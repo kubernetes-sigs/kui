@@ -1,0 +1,103 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** distinguish the mini splits */
+.kui--scrollback[data-is-minisplit] {
+  background-color: var(--color-base02);
+  box-shadow: 1px 1px var(--color-base01);
+  border: 1px dotted var(--color-base03);
+  display: flex;
+  flex-direction: column;
+
+  .repl-block + .repl-block.repl-active {
+    margin-top: 0.5rem;
+  }
+
+  .kui--repl-block-timestamp {
+    display: none;
+  }
+
+  .repl-block {
+    margin: 0;
+  }
+
+  .repl-block.kui--maximize-candidate {
+    &:not(.repl-active):not(.processing) {
+      flex: 1;
+
+      &:not(:nth-last-child(2)) {
+        display: none;
+      }
+    }
+    .repl-output {
+      flex: 1;
+      padding-right: 1rem;
+
+      .repl-result:not(:empty) {
+        flex: 1;
+        display: flex;
+
+        .kui--data-table-as-grid {
+          /* grids should wrap, rather than be rectilinear */
+          grid-template-columns: repeat(auto-fill, minmax(1.25rem, auto)) !important;
+        }
+      }
+
+      .kui--card {
+        flex: 1;
+        margin: 0.5rem 1px 1px; /* 1px: leave room for card box-shadow */
+      }
+      .kui--data-table-wrapper {
+        display: flex;
+      }
+      .kui--card-body {
+        position: relative;
+        .kui--data-table-as-grid {
+          position: absolute;
+          padding-right: 1rem;
+          width: calc(100% - 1rem);
+          max-height: calc(100% - 2rem);
+          overflow: auto;
+        }
+        .kui--table-like {
+          width: 100%;
+        }
+        .kui--data-table-container {
+          position: absolute;
+          overflow: auto;
+          max-height: 100%;
+          width: 100%;
+
+          .kui--header-cell {
+            background-color: var(--color-table-border1);
+          }
+
+          .slightly-deemphasize {
+            font-size: 0.75rem;
+          }
+        }
+      }
+      div[data-table-watching] {
+        flex: 1;
+        display: flex;
+      }
+    }
+  }
+  /*.repl-block + .repl-block.repl-active {
+    flex: 1;
+    justify-content: flex-end;
+  }*/
+}

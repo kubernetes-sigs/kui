@@ -102,7 +102,7 @@ const asRadioTable = ({ REPL }: Arguments, { header, body }: Table): RadioTable 
         Object.assign(rtRow, {
           onSelect: async () => {
             const context = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
-            await REPL.pexec(`kubectl config use-context ${context}`)
+            await REPL.qexec(`kubectl config use-context ${context}`)
           }
         })
       )

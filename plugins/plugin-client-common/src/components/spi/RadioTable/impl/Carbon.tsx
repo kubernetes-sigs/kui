@@ -29,7 +29,10 @@ import {
 
 import BaseProps from '../model'
 import Icons from '../../Icons'
-import { State as BaseState, slice } from '../index'
+import { State as BaseState } from '../index'
+
+import Card from '../../Card'
+import Toolbar from '../../../Content/Table/Toolbar'
 
 import '../../../../../web/scss/components/RadioTable/Carbon.scss'
 
@@ -69,8 +72,24 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     return `${this.state.uuid}-${idx}`
   }
 
-  private row(row: RadioTableRow, ridx: number, head: boolean, onSelect?: () => void) {
-    const isSelected = !head && ridx === this.props.selectedIdx - this.props.offset
+  private topToolbar() {
+    const { table } = this.props
+
+    const titleBreadcrumb = table.title ? [{ label: table.title, className: 'kui--data-table-title' }] : []
+    const breadcrumbs = titleBreadcrumb
+
+    return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+  }
+
+  private bottomToolbar() {
+    if (this.props.selectedIdx >= 0) {
+      const selectedRow = this.props.table.body[this.props.selectedIdx]
+      return <Toolbar>{this.row(selectedRow, this.props.selectedIdx)}</Toolbar>
+    }
+  }
+
+  private row(row: RadioTableRow, ridx: number, head = false, onSelect?: () => void) {
+    const isSelected = !onSelect && !head && ridx === this.props.selectedIdx - this.props.offset
     const name = this.id(ridx)
 
     // notes: label is needed for selection
@@ -79,6 +98,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
         label
         head={head}
         key={ridx}
+        className={'kui--radio-table-row' + (head ? ' kui--radio-table-row--header-row' : '')}
         data-name={row.nameIdx !== undefined ? radioTableCellToString(row.cells[row.nameIdx]) : name}
         data-is-selected={isSelected || undefined}
       >
@@ -93,7 +113,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
         )}
 
         <StructuredListCell>
-          {!head && <Icons icon="Checkmark" className="bx--structured-list-svg" />}
+          <Icons icon="Checkmark" className="bx--structured-list-svg" />
         </StructuredListCell>
 
         {row.cells.map((cell, cidx) => {
@@ -105,7 +125,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
               key={cidx}
               data-is-name={cidx === row.nameIdx ? true : undefined}
               data-key={typeof cell !== 'string' ? cell.key : undefined}
-              className={radioTableHintsAsCss(cell)}
+              className={`kui--radio-table-cell ${radioTableHintsAsCss(cell) || ''}`}
             >
               <span data-tag={badgeHint ? 'badge' : undefined}>
                 {badgeHint && <span data-tag="badge-circle" className={badgeHint.toString()} />}
@@ -120,23 +140,39 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
   }
 
   private header() {
-    return <StructuredListHead>{this.row(this.props.table.header, 0, true)}</StructuredListHead>
+    return (
+      <StructuredListHead className="kui--radio-table-header">
+        {this.row(this.props.table.header, 0, true)}
+      </StructuredListHead>
+    )
   }
 
   private body() {
     return (
-      <StructuredListBody>
-        {slice(this.props).map((row, idx) => this.row(row, idx, false, row.onSelect))}
+      <StructuredListBody className="kui--radio-table-body">
+        {this.props.table.body.map(
+          (row, idx) => idx !== this.props.selectedIdx && this.row(row, idx, false, row.onSelect)
+        )}
       </StructuredListBody>
     )
   }
 
   public render() {
     return (
-      <StructuredListWrapper selection className="kui--radio-table kui--table-like">
-        {this.header()}
-        {this.body()}
-      </StructuredListWrapper>
+      <div className="kui--data-table-wrapper kui--screenshotable kui--radio-table-wrapper kui--table-like-wrapper">
+        <Card
+          header={this.props.title && this.topToolbar()}
+          footer={this.bottomToolbar()}
+          footerClassName="kui--inverted-color-context kui--no-padding"
+        >
+          <div className="kui--data-table-container">
+            <StructuredListWrapper selection className="kui--radio-table kui--table-like">
+              {this.header()}
+              {this.body()}
+            </StructuredListWrapper>
+          </div>
+        </Card>
+      </div>
     )
   }
 }

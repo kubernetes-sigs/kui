@@ -34,8 +34,8 @@ type WithStartTime = { startTime: Date }
 type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
-type withPin = { isPinned: boolean }
 type WithAnnouncement = { isAnnouncement: boolean }
+type WithPreferences = { prefersTerminalPresentation: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -45,7 +45,11 @@ export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithAnnouncement
 type EmptyBlock = WithState<BlockState.Empty> & WithCWD
 type ErrorBlock = WithState<BlockState.Error> & WithCommand & WithResponse<Error> & WithUUID
-type OkBlock = WithState<BlockState.ValidResponse> & WithCommand & WithResponse<ScalarResponse> & WithUUID
+type OkBlock = WithState<BlockState.ValidResponse> &
+  WithCommand &
+  WithResponse<ScalarResponse> &
+  WithUUID &
+  WithPreferences
 export type ProcessingBlock = WithState<BlockState.Processing> & WithCommand & WithUUID & WithStartTime
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
 
@@ -53,8 +57,7 @@ type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & 
 export type FinishedBlock = OkBlock | ErrorBlock | CancelledBlock | EmptyBlock
 
 // A Block is one of the canonical types
-export type BlockModel = (ProcessingBlock | FinishedBlock | CancelledBlock | ActiveBlock | AnnouncementBlock) &
-  Partial<withPin>
+export type BlockModel = ProcessingBlock | FinishedBlock | CancelledBlock | ActiveBlock | AnnouncementBlock
 export default BlockModel
 
 /** Capture the current working directory */
@@ -167,7 +170,12 @@ export function Cancelled(block: BlockModel): CancelledBlock | EmptyBlock {
 }
 
 /** Transform to Finished */
-export function Finished(block: ProcessingBlock, response: ScalarResponse, cancelled: boolean): FinishedBlock {
+export function Finished(
+  block: ProcessingBlock,
+  response: ScalarResponse,
+  cancelled: boolean,
+  prefersTerminalPresentation = false
+): FinishedBlock {
   if (cancelled) {
     return Cancelled(block)
   } else if (isError(response)) {
@@ -186,6 +194,7 @@ export function Finished(block: ProcessingBlock, response: ScalarResponse, cance
       command: block.command,
       execUUID: block.execUUID,
       startTime: block.startTime,
+      prefersTerminalPresentation,
       state: BlockState.ValidResponse
     }
   }

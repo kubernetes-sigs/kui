@@ -16,6 +16,7 @@
 
 import { ExecType } from './command'
 import { Tab } from '../webapp/tab'
+import AlwaysViewIn from './AlwaysViewIn'
 import { Stream, Streamable, StreamableFactory } from './streamable'
 import { Block } from '../webapp/models/block'
 import { Abortable, FlowControllable } from '../core/jobs/job'
@@ -40,7 +41,7 @@ export interface ExecOptions {
    * always show the view in terminal, e.g. for certain commands producing watchable table,
    * we want them to always show in `Terminal`
    */
-  alwaysViewIn?: 'Terminal'
+  alwaysViewIn?: AlwaysViewIn
 
   isProxied?: boolean
   noDelegation?: boolean

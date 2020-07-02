@@ -70,7 +70,7 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
     const isLeftNav = this.state.responseType && this.state.responseType === 'NavResponse'
 
     return (
-      <div className="kui--full-height">
+      <React.Fragment>
         <div className={'kui--full-height' + (isLeftNav || this.state.responseType === undefined ? ' hide' : '')}>
           <TopNavSidecar {...this.props} onClose={this.onClose.bind(this)} />
         </div>
@@ -78,7 +78,7 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
         <div className={'kui--full-height' + (!isLeftNav ? ' hide' : '')}>
           <LeftNavSidecar {...this.props} onClose={this.onClose.bind(this)} />
         </div>
-      </div>
+      </React.Fragment>
     )
   }
 }

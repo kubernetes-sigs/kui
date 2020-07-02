@@ -34,12 +34,12 @@ import renderTable from '../Table'
 import Markdown from '../Markdown'
 import { KuiContext } from '../../../'
 import RadioTableSpi from '../../spi/RadioTable'
+import { BlockViewTraits } from '../../Views/Terminal/Block'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
 
-interface Props {
+type Props = BlockViewTraits & {
   tab: KuiTab
   response: ScalarResponse | Error
-  isPinned: boolean
   onRender: (hasContent: boolean) => void
 }
 
@@ -79,7 +79,9 @@ export default class Scalar extends React.PureComponent<Props, State> {
     const { tab, response } = this.props
 
     try {
-      if (typeof response === 'number' || typeof response === 'string' || typeof response === 'boolean') {
+      if (typeof response === 'boolean') {
+        return <React.Fragment />
+      } else if (typeof response === 'number' || typeof response === 'string') {
         return <pre>{response}</pre>
       } else if (isRadioTable(response)) {
         return (
@@ -88,9 +90,19 @@ export default class Scalar extends React.PureComponent<Props, State> {
           </KuiContext.Consumer>
         )
       } else if (isTable(response)) {
-        const renderBottomToolbar = !this.props.isPinned
-        const renderGrid = this.props.isPinned
-        return renderTable(tab, tab.REPL, response, undefined, renderBottomToolbar, renderGrid, this.props.onRender)
+        const renderBottomToolbar = true
+        const renderGrid =
+          !this.props.prefersTerminalPresentation && this.props.isPartOfMiniSplit && response.body.length > 5
+        return renderTable(
+          tab,
+          tab.REPL,
+          response,
+          undefined,
+          renderBottomToolbar,
+          renderGrid,
+          this.props.onRender,
+          this.props.isPartOfMiniSplit
+        )
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
         // <PaginatedTable {...props} />

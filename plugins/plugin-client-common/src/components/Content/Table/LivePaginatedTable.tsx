@@ -50,7 +50,11 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     if (this.props.onRender) {
       setTimeout(() => this.props.onRender(this.state.rows.length > 0))
     }
-    return <div data-table-watching={this.state.isWatching}>{super.render()}</div>
+    return (
+      <div data-table-watching={this.state.isWatching} data-table-as-grid={this.state.asGrid}>
+        {super.render()}
+      </div>
+    )
   }
 
   /**

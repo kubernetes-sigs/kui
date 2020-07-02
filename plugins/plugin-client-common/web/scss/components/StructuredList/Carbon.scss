@@ -14,7 +14,24 @@
  * limitations under the License.
  */
 
+@import '../common/narrow-window';
 @import '~carbon-components/scss/components/structured-list/_structured-list.scss';
+
+@include narrow-window {
+  .bx--structured-list-td,
+  .bx--structured-list-th {
+    &.hide-with-sidecar {
+      display: none;
+    }
+  }
+}
+
+.kui--radio-table-row {
+  &,
+  &.kui--radio-table-row--header-row {
+    border-bottom-color: var(--color-table-border3);
+  }
+}
 
 [kui-theme-style] {
   .sidecar-visible {
@@ -23,14 +40,6 @@
 
       .bx--structured-list-td,
       .bx--structured-list-th {
-        &[data-is-name] {
-          width: 100%;
-          max-width: 0;
-          overflow: hidden;
-          white-space: nowrap;
-          text-overflow: ellipsis;
-        }
-
         &.hide-with-sidecar {
           display: none;
         }
@@ -42,53 +51,52 @@
 [kui-theme-style] .bx--structured-list.kui--table-like {
   font-family: var(--font-sans-serif);
   color: var(--color-text-01);
+}
+.kui--radio-table {
+  margin-bottom: 0;
+  width: auto;
+}
 
-  &.kui--radio-table {
-    margin-bottom: 0;
-    width: auto;
+.bx--structured-list-row {
+  border-bottom-color: var(--color-base03);
+}
+
+.bx--structured-list-th,
+.bx--structured-list-td {
+  color: inherit;
+  font-size: inherit;
+}
+
+.bx--structured-list-td {
+  &.sub-text {
+    color: var(--color-text-02);
   }
+}
 
-  .bx--structured-list-row {
-    border-bottom-color: var(--color-base03);
+.bx--structured-list--selection
+  .bx--structured-list-row:hover:not(.bx--structured-list-row--header-row):not(.bx--structured-list-row--selected) {
+  background-color: var(--color-ui-03);
+  border-color: var(--color-table-border1);
+
+  &,
+  .bx--structured-list-td:not(.sub-text) {
+    color: var(--color-text-01);
   }
-
-  .bx--structured-list-th,
-  .bx--structured-list-td {
-    color: inherit;
-    font-size: inherit;
+  .bx--structured-list-td.sub-text {
+    color: var(--color-text-02);
   }
+}
 
-  .bx--structured-list-td {
-    &.sub-text {
-      color: var(--color-text-02);
-    }
-  }
+.bx--structured-list-input:checked + .bx--structured-list-td .bx--structured-list-svg {
+  fill: currentColor;
+}
 
-  .bx--structured-list-row:hover .bx--structured-list-td {
-    border-top-color: var(--color-base05);
-  }
+.kui--radio-table-wrapper .bx--structured-list-td {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 
-  &.kui--radio-table .bx--structured-list-td {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-
-    /* only for RadioTable? */
-    white-space: normal;
-    word-break: break-all;
-  }
-
-  &.bx--structured-list--selection
-    .bx--structured-list-row:hover:not(.bx--structured-list-row--header-row):not(.bx--structured-list-row--selected) {
-    background-color: var(--color-ui-03);
-    border-color: var(--color-table-border1);
-
-    &,
-    .bx--structured-list-td:not(.sub-text) {
-      color: var(--color-text-01);
-    }
-  }
-
-  .bx--structured-list-input:checked + .bx--structured-list-td .bx--structured-list-svg {
-    fill: currentColor;
-  }
+  /* only for RadioTable? */
+  white-space: normal;
+  word-break: break-all;
+  vertical-align: middle;
 }

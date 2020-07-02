@@ -1,6 +1,8 @@
 @import 'carbon-components/scss/components/ui-shell/_header.scss';
 @import 'carbon-components/scss/components/ui-shell/_ui-shell.scss';
 
+$tab-shadow: inset 0 -3px 0 0;
+
 .bx--header {
   height: 2.75rem;
   background-color: var(--color-stripe-01);
@@ -72,12 +74,12 @@
     min-width: 12rem;
     max-width: 20rem;
 
-    box-shadow: inset 0 -2px 0 0 var(--color-table-border3);
+    box-shadow: $tab-shadow var(--color-table-border3);
     &:hover {
-      box-shadow: inset 0 -2px 0 0 var(--color-table-border2);
+      box-shadow: $tab-shadow var(--color-table-border2);
     }
     &.kui--tab--active {
-      box-shadow: inset 0 -2px 0 0 var(--active-tab-color);
+      box-shadow: $tab-shadow var(--active-tab-color);
     }
 
     &:not(:first-child) {

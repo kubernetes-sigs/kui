@@ -85,9 +85,6 @@ export interface InputOptions {
 
   /** Block is about to lose focus */
   willLoseFocus?: () => void
-
-  /* unpin the view, e.g. show the view back in terminal */
-  unPin?: () => void
 }
 
 type InputProps = {
@@ -141,7 +138,9 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
       !this.props.noPromptContext && (
         <KuiContext.Consumer>
           {config =>
-            !config.noPromptContext && this.props.model && <span className="repl-context">{this.props.model.cwd}</span>
+            !config.noPromptContext &&
+            !this.props.isPartOfMiniSplit &&
+            this.props.model && <span className="repl-context">{this.props.model.cwd}</span>
           }
         </KuiContext.Consumer>
       )
@@ -154,7 +153,9 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
     return (
       <KuiContext.Consumer>
-        {config => <span className="repl-prompt-righty">{config.prompt || '/'}</span>}
+        {config => (
+          <span className="repl-prompt-righty">{config.prompt || this.props.isPartOfMiniSplit ? '\u276f' : '/'}</span>
+        )}
       </KuiContext.Consumer>
     )
   }
@@ -181,7 +182,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
         console.error('error rendering i-search', err)
         return this.normalPrompt()
       }
-    } else if (!this.props.isPinned) {
+    } else {
       return this.normalPrompt()
     }
   }
@@ -267,10 +268,6 @@ export default class Input extends InputProvider {
 
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
-    if (this.props.isPinned) {
-      return
-    }
-
     const active = isActive(this.props.model)
 
     if (active) {
@@ -357,11 +354,7 @@ export default class Input extends InputProvider {
 
   /** render the time the block started processing */
   private timestamp() {
-    if (
-      !this.props.isPinned &&
-      !isEmpty(this.props.model) &&
-      (isProcessing(this.props.model) || isFinished(this.props.model))
-    ) {
+    if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
       return (
         this.props.model.startTime && (
           <span className="kui--repl-block-timestamp kui--repl-block-right-element">
@@ -394,7 +387,7 @@ export default class Input extends InputProvider {
   }
 
   private removeAction(): DropDownAction[] {
-    return !this.props.willRemove || this.props.isPinned
+    return !this.props.willRemove
       ? []
       : [
           {
@@ -415,23 +408,10 @@ export default class Input extends InputProvider {
         ]
   }
 
-  private unPinnedAction(): DropDownAction[] {
-    return !this.props.isPinned
-      ? []
-      : [
-          {
-            label: strings2('Show as table in terminal'),
-            handler: () => this.props.unPin()
-          }
-        ]
-  }
-
   /** DropDown menu for completed blocks */
   private dropdown() {
     if (!isActive(this.props.model)) {
-      const actions = this.screenshotAction()
-        .concat(this.unPinnedAction())
-        .concat(this.removeAction())
+      const actions = this.screenshotAction().concat(this.removeAction())
       return (
         <DropDown
           actions={actions}
@@ -443,7 +423,7 @@ export default class Input extends InputProvider {
   }
 
   /** Close button. Only for pinned blocks for now. */
-  private close() {
+  /* private close() {
     return (
       this.props.willRemove &&
       this.props.isPinned && (
@@ -457,7 +437,7 @@ export default class Input extends InputProvider {
         </a>
       )
     )
-  }
+  } */
 
   /**
    * Status elements associated with the block; even though these
@@ -472,7 +452,7 @@ export default class Input extends InputProvider {
         {this.errorIcon()}
         {this.timestamp()}
         {this.dropdown()}
-        {this.close()}
+        {/* this.close() */}
       </span>
     )
   }

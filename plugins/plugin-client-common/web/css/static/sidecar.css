@@ -70,6 +70,10 @@
   }
 }
 
+.kui--sidecar {
+  font-family: var(--font-sans-serif);
+}
+
 .kui--sidecar .bx--data-table {
   white-space: normal;
 }

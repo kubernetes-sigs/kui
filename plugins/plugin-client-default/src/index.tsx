@@ -36,7 +36,7 @@ import { productName } from '@kui-shell/client/config.d/name.json'
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui productName={productName} splitTerminals enableWatcherAutoPin {...props} toplevel={!inBrowser() && <Search />}>
+    <Kui productName={productName} splitTerminals lightweightTables {...props} toplevel={!inBrowser() && <Search />}>
       <ContextWidgets>
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />

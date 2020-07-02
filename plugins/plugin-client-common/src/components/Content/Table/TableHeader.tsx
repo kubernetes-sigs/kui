@@ -38,7 +38,7 @@ export default function renderHeader(kuiHeader: KuiRow, { getHeaderProps, header
                 header,
                 'data-key': header.key,
                 // isSortable: isSortable,
-                className: outerCSS
+                className: `kui--header-cell ${outerCSS || ''}`
               })}
             >
               {css ? <span className={css}>{header.header}</span> : header.header}

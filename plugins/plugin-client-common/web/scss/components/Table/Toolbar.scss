@@ -29,18 +29,14 @@ body[kui-theme-style] .kui--toolbar-alert.bx--toast-notification {
   }
 }
 
-body[kui-theme-style] .kui--data-table-toolbar {
+.kui--data-table-toolbar-bottom {
   display: flex;
+  height: 2rem;
+}
 
+body[kui-theme-style] .kui--data-table-toolbar {
   nav[aria-label='Breadcrumb'] {
     overflow-x: unset;
-  }
-
-  nav[aria-label='Breadcrumb'] {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    height: 2.1875rem;
   }
 
   .kui--toolbar-button-with-icon {

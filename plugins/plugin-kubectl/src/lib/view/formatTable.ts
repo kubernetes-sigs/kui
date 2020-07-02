@@ -66,8 +66,6 @@ const outerCSSForKey = {
   CURRENT: 'entity-name-group entity-name-group-extra-narrow text-center',
   DESIRED: 'entity-name-group entity-name-group-extra-narrow text-center',
 
-  RESTARTS: 'very-narrow',
-
   'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
@@ -77,7 +75,7 @@ const outerCSSForKey = {
   APIGROUP: 'hide-with-sidecar',
 
   REVISION: 'hide-with-sidecar', // helm ls
-  AGE: 'hide-with-sidecar very-narrow', // e.g. helm status and kubectl get svc
+  AGE: 'hide-with-sidecar', // e.g. helm status and kubectl get svc
   'PORT(S)': 'entity-name-group entity-name-group-narrow hide-with-sidecar', // helm status for services
   SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
 }

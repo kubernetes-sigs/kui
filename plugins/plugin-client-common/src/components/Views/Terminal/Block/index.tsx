@@ -22,7 +22,8 @@ import Output from './Output'
 import { BlockModel, isActive, isEmpty, isFinished, isProcessing, isAnnouncement, hasUUID } from './BlockModel'
 
 export type BlockViewTraits = {
-  isPinned?: boolean
+  prefersTerminalPresentation?: boolean
+  isPartOfMiniSplit?: boolean
 }
 
 type Props = InputOptions & {
@@ -77,7 +78,8 @@ export default class Block extends React.PureComponent<Props, State> {
           tab={this.props.tab}
           model={this.props.model}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
-          isPinned={this.props.isPinned}
+          prefersTerminalPresentation={this.props.prefersTerminalPresentation}
+          isPartOfMiniSplit={this.props.isPartOfMiniSplit}
         />
       )
     }
@@ -135,8 +137,7 @@ export default class Block extends React.PureComponent<Props, State> {
     return (
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
         <div
-          className={'repl-block ' + this.props.model.state.toString()}
-          data-pinned={this.props.isPinned || undefined}
+          className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
           data-announcement={isAnnouncement(this.props.model) || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}
