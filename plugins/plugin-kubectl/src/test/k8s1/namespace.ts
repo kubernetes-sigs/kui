@@ -102,11 +102,15 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(ReplExpect.okWithCustom({ selector: radioButton }))
           .then(selector =>
             this.app.client.waitUntil(async () => {
+              console.error('1', selector)
               await this.app.client.click(selector)
+              console.error('2')
               const actualNamespace = await this.app.client.getText(
                 Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-kubeui--current-namespace')
               )
+              console.error('3', actualNamespace)
               await this.app.client.waitForExist(selector.replace(radioButton, radioButtonSelected))
+              console.error('4')
               return actualNamespace === ns1
             })
           )

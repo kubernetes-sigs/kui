@@ -95,7 +95,7 @@ async function doGetCurrentNamespace({ tab }: Arguments<KubeOptions>) {
 }
 
 /** Align the table model of outerCSS and css to CellShould hints */
-function hintsFor(outerCSS: string, css: string): CellShould[] {
+function hintsFor(key: string, outerCSS: string, css: string): CellShould[] {
   const hints = [] as CellShould[]
 
   if (/hide-with-sidecar/.test(outerCSS)) {
@@ -112,6 +112,10 @@ function hintsFor(outerCSS: string, css: string): CellShould[] {
     hints.push(CellShould.HaveGrayBadge)
   }
 
+  if (key === 'STATUS') {
+    hints.push(CellShould.HideWithSidecar)
+  }
+
   return hints
 }
 
@@ -121,9 +125,9 @@ export function t2rt({ name, attributes }: Row): RadioTableRow {
     nameIdx: 0,
     cells: [
       name,
-      ...attributes.map(({ value, outerCSS, css }) => ({
+      ...attributes.map(({ key, value, outerCSS, css }) => ({
         value,
-        hints: hintsFor(outerCSS, css)
+        hints: hintsFor(key, outerCSS, css)
       }))
     ]
   }
@@ -134,7 +138,7 @@ type SwitchFn = (ns: string, args: Arguments<KubeOptions>) => void
 
 /** SwitchFn impl that uses `kubectl config set-context` */
 const doSwitchViaKubectl: SwitchFn = (ns: string, args: Arguments<KubeOptions>) => {
-  return args.REPL.pexec(`kubectl config set-context --current --namespace=${ns}`)
+  return args.REPL.qexec(`kubectl config set-context --current --namespace=${ns}`)
 }
 
 /** Format as RadioTable */

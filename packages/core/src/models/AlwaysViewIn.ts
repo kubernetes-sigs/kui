@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-@import '../Table/badges';
-@import '../Table/common';
+type AlwaysViewIn = 'Terminal'
 
-[kui-theme-style] .kui--radio-table-wrapper {
-  [data-tag='badge-circle'] {
-    display: inline-block;
-    vertical-align: middle;
-  }
-}
+export default AlwaysViewIn

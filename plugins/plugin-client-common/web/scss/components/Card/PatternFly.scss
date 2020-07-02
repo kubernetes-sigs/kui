@@ -49,6 +49,16 @@
   }
 }
 
+.kui--card-footer {
+  &.kui--no-padding {
+    padding: 0;
+    height: auto;
+  }
+  &.kui--inverted-color-context {
+    background-color: var(--color-sidecar-header);
+  }
+}
+
 [kui-theme-style] .kui--card {
   white-space: normal;
   font-family: var(--font-sans-serif);

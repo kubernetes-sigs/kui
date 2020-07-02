@@ -15,9 +15,6 @@
  */
 
 type FeatureFlags = {
-  /** [Optional] Enable WatchPane? */
-  enableWatchPane?: boolean
-
   /** [Optional] disable table title? */
   disableTableTitle?: boolean
 
@@ -38,6 +35,9 @@ type FeatureFlags = {
    *
    */
   showWelcomeMax?: number
+
+  /** [Optional] Should Tables NOT be presented within a Card/Tile UI? */
+  lightweightTables?: boolean
 }
 
 export default FeatureFlags

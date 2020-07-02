@@ -17,16 +17,16 @@
 /** Scrollback styling */
 
 @import './Block';
-@import './Pinned';
 
 .kui--terminal-split-container {
   display: grid;
-  grid-gap: 1px;
+  grid-gap: 6px;
   overflow: hidden;
-  background-color: var(--color-table-border1);
+  background-color: var(--color-stripe-01);
 }
 
 .kui--scrollback {
-  background-color: var(--color-repl-background);
   padding: 0.5rem 0;
+  border-radius: 3px / 6px;
+  background-color: var(--color-repl-background);
 }

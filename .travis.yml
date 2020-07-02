@@ -12,7 +12,6 @@ env:
     - WEBPACK_CLIENT_URL="http://localhost:9080/"
     - RUNNING_KUI_TEST=true
     - KUI_USE_HTTP=true
-    - USE_WATCH_PANE=true
     - IBMCLOUD_TRACE=true
     - CSP_ALLOWED_HOSTS="http://localhost:8081 ws://localhost:8081 http://localhost:9953 ws://localhost:9080 http://localhost:9080 ws://localhost:9081 http://localhost:9081 ws://localhost:9082 http://localhost:9082 ws://localhost:9084 http://localhost:9084"
     - PATH=bin:$PATH

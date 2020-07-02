@@ -107,7 +107,15 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
 
   /** card footer */
   private footer() {
-    return this.props.footer && <CardFooter className="kui--card-footer">{this.props.footer}</CardFooter>
+    return (
+      this.props.footer && (
+        <CardFooter
+          className={'kui--card-footer' + (this.props.footerClassName ? ` ${this.props.footerClassName}` : '')}
+        >
+          {this.props.footer}
+        </CardFooter>
+      )
+    )
   }
 
   private title() {

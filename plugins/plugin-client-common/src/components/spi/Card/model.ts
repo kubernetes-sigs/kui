@@ -50,6 +50,9 @@ interface Props {
   /** [Optional] CSS class to associate with the outermost Card element */
   className?: string
 
+  /** [Optional] CSS class to associate with the Card footer */
+  footerClassName?: string
+
   /** [Optional] REPL controller, but required if you want your Card
    * to have functional kuiexec?command=... links via Markdown */
   repl?: REPL

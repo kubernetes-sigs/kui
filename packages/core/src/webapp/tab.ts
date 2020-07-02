@@ -79,7 +79,9 @@ export const getTab = (idx: Tab | number): Tab => {
 }
 
 export function pexecInCurrentTab(command: string) {
-  const { facade: tab } = (document.querySelector('.kui--tab-content.visible .kui--scrollback') as any) as {
+  const { facade: tab } = (document.querySelector(
+    '.kui--tab-content.visible .kui--scrollback:not([data-is-minisplit])'
+  ) as any) as {
     facade: Tab
   }
   return tab.REPL.pexec(command, { tab })

@@ -1,0 +1,155 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** Grid assignments for terminals */
+div.kui--scrollback:nth-of-type(1) {
+  grid-area: T1;
+}
+div.kui--scrollback:nth-of-type(2) {
+  grid-area: T2;
+}
+div.kui--scrollback:nth-of-type(3) {
+  grid-area: T3;
+}
+div.kui--scrollback:nth-of-type(4) {
+  grid-area: T4;
+}
+div.kui--scrollback:nth-of-type(5) {
+  grid-area: T5;
+}
+
+/** Grid assignment for sidecar */
+.kui--sidecar-container {
+  display: none;
+  &[data-visible] {
+    display: block;
+    grid-area: S;
+  }
+}
+
+/** Case: no splits */
+.repl:not(.sidecar-visible),
+.repl.sidecar-visible {
+  .kui--terminal-split-container[data-split-count='1'] {
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    grid-template-areas: 'T1';
+
+    &[data-sidecar] {
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-areas: 'T1 T1 S S S'; /* 40/60 split */
+    }
+  }
+}
+
+/**
+ * Case: sidecar closed
+ *
+ */
+.repl:not(.sidecar-visible) .kui--terminal-split-container {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+
+  /* sidecar closed, two terminals */
+  &[data-split-count='2'] {
+    grid-template-areas:
+      'T1 T2'
+      'T1 T2';
+  }
+
+  /* sidecar closed, three terminals */
+  &[data-split-count='3'] {
+    grid-template-areas:
+      'T1 T3 T3'
+      'T2 T3 T3';
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* sidecar closed, four terminals */
+  &[data-split-count='4'] {
+    grid-template-areas:
+      'T1 T2 T3'
+      'T4 T4 T4';
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* sidecar closed, five terminals */
+  &[data-split-count='5'] {
+    grid-template-areas:
+      'T1 T2 T3'
+      'T4 T5 T5';
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/** 
+ * Case: sidecar open
+ *
+ */
+.repl.sidecar-visible .kui--terminal-split-container {
+  grid-template-columns: repeat(1, 1fr);
+
+  &[data-sidecar='100%'][data-split-count] {
+    grid-template: repeat(1, 1fr) / repeat(1, 1fr);
+    grid-template-areas: 'S';
+    div.kui--scrollback {
+      display: none;
+    }
+  }
+
+  /* sidecar open, two terminals */
+  &[data-split-count='2'] {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-areas: 'T1 T1 S S S' 'T2 T2 S S S';
+  }
+
+  /* sidecar open, three terminals */
+  &[data-split-count='3'] {
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-template-areas:
+      'T3 T3 T3 T3 S S S S S S'
+      'T3 T3 T3 T3 S S S S S S'
+      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2';
+  }
+
+  /* sidecar open, four terminals */
+  &[data-split-count='4'] {
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-areas:
+      'T4 T4 T4 T4 S S S S S S'
+      'T4 T4 T4 T4 S S S S S S'
+      'T4 T4 T4 T4 S S S S S S'
+      'T3 T3 T3 T3 S S S S S S'
+      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2'
+      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2';
+  }
+
+  /* sidecar open, five terminals */
+  &[data-split-count='5'] {
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-template-areas:
+      'T5 T5 T5 T5 S S S S S S'
+      'T5 T5 T5 T5 S S S S S S'
+      'T3 T3 T3 T3 S S S S S S'
+      'T3 T3 T3 T3 S S S S S S'
+      'T4 T4 T4 T4 T1 T1 T1 T2 T2 T2'
+      'T4 T4 T4 T4 T1 T1 T1 T2 T2 T2';
+  }
+}
