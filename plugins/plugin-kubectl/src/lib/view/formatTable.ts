@@ -186,7 +186,7 @@ export async function getNamespaceBreadcrumbs(entityType: string, args: Argument
 }
 
 /** HELLO -> Hello, which is not possible to do with CSS */
-function initialCapital(name: string): string {
+export function initialCapital(name: string): string {
   return name[0] + name.slice(1).toLowerCase()
 }
 
@@ -349,7 +349,11 @@ export const formatTable = async <O extends KubeOptions>(
   const breadcrumbs = await getNamespaceBreadcrumbs(entityTypeFromCommandLine, args)
 
   return {
-    header: Object.assign(rows[0], { key: rows[0].key || rows[0].name, name: initialCapital(rows[0].name), attributes: (rows[0].attributes || []).map(_ => Object.assign(_, { value: initialCapital(_.value) })) }),
+    header: Object.assign(rows[0], {
+      key: rows[0].key || rows[0].name,
+      name: initialCapital(rows[0].name),
+      attributes: (rows[0].attributes || []).map(_ => Object.assign(_, { value: initialCapital(_.value) }))
+    }),
     body: rows.slice(1),
     noSort: true,
     title: entityTypeFromRows || entityTypeFromCommandLine || '',
