@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.9](https://github.com/IBM/kui/compare/v8.10.8...v8.10.9) (2020-07-06)
+
+### Bug Fixes
+
+- **plugins/plugin-client-default:** improve debug logging of client properties ([82eb6a2](https://github.com/IBM/kui/commit/82eb6a2)), closes [#5088](https://github.com/IBM/kui/issues/5088)
+
 ## [8.10.8](https://github.com/IBM/kui/compare/v8.10.7...v8.10.8) (2020-07-02)
 
 ### Bug Fixes
