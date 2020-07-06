@@ -289,6 +289,15 @@ const renderHelpUnsafe = <O extends KubeOptions>(
         )
         .concat('\n\n')
         .replace(/(\s--\S+)/g, '`$1`')
+
+        // see https://github.com/IBM/kui/issues/5085; needed only to support helm 3.0 and 3.1 custom ascii art tables
+        .replace(/\n\n[+-]+\n/g, '\n\n')
+        .replace(/^\+--/gm, '---')
+        .replace(/--\+$/gm, '---')
+        .replace(/--\+/g, '--|')
+        .replace(/^[+-]+$/gm, '')
+        .replace(/\|\n[|-]+\n\n/g, '|\n\n')
+
         .replace(/^\n*([^\n.]+)(\.?)/, '### About\n#### $1')
         .replace(/\n\s*(Find more information at:)\s+([^\n]+)/, '') // [Find more information] will be in links below the menus
         .concat(!aliasesSection ? '' : `### Aliases\n${aliasesSection.content}`)
