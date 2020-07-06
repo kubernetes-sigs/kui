@@ -110,7 +110,9 @@ export class Kui extends React.PureComponent<Props, State> {
       this.state = Object.assign({}, this.defaultSessionBehavior(), this.defaultFeatureFlag(), props, {
         isBootstrapped: !!props.noBootstrap
       })
-      debug('initial state', this.state)
+      debug('initial state:inBrowser?', inBrowser())
+      debug('initial state:given properties', props)
+      debug('initial state:final value', this.state)
     } catch (err) {
       console.log('using default configuration')
       this.state = {
@@ -174,7 +176,7 @@ export class Kui extends React.PureComponent<Props, State> {
    *
    */
   private defaultSessionBehavior(): KuiConfiguration {
-    return !inBrowser()
+    const behavior = !inBrowser()
       ? {}
       : {
           loading: this.defaultLoading(),
@@ -182,6 +184,9 @@ export class Kui extends React.PureComponent<Props, State> {
           loadingError: this.defaultLoadingError(),
           loadingDone: this.defaultLoadingDone()
         }
+
+    debug('defaultSessionBehavior', behavior)
+    return behavior
   }
 
   private onThemeChange({ themeModel }: { themeModel: Theme }) {
