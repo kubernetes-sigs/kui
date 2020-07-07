@@ -16,14 +16,20 @@
 
 import * as React from 'react'
 
+import Markdown from '../Markdown'
 import Icons from '../../spi/Icons'
 import Breadcrumb, { Props as BreadcrumbProps } from '../../spi/Breadcrumb'
 
 import 'carbon-components/scss/components/pagination/_pagination.scss'
 
+import '../../../../web/css/static/ToolbarButton.scss'
+import '../../../../web/scss/components/Table/Events.scss'
+import '../../../../web/scss/components/Table/Toolbar.scss'
+
 export type Props = Partial<GridProps> &
   Partial<PaginationProps> &
-  Partial<BreadcrumbProps> & {
+  Partial<BreadcrumbProps> &
+  Partial<StreamProps> & {
     framed?: boolean
     className?: string
   }
@@ -40,6 +46,10 @@ interface PaginationProps {
   totalItems: number
   pageSize: number
   setPage: (page: number) => void
+}
+
+interface StreamProps {
+  stream: string[]
 }
 
 export default class Toolbar extends React.PureComponent<Props> {
@@ -148,6 +158,18 @@ export default class Toolbar extends React.PureComponent<Props> {
     return <div className="kui--data-table-toolbar-filler" />
   }
 
+  private messageStream() {
+    if (this.props.stream) {
+      return this.props.stream.map((_, idx) => (
+        <div key={`${_}-${idx}`} className="kui--data-table-footer-messages kui--inverted-color-context">
+          <div className="kui--data-table-footer-message">
+            <Markdown source={_} noExternalLinks />
+          </div>
+        </div>
+      ))
+    }
+  }
+
   public render() {
     const className = 'kui--data-table-toolbar' + (this.props.className ? ` ${this.props.className}` : '')
 
@@ -157,6 +179,7 @@ export default class Toolbar extends React.PureComponent<Props> {
         {this.buttons()}
         {this.props.children}
         {this.filler()}
+        {this.messageStream()}
         {this.paginationController()}
       </div>
     )

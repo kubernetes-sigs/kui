@@ -48,6 +48,9 @@ interface Props {
 
   /** css class for top-level element */
   className?: string
+
+  /** Do not linkify external links */
+  noExternalLinks?: boolean
 }
 
 export default class Markdown extends React.PureComponent<Props> {
@@ -96,7 +99,12 @@ export default class Markdown extends React.PureComponent<Props> {
                   }
                   return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
                 }
-            return <Link {...props} href={href} target={target} onClick={onClick} />
+
+            if (!isLocal && this.props.noExternalLinks) {
+              return <span className={this.props.className}>{href}</span>
+            } else {
+              return <Link {...props} href={href} target={target} onClick={onClick} />
+            }
           },
           code: props => <CodeSnippet value={props.value} onCopy={this.onCopy.bind(this, props.value)} />,
           heading: props => {

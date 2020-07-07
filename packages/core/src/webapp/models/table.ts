@@ -121,10 +121,6 @@ export interface Button {
   onclick: (evt: Event) => void | string
 }
 
-export interface Footer {
-  leftButtons: Button[]
-}
-
 export enum TableStyle {
   Light,
   Medium,
@@ -140,7 +136,7 @@ export class Table<RowType extends Row = Row> {
 
   header?: RowType
 
-  footer?: Footer
+  footer?: string[]
 
   noSort?: boolean
 

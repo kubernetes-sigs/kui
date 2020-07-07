@@ -60,6 +60,8 @@ export interface WatchPusher {
 
   /** The header model has changed */
   header: (response: Row) => void
+
+  footer: (streams: string[]) => void
 }
 
 export function isWatchable(model: Entity & Partial<Watchable>): model is Entity & Watchable {
