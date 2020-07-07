@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.10](https://github.com/IBM/kui/compare/v8.10.9...v8.10.10) (2020-07-07)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** clicking 'remove' of a watchable response doesn't abort the underlying pty job ([22bd236](https://github.com/IBM/kui/commit/22bd236)), closes [#5090](https://github.com/IBM/kui/issues/5090)
+
 ## [8.10.9](https://github.com/IBM/kui/compare/v8.10.8...v8.10.9) (2020-07-06)
 
 ### Bug Fixes

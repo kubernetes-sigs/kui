@@ -1,6 +1,6 @@
 {
   "packages": ["packages/*", "plugins/*"],
-  "version": "8.10.9",
+  "version": "8.10.10",
   "command": {
     "publish": {
       "conventionalCommits": true

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.10](https://github.com/IBM/kui/compare/v8.10.9...v8.10.10) (2020-07-07)
+
+**Note:** Version bump only for package @kui-shell/plugin-proxy-support
+
 ## [8.10.9](https://github.com/IBM/kui/compare/v8.10.8...v8.10.9) (2020-07-06)
 
 **Note:** Version bump only for package @kui-shell/plugin-proxy-support
