@@ -75,7 +75,8 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     const done = this.done.bind(this)
     const allOffline = this.allOffline.bind(this)
     const header = this.header.bind(this)
-    this.props.response.watch.init({ update, batchUpdateDone, offline, done, allOffline, header })
+    const footer = this.footer.bind(this)
+    this.props.response.watch.init({ update, batchUpdateDone, offline, done, allOffline, header, footer })
   }
 
   /**
@@ -179,6 +180,18 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   private header(newKuiHeader: KuiRow) {
     this.props.response.header = newKuiHeader
     this.setState({ headers: kuiHeader2carbonHeader(newKuiHeader) })
+  }
+
+  /**
+   * Update to reflect new footer message
+   *
+   */
+  private footer(streams: string[]) {
+    this.setState(curState => {
+      return {
+        footer: curState.footer ? curState.footer.concat(streams) : streams
+      }
+    })
   }
 
   /**

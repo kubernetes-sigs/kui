@@ -1,0 +1,79 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.kui--data-table-container {
+  .kui--data-table-footer-message {
+    /* this tells the browser to line wrap according to the width dictated by the rest of the table */
+    max-width: 0;
+  }
+}
+
+.kui--data-table-as-grid {
+  .kui--data-table-footer-message {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.4375rem;
+  }
+}
+
+.kui--scrollback:not([data-is-minisplit]) {
+  .kui--data-table-as-grid {
+    .kui--data-table-footer-message {
+      max-width: 22rem;
+    }
+  }
+}
+
+/* applies only to tables */
+.kui--data-table-container {
+  .kui--data-table-footer-messages {
+    height: 1.5rem;
+  }
+}
+
+/* applies to tables and grids */
+.kui--data-table-wrapper {
+  .kui--data-table-footer-messages {
+    background-color: var(--color-stripe-02);
+    line-height: initial;
+
+    .kui--data-table-footer-message p {
+      line-height: initial;
+      white-space: pre-wrap;
+      font-family: monospace;
+      font-size: 0.75rem;
+      padding: 0;
+    }
+  }
+
+  tr:not(.kui--data-table-footer-messages) + .kui--data-table-footer-messages,
+  .kui--data-table-toolbar-filler + .kui--data-table-footer-messages {
+    .kui--data-table-footer-message {
+      padding-top: 0.5rem;
+    }
+  }
+  .kui--data-table-footer-messages:last-child {
+    .kui--data-table-footer-message {
+      padding-bottom: 0.5rem;
+    }
+  }
+
+  .kui--data-table-footer-messages:not(:last-child) {
+    .kui--data-table-footer-message {
+      padding-bottom: 0;
+    }
+  }
+}

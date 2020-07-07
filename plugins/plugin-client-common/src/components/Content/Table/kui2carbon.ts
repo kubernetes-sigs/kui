@@ -87,12 +87,14 @@ export function kuiRow2carbonRow(headers: DataTableHeader[], justUpdated = false
  * Components.
  *
  */
-export default function kui2carbon(response: KuiTable): { headers: DataTableHeader[]; rows: NamedDataTableRow[] } {
+export default function kui2carbon(
+  response: KuiTable
+): { headers: DataTableHeader[]; rows: NamedDataTableRow[]; footer: string[] } {
   // align header model
   const headers = !response.header ? headerFromBody(response) : kuiHeader2carbonHeader(response.header)
 
   // align body model
   const rows = response.body.map(kuiRow2carbonRow(headers))
 
-  return { headers, rows }
+  return { headers, rows, footer: response.footer }
 }
