@@ -42,6 +42,7 @@ import {
   Cancelled,
   Processing,
   isActive,
+  isOk,
   isProcessing,
   hasUUID,
   BlockModel
@@ -529,6 +530,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return !this.hasPinned(curState.splits[availableSplit]) ? availableSplit : 0
   }
 
+  // If the block has watchable response, abort the job
+  private removeWatchableBlock(block: BlockModel) {
+    if (isOk(block) && isWatchable(block.response)) {
+      block.response.watch.abort()
+    }
+  }
+
   /**
    * Remove the given split (identified by `sbuuid`) from the state.
    *
@@ -537,6 +545,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.setState(curState => {
       const idx = this.findSplit(this.state, sbuuid)
       if (idx >= 0) {
+        curState.splits[idx].blocks.forEach(this.removeWatchableBlock)
+
         const splits = curState.splits.slice(0, idx).concat(curState.splits.slice(idx + 1))
 
         if (splits.length === 0) {
@@ -604,12 +614,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** remove the block at the given index */
   private willRemoveBlock(uuid: string, idx: number) {
-    this.splice(uuid, curState => ({
-      blocks: curState.blocks
-        .slice(0, idx)
-        .concat(curState.blocks.slice(idx + 1))
-        .concat(curState.blocks.find(_ => isActive(_)) ? [] : [Active()]) // plus a new block, if needed
-    }))
+    this.splice(uuid, curState => {
+      this.removeWatchableBlock(curState.blocks[idx])
+
+      return {
+        blocks: curState.blocks
+          .slice(0, idx)
+          .concat(curState.blocks.slice(idx + 1))
+          .concat(curState.blocks.find(_ => isActive(_)) ? [] : [Active()]) // plus a new block, if needed
+      }
+    })
   }
 
   private tabRefFor(scrollback: ScrollbackState, ref: HTMLElement) {
