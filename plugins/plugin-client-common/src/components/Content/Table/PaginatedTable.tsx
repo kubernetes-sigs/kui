@@ -39,9 +39,6 @@ import '../../../../web/scss/components/Table/hack-select.scss'
 /** import the kui theme alignment */
 import '../../../../web/scss/components/Table/carbon-kui-theme-alignment.scss'
 
-import '../../../../web/css/static/ToolbarButton.scss'
-import '../../../../web/scss/components/Table/Toolbar.scss'
-
 const strings = i18n('plugin-client-common')
 
 interface PaginationConfiguration {
@@ -81,6 +78,7 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 export type State = ToolbarProps & {
   headers: DataTableHeader[]
   rows: NamedDataTableRow[]
+  footer: string[]
 
   page: number
   pageSize: number
@@ -114,11 +112,12 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
     try {
       // assemble the data model
-      const { headers, rows } = kui2carbon(this.props.response)
+      const { headers, rows, footer } = kui2carbon(this.props.response)
 
       this.state = {
         headers,
         rows,
+        footer,
         asGrid: this.props.asGrid && findGridableColumn(this.props.response) >= 0,
         page: 1,
         pageSize: this.defaultPageSize
@@ -156,25 +155,32 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
      */
   }
 
+  private footerLines() {
+    const nRows = this.props.isPartOfMiniSplit ? -1 : -2
+    return this.state.footer ? this.state.footer.slice(nRows) : undefined
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private bottomToolbar(lightweightTables = false) {
     const gridableColumn = findGridableColumn(this.props.response)
 
     return (
-      this.props.toolbars &&
-      (this.isPaginated() || gridableColumn >= 0) && (
-        <Toolbar
-          className="kui--data-table-toolbar-bottom"
-          asGrid={this.state.asGrid}
-          gridableColumn={gridableColumn}
-          setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
-          paginate={this.isPaginated()}
-          setPage={(page: number) => this.setState({ page })}
-          page={this.state.page}
-          totalItems={this.state.rows.length}
-          pageSize={this.state.pageSize}
-        />
-      )
+      <React.Fragment>
+        {this.state.asGrid && this.state.footer && <Toolbar stream={this.footerLines()} />}
+        {this.props.toolbars && (this.isPaginated() || gridableColumn >= 0) && (
+          <Toolbar
+            className="kui--data-table-toolbar-bottom"
+            asGrid={this.state.asGrid}
+            gridableColumn={gridableColumn}
+            setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
+            paginate={this.isPaginated()}
+            setPage={(page: number) => this.setState({ page })}
+            page={this.state.page}
+            totalItems={this.state.rows.length}
+            pageSize={this.state.pageSize}
+          />
+        )}
+      </React.Fragment>
     )
   }
 
@@ -230,7 +236,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(response.body, this.justUpdatedMap(), renderOpts, tab, repl, offset)}
+                {renderBody(response.body, this.justUpdatedMap(), renderOpts, tab, repl, offset, this.footerLines())}
               </Table>
             </TableContainer>
           )}
@@ -271,7 +277,11 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
               return <div className={className}>{this.content(true, config.lightweightTables)}</div>
             } else {
               return (
-                <Card header={this.topToolbar()} footer={this.bottomToolbar()} className={className}>
+                <Card
+                  header={this.topToolbar(config.lightweightTables)}
+                  footer={this.bottomToolbar(config.lightweightTables)}
+                  className={className}
+                >
                   {this.content(false, config.lightweightTables)}
                 </Card>
               )
