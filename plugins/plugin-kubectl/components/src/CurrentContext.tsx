@@ -17,7 +17,14 @@
 import * as React from 'react'
 
 import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser, i18n } from '@kui-shell/core'
+import {
+  eventChannelUnsafe,
+  getCurrentTab,
+  wireToTabEvents,
+  wireToStandardEvents,
+  inBrowser,
+  i18n
+} from '@kui-shell/core'
 import {
   getCurrentContextName,
   onKubectlConfigChangeEvents,
@@ -101,6 +108,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     this.reportCurrentContext()
 
     if (inBrowser()) {
+      wireToTabEvents(this.handler)
       onKubectlConfigChangeEvents(this.handler)
     } else {
       wireToStandardEvents(this.handler)

@@ -17,7 +17,14 @@
 import * as React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { eventChannelUnsafe, getCurrentTab, wireToStandardEvents, inBrowser, i18n } from '@kui-shell/core'
+import {
+  eventChannelUnsafe,
+  getCurrentTab,
+  wireToTabEvents,
+  wireToStandardEvents,
+  inBrowser,
+  i18n
+} from '@kui-shell/core'
 import {
   KubeContext,
   getCurrentDefaultNamespace,
@@ -86,6 +93,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     this.reportCurrentNamespace()
 
     if (inBrowser()) {
+      wireToTabEvents(this.handler)
       onKubectlConfigChangeEvents(this.handler)
     } else {
       wireToStandardEvents(this.handler)
