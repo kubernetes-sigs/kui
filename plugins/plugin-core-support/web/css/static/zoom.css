@@ -45,7 +45,6 @@ $MAX_ZOOM_OUT: 2;
       height: calc(16px * (1 + #{$step} * #{$i - 1}) * var(--kui--master-font-scale));
     }
 
-    .graphical-icon > svg,
     svg[width="20"] {
       width: calc(20px * (1 + #{$step} * #{$i - 1}) * var(--kui--master-font-scale));
       height: calc(20px * (1 + #{$step} * #{$i - 1}) * var(--kui--master-font-scale));
@@ -63,7 +62,6 @@ $MAX_ZOOM_OUT: 2;
       height: calc(16px * (1 - #{$step} * #{$i + 1}) * var(--kui--master-font-scale));
     }
 
-    .graphical-icon > svg,
     svg[width="20"] {
       width: calc(20px * (1 - #{$step} * #{$i + 1}) * var(--kui--master-font-scale));
       height: calc(20px * (1 - #{$step} * #{$i + 1}) * var(--kui--master-font-scale));
