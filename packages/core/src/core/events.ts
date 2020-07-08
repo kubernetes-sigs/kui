@@ -285,12 +285,20 @@ class EventBus extends ReadEventBus {}
 export const eventBus = new EventBus()
 
 /**
+ * Hook an event listener up to tab events.
+ *
+ */
+export function wireToTabEvents(listener: () => void) {
+  eventBus.on('/tab/new', listener)
+  eventBus.on('/tab/switch/request', listener)
+}
+
+/**
  * Hook an event listener up to the family of standard user
  * interaction events.
  *
  */
 export function wireToStandardEvents(listener: () => void) {
-  eventBus.on('/tab/new', listener)
-  eventBus.on('/tab/switch/request', listener)
+  wireToTabEvents(listener)
   eventBus.onAnyCommandComplete(listener)
 }
