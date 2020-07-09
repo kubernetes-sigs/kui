@@ -58,8 +58,9 @@ import SymbolTable from '../core/symbol-table'
 import { getModel } from '../commands/tree'
 import { isSuccessfulCommandResolution } from '../commands/resolution'
 
-import { Tab, getCurrentTab, getTabId } from '../webapp/tab'
+import { Tab, getTabId } from '../webapp/tab'
 import { Block } from '../webapp/models/block'
+import { getCurrentTab } from '../webapp/current-tab'
 
 import { Stream, Streamable } from '../models/streamable'
 import enforceUsage from './enforce-usage'

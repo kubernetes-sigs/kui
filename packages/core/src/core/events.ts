@@ -44,6 +44,7 @@ class WriteEventBus extends EventBusBase {
   public emit(channel: '/tab/new' | '/tab/close' | '/tab/offline', tab: Tab): void
   public emit(channel: '/tab/new/request'): void
   public emit(channel: '/tab/switch/request', idx: number): void
+  public emit(channel: '/tab/switch/complete', tab: Tab): void
   public emit(channel: string, args?: any) {
     return this.eventBus.emit(channel, args)
   }
@@ -95,6 +96,7 @@ class ReadEventBus extends WriteEventBus {
 
   public on(channel: '/tab/new/request', listener: () => void): void
   public on(channel: '/tab/switch/request', listener: (tabId: number) => void): void
+  public on(channel: '/tab/switch/complete', listener: (tab: Tab) => void): void
   public on(channel: string, listener: any) {
     return this.eventBus.on(channel, listener)
   }
@@ -290,7 +292,7 @@ export const eventBus = new EventBus()
  */
 export function wireToTabEvents(listener: () => void) {
   eventBus.on('/tab/new', listener)
-  eventBus.on('/tab/switch/request', listener)
+  eventBus.on('/tab/switch/complete', listener)
 }
 
 /**

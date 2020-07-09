@@ -121,7 +121,8 @@ export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEval
 export { CommandStartEvent, CommandCompleteEvent } from './repl/events'
 
 // Tabs
-export { Tab, getCurrentTab, pexecInCurrentTab, getTabId, getPrimaryTabId, sameTab } from './webapp/tab'
+export { Tab, getTabId, getPrimaryTabId, sameTab } from './webapp/tab'
+export { getCurrentTab, pexecInCurrentTab } from './webapp/current-tab'
 export { default as TabState } from './models/tab-state'
 
 // Themes

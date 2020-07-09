@@ -18,11 +18,9 @@ import SplitPane from 'react-split-pane'
 import * as React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession } from '@kui-shell/core'
 
-import Alert from '../spi/Alert'
 import Icons from '../spi/Icons'
 import KuiContext from './context'
 import Confirm from '../Views/Confirm'
-import Loading from '../spi/Loading'
 import { TopTabButton } from './TabModel'
 import Width from '../Views/Sidecar/width'
 import WatchPane, { Height } from '../Views/WatchPane'
@@ -75,6 +73,9 @@ type State = Partial<WithTab> & {
   splitPaneImplHacked?: boolean
 
   activeView: CurrentlyShowing
+
+  /** have we announced that we are the active tab? */
+  haveAnnouncedAsActive?: boolean
 }
 
 /**
@@ -183,8 +184,15 @@ export default class TabContent extends React.PureComponent<Props, State> {
       } catch (err) {
         console.error(err)
       }
+    } else if (state.tab && props.active !== state.haveAnnouncedAsActive) {
+      if (props.active) {
+        eventBus.emit('/tab/switch/complete', state.tab)
+      }
+      return {
+        haveAnnouncedAsActive: props.active
+      }
     } else {
-      return state
+      return null
     }
   }
 

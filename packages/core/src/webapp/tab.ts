@@ -64,15 +64,4 @@ export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
   return getTabId(tab1) === getTabId(tab2)
 }
 
-export const getCurrentTab = (): Tab => {
-  return document.querySelector('.kui--tab-content.visible') as Tab
-}
-
-export function pexecInCurrentTab(command: string) {
-  const { facade: tab } = (document.querySelector('.kui--tab-content.visible .kui--scrollback') as any) as {
-    facade: Tab
-  }
-  return tab.REPL.pexec(command, { tab })
-}
-
 export default Tab
