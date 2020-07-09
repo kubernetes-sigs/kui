@@ -65,13 +65,17 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  /** temporary hack to regrab focus to the repl */
+  /**
+   * Temporary hack to regrab focus to the repl. The hack part is the
+   * querySelector. This really needs to be done in TabContent, which
+   * owns the Tab impl.
+   *
+   */
   private hackFocus() {
     setTimeout(() => {
       try {
-        const input = document.querySelector(
-          `tab[data-tab-id="${this.state.activeIdx + 1}"] .repl-active input`
-        ) as HTMLElement
+        const selector = `.kui--tab-content[data-tab-id="${this.state.activeIdx + 1}"] .repl-active input`
+        const input = document.querySelector(selector) as HTMLElement
         if (input) {
           input.focus()
         }
