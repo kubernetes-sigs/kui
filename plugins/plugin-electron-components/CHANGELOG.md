@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.11](https://github.com/IBM/kui/compare/v8.10.10...v8.10.11) (2020-07-09)
+
+**Note:** Version bump only for package @kui-shell/plugin-electron-components
+
 ## [8.10.10](https://github.com/IBM/kui/compare/v8.10.9...v8.10.10) (2020-07-07)
 
 **Note:** Version bump only for package @kui-shell/plugin-electron-components
