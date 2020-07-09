@@ -68,6 +68,16 @@ export const getCurrentTab = (): Tab => {
   return document.querySelector('.kui--tab-content.visible') as Tab
 }
 
+export const getTab = (idx: Tab | number): Tab => {
+  if (!idx) {
+    return getCurrentTab()
+  } else if (typeof idx === 'number') {
+    return document.querySelector(`.kui--tab-content[data-tab-id="${idx}"]`) as Tab
+  } else {
+    return idx
+  }
+}
+
 export function pexecInCurrentTab(command: string) {
   const { facade: tab } = (document.querySelector('.kui--tab-content.visible .kui--scrollback') as any) as {
     facade: Tab
