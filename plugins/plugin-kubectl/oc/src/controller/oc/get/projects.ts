@@ -46,15 +46,12 @@ export default function registerOcProjectGet(registrar: Registrar) {
     Object.assign({}, defaultFlags, { viewTransformer })
   )
 
-  registrar.listen(
-    `/${commandPrefix}/oc/get/project`,
-    doGet('oc'),
-    Object.assign({}, defaultFlags, { viewTransformer })
-  )
-
-  registrar.listen(
-    `/${commandPrefix}/oc/get/projects`,
-    doGet('oc'),
-    Object.assign({}, defaultFlags, { viewTransformer })
-  )
+  const aliases = ['project', 'projects', 'ns', 'namespace']
+  aliases.forEach(ns => {
+    registrar.listen(
+      `/${commandPrefix}/oc/get/${ns}`,
+      doGet('oc'),
+      Object.assign({}, defaultFlags, { viewTransformer })
+    )
+  })
 }
