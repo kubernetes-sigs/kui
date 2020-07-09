@@ -288,7 +288,7 @@ export const eventBus = new EventBus()
  * Hook an event listener up to tab events.
  *
  */
-export function wireToTabEvents(listener: () => void) {
+export function wireToTabEvents(listener: (tab?: Tab | number) => void) {
   eventBus.on('/tab/new', listener)
   eventBus.on('/tab/switch/request', listener)
 }
@@ -298,7 +298,7 @@ export function wireToTabEvents(listener: () => void) {
  * interaction events.
  *
  */
-export function wireToStandardEvents(listener: () => void) {
+export function wireToStandardEvents(listener: (tab?: Tab | number) => void) {
   wireToTabEvents(listener)
-  eventBus.onAnyCommandComplete(listener)
+  eventBus.onAnyCommandComplete(() => listener())
 }
