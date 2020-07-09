@@ -19,7 +19,8 @@ import * as React from 'react'
 import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import {
   eventChannelUnsafe,
-  getCurrentTab,
+  getTab,
+  Tab,
   wireToTabEvents,
   wireToStandardEvents,
   inBrowser,
@@ -75,8 +76,8 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     return context
   }
 
-  private async reportCurrentContext() {
-    const tab = getCurrentTab()
+  private async reportCurrentContext(idx?: Tab | number) {
+    const tab = getTab(idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
         eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentContext())
@@ -105,8 +106,6 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
    *
    */
   public componentDidMount() {
-    this.reportCurrentContext()
-
     if (inBrowser()) {
       wireToTabEvents(this.handler)
       onKubectlConfigChangeEvents(this.handler)

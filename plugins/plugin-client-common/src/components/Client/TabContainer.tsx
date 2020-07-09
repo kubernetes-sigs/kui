@@ -213,7 +213,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
           tabs={this.state.tabs}
           onNewTab={() => this.onNewTab()}
           onCloseTab={(idx: number) => this.onCloseTab(idx)}
-          onSwitchTab={(idx: number) => this.onSwitchTab(idx)}
+          onSwitchTab={(idx: number) => eventBus.emit('/tab/switch/request', idx)}
         />
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
