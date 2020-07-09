@@ -156,12 +156,14 @@ export default class TabState {
   public restore() {
     process.env = this._env
 
-    if (inBrowser()) {
-      debug('changing cwd', process.env.PWD, this._cwd)
-      process.env.PWD = this._cwd
-    } else {
-      debug('changing cwd', process.cwd(), this._cwd)
-      process.chdir(this._cwd)
+    if (this._cwd !== undefined) {
+      if (inBrowser()) {
+        debug('changing cwd', process.env.PWD, this._cwd)
+        process.env.PWD = this._cwd
+      } else {
+        debug('changing cwd', process.cwd(), this._cwd)
+        process.chdir(this._cwd)
+      }
     }
   }
 }
