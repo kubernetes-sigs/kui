@@ -19,7 +19,8 @@ import * as React from 'react'
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import {
   eventChannelUnsafe,
-  getCurrentTab,
+  getTab,
+  Tab,
   wireToTabEvents,
   wireToStandardEvents,
   inBrowser,
@@ -56,8 +57,8 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     return context.metadata.namespace
   }
 
-  private async reportCurrentNamespace() {
-    const tab = getCurrentTab()
+  private async reportCurrentNamespace(idx?: Tab | number) {
+    const tab = getTab(idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
         eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentNamespace())
@@ -90,8 +91,6 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
    *
    */
   public componentDidMount() {
-    this.reportCurrentNamespace()
-
     if (inBrowser()) {
       wireToTabEvents(this.handler)
       onKubectlConfigChangeEvents(this.handler)
