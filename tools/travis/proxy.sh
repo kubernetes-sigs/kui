@@ -29,7 +29,7 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 if [ -n "$1" ]; then
     ROOT=$(cd "$1" && pwd)
 else
-    ROOT=..
+    ROOT=$SCRIPTDIR/../..
 fi
 
 start() {
@@ -37,7 +37,7 @@ start() {
     echo "$PID" > /tmp/kuiproxy.pid
     echo "start proxy $PID"
 
-    cd "$ROOT"/kui/packages/proxy && ./app/bin/www &
+    cd "$ROOT"/packages/proxy && ./app/bin/www &
     SUB=$!
     echo $SUB > /tmp/kuiproxy_subprocess.pid
 
