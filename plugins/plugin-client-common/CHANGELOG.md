@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.12](https://github.com/IBM/kui/compare/v8.10.11...v8.10.12) (2020-07-10)
+
+### Bug Fixes
+
+- multiple issues with tab switching versus status stripe widgets ([07245b2](https://github.com/IBM/kui/commit/07245b2)), closes [#5101](https://github.com/IBM/kui/issues/5101)
+- **plugins/plugin-client-common:** input may not receive focus on tab switch ([9e61c3a](https://github.com/IBM/kui/commit/9e61c3a)), closes [#5102](https://github.com/IBM/kui/issues/5102)
+
 ## [8.10.11](https://github.com/IBM/kui/compare/v8.10.10...v8.10.11) (2020-07-09)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common
