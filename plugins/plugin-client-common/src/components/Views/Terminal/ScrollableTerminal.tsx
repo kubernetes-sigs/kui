@@ -238,8 +238,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.props.onClear()
     }
 
-    this.splice(uuid, ({ _activeBlock, cleaners }) => {
+    this.splice(uuid, ({ _activeBlock, blocks, cleaners }) => {
       cleaners.forEach(cleaner => cleaner())
+      blocks.forEach(this.removeWatchableBlock)
 
       // capture the value of the last input
       const capturedValue = _activeBlock ? _activeBlock.inputValue() : ''
