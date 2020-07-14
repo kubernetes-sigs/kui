@@ -145,7 +145,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
             .then(ReplExpect.okWithCustom({ selector: ' ' }))
             .then(selector => this.app.client.getText(selector))
 
-          const currentContextAsIndicatedByContextsTable = await CLI.command(`contexts`, this.app)
+          const currentContextAsIndicatedByContextsTable = await CLI.command(`contexts -o wide`, this.app)
             .then(
               ReplExpect.okWithCustom({
                 selector: `${RADIO_BUTTON_SELECTED} [data-is-name]`
@@ -164,7 +164,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     const listContextsAndExpectGiven = (contextName: string) => {
       it(`should list contexts and show the context ${contextName}`, async () => {
         try {
-          const allContextNames = await CLI.command(`contexts`, this.app)
+          const allContextNames = await CLI.command(`contexts -o wide`, this.app)
             .then(ReplExpect.okWithCustom({ selector: ' ' }))
             .then(selector => this.app.client.elements(`${selector} [data-is-name]`))
             .then(elements => elements.value.map(_ => _.ELEMENT))
@@ -199,7 +199,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     const switchToContext = (contextName: string) => {
       it(`should switch to the context ${contextName}`, async () => {
         try {
-          const selector = await CLI.command(`contexts`, this.app).then(
+          const selector = await CLI.command(`contexts -o wide`, this.app).then(
             ReplExpect.okWithCustom({
               selector: RADIO_BUTTON_BY_NAME(contextName)
             })
@@ -211,7 +211,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           await this.app.client.waitForExist(`${selector}${RADIO_BUTTON_IS_SELECTED}`)
 
           // and if we request a new contexts table, it'd better be selected there, too
-          const selector2 = await CLI.command(`contexts`, this.app).then(
+          const selector2 = await CLI.command(`contexts -o wide`, this.app).then(
             ReplExpect.okWithCustom({
               selector: RADIO_BUTTON_BY_NAME(contextName)
             })
