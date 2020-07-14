@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.13](https://github.com/IBM/kui/compare/v8.10.12...v8.10.13) (2020-07-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** clearing Terminal does not abort watchers ([4ff89e5](https://github.com/IBM/kui/commit/4ff89e5)), closes [#5116](https://github.com/IBM/kui/issues/5116)
+
 ## [8.10.12](https://github.com/IBM/kui/compare/v8.10.11...v8.10.12) (2020-07-10)
 
 ### Bug Fixes
