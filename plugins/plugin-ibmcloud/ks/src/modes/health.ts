@@ -24,7 +24,7 @@ import { IBMCloudCluster, isIBMCloudCluster } from '../models/cluster'
 export default {
   when: isIBMCloudCluster,
   badge: (resource: IBMCloudCluster) => ({
-    title: capitalize(resource.content.state),
-    css: stateToCSS[resource.content.state]
+    title: capitalize(resource.raw.state),
+    css: stateToCSS[resource.raw.state]
   })
 }

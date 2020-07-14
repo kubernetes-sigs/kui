@@ -30,7 +30,7 @@ export default {
     label: strings('Show Pool'),
     command: (tab: Tab, worker: IBMCloudWorker) =>
       `ibmcloud ks worker-pool get --cluster ${encodeComponent(worker.spec.cluster)} --worker-pool ${encodeComponent(
-        worker.content.poolName
+        worker.raw.poolName
       )}`,
     kind: 'drilldown' as const
   }

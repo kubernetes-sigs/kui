@@ -24,7 +24,7 @@ import { IBMCloudWorkerPool, isIBMCloudWorkerPool } from '../models/worker-pool'
 export default {
   when: isIBMCloudWorkerPool,
   badge: (resource: IBMCloudWorkerPool) => ({
-    title: capitalize(resource.content.state.toString()),
-    css: stateToCSS[resource.content.state]
+    title: capitalize(resource.raw.state.toString()),
+    css: stateToCSS[resource.raw.state]
   })
 }

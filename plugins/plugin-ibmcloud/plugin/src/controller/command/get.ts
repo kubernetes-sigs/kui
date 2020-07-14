@@ -80,7 +80,7 @@ async function doGet(args: Arguments<KubeOptions>): Promise<MultiModalResponse<I
       text: strings('This command is part of the plugin', installedEntry.Name)
     },
     modes: [],
-    content: installedEntry,
+    raw: installedEntry,
     spec: {
       usage: installedCommand.Usage
     },

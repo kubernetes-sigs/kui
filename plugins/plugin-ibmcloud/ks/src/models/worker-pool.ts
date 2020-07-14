@@ -61,13 +61,14 @@ export interface IBMCloudWorkerPoolRaw {
  * A Kui resource model
  *
  */
-export type IBMCloudWorkerPool = ResourceWithMetadata<IBMCloudWorkerPoolRaw> &
+export type IBMCloudWorkerPool = ResourceWithMetadata &
   WithSummary &
-  WithCluster<IBMCloudWorkerPoolRaw> &
-  WithRawData<IBMCloudWorkerPoolRaw> & {
+  WithCluster &
+  WithRawData & {
     apiVersion
     kind
     isSimulacrum: true
+    raw: IBMCloudWorkerPoolRaw
   }
 
 /**
