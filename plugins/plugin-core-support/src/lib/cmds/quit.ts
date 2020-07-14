@@ -21,7 +21,7 @@
 
 import { Arguments, Registrar, inBrowser } from '@kui-shell/core'
 
-const doQuit = ({ tab, REPL }: Arguments) => REPL.qexec('tab close', undefined, undefined, { tab })
+const doQuit = ({ REPL }: Arguments) => REPL.qexec('tab close')
 
 const usage = (command: string) => ({
   command,
@@ -31,8 +31,16 @@ const usage = (command: string) => ({
 
 export default (commandTree: Registrar) => {
   if (!inBrowser()) {
-    const quitCmd = commandTree.listen('/quit', doQuit, {
+    commandTree.listen('/quit', doQuit, {
       usage: usage('quit')
+    })
+
+    // register a window close command handler
+    commandTree.listen('/window/close', () => {
+      const remote = require('electron').remote
+      const w = remote.getCurrentWindow()
+      w.close()
+      return true
     })
   }
 
