@@ -85,6 +85,91 @@ function notEmpty<TValue>(value: TValue | void | null | undefined): value is TVa
   return value !== null && value !== undefined
 }
 
+export class EventWatcher implements Abortable, Watcher {
+  private ptyJob: Abortable[] = [] /** the pty job we spawned to capture --watch output */
+  private eventLeftover: string
+
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(
+    private readonly args: Arguments,
+    private readonly command: string,
+    private readonly kindByUser: string,
+    private readonly name: string,
+    private readonly namespace: string,
+    private readonly watchOnly: boolean,
+    private readonly pusher: WatchPusher
+  ) {}
+
+  public abort() {
+    if (this.ptyJob) {
+      this.ptyJob.forEach(job => job.abort())
+    }
+  }
+
+  private onPTYEventInit(ptyJob: Abortable) {
+    debug('onPTYEventInit')
+    this.ptyJob.push(ptyJob)
+
+    return async (_: Streamable) => {
+      if (typeof _ === 'string') {
+        const rawData = this.eventLeftover ? this.eventLeftover + _ : _
+        this.eventLeftover = undefined
+
+        // here is where we turn the raw data into tabular data
+        const preprocessed = preprocessTable(rawData, 3)
+        debug('rawData', rawData)
+        this.eventLeftover = preprocessed.leftover === '\n' ? undefined : preprocessed.leftover
+
+        // format the row as `[ago] involvedObject.name: message`
+        const sortedRows = preprocessed.rows.filter(notEmpty).sort((rowA, rowB) => {
+          const lastSeenA = new Date(rowA[0].value).getTime()
+          const lastSeenB = new Date(rowB[0].value).getTime()
+          return lastSeenA - lastSeenB
+        })
+
+        const agos = sortedRows.map(row => {
+          const ago = Date.now() - new Date(row[0].value).getTime()
+
+          return strings('ago', prettyPrintDuration(ago >= 0 ? ago : 0, { compact: true }).toString())
+        })
+
+        const rows = sortedRows.map((row, idx) => {
+          return `\`[${agos[idx]}]\`` + ` **${row[1].value}**: ${row[2].value}`
+        })
+
+        if (rows) {
+          this.pusher.footer(rows)
+        }
+      }
+    }
+  }
+
+  public async init() {
+    const fullKind = await getKind(this.command, this.args, this.kindByUser)
+    const filter = this.name
+      ? `--field-selector=involvedObject.kind=${fullKind},involvedObject.name=${this.name}`
+      : `--field-selector=involvedObject.kind=${fullKind}`
+
+    const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|\\n"}'`
+    const watch = this.watchOnly ? '--watch-only' : '-w'
+
+    const getEventCommand = `${this.command} get events ${watch} -n ${this.namespace} ${filter} ${output}`.replace(
+      /^k(\s)/,
+      'kubectl$1'
+    )
+
+    // debug('getEventCommand', getEventCommand)
+    this.args.REPL.qexec(`sendtopty ${getEventCommand}`, this.args.block, undefined, {
+      quiet: true,
+      replSilence: true,
+      echo: false,
+      onInit: this.onPTYEventInit.bind(this) // <-- the PTY will call us back when it's ready to stream
+    }).catch(err => {
+      debug('pty event error', err)
+    })
+  }
+}
+
 class KubectlWatcher implements Abortable, Watcher {
   /**
    * We expect k columns; see the custom-columns below.
@@ -269,44 +354,6 @@ class KubectlWatcher implements Abortable, Watcher {
     }
   }
 
-  private onPTYEventInit(ptyJob: Abortable) {
-    debug('onPTYEventInit')
-    this.ptyJob.push(ptyJob)
-
-    return async (_: Streamable) => {
-      if (typeof _ === 'string') {
-        const rawData = this.eventLeftover ? this.eventLeftover + _ : _
-        this.eventLeftover = undefined
-
-        // here is where we turn the raw data into tabular data
-        const preprocessed = preprocessTable(rawData, 3)
-        // debug('rawData', rawData)
-        this.eventLeftover = preprocessed.leftover === '\n' ? undefined : preprocessed.leftover
-
-        // format the row as `[ago] involvedObject.name: message`
-        const sortedRows = preprocessed.rows.filter(notEmpty).sort((rowA, rowB) => {
-          const lastSeenA = new Date(rowA[0].value).getTime()
-          const lastSeenB = new Date(rowB[0].value).getTime()
-          return lastSeenA - lastSeenB
-        })
-
-        const agos = sortedRows.map(row => {
-          const ago = Date.now() - new Date(row[0].value).getTime()
-
-          return strings('ago', prettyPrintDuration(ago >= 0 ? ago : 0, { compact: true }).toString())
-        })
-
-        const rows = sortedRows.map((row, idx) => {
-          return `\`[${agos[idx]}]\`` + ` **${row[1].value}**: ${row[2].value}`
-        })
-
-        if (rows) {
-          this.pusher.footer(rows)
-        }
-      }
-    }
-  }
-
   /**
    * Our impl of the `Watcher` API. This is the callback we will
    * receive from the table UI when it is ready for us to start
@@ -350,19 +397,9 @@ class KubectlWatcher implements Abortable, Watcher {
     if (getWithResourceName || getLabel(this.args) || this.args.parsedOptions['field-selector']) {
       debug('event watch not support')
     } else {
-      const kind = await getKind(cmd, this.args, kindByUser)
-      const filter = `--field-selector=involvedObject.kind=${kind}`
-      const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|\\n"}'`
-      const getEventCommand = `${cmd} get events -w -n ${namespace} ${filter} ${output}`.replace(/^k(\s)/, 'kubectl$1')
-
-      this.args.REPL.qexec(`sendtopty ${getEventCommand}`, this.args.block, undefined, {
-        quiet: true,
-        replSilence: true,
-        echo: false,
-        onInit: this.onPTYEventInit.bind(this) // <-- the PTY will call us back when it's ready to stream
-      }).catch(err => {
-        debug('pty event error', err)
-      })
+      const eventWatcher = new EventWatcher(this.args, cmd, kindByUser, undefined, namespace, false, this.pusher)
+      eventWatcher.init()
+      this.ptyJob.push(eventWatcher)
     }
   }
 }
