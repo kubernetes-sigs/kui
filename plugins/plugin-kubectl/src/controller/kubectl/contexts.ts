@@ -20,6 +20,8 @@ import {
   RadioTable,
   RadioTableRow,
   radioTableCellToString,
+  radioTableAddHint,
+  CellShould,
   Table,
   isTable,
   Row,
@@ -52,14 +54,31 @@ const usage = {
     command,
     strict: command,
     docs: 'List your available kubernetes contexts',
+    optional: [{ name: '-o', docs: 'Output format', allowed: ['wide'] }],
     example: 'kubectl contexts'
   })
 }
 
 /** Exclude the CURRENT column. */
-function rtRowsFor(row: Row): RadioTableRow {
+function rtRowsFor(row: Row, wide: boolean): RadioTableRow {
   const rtRow = t2rt(row)
   rtRow.cells = rtRow.cells.slice(1)
+
+  // hide the name column unless the user asked for -o wide
+  if (!wide) {
+    rtRow.cells = rtRow.cells.map(_ =>
+      typeof _ === 'string'
+        ? _
+        : Object.assign(_, {
+            value: _.value.replace(/^(.+)\/[a-z0-9]+$/, '$1').replace(/^IAM#(.*)\/.*$/, '$1'),
+            title: _.value
+          })
+    )
+
+    radioTableAddHint(rtRow, rtRow.nameIdx, [CellShould.BeHidden])
+    rtRow.nameIdx = 1
+  }
+
   return rtRow
 }
 
@@ -67,7 +86,7 @@ function rtRowsFor(row: Row): RadioTableRow {
  * Add click handlers to change context
  *
  */
-const asRadioTable = ({ REPL }: Arguments, { header, body }: Table): RadioTable => {
+const asRadioTable = (args: Arguments, { header, body }: Table): RadioTable => {
   /* const header = t2rt(table.header)
   const body = table.body.map(row => {
     const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
@@ -89,20 +108,23 @@ const asRadioTable = ({ REPL }: Arguments, { header, body }: Table): RadioTable 
   // leftover from old model bad choices
   const defaultSelectedIdx = body.findIndex(_ => _.rowCSS[0] === 'selected-row')
 
+  // did the user ask for a wide table (i.e. table without processing)?
+  const wide = args.parsedOptions.o === 'wide'
+
   return {
     apiVersion: 'kui-shell/v1',
     kind: 'RadioTable',
     title: strings('contextsTableTitle'),
     defaultSelectedIdx,
 
-    header: rtRowsFor(header),
+    header: rtRowsFor(header, wide),
     body: body
-      .map(row => rtRowsFor(row))
+      .map(row => rtRowsFor(row, wide))
       .map(rtRow =>
         Object.assign(rtRow, {
           onSelect: async () => {
-            const context = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
-            await REPL.qexec(`kubectl config use-context ${context}`)
+            const context = radioTableCellToString(rtRow.cells[0], true) // true: use title if we have it
+            await args.REPL.qexec(`kubectl config use-context ${context}`)
           }
         })
       )

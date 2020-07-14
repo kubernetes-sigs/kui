@@ -48,8 +48,8 @@ export function radioTableHintsAsCss(cell: RadioTableCell) {
 }
 
 /** Project the string value of the given `cell` */
-export function radioTableCellToString(cell: RadioTableCell) {
-  return typeof cell === 'string' ? cell : cell.value
+export function radioTableCellToString(cell: RadioTableCell, useTitle = false) {
+  return typeof cell === 'string' ? cell : useTitle ? cell.title || cell.value : cell.value
 }
 
 /** Should the cell be rendered with a traffic light badge? */
@@ -57,11 +57,34 @@ export function cellShouldHaveBadge(cell: RadioTableCell) {
   return typeof cell !== 'string' && shouldHaveBadge(cell.hints)
 }
 
+/** Add the hint to the given RadioTableCell */
+export function radioTableAddHint(row: RadioTableRow, cidx: number, newHints: CellShould[]) {
+  const cell = row.cells[cidx]
+
+  if (typeof cell !== 'string') {
+    if (Array.isArray(cell.hints)) {
+      cell.hints = cell.hints.concat(newHints)
+    } else if (!cell.hints) {
+      cell.hints = newHints
+    } else {
+      cell.hints = [cell.hints, ...newHints]
+    }
+  } else {
+    row.cells[cidx] = {
+      value: cell,
+      hints: newHints
+    }
+  }
+}
+
 export type RadioTableCell =
   | string
   | {
       key?: string
       value: string
+
+      /** tooltip? */
+      title?: string
 
       /** optional hints to improve rendering of the cells */
       hints?: CellShould | CellShould[]

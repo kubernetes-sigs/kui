@@ -210,6 +210,7 @@ export {
   RadioTableCell,
   radioTableHintsAsCss,
   radioTableCellToString,
+  radioTableAddHint,
   cellShouldHaveBadge
 } from './models/RadioTable'
 
