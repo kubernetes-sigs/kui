@@ -27,6 +27,7 @@ import {
   ToolbarText,
   ToolbarProps,
   MultiModalResponse,
+  eventChannelUnsafe,
   i18n
 } from '@kui-shell/core'
 
@@ -34,6 +35,7 @@ import ClearButton from './ClearButton'
 import SaveFileButton from './SaveFileButton'
 import RevertFileButton from './RevertFileButton'
 
+import getKuiFontSize from './lib/fonts'
 import { language } from './lib/file-types'
 import defaultMonacoOptions, { Options as MonacoOptions } from './lib/defaults'
 
@@ -54,6 +56,7 @@ interface State {
   subscription?: IDisposable
   toolbarText?: ToolbarText
   catastrophicError: Error
+  cleaners: (() => void)[]
 }
 
 export default class Editor extends React.PureComponent<Props, State> {
@@ -62,6 +65,7 @@ export default class Editor extends React.PureComponent<Props, State> {
 
     // created below in render() via ref={...} -> initMonaco()
     this.state = {
+      cleaners: [],
       editor: undefined,
       wrapper: undefined,
       catastrophicError: undefined
@@ -116,17 +120,7 @@ export default class Editor extends React.PureComponent<Props, State> {
 
   /** Called when we no longer need the monaco-editor instance */
   private destroyMonaco() {
-    if (this.state.editor) {
-      this.state.editor.dispose()
-      const model = this.state.editor.getModel()
-      if (model) {
-        model.dispose()
-      }
-
-      if (this.state.subscription) {
-        this.state.subscription.dispose()
-      }
-    }
+    this.state.cleaners.forEach(cleaner => cleaner())
   }
 
   private static isClearable(props: Props) {
@@ -270,6 +264,8 @@ export default class Editor extends React.PureComponent<Props, State> {
 
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
   private static initMonaco(props: Props, state: State): Partial<State> {
+    const cleaners = []
+
     try {
       // here we instantiate an editor widget
       const providedOptions = {
@@ -289,6 +285,12 @@ export default class Editor extends React.PureComponent<Props, State> {
       const options = Object.assign(defaultMonacoOptions(providedOptions), providedOptions)
       const editor = Monaco.create(state.wrapper, options)
 
+      const onZoom = () => {
+        editor.updateOptions({ fontSize: getKuiFontSize() })
+      }
+      eventChannelUnsafe.on('/zoom', onZoom)
+      cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
+
       editor['clearDecorations'] = () => {
         // debug('clearing decorations', editor['__cloudshell_decorations'])
         const none = [{ range: new Range(1, 1, 1, 1), options: {} }]
@@ -303,9 +305,21 @@ export default class Editor extends React.PureComponent<Props, State> {
         state.wrapper.focus()
       }
 
+      const subscription = Editor.subscribeToChanges(props, editor)
+      cleaners.push(() => subscription.dispose())
+
+      cleaners.push(() => {
+        console.error('!!!!!')
+        editor.dispose()
+        const model = editor.getModel()
+        if (model) {
+          model.dispose()
+        }
+      })
+
       return {
         editor,
-        subscription: Editor.subscribeToChanges(props, editor)
+        cleaners
       }
     } catch (err) {
       console.error('Error initing Monaco: ', err)
