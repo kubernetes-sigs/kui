@@ -112,13 +112,14 @@ export function trafficLight(status: PluginStatus): string {
     : 'gray-background'
 }
 
-export type IBMCloudPlugin = ResourceWithMetadata<IBMCloudInstalledPluginRaw> &
+export type IBMCloudPlugin = ResourceWithMetadata &
   WithSummary &
-  WithVersion<IBMCloudInstalledPluginRaw> &
-  WithRawData<IBMCloudInstalledPluginRaw> & {
+  WithVersion &
+  WithRawData & {
     apiVersion
     kind: 'Plugin'
     isSimulacrum: true
+    raw: IBMCloudInstalledPluginRaw
     spec: {
       updateAvailable: boolean
       status: PluginStatus
@@ -139,14 +140,15 @@ export function isIBMCloudPluginWithAvailableUpdates(resource: ResourceWithMetad
 }
 
 export function isIBMCloudPluginWithCommands(resource: ResourceWithMetadata): resource is IBMCloudPlugin {
-  return isIBMCloudPlugin(resource) && resource.content.Commands.length > 0
+  return isIBMCloudPlugin(resource) && resource.raw.Commands.length > 0
 }
 
-export type IBMCloudPluginCommand = ResourceWithMetadata<IBMCloudInstalledPluginRaw> &
+export type IBMCloudPluginCommand = ResourceWithMetadata &
   WithSummary & {
     apiVersion
     kind: 'Command'
     isSimulacrum: true
+    raw: IBMCloudInstalledPluginRaw
     spec: {
       usage: string
     }

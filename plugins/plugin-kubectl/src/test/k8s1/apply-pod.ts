@@ -82,18 +82,20 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
               console.error(`still waiting for yaml in ${this.title}`, text)
             }
 
-            return Promise.resolve(text).then(
-              Util.expectYAMLSubset(
-                {
-                  apiVersion: 'v1',
-                  kind: 'Pod',
-                  metadata: {
-                    name: 'nginx'
-                  }
-                },
-                false
+            return Promise.resolve(text)
+              .then(
+                Util.expectYAMLSubset(
+                  {
+                    apiVersion: 'v1',
+                    kind: 'Pod',
+                    metadata: {
+                      name: 'nginx'
+                    }
+                  },
+                  false
+                )
               )
-            )
+              .catch(() => false)
           })
 
           console.log(`kubectl apply pod 6 ${this.title}`)

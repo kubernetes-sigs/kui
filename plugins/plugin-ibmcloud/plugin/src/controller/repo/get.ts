@@ -72,7 +72,7 @@ async function doGet(args: Arguments<KubeOptions>): Promise<MultiModalResponse<I
       text: strings('Home URL', installedEntry.URL)
     },
     modes: [],
-    content: installedEntry,
+    raw: installedEntry,
     summary: {
       content: summary,
       contentType: 'text/markdown'

@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import { Tab, i18n, encodeComponent } from '@kui-shell/core'
+import { Button, ModeRegistration, Tab, i18n, encodeComponent } from '@kui-shell/core'
 import { IBMCloudCluster, isIBMCloudCluster } from '../models/cluster'
 
 const strings = i18n('plugin-ibmcloud/ks')
+
+const mode: Button<IBMCloudCluster> = {
+  mode: 'show-workers',
+  label: strings('Show Workers'),
+  command: (tab: Tab, cluster: IBMCloudCluster) =>
+    `ibmcloud ks worker ls --cluster ${encodeComponent(cluster.metadata.name)}`,
+  kind: 'drilldown' as const
+}
 
 /**
  * Display resource version as a badge
  *
  */
-export default {
+const registration: ModeRegistration<IBMCloudCluster> = {
   when: isIBMCloudCluster,
-  mode: {
-    mode: 'show-workers',
-    label: strings('Show Workers'),
-    command: (tab: Tab, cluster: IBMCloudCluster) =>
-      `ibmcloud ks worker ls --cluster ${encodeComponent(cluster.metadata.name)}`,
-    kind: 'drilldown' as const
-  }
+  mode
 }
+
+export default registration

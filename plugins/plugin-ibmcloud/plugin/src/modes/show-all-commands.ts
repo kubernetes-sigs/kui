@@ -28,7 +28,7 @@ export default {
   mode: {
     mode: 'all-commands',
     label: strings('Show All Commands'),
-    command: (tab: Tab, command: IBMCloudPluginCommand) => `ibmcloud plugin command list ${command.content.Name}`,
+    command: (tab: Tab, command: IBMCloudPluginCommand) => `ibmcloud plugin command list ${command.raw.Name}`,
     kind: 'drilldown' as const
   }
 }
