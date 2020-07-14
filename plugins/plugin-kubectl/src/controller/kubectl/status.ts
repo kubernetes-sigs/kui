@@ -35,6 +35,7 @@ import { fqnOfRef, ResourceRef, versionOf } from './fqn'
 import { initialCapital } from '../../lib/view/formatTable'
 import { KubeOptions as Options, fileOf, kustomizeOf, getNamespace, getContextForArgv } from './options'
 import commandPrefix from '../command-prefix'
+import { EventWatcher } from './watch/get-watch'
 
 import fetchFile, { fetchFileKustomize } from '../../lib/util/fetch-file'
 import KubeResource from '../../lib/model/resource'
@@ -336,16 +337,25 @@ class StatusPoller implements Abortable {
 
 class StatusWatcher implements Abortable, Watcher {
   private readonly pollers: Abortable[] = []
+  private ptyJob: Abortable[] = []
   private initialBody: Row[]
 
   // eslint-disable-next-line no-useless-constructor
   public constructor(
+    private readonly args: Arguments<FinalStateOptions>,
     private readonly tab: Tab,
     private readonly resourcesToWaitFor: ResourceRef[],
     private readonly finalState: FinalState,
     private readonly contextArgs: string,
     private readonly command: string
   ) {}
+
+  private abortEventWatchers() {
+    if (this.ptyJob) {
+      this.ptyJob.forEach(job => job.abort())
+      this.ptyJob = []
+    }
+  }
 
   /**
    * Our impl of `Abortable` for use by the table view
@@ -359,6 +369,11 @@ class StatusWatcher implements Abortable, Watcher {
         poller.abort()
       }
     })
+
+    if (this.ptyJob) {
+      this.ptyJob.forEach(job => job.abort())
+      this.ptyJob = []
+    }
   }
 
   /**
@@ -376,11 +391,21 @@ class StatusWatcher implements Abortable, Watcher {
         for (let idx = 0; idx < this.pollers.length; idx++) {
           this.pollers[idx] = undefined
         }
+
+        if (this.ptyJob) {
+          this.ptyJob.forEach(job => job.abort())
+          this.ptyJob = []
+        }
       }
     }
 
     this.resourcesToWaitFor
       .map((_, idx) => {
+        const { kind, name, namespace } = _
+        const eventWatcher = new EventWatcher(this.args, this.command, kind, name, namespace, true, pusher)
+        eventWatcher.init()
+        this.ptyJob.push(eventWatcher)
+
         const row = this.initialBody[idx]
         return new StatusPoller(this.tab, _, row, this.finalState, done, pusher, this.contextArgs, this.command)
       })
@@ -475,7 +500,7 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
     // the desired final state of the specified resources
     const finalState = args.parsedOptions['final-state']
 
-    return new StatusWatcher(args.tab, resourcesToWaitFor, finalState, contextArgs, commandArg).initialTable()
+    return new StatusWatcher(args, args.tab, resourcesToWaitFor, finalState, contextArgs, commandArg).initialTable()
   } catch (err) {
     console.error('error constructing StatusWatcher', err)
 
