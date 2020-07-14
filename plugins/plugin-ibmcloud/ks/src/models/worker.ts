@@ -79,14 +79,15 @@ export interface IBMCloudWorkerRaw {
  * A Kui resource model
  *
  */
-export type IBMCloudWorker = ResourceWithMetadata<IBMCloudWorkerRaw> &
+export type IBMCloudWorker = ResourceWithMetadata &
   WithSummary &
-  WithCluster<IBMCloudWorkerRaw> &
-  WithRawData<IBMCloudWorkerRaw> &
-  WithVersion<IBMCloudWorkerRaw> & {
+  WithCluster &
+  WithRawData &
+  WithVersion & {
     apiVersion
     kind: 'Worker'
     isSimulacrum: true
+    raw: IBMCloudWorkerRaw
   }
 
 /**
@@ -103,7 +104,7 @@ export function hasAvailableUpdates(worker: IBMCloudWorkerRaw) {
 }
 
 export function isIBMCloudWorkerWithAvailableUpdates(resource: ResourceWithMetadata): resource is IBMCloudWorker {
-  return isIBMCloudWorker(resource) && hasAvailableUpdates(resource.content)
+  return isIBMCloudWorker(resource) && hasAvailableUpdates(resource.raw)
 }
 
 export default IBMCloudWorkerRaw

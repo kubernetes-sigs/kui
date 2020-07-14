@@ -31,33 +31,33 @@ const strings = i18n('plugin-ibmcloud/ks')
  */
 async function doGet(args: Arguments<WorkerPoolOptions>): Promise<MultiModalResponse<IBMCloudWorkerPool>> {
   const { safeDump } = await import('js-yaml')
-  const content: IBMCloudWorkerPoolRaw = JSON.parse(await doJSONWithStdout(args))
+  const raw: IBMCloudWorkerPoolRaw = JSON.parse(await doJSONWithStdout(args))
 
   const toolbarText = {
     type: 'info' as const,
-    text: strings('Using machine type', content.machineType)
+    text: strings('Using machine type', raw.machineType)
   }
 
   return {
     apiVersion,
     kind,
     metadata: {
-      name: content.name
+      name: raw.name
     },
     spec: {
       cluster: args.parsedOptions.cluster
     },
-    nameHash: content.id,
+    nameHash: raw.id,
     toolbarText,
-    kuiRawData: safeDump(content),
+    kuiRawData: safeDump(raw),
     modes: [],
-    content,
+    raw,
     isSimulacrum: true,
     summary: {
       content: safeDump({
-        'Workers per Zone': content.sizePerZone,
-        Labels: content.labels,
-        Zones: content.zones.map(_ => _.id)
+        'Workers per Zone': raw.sizePerZone,
+        Labels: raw.labels,
+        Zones: raw.zones.map(_ => _.id)
       }),
       contentType: 'yaml'
     }

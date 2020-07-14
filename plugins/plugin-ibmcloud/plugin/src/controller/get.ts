@@ -88,7 +88,7 @@ const doGet = (cmd: string) => async (args: Arguments<ListOptions>): Promise<Mul
         content: safeDump({
           'Plugin SDK Version': currentVersion || latest.version,
           'Minimal IBM Cloud CLI version required':
-            (isInstalled ? semver(installedEntry) : latest.min_cli_version) || strings('N/A')
+            (isInstalled ? semver(installedEntry.Version) : latest.min_cli_version) || strings('N/A')
         }),
         contentType: 'yaml'
       },
@@ -111,7 +111,7 @@ const doGet = (cmd: string) => async (args: Arguments<ListOptions>): Promise<Mul
         }
       }
     ],
-    content: installedEntry,
+    raw: installedEntry,
     isSimulacrum: true,
     spec: {
       updateAvailable,

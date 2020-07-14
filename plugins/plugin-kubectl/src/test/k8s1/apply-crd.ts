@@ -83,18 +83,20 @@ commands.forEach(command => {
             console.error(`still waiting for yaml in ${this.title}`, text)
           }
 
-          return Promise.resolve(text).then(
-            Util.expectYAMLSubset(
-              {
-                apiVersion: 'apiextensions.k8s.io/v1beta1',
-                kind: 'CustomResourceDefinition',
-                metadata: {
-                  name: crdName
-                }
-              },
-              false
+          return Promise.resolve(text)
+            .then(
+              Util.expectYAMLSubset(
+                {
+                  apiVersion: 'apiextensions.k8s.io/v1beta1',
+                  kind: 'CustomResourceDefinition',
+                  metadata: {
+                    name: crdName
+                  }
+                },
+                false
+              )
             )
-          )
+            .catch(() => false)
         })
         console.error(`${command} apply crd 6`)
       } catch (err) {

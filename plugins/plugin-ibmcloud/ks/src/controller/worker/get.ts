@@ -47,29 +47,29 @@ function parseWorkerName(id: string): { name: string; nameHash: string } {
  */
 async function doGet(args: Arguments<WorkerOptions>): Promise<MultiModalResponse<IBMCloudWorker>> {
   const { safeDump } = await import('js-yaml')
-  const content: IBMCloudWorkerRaw = JSON.parse(await doJSONWithStdout(args))
+  const raw: IBMCloudWorkerRaw = JSON.parse(await doJSONWithStdout(args))
 
-  const toolbarText = hasAvailableUpdates(content)
+  const toolbarText = hasAvailableUpdates(raw)
     ? {
         type: 'warning' as const,
         text: strings('An update is available for this worker')
       }
     : undefined
 
-  const updateSummary = hasAvailableUpdates(content)
+  const updateSummary = hasAvailableUpdates(raw)
     ? {
-        'Available Update': `${content.kubeVersion} \u2192 ${content.targetVersion}`
+        'Available Update': `${raw.kubeVersion} \u2192 ${raw.targetVersion}`
       }
     : {}
 
-  const { name, nameHash } = parseWorkerName(content.id)
+  const { name, nameHash } = parseWorkerName(raw.id)
 
   return {
     apiVersion,
     kind: 'Worker',
     metadata: {
-      name: content.id,
-      namespace: content.poolName
+      name: raw.id,
+      namespace: raw.poolName
     },
     spec: {
       cluster: args.parsedOptions.cluster
@@ -77,17 +77,17 @@ async function doGet(args: Arguments<WorkerOptions>): Promise<MultiModalResponse
     prettyName: name,
     nameHash,
     toolbarText,
-    kuiRawData: safeDump(content),
-    version: content.kubeVersion,
+    kuiRawData: safeDump(raw),
+    version: raw.kubeVersion,
     modes: [],
-    content,
+    raw,
     isSimulacrum: true,
     summary: {
       content: safeDump(
         Object.assign(
           {
-            'Public IP': content.publicIP,
-            'Private IP': content.privateIP
+            'Public IP': raw.publicIP,
+            'Private IP': raw.privateIP
           },
           updateSummary
         )

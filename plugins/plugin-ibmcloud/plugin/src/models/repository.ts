@@ -30,11 +30,12 @@ export interface IBMCloudInstalledRepositoriesRaw {
   PluginRepos: IBMCloudInstalledRepositoryRaw[]
 }
 
-export type IBMCloudRepository = ResourceWithMetadata<IBMCloudInstalledRepositoryRaw> &
+export type IBMCloudRepository = ResourceWithMetadata &
   WithSummary & {
     apiVersion
     kind: 'Repository'
     isSimulacrum: true
+    raw: IBMCloudInstalledRepositoryRaw
   }
 
 /**

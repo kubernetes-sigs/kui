@@ -58,7 +58,7 @@ const buttons = [
 ]
 
 const toolbarText = {
-  type: 'info',
+  type: 'info' as const,
   text: 'this is the toolbar text'
 }
 

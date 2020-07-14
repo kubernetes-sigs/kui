@@ -88,13 +88,14 @@ export interface IBMCloudClusterRaw {
  * A Kui resource model
  *
  */
-export type IBMCloudCluster = ResourceWithMetadata<IBMCloudClusterRaw> &
+export type IBMCloudCluster = ResourceWithMetadata &
   WithSummary &
-  WithVersion<IBMCloudClusterRaw> &
-  WithRawData<IBMCloudClusterRaw> & {
+  WithVersion &
+  WithRawData & {
     apiVersion
     kind: 'Cluster'
     isSimulacrum: true
+    raw: IBMCloudClusterRaw
   }
 
 /**
@@ -111,7 +112,7 @@ export function hasAvailableUpdates(cluster: IBMCloudClusterRaw) {
 }
 
 export function isIBMCloudClusterWithAvailableUpdates(resource: ResourceWithMetadata): resource is IBMCloudCluster {
-  return isIBMCloudCluster(resource) && hasAvailableUpdates(resource.content)
+  return isIBMCloudCluster(resource) && hasAvailableUpdates(resource.raw)
 }
 
 export default IBMCloudClusterRaw

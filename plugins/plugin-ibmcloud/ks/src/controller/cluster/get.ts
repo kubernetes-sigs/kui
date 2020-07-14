@@ -29,18 +29,18 @@ const strings = i18n('plugin-ibmcloud/ks')
 function prettyPrintDuration(delta: number): string {
   return prettyMilliseconds(delta, { compact: true })
 }
-function workerSummary(content: IBMCloudClusterRaw): string {
-  const nWorkers = content.workerCount
-  const nZones = content.workerZones.length
+function workerSummary(raw: IBMCloudClusterRaw): string {
+  const nWorkers = raw.workerCount
+  const nZones = raw.workerZones.length
 
   if (nWorkers === 1 && nZones === 1) {
-    return strings('one worker in zone', ...content.workerZones, content.location)
+    return strings('one worker in zone', ...raw.workerZones, raw.location)
   } else if (nWorkers === 1) {
-    return strings('one worker in zonez', ...content.workerZones, content.location)
+    return strings('one worker in zonez', ...raw.workerZones, raw.location)
   } else if (nZones === 1) {
-    return strings('N workers in zone', content.workerCount, ...content.workerZones, content.location)
+    return strings('N workers in zone', raw.workerCount, ...raw.workerZones, raw.location)
   } else {
-    return strings('N workers in zones', content.workerCount, ...content.workerZones, content.location)
+    return strings('N workers in zones', raw.workerCount, ...raw.workerZones, raw.location)
   }
 }
 
@@ -50,18 +50,18 @@ function workerSummary(content: IBMCloudClusterRaw): string {
  */
 async function doGet(args: Arguments<KubeOptions>): Promise<MultiModalResponse<IBMCloudCluster>> {
   const { safeDump } = await import('js-yaml')
-  const content: IBMCloudClusterRaw = JSON.parse(await doJSONWithStdout(args))
+  const raw: IBMCloudClusterRaw = JSON.parse(await doJSONWithStdout(args))
 
-  const toolbarText = hasAvailableUpdates(content)
+  const toolbarText = hasAvailableUpdates(raw)
     ? {
         type: 'warning' as const,
         text: strings('An update is available for the cluster')
       }
     : undefined
 
-  const updateSummary = hasAvailableUpdates(content)
+  const updateSummary = hasAvailableUpdates(raw)
     ? {
-        'Available Update': `${content.masterKubeVersion} \u2192 ${content.targetVersion}`
+        'Available Update': `${raw.masterKubeVersion} \u2192 ${raw.targetVersion}`
       }
     : {}
 
@@ -69,28 +69,28 @@ async function doGet(args: Arguments<KubeOptions>): Promise<MultiModalResponse<I
     apiVersion,
     kind: 'Cluster',
     metadata: {
-      name: content.name,
-      namespace: content.resourceGroupName,
-      creationTimestamp: content.createdDate
+      name: raw.name,
+      namespace: raw.resourceGroupName,
+      creationTimestamp: raw.createdDate
     },
-    nameHash: content.id,
+    nameHash: raw.id,
     toolbarText,
-    kuiRawData: safeDump(content),
-    version: content.masterKubeVersion,
+    kuiRawData: safeDump(raw),
+    version: raw.masterKubeVersion,
     modes: [],
-    content,
+    raw,
     isSimulacrum: true,
     summary: {
       content: safeDump(
         Object.assign(
           {
-            Age: prettyPrintDuration(new Date().getTime() - new Date(content.createdDate).getTime()),
+            Age: prettyPrintDuration(new Date().getTime() - new Date(raw.createdDate).getTime()),
             'Last Modified': strings(
               'ago',
-              prettyPrintDuration(new Date().getTime() - new Date(content.modifiedDate).getTime())
+              prettyPrintDuration(new Date().getTime() - new Date(raw.modifiedDate).getTime())
             ),
-            Workers: workerSummary(content),
-            'Ingress Hostname': content.ingressHostname
+            Workers: workerSummary(raw),
+            'Ingress Hostname': raw.ingressHostname
           },
           updateSummary
         )

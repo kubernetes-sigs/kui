@@ -30,7 +30,7 @@ export default {
     label: strings('Update Cluster'),
     command: (tab: Tab, cluster: IBMCloudCluster) =>
       `ibmcloud ks cluster update --cluster ${encodeComponent(cluster.metadata.name)} --kube-version ${encodeComponent(
-        cluster.content.targetVersion
+        cluster.raw.targetVersion
       )}`,
     confirm: true,
     kind: 'drilldown' as const

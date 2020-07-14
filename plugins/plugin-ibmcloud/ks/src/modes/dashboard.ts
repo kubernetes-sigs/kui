@@ -28,7 +28,7 @@ export default {
   mode: {
     mode: 'dashboard',
     label: strings('Open Dashboard'),
-    command: (tab: Tab, cluster: IBMCloudCluster) => `kuiopen ${encodeComponent(cluster.content.monitoringURL)}`,
+    command: (tab: Tab, cluster: IBMCloudCluster) => `kuiopen ${encodeComponent(cluster.raw.monitoringURL)}`,
     kind: 'drilldown' as const
   }
 }
