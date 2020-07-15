@@ -96,6 +96,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
       onKubectlConfigChangeEvents(this.handler)
     } else {
       wireToStandardEvents(this.handler)
+      onKubectlConfigChangeEvents(this.handler)
     }
   }
 
