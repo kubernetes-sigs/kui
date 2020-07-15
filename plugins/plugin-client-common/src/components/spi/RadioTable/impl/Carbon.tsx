@@ -16,7 +16,14 @@
 
 import * as React from 'react'
 import { v4 as uuid } from 'uuid'
-import { RadioTableRow, radioTableHintsAsCss, radioTableCellToString, cellShouldHaveBadge } from '@kui-shell/core'
+import {
+  Breadcrumb,
+  RadioTableRow,
+  radioTableHintsAsCss,
+  radioTableCellToString,
+  cellShouldHaveBadge,
+  i18n
+} from '@kui-shell/core'
 
 import {
   StructuredListWrapper,
@@ -35,6 +42,8 @@ import Card from '../../Card'
 import Toolbar from '../../../Content/Table/Toolbar'
 
 import '../../../../../web/scss/components/RadioTable/Carbon.scss'
+
+const strings = i18n('plugin-client-common')
 
 type Props = BaseProps &
   BaseState & {
@@ -76,7 +85,11 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     const { table } = this.props
 
     const titleBreadcrumb = table.title ? [{ label: table.title, className: 'kui--data-table-title' }] : []
-    const breadcrumbs = titleBreadcrumb
+    const breadcrumbs: Breadcrumb[] = titleBreadcrumb
+
+    if (table.body.length > 1) {
+      breadcrumbs.push({ label: strings('nRows', table.body.length) })
+    }
 
     return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
   }
