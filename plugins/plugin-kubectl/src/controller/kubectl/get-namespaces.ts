@@ -171,19 +171,6 @@ async function asRadioTable(
     )
   }
 
-  // place default at the top of the table, unless it is selected, in
-  // which case the view will take care of things
-  const rowIdxForDefaultNS = body.findIndex(_ => _.name === 'default')
-  if (rowIdxForDefaultNS !== 0 && rowIdxForDefaultNS !== defaultSelectedIdx && body.length > 2) {
-    const defaultRow = radio.body[rowIdxForDefaultNS]
-    radio.body.splice(rowIdxForDefaultNS, 1) // delete the default row from body
-    radio.body.splice(0, 0, defaultRow) // insert the default row at the top
-
-    if (defaultSelectedIdx < rowIdxForDefaultNS) {
-      radio.defaultSelectedIdx += 1
-    }
-  }
-
   return radio
 }
 

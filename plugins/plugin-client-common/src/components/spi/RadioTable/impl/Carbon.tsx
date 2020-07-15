@@ -136,7 +136,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
             <StructuredListCell
               head={head}
               key={cidx}
-              title={typeof cell !== 'string' && cell.title}
+              title={(typeof cell !== 'string' && cell.title) || undefined}
               data-is-name={cidx === row.nameIdx ? true : undefined}
               data-key={typeof cell !== 'string' ? cell.key : undefined}
               className={`kui--radio-table-cell ${radioTableHintsAsCss(cell) || ''}`}
