@@ -270,28 +270,31 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       return <div className="oops">Internal Error</div>
     } else {
       return (
-        <KuiContext.Consumer>
-          {config => {
-            const className =
-              'kui--data-table-wrapper kui--screenshotable' +
-              (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
-              (config.lightweightTables ? ' kui--data-table-wrapper-lightweight' : '')
+        <div className="kui--data-table-wrapper">
+          <div className="kui--screenshotable">
+            <KuiContext.Consumer>
+              {config => {
+                const className =
+                  (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
+                  (config.lightweightTables ? ' kui--data-table-wrapper-lightweight' : '')
 
-            if (this.props.response.style === TableStyle.Light && !this.props.isPartOfMiniSplit) {
-              return <div className={className}>{this.content(true, config.lightweightTables)}</div>
-            } else {
-              return (
-                <Card
-                  header={this.topToolbar(config.lightweightTables)}
-                  footer={this.bottomToolbar(config.lightweightTables)}
-                  className={className}
-                >
-                  {this.content(false, config.lightweightTables)}
-                </Card>
-              )
-            }
-          }}
-        </KuiContext.Consumer>
+                if (this.props.response.style === TableStyle.Light && !this.props.isPartOfMiniSplit) {
+                  return <div className={className}>{this.content(true, config.lightweightTables)}</div>
+                } else {
+                  return (
+                    <Card
+                      header={this.topToolbar(config.lightweightTables)}
+                      footer={this.bottomToolbar(config.lightweightTables)}
+                      className={className}
+                    >
+                      {this.content(false, config.lightweightTables)}
+                    </Card>
+                  )
+                }
+              }}
+            </KuiContext.Consumer>
+          </div>
+        </div>
       )
     }
   }
