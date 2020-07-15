@@ -128,6 +128,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private topToolbar(lightweightTables = false) {
+    if (this.props.response.body.length <= 1) {
+      return
+    }
+
     // 1) If we started as a table, and are now a grid, then show
     // "Status Grid", otherwise:
     // 2) only for client w/o disableTableTitle, show a breadcrumb
@@ -162,6 +166,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private bottomToolbar(lightweightTables = false) {
+    if (this.props.response.body.length <= 1) {
+      return
+    }
+
     const gridableColumn = findGridableColumn(this.props.response)
 
     return (
