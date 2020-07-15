@@ -111,6 +111,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
       onKubectlConfigChangeEvents(this.handler)
     } else {
       wireToStandardEvents(this.handler)
+      onKubectlConfigChangeEvents(this.handler)
     }
   }
 
