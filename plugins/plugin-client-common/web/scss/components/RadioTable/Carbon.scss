@@ -17,8 +17,20 @@
 @import './common';
 @import '../StructuredList/Carbon';
 
+$max-body-height: 30rem;
+$secondary-column-max-width: 8rem;
+
 [kui-theme-style] .kui--radio-table .kui--radio-table-row:hover .bx--structured-list-svg {
   fill: var(--color-text-02);
+}
+
+/** inner scrolling for tall tables, when not in a minisplit */
+.kui--scrollback:not([data-is-minisplit]) {
+  .kui--radio-table-body {
+    max-height: $max-body-height;
+    overflow: auto;
+    display: block;
+  }
 }
 
 .kui--radio-table-wrapper {
@@ -42,7 +54,7 @@
     flex: 1;
 
     &.hide-with-sidecar:not([data-is-name='true']) {
-      max-width: 8rem;
+      max-width: $secondary-column-max-width;
     }
   }
 }
