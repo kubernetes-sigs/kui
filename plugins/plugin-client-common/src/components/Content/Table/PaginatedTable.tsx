@@ -138,6 +138,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         ? []
         : getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
 
+    if (this.props.response.body.length > 1) {
+      breadcrumbs.push({ label: strings('nRows', this.props.response.body.length) })
+    }
+
     if (breadcrumbs.length > 0) {
       return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
     }
