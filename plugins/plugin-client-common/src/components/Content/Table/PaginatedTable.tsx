@@ -138,7 +138,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         ? []
         : getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
 
-    if (this.props.response.body.length > 1) {
+    if (this.props.response.body.length > 1 && !this.state.asGrid) {
       breadcrumbs.push({ label: strings('nRows', this.props.response.body.length) })
     }
 
@@ -270,13 +270,11 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       return <div className="oops">Internal Error</div>
     } else {
       return (
-        <div className="kui--data-table-wrapper">
+        <div className={'kui--data-table-wrapper' + (this.state.asGrid ? ' kui--data-table-as-grid' : '')}>
           <div className="kui--screenshotable">
             <KuiContext.Consumer>
               {config => {
-                const className =
-                  (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
-                  (config.lightweightTables ? ' kui--data-table-wrapper-lightweight' : '')
+                const className = config.lightweightTables ? ' kui--data-table-wrapper-lightweight' : ''
 
                 if (this.props.response.style === TableStyle.Light && !this.props.isPartOfMiniSplit) {
                   return <div className={className}>{this.content(true, config.lightweightTables)}</div>
