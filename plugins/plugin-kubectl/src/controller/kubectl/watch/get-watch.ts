@@ -86,6 +86,12 @@ function notEmpty<TValue>(value: TValue | void | null | undefined): value is TVa
 }
 
 export class EventWatcher implements Abortable, Watcher {
+  /**
+   * We may get an `abort()` call before we've finished initializing
+   * the PTY. This bit protects against that race. https://github.com/IBM/kui/issues/5149
+   */
+  private shouldAbort = false
+
   private ptyJob: Abortable[] = [] /** the pty job we spawned to capture --watch output */
   private eventLeftover: string
 
@@ -101,6 +107,8 @@ export class EventWatcher implements Abortable, Watcher {
   ) {}
 
   public abort() {
+    this.shouldAbort = true
+
     if (this.ptyJob) {
       this.ptyJob.forEach(job => job.abort())
     }
@@ -144,6 +152,13 @@ export class EventWatcher implements Abortable, Watcher {
     }
   }
 
+  private onPTYInitDone() {
+    if (this.shouldAbort) {
+      // protecting against abort-before-init race
+      this.abort()
+    }
+  }
+
   public async init() {
     const fullKind = await getKind(this.command, this.args, this.kindByUser)
     const filter = this.name
@@ -163,6 +178,7 @@ export class EventWatcher implements Abortable, Watcher {
       quiet: true,
       replSilence: true,
       echo: false,
+      onReady: this.onPTYInitDone.bind(this),
       onInit: this.onPTYEventInit.bind(this) // <-- the PTY will call us back when it's ready to stream
     }).catch(err => {
       debug('pty event error', err)
