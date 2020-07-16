@@ -138,7 +138,15 @@ export class EventWatcher implements Abortable, Watcher {
         const agos = sortedRows.map(row => {
           const ago = Date.now() - new Date(row[0].value).getTime()
 
-          return strings('ago', prettyPrintDuration(ago >= 0 ? ago : 0, { compact: true }).toString())
+          if (isNaN(ago)) {
+            // kubectl displays "<unknown>"
+            return strings('<unknown>')
+          } else if (ago <= 0) {
+            // < 0 is probably due to clock skew
+            return strings('now')
+          } else {
+            return strings('ago', prettyPrintDuration(ago >= 0 ? ago : 0, { compact: true }).toString())
+          }
         })
 
         const rows = sortedRows.map((row, idx) => {
