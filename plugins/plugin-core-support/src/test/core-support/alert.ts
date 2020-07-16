@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as assert from 'assert'
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
@@ -25,12 +24,14 @@ describe('alert command', function(this: Common.ISuite) {
   types.forEach(type => {
     it(`should execute: alert ${type} "foo" --body="bar"`, () => {
       return CLI.command(`alert ${type} "foo" --body="bar"`, this.app)
-        .then(() => ReplExpect.okWithCustom({ selector: Selectors.TERMINAl_ALERT(type) }))
-        .then(async () => {
-          const alertText = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_ALERT(type)}`)
-          assert.ok(alertText.includes('foo') && alertText.includes('bar'))
-        })
-        .catch(Common.oops(this))
+        .then(ReplExpect.okWithCustom({ selector: Selectors.TERMINAL_ALERT(type) }))
+        .then((selector: string) =>
+          this.app.client.waitUntil(async () => {
+            const alertText = await this.app.client.getText(selector)
+            return alertText.includes('foo') && alertText.includes('bar')
+          }, CLI.waitTimeout)
+        )
+        .catch(Common.oops(this, true))
     })
   })
 
