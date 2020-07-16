@@ -164,7 +164,7 @@ export default class Search extends React.PureComponent<Props, State> {
           <CarbonSearch
             id="search-input"
             placeHolderText={strings('placeHolderText')}
-            small
+            size="sm"
             labelText="Search"
             onChange={this.onChange.bind(this)}
             ref={this.doFocus.bind(this)}
