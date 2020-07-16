@@ -163,6 +163,8 @@ body[kui-theme-style] .kui--data-table-wrapper {
   /* make space for any box shadows */
   .kui--screenshotable {
     padding: 1px;
+    display: flex;
+    flex: 1;
   }
 
   .kui--card-footer {
