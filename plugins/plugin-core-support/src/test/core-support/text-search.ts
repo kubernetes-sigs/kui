@@ -93,33 +93,56 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
       text
     )
 
-    await this.app.client.keys(Keys.ENTER)
+    let idx = 0
+    await this.app.client.waitUntil(async () => {
+      const actualText = await this.app.client.getValue('#search-input')
+      console.error('3T', actualText)
+
+      if (++idx > 5) {
+        console.error(`still waiting for search result actualText=${actualText} expectedText=${text}`)
+      }
+
+      return actualText === text
+    }, CLI.waitTimeout)
+  }
+
+  const waitForSearchFoundText = async (searchFoundText: string) => {
+    let idx = 0
+    await this.app.client.waitUntil(async () => {
+      await this.app.client.waitForExist('#search-found-text')
+      const txt = await this.app.client.getText('#search-found-text')
+
+      if (++idx > 5) {
+        console.error(`still waiting for search result actualText=${txt} expectedText=${searchFoundText}`)
+      }
+
+      console.error('4a', txt)
+      return txt === searchFoundText
+    }, CLI.waitTimeout)
   }
 
   const findMatch = (typeText: string, searchFoundText: string) => {
     it(`should find ${searchFoundText} for ${typeText}`, async () => {
-      await this.app.client.waitUntil(async () => {
-        await this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
-        return this.app.client.waitForVisible('#search-bar', 2000).then(
-          () => true,
-          () => false
-        )
-      })
+      try {
+        console.error('1', typeText)
+        await this.app.client.waitUntil(async () => {
+          await this.app.client.keys(['NULL', Keys.ctrlOrMeta, 'f'])
+          console.error('1a')
+          await this.app.client.waitForVisible('#search-bar', 4000)
+          return true
+        }, CLI.waitTimeout)
 
-      return this.app.client
-        .waitUntil(() => this.app.client.hasFocus('#search-input'))
-        .then(() => {
-          let idx = 0
-          return this.app.client.waitUntil(async () => {
-            await type(typeText)
-            const txt = await this.app.client.getText('#search-found-text')
-            if (++idx > 5) {
-              console.error(`still waiting for search result actualText=${txt} expectedText=${searchFoundText}`)
-            }
-            return txt === searchFoundText // one execution, plus one "Command not found: bojangles" match, plus one tab title match
-          })
-        })
-        .catch(Common.oops(this, true))
+        console.error('2')
+        await this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'), CLI.waitTimeout)
+
+        console.error('3')
+        await type(typeText)
+
+        console.error('4', searchFoundText)
+        await waitForSearchFoundText(searchFoundText)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
     })
   }
 
@@ -146,15 +169,14 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
     this.app.client
       .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
-      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
-      .then(() =>
-        this.app.client.waitUntil(async () => {
-          await type(`waldo`)
-          // await this.app.client.setValue('#search-input', `waldo${Keys.ENTER}`)
-          const txt = await this.app.client.getText('#search-found-text')
-          return txt === 'No matches'
-        })
-      )
+      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'), CLI.waitTimeout))
+      .then(async () => {
+        console.error('5')
+        await type(`waldo`)
+
+        console.error('6')
+        await waitForSearchFoundText('No matches')
+      })
       .catch(Common.oops(this, true)))
 
   // paste test; reload first to start with a clean slate in the text search box
@@ -163,7 +185,7 @@ Common.localDescribe('Text search', function(this: Common.ISuite) {
     return this.app.client
       .keys(['NULL', Keys.ctrlOrMeta, 'f'])
       .then(() => this.app.client.waitForVisible('#search-bar'))
-      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input')))
+      .then(() => this.app.client.waitUntil(() => this.app.client.hasFocus('#search-input'), CLI.waitTimeout))
       .then(() => this.app.electron.clipboard.writeText('grumble'))
       .then(() => this.app.client.execute(() => document.execCommand('paste')))
       .then(() => this.app.client.getValue('#search-input'))
