@@ -237,5 +237,14 @@ body.kui--patternfly4[kui-theme-style] {
     --color-latency-3: #b2b0ea;
     --color-latency-4: #f9e0a2;
     --color-latency-5: #f4b678;
+
+    /* .pf-t-dark */
+    --pf-global--Color--100: var(--pf-global--Color--light-100);
+    --pf-global--Color--200: var(--pf-global--Color--light-200);
+    --pf-global--BorderColor--100: var(--pf-global--BorderColor--light-100);
+    --pf-global--primary-color--100: var(--pf-global--primary-color--light-100);
+    --pf-global--link--Color: var(--pf-global--link--Color--light);
+    --pf-global--link--Color--hover: var(--pf-global--link--Color--light);
+    --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--dark-100);
   }
 }
