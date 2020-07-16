@@ -15,11 +15,11 @@
  */
 
 @import './common';
+@import '../Table/sizing';
 @import '../StructuredList/Carbon';
 
 $max-body-height: 30rem;
 $min-body-width: 30rem;
-$secondary-column-max-width: 9rem;
 
 [kui-theme-style] .kui--radio-table .kui--radio-table-row:hover .bx--structured-list-svg {
   fill: var(--color-text-02);
