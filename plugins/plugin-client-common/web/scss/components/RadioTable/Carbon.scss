@@ -25,13 +25,17 @@ $min-body-width: 30rem;
   fill: var(--color-text-02);
 }
 
-/** inner scrolling for tall tables, when not in a minisplit */
-.kui--scrollback:not([data-is-minisplit]) {
+/** inner scrolling for tall tables */
+.kui--scrollback {
   .kui--radio-table-body {
     max-height: $max-body-height;
-    min-width: $min-body-width;
     overflow: auto;
     display: block;
+  }
+}
+.kui--scrollback:not([data-is-minisplit]) {
+  .kui--radio-table-body {
+    min-width: $min-body-width;
   }
 }
 
