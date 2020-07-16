@@ -58,6 +58,9 @@
     background-color: var(--color-sidecar-header);
   }
 }
+[kui-theme-style='dark'] .kui--card-footer.kui--inverted-color-context {
+  background-color: var(--color-sidecar-background);
+}
 
 [kui-theme-style] .kui--card {
   white-space: normal;
