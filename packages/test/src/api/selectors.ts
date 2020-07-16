@@ -59,7 +59,7 @@ export const SIDECAR_ALERT = (type: string) =>
   `${SIDECAR} .bx--tab-content[aria-hidden="false"] .kui--toolbar-alert[data-type="${type}"]`
 
 // terminal alert
-export const TERMINAl_ALERT = (type: string) => `.kui--terminal-alert[data-type="${type}"]`
+export const TERMINAL_ALERT = (type: string) => `.kui--terminal-alert[data-type="${type}"]`
 
 // sidecar tab content, for visible tab
 export const SIDECAR_TAB_CONTENT = `${SIDECAR} .bx--tab-content[aria-hidden="false"] .custom-content`
