@@ -173,19 +173,21 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
 
   public render() {
     return (
-      <div className="kui--data-table-wrapper kui--screenshotable kui--radio-table-wrapper kui--table-like-wrapper">
-        <Card
-          header={this.props.title && this.topToolbar()}
-          footer={this.bottomToolbar()}
-          footerClassName="kui--inverted-color-context kui--no-padding"
-        >
-          <div className="kui--data-table-container">
-            <StructuredListWrapper selection className="kui--radio-table kui--table-like">
-              {this.header()}
-              {this.body()}
-            </StructuredListWrapper>
-          </div>
-        </Card>
+      <div className="kui--data-table-wrapper kui--radio-table-wrapper kui--table-like-wrapper">
+        <div className="kui--screenshotable">
+          <Card
+            header={this.props.title && this.topToolbar()}
+            footer={this.bottomToolbar()}
+            footerClassName="kui--inverted-color-context kui--no-padding"
+          >
+            <div className="kui--data-table-container">
+              <StructuredListWrapper selection className="kui--radio-table kui--table-like">
+                {this.header()}
+                {this.body()}
+              </StructuredListWrapper>
+            </div>
+          </Card>
+        </div>
       </div>
     )
   }
