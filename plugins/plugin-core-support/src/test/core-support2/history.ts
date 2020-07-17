@@ -66,7 +66,7 @@ describe('command history', function(this: Common.ISuite) {
 
   it(`should list history with filter, expect nothing`, () =>
     CLI.command(`history gumbogumbo`, this.app)
-      .then(ReplExpect.justOK) // some random string that won't be in the command history
+      .then(ReplExpect.okWithCustom({ selector: Selectors.TABLE_HAS_NO_RESOURCES })) // some random string that won't be in the command history
       .catch(Common.oops(this)))
 
   it(`should delete command history`, () =>
@@ -76,7 +76,7 @@ describe('command history', function(this: Common.ISuite) {
 
   it(`should list history with no args after delete and expect nothing`, () =>
     CLI.command(`history`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.okWithCustom({ selector: Selectors.TABLE_HAS_NO_RESOURCES }))
       .catch(Common.oops(this)))
 
   it(`should list history with idx arg after delete and expect only the previous`, () =>
@@ -91,6 +91,6 @@ describe('command history', function(this: Common.ISuite) {
 
   it(`should list history with idx and filter args after delete and expect nothing`, () =>
     CLI.command(`history 10 lls`, this.app)
-      .then(ReplExpect.justOK) // some random string that won't be in the command history
+      .then(ReplExpect.okWithCustom({ selector: Selectors.TABLE_HAS_NO_RESOURCES })) // some random string that won't be in the command history
       .catch(Common.oops(this)))
 })

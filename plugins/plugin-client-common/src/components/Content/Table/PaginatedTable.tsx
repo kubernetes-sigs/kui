@@ -207,6 +207,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     }, {} as Record<string, boolean>)
   }
 
+  private noResources() {
+    return <div className="kui--data-table-has-no-resources kui--hero-text">{strings('No resources')}</div>
+  }
+
   private table() {
     const { tab, repl, response } = this.props
     const { headers, rows, page } = this.state
@@ -259,6 +263,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return (
       <React.Fragment>
         {includeToolbars && this.topToolbar(lightweightTables)}
+        {this.state.rows.length === 0 && this.noResources()}
         {this.state.asGrid ? this.grid(this.state.rows) : this.table()}
         {includeToolbars && this.bottomToolbar(lightweightTables)}
       </React.Fragment>
