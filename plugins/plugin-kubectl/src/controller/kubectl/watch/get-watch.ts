@@ -32,10 +32,15 @@ import {
 
 import { kindPart } from '../fqn'
 import { getKind } from '../explain'
-import { formatOf, getLabel, getNamespace, getResourceNamesForArgv, KubeOptions, KubeExecOptions } from '../options'
+import { formatOf, isForAllNamespaces, getLabel, getNamespace, getResourceNamesForArgv, KubeOptions, KubeExecOptions } from '../options'
 
 import { getCommandFromArgs } from '../../../lib/util/util'
-import { Pair, getNamespaceBreadcrumbs } from '../../../lib/view/formatTable'
+import {
+  Pair,
+  getNamespaceBreadcrumbs,
+  preprocessTable as preFormatTables,
+  formatTable
+} from '../../../lib/view/formatTable'
 
 const strings = i18n('plugin-kubectl', 'events')
 const debug = Debug('plugin-kubectl/controller/watch/watcher')
@@ -261,6 +266,27 @@ class KubectlWatcher implements Abortable, Watcher {
   }
 
   /**
+   * a resource cannot be retrieved by name across all namespaces,
+   * so we need to append the namespace column to match the inital
+   * all-namespaces table
+   * see issue: https://github.com/IBM/kui/issues/5169
+   *
+   */
+  private async allNamespaceOverride(namespace: string, getCommand: string, kind: string) {
+    const rawData = await this.args.REPL.qexec<string>(`sendtopty ${getCommand.replace(/^k(\s)/, 'kubectl$1')}`)
+    const preTables = preFormatTables(rawData.split(/^(?=LAST SEEN|NAMESPACE|NAME\s+)/m))
+    const allNamespacesTable = preTables[0].map((pairs, idx) => {
+      if (idx === 0) {
+        return [{ key: 'NAMESPACE', value: 'NAMESPACE' }].concat(pairs)
+      } else {
+        return [{ key: 'NAMESPACE', value: namespace }].concat(pairs)
+      }
+    })
+
+    return formatTable(getCommandFromArgs(this.args), 'get', kind, this.args, allNamespacesTable)
+  }
+
+  /**
    * Fetch the user-formatted rows for the so-named resources in the
    * given namespace.
    *
@@ -275,17 +301,21 @@ class KubectlWatcher implements Abortable, Watcher {
       ' '
     )} -n ${namespace} ${this.output ? `-o ${this.output}` : ''}`
 
-    return this.args.REPL.qexec<Table>(getCommand).catch((err: CodedError) => {
-      if (err.code !== 404) {
-        console.error(err)
-      }
-      // mark as all offline, if we got a 404 for the bulk get
-      if (typeof rowNames === 'string') {
-        this.pusher.offline(rowNames)
-      } else {
-        rowNames.forEach(name => this.pusher.offline(name))
-      }
-    })
+    if (isForAllNamespaces(this.args.parsedOptions)) {
+      return this.allNamespaceOverride(namespace, getCommand, kind)
+    } else {
+      return this.args.REPL.qexec<Table>(getCommand).catch((err: CodedError) => {
+        if (err.code !== 404) {
+          console.error(err)
+        }
+        // mark as all offline, if we got a 404 for the bulk get
+        if (typeof rowNames === 'string') {
+          this.pusher.offline(rowNames)
+        } else {
+          rowNames.forEach(name => this.pusher.offline(name))
+        }
+      })
+    }
   }
 
   /** Get rows as specified by user's -o */
