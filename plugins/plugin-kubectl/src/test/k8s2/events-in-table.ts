@@ -75,6 +75,23 @@ commands.forEach(command => {
       }
     })
 
+    it(`should watch with resource name and expect events`, async () => {
+      try {
+        const res = await CLI.command(`${command} get pods ${name} --watch ${inNamespace}`, this.app)
+        console.log('wait for pod to come up')
+        await this.app.client.waitUntil(async () => {
+          return ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(res)
+        })
+
+        console.log('wait for events')
+        await this.app.client.waitUntil(async () => {
+          return (await currentEventCount(this.app, res.count)) > 0
+        })
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+
     deleteNS(this, ns)
   })
 
