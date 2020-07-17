@@ -216,7 +216,8 @@
   }
   .header-right-bits {
     white-space: nowrap;
-    margin: 0 1rem;
+    margin-left: 1rem;
+    margin-right: 5px; /* matching titlebar */
 
     .custom-header-content {
       display: flex;

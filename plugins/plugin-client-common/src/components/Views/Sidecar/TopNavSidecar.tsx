@@ -192,21 +192,19 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
 
   /** display the unadulterated name from the response as sidecar header */
   private namePart() {
-    if (this.context.sidecarName === 'heroText') {
-      return (
-        <div className="header-left-bits">
-          <div className="sidecar-header-text">
-            <div className="sidecar-header-name" data-base-class="sidecar-header-name">
-              <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
-                {this.current.response && this.current.response.metadata
-                  ? this.current.response.metadata.name
-                  : undefined}
-              </div>
+    return (
+      <div className="header-left-bits">
+        <div className="sidecar-header-text">
+          <div className="sidecar-header-name" data-base-class="sidecar-header-name">
+            <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
+              {this.context.sidecarName === 'heroText' && this.current.response && this.current.response.metadata
+                ? this.current.response.metadata.name
+                : undefined}
             </div>
           </div>
         </div>
-      )
-    }
+      </div>
+    )
   }
 
   /** Tell the world that we have changed the focused mode */
