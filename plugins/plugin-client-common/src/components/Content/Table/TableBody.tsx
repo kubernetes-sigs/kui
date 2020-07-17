@@ -61,7 +61,7 @@ export default function renderBody(
           (footerLines || []).map((footer, idx) => (
             <TableRow key={`footer-${idx}`} className="kui--data-table-footer-messages kui--inverted-color-context">
               <TableCell colSpan={999} className="kui--data-table-footer-message">
-                <Markdown source={footer} noExternalLinks />
+                <Markdown source={footer} noExternalLinks repl={repl} />
               </TableCell>
             </TableRow>
           ))

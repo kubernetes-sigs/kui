@@ -123,6 +123,9 @@ export const TABLE_PAGINATION_FORWARD = (N: number) =>
 export const TABLE_PAGINATION_BACKWARD = (N: number) =>
   `${OUTPUT_N(N)} .kui--data-table-toolbar-pagination button.bx--pagination__button--backward`
 export const TABLE_FOOTER = (N: number) => `${OUTPUT_N(N)} .kui--data-table-footer-messages`
+export const TABLE_FOOTER_MESSAGE = (N: number, M: number) =>
+  `${TABLE_FOOTER(N)} .kui--data-table-footer-message:nth-child(${M})`
+export const TABLE_FOOTER_MESSAGE_LINK = (N: number, M: number) => `${TABLE_FOOTER_MESSAGE(N, M)} a`
 
 const _TABLE_AS_GRID = '.kui--data-table-as-grid'
 export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} ${_TABLE_AS_GRID}`

@@ -81,9 +81,11 @@ export default class Markdown extends React.PureComponent<Props> {
               : async () => {
                   let file = props.href
                   if (props.href.startsWith('#kuiexec?command=')) {
-                    const cmdline = decodeURIComponent(props.href.slice('#kuiexec?command='.length))
-                    if (cmdline) {
-                      return this.props.repl.pexec(cmdline)
+                    const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
+                    if (raw) {
+                      const cmdline = decodeURIComponent(raw[1])
+                      const echo = !raw[2]
+                      return this.props.repl.pexec(cmdline, { echo })
                     }
                   } else if (props.href.charAt(0) === '#') {
                     const elt = this.props.tab.querySelector(

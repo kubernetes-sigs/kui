@@ -50,12 +50,20 @@
     background-color: var(--color-stripe-02);
     line-height: initial;
 
-    .kui--data-table-footer-message p {
-      line-height: initial;
-      white-space: pre-wrap;
-      font-family: monospace;
-      font-size: 0.75rem;
-      padding: 0;
+    .kui--data-table-footer-message {
+      p {
+        line-height: initial;
+        white-space: pre-wrap;
+        font-family: monospace;
+        font-size: 0.75rem;
+        padding: 0;
+      }
+
+      a {
+        color: var(--color-base0F);
+        font-weight: normal;
+        font-size: 0.75rem;
+      }
     }
   }
 

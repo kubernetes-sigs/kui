@@ -17,7 +17,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -66,6 +66,10 @@ commands.forEach(command => {
         await this.app.client.waitUntil(async () => {
           return (await currentEventCount(this.app, res.count)) > 0
         })
+
+        console.log('click on event to drill down')
+        await this.app.client.click(Selectors.TABLE_FOOTER_MESSAGE_LINK(res.count, 1))
+        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
       } catch (err) {
         return Common.oops(this, true)(err)
       }
