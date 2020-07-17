@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as assert from 'assert'
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
@@ -76,11 +74,11 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
     await this.app.client.waitForExist(Selectors.OK_N(count), CLI.waitTimeout)
 
     await this.app.client.waitUntil(async () => {
-      const emptyWatchText = await this.app.client.getText(Selectors.OK_N(count))
+      const emptyWatchText = await this.app.client.getText(Selectors.TABLE_TITLE_NROWS(count))
       if (positive) {
-        return emptyWatchText.includes('No resources')
+        return emptyWatchText.includes('0') // e.g. "0 rows"
       } else {
-        return !emptyWatchText.includes('No resources')
+        return !emptyWatchText.includes('0') // better not have "0 rows"
       }
     }, CLI.waitTimeout)
   }
