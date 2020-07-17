@@ -23,10 +23,26 @@ import Icons from '../../Icons'
 import '../../../../../web/scss/components/DropDown/Carbon.scss'
 
 export default class CarbonDropDown extends React.PureComponent<Props> {
+  private isOpen = false
+
+  /** re: isOpen, see the comment for the onOpen() method */
   private onClose() {
-    if (this.props.onClose) {
-      this.props.onClose()
+    if (this.isOpen) {
+      if (this.props.onClose) {
+        this.props.onClose()
+      }
+      this.isOpen = false
     }
+  }
+
+  /**
+   * This will no longer be needed once we update to
+   * carbon-components-react
+   * 10.16. https://github.com/carbon-design-system/carbon/pull/6083
+   *
+   */
+  private onOpen() {
+    this.isOpen = true
   }
 
   public render() {
@@ -35,6 +51,7 @@ export default class CarbonDropDown extends React.PureComponent<Props> {
         flipped
         menuOptionsClass={this.props.className}
         className={this.props.className}
+        onOpen={this.onOpen.bind(this)}
         onClose={this.onClose.bind(this)}
       >
         {this.props.actions.map((_, idx) => {
