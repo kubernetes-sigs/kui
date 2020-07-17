@@ -120,10 +120,12 @@ div.kui--scrollback:nth-of-type(5) {
   /* sidecar open, three terminals */
   &[data-split-count='3'] {
     grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     grid-template-areas:
       'T3 T3 T3 T3 S S S S S S'
       'T3 T3 T3 T3 S S S S S S'
+      'T3 T3 T3 T3 S S S S S S'
+      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2'
       'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2';
   }
 
