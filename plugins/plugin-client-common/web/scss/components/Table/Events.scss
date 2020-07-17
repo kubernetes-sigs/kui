@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+$inter-message-spacing: 0.1875rem;
+
 .kui--data-table-container {
   .kui--data-table-footer-message {
     /* this tells the browser to line wrap according to the width dictated by the rest of the table */
@@ -40,7 +42,7 @@
 /* applies only to tables */
 .kui--data-table-container {
   .kui--data-table-footer-messages {
-    height: 1.5rem;
+    height: auto;
   }
 }
 
@@ -60,6 +62,7 @@
       }
 
       a {
+        line-height: initial;
         color: var(--color-base0F);
         font-weight: normal;
         font-size: 0.75rem;
@@ -68,20 +71,23 @@
   }
 
   tr:not(.kui--data-table-footer-messages) + .kui--data-table-footer-messages,
-  .kui--data-table-toolbar-filler + .kui--data-table-footer-messages {
+  .kui--data-table-toolbar-filler + .kui--data-table-footer-messages,
+  .kui--data-table-footer-messages:first-child {
     .kui--data-table-footer-message {
-      padding-top: 0.5rem;
-    }
-  }
-  .kui--data-table-footer-messages:last-child {
-    .kui--data-table-footer-message {
-      padding-bottom: 0.5rem;
+      padding-top: calc(2 * #{$inter-message-spacing});
     }
   }
 
-  .kui--data-table-footer-messages:not(:last-child) {
+  .kui--data-table-footer-messages {
     .kui--data-table-footer-message {
+      padding-top: 0;
       padding-bottom: 0;
+    }
+  }
+
+  .kui--data-table-footer-messages:last-child {
+    .kui--data-table-footer-message {
+      padding-bottom: calc(2.5 * #{$inter-message-spacing});
     }
   }
 }
