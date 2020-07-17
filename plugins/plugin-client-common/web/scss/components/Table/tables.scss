@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '../Table/sizing';
+@import './sizing';
 @import '../common/narrow-window';
 
 body[kui-theme-style] {
@@ -199,6 +199,7 @@ body[kui-theme-style] .kui--data-table-wrapper {
   .kui--data-table-container {
     min-width: $min-body-width;
     max-height: $max-body-height;
+    min-height: $min-body-height;
     overflow: auto;
   }
 }

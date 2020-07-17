@@ -134,7 +134,8 @@ export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(
 const _TABLE_TITLE = `.kui--data-table-title`
 export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} ${_TABLE_TITLE}`
 
-export const TABLE_TITLE_SECONDARY = (N: number) => `${OUTPUT_N(N)} .kui--secondary-breadcrumb`
+export const TABLE_TITLE_SECONDARY = (N: number) => `${OUTPUT_N(N)} .kui--secondary-breadcrumb:first-child`
+export const TABLE_TITLE_NROWS = (N: number) => `${OUTPUT_N(N)} .kui--nrows-breadcrumb`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
 export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
 export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>

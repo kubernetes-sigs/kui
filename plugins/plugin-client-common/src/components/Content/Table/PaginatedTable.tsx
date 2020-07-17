@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, Table as KuiTable, TableStyle, i18n } from '@kui-shell/core'
+import { Tab, REPL, Table as KuiTable, TableStyle, i18n, isWatchable } from '@kui-shell/core'
 
 import * as React from 'react'
 import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-components-react'
@@ -138,8 +138,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         ? []
         : getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
 
-    if (this.props.response.body.length > 1 && !this.state.asGrid) {
-      breadcrumbs.push({ label: strings('nRows', this.props.response.body.length) })
+    if (!this.state.asGrid) {
+      const nRows = this.props.response.body.length
+      if (nRows > 1 || isWatchable(this.props.response)) {
+        breadcrumbs.push({
+          label: nRows === 1 ? strings('nRows1') : strings('nRows', nRows),
+          className: 'kui--secondary-breadcrumb kui--nrows-breadcrumb'
+        })
+      }
     }
 
     if (breadcrumbs.length > 0) {

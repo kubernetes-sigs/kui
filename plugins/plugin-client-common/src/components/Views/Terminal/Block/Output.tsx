@@ -27,8 +27,7 @@ import {
   eventChannelUnsafe,
   Tab as KuiTab,
   Stream,
-  Streamable,
-  isWatchable
+  Streamable
 } from '@kui-shell/core'
 
 import { BlockViewTraits } from './'
@@ -196,7 +195,7 @@ export default class Output extends React.PureComponent<Props, State> {
         isHTML(response) ||
         isMarkdownResponse(response) ||
         (typeof response === 'string' && response.length > 0) ||
-        (isTable(response) && response.body.length > 0) ||
+        isTable(response) ||
         isMixedResponse(response) ||
         this.state.streamingOutput.length > 0
       )
@@ -209,11 +208,6 @@ export default class Output extends React.PureComponent<Props, State> {
     if (isOk(this.props.model)) {
       if (hasContent) {
         return <div className="ok" />
-      } else if (isWatchable(this.props.model.response)) {
-        return (
-          //          <div className="kui--hero-text">{strings('No resources')}</div>
-          <div className="ok">{strings('No resources')}</div>
-        )
       } else {
         return <div className="ok">{strings('ok')}</div>
       }
