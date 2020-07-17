@@ -124,7 +124,7 @@ export class EventWatcher implements Abortable, Watcher {
         this.eventLeftover = undefined
 
         // here is where we turn the raw data into tabular data
-        const preprocessed = preprocessTable(rawData, 3)
+        const preprocessed = preprocessTable(rawData, 4)
         debug('rawData', rawData)
         this.eventLeftover = preprocessed.leftover === '\n' ? undefined : preprocessed.leftover
 
@@ -150,7 +150,13 @@ export class EventWatcher implements Abortable, Watcher {
         })
 
         const rows = sortedRows.map((row, idx) => {
-          return `\`[${agos[idx]}]\`` + ` **${row[1].value}**: ${row[2].value}`
+          const involvedObjectName = row[1].value
+          const message = row[2].value
+          const eventName = row[3].value
+          const onClick = `#kuiexec?command=${encodeURIComponent(
+            `kubectl get event ${eventName} -n ${this.namespace} -o yaml`
+          )}&quiet`
+          return `[[${agos[idx]}]](${onClick})` + ` **${involvedObjectName}**: ${message}`
         })
 
         if (rows) {
@@ -173,7 +179,7 @@ export class EventWatcher implements Abortable, Watcher {
       ? `--field-selector=involvedObject.kind=${fullKind},involvedObject.name=${this.name}`
       : `--field-selector=involvedObject.kind=${fullKind}`
 
-    const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|\\n"}'`
+    const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|"}{.metadata.name}{"|\\n"}'`
     const watch = this.watchOnly ? '--watch-only' : '-w'
 
     const getEventCommand = `${this.command} get events ${watch} -n ${this.namespace} ${filter} ${output}`.replace(
