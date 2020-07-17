@@ -402,7 +402,7 @@ class StatusWatcher implements Abortable, Watcher {
     this.resourcesToWaitFor
       .map((_, idx) => {
         const { kind, name, namespace } = _
-        const eventWatcher = new EventWatcher(this.args, this.command, kind, name, namespace, true, pusher)
+        const eventWatcher = new EventWatcher(this.args, this.command, kind, [name], namespace, true, pusher)
         eventWatcher.init()
         this.ptyJob.push(eventWatcher)
 

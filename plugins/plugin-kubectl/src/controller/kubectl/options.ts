@@ -153,6 +153,11 @@ export function getNamespaceForArgv(args: Arguments<KubeOptions>): string {
   return !ns ? '' : `-n ${ns}`
 }
 
+/** @return the resource names array as expressed in the command line */
+export function getResourceNamesForArgv(kindFromArgv: string, args: Arguments<KubeOptions>): string[] {
+  return args.argvNoOptions.slice(args.argvNoOptions.indexOf(kindFromArgv) + 1)
+}
+
 export function getContext(args: Arguments<KubeOptions>) {
   return args.parsedOptions.context
 }

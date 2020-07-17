@@ -32,7 +32,7 @@ import {
 
 import { kindPart } from '../fqn'
 import { getKind } from '../explain'
-import { formatOf, getLabel, getNamespace, KubeOptions, KubeExecOptions } from '../options'
+import { formatOf, getLabel, getNamespace, getResourceNamesForArgv, KubeOptions, KubeExecOptions } from '../options'
 
 import { getCommandFromArgs } from '../../../lib/util/util'
 import { Pair, getNamespaceBreadcrumbs } from '../../../lib/view/formatTable'
@@ -100,7 +100,7 @@ export class EventWatcher implements Abortable, Watcher {
     private readonly args: Arguments,
     private readonly command: string,
     private readonly kindByUser: string,
-    private readonly name: string,
+    private readonly name: string[],
     private readonly namespace: string,
     private readonly watchOnly: boolean,
     private readonly pusher: WatchPusher
@@ -128,12 +128,15 @@ export class EventWatcher implements Abortable, Watcher {
         debug('rawData', rawData)
         this.eventLeftover = preprocessed.leftover === '\n' ? undefined : preprocessed.leftover
 
-        // format the row as `[ago] involvedObject.name: message`
-        const sortedRows = preprocessed.rows.filter(notEmpty).sort((rowA, rowB) => {
-          const lastSeenA = new Date(rowA[0].value).getTime()
-          const lastSeenB = new Date(rowB[0].value).getTime()
-          return lastSeenA - lastSeenB
-        })
+        // filter and format the row as `[ago] involvedObject.name: message`
+        const sortedRows = preprocessed.rows
+          .filter(notEmpty)
+          .filter(row => !this.name || this.name.length === 0 || this.name.includes(row[1].value)) // filter the rows with `involvedObject.name` specified by `this.name`
+          .sort((rowA, rowB) => {
+            const lastSeenA = new Date(rowA[0].value).getTime()
+            const lastSeenB = new Date(rowB[0].value).getTime()
+            return lastSeenA - lastSeenB
+          })
 
         const agos = sortedRows.map(row => {
           const ago = Date.now() - new Date(row[0].value).getTime()
@@ -175,9 +178,7 @@ export class EventWatcher implements Abortable, Watcher {
 
   public async init() {
     const fullKind = await getKind(this.command, this.args, this.kindByUser)
-    const filter = this.name
-      ? `--field-selector=involvedObject.kind=${fullKind},involvedObject.name=${this.name}`
-      : `--field-selector=involvedObject.kind=${fullKind}`
+    const filter = `--field-selector=involvedObject.kind=${fullKind}`
 
     const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|"}{.metadata.name}{"|\\n"}'`
     const watch = this.watchOnly ? '--watch-only' : '-w'
@@ -422,12 +423,19 @@ class KubectlWatcher implements Abortable, Watcher {
     const cmd = getCommandFromArgs(this.args)
     const namespace = await getNamespace(this.args)
     const kindByUser = this.args.argvNoOptions[this.args.argvNoOptions.indexOf('get') + 1]
-    const getWithResourceName = this.args.argvNoOptions.indexOf(kindByUser) !== this.args.argvNoOptions.length - 1
 
-    if (getWithResourceName || getLabel(this.args) || this.args.parsedOptions['field-selector']) {
-      debug('event watch not support')
+    if (getLabel(this.args) || this.args.parsedOptions['field-selector']) {
+      debug('event watcher does not support label and field selector')
     } else {
-      const eventWatcher = new EventWatcher(this.args, cmd, kindByUser, undefined, namespace, false, this.pusher)
+      const eventWatcher = new EventWatcher(
+        this.args,
+        cmd,
+        kindByUser,
+        getResourceNamesForArgv(kindByUser, this.args),
+        namespace,
+        false,
+        this.pusher
+      )
       eventWatcher.init()
       this.ptyJob.push(eventWatcher)
     }
