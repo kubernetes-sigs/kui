@@ -170,7 +170,9 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
     return (
       <React.Fragment>
-        {this.state.asGrid && this.state.footer && <Toolbar stream={this.footerLines()} />}
+        {(this.props.isPartOfMiniSplit || this.state.asGrid) && this.state.footer && (
+          <Toolbar stream={this.footerLines()} />
+        )}
         {this.props.toolbars && (this.isPaginated() || gridableColumn >= 0) && (
           <Toolbar
             className="kui--data-table-toolbar-bottom"
@@ -240,7 +242,15 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(response.body, this.justUpdatedMap(), renderOpts, tab, repl, offset, this.footerLines())}
+                {renderBody(
+                  response.body,
+                  this.justUpdatedMap(),
+                  renderOpts,
+                  tab,
+                  repl,
+                  offset,
+                  this.props.isPartOfMiniSplit ? [] : this.footerLines()
+                )}
               </Table>
             </TableContainer>
           )}
