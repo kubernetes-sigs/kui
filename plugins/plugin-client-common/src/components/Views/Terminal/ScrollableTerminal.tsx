@@ -633,6 +633,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   willLoseFocus={() => this.doFocus(scrollback)}
                   prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                   isPartOfMiniSplit={isMiniSplit}
+                  isWidthConstrained={isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1}
                   ref={c => {
                     if (isActive(_)) {
                       // grab a ref to the active block, to help us maintain focus

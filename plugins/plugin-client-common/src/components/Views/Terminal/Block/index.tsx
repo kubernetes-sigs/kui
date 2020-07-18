@@ -24,6 +24,7 @@ import { BlockModel, isActive, isEmpty, isFinished, isProcessing, isAnnouncement
 export type BlockViewTraits = {
   prefersTerminalPresentation?: boolean
   isPartOfMiniSplit?: boolean
+  isWidthConstrained?: boolean
 }
 
 type Props = InputOptions & {
@@ -80,6 +81,7 @@ export default class Block extends React.PureComponent<Props, State> {
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
           prefersTerminalPresentation={this.props.prefersTerminalPresentation}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+          isWidthConstrained={this.props.isWidthConstrained}
         />
       )
     }

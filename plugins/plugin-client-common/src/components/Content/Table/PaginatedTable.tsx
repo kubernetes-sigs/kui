@@ -67,6 +67,9 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
   /** Is this table being rendered in a minisplit? */
   isPartOfMiniSplit: boolean
 
+  /** Is the Sidecar visible in this Tab? or some other width constraint? */
+  isWidthConstrained: boolean
+
   /** display as grid (versus as regular table)? */
   asGrid: boolean
 
@@ -176,7 +179,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
     return (
       <React.Fragment>
-        {(this.props.isPartOfMiniSplit || this.state.asGrid) && this.state.footer && (
+        {(!this.showFooterInTableBody() || this.state.asGrid) && this.state.footer && (
           <Toolbar stream={this.footerLines()} />
         )}
         {this.props.toolbars && (this.isPaginated() || gridableColumn >= 0) && (
@@ -255,7 +258,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                   tab,
                   repl,
                   offset,
-                  this.props.isPartOfMiniSplit ? [] : this.footerLines()
+                  !this.showFooterInTableBody() ? [] : this.footerLines()
                 )}
               </Table>
             </TableContainer>
@@ -269,6 +272,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       !paginated ? rows : rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
       !paginated ? 0 : (page - 1) * this.state.pageSize
     )
+  }
+
+  private showFooterInTableBody() {
+    return !(this.props.isWidthConstrained || this.props.isPartOfMiniSplit)
   }
 
   private content(includeToolbars = false, lightweightTables = false) {
