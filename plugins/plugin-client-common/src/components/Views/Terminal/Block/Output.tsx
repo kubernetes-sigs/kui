@@ -136,6 +136,7 @@ export default class Output extends React.PureComponent<Props, State> {
               response={part}
               prefersTerminalPresentation={this.props.prefersTerminalPresentation}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+              isWidthConstrained={this.props.isWidthConstrained}
               onRender={this.onRender.bind(this)}
             />
           ))}
@@ -169,6 +170,7 @@ export default class Output extends React.PureComponent<Props, State> {
               response={this.props.model.response}
               prefersTerminalPresentation={this.props.prefersTerminalPresentation}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+              isWidthConstrained={this.props.isWidthConstrained}
               onRender={this.onRender.bind(this)}
             />
           )}

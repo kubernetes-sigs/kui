@@ -29,7 +29,8 @@ export default function renderTable(
   toolbars = false,
   asGrid = false,
   onRender?: (hasContent: boolean) => void,
-  isPartOfMiniSplit = false
+  isPartOfMiniSplit = false,
+  isWidthConstrained = false
 ) {
   if (isWatchable(response)) {
     return (
@@ -45,6 +46,7 @@ export default function renderTable(
             asGrid={asGrid}
             onRender={onRender}
             isPartOfMiniSplit={isPartOfMiniSplit}
+            isWidthConstrained={isWidthConstrained}
           />
         )}
       </KuiContext.Consumer>
@@ -63,6 +65,7 @@ export default function renderTable(
               toolbars={toolbars}
               asGrid={asGrid}
               isPartOfMiniSplit={isPartOfMiniSplit}
+              isWidthConstrained={isWidthConstrained}
             />
           )
         }}
