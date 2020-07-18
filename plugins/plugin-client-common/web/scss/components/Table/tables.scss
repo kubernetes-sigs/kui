@@ -114,7 +114,10 @@ body .bx--data-table {
 @mixin full-width-tables {
   .kui--data-table-wrapper:not(.kui--data-table-as-grid) {
     /* render tables full-width when sidecar is open https://github.com/IBM/kui/issues/3952 */
-    flex: 1;
+    &,
+    .kui--card {
+      flex: 1;
+    }
   }
   .kui--paginated-table {
     flex: 1;
