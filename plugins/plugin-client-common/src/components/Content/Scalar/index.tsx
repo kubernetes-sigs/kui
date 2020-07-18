@@ -101,7 +101,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
           renderBottomToolbar,
           renderGrid,
           this.props.onRender,
-          this.props.isPartOfMiniSplit
+          this.props.isPartOfMiniSplit,
+          this.props.isWidthConstrained
         )
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
