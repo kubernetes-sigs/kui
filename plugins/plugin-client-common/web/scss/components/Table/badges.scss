@@ -14,6 +14,7 @@ $grid-cell-size: 1.25rem;
     width: 0.875rem;
     height: 0.875rem;
     background-color: var(--color-ui-05);
+    border-radius: 1px;
   }
   [data-tag='badge-circle'].green-background {
     background-color: var(--color-green);
@@ -62,7 +63,6 @@ $grid-cell-size: 1.25rem;
         margin: 0;
         width: $grid-cell-size;
         height: $grid-cell-size;
-        border-radius: 0;
 
         transition-property: filter;
         transition-timing-function: var(--transition-timing-function);
