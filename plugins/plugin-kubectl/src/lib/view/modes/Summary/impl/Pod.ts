@@ -33,7 +33,9 @@ import { Pod } from '../../../../model/resource'
 function ready(pod: Pod) {
   const { containerStatuses } = pod.status
 
-  const numerator = containerStatuses.reduce((count, status) => count + (status.ready ? 1 : 0), 0)
+  const numerator = !containerStatuses
+    ? 0
+    : containerStatuses.reduce((count, status) => count + (status.ready ? 1 : 0), 0)
   const denominator = containerStatuses.length
 
   return `${numerator}/${denominator}`
