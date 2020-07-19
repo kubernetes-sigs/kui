@@ -609,12 +609,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           {this.state.splits.map((scrollback, sbidx) => {
             const tab = this.tabFor(scrollback)
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
+            const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
 
             return React.createElement(
               'div',
               {
                 className: 'kui--scrollback scrollable scrollable-auto',
                 'data-is-minisplit': isMiniSplit,
+                'data-is-width-constrained': isWidthConstrained || undefined,
                 key: tab.uuid,
                 'data-scrollback-id': tab.uuid,
                 ref: ref => this.tabRefFor(scrollback, ref),
@@ -633,7 +635,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   willLoseFocus={() => this.doFocus(scrollback)}
                   prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                   isPartOfMiniSplit={isMiniSplit}
-                  isWidthConstrained={isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1}
+                  isWidthConstrained={isWidthConstrained}
                   ref={c => {
                     if (isActive(_)) {
                       // grab a ref to the active block, to help us maintain focus
