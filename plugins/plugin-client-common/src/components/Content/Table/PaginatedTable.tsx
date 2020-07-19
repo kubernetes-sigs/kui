@@ -299,7 +299,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
               {config => {
                 const className = config.lightweightTables ? ' kui--data-table-wrapper-lightweight' : ''
 
-                if (this.props.response.style === TableStyle.Light && !this.props.isPartOfMiniSplit) {
+                if (this.props.response.style === TableStyle.Light && !this.showFooterInTableBody()) {
                   return <div className={className}>{this.content(true, config.lightweightTables)}</div>
                 } else {
                   return (
