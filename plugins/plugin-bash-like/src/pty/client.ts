@@ -396,7 +396,6 @@ async function initOnMessage(
 
   let bytesWereWritten = false
   let sawCode: number
-  let raw = ''
 
   //
   // here, we deal with user typing! we need to relay keyboard
@@ -525,21 +524,22 @@ async function initOnMessage(
       }
       if (enterAltBufferPattern.test(msg.data)) {
         // we need to fast-track this; xterm.js does not invoke the
-        // setMode/resetMode handlers till too late; we might've
-        // called raw += ... even though we are in alt buffer mode
+        // setMode/resetMode handlers till too late
         focus(terminal)
         resizer.enterAltBufferMode()
       } else if (exitAltBufferPattern.test(msg.data)) {
         // ... same here
         resizer.exitAltBufferMode()
-      } else if (!resizer.inAltBufferMode()) {
-        raw += msg.data
       }
 
       if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
         pendingWrites++
         bytesWereWritten = true
-        sawCode = /File exists/i.test(raw) ? 409 : /no such/i.test(raw) || /not found/i.test(raw) ? 404 : sawCode
+        sawCode = /File exists/i.test(msg.data)
+          ? 409
+          : /no such/i.test(msg.data) || /not found/i.test(msg.data)
+          ? 404
+          : sawCode
         terminal.write(msg.data, () => {
           // at this point, xterm.js has populated its data model,
           // though it may not yet have rendered the content to the
@@ -548,12 +548,12 @@ async function initOnMessage(
             cbAfterPendingWrites()
           }
         })
-        raw = ''
       }
     } else if (msg.type === 'data' && execOptions.stdout && execOptions.onInit) {
       bytesWereWritten = true
       execOptions.stdout(msg.data)
     } else if (msg.type === 'exit') {
+      debug('exit', msg.exitCode, cmdline)
       gotExit = true
 
       if (execOptions.onExit) {
