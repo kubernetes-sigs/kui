@@ -40,10 +40,36 @@ p {
   width: 350px !important;
 }
 
+.bx--toggle__text--on {
+  color: $light-grey;
+}
+
+.bx--toggle__text--off {
+  color: $light-grey;
+}
+.bx--toggle-input__label {
+  color: #ffffff;
+}
+
 .formProps {
   overflow-y: auto !important;
   display: block;
 }
-.bx--label{
-  color: #FFFFFF !important;
+.bx--label {
+  color: #ffffff !important;
+}
+.bx--list-box {
+  width: 350px !important;
+}
+.bx--checkbox-label::before {
+  border-color: #ffffff;
+}
+.parent {
+  white-space: nowrap;
+  overflow-x: auto;
+}
+
+.child {
+  display: inline-block;
+  width: 50%;
 }

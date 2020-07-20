@@ -611,7 +611,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
               <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="350" />
             </FormGroup>
             <FormGroup legendText="">
-              <h4 className="titletexts"> High level Review </h4>
+              <h4 className="titletexts"> High Level Overview </h4>
               <DataTable
                 headers={this.basicStatsHeader}
                 rows={this.basicStatsRows}
@@ -811,7 +811,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 <RadioButton id="rollforwardwinner" labelText="Roll Forward to Winner" value="rollforwardwinner" />
                 <RadioButton
                   id="rollforwardother"
-                  labelText="Roll Forward to Another Service"
+                  labelText="Roll Forward to Another Deployment"
                   value="rollforwardother"
                 />
               </RadioButtonGroup>

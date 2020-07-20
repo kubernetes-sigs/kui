@@ -1,12 +1,23 @@
 import * as React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
-import { Form, FormGroup, TextInput, Button, MultiSelect, Checkbox, ComboBox, Tag } from 'carbon-components-react'
+import {
+  Form,
+  FormGroup,
+  TextInput,
+  Button,
+  MultiSelect,
+  Checkbox,
+  ComboBox,
+  Tag,
+  Toggle
+} from 'carbon-components-react'
 import { View32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
 import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
 import 'carbon-components/scss/components/combo-box/_combo-box.scss'
+import 'carbon-components/scss/components/toggle/_toggle.scss'
 import 'carbon-components/scss/components/select/_select.scss'
 import 'carbon-components/scss/components/multi-select/_multi-select.scss'
 import 'carbon-components/scss/components/button/_button.scss'
@@ -163,7 +174,7 @@ class ExprBase extends React.Component<{}, Formstate> {
 
   // Updates states based on limit type changes
   private handleLimitTypeChange = (value, idx) => {
-    const limitType = value == null ? '' : value
+    const limitType = value ? 'relative' : 'absolute'
     const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], limitType: limitType }
     this.setState({ criteria: newMetric })
@@ -350,6 +361,15 @@ class ExprBase extends React.Component<{}, Formstate> {
               invalid={this.state.invalidCandidate}
               invalidText="Cannot select same version as experimental baseline."
             />
+            <br />
+            <TextInput
+              id="candidate-name"
+              labelText="or Add Candidate Deployment(s) below:"
+              helperText="Comma separated candidate names"
+              placeholder="reviews_v3, reviews_v4"
+              onChange={value => this.handleAddCand(value.selectedItems)}
+              type="text"
+            ></TextInput>
           </FormGroup>
           {this.state.showCriteria ? (
             <FormGroup legendText="">
@@ -361,7 +381,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                   const checkId = `checkbox-${idx}`
                   return (
                     <div
-                      style={{ padding: 5, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
+                      style={{ padding: 20, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
                       key={idx}
                     >
                       <h5> {`Criterion #${idx + 1}`}</h5>
@@ -374,32 +394,33 @@ class ExprBase extends React.Component<{}, Formstate> {
                         itemToString={item => (item ? item.name : '')}
                         onChange={value => this.handleMetricName(value.selectedItem, idx)}
                       />
-                      <Tag type="teal">{'Info:'}</Tag>
                       <Tag type="cyan">{val.type === '' ? '...' : val.type}</Tag>
-                      <Tag type="magenta">{val.reward ? 'Reward' : '...'}</Tag>
-                      <Tag type="cool-gray">{val.limitType === '' ? '...' : `${val.limitType} threshold`}</Tag>
-                      <ComboBox
-                        id={limitTypeId}
-                        titleText="Limit Type"
-                        helperText="For non-reward criteria, designate the type of threshold to be set for the metric"
-                        placeholder="Select the type of threshold"
-                        disabled={val.reward}
-                        invalid={val.reward && val.limitType !== ''}
-                        invalidText="Limits can only be set for non-reward metrics"
-                        items={['absolute', 'relative']}
-                        onChange={value => this.handleLimitTypeChange(value.selectedItem, idx)}
-                        style={{ width: 350 }}
-                      />
-                      <TextInput
-                        id={limitValueId}
-                        labelText="Limit Value"
-                        helperText="Set a value for the threshold selected"
-                        disabled={val.reward}
-                        invalid={val.reward && val.limitValue !== 0}
-                        invalidText="Limit values can only be set for non-reward metrics"
-                        onChange={e => this.handleLimitValChange(e.target.value, idx)}
-                        style={{ width: 350 }}
-                      />
+                      <Tag type="magenta">
+                        {val.reward ? 'Reward' : val.limitType === '' ? '...' : `${val.limitType} threshold`}
+                      </Tag>
+                      <br></br>
+                      <span className="child">
+                        <Toggle
+                          aria-label=""
+                          labelText="Threshold Type"
+                          id={limitTypeId}
+                          disabled={val.reward}
+                          labelA="Absolute"
+                          labelB="Relative"
+                          onToggle={value => this.handleLimitTypeChange(value, idx)}
+                        />
+                      </span>
+                      <span className="child">
+                        <TextInput
+                          id={limitValueId}
+                          labelText="Limit Value"
+                          helperText="Set a value for the threshold selected"
+                          disabled={val.reward}
+                          invalid={val.reward && val.limitValue !== 0}
+                          invalidText="Limit values can only be set for non-reward metrics"
+                          onChange={e => this.handleLimitValChange(e.target.value, idx)}
+                        />
+                      </span>
                       <Checkbox
                         id={checkId}
                         labelText="Set as reward"
@@ -411,7 +432,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                         kind="ghost"
                         renderIcon={SubtractAlt32}
                         onClick={() => this.deleteCriterion(idx)}
-                        style={{ color: 'red' }}
+                        style={{ color: 'red', paddingLeft: 'initial' }}
                       >
                         {`Delete Criterion ${idx + 1}`}
                       </Button>
