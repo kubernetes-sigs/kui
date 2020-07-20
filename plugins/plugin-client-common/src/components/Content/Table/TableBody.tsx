@@ -17,9 +17,8 @@
 import { Row as KuiRow, Tab, REPL } from '@kui-shell/core'
 
 import * as React from 'react'
-import { DataTableCustomRenderProps, TableBody, TableRow, TableCell } from 'carbon-components-react'
+import { DataTableCustomRenderProps, TableBody, TableRow } from 'carbon-components-react'
 
-import Markdown from '../Markdown'
 import renderCell from './TableCell'
 import { NamedDataTableRow } from './kui2carbon'
 
@@ -35,37 +34,26 @@ export default function renderBody(
   renderOpts: DataTableCustomRenderProps<NamedDataTableRow>,
   tab: Tab,
   repl: REPL,
-  offset: number,
-  footerLines: string[]
+  offset: number
 ) {
   return (
     <TableBody>
-      {renderOpts.rows
-        .map((row, ridx) => {
-          const kuiRow = kuiBody[offset + ridx]
-          const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
+      {renderOpts.rows.map((row, ridx) => {
+        const kuiRow = kuiBody[offset + ridx]
+        const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
 
-          return (
-            <TableRow
-              key={row.id}
-              {...renderOpts.getRowProps({
-                row,
-                'data-name': kuiBody[offset + ridx].name
-              })}
-            >
-              {row.cells.map(renderCell(kuiRow, updated, tab, repl))}
-            </TableRow>
-          )
-        })
-        .concat(
-          (footerLines || []).map((footer, idx) => (
-            <TableRow key={`footer-${idx}`} className="kui--data-table-footer-messages kui--inverted-color-context">
-              <TableCell colSpan={999} className="kui--data-table-footer-message">
-                <Markdown source={footer} noExternalLinks repl={repl} />
-              </TableCell>
-            </TableRow>
-          ))
-        )}
+        return (
+          <TableRow
+            key={row.id}
+            {...renderOpts.getRowProps({
+              row,
+              'data-name': kuiBody[offset + ridx].name
+            })}
+          >
+            {row.cells.map(renderCell(kuiRow, updated, tab, repl))}
+          </TableRow>
+        )
+      })}
     </TableBody>
   )
 }
