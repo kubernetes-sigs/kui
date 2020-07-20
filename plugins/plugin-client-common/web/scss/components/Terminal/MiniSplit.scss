@@ -46,14 +46,14 @@
       flex: 1;
       padding-right: 1rem;
 
-      .repl-result:not(:empty) {
+      .repl-result:not(:empty),
+      [data-table-watching] {
         flex: 1;
         display: flex;
-
-        .kui--data-table-as-grid {
-          /* grids should wrap, rather than be rectilinear */
-          grid-template-columns: repeat(auto-fill, minmax(1.25rem, auto)) !important;
-        }
+      }
+      .kui--data-table-as-grid {
+        /* grids should wrap, rather than be rectilinear */
+        grid-template-columns: repeat(auto-fill, minmax(1.25rem, auto)) !important;
       }
 
       .kui--card {
