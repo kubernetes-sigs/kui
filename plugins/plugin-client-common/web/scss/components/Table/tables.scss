@@ -125,10 +125,10 @@ body .bx--data-table {
 
   .repl-result {
     width: 100%;
+  }
 
-    [data-table-watching]:not([data-table-as-grid='true']) {
-      width: 100%;
-    }
+  [data-table-watching]:not([data-table-as-grid='true']) {
+    width: 100%;
   }
 
   .bx--data-table-container {
@@ -157,6 +157,13 @@ body[kui-theme-style] .repl.sidecar-visible {
 }
 @include narrow-window {
   @include full-width-tables;
+}
+
+.kui--scrollback div[data-table-watching] {
+  @include full-width-tables;
+  .kui--data-table-container {
+    min-width: calc(1.5 * #{$min-body-width});
+  }
 }
 
 body[kui-theme-style] .kui--data-table-wrapper {

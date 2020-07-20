@@ -192,6 +192,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
      */
   }
 
+  private hasFooterLines() {
+    return this.state.footer && this.state.footer.length > 0
+  }
+
   private footerLines() {
     const nRows = this.props.isPartOfMiniSplit ? -1 : -2
     return this.state.footer ? this.state.footer.slice(nRows) : undefined
@@ -203,9 +207,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
     return (
       <React.Fragment>
-        {(!this.showFooterInTableBody() || this.state.asGrid) && this.state.footer && (
-          <Toolbar stream={this.footerLines()} repl={this.props.repl} />
-        )}
+        {this.hasFooterLines() && <Toolbar stream={this.footerLines()} repl={this.props.repl} />}
         {this.props.toolbars && (this.isPaginated() || gridableColumn >= 0) && (
           <Toolbar
             className="kui--data-table-toolbar-bottom"
@@ -276,15 +278,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(
-                  response.body,
-                  this.justUpdatedMap(),
-                  renderOpts,
-                  tab,
-                  repl,
-                  offset,
-                  !this.showFooterInTableBody() ? [] : this.footerLines()
-                )}
+                {renderBody(response.body, this.justUpdatedMap(), renderOpts, tab, repl, offset)}
               </Table>
             </TableContainer>
           )}
@@ -297,10 +291,6 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       !paginated ? rows : rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
       !paginated ? 0 : (page - 1) * this.state.pageSize
     )
-  }
-
-  private showFooterInTableBody() {
-    return !(this.props.isWidthConstrained || this.props.isPartOfMiniSplit)
   }
 
   private content(includeToolbars = false, lightweightTables = false) {
@@ -324,7 +314,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
               {config => {
                 const className = config.lightweightTables ? ' kui--data-table-wrapper-lightweight' : ''
 
-                if (this.props.response.style === TableStyle.Light && !this.showFooterInTableBody()) {
+                if (this.props.response.style === TableStyle.Light) {
                   return <div className={className}>{this.content(true, config.lightweightTables)}</div>
                 } else {
                   return (
