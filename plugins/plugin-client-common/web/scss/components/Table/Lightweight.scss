@@ -15,45 +15,9 @@
  */
 
 /**
- * "Framed" Toolbars, e.g. to frame out the toolbars, rather than the
- * table body
+ * For TableStyle.Light
  *
  */
 body[kui-theme-style] .kui--data-table-wrapper-lightweight {
   margin: 0.125rem 0 0;
-
-  .bx--data-table {
-    th {
-      box-shadow: 0 1px var(--color-base03);
-    }
-    th,
-    .bx--table-sort {
-      background-color: transparent;
-    }
-  }
-
-  &:not(.kui--data-table-as-grid) {
-    .kui--data-table-toolbar[data-frame] {
-      padding: 0 1rem;
-
-      &.kui--data-table-toolbar-top {
-        height: 1.875rem;
-      }
-      &.kui--data-table-toolbar-bottom {
-        box-shadow: 0 -1px var(--color-base03);
-      }
-    }
-  }
-  .kui--data-table-toolbar[data-frame] {
-    border-radius: 3px;
-
-    .kui--toolbar-button-with-icon:hover {
-      background-color: var(--color-table-border1);
-    }
-    /*    &.kui--data-table-toolbar-top {
-        box-shadow: 0 1px var(--color-base03);
-        border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    } */
-  }
 }

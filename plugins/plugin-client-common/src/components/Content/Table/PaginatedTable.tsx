@@ -22,7 +22,6 @@ import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-compon
 import sortRow from './sort'
 import Card from '../../spi/Card'
 import renderBody from './TableBody'
-import { KuiContext } from '../../../'
 import renderHeader from './TableHeader'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
 import Grid, { findGridableColumn } from './Grid'
@@ -161,7 +160,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
     if (!this.state.asGrid) {
       const nRows = this.props.response.body.length
-      if (nRows > 1 || isWatchable(this.props.response)) {
+      if (!lightweightTables && (nRows > 1 || isWatchable(this.props.response))) {
         breadcrumbs.push({
           label: nRows === 1 ? strings('nRows1') : strings('nRows', nRows),
           className: 'kui--secondary-breadcrumb kui--nrows-breadcrumb'
@@ -307,28 +306,22 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     if (!this.state) {
       return <div className="oops">Internal Error</div>
     } else {
-      return (
-        <div className={'kui--data-table-wrapper' + (this.state.asGrid ? ' kui--data-table-as-grid' : '')}>
-          <div className="kui--screenshotable">
-            <KuiContext.Consumer>
-              {config => {
-                const className = config.lightweightTables ? ' kui--data-table-wrapper-lightweight' : ''
+      const lightweightTables = this.props.response.style === TableStyle.Light && !this.props.isPartOfMiniSplit
+      const className =
+        'kui--data-table-wrapper' +
+        (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
+        (lightweightTables ? ' kui--data-table-wrapper-lightweight' : '')
 
-                if (this.props.response.style === TableStyle.Light) {
-                  return <div className={className}>{this.content(true, config.lightweightTables)}</div>
-                } else {
-                  return (
-                    <Card
-                      header={this.topToolbar(config.lightweightTables)}
-                      footer={this.bottomToolbar(config.lightweightTables)}
-                      className={className}
-                    >
-                      {this.content(false, config.lightweightTables)}
-                    </Card>
-                  )
-                }
-              }}
-            </KuiContext.Consumer>
+      return (
+        <div className={className}>
+          <div className="kui--screenshotable">
+            {lightweightTables ? (
+              this.content(true, true)
+            ) : (
+              <Card header={this.topToolbar()} footer={this.bottomToolbar()}>
+                {this.content()}
+              </Card>
+            )}
           </div>
         </div>
       )
