@@ -32,7 +32,15 @@ import {
 
 import { kindPart } from '../fqn'
 import { getKind } from '../explain'
-import { formatOf, isForAllNamespaces, getLabel, getNamespace, getResourceNamesForArgv, KubeOptions, KubeExecOptions } from '../options'
+import {
+  formatOf,
+  isForAllNamespaces,
+  getLabel,
+  getNamespace,
+  getResourceNamesForArgv,
+  KubeOptions,
+  KubeExecOptions
+} from '../options'
 
 import { getCommandFromArgs } from '../../../lib/util/util'
 import {
@@ -283,7 +291,9 @@ class KubectlWatcher implements Abortable, Watcher {
       }
     })
 
-    return formatTable(getCommandFromArgs(this.args), 'get', kind, this.args, allNamespacesTable)
+    const cmd = getCommandFromArgs(this.args)
+    const cmdForDrilldown = cmd === 'k' ? 'kubectl' : cmd
+    return formatTable(cmdForDrilldown, 'get', kind, this.args, allNamespacesTable)
   }
 
   /**
