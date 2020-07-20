@@ -152,7 +152,13 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     }
 
     if (breadcrumbs.length > 0) {
-      return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
+      return (
+        <Toolbar
+          className="kui--data-table-toolbar-top"
+          breadcrumbs={breadcrumbs.length > 0 && breadcrumbs}
+          repl={this.props.repl}
+        />
+      )
     }
   }
 
@@ -180,11 +186,12 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return (
       <React.Fragment>
         {(!this.showFooterInTableBody() || this.state.asGrid) && this.state.footer && (
-          <Toolbar stream={this.footerLines()} />
+          <Toolbar stream={this.footerLines()} repl={this.props.repl} />
         )}
         {this.props.toolbars && (this.isPaginated() || gridableColumn >= 0) && (
           <Toolbar
             className="kui--data-table-toolbar-bottom"
+            repl={this.props.repl}
             asGrid={this.state.asGrid}
             gridableColumn={gridableColumn}
             setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
