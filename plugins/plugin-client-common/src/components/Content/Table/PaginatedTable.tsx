@@ -109,9 +109,27 @@ export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: B
 export default class PaginatedTable<P extends Props, S extends State> extends React.PureComponent<P, S> {
   private readonly defaultPageSize: number
 
+  /**
+   * A lock that governs the --kui--table-max-height
+   * initialization. See https://github.com/IBM/kui/issues/5206
+   *
+   */
+  private static oneTimeInit = false
+
   public constructor(props: P) {
     super(props)
     this.defaultPageSize = props.pageSize || 10
+
+    /** Manage the --kui--table-max-height css variable */
+    if (!PaginatedTable.oneTimeInit) {
+      PaginatedTable.oneTimeInit = true
+      const adjustMaxHeight = () => {
+        const maxHeight = ~~(0.66 * document.body.getBoundingClientRect().height)
+        document.body.style.setProperty('--kui--table-max-height', `${maxHeight}px`)
+      }
+      adjustMaxHeight()
+      window.addEventListener('resize', adjustMaxHeight)
+    }
 
     try {
       // assemble the data model

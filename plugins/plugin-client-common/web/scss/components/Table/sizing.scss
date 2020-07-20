@@ -15,6 +15,6 @@
  */
 
 $min-body-height: 2rem;
-$max-body-height: 36rem;
+$max-body-height: var(--kui--table-max-height); /* See PaginatedTable.tsx */
 $min-body-width: 22rem;
 $secondary-column-max-width: 9rem;
