@@ -108,6 +108,9 @@ export class EventWatcher implements Abortable, Watcher {
   private ptyJob: Abortable[] = [] /** the pty job we spawned to capture --watch output */
   private eventLeftover: string
 
+  /** Timestamp when we started up */
+  private now = Date.now()
+
   // eslint-disable-next-line no-useless-constructor
   public constructor(
     private readonly args: Arguments,
@@ -152,14 +155,15 @@ export class EventWatcher implements Abortable, Watcher {
           })
 
         const agos = sortedRows.map(row => {
-          const ago = Date.now() - new Date(row[0].value).getTime()
+          const ts = new Date(row[0].value).getTime()
+          const ago = this.now - ts
 
           if (isNaN(ago)) {
             // kubectl displays "<unknown>"
             return strings('<unknown>')
           } else if (ago <= 0) {
             // < 0 is probably due to clock skew
-            return strings('now')
+            return strings('ago', prettyPrintDuration(0))
           } else {
             return strings('ago', prettyPrintDuration(ago >= 0 ? ago : 0, { compact: true }).toString())
           }
