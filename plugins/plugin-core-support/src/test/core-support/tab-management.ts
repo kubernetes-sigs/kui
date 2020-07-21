@@ -316,4 +316,23 @@ describe('core new tab from active tab that is emitting output via button click'
       .waitForExist(Selectors.TAB_N(2), 5000, true)
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
   })
+
+  it('should execute echo in the new tab, and close the previous tab', async () => {
+    try {
+      await this.app.client.click(tabButtonSelector)
+      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
+
+      const echoRes = await CLI.command('echo hi', this.app)
+      await ReplExpect.okWithPtyOutput('hi')(echoRes)
+
+      await this.app.client.click('.kui--tab:nth-child(1) .kui--tab-close')
+      await this.app.client
+        .waitForExist(Selectors.TAB_N(2), 5000, true)
+        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+
+      await ReplExpect.okWithPtyOutput('hi')(echoRes)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 })
