@@ -48,6 +48,10 @@ class WriteEventBus extends EventBusBase {
     return this.eventBus.emit(channel, args)
   }
 
+  public emitTabLayoutChange(tabUUID: string): void {
+    setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`))
+  }
+
   private emitCommandEvent(which: 'start' | 'complete', event: CommandStartEvent | CommandCompleteEvent) {
     this.eventBus.emit(`/command/${which}`, event)
 
@@ -97,6 +101,14 @@ class ReadEventBus extends WriteEventBus {
   public on(channel: '/tab/switch/request', listener: (tabId: number) => void): void
   public on(channel: string, listener: any) {
     return this.eventBus.on(channel, listener)
+  }
+
+  public onTabLayoutChange(tabUUID: string, listener: () => void): void {
+    this.eventBus.on(`/tab/layout/change/${tabUUID}`, listener)
+  }
+
+  public offTabLayoutChange(tabUUID: string, listener: () => void): void {
+    this.eventBus.off(`/tab/layout/change/${tabUUID}`, listener)
   }
 
   private onCommand(
