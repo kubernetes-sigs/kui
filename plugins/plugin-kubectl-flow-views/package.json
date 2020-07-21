@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-kubectl-flow-views",
-  "version": "8.10.0",
+  "version": "8.11.0",
   "description": "Kubectl flow visualizations for Kui",
   "license": "Apache-2.0",
   "keywords": [
@@ -27,8 +27,6 @@
   "main": "dist/index.js",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
-  "dependencies": {
-  },
   "publishConfig": {
     "access": "public"
   },
