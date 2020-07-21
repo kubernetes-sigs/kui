@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { v5 } from 'uuid'
 import * as React from 'react'
-import { v4 as uuid } from 'uuid'
 
 import {
   i18n,
@@ -26,6 +26,7 @@ import {
   ExecOptions,
   ExecType,
   isPopup,
+  History,
   CommandStartEvent,
   CommandCompleteEvent,
   isWatchable
@@ -60,6 +61,14 @@ const MAX_TERMINALS = 5
 
 /** Remember the welcomed count in localStorage, using this key */
 const NUM_WELCOMED = 'kui-shell.org/ScrollableTerminal/NumWelcomed'
+
+/**
+ * Seed UUID for v5 sequences. THe particular value here does not
+ * matter, but if you change this, you will invalidate scrollback
+ * history for all users. Only change this if that is what you
+ * intended.
+ */
+const UUID_NAMESPACE = '5a04bbd1-fb7e-44f7-a5ea-16c0331772e3'
 
 export interface TerminalOptions {
   noActiveInput?: boolean
@@ -143,6 +152,20 @@ function isInViewport(elm: HTMLElement) {
 }
 
 export default class ScrollableTerminal extends React.PureComponent<Props, State> {
+  /**
+   * For UUID generation, keep a running counter of the total number
+   * of scrollbacks created. This index will be fed to the uuid.v5()
+   * generator. Note: we can't use the scrollback's index in the
+   * current split array, because the user might reorder them, e.g. by
+   * creating two splits, then deleting the *first*, then creating
+   * (again) a second split. What was the second split is now in the
+   * first position, and the new split will have the same ID as the
+   * (now) first-ordinal split. Thus, instead we keep a running
+   * counter. This will preserve cross-session UUID sequence equality,
+   * while avoiding the reordering dilemma.
+   */
+  private scrollbackCounter = 0
+
   public constructor(props: Props) {
     super(props)
 
@@ -165,6 +188,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         if (announcement) {
           eventBus.emitCommandComplete({
             tab: this.props.tab,
+            historyIdx: -1,
             command: 'welcome',
             argvNoOptions: ['welcome'],
             parsedOptions: {},
@@ -199,21 +223,40 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return scrollback
   }
 
-  private allocateUUIDForScrollback(forSplit = false) {
-    if (forSplit || (this.props.config.splitTerminals && !isPopup())) {
-      return `${this.props.uuid}_${uuid()}`
+  private allocateUUIDForScrollback() {
+    if (this.props.config.splitTerminals && !isPopup()) {
+      // this.props.uuid is the uuid for the whole tab
+      // on top of that, we allocate a "v5" uuid for this scrollback
+      const sbidx = this.scrollbackCounter++
+      const tabPart = this.props.uuid
+      const scrollbackPart = v5(sbidx.toString(), UUID_NAMESPACE)
+      return `${tabPart}_${scrollbackPart}`
     } else {
       return this.props.uuid
     }
   }
 
-  private scrollback(capturedValue?: string, sbuuid = this.allocateUUIDForScrollback(false)): ScrollbackState {
+  /** Restore from localStorage for a given tab UUID */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private restoreBlocks(sbuuid: string): BlockModel[] {
+    // TODO:
+    /* return History(sbuuid)
+      .slice(-20)
+      .filter(_ => _.execUUID !== undefined && isScalarResponse(_.response) && _.isCurrentlyShown)
+      .map(_ => Finished(Processing(Active(), _.raw, _.execUUID), _.response as ScalarResponse, false, _.historyIdx)) */
+    return []
+  }
+
+  private scrollback(capturedValue?: string, sbuuid = this.allocateUUIDForScrollback()): ScrollbackState {
     const state = {
       uuid: sbuuid,
       cleaners: [],
       forceMiniSplit: false,
-      blocks: [Active(capturedValue)] // <-- TODO: restore from localStorage for a given tab UUID?
+      blocks: (capturedValue !== undefined ? [] : this.restoreBlocks(sbuuid)).concat([Active(capturedValue)])
     }
+
+    // prefetch command history; this helps with master history
+    History(sbuuid)
 
     eventBus.onceWithTabId('/tab/close/request', sbuuid, async () => {
       // async, to allow for e.g. command completion events to finish
@@ -244,6 +287,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.splice(uuid, ({ _activeBlock, blocks, cleaners }) => {
       cleaners.forEach(cleaner => cleaner())
       blocks.forEach(this.removeWatchableBlock)
+
+      /* History(uuid).hide(
+        blocks
+          .map(_ => {
+            if (isOk(_) || (isOops(_) && _.historyIdx !== -1)) {
+              return _.historyIdx
+            }
+          })
+          .filter(_ => _)
+      ) */
 
       // capture the value of the last input
       const capturedValue = _activeBlock ? _activeBlock.inputValue() : ''
@@ -318,6 +371,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   inProcess,
                   event.responseType === 'ScalarResponse' ? event.response : true,
                   event.cancelled,
+                  event.historyIdx,
                   prefersTerminalPresentation
                 )
               ]) // mark as finished
@@ -486,6 +540,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       const idx = this.findSplit(this.state, sbuuid)
       if (idx >= 0) {
+        if (idx === curState.splits.length - 1) {
+          // If we are removing the last split, we can safely
+          // decrement the running counter. The reordering problem
+          // described in the `scrollbackCounter` comment above does
+          // not occur when removing the last split
+          this.scrollbackCounter--
+        }
+
         curState.splits[idx].blocks.forEach(this.removeWatchableBlock)
 
         const splits = curState.splits.slice(0, idx).concat(curState.splits.slice(idx + 1))
@@ -628,7 +690,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               },
               scrollback.blocks.map((_, idx) => (
                 <Block
-                  key={(hasUUID(_) ? _.execUUID : idx) + `-isPartOfMiniSplit=${isMiniSplit}`}
+                  key={(hasUUID(_) ? _.execUUID : idx) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
                   idx={idx}
                   model={_}
                   uuid={scrollback.uuid}

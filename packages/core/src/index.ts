@@ -47,6 +47,7 @@ export {
 export { optionsToString as unparse } from './core/utility'
 export {
   ScalarResponse,
+  isScalarResponse,
   MetadataNamedResource,
   MixedResponse,
   isMixedResponse,
@@ -87,9 +88,9 @@ export { isWatchable, Watchable, Watcher, WatchPusher } from './core/jobs/watcha
 export { Abortable, FlowControllable } from './core/jobs/job'
 import { Tab } from './webapp/tab'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export async function History(tab: Tab) {
-  const model = (await import('./models/history')).default
-  return model
+import { getHistoryForTab } from './models/history'
+export function History(tab: string | Tab) {
+  return getHistoryForTab(typeof tab === 'string' ? tab : tab.uuid)
 }
 export { HistoryModel } from './models/history'
 

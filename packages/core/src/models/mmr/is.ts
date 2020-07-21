@@ -21,3 +21,5 @@ export function isMultiModalResponse(entity: Entity): entity is MultiModalRespon
   const mmr = entity as MultiModalResponse
   return isMetadataBearing(mmr) && mmr.modes && Array.isArray(mmr.modes)
 }
+
+export default isMultiModalResponse

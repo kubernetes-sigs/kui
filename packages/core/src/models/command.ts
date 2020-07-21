@@ -31,6 +31,7 @@ import * as Yargs from 'yargs-parser'
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type KResponse<Content extends any = any> = Entity<Content>
+export default KResponse
 
 /**
  * "top-level", meaning the user hit enter in the CLI,

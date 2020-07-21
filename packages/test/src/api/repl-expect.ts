@@ -23,6 +23,7 @@ import * as Selectors from './selectors'
 export interface AppAndCount {
   app: Application
   count: number
+  splitIndex?: number
 }
 
 interface CustomSpec {
@@ -53,11 +54,12 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
   // appAndCount.count is the prompt index of this command... so +1 gives us the next prompt, whose existence signals that this command has finished
   const app = appAndCount.app
   const N = appAndCount.count + 1
+  const { splitIndex = 1 } = appAndCount
 
   const nextPrompt = process.env.KUI_POPUP
     ? Selectors.STATUS_STRIPE_PROMPT
     : !process.env.BOTTOM_INPUT_MODE
-    ? Selectors.PROMPT_N(N)
+    ? Selectors.PROMPT_N_FOR_SPLIT(N, splitIndex)
     : Selectors.BOTTOM_PROMPT
 
   return app.client
@@ -75,7 +77,7 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
     }) //      ... verify that
     .then(async () => {
       if (opt && opt.expectError) return false
-      const html = await app.client.getHTML(Selectors.OK_N(N - 1))
+      const html = await app.client.getHTML(Selectors.OK_N(N - 1, splitIndex))
       const okReg = new RegExp(process.env.OK) || /ok/
       assert.ok(okReg.test(html)) // make sure it says "ok" !
     })
@@ -84,18 +86,18 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
       if (opt && opt.expectString) {
         // expect exactly one entry
         return app.client
-          .getText(`${Selectors.LIST_RESULTS_BY_NAME_N(N - 1)} .entity-name`)
+          .getText(`${Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex)} .entity-name`)
           .then(name => assert.strictEqual(name, opt.expectString))
       } else if (opt && opt.expectArray) {
         // expect several entries, of which opt is one // NOTE: what does it mean by opt is one???
         return app.client
-          .getText(Selectors.LIST_RESULTS_BY_NAME_N(N - 1))
+          .getText(Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex))
           .then(name => (!Array.isArray(name) ? [name] : name))
           .then(name => assert.ok(name !== opt.expectArray[0] && name.find(_ => _.indexOf(opt.expectArray[0]) >= 0)))
       } else if (opt && (opt.selector || opt.expect)) {
         // more custom, look for expect text under given selector
         const selector = `${
-          opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1) : Selectors.OUTPUT_N(N - 1)
+          opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1, splitIndex) : Selectors.OUTPUT_N(N - 1, splitIndex)
         }${opt.selfSelector || ''} ${opt.selector || ''}`
         if (opt.elements) {
           return app.client.waitForExist(selector, waitTimeout).then(() => app.client.elements(selector))
@@ -129,7 +131,7 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
       } else if (opt && opt.expectJustOK === true) {
         // ensure that there is nothing other than "ok"
         return app.client.waitUntil(async () => {
-          const txt = await app.client.getText(Selectors.OUTPUT_N(N - 1))
+          const txt = await app.client.getText(Selectors.OUTPUT_N(N - 1, splitIndex))
           const justOK = process.env.OK || 'ok'
           return txt.length === 0 || txt === justOK
         })
@@ -144,7 +146,7 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
 
 export const ok = async (res: AppAndCount) =>
   expectOK(res, { passthrough: true })
-    .then(N => res.app.client.elements(Selectors.LIST_RESULTS_BY_NAME_N(N)))
+    .then(N => res.app.client.elements(Selectors.LIST_RESULTS_BY_NAME_N(N, res.splitIndex)))
     .then(elts => assert.strictEqual(elts.value.length, 0))
     .then(() => res.app)
 

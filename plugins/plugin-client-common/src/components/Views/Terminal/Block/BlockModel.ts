@@ -44,14 +44,18 @@ export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithCWD &
   WithAnnouncement
 type EmptyBlock = WithState<BlockState.Empty> & WithCWD
-type ErrorBlock = WithState<BlockState.Error> & WithCommand & WithResponse<Error> & WithUUID
+type ErrorBlock = WithState<BlockState.Error> & WithCommand & WithResponse<Error> & WithUUID & WithHistoryIndex
 type OkBlock = WithState<BlockState.ValidResponse> &
   WithCommand &
   WithResponse<ScalarResponse> &
   WithUUID &
+  WithHistoryIndex &
   WithPreferences
 export type ProcessingBlock = WithState<BlockState.Processing> & WithCommand & WithUUID & WithStartTime
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
+
+/** Blocks with an association to the History model */
+type WithHistoryIndex = { historyIdx: number }
 
 /** FinishedBlocks are either ok, error, or cancelled */
 export type FinishedBlock = OkBlock | ErrorBlock | CancelledBlock | EmptyBlock
@@ -174,6 +178,7 @@ export function Finished(
   block: ProcessingBlock,
   response: ScalarResponse,
   cancelled: boolean,
+  historyIdx: number,
   prefersTerminalPresentation = false
 ): FinishedBlock {
   if (cancelled) {
@@ -181,6 +186,7 @@ export function Finished(
   } else if (isError(response)) {
     return {
       response,
+      historyIdx,
       cwd: block.cwd,
       command: block.command,
       state: BlockState.Error,
@@ -190,6 +196,7 @@ export function Finished(
   } else {
     return {
       response,
+      historyIdx,
       cwd: block.cwd,
       command: block.command,
       execUUID: block.execUUID,

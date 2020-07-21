@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2017-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,88 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import store from './store'
+import KResponse from './command'
+import { ResponseType } from '../repl/events'
 
-// localStorage key; note: the value here holds no meaning, it is a
-// historical artifact, at this point
-const key = 'openwhisk.history'
+/** Legacy localStorage key for long-time Kui users */
+const legacyKey = 'openwhisk.history'
+
+/** localStorage key */
+const Key = 'kui-shell.history'
+
+/** We will persist no more than this number of history entries per Tab */
+const MAX_HISTORY = 250
+
+const debug = Debug('core/history')
 
 type FilterFunction = (line: HistoryLine) => boolean
 
+/** One History entry */
 export interface HistoryLine {
-  entityType?: string
-  verb?: string
-  response?: any // eslint-disable-line @typescript-eslint/no-explicit-any
-  raw?: string
+  /** The raw command line */
+  raw: string
+
+  /** The output of that command line's execution */
+  response?: KResponse
+  responseType?: ResponseType
+  execUUID?: string
+
+  /** Index into model */
+  historyIdx: number
+
+  /** Is this line shown in the UI? */
+  isCurrentlyShown: boolean
 }
 
+/** A tuple of History entries, one per Tab (as specified by its given uuid) */
 export class HistoryModel {
   private _lines: HistoryLine[]
   private _cursor: number
+
+  /** Facilitate copying master history to new Tabs */
+  private static masterUUID: string
 
   // re: eslint-disable; we don't want to publicize this beyond the
   // core, but still want it accessible within this file; eslint
   // doesn't seem to allow for this, by default.
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-  constructor() {
-    this._lines = (typeof window !== 'undefined' && JSON.parse(store().getItem(key))) || []
+  constructor(private readonly uuid: string) {
+    let lines = typeof window !== 'undefined' && this.restore()
+    if (!lines && typeof window !== 'undefined') {
+      const raw = store().getItem(legacyKey)
+      lines = JSON.parse(raw)
+      store().setItem(this.key(), raw)
+      const backupKey = `${legacyKey}.bak`
+      store().setItem(backupKey, raw)
+      store().removeItem(legacyKey)
+      debug('legacy history copied over, backed up in this key', backupKey)
+    }
+
+    this._lines = lines || []
+
+    if (!HistoryModel.masterUUID) {
+      debug('setting master', uuid)
+      HistoryModel.masterUUID = uuid
+    } else if (!lines || lines.length === 0) {
+      this._lines = this.restore(HistoryModel.masterUUID) || []
+      debug('copying history from master', HistoryModel.masterUUID, this._lines)
+      this.save()
+    }
+
+    if (this._lines.length > MAX_HISTORY) {
+      debug('cropping history', lines.length)
+      this._lines = this._lines.slice(-MAX_HISTORY)
+      this.save()
+    }
+
     this._cursor = this._lines.length // pointer to historic line
+  }
+
+  /** The persistence key for this tab */
+  private key(uuid = this.uuid) {
+    return `${Key}.${uuid}`
   }
 
   /** return the given line of history */
@@ -47,7 +103,7 @@ export class HistoryModel {
     return this._lines[idx]
   }
 
-  public slice(start: number, end: number): HistoryLine[] {
+  public slice(start: number, end?: number): HistoryLine[] {
     return this._lines.slice(start, end)
   }
 
@@ -71,22 +127,59 @@ export class HistoryModel {
     return this._cursor
   }
 
+  /** Low-level save to persistent storage */
+  private save(lines = this._lines, uuid = this.uuid) {
+    store().setItem(this.key(uuid), JSON.stringify(lines))
+  }
+
+  /** Low-level restore from persistent storage */
+  private restore(uuid = this.uuid) {
+    try {
+      const model = JSON.parse(store().getItem(this.key(uuid)))
+      debug('restoring', uuid, model)
+      return model
+    } catch (err) {
+      debug('corrupt history', uuid, err)
+      this.save([], uuid) // invalidate the corrupt state
+      return []
+    }
+  }
+
   /**
    * Clear out all history
    *
    */
   public wipe() {
     this._lines = []
-    store().setItem(key, JSON.stringify(this._lines))
+    this.save()
     return true
   }
 
+  /** Internal hide */
+  private hideAt(historyIdx: number) {
+    const line = this._lines[historyIdx]
+    if (line) {
+      line.isCurrentlyShown = false
+    }
+  }
+
+  /** Hide the given entry from future display */
+  public hide(historyIdx: number | number[]) {
+    debug('hiding', historyIdx)
+    if (typeof historyIdx === 'number') {
+      this.hideAt(historyIdx)
+    } else {
+      historyIdx.forEach(_ => this.hideAt(_))
+    }
+    this.save()
+  }
+
   /** add a line of repl history */
-  public add(line: HistoryLine): number {
+  public add(line: Pick<HistoryLine, 'raw' | 'isCurrentlyShown'>): number {
     if (this._lines.length === 0 || JSON.stringify(this._lines[this._lines.length - 1]) !== JSON.stringify(line)) {
       // don't add sequential duplicates
-      this._lines.push(line)
-      store().setItem(key, JSON.stringify(this._lines))
+      this._lines.push(Object.assign(line, { historyIdx: this._lines.length - 1 }))
+      this.save()
       // console.log('history::add', cursor)
     }
     this._cursor = this._lines.length
@@ -94,10 +187,10 @@ export class HistoryModel {
   }
 
   /** update a line of repl history -- for async operations */
-  public update(cursor: number, updateFn: (line: HistoryLine) => void) {
+  public async update(cursor: number, updateFn: (line: HistoryLine) => void | Promise<void>) {
     // console.log('history::update', cursor)
-    updateFn(this._lines[cursor])
-    store().setItem(key, JSON.stringify(this._lines))
+    await updateFn(this._lines[cursor])
+    this.save()
   }
 
   public lineByIncr(incr: number): HistoryLine {
@@ -151,6 +244,8 @@ export class HistoryModel {
         return idx
       }
     }
+
+    return -1
   }
 
   /**
@@ -165,7 +260,16 @@ export class HistoryModel {
   }
 }
 
-// For now, we have a single global history. We could make this
-// per-tab state; see https://github.com/IBM/kui/issues/1299
-export const History = new HistoryModel()
-export default History
+/** Here, we cache the deserialized form, indexed by Tab.uuid */
+const cache: Record<string, HistoryModel> = {}
+
+/** @return the HistoryModel for the given Tab, as identified by `uuid` */
+export function getHistoryForTab(uuid: string): HistoryModel {
+  if (!cache[uuid]) {
+    cache[uuid] = new HistoryModel(uuid)
+  }
+
+  return cache[uuid]
+}
+
+export default HistoryModel
