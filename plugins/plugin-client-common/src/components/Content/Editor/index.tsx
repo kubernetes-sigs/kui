@@ -28,6 +28,7 @@ import {
   ToolbarProps,
   MultiModalResponse,
   eventChannelUnsafe,
+  eventBus,
   i18n
 } from '@kui-shell/core'
 
@@ -45,6 +46,7 @@ const strings = i18n('plugin-client-common', 'editor')
 
 type Props = MonacoOptions &
   ToolbarProps & {
+    tabUUID: string
     repl: REPL
     content: StringContent
     response: File | MultiModalResponse
@@ -291,6 +293,12 @@ export default class Editor extends React.PureComponent<Props, State> {
       eventChannelUnsafe.on('/zoom', onZoom)
       cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
 
+      const onTabLayoutChange = () => {
+        editor.layout()
+      }
+      eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+      cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+
       editor['clearDecorations'] = () => {
         // debug('clearing decorations', editor['__cloudshell_decorations'])
         const none = [{ range: new Range(1, 1, 1, 1), options: {} }]
@@ -309,7 +317,6 @@ export default class Editor extends React.PureComponent<Props, State> {
       cleaners.push(() => subscription.dispose())
 
       cleaners.push(() => {
-        console.error('!!!!!')
         editor.dispose()
         const model = editor.getModel()
         if (model) {
