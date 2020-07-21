@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.11.0](https://github.com/IBM/kui/compare/v4.5.0...v8.11.0) (2020-07-21)
+
+### Bug Fixes
+
+- about should show breadcrumbs ([99dc401](https://github.com/IBM/kui/commit/99dc401)), closes [#4730](https://github.com/IBM/kui/issues/4730)
+- allow user to disable table title by feature flags, and disable table pagination ([5450512](https://github.com/IBM/kui/commit/5450512)), closes [#4640](https://github.com/IBM/kui/issues/4640) [#4655](https://github.com/IBM/kui/issues/4655)
+- eliminate complex nesting of NavResponse model ([e849ae7](https://github.com/IBM/kui/commit/e849ae7)), closes [#4205](https://github.com/IBM/kui/issues/4205)
+- improve hover effect for status stripe buttons ([50ced8f](https://github.com/IBM/kui/commit/50ced8f)), closes [#4896](https://github.com/IBM/kui/issues/4896)
+- make inBrowserOk the default ([2a3c811](https://github.com/IBM/kui/commit/2a3c811)), closes [#4275](https://github.com/IBM/kui/issues/4275)
+- sidecar back/forward should be ordered by visitation rather than insertion ([fba613a](https://github.com/IBM/kui/commit/fba613a)), closes [#4746](https://github.com/IBM/kui/issues/4746)
+- sidecar Toolbar component renders empty if there is no Toolbar content ([14c27ba](https://github.com/IBM/kui/commit/14c27ba)), closes [#4229](https://github.com/IBM/kui/issues/4229)
+- still see name-related breadcrumbs and short-name header with feature flag sidecarName 'heroText' ([1a8be9f](https://github.com/IBM/kui/commit/1a8be9f)), closes [#5013](https://github.com/IBM/kui/issues/5013)
+- TopNavSidecar doesn't return to the previous selected Tab when back button is hit ([32acee5](https://github.com/IBM/kui/commit/32acee5)), closes [#4745](https://github.com/IBM/kui/issues/4745)
+
+### Features
+
+- add capability to show welcome widget to new users in Terminal ([0c33e6e](https://github.com/IBM/kui/commit/0c33e6e)), closes [#4990](https://github.com/IBM/kui/issues/4990) [#5007](https://github.com/IBM/kui/issues/5007)
+- **plugins/plugin-client-common:** support client option for hero names in sidecar ([d4f6984](https://github.com/IBM/kui/commit/d4f6984)), closes [#4909](https://github.com/IBM/kui/issues/4909)
+- kubectl edit via kui's editor ([414e813](https://github.com/IBM/kui/commit/414e813)), closes [#762](https://github.com/IBM/kui/issues/762)
+- RadioTable and port of the themes table to use it ([79a3e8e](https://github.com/IBM/kui/commit/79a3e8e)), closes [#4507](https://github.com/IBM/kui/issues/4507)
+- watcher panel for open-ended watch jobs ([6dfe7df](https://github.com/IBM/kui/commit/6dfe7df)), closes [#4503](https://github.com/IBM/kui/issues/4503)
+
+### BREAKING CHANGES
+
+- removes support for inBrowserOk
+
 # [8.10.0](https://github.com/IBM/kui/compare/v4.5.0...v8.10.0) (2020-06-17)
 
 ### Bug Fixes
