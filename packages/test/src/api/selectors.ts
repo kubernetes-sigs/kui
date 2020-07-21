@@ -91,15 +91,35 @@ export const SIDECAR_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-close a` 
 export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = `${SIDECAR_BASE} .sidecar-bottom-stripe-close a` // resume button in minimized mode
 export const SIDECAR_FULLY_CLOSE_BUTTON = `${SIDECAR} .sidecar-bottom-stripe-quit a` // fully close button in the bottom stripe
 export const SIDECAR_FULLY_CLOSED = `${CURRENT_TAB} .kui--sidecar:not([data-visible])`
-export const PROCESSING_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
-export const CURRENT_PROMPT_BLOCK = `${PROMPT_BLOCK}.repl-active`
+const current = (sel: string) => `${sel}.repl-active`
+export const PROCESSING_PROMPT_BLOCK = current(PROMPT_BLOCK)
+export const CURRENT_PROMPT_BLOCK = current(PROMPT_BLOCK)
+export const _PROMPT_BLOCK_N = (N: number) => `${_PROMPT_BLOCK}[data-input-count="${N}"]`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`
 export const PROCESSING_N = (N: number) => `${PROMPT_BLOCK_N(N)}.processing`
 const _PROMPT = '.repl-input-element'
 export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} ${_PROMPT}`
-export const PROMPT_N = (N: number) => `${PROMPT_BLOCK_N(N)} ${_PROMPT}`
-export const OUTPUT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result`
-export const OUTPUT_N_STREAMING = (N: number) => `${PROMPT_BLOCK_N(N)} [data-stream]`
+
+/**
+ * Terminal splits
+ *
+ */
+export const NEW_SPLIT_BUTTON = '#kui--split-terminal-button'
+export const SPLITS = `${CURRENT_TAB} .kui--scrollback`
+export const SPLIT_N = (N: number) => `${SPLITS}:nth-child(${N})`
+export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-output`
+export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (splitIndex: number) => `${SPLIT_N(splitIndex)} ${current(_PROMPT_BLOCK)}`
+export const CURRENT_PROMPT_FOR_SPLIT = (splitIndex: number) =>
+  `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex)} ${_PROMPT}`
+export const PROMPT_BLOCK_N_FOR_SPLIT = (N: number, splitIndex: number) =>
+  `${SPLIT_N(splitIndex)} ${_PROMPT_BLOCK_N(N)}`
+export const PROMPT_N_FOR_SPLIT = (N: number, splitIndex: number) =>
+  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_PROMPT}`
+
+export const PROMPT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_PROMPT}`
+export const OUTPUT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result`
+export const OUTPUT_N_STREAMING = (N: number, splitIndex = 1) =>
+  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} [data-stream]`
 export const OUTPUT_N_PTY = (N: number) => OUTPUT_N_STREAMING(N)
 export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
@@ -111,9 +131,12 @@ export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
 export const OUTPUT_LAST_STREAMING = `${PROMPT_BLOCK_LAST} [data-stream]`
 export const OUTPUT_LAST_PTY = OUTPUT_LAST_STREAMING
-export const LIST_RESULTS_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result tbody tr`
-export const LIST_RESULTS_BY_NAME_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-result [data-name]`
-export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string) => `${LIST_RESULTS_N(N)}[data-name="${name}"]`
+export const LIST_RESULTS_N = (N: number, splitIndex = 1) =>
+  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result tbody tr`
+export const LIST_RESULTS_BY_NAME_N = (N: number, splitIndex = 1) =>
+  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result [data-name]`
+export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string, splitIndex = 1) =>
+  `${LIST_RESULTS_N(N, splitIndex)}[data-name="${name}"]`
 export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th button[data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
@@ -138,9 +161,9 @@ export const TABLE_TITLE_SECONDARY = (N: number) => `${OUTPUT_N(N)} .kui--second
 export const TABLE_TITLE_NROWS = (N: number) => `${OUTPUT_N(N)} .kui--nrows-breadcrumb`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
 export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
-export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string) =>
-  `${LIST_RESULT_BY_N_FOR_NAME(N, name)} .entity-name`
-export const OK_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-output .ok`
+export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string, splitIndex = 1) =>
+  `${LIST_RESULT_BY_N_FOR_NAME(N, name, splitIndex)} .entity-name`
+export const OK_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-output .ok`
 export const xtermRows = (N: number) => `${PROMPT_BLOCK_N(N)} .xterm-container .xterm-rows`
 
 export const WATCHER_N = (N: number) => `.kui--card.kui--card-${N}`
@@ -163,17 +186,6 @@ export const WATCHER_N_SHOW_AS_TABLE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N,
 
 // terminal card
 export const TERMINAl_CARD = `.kui--card`
-
-/**
- * Terminal splits
- *
- */
-export const NEW_SPLIT_BUTTON = '#kui--split-terminal-button'
-export const SPLITS = `${CURRENT_TAB} .kui--scrollback`
-export const SPLIT_N = (N: number) => `${SPLITS}:nth-child(${N})`
-export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-output`
-export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (N: number) => `${SPLIT_N(N)} ${_PROMPT_BLOCK}`
-export const CURRENT_PROMPT_FOR_SPLIT = (N: number) => `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(N)} ${_PROMPT}`
 
 export const CURRENT_GRID_FOR_SPLIT = (N: number) => `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(N)} ${_PROMPT} ${_TABLE_AS_GRID}`
 export const CURRENT_GRID_BY_NAME_FOR_SPLIT = (N: number, name: string) =>

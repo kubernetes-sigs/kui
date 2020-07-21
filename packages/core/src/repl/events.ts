@@ -27,9 +27,9 @@ export interface CommandStartEvent {
   echo: boolean
 }
 
-type ResponseTypeStr = 'MultiModalResponse' | 'NavResponse' | 'ScalarResponse' | 'Incomplete' | 'Error'
+export type ResponseType = 'MultiModalResponse' | 'NavResponse' | 'ScalarResponse' | 'Incomplete' | 'Error'
 
-export interface CommandCompleteEvent<R extends KResponse = KResponse, T extends ResponseTypeStr = ResponseTypeStr> {
+export interface CommandCompleteEvent<R extends KResponse = KResponse, T extends ResponseType = ResponseType> {
   tab: Tab
 
   command: string
@@ -45,10 +45,12 @@ export interface CommandCompleteEvent<R extends KResponse = KResponse, T extends
 
   response: R
   responseType: T
+
+  historyIdx: number
 }
 
 export type CommandStartHandler = (event: CommandStartEvent) => void
 
-export type CommandCompleteHandler<R extends KResponse = KResponse, T extends ResponseTypeStr = ResponseTypeStr> = (
+export type CommandCompleteHandler<R extends KResponse = KResponse, T extends ResponseType = ResponseType> = (
   event: CommandCompleteEvent<R, T>
 ) => void

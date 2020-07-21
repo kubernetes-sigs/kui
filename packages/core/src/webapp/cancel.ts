@@ -37,6 +37,7 @@ export default function doCancel(tab: Tab, block: Block) {
     execType: ExecType.TopLevel,
     cancelled: true,
     execUUID,
+    historyIdx: -1,
     command: undefined,
     argvNoOptions: undefined,
     execOptions: undefined,

@@ -28,6 +28,8 @@ debug('loading')
 import { v4 as uuid } from 'uuid'
 import encodeComponent from './encode'
 import { split, patterns } from './split'
+import { RawContent, RawResponse, isRawResponse, MixedResponse, MixedResponsePart } from '../models/entity'
+import { getHistoryForTab } from '../models/history'
 import { Executor, ReplEval, DirectReplEval } from './types'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { isNavResponse } from '../models/NavResponse'
@@ -45,7 +47,7 @@ import {
 } from '../models/command'
 
 import REPL from '../models/repl'
-import { RawContent, RawResponse, isRawResponse, MixedResponse, MixedResponsePart } from '../models/entity'
+
 import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
 import eventChannelUnsafe, { eventBus } from '../core/events'
 import { CodedError } from '../models/errors'
@@ -150,17 +152,38 @@ class InProcessExecutor implements Executor {
     }
   }
 
-  /** add a history entry */
-  private async updateHistory(command: string, execOptions: ExecOptions) {
+  /** Add a history entry */
+  private pushHistory(command: string, execOptions: ExecOptions, tab: Tab): number | void {
     if (!execOptions || !execOptions.noHistory) {
       if (!execOptions || !execOptions.quiet) {
-        const historyModel = (await import('../models/history')).default
-        execOptions.history = historyModel.add({
-          raw: command
-        })
+        if (!execOptions || execOptions.type === ExecType.TopLevel) {
+          const historyModel = getHistoryForTab(tab.uuid)
+          return (execOptions.history = historyModel.add({
+            raw: command,
+            isCurrentlyShown: true
+          }))
+        }
       }
     }
   }
+
+  /** Update a history entry with the response */
+  /* private updateHistory(cursor: number, endEvent: CommandCompleteEvent) {
+    getHistoryForTab(endEvent.tab.uuid).update(cursor, async line => {
+      const resp = await endEvent.response
+      if (!isHTML(resp) && !isReactResponse(resp)) {
+        try {
+          JSON.stringify(resp)
+          line.response = resp
+          line.execUUID = endEvent.execUUID
+          line.historyIdx = endEvent.historyIdx
+          line.responseType = endEvent.responseType
+        } catch (err) {
+          debug('non-serializable response', resp)
+        }
+      }
+    })
+  } */
 
   /** Notify the world that a command execution has begun */
   private emitStartEvent(startEvent: CommandStartEvent) {
@@ -170,7 +193,8 @@ class InProcessExecutor implements Executor {
   /** Notify the world that a command execution has finished */
   private emitCompletionEvent<T extends KResponse, O extends ParsedOptions>(
     presponse: T | Promise<T>,
-    endEvent: Omit<CommandCompleteEvent, 'response' | 'responseType'>
+    endEvent: Omit<CommandCompleteEvent, 'response' | 'responseType' | 'historyIdx'>,
+    historyIdx?: number
   ) {
     return Promise.resolve(presponse).then(response => {
       const responseType = isMultiModalResponse(response)
@@ -179,7 +203,12 @@ class InProcessExecutor implements Executor {
         ? ('NavResponse' as const)
         : ('ScalarResponse' as const)
 
-      eventBus.emitCommandComplete(Object.assign(endEvent, { response, responseType }))
+      const fullEvent = Object.assign(endEvent, { response, responseType, historyIdx })
+      eventBus.emitCommandComplete(fullEvent)
+
+      /* if (historyIdx) {
+        this.updateHistory(historyIdx, fullEvent)
+      } */
     })
   }
 
@@ -333,24 +362,28 @@ class InProcessExecutor implements Executor {
         return
       }
 
-      await this.updateHistory(command, execOptions)
+      const historyIdx = this.pushHistory(command, execOptions, tab)
 
       try {
         enforceUsage(argv, evaluator, execOptions)
       } catch (err) {
         debug('usage enforcement failure', err, execType === ExecType.Nested)
-        this.emitCompletionEvent(err, {
-          tab,
-          execType,
-          command: commandUntrimmed,
-          argvNoOptions,
-          parsedOptions,
-          execOptions,
-          cancelled: false,
-          echo: execOptions.echo,
-          execUUID,
-          evaluatorOptions
-        })
+        this.emitCompletionEvent(
+          err,
+          {
+            tab,
+            execType,
+            command: commandUntrimmed,
+            argvNoOptions,
+            parsedOptions,
+            execOptions,
+            cancelled: false,
+            echo: execOptions.echo,
+            execUUID,
+            evaluatorOptions
+          },
+          historyIdx || -1
+        )
 
         if (execOptions.type === ExecType.Nested) {
           throw err
@@ -418,18 +451,22 @@ class InProcessExecutor implements Executor {
         debug('warning: command handler returned nothing', commandUntrimmed)
       }
 
-      this.emitCompletionEvent(response || true, {
-        tab,
-        execType,
-        command: commandUntrimmed,
-        argvNoOptions,
-        parsedOptions,
-        execUUID,
-        cancelled: false,
-        echo: execOptions.echo,
-        evaluatorOptions,
-        execOptions
-      })
+      this.emitCompletionEvent(
+        response || true,
+        {
+          tab,
+          execType,
+          command: commandUntrimmed,
+          argvNoOptions,
+          parsedOptions,
+          execUUID,
+          cancelled: false,
+          echo: execOptions.echo,
+          evaluatorOptions,
+          execOptions
+        },
+        historyIdx || -1
+      )
 
       return response
     } else {
