@@ -79,10 +79,8 @@ const renderTable = TableProps => (
 )
 
 export class DecisionBase extends React.Component<{}, DecisionState> {
+  private _isMounted = false
   private winner = ''
-  // For displaying Pie Chart
-  private winProbData = []
-  private winProbLabels = {}
   // For displaying Traffic Suggestion Section
   private algoList = []
   private trafficRecs = []
@@ -124,9 +122,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       chartData: [], // Stores data for the criteria graphs
       chartOptions: {} // Stores options for criteria graphs
     }
-    eventChannelUnsafe.on('/get/decision', formstate => {
-      this.setState({ experimentCreated: true, experimentRequest: formstate })
-    })
+    // eventChannelUnsafe.on('/get/decision', formstate => {
+    //   this.setState({ experimentCreated: true, experimentRequest: formstate })
+    // })
     // Bound NON-lambda functions to component's scope
     this.handleReset = this.handleReset.bind(this)
     this.handleApply = this.handleApply.bind(this)
@@ -135,6 +133,20 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.toggleAdvancedStatistics = this.toggleAdvancedStatistics.bind(this)
     this.getAdvancedStatistics = this.getAdvancedStatistics.bind(this)
     this.endExperiment = this.endExperiment.bind(this)
+  }
+
+  public componentDidMount() {
+    console.log('Mounted Decision')
+    this._isMounted = true
+    eventChannelUnsafe.on('/get/decision', formstate => {
+      console.log(formstate)
+      this.setState({ experimentCreated: true, experimentRequest: formstate })
+    })
+  }
+
+  public componentWillUnmount() {
+    console.log('Unmounted Decision')
+    this._isMounted = false
   }
 
   /*
@@ -147,46 +159,44 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       const prob = apiResult.winner_assessment.winning_probability
       this.winner = `%{assessment.current_winner} is the winner with ${prob} % of winning`
     } else {
-      this.winner = 'No winners determined.'
+      this.winner = 'Do not enough data to determine winner'
     }
   }
 
   // Fill pie chart with version probabilities
   private getWinProbAndBasicStats(apiResult) {
     const dataLabels = []
-    this.winProbData = []
     this.basicStatsHeader = [
       { header: 'Deployment', key: 'version' },
       { header: 'Type', key: 'type' },
       { header: 'Request Count', key: 'count' },
+      { header: 'Win Probability', key: 'winprob' },
       { header: 'Roll Back Recommended', key: 'rollback' }
     ]
     const baseRlts = apiResult.baseline_assessment
+    this.basicStatsRows = []
     this.basicStatsRows.push({
       id: baseRlts.id,
       version: baseRlts.id,
       type: 'Baseline',
       count: baseRlts.request_count,
+      winprob: baseRlts.win_probability,
       rollback: 'Does not apply'
     })
-    this.winProbData.push(baseRlts.win_probability)
     dataLabels.push(baseRlts.id)
 
     const candRlts = apiResult.candidate_assessments
     for (let i = 0; i < candRlts.length; i++) {
-      this.winProbData.push(candRlts[i].win_probability)
       this.basicStatsRows.push({
         id: candRlts[i].id,
         version: candRlts[i].id,
         type: 'Candidate',
         count: candRlts[i].request_count,
+        winprob: candRlts[i].win_probability,
         rollback: candRlts[i].rollback.toString()
       })
       dataLabels.push(candRlts[i].id)
     }
-    this.winProbLabels = { labels: dataLabels }
-    console.log(this.basicStatsHeader)
-    console.log(this.basicStatsRows)
   }
 
   // Get the list of algorithms available
@@ -607,9 +617,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 </div>
               )}
             </FormGroup>
-            <FormGroup legendText="Win Probabilities" className="formGroupProps">
-              <Chart type="pie" options={this.winProbLabels} series={this.winProbData} width="350" />
-            </FormGroup>
             <FormGroup legendText="">
               <h4 className="titletexts"> High Level Overview </h4>
               <DataTable
@@ -631,12 +638,12 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
               <h4 className="titletexts"> Traffic Assessments </h4>
               <Dropdown
                 id="analyticsAlgo"
-                label="Analytics Algorithm"
+                label="Traffic Routing Goal"
                 items={this.algoList}
                 itemToString={item => (item ? item.text : '')}
                 initialSelectedItem={this.algoList[0]}
-                titleText="Analytics Algorithm"
-                helperText="Choose the algorithm to view its traffic routing suggestions."
+                titleText="Traffic Routing Goal"
+                helperText="Choose your traffic routing goal"
                 onChange={value => this.handleAlgoChange(value.selectedItem)}
               />
               <div>

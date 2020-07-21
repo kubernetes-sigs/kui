@@ -378,6 +378,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                   const criterionId = `criterion-${idx}`
                   const limitTypeId = `limitType-${idx}`
                   const limitValueId = `limitValue-${idx}`
+                  const deletecriterion = `deletecriterion-${idx}`
                   const checkId = `checkbox-${idx}`
                   return (
                     <div
@@ -396,10 +397,15 @@ class ExprBase extends React.Component<{}, Formstate> {
                       />
                       <Tag type="cyan">{val.type === '' ? '...' : val.type}</Tag>
                       <Tag type="magenta">
-                        {val.reward ? 'Reward' : val.limitType === '' ? '...' : `${val.limitType} threshold`}
+                        {val.reward
+                          ? 'Reward'
+                          : val.limitType === ''
+                          ? 'Absolute Threshold'
+                          : `${val.limitType} threshold`}
                       </Tag>
                       <br></br>
                       <span className="child">
+                        {val.limitType ? null : this.handleLimitTypeChange(false, idx)}
                         <Toggle
                           aria-label=""
                           labelText="Threshold Type"
@@ -428,6 +434,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                         onChange={() => this.handleRewardChange(idx)}
                       />
                       <Button
+                        id={deletecriterion}
                         size="small"
                         kind="ghost"
                         renderIcon={SubtractAlt32}
