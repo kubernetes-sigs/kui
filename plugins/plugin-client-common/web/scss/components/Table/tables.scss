@@ -208,7 +208,7 @@ body[kui-theme-style] .kui--data-table-wrapper {
 .kui--scrollback:not([data-is-minisplit]) {
   .kui--data-table-container {
     min-width: $min-body-width;
-    max-height: $max-body-height;
+    /* max-height: $max-body-height; see https://github.com/IBM/kui/issues/5221 */
     min-height: $min-body-height;
     overflow: auto;
   }
