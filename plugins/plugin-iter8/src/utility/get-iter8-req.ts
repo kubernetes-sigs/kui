@@ -35,7 +35,7 @@ function getCandModel(namespace: string, candList: Array<string>): Array<Object>
     candObjs.push({
       id: `${candList[i]}`,
       version_labels: {
-        destination_service_namespace: namespace,
+        destination_workload_namespace: namespace,
         destination_workload: candList[i]
       }
     })
