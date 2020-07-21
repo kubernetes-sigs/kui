@@ -469,6 +469,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     } else if (pinBlock && this.hasReachedMaxPinnned()) {
       reject(new Error(strings('No more pins allowed')))
     } else {
+      eventBus.emitTabLayoutChange(this.props.tab.uuid)
+
       this.setState(({ splits, focusedIdx }) => {
         const newFocus = focusedIdx + 1
         const newSplits = splits
@@ -544,6 +546,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private removeSplit(sbuuid: string) {
     this.setState(curState => {
+      eventBus.emitTabLayoutChange(this.props.tab.uuid)
+
       const idx = this.findSplit(this.state, sbuuid)
       if (idx >= 0) {
         curState.splits[idx].blocks.forEach(this.removeWatchableBlock)
