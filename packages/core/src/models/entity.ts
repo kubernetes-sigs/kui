@@ -18,8 +18,9 @@ import { isHTML } from '../util/types'
 import { Table, Row, isTable } from '../webapp/models/table'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
-import { MultiModalResponse } from './mmr/types'
-import { NavResponse } from './NavResponse'
+import isMultiModalResponse from './mmr/is'
+import MultiModalResponse from './mmr/types'
+import { NavResponse, isNavResponse } from './NavResponse'
 import RadioTable from './RadioTable'
 import Presentation from '../webapp/views/presentation'
 import { ReactNode, isValidElement } from 'react'
@@ -182,6 +183,10 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
  *
  */
 export type ScalarResponse<RowType extends Row = Row> = SimpleEntity | Table<RowType> | MixedResponse
+
+export function isScalarResponse(response: Entity): response is ScalarResponse {
+  return !isMultiModalResponse(response) && !isNavResponse(response)
+}
 
 export type ViewableResponse = MultiModalResponse | NavResponse | RadioTable
 

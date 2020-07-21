@@ -24,18 +24,19 @@ export const timeout = Math.max(5000, parseInt(process.env.TIMEOUT) || 60000)
 export const waitTimeout = timeout - 5000
 
 /** grab focus for the repl */
-const grabFocus = async (app: Application) => {
-  const currentPrompt = process.env.KUI_POPUP
+const grabFocus = async (
+  app: Application,
+  currentPromptBlock = process.env.KUI_POPUP
+    ? Selectors.STATUS_STRIPE_BLOCK
+    : !process.env.BOTTOM_INPUT_MODE
+    ? Selectors.CURRENT_PROMPT_BLOCK
+    : Selectors.BOTTOM_PROMPT_BLOCK,
+  currentPrompt = process.env.KUI_POPUP
     ? Selectors.STATUS_STRIPE_PROMPT
     : !process.env.BOTTOM_INPUT_MODE
     ? Selectors.CURRENT_PROMPT
     : Selectors.BOTTOM_PROMPT
-  const currentPromptBlock = process.env.KUI_POPUP
-    ? Selectors.STATUS_STRIPE_BLOCK
-    : !process.env.BOTTOM_INPUT_MODE
-    ? Selectors.CURRENT_PROMPT_BLOCK
-    : Selectors.BOTTOM_PROMPT_BLOCK
-
+) => {
   return app.client
     .click(currentPrompt)
     .then(() => app.client.waitForEnabled(currentPromptBlock))
@@ -66,7 +67,7 @@ export const command = async (
     .waitForExist(block, waitTimeout)
     .then(async () => {
       if (process.env.BOTTOM_INPUT_MODE) await app.client.waitForExist(Selectors.BOTTOM_PROMPT_BLOCK, timeout - 5000)
-      if (!noFocus) return grabFocus(app)
+      if (!noFocus) return grabFocus(app, block, currentPrompt)
     })
     .then(() =>
       app.client.getAttribute(process.env.BOTTOM_INPUT_MODE ? Selectors.BOTTOM_PROMPT_BLOCK : block, 'data-input-count')
@@ -87,6 +88,20 @@ export const command = async (
       if (noNewline !== true) await app.client.keys(keys.ENTER)
       return { app: app, count: parseInt(count) }
     })
+}
+
+/** Execute the given command in the given split */
+export const commandInSplit = async (cmd: string, app: Application, splitIndex: number) => {
+  const resp = await command(
+    cmd,
+    app,
+    undefined,
+    undefined,
+    undefined,
+    Selectors.CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex),
+    Selectors.CURRENT_PROMPT_FOR_SPLIT(splitIndex)
+  )
+  return Object.assign(resp, { splitIndex })
 }
 
 export const paste = async (cmd: string, app: Application, nLines = 1) =>
