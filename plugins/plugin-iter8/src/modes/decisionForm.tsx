@@ -31,7 +31,7 @@ import '../../src/web/scss/static/decisionForm.scss'
 // Functional imports
 import { DecisionState } from '../modes/state-models'
 import GetAnalyticsAssessment from '../utility/get-analytics-assessment'
-import { getAnalyticsResponse } from '../utility/get-response'
+// import { getAnalyticsResponse } from '../utility/get-response'
 import NameDict from '../utility/get-display-name'
 import { criteriaChartDesign } from '../utility/variables'
 import { trafficCheck, getUserDecision, applyTrafficSplit } from '../components/traffic-split'
@@ -40,6 +40,9 @@ const { TableContainer, Table, TableHead, TableRow, TableBody, TableCell, TableH
 
 // Function for round off
 function roundoff(value, fix = 4) {
+  if (value == null) {
+    return null
+  }
   return parseFloat(value.toFixed(fix))
 }
 
@@ -455,17 +458,17 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.setState({ haveResults: false })
 
     // Update last state for next iteration
-    // if (!(this.state.experimentResult === null)) {
-    //   let new_iteration_request = this.state.experimentRequest
-    //   new_iteration_request.last_state = this.state.experimentResult.last_state
-    //   this.setState({experimentRequest: new_iteration_request})
-    // }
+    if (!(this.state.experimentResult === null)) {
+      const newIterationRequest = this.state.experimentRequest
+      newIterationRequest['last_state'] = this.state.experimentResult.last_state
+      this.setState({ experimentRequest: newIterationRequest })
+    }
     const AnalyticsAssess = new GetAnalyticsAssessment(this.state.experimentRequest)
     AnalyticsAssess.getAnalyticsAssessment()
       .then(result => {
-        console.log('Experiment Response')
+        const jsonrlts = JSON.parse(JSON.parse(result))
         console.log(result)
-        const jsonrlts = getAnalyticsResponse()
+        // const jsonrlts = getAnalyticsResponse()
         this.getWinAnalysis(jsonrlts)
         this.getWinProbAndBasicStats(jsonrlts)
         this.getAlgo(jsonrlts)

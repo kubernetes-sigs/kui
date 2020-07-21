@@ -13,7 +13,9 @@ export default class NameDict {
   // Dictionary for displaying Analytics Algorithms
   private algoDisplayNames = {
     uniform: 'Uniform Split',
-    random: 'Random Split'
+    random: 'Random Split',
+    progressive: 'Progressive Split',
+    top_2: 'Top Two Split'
   }
 
   //Dictionary for displaying Advanced statistics
