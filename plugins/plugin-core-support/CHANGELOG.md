@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.15](https://github.com/IBM/kui/compare/v8.10.14...v8.10.15) (2020-07-22)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** close tabs doesn't produce the correct tab content ([e9602ec](https://github.com/IBM/kui/commit/e9602ec)), closes [#5220](https://github.com/IBM/kui/issues/5220)
+
 ## [8.10.14](https://github.com/IBM/kui/compare/v8.10.13...v8.10.14) (2020-07-22)
 
 **Note:** Version bump only for package @kui-shell/plugin-core-support

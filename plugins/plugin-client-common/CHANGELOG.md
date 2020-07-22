@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.15](https://github.com/IBM/kui/compare/v8.10.14...v8.10.15) (2020-07-22)
+
+### Bug Fixes
+
+- Editor component does not respond to tab layout changes ([b4201f9](https://github.com/IBM/kui/commit/b4201f9)), closes [#5231](https://github.com/IBM/kui/issues/5231) [#5232](https://github.com/IBM/kui/issues/5232)
+- **plugins/plugin-client-common:** close tabs doesn't produce the correct tab content ([e9602ec](https://github.com/IBM/kui/commit/e9602ec)), closes [#5220](https://github.com/IBM/kui/issues/5220)
+- **plugins/plugin-client-common:** editor component does not respond to font zooming ([6919338](https://github.com/IBM/kui/commit/6919338)), closes [#5120](https://github.com/IBM/kui/issues/5120)
+
 ## [8.10.14](https://github.com/IBM/kui/compare/v8.10.13...v8.10.14) (2020-07-22)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common
