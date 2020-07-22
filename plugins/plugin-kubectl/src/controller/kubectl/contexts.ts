@@ -20,8 +20,6 @@ import {
   RadioTable,
   RadioTableRow,
   radioTableCellToString,
-  radioTableAddHint,
-  CellShould,
   Table,
   isTable,
   Row,
@@ -75,7 +73,6 @@ function rtRowsFor(row: Row, wide: boolean): RadioTableRow {
           })
     )
 
-    radioTableAddHint(rtRow, rtRow.nameIdx, [CellShould.BeHidden])
     rtRow.nameIdx = 1
   }
 
