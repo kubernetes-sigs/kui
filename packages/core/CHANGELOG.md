@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.1](https://github.com/IBM/kui/compare/v8.11.0...v8.11.1) (2020-07-22)
+
+### Bug Fixes
+
+- Editor component does not respond to tab layout changes ([970c1b3](https://github.com/IBM/kui/commit/970c1b3)), closes [#5231](https://github.com/IBM/kui/issues/5231) [#5232](https://github.com/IBM/kui/issues/5232)
+
 # [8.11.0](https://github.com/IBM/kui/compare/v4.5.0...v8.11.0) (2020-07-21)
 
 ### Bug Fixes
