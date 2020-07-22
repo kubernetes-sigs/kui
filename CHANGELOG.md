@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.2](https://github.com/IBM/kui/compare/v8.11.1...v8.11.2) (2020-07-22)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubernetes contexts table renders poorly ([637d85e](https://github.com/IBM/kui/commit/637d85e)), closes [#5230](https://github.com/IBM/kui/issues/5230)
+
 ## [8.11.1](https://github.com/IBM/kui/compare/v8.11.0...v8.11.1) (2020-07-22)
 
 ### Bug Fixes
