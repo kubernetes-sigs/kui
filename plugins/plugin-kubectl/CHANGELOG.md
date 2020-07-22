@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.14](https://github.com/IBM/kui/compare/v8.10.13...v8.10.14) (2020-07-22)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** `oc get namespaces` doesn't produce a RadioTable ([ea16844](https://github.com/IBM/kui/commit/ea16844)), closes [#5227](https://github.com/IBM/kui/issues/5227)
+
 ## [8.10.13](https://github.com/IBM/kui/compare/v8.10.12...v8.10.13) (2020-07-14)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl
