@@ -161,8 +161,12 @@ body[kui-theme-style] .repl.sidecar-visible {
 
 .kui--scrollback div[data-table-watching] {
   @include full-width-tables;
-  .kui--data-table-container {
-    min-width: calc(1.5 * #{$min-body-width});
+}
+.kui--scrollback {
+  &:not([data-is-minisplit]):not([data-is-width-constrained]) .kui--data-table-container {
+    div[data-table-watching] {
+      min-width: calc(1.5 * #{$min-body-width});
+    }
   }
 }
 
@@ -205,7 +209,7 @@ body[kui-theme-style] .kui--data-table-wrapper {
 }
 
 /** inner scrolling for tall tables, when not in a minisplit */
-.kui--scrollback:not([data-is-minisplit]) {
+.kui--scrollback:not([data-is-minisplit]):not([data-is-width-constrained]) {
   .kui--data-table-container {
     min-width: $min-body-width;
     /* max-height: $max-body-height; see https://github.com/IBM/kui/issues/5221 */
