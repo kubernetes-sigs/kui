@@ -74,6 +74,13 @@
 }
 
 .bx--structured-list--selection
+  .bx--structured-list-row:hover:not(.bx--structured-list-row--header-row)
+  > .bx--structured-list-td,
+.bx--structured-list-row.bx--structured-list-row--selected > .bx--structured-list-td {
+  color: inherit;
+}
+
+.bx--structured-list--selection
   .bx--structured-list-row:hover:not(.bx--structured-list-row--header-row):not(.bx--structured-list-row--selected) {
   background-color: var(--color-ui-03);
   border-color: var(--color-table-border1);

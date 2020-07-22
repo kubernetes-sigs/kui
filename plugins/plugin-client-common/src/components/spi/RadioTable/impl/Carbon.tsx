@@ -91,18 +91,18 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
       breadcrumbs.push({ label: strings('nRows', table.body.length) })
     }
 
+    if (this.props.selectedIdx >= 0) {
+      const selectedRow = this.props.table.body[this.props.selectedIdx]
+      if (selectedRow.nameIdx !== undefined) {
+        breadcrumbs.push({ label: radioTableCellToString(selectedRow.cells[selectedRow.nameIdx]) })
+      }
+    }
+
     return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
   }
 
-  private bottomToolbar() {
-    if (this.props.selectedIdx >= 0) {
-      const selectedRow = this.props.table.body[this.props.selectedIdx]
-      return <Toolbar>{this.row(selectedRow, this.props.selectedIdx)}</Toolbar>
-    }
-  }
-
   private row(row: RadioTableRow, ridx: number, head = false, onSelect?: () => void) {
-    const isSelected = !onSelect && !head && ridx === this.props.selectedIdx - this.props.offset
+    const isSelected = !head && ridx === this.props.selectedIdx - this.props.offset
     const name = this.id(ridx)
 
     // notes: label is needed for selection
@@ -111,7 +111,11 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
         label
         head={head}
         key={ridx}
-        className={'kui--radio-table-row' + (head ? ' kui--radio-table-row--header-row' : '')}
+        className={
+          'kui--radio-table-row' +
+          (head ? ' kui--radio-table-row--header-row' : '') +
+          (isSelected ? ' kui--inverted-color-context bx--structured-list-row--selected' : '')
+        }
         data-name={row.nameIdx !== undefined ? radioTableCellToString(row.cells[row.nameIdx]) : name}
         data-is-selected={isSelected || undefined}
       >
@@ -164,9 +168,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
   private body() {
     return (
       <StructuredListBody className="kui--radio-table-body">
-        {this.props.table.body.map(
-          (row, idx) => idx !== this.props.selectedIdx && this.row(row, idx, false, row.onSelect)
-        )}
+        {this.props.table.body.map((row, idx) => this.row(row, idx, false, row.onSelect))}
       </StructuredListBody>
     )
   }
@@ -177,7 +179,6 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
         <div className="kui--screenshotable">
           <Card
             header={this.props.title && this.topToolbar()}
-            footer={this.bottomToolbar()}
             footerClassName="kui--inverted-color-context kui--no-padding"
           >
             <div className="kui--data-table-container">
