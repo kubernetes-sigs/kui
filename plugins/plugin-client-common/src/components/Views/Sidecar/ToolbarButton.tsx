@@ -21,6 +21,7 @@ import {
   ResourceWithMetadata,
   isViewButton,
   MultiModalResponse,
+  pexecInCurrentTab,
   ParsedOptions
 } from '@kui-shell/core'
 
@@ -59,7 +60,7 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
       if (isViewButton(button) || button.confirm) {
         return tab.REPL.qexec(cmd, undefined, undefined, { rethrowErrors: true })
       } else {
-        return tab.REPL.pexec(cmd)
+        return pexecInCurrentTab(cmd)
       }
     } else {
       cmd(tab, response, args)
