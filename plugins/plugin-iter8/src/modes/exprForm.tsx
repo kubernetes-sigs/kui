@@ -42,7 +42,9 @@ class ExprBase extends React.Component<{}, Formstate> {
   private nsList = this.kubeMethods.getNamespace()
   private countMetricsList = this.GetMetricConfig.getCounterMetrics()
   private ratioMetricsList = this.GetMetricConfig.getRatioMetrics()
-  private totMetricsList = this.countMetricsList.concat(this.ratioMetricsList)
+
+  private totMetricsList = []
+
   private svcList = []
   private deployList = []
 
@@ -64,6 +66,9 @@ class ExprBase extends React.Component<{}, Formstate> {
     this.submitForm = this.submitForm.bind(this)
     this.handleNameChange = this.handleNameChange.bind(this)
     this.addCriterion = this.addCriterion.bind(this)
+    if (Array.isArray(this.countMetricsList) && Array.isArray(this.ratioMetricsList)) {
+      this.totMetricsList = this.countMetricsList.concat(this.ratioMetricsList)
+    }
   }
 
   /*
