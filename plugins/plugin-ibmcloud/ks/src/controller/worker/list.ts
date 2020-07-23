@@ -27,39 +27,45 @@ import { IBMCloudWorkerRaw } from '../../models/worker'
  * `ibmcloud ks worker ls`
  *
  */
-async function doLs(args: Arguments<WorkerOptions>): Promise<Table> {
-  const response: IBMCloudWorkerRaw[] = JSON.parse(await doJSONWithStdout(args))
+async function doLs(args: Arguments<WorkerOptions>): Promise<string | Table> {
+  const raw = await doJSONWithStdout(args)
+  try {
+    const response: IBMCloudWorkerRaw[] = JSON.parse(raw)
 
-  if (response.length === 0) {
-    return {
-      body: []
+    if (response.length === 0) {
+      return {
+        body: []
+      }
     }
-  }
 
-  const body = response.map(_ => ({
-    name: _.id,
-    onclick: `ibmcloud ks worker get ${args.REPL.encodeComponent(_.id)} --cluster ${args.parsedOptions.cluster}`,
-    onclickSilence: true,
-    attributes: [
-      { key: 'STATE', value: capitalize(_.state.toString()), tag: 'badge', css: stateToCSS[_.state] },
-      { key: 'STATUS', value: capitalize(_.status.toString()) },
-      { key: 'PUBLIC IP', value: _.publicIP, outerCSS: 'hide-with-sidecar' },
-      // { key: 'PRIVATE IP', value: _.privateIP, outerCSS: 'hide-with-sidecar' },
-      { key: 'FLAVOR', value: _.machineType, outerCSS: 'hide-with-sidecar' },
-      // { key: 'ZONE', value: _.location, outerCSS: 'hide-with-sidecar' },
-      // { key: 'VERSION', value: _.kubeVersion, outerCSS: 'hide-with-sidecar' },
-      { key: 'MESSAGE', value: _.statusDetails, outerCSS: 'hide-with-sidecar' }
-    ]
-  }))
+    const body = response.map(_ => ({
+      name: _.id,
+      onclick: `ibmcloud ks worker get ${args.REPL.encodeComponent(_.id)} --cluster ${args.parsedOptions.cluster}`,
+      onclickSilence: true,
+      attributes: [
+        { key: 'State', value: capitalize(_.state.toString()), tag: 'badge', css: stateToCSS[_.state] },
+        { key: 'Status', value: capitalize(_.status.toString()) },
+        { key: 'Public IP', value: _.publicIP, outerCSS: 'hide-with-sidecar' },
+        // { key: 'Private IP', value: _.privateIP, outerCSS: 'hide-with-sidecar' },
+        { key: 'Flavor', value: _.machineType, outerCSS: 'hide-with-sidecar' },
+        // { key: 'Zone', value: _.location, outerCSS: 'hide-with-sidecar' },
+        // { key: 'Version', value: _.kubeVersion, outerCSS: 'hide-with-sidecar' },
+        { key: 'Message', value: _.statusDetails, outerCSS: 'hide-with-sidecar' }
+      ]
+    }))
 
-  const header = {
-    name: 'NAME',
-    attributes: body[0].attributes.map(_ => ({ value: _.key, outerCSS: _.outerCSS }))
-  }
+    const header = {
+      name: 'Name',
+      attributes: body[0].attributes.map(_ => ({ value: _.key, outerCSS: _.outerCSS }))
+    }
 
-  return {
-    header,
-    body
+    return {
+      header,
+      body
+    }
+  } catch (err) {
+    console.error('error parsing output', err)
+    return raw
   }
 }
 
@@ -67,7 +73,7 @@ async function doLs(args: Arguments<WorkerOptions>): Promise<Table> {
  * `ibmcloud ks worker list`
  *
  */
-function doList(args: Arguments<WorkerOptions>): Promise<Table> {
+function doList(args: Arguments<WorkerOptions>): Promise<string | Table> {
   args.command = args.command.replace(/ibmcloud\s+ks\s+worker\s+list/, 'ibmcloud ks worker ls')
 
   const idx1 = args.argv.indexOf('worker')
