@@ -62,9 +62,9 @@ async function doLs(args: Arguments<ListOptions>): Promise<Table> {
     onclick: `ibmcloud plugin get ${args.REPL.encodeComponent(_.name)}`,
     onclickSilence: true,
     attributes: [
-      { key: strings('ALIASES'), value: _.Aliases ? _.Aliases.join(',') : '', outerCSS: 'hide-with-sidecar' },
+      { key: strings('Aliases'), value: _.Aliases ? _.Aliases.join(',') : '', outerCSS: 'hide-with-sidecar' },
       {
-        key: strings('STATUS'),
+        key: strings('Status'),
         tag: 'badge',
         value: !_.latest
           ? strings('Unregistered Plugin')
@@ -73,13 +73,13 @@ async function doLs(args: Arguments<ListOptions>): Promise<Table> {
           : strings('Ready'),
         css: !_.latest ? 'gray-background' : _.updateAvailable ? 'yellow-background' : 'green-background'
       },
-      { key: strings('VERSION'), value: _.currentVersion, outerCSS: '', css: '' }
+      { key: strings('Version'), value: _.currentVersion, outerCSS: '', css: '' }
     ].concat(
       allPluginsAreUpToDate
         ? []
         : [
             {
-              key: strings('LATEST'),
+              key: strings('Latest'),
               value: _.updateAvailable ? _.latest.version : '',
               outerCSS: 'hide-with-sidecar',
               css: 'yellow-text'
@@ -89,7 +89,7 @@ async function doLs(args: Arguments<ListOptions>): Promise<Table> {
   }))
 
   const header = {
-    name: 'NAME',
+    name: 'Name',
     attributes: body[0].attributes.map(_ => ({ value: _.key, outerCSS: _.outerCSS }))
   }
 

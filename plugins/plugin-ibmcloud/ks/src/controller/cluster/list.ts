@@ -27,28 +27,34 @@ import { IBMCloudClusterRaw } from '../../models/cluster'
  * `ibmcloud ks cluster ls`
  *
  */
-async function doLs(args: Arguments<KubeOptions>): Promise<Table> {
-  const response: IBMCloudClusterRaw[] = JSON.parse(await doJSONWithStdout(args))
+async function doLs(args: Arguments<KubeOptions>): Promise<string | Table> {
+  const raw = await doJSONWithStdout(args)
+  try {
+    const response: IBMCloudClusterRaw[] = JSON.parse(raw)
 
-  const header = {
-    name: 'NAME',
-    attributes: [{ value: 'STATE' }, { value: 'VERSION', outerCSS: 'hide-with-sidecar' }, { value: 'LOCATION' }]
-  }
+    const header = {
+      name: 'Name',
+      attributes: [{ value: 'State' }, { value: 'Version', outerCSS: 'hide-with-sidecar' }, { value: 'Location' }]
+    }
 
-  const body = response.map(_ => ({
-    name: _.name,
-    onclick: `ibmcloud ks cluster get ${args.REPL.encodeComponent(_.name)}`,
-    onclickSilence: true,
-    attributes: [
-      { key: 'STATE', value: capitalize(_.state), tag: 'badge', css: stateToCSS[_.state] },
-      { key: 'VERSION', value: _.masterKubeVersion, outerCSS: 'hide-with-sidecar' },
-      { key: 'LOCATION', value: _.location }
-    ]
-  }))
+    const body = response.map(_ => ({
+      name: _.name,
+      onclick: `ibmcloud ks cluster get ${args.REPL.encodeComponent(_.name)}`,
+      onclickSilence: true,
+      attributes: [
+        { key: 'State', value: capitalize(_.state), tag: 'badge', css: stateToCSS[_.state] },
+        { key: 'Version', value: _.masterKubeVersion, outerCSS: 'hide-with-sidecar' },
+        { key: 'Location', value: _.location }
+      ]
+    }))
 
-  return {
-    header,
-    body
+    return {
+      header,
+      body
+    }
+  } catch (err) {
+    console.error('error parsing output', err)
+    return raw
   }
 }
 
@@ -56,7 +62,7 @@ async function doLs(args: Arguments<KubeOptions>): Promise<Table> {
  * `ibmcloud ks cluster list`
  *
  */
-function doList(args: Arguments<KubeOptions>): Promise<Table> {
+function doList(args: Arguments<KubeOptions>): Promise<string | Table> {
   args.command = args.command.replace(/ks\s+cluster(s?)\s+list/, 'ks cluster ls')
 
   const idx1 = args.argv.indexOf('cluster')
