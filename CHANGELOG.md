@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.11.3](https://github.com/IBM/kui/compare/v8.11.2...v8.11.3) (2020-07-23)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** clicking on pod delete button can cause command to be executed in minisplit ([e76f8a0](https://github.com/IBM/kui/commit/e76f8a0)), closes [#5247](https://github.com/IBM/kui/issues/5247)
+- **plugins/plugin-client-common:** status column can be invisible in split tables ([3850efd](https://github.com/IBM/kui/commit/3850efd)), closes [#5244](https://github.com/IBM/kui/issues/5244)
+- **plugins/plugin-client-commong:** show RadioTable selected row in the table body and header breadcrumb ([447089d](https://github.com/IBM/kui/commit/447089d)), closes [#5239](https://github.com/IBM/kui/issues/5239)
+
 ## [8.11.2](https://github.com/IBM/kui/compare/v8.11.1...v8.11.2) (2020-07-22)
 
 ### Bug Fixes
