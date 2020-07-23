@@ -58,7 +58,7 @@ export default function getRequestModel(time: string, formstate: Formstate): Obj
     baseline: {
       id: `${formstate.baseline}`,
       version_labels: {
-        destination_service_namespace: formstate.namespace,
+        destination_workload_namespace: formstate.namespace,
         destination_workload: formstate.baseline
       }
     },

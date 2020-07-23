@@ -266,7 +266,7 @@ class ExprBase extends React.Component<{}, Formstate> {
    */
   private submitForm() {
     // Get the current time in ISO form
-    const d = new Date()
+    const d = new Date(Date.now() - 20000)
     const time = d.toISOString()
     // Reorganize form input into Iter8 Request model
     const jsonOutput = getRequestModel(time, this.state)
