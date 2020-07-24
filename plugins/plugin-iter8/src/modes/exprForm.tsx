@@ -81,6 +81,7 @@ class ExprBase extends React.Component<{}, Formstate> {
 
   private handleAddCand = value => {
     // Convert all input items into an iterable array
+    console.log(value)
     const versionValue = value.map(data => {
       return data.text
     })
@@ -96,6 +97,16 @@ class ExprBase extends React.Component<{}, Formstate> {
       invalidCandidate: false,
       candidates: versionValue
     })
+    console.log(this.state.candidates)
+  }
+
+  private handleSplitCand(value) {
+    const candList = value.target.value.split(',')
+    const obj = []
+    for (let i = 0; i < candList.length; i++) {
+      obj.push({ id: `c-${i}`, text: candList[i] })
+    }
+    this.handleAddCand(obj)
   }
 
   private handleSelectExpType = value => {
@@ -372,7 +383,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               labelText="or Add Candidate Deployment(s) below:"
               helperText="Comma separated candidate names"
               placeholder="reviews_v3, reviews_v4"
-              onChange={value => this.handleAddCand(value.selectedItems)}
+              onChange={value => this.handleSplitCand(value)}
               type="text"
             ></TextInput>
           </FormGroup>
@@ -386,10 +397,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                   const deletecriterion = `deletecriterion-${idx}`
                   const checkId = `checkbox-${idx}`
                   return (
-                    <div
-                      style={{ padding: 20, borderBottom: 'gray', borderStyle: 'dashed', borderBottomWidth: 'thin' }}
-                      key={idx}
-                    >
+                    <div style={{ padding: 20 }} key={idx}>
                       <h5> {`Criterion #${idx + 1}`}</h5>
                       <ComboBox
                         id={criterionId}

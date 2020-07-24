@@ -116,7 +116,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       experimentResult: null, // JSON object returned from Iter8 API
       haveAdvancedStatistics: false, // Bool set to true if ratio Metrics were added when creating experiment
       haveCriteriaComparison: false, // Bool set to true if any criteria were added when creating expeirment
-      selectedAdvancedStatistic: 'Improvement Over Baseline', // Initial selection for the analytics assessment dropdown
+      selectedAdvancedStatistic: 'Credible Interval', // Initial selection for the analytics assessment dropdown
       showAdvancedStatistics: false, // Toggle to show advanced statistics
       advancedStatisticsRows: [], // table Row values for Advanced statistics
       hasExperimentEnded: false, // set to true if experiment has ended
@@ -139,7 +139,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   }
 
   public componentDidMount() {
-    console.log('Mounted Decision')
+    console.log('Mounted Decision tab')
     this._isMounted = true
     eventChannelUnsafe.on('/get/decision', formstate => {
       console.log(formstate)
@@ -159,10 +159,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Sets display with winner information
   private getWinAnalysis(apiResult) {
     if (apiResult.winner_assessment.winning_version_found) {
-      const prob = apiResult.winner_assessment.winning_probability
-      this.winner = `%{assessment.current_winner} is the winner with ${prob} % of winning`
+      const prob = apiResult.winner_assessment.probability_of_winning_for_best_version
+      this.winner = `Version: ${apiResult.winner_assessment.current_best_version} is the winner with ${prob} probability of winning`
     } else {
-      this.winner = 'Do not enough data to determine winner'
+      this.winner = 'Do not have enough data to determine winner'
     }
   }
 
@@ -408,29 +408,31 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     for (let version = 0; version < criterionAssessments.length; version++) {
       for (let metric = 0; metric < criterionAssessments[version].length; metric++) {
         if ({}.hasOwnProperty.call(criterionAssessments[version][metric].statistics, 'ratio_statistics')) {
-          const value = {
-            /*eslint-disable */
-            improvement_over_baseline: {
-              lower: Math.random() * -1,
-              upper: Math.random()
-            },
-            probability_of_beating_baseline: Math.random(),
-            probability_of_being_best_version: Math.random(),
-            credible_interval: {
-              lower: Math.random() * -1,
-              upper: Math.random()
+          if (criterionAssessments[version][metric].statistics['ratio_statistics'] != null) {
+            const value = {
+              /*eslint-disable */
+              improvement_over_baseline: {
+                lower: Math.random() * -1,
+                upper: Math.random()
+              },
+              probability_of_beating_baseline: Math.random(),
+              probability_of_being_best_version: Math.random(),
+              credible_interval: {
+                lower: criterionAssessments[version][metric].statistics['ratio_statistics'].credible_interval.lower,
+                upper: criterionAssessments[version][metric].statistics['ratio_statistics'].credible_interval.upper
+              }
+              /* eslint-enable */
             }
-            /* eslint-enable */
-          }
-          let keys = []
-          keys = Object.values(this.advancedStatisticsNames)
-          for (let k = 0; k < keys.length; k++) {
-            if (!{}.hasOwnProperty.call(tempObject, keys[k])) {
-              tempObject[keys[k]] = JSON.parse(JSON.stringify(versionRows))
+            let keys = []
+            keys = Object.values(this.advancedStatisticsNames)
+            for (let k = 0; k < keys.length; k++) {
+              if (!{}.hasOwnProperty.call(tempObject, keys[k])) {
+                tempObject[keys[k]] = JSON.parse(JSON.stringify(versionRows))
+              }
+              tempObject[keys[k]][version][
+                criterionAssessments[version][metric].metric_id
+              ] = this.parseAdvancedStatisticsValues(keys[k], value[keys[k]])
             }
-            tempObject[keys[k]][version][
-              criterionAssessments[version][metric].metric_id
-            ] = this.parseAdvancedStatisticsValues(keys[k], value[keys[k]])
           }
         }
       }
@@ -463,11 +465,12 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       newIterationRequest['last_state'] = this.state.experimentResult.last_state
       this.setState({ experimentRequest: newIterationRequest })
     }
+    console.log(this.state.experimentRequest)
     const AnalyticsAssess = new GetAnalyticsAssessment(this.state.experimentRequest)
     AnalyticsAssess.getAnalyticsAssessment()
       .then(result => {
         const jsonrlts = JSON.parse(JSON.parse(result))
-        console.log(result)
+        console.log(jsonrlts)
         // const jsonrlts = getAnalyticsResponse()
         this.getWinAnalysis(jsonrlts)
         this.getWinProbAndBasicStats(jsonrlts)
@@ -536,7 +539,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
 
   // Converts traffic implementation into VS and Dest. Rules
   private handleApply() {
-    const namespace = this.state.experimentRequest.baseline.version_labels.destination_service_namespace
+    const namespace = this.state.experimentRequest.baseline.version_labels.destination_workload_namespace
     const service = this.state.experimentRequest.service_name
     const decision = getUserDecision(namespace, service, this.state.trafficSplit)
     applyTrafficSplit(decision)
@@ -580,7 +583,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       }
     }
     this.setState({ trafficSplit: temporarySplit, hasExperimentEnded: true })
-    console.log(temporarySplit)
     this.handleApply()
   }
 
@@ -609,7 +611,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                     {' '}
                     Winner Found! <FaceCool20 />{' '}
                   </h4>
-                  <h5> {this.winner} </h5>
+                  <h5 className="green"> {this.winner} </h5>
                 </div>
               ) : (
                 <div>

@@ -62,6 +62,9 @@ export default function getRequestModel(time: string, formstate: Formstate): Obj
         destination_workload: formstate.baseline
       }
     },
-    candidates: getCandModel(formstate.namespace, formstate.candidates)
+    candidates: getCandModel(formstate.namespace, formstate.candidates),
+    traffic_control: {
+      max_increment: 25
+    }
   }
 }
