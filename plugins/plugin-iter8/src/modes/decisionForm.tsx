@@ -104,7 +104,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   public constructor(props) {
     super(props)
     this.state = {
-      selectedAlgo: 'uniform', // Assumes that uniform is always the first algorithm
+      selectedAlgo: 'progressive', // Assumes that progressive is always the first algorithm
       trafficSplit: [{ version: '', split: 0 }], // Traffic split to be applied to each service (modified by analytics service or on toggle)
       currentSplit: [], // Current traffic split that has been applied to the service
       trafficErr: false, // true if sum(traffic) != 100
@@ -159,7 +159,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Sets display with winner information
   private getWinAnalysis(apiResult) {
     if (apiResult.winner_assessment.winning_version_found) {
-      const prob = apiResult.winner_assessment.probability_of_winning_for_best_version
+      const prob = roundoff(apiResult.winner_assessment.probability_of_winning_for_best_version, 2)
       this.winner = `Version: ${apiResult.winner_assessment.current_best_version} is the winner with ${prob} probability of winning`
     } else {
       this.winner = 'Do not have enough data to determine winner'
@@ -183,7 +183,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       version: baseRlts.id,
       type: 'Baseline',
       count: baseRlts.request_count,
-      winprob: baseRlts.win_probability,
+      winprob: roundoff(baseRlts.win_probability, 2),
       rollback: 'Does not apply'
     })
     dataLabels.push(baseRlts.id)
@@ -195,7 +195,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         version: candRlts[i].id,
         type: 'Candidate',
         count: candRlts[i].request_count,
-        winprob: candRlts[i].win_probability,
+        winprob: roundoff(candRlts[i].win_probability, 2),
         rollback: candRlts[i].rollback.toString()
       })
       dataLabels.push(candRlts[i].id)
@@ -561,7 +561,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       this.updateEndExperimentWinner(baseline)
     } else if (value === 'rollforwardwinner') {
       const winner = this.state.experimentResult.winner_assessment.winning_version_found
-        ? this.state.experimentResult.winner_assessment.current_winner
+        ? this.state.experimentResult.winner_assessment.current_best_version
         : baseline
       this.updateEndExperimentWinner(winner)
     }
@@ -638,6 +638,17 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                   })
                 }
               />
+            </FormGroup>
+            <FormGroup legendText="">
+              <Button
+                size="default"
+                kind="primary"
+                renderIcon={ChartLineData32}
+                disabled={!this.state.experimentCreated || this.state.hasExperimentEnded}
+                onClick={this.handleGetAssessment}
+              >
+                Get Assessment
+              </Button>
             </FormGroup>
             <FormGroup legendText="">
               <h4 className="titletexts"> Traffic Assessments </h4>
