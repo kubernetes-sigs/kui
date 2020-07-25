@@ -32,6 +32,7 @@ export type SupportedIcon =
   | 'Grid'
   | 'Info'
   | 'List'
+  | 'Location'
   | 'Network'
   | 'NextPage'
   | 'Notification'

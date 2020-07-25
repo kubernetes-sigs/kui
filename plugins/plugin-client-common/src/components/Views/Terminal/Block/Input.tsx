@@ -24,21 +24,10 @@ import onKeyPress from './OnKeyPress'
 import KuiContext from '../../../Client/context'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
-import {
-  BlockModel,
-  isActive,
-  isProcessing,
-  isFinished,
-  hasCommand,
-  isEmpty,
-  isOops,
-  hasUUID,
-  hasValue
-} from './BlockModel'
+import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
 import { BlockViewTraits } from './'
 
 import DropDown, { DropDownAction } from '../../../spi/DropDown'
-import Icons from '../../../spi/Icons'
 
 const strings = i18n('plugin-client-common')
 const strings2 = i18n('plugin-client-common', 'screenshot')
@@ -88,8 +77,11 @@ export interface InputOptions {
 }
 
 type InputProps = {
-  /** number of commands issued; a strictly increasing natural number */
+  /** Block ordinal */
   idx?: number
+
+  /** Block ordinal to be displayed to user */
+  displayedIdx?: number
 
   /** needed temporarily to make pty/client happy */
   _block?: HTMLElement
@@ -132,6 +124,12 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected status() {}
 
+  protected contextContent(
+    insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1
+  ): React.ReactNode {
+    return <React.Fragment>In[{insideBrackets}]</React.Fragment> // this.props.model.cwd
+  }
+
   /** the "xxx" part of "xxx >" of the prompt */
   protected promptLeft() {
     return (
@@ -140,7 +138,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
           {config =>
             !config.noPromptContext &&
             !this.props.isPartOfMiniSplit &&
-            this.props.model && <span className="repl-context">{this.props.model.cwd}</span>
+            this.props.model && <span className="repl-context">{this.contextContent()}</span>
           }
         </KuiContext.Consumer>
       )
@@ -154,7 +152,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     return (
       <KuiContext.Consumer>
         {config => (
-          <span className="repl-prompt-righty">{config.prompt || this.props.isPartOfMiniSplit ? '\u276f' : '/'}</span>
+          <span className="repl-prompt-righty">{config.prompt || (this.props.isPartOfMiniSplit ? '\u276f' : '/')}</span>
         )}
       </KuiContext.Consumer>
     )
@@ -166,10 +164,15 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   protected normalPrompt() {
     return (
-      <div className="repl-prompt">
-        {this.promptLeft()}
-        {this.promptRight()}
-      </div>
+      <KuiContext.Consumer>
+        {config =>
+          this.props.isPartOfMiniSplit || config.prompt ? (
+            <div className="repl-prompt">{this.promptRight()}</div>
+          ) : (
+            <div className="repl-context">{this.contextContent()}</div>
+          )
+        }
+      </KuiContext.Consumer>
     )
   }
 
@@ -190,8 +193,8 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
   public render() {
     return (
       <div className={'repl-input' + (this.state && this.state.isearch ? ' kui--isearch-active' : '')}>
+        {this.prompt()}
         <div className="kui--input-and-context">
-          {this.prompt()}
           {this.props.children}
           {this.input()}
           {this.status()}
@@ -225,9 +228,14 @@ export default class Input extends InputProvider {
     }
   }
 
+  protected contextContent() {
+    return super.contextContent(isProcessing(this.props.model) ? this.spinner() : undefined)
+  }
+
   private static newSpinner(spinnerDom: HTMLSpanElement) {
     let frame = 0
 
+    spinnerDom.innerText = spinnerFrames.frames[frame++]
     return setInterval(function() {
       frame = frame + 1 === spinnerFrames.frames.length ? 0 : frame + 1
       spinnerDom.innerText = spinnerFrames.frames[frame]
@@ -367,23 +375,21 @@ export default class Input extends InputProvider {
 
   /** spinner for processing blocks */
   private spinner() {
-    if (isProcessing(this.props.model)) {
-      return (
-        <span
-          className="kui--repl-block-spinner"
-          ref={spinnerDom => {
-            this.setState({ spinnerDom })
-          }}
-        />
-      )
-    }
+    return (
+      <span
+        className="kui--repl-block-spinner"
+        ref={spinnerDom => {
+          this.setState({ spinnerDom })
+        }}
+      />
+    )
   }
 
   /** error icon for error blocks */
   private errorIcon() {
-    if (isOops(this.props.model)) {
+    /* if (isOops(this.props.model)) {
       return <Icons className="kui--repl-block-error-icon" icon="Error" data-mode="error" />
-    }
+    } */
   }
 
   private removeAction(): DropDownAction[] {
@@ -448,7 +454,6 @@ export default class Input extends InputProvider {
   protected status() {
     return (
       <span className="repl-prompt-right-elements">
-        {this.spinner()}
         {this.errorIcon()}
         {this.timestamp()}
         {this.dropdown()}

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { basename } from 'path'
 import { ScalarResponse, UsageError, inBrowser } from '@kui-shell/core'
 
 const enum BlockState {
@@ -67,7 +66,7 @@ export default BlockModel
 /** Capture the current working directory */
 function cwd() {
   const dir = inBrowser() ? process.env.PWD : process.cwd()
-  return dir === process.env.HOME ? '~' : basename(dir)
+  return dir ? dir.replace(process.env.HOME, '~') : undefined
 }
 
 export function isError(response: ScalarResponse): response is Error {

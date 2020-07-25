@@ -125,7 +125,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
           return <HTMLDom content={response.raw} />
         }
       } else if (isError(response)) {
-        return <div className="oops">{response.message}</div>
+        return <React.Fragment>{response.message}</React.Fragment>
       } else if (isReactResponse(response)) {
         return response.react
       } else if (isHTML(response)) {

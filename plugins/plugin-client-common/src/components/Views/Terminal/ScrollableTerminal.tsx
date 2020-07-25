@@ -94,6 +94,7 @@ type Props = TerminalOptions & {
 interface ScrollbackState {
   uuid: string
   blocks: BlockModel[]
+  nAnnouncements: number
   forceMiniSplit: boolean
 
   /** tab facade */
@@ -212,6 +213,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               })
             ]
 
+        scrollback.nAnnouncements++
         scrollback.blocks = welcomeBlocks.concat(scrollback.blocks)
 
         if (welcomeMax !== -1) {
@@ -252,6 +254,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       uuid: sbuuid,
       cleaners: [],
       forceMiniSplit: false,
+      nAnnouncements: 0,
       blocks: (capturedValue !== undefined ? [] : this.restoreBlocks(sbuuid)).concat([Active(capturedValue)])
     }
 
@@ -692,6 +695,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 <Block
                   key={(hasUUID(_) ? _.execUUID : idx) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
                   idx={idx}
+                  displayedIdx={idx - scrollback.nAnnouncements + 1}
                   model={_}
                   uuid={scrollback.uuid}
                   tab={tab}
