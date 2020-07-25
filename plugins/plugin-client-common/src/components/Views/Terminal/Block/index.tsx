@@ -31,6 +31,9 @@ type Props = InputOptions & {
   /** block ordinal index */
   idx: number
 
+  /** block ordinal index to be displayed to the user */
+  displayedIdx?: number
+
   /** block model */
   model: BlockModel
 
@@ -77,6 +80,7 @@ export default class Block extends React.PureComponent<Props, State> {
         <Output
           uuid={this.props.uuid}
           tab={this.props.tab}
+          idx={this.props.idx}
           model={this.props.model}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
           prefersTerminalPresentation={this.props.prefersTerminalPresentation}

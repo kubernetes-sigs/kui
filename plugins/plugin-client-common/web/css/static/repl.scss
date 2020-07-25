@@ -19,21 +19,87 @@
 .repl.sidecar-visible p {
   white-space: normal;
 }
+.repl .kui--scrollback/*[data-is-width-constrained]*/ .repl-block {
+  .repl-input,
+  .repl-output {
+    padding-left: 1rem;
+  }
+  .repl-input .repl-context {
+    flex-basis: unset;
+    &:before {
+      left: -1rem !important;
+    }
+  }
+  .repl-output .repl-context {
+    display: none;
+  }
+}
 .repl {
   .repl-prompt {
-    margin-right: 0.25rem;
     --color-prompt-text: var(--color-brand-01);
-    --color-prompt-background: transparent;
     color: var(--color-prompt-text);
   }
-  .repl-input:not(.kui--isearch-active) .repl-prompt {
-    font-weight: 500;
-    font-family: var(--font-sans-serif);
+  .repl-block:hover .repl-context {
+    opacity: 1;
   }
   .repl-context {
-    background-color: var(--color-prompt-background);
-    letter-spacing: 0.16px;
-    filter: grayscale(20%);
+    color: var(--color-text-02);
+    display: flex;
+    justify-content: flex-end;
+    flex-basis: 4rem;
+    text-align: end;
+    margin-right: 0.5rem;
+    position: relative;
+    opacity: 0.75;
+  }
+  .repl-input .repl-context {
+    align-items: center;
+  }
+  /* .repl-output {
+    margin-top: 2px;
+
+    .repl-context {
+      &:after {
+        content: '';
+        border: 0.25px solid var(--color-table-border3);
+        position: absolute;
+        bottom: -1rem;
+        top: 1.25rem;
+        right: 1em;
+      }
+    }
+  } */
+
+  /** Coloring the context border by status of the block */
+  .repl-block {
+    position: relative;
+
+    &:before {
+      background-color: var(--color-text-02);
+      border-left: none;
+      border-right: none;
+      border-radius: 1px;
+      opacity: 0.25;
+      content: '';
+      left: 0;
+      position: absolute;
+      top: 0.1875rem;
+      bottom: 0.1875rem;
+      width: 4px;
+    }
+    &.repl-active:before {
+      opacity: 1;
+    }
+    &.error:before {
+      opacity: 1;
+      background-color: var(--color-error);
+    }
+    &.repl-active .repl-context {
+      opacity: 1;
+    }
+    &:hover .repl-output .repl-context:after {
+      border-color: var(--color-base03);
+    }
   }
 
   .repl-prompt-righty {
@@ -62,9 +128,7 @@
     opacity: 0.0375;
   }
   .kui--repl-block-spinner {
-    color: var(--color-brand-03);
-    margin-right: 0.5rem;
-    font-size: 0.875rem;
+    color: var(--active-tab-color);
     font-weight: 700;
   }
   .kui--repl-block-error-icon {
@@ -97,7 +161,7 @@
   caret-color: var(--color-caret);
   overflow: hidden;
   white-space: nowrap;
-  padding: 1px; /* to match user-agent styling of <input/> */
+  padding: 0px; /* to match user-agent styling of <input/> */
   /* text-overflow: ellipsis; see https://github.com/IBM/kui/issues/3539 */
 }
 .kui--prompt-like:empty {
@@ -111,20 +175,17 @@
 .repl-block.valid-response .oops,
 .repl-block.error .oops,
 .clickable.oops,
-.oops .oops-text-on-oops,
 .red-text {
-  opacity: 1 !important;
   white-space: pre-wrap;
-}
-.header .clickable.oops {
-  font-weight: 900;
 }
 .repl-input,
 .repl-output {
   display: flex;
 }
 .repl-block .result-vertical {
+  display: flex;
   flex-direction: column;
+  flex: 1;
 }
 .repl-block .whitespace {
   white-space: pre-wrap;
@@ -144,9 +205,6 @@
 .repl-block .repl-output [data-stream] ~ .repl-result-spinner {
   /* probably not 100% right, but: for pty output, don't show kui's "caret", since xtermjs has its own */
   display: none;
-}
-.repl-block.processing .repl-input .repl-input-element {
-  color: var(--color-name);
 }
 .repl-block.processing .repl-result-spinner-inner {
   /* animation: spin 750ms linear infinite; */
@@ -207,8 +265,7 @@
   flex: 1;
 }
 .repl-block {
-  margin: 0.5rem 0 0; /* margin vs padding to help with screenshot rubber banding */
-  padding: 0;
+  padding: 0.5rem 0;
   display: flex;
   flex-direction: column;
 }
@@ -219,8 +276,6 @@
 
 .repl-block {
   .repl-input {
-    flex-direction: column;
-
     .kui--input-and-context {
       flex: 1;
       display: flex;

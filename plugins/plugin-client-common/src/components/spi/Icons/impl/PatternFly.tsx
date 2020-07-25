@@ -30,6 +30,7 @@ import {
   QuestionCircleIcon /* ToolsIcon */ as Settings,
   TrashAltIcon as Trash,
   LevelUpAltIcon as Up,
+  MapMarkerAltIcon as Location,
   ServerIcon as Server,
   AtIcon as At,
   CodeBranchIcon as CodeBranch,
@@ -90,6 +91,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Info {...props} />
     case 'List':
       return <List {...props} />
+    case 'Location':
+      return <Location {...props} />
     case 'Pause':
       return <Pause {...props} />
     case 'Play':
