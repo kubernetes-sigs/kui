@@ -1,8 +1,7 @@
 .kui--input-stripe {
   display: flex;
   flex-grow: 0;
-  flex-basis: 90px;
-  padding: 1.5em 1em 1.5em 1em;
+  flex-basis: 2rem;
   background-color: var(--color-stripe-01);
   box-shadow: 0 -3px 10px 0 rgba(60, 60, 60, 0.1);
 
@@ -24,6 +23,8 @@
 
     .repl-prompt {
       border: none;
+      padding: 0.5em 0.375em;
+      background-color: var(--color-base03);
     }
 
     .kui--tab-completions {

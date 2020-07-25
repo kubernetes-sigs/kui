@@ -56,6 +56,12 @@ type Props = {
   /** for key handlers, which may go away soon */
   tab: KuiTab
 
+  /** Block ordinal */
+  idx: number
+
+  /** Block ordinal to be displayed to user */
+  displayedIdx?: number
+
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
 } & BlockViewTraits
@@ -180,13 +186,13 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private cursor() {
-    if (isProcessing(this.props.model)) {
+    /* if (isProcessing(this.props.model)) {
       return (
         <div className="repl-result-spinner">
           <div className="repl-result-spinner-inner"></div>
         </div>
       )
-    }
+    } */
   }
 
   private isShowingSomethingInTerminal(block: BlockModel): block is FinishedBlock {
@@ -216,6 +222,10 @@ export default class Output extends React.PureComponent<Props, State> {
     }
   }
 
+  private ctx(insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1) {
+    return <span className="repl-context">Out[{insideBrackets}]</span>
+  }
+
   public render() {
     const hasContent =
       this.state.assertHasContent !== undefined
@@ -223,11 +233,14 @@ export default class Output extends React.PureComponent<Props, State> {
         : this.isShowingSomethingInTerminal(this.props.model)
 
     return (
-      <div className={'repl-output result-vertical' + (hasContent ? ' repl-result-has-content' : '')}>
-        {this.stream()}
-        {this.result()}
-        {this.cursor()}
-        {this.ok(hasContent)}
+      <div className={'repl-output ' + (hasContent ? ' repl-result-has-content' : '')}>
+        {!this.props.isPartOfMiniSplit && isFinished(this.props.model) && this.ctx()}
+        <div className="result-vertical">
+          {this.stream()}
+          {this.result()}
+          {this.cursor()}
+          {this.ok(hasContent)}
+        </div>
       </div>
     )
   }

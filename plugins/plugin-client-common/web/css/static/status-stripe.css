@@ -4,11 +4,10 @@ $font-size: 0.75rem;
   display: flex;
   flex-basis: 2.25rem;
   background-color: var(--color-sidecar-header);
-
-  --color-fg: var(--color-text-01);
+  color: var(--color-text-01);
 
   z-index: 10;
-  box-shadow: 0 -1px 0px 0px rgba(175, 175, 175, 0.1);
+  box-shadow: 0 -1px 1px var(--color-base05);
 
   .kui--status-stripe-element a.clickable,
   .kui--status-stripe-icon > div {
@@ -18,10 +17,10 @@ $font-size: 0.75rem;
   }
 
   .kui--status-stripe-element {
-    color: var(--color-fg);
+    color: currentColor;
   }
   .kui--status-stripe-element svg {
-    fill: var(--color-fg);
+    fill: currentColor;
   }
   .kui--status-stripe-element[data-view="obscured"] {
     color: var(--color-text-02);
@@ -32,8 +31,17 @@ $font-size: 0.75rem;
   .kui--status-stripe-element[data-view="ok"] svg {
     fill: var(--color-green);
   }
-  .kui--status-stripe-element[data-view="warn"] svg {
-    fill: var(--color-yellow-sidecar);
+  .kui--status-stripe-element:not(.kui--status-stripe-tag-element)[data-view="warn"] {
+    filter: grayscale(0.15) brightness(0.9);
+
+    &,
+    &.kui--status-stripe-element-clickable:hover {
+      background-color: var(--color-yellow);
+      color: var(--color-base00);
+    }
+    &.kui--status-stripe-element-clickable:hover {
+      filter: none;
+    }
   }
   .kui--status-stripe-element[data-view="error"] svg {
     fill: var(--color-error);
@@ -50,6 +58,7 @@ $font-size: 0.75rem;
   .kui--status-stripe-button .kui--status-stripe-element:hover {
     &:not(.kui--status-stripe-tag-element) {
       cursor: pointer;
+      color: var(--color-text-01);
       background-color: var(--color-table-border3);
     }
   }
@@ -110,13 +119,17 @@ $font-size: 0.75rem;
   }
 
   .clickable {
-    color: var(--color-fg);
+    color: currentColor;
     text-decoration: none;
   }
 
   .kui--status-stripe-element .clickable:hover {
-    color: var(--color-brand-01);
+    color: currentColor;
     text-decoration: none;
+
+    & svg {
+      stroke: currentColor;
+    }
   }
 
   .kui--status-stripe-button {

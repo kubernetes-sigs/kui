@@ -34,6 +34,11 @@
     margin: 0;
   }
 
+  .repl-prompt {
+    padding-left: 1rem;
+    padding-right: 0.25rem;
+  }
+
   .repl-block.kui--maximize-candidate {
     &:not(.repl-active):not(.processing) {
       flex: 1;

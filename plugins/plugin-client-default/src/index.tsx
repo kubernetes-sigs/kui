@@ -17,7 +17,7 @@
 import * as React from 'react'
 
 import { inBrowser } from '@kui-shell/core'
-import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
+import { Kui, KuiProps, ContextWidgets, MeterWidgets, CurrentWorkingDirectory } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
 import { UpdateChecker } from '@kui-shell/plugin-core-support'
@@ -38,6 +38,7 @@ export default function renderMain(props: KuiProps) {
   return (
     <Kui productName={productName} splitTerminals lightweightTables {...props} toplevel={!inBrowser() && <Search />}>
       <ContextWidgets>
+        <CurrentWorkingDirectory />
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
         <CurrentNamespace />

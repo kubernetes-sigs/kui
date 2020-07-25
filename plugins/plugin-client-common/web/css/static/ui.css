@@ -957,13 +957,6 @@ badge:not(.badge-as-fontawesome):not(.badge-as-image) {
   font-family: var(--font-sans-serif);
 }
 
-.oops.oops-as-html {
-  color: unset !important;
-}
-.repl-block.valid-response .oops,
-.repl-block.error .oops,
-.clickable.oops,
-.oops .oops-text-on-oops,
 .red-text {
   color: var(--color-error);
 }
