@@ -27,7 +27,6 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "ansi_up": "4.0.4",
     "bytes-iec": "3.1.0",
     "command-exists": "1.2.9",
     "debug": "4.1.1",
