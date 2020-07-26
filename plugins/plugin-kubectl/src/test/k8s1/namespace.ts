@@ -16,14 +16,7 @@
 
 import { strictEqual } from 'assert'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
-import {
-  waitForGreen,
-  waitForRed,
-  createNS,
-  waitTillNone,
-  RADIO_BUTTON,
-  RADIO_BUTTON_SELECTED
-} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const ns1: string = createNS()
 const ns2: string = createNS()
@@ -95,8 +88,8 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       })
 
       it(`should initiate namespace switch via click`, () => {
-        const radioButton = RADIO_BUTTON
-        const radioButtonSelected = RADIO_BUTTON_SELECTED
+        const radioButton = Selectors.RADIO_BUTTON
+        const radioButtonSelected = Selectors.RADIO_BUTTON_SELECTED
 
         return CLI.command(`${kubectl} get ns ${ns1}`, this.app)
           .then(ReplExpect.okWithCustom({ selector: radioButton }))
