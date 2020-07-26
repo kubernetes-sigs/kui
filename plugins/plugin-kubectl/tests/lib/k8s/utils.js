@@ -32,12 +32,6 @@ exports.defaultModeForGet = 'summary'
 /** Do singleton tables have a title decoration? */
 exports.singletonTablesHaveTitle = false
 
-/** Selectors of radio button (new RadioTable-based) */
-exports.RADIO_BUTTON = '.bx--structured-list-row:not(.bx--structured-list-row--header-row)'
-exports.RADIO_BUTTON_BY_NAME = name => `${exports.RADIO_BUTTON}[data-name="${name}"]`
-exports.RADIO_BUTTON_IS_SELECTED = '[data-is-selected]'
-exports.RADIO_BUTTON_SELECTED = `${exports.RADIO_BUTTON}${exports.RADIO_BUTTON_IS_SELECTED}`
-
 /**
  * Wait for a green badge
  *

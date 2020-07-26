@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-// this file defines the external API
-export { main } from './pty/server'
-export { StdioChannelWebsocketSide } from './pty/stdio-channel'
-export { getSessionForTab } from './pty/session'
-export { dispatchToShell as doExecWithPty, doExecWithStdoutViaPty } from './lib/cmds/catchall'
+import { Registrar } from '@kui-shell/core'
+import gitBranch from './controller/git/branch'
+
+export default function(registrar: Registrar) {
+  gitBranch(registrar)
+}

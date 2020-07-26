@@ -23,6 +23,7 @@ import {
   inBrowser,
   hasProxy,
   Arguments,
+  ParsedOptions,
   Registrar
 } from '@kui-shell/core'
 
@@ -98,6 +99,46 @@ export const dispatchToShell = async ({
 
     return exec().catch(cleanUpError)
   }
+}
+
+/**
+ * Execute the given command using a pty, but return a string
+ *
+ */
+export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOptions>(
+  args: Arguments<O>
+): Promise<string> {
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise<string>(async (resolve, reject) => {
+    let stdout = ''
+
+    // a bit of plumbing: tell the PTY that we will be handling everything
+    const myExecOptions = Object.assign({}, args.execOptions, {
+      rethrowErrors: true, // we want to handle errors
+      quiet: true, // don't ever emit anything on your own
+      replSilence: true, // repl: same thing
+      echo: false, // do not even echo "ok"
+
+      // the PTY will call this when the PTY process is ready; in
+      // return, we send it back a consumer of streaming output
+      onInit: () => {
+        return (chunk: Streamable) => {
+          if (typeof chunk === 'string') {
+            stdout += chunk
+          }
+        }
+      }
+    })
+
+    const myArgs = Object.assign({}, args, { execOptions: myExecOptions })
+
+    await dispatchToShell(myArgs).catch(err => {
+      console.error(err)
+      reject(err)
+    })
+
+    resolve(stdout)
+  })
 }
 
 /**
