@@ -215,3 +215,9 @@ export const STATUS_STRIPE_WIDGET_ICON_WITH_ATTR = (which: string, key: string, 
   `${STATUS_STRIPE_WIDGET_WITH_ATTR(which, key, value)} .kui--status-stripe-icon`
 export const STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR = (which: string, key: string, value: string) =>
   `${STATUS_STRIPE_WIDGET_WITH_ATTR(which, key, value)} .kui--status-stripe-text`
+
+/** Selectors of radio button (new RadioTable-based) */
+export const RADIO_BUTTON = '.kui--radio-table-body .kui--radio-table-row'
+export const RADIO_BUTTON_BY_NAME = (name: string) => `${RADIO_BUTTON}[data-name="${name}"]`
+export const RADIO_BUTTON_IS_SELECTED = '[data-is-selected]'
+export const RADIO_BUTTON_SELECTED = `${RADIO_BUTTON}${RADIO_BUTTON_IS_SELECTED}`

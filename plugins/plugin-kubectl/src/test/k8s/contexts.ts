@@ -22,15 +22,7 @@ import * as assert from 'assert'
 
 import { expandHomeDir } from '@kui-shell/core'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
-import {
-  waitForGreen,
-  waitForRed,
-  createNS,
-  waitTillNone,
-  RADIO_BUTTON_BY_NAME,
-  RADIO_BUTTON_SELECTED,
-  RADIO_BUTTON_IS_SELECTED
-} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -148,7 +140,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           const currentContextAsIndicatedByContextsTable = await CLI.command(`contexts -o wide`, this.app)
             .then(
               ReplExpect.okWithCustom({
-                selector: `${RADIO_BUTTON_SELECTED} [data-is-name]`
+                selector: `${Selectors.RADIO_BUTTON_SELECTED} [data-is-name]`
               })
             )
             .then(selector => this.app.client.getText(selector))
@@ -201,22 +193,22 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
         try {
           const selector = await CLI.command(`contexts -o wide`, this.app).then(
             ReplExpect.okWithCustom({
-              selector: RADIO_BUTTON_BY_NAME(contextName)
+              selector: Selectors.RADIO_BUTTON_BY_NAME(contextName)
             })
           )
 
           await this.app.client.click(selector)
 
           // the row in that first table had better now be selected
-          await this.app.client.waitForExist(`${selector}${RADIO_BUTTON_IS_SELECTED}`)
+          await this.app.client.waitForExist(`${selector}${Selectors.RADIO_BUTTON_IS_SELECTED}`)
 
           // and if we request a new contexts table, it'd better be selected there, too
           const selector2 = await CLI.command(`contexts -o wide`, this.app).then(
             ReplExpect.okWithCustom({
-              selector: RADIO_BUTTON_BY_NAME(contextName)
+              selector: Selectors.RADIO_BUTTON_BY_NAME(contextName)
             })
           )
-          await this.app.client.waitForExist(`${selector2}${RADIO_BUTTON_IS_SELECTED}`)
+          await this.app.client.waitForExist(`${selector2}${Selectors.RADIO_BUTTON_IS_SELECTED}`)
         } catch (err) {
           return Common.oops(this)(err)
         }
