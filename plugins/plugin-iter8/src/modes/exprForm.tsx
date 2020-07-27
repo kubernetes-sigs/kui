@@ -81,7 +81,6 @@ class ExprBase extends React.Component<{}, Formstate> {
 
   private handleAddCand = value => {
     // Convert all input items into an iterable array
-    console.log(value)
     const versionValue = value.map(data => {
       return data.text
     })
@@ -97,7 +96,6 @@ class ExprBase extends React.Component<{}, Formstate> {
       invalidCandidate: false,
       candidates: versionValue
     })
-    console.log(this.state.candidates)
   }
 
   private handleSplitCand(value) {
@@ -266,9 +264,6 @@ class ExprBase extends React.Component<{}, Formstate> {
   private handleRewardChange = idx => {
     const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward }
-    console.log('REWARD INFORMATION')
-    console.log(newMetric)
-    console.log(idx)
     this.setState(prevState => ({
       criteria: newMetric,
       disableReward: !prevState.disableReward

@@ -296,6 +296,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       }
     }
     this.setState({ chartData: tempChartData, chartOptions: tempChartOptions })
+    console.log(tempChartData)
   }
 
   // Get details for the criteria charts
@@ -330,7 +331,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         }
         tempChartData[i].data[1].data.push(roundoff(baselineCriteriaResults[i].statistics.value))
       }
-
       // get chart details from candidates
       const candidateCriteriaResult = this.state.experimentResult.candidate_assessments
       for (let i = 0; i < candidateCriteriaResult.length; i++) {
@@ -340,6 +340,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         }
       }
       this.setState({ chartData: tempChartData, chartOptions: tempChartOptions })
+      console.log('After updating')
+      console.log(tempChartData)
     }
   }
 
