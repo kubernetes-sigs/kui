@@ -39,7 +39,7 @@ export default function getSize(this: HTMLElement): { width: number; height: num
 
   const selectorForContext = '.repl-block .repl-context'
   const contextElement = this.querySelector(selectorForContext)
-  const { width: contextWidth } = contextElement.getBoundingClientRect()
+  const { width: contextWidth } = contextElement ? contextElement.getBoundingClientRect() : { width: 0 }
 
   const width = enclosingRect.width - paddingHorizontal(widthPadElement) - contextWidth
   const height = enclosingRect.height - paddingVertical(this /* heightPadElement */)
