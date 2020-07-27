@@ -92,7 +92,7 @@ import { getHistoryForTab } from './models/history'
 export function History(tab: string | Tab) {
   return getHistoryForTab(typeof tab === 'string' ? tab : tab.uuid)
 }
-export { HistoryModel } from './models/history'
+export { HistoryModel, HistoryLine } from './models/history'
 
 // pretty printing
 export { prettyPrintTime } from './webapp/util/time'

@@ -74,6 +74,9 @@ export interface InputOptions {
 
   /** Block is about to lose focus */
   willLoseFocus?: () => void
+
+  /** Navigation controller */
+  navigateTo?(dir: 'first' | 'last' | 'previous' | 'next'): void
 }
 
 type InputProps = {

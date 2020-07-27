@@ -46,6 +46,9 @@ type Props = InputOptions & {
 
   noActiveInput?: boolean
 
+  /** Is this block the one currently displayed in a MiniSplit */
+  isVisibleInMiniSplit?: boolean
+
   noOutput?: boolean
   onOutputRender?: (idx: number) => void
 } & BlockViewTraits
@@ -154,6 +157,7 @@ export default class Block extends React.PureComponent<Props, State> {
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}
           data-is-focused={this.props.isFocused || undefined}
+          data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
           ref={c => this.setState({ _block: c })}
         >
           {isAnnouncement(this.props.model) ? (
