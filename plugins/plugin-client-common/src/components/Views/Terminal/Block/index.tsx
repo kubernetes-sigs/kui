@@ -22,6 +22,7 @@ import Output from './Output'
 import { BlockModel, isActive, isEmpty, isFinished, isProcessing, isAnnouncement, hasUUID } from './BlockModel'
 
 export type BlockViewTraits = {
+  isFocused?: boolean
   prefersTerminalPresentation?: boolean
   isPartOfMiniSplit?: boolean
   isWidthConstrained?: boolean
@@ -52,6 +53,9 @@ type Props = InputOptions & {
 interface State {
   // needed temporarily to make pty/client happy
   _block?: HTMLElement
+
+  /** Is the Input element focused? */
+  isFocused: boolean
 }
 
 export default class Block extends React.PureComponent<Props, State> {
@@ -60,7 +64,9 @@ export default class Block extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-    this.state = {}
+    this.state = {
+      isFocused: false
+    }
   }
 
   /** Owner wants us to focus on the current prompt */
@@ -147,6 +153,7 @@ export default class Block extends React.PureComponent<Props, State> {
           data-announcement={isAnnouncement(this.props.model) || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}
+          data-is-focused={this.props.isFocused || undefined}
           ref={c => this.setState({ _block: c })}
         >
           {isAnnouncement(this.props.model) ? (
