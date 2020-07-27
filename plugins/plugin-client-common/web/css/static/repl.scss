@@ -87,14 +87,14 @@
       bottom: 0.1875rem;
       width: 4px;
     }
-    &.repl-active:before {
+    &[data-is-focused]:before {
       opacity: 1;
     }
     &.error:before {
       opacity: 1;
       background-color: var(--color-error);
     }
-    &.repl-active .repl-context {
+    &[data-is-focused] .repl-context {
       opacity: 1;
     }
     &:hover .repl-output .repl-context:after {

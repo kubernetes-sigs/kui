@@ -424,6 +424,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         xterm.focus()
       }
     }
+
+    this.setState(curState => ({ focusedIdx: curState.splits.findIndex(_ => _.uuid === scrollback.uuid) }))
   }
 
   /**
@@ -703,6 +705,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   onOutputRender={this.onOutputRender.bind(this, scrollback)}
                   willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                   willLoseFocus={() => this.doFocus(scrollback)}
+                  isFocused={sbidx === this.state.focusedIdx && isActive(_)}
                   prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                   isPartOfMiniSplit={isMiniSplit}
                   isWidthConstrained={isWidthConstrained}
