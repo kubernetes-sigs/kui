@@ -210,7 +210,7 @@ export default class Input extends InputProvider {
     super(props)
 
     this.state = {
-      execUUID: hasUUID(props.model) && props.model.execUUID,
+      execUUID: hasUUID(props.model) ? props.model.execUUID : undefined,
       prompt: undefined,
       spinner: undefined
     }
@@ -223,7 +223,7 @@ export default class Input extends InputProvider {
 
   /** Owner wants us to focus on the current prompt */
   public doFocus() {
-    if (this.state.prompt) {
+    if (this.props.isFocused && this.state.prompt) {
       this.state.prompt.focus()
     }
   }
@@ -274,18 +274,58 @@ export default class Input extends InputProvider {
     return state
   }
 
+  private onKeyPress(evt: React.KeyboardEvent<HTMLInputElement>) {
+    if (!this.state.isearch) {
+      onKeyPress.bind(this)(evt)
+    }
+    this.props.onInputKeyPress && this.props.onInputKeyPress(evt)
+  }
+
+  private readonly _onKeyPress = this.onKeyPress.bind(this)
+
+  private onKeyDown(evt: React.KeyboardEvent<HTMLInputElement>) {
+    if (!this.state.isearch) {
+      onKeyDown.bind(this)(evt)
+    }
+    this.props.onInputKeyDown && this.props.onInputKeyDown(evt)
+  }
+
+  private readonly _onKeyDown = this.onKeyDown.bind(this)
+
+  private onKeyUp(evt: React.KeyboardEvent<HTMLInputElement>) {
+    onKeyUp.bind(this)(evt)
+    this.props.onInputKeyUp && this.props.onInputKeyUp(evt)
+  }
+
+  private readonly _onKeyUp = this.onKeyUp.bind(this)
+
+  private onPaste(evt: React.ClipboardEvent) {
+    if (!this.state.isearch) {
+      onPaste(evt.nativeEvent, this.props.tab, this.state.prompt)
+    }
+  }
+
+  private readonly _onPaste = this.onPaste.bind(this)
+
+  private onRef(c: HTMLInputElement) {
+    if (c && !this.state.prompt) {
+      c.value = hasValue(this.props.model) ? this.props.model.value : ''
+      this.setState({ prompt: c })
+    } else if (c && this.props.isFocused) {
+      c.focus()
+    }
+  }
+
+  private readonly _onRef = this.onRef.bind(this)
+
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
     const active = isActive(this.props.model)
 
     if (active) {
-      setTimeout(() => this.state.prompt.focus())
-
-      const kp = active && !this.state.isearch ? onKeyPress.bind(this) : undefined
-      const kd = active && !this.state.isearch ? onKeyDown.bind(this) : undefined
-      const ku = active ? onKeyUp.bind(this) : undefined
-      const op =
-        active && !this.state.isearch ? evt => onPaste(evt.nativeEvent, this.props.tab, this.state.prompt) : undefined
+      if (this.props.isFocused && this.state.prompt) {
+        this.state.prompt.focus()
+      }
 
       return (
         <input
@@ -305,25 +345,11 @@ export default class Input extends InputProvider {
           onMouseMove={this.props.onInputMouseMove}
           onChange={this.props.onInputChange}
           onClick={this.props.onInputClick}
-          onKeyPress={evt => {
-            if (kp) kp(evt)
-            this.props.onInputKeyPress && this.props.onInputKeyPress(evt)
-          }}
-          onKeyDown={evt => {
-            if (kd) kd(evt)
-            this.props.onInputKeyDown && this.props.onInputKeyDown(evt)
-          }}
-          onKeyUp={evt => {
-            if (ku) ku(evt)
-            this.props.onInputKeyUp && this.props.onInputKeyUp(evt)
-          }}
-          onPaste={op}
-          ref={c => {
-            if (c && !this.state.prompt) {
-              c.value = hasValue(this.props.model) ? this.props.model.value : ''
-              this.setState({ prompt: c })
-            }
-          }}
+          onKeyPress={this._onKeyPress}
+          onKeyDown={this._onKeyDown}
+          onKeyUp={this._onKeyUp}
+          onPaste={this._onPaste}
+          ref={this._onRef}
         />
       )
     } else {
