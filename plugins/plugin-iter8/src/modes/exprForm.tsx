@@ -266,6 +266,9 @@ class ExprBase extends React.Component<{}, Formstate> {
   private handleRewardChange = idx => {
     const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward }
+    console.log('REWARD INFORMATION')
+    console.log(newMetric)
+    console.log(idx)
     this.setState(prevState => ({
       criteria: newMetric,
       disableReward: !prevState.disableReward

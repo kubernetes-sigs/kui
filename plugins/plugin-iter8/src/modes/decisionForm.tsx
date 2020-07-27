@@ -159,7 +159,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   // Sets display with winner information
   private getWinAnalysis(apiResult) {
     if (apiResult.winner_assessment.winning_version_found) {
-      const prob = roundoff(apiResult.winner_assessment.probability_of_winning_for_best_version, 2)
+      const prob = roundoff(apiResult.winner_assessment.probability_of_winning_for_best_version, 4)
       this.winner = `Version: ${apiResult.winner_assessment.current_best_version} is the winner with ${prob} probability of winning`
     } else {
       this.winner = 'Do not have enough data to determine winner'
@@ -183,7 +183,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       version: baseRlts.id,
       type: 'Baseline',
       count: baseRlts.request_count,
-      winprob: roundoff(baseRlts.win_probability, 2),
+      winprob: roundoff(baseRlts.win_probability, 4),
       rollback: 'Does not apply'
     })
     dataLabels.push(baseRlts.id)
@@ -195,7 +195,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         version: candRlts[i].id,
         type: 'Candidate',
         count: candRlts[i].request_count,
-        winprob: roundoff(candRlts[i].win_probability, 2),
+        winprob: roundoff(candRlts[i].win_probability, 4),
         rollback: candRlts[i].rollback.toString()
       })
       dataLabels.push(candRlts[i].id)
@@ -265,7 +265,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         if (this.state.experimentRequest.criteria[i].threshold.type === 'absolute') {
           perMetricData.data.push({
             name: 'threshold',
-            data: [roundoff(this.state.experimentRequest.criteria[i].threshold.value, 2)]
+            data: [roundoff(this.state.experimentRequest.criteria[i].threshold.value, 4)]
           })
         } else {
           perMetricData.data.push({

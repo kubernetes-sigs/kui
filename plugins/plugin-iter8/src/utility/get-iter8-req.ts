@@ -8,7 +8,7 @@ function getCriteriaModel(definedCriteria: Array<CriterionState>): Array<Object>
     let newMetric = definedCriteria[i]
     if (newMetric.name === '') {
       continue
-    } else if (newMetric.limitType === '') {
+    } else if (newMetric.reward) {
       criteriaArr.push({
         id: i,
         metric_id: newMetric.name,
