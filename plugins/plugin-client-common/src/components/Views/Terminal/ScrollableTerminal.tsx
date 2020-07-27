@@ -105,6 +105,12 @@ interface ScrollbackState {
 
   /** cleanup routines for this split */
   cleaners: Cleaner[]
+
+  /**
+   * Block index (into this.blocks) to show in a MiniSplit. Must be a
+   * negative number, interpreted as an index from the end.
+   */
+  showThisIdxInMiniSplit: number
 }
 
 function isScrollback(tab: KuiTab): boolean {
@@ -255,6 +261,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       cleaners: [],
       forceMiniSplit: false,
       nAnnouncements: 0,
+      showThisIdxInMiniSplit: -2,
       blocks: (capturedValue !== undefined ? [] : this.restoreBlocks(sbuuid)).concat([Active(capturedValue)])
     }
 
@@ -673,6 +680,25 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     )
   }
 
+  /** Update the viewport to show a particular entry */
+  private navigateTo(scrollback: ScrollbackState, dir: 'first' | 'last' | 'previous' | 'next') {
+    this.splice(scrollback.uuid, ({ blocks, showThisIdxInMiniSplit }) => {
+      const newIdx =
+        dir === 'first'
+          ? 0
+          : dir === 'last'
+          ? -2
+          : dir === 'previous'
+          ? Math.max(-scrollback.blocks.length, showThisIdxInMiniSplit - 1)
+          : Math.min(-2, showThisIdxInMiniSplit + 1)
+
+      return {
+        blocks,
+        showThisIdxInMiniSplit: newIdx
+      }
+    })
+  }
+
   public render() {
     const nTerminals = this.state.splits.length
 
@@ -687,6 +713,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const tab = this.tabFor(scrollback)
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
             const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
+            const nBlocks = scrollback.blocks.length
+            const showThisIdxInMiniSplit =
+              scrollback.showThisIdxInMiniSplit < 0
+                ? nBlocks + scrollback.showThisIdxInMiniSplit
+                : scrollback.showThisIdxInMiniSplit
 
             return React.createElement(
               'div',
@@ -714,7 +745,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   isFocused={sbidx === this.state.focusedIdx && isActive(_)}
                   prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                   isPartOfMiniSplit={isMiniSplit}
+                  isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
                   isWidthConstrained={isWidthConstrained}
+                  navigateTo={this.navigateTo.bind(this, scrollback)}
                   ref={c => {
                     if (isActive(_)) {
                       // grab a ref to the active block, to help us maintain focus

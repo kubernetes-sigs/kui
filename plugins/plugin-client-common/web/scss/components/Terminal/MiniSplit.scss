@@ -42,7 +42,7 @@
     &:not(.repl-active):not(.processing) {
       flex: 1;
 
-      &:not(:nth-last-child(2)) {
+      &:not([data-is-visible-in-minisplit]) {
         display: none;
       }
     }
