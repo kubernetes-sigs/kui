@@ -425,6 +425,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
     }
 
+    this.setFocusOnScrollback(scrollback)
+  }
+
+  private setFocusOnScrollback(scrollback: ScrollbackState) {
     this.setState(curState => ({ focusedIdx: curState.splits.findIndex(_ => _.uuid === scrollback.uuid) }))
   }
 
@@ -504,6 +508,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private onClick(scrollback: ScrollbackState) {
     if (document.activeElement === document.body && !getSelection().toString()) {
       this.doFocus(scrollback)
+    } else {
+      this.setFocusOnScrollback(scrollback)
     }
   }
 
