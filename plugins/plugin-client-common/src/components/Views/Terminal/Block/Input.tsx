@@ -139,9 +139,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
       !this.props.noPromptContext && (
         <KuiContext.Consumer>
           {config =>
-            !config.noPromptContext &&
-            !this.props.isPartOfMiniSplit &&
-            this.props.model && <span className="repl-context">{this.contextContent()}</span>
+            !config.noPromptContext && this.props.model && <span className="repl-context">{this.contextContent()}</span>
           }
         </KuiContext.Consumer>
       )
@@ -169,7 +167,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     return (
       <KuiContext.Consumer>
         {config =>
-          this.props.isPartOfMiniSplit || config.prompt ? (
+          config.prompt ? (
             <div className="repl-prompt">{this.promptRight()}</div>
           ) : (
             <div className="repl-context">{this.contextContent()}</div>

@@ -48,6 +48,11 @@ class WriteEventBus extends EventBusBase {
     return this.eventBus.emit(channel, args)
   }
 
+  /** User switching focus from one Split to another, within one Tab */
+  public emitSplitSwitch(tab: Tab): void {
+    this.eventBus.emit('/tab/switch/split', tab)
+  }
+
   public emitTabLayoutChange(tabUUID: string): void {
     setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`))
   }
@@ -101,6 +106,16 @@ class ReadEventBus extends WriteEventBus {
   public on(channel: '/tab/switch/request', listener: (tabId: number) => void): void
   public on(channel: string, listener: any) {
     return this.eventBus.on(channel, listener)
+  }
+
+  /** User switching focus from one Split to another, within one Tab */
+  public onSplitSwitch(listener: (tab?: Tab | number) => void): void {
+    this.eventBus.on('/tab/switch/split', listener)
+  }
+
+  /** User switching focus from one Split to another, within one Tab */
+  public offSplitSwitch(listener: (tab?: Tab | number) => void): void {
+    this.eventBus.off('/tab/switch/split', listener)
   }
 
   public onTabLayoutChange(tabUUID: string, listener: () => void): void {
@@ -303,6 +318,7 @@ export const eventBus = new EventBus()
 export function wireToTabEvents(listener: (tab?: Tab | number) => void) {
   eventBus.on('/tab/new', listener)
   eventBus.on('/tab/switch/request', listener)
+  eventBus.onSplitSwitch(listener)
 }
 
 /**
