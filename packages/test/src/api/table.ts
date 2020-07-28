@@ -31,6 +31,7 @@ interface RowWithBadgeAndMessage {
 }
 
 interface TableValidation {
+  hasGridButton?: boolean
   cells: ((value: string, rowIdx: number) => void)[]
 }
 
@@ -153,6 +154,11 @@ export class TestTable {
         })
         .then(async res => {
           await res.app.client.waitForExist(Selectors.TABLE_TITLE(res.count - 1), CLI.waitTimeout, true)
+
+          if (validation && validation.hasGridButton) {
+            await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_GRID(res.count))
+          }
+
           return res
         })
         .then(

@@ -32,7 +32,11 @@ export type Props<T extends KuiTable = KuiTable> = {
 }
 
 export const findGridableColumn = (response: KuiTable) => {
-  return response.body[0] ? response.header.attributes.findIndex(cell => /STATUS|REASON/i.test(cell.key)) : -1
+  return response.gridableColumn !== undefined
+    ? response.gridableColumn
+    : response.body[0]
+    ? response.header.attributes.findIndex(cell => /STATUS|REASON/i.test(cell.key))
+    : -1
 }
 
 /**
@@ -52,7 +56,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
     return (
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
-          const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
+          const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn - 1]
           const title = `${kuiRow.name}\n${badgeCell ? badgeCell.value : ''}`
           const css = badgeCell ? badgeCell.css : 'kui--status-unknown'
 
@@ -61,7 +65,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
 
           const props = {
             title,
-            key: kuiRow.attributes[gridableColumn].css, // force restart of animation if color changes
+            key: css, // force restart of animation if color changes
             'data-tag': 'badge-circle',
             'data-just-updated': this.props.justUpdated[kuiRow.rowKey || kuiRow.name],
             className: css,

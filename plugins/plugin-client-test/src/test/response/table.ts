@@ -49,6 +49,7 @@ new TestTable('should test table with dilldown', {
       body: expectRow
     },
     validation: {
+      hasGridButton: true,
       cells: [
         (value: string, rowIdx: number) => {
           assert.strictEqual(value, firstCol[rowIdx])
