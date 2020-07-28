@@ -20,6 +20,7 @@ export const firstSeen = 'FIRST SEEN'
 
 export default (): Table => ({
   title: 'noTitle',
+  gridableColumn: 2,
   breadcrumbs: [{ label: 'noBreadcrumb' }],
   noSort: true,
   header: { name: 'NAME', attributes: [{ value: 'FOO' }, { value: firstSeen }] },
@@ -27,23 +28,23 @@ export default (): Table => ({
     {
       name: 'TestString',
       onclick: `test string`,
-      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5', css: 'green-background', tag: 'badge' }]
     },
     {
       name: 'TestTable',
       onclick: `test table`,
-      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5', css: 'green-background', tag: 'badge' }]
     },
     {
       name: 'TestMMRName',
       onclick: `test mmr name`,
-      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5', css: 'green-background', tag: 'badge' }]
     },
     {
       name: 'TestMMRModeSilence',
       onclick: `test mmr mode`,
       onclickSilence: true,
-      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5' }]
+      attributes: [{ value: 'foo' }, { key: firstSeen, value: '5', css: 'green-background', tag: 'badge' }]
     }
   ]
 })
