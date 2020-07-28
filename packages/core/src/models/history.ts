@@ -44,9 +44,6 @@ export interface HistoryLine {
 
   /** Index into model */
   historyIdx: number
-
-  /** Is this line shown in the UI? */
-  isCurrentlyShown: boolean
 }
 
 /** A tuple of History entries, one per Tab (as specified by its given uuid) */
@@ -155,27 +152,8 @@ export class HistoryModel {
     return true
   }
 
-  /** Internal hide */
-  private hideAt(historyIdx: number) {
-    const line = this._lines[historyIdx]
-    if (line) {
-      line.isCurrentlyShown = false
-    }
-  }
-
-  /** Hide the given entry from future display */
-  public hide(historyIdx: number | number[]) {
-    debug('hiding', historyIdx)
-    if (typeof historyIdx === 'number') {
-      this.hideAt(historyIdx)
-    } else {
-      historyIdx.forEach(_ => this.hideAt(_))
-    }
-    this.save()
-  }
-
   /** add a line of repl history */
-  public add(line: Pick<HistoryLine, 'raw' | 'isCurrentlyShown'>): number {
+  public add(line: Pick<HistoryLine, 'raw'>): number {
     if (this._lines.length === 0 || JSON.stringify(this._lines[this._lines.length - 1]) !== JSON.stringify(line)) {
       // don't add sequential duplicates
       this._lines.push(Object.assign(line, { historyIdx: this._lines.length - 1 }))

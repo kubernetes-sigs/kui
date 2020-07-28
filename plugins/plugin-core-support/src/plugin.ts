@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2017-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import quit from './lib/cmds/quit'
 import clear from './lib/cmds/clear'
 import base64 from './lib/cmds/base64'
 import prompt from './lib/cmds/prompt'
+import replay from './lib/cmds/replay'
 import sleep from './lib/cmds/sleep'
 import history from './lib/cmds/history/history'
 import tabManagement from './lib/cmds/tab-management'
@@ -40,6 +41,7 @@ export default async (commandTree: Registrar) => {
     clear(commandTree),
     base64(commandTree),
     prompt(commandTree),
+    replay(commandTree),
     sleep(commandTree),
     history(commandTree),
     tabManagement(commandTree)

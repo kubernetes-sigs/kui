@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('main/spawn-electron')
 debug('loading')
 
-import { BrowserWindow, BrowserWindowConstructorOptions, IpcMainEvent, Rectangle, Screen } from 'electron'
+import { BrowserWindow, BrowserWindowConstructorOptions, Event, IpcMainEvent, Rectangle, Screen } from 'electron'
 
 import windowDefaults, { popupWindowDefaults } from '../webapp/defaults'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
@@ -47,6 +47,44 @@ interface App extends EventEmitter {
  */
 let app: App
 
+/**
+ * Screen coordinates for regular window
+ *
+ */
+function getPositionForRegularWindow(screen: Screen) {
+  if (screen) {
+    const nWindows = BrowserWindow.getAllWindows().length
+    const { bounds } = screen.getPrimaryDisplay()
+    const delta = nWindows * 40
+
+    const x = Math.round((bounds.width - windowDefaults.width) / 2) + delta
+    const y = Math.round((bounds.height - windowDefaults.height) / 2) + delta
+    return { x, y }
+  }
+}
+
+/**
+ * Screen coordinates for popup window
+ *
+ */
+function getPositionForPopup(screen: Screen) {
+  if (screen) {
+    const nWindows = BrowserWindow.getAllWindows().length
+    const { bounds } = screen.getPrimaryDisplay()
+    return {
+      x: bounds.width - popupWindowDefaults.width - 50,
+      y: Math.round((bounds.height - popupWindowDefaults.height) / 4 + (nWindows - 1) * 40)
+    }
+  }
+}
+
+/** Special purpose createWindow that accepts only an argv */
+function createWindowWithArgv(executeThisArgvPlease?: string[]) {
+  // eslint-disable-next-line @typescript-eslint/no-use-before-define
+  createWindow(true, executeThisArgvPlease)
+}
+
+/** Open a new Electron window */
 export function createWindow(
   noHeadless = false,
   executeThisArgvPlease?: string[],
@@ -102,7 +140,10 @@ export function createWindow(
       '@kui-shell/client/config.d/icons.json'
     )
 
-    const position = subwindowPrefs && subwindowPrefs.position ? await subwindowPrefs.position() : {}
+    const position =
+      subwindowPrefs && subwindowPrefs.position
+        ? await subwindowPrefs.position()
+        : getPositionForRegularWindow((await import('electron')).screen)
     const opts: BrowserWindowConstructorOptions = Object.assign(
       {
         title: productName,
@@ -278,7 +319,7 @@ export function createWindow(
     }
 
     debug('install menus')
-    require('./menu').install(createWindow)
+    require('./menu').install(createWindowWithArgv)
 
     // Open the DevTools.
     // mainWindow.webContents.openDevTools()
@@ -382,21 +423,6 @@ export function createWindow(
 
     debug('createWindow done')
   })
-}
-
-/**
- * Screen coordinates for popup window
- *
- */
-function getPositionForPopup(screen: Screen) {
-  if (screen) {
-    const nWindows = BrowserWindow.getAllWindows().length
-    const { bounds } = screen.getPrimaryDisplay()
-    return {
-      x: bounds.width - popupWindowDefaults.width - 50,
-      y: Math.round((bounds.height - popupWindowDefaults.height) / 4 + (nWindows - 1) * 40)
-    }
-  }
 }
 
 /**
@@ -536,6 +562,12 @@ export async function initElectron(
     }
   }
 
+  // See menu.ts; Open Recent leads here
+  app.on('open-file', async (evt: Event, filepath: string) => {
+    const { replay } = await import('./open')
+    replay(filepath, createWindowWithArgv)
+  })
+
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
@@ -563,4 +595,4 @@ export async function initElectron(
       createWindow()
     }
   })
-} /* initElectron */
+}

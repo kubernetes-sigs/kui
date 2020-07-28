@@ -43,6 +43,9 @@ interface State {
   /** list of current tabs; one TabContent for each */
   tabs: TabModel[]
 
+  /** Has the first tab activated itself? */
+  isFirstTabReady: boolean
+
   /** current active tab index */
   activeIdx: number
 }
@@ -53,6 +56,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
     this.state = {
       tabs: [this.newTabModel()],
+      isFirstTabReady: false,
       activeIdx: 0
     }
 
@@ -204,6 +208,13 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
+  private onTabReady(tab: Tab) {
+    if (this.props.onTabReady) {
+      this.props.onTabReady(tab)
+    }
+    this.setState({ isFirstTabReady: true })
+  }
+
   public render() {
     return (
       <div className="kui--full-height">
@@ -222,6 +233,9 @@ export default class TabContainer extends React.PureComponent<Props, State> {
               uuid={_.uuid}
               active={idx === this.state.activeIdx}
               willUpdateTopTabButtons={this.willUpdateTopTabButtons.bind(this, _.uuid)}
+              onTabReady={
+                idx === 0 && this.props.onTabReady && !this.state.isFirstTabReady && this.onTabReady.bind(this)
+              }
               state={_.state}
               {...this.props}
             >
