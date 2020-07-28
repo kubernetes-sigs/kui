@@ -132,6 +132,8 @@ export class Table<RowType extends Row = Row> {
 
   // type?: string
 
+  gridableColumn?: number
+
   style?: TableStyle
 
   header?: RowType
