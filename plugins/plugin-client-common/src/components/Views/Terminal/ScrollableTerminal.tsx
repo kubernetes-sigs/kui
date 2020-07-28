@@ -256,7 +256,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private scrollback(capturedValue?: string, sbuuid = this.allocateUUIDForScrollback()): ScrollbackState {
-    const state = {
+    const state: ScrollbackState = {
       uuid: sbuuid,
       cleaners: [],
       forceMiniSplit: false,
@@ -267,6 +267,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     // prefetch command history; this helps with master history
     History(sbuuid)
+
+    this.tabFor(state)
 
     eventBus.onceWithTabId('/tab/close/request', sbuuid, async () => {
       // async, to allow for e.g. command completion events to finish
@@ -436,7 +438,18 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private setFocusOnScrollback(scrollback: ScrollbackState) {
-    this.setState(curState => ({ focusedIdx: curState.splits.findIndex(_ => _.uuid === scrollback.uuid) }))
+    this.setState(curState => {
+      const focusedIdx = this.findSplit(curState, scrollback.uuid)
+      if (curState.focusedIdx !== focusedIdx) {
+        const currentSplit = curState.splits[curState.focusedIdx]
+        if (currentSplit && currentSplit.facade) {
+          currentSplit.facade.state.capture()
+        }
+        scrollback.facade.state.restore()
+        eventBus.emitSplitSwitch(scrollback.facade)
+      }
+      return { focusedIdx }
+    })
   }
 
   /**
@@ -636,10 +649,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (!scrollback.facade) {
       const { uuid } = scrollback
       let facade: KuiTab // eslint-disable-line prefer-const
+
+      const focusedSplit = this.state ? this.state.splits[this.state.focusedIdx] : undefined
+      const focusedState = (focusedSplit && focusedSplit.facade && focusedSplit.facade.state) || this.props.tab.state
+
       const tabFacade = Object.assign({}, this.props.tab, {
+        // clone tab state
+        state: focusedState.cloneWithUUID(uuid),
+
+        // create a REPL controller that uses our uuid
         REPL: Object.assign({}, this.props.tab.REPL, {
           pexec: (command: string, execOptions?: ExecOptions) => {
             return this.props.tab.REPL.pexec(command, Object.assign({ tab: facade }, execOptions))
+          },
+          rexec: (command: string, execOptions?: ExecOptions) => {
+            return this.props.tab.REPL.rexec(command, Object.assign({ tab: facade }, execOptions))
           },
           qexec: (
             command: string,

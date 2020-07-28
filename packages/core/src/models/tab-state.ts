@@ -73,11 +73,22 @@ export default class TabState {
     return this._cwd
   }
 
+  /** Capture contextual global state */
   public capture() {
     this._env = Object.assign({}, process.env)
     this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
 
-    debug('captured tab state', this.cwd)
+    debug('captured tab state', this.uuid, this.cwd)
+  }
+
+  /** Clone the captured state */
+  public cloneWithUUID(uuid: string) {
+    this.capture()
+    const clone = new TabState(uuid)
+    clone._env = Object.assign({}, this.env)
+    clone._cwd = this.cwd
+    debug('cloned tab state', clone.uuid, clone.cwd)
+    return clone
   }
 
   /**
@@ -154,6 +165,7 @@ export default class TabState {
    *
    */
   public restore() {
+    debug('restoring state', this.cwd)
     process.env = this._env
 
     if (this._cwd !== undefined) {
