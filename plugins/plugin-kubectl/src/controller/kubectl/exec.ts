@@ -195,7 +195,7 @@ export async function exec<O extends KubeOptions>(
       content: {
         code: 0,
         stdout: await doExecWithPty(args, prepare),
-        stderr: '',
+        stderr: undefined,
         wasSentToPty: true
       }
     })

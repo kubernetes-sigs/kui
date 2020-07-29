@@ -17,10 +17,12 @@
 import { Registrar } from '@kui-shell/core'
 import { defaultFlags, commandPrefix } from '@kui-shell/plugin-kubectl'
 
-import help from './controller/help'
-import info from './controller/info'
-import list from './controller/list'
-import genericTable from './controller/generic-table'
+import help from './controller/krew/help'
+import info from './controller/krew/info'
+import list from './controller/krew/list'
+import genericTable from './controller/krew/generic-table'
+
+import popeye from './controller/popeye'
 
 const aliases = ['k', 'kubectl']
 const canonical = 'kubectl'
@@ -32,5 +34,7 @@ export default async (registrar: Registrar) => {
     registrar.listen(`/${commandPrefix}/${command}/krew/list`, list(canonical), defaultFlags)
     registrar.listen(`/${commandPrefix}/${command}/krew/search`, genericTable(canonical), defaultFlags)
     registrar.listen(`/${commandPrefix}/${command}/krew/version`, genericTable(canonical), defaultFlags)
+
+    registrar.listen(`/${commandPrefix}/${command}/popeye`, popeye(canonical), defaultFlags)
   })
 }
