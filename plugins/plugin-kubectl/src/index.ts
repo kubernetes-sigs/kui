@@ -85,6 +85,8 @@ export { fetchFileString } from './lib/util/fetch-file'
 
 export { fqnOf, fqn } from './controller/kubectl/fqn'
 
+export { getKind } from './controller/kubectl/explain'
+
 /**
  * Exports for future delegation; e.g. `oc get pods` is mostly just
  * `kubectl get pods`
