@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-//
-// Note: for now, this is disabled in favor of the bash-like shell
-// echo; we should probably restore for support for browser/no-proxy
-// mode.
-//
+import { Registrar } from '@kui-shell/core'
 
-export default () => {
-  /*  commandTree.listen('/echo', ({ argvNoOptions }) => {
+/** For debugging the command line parser */
+export default (registrar: Registrar) => {
+  registrar.listen('/kuiecho', ({ argvNoOptions }) => {
     return argvNoOptions.slice(1).join(' ') || true
-  }) */
+  })
 }
