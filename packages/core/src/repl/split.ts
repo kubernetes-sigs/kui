@@ -46,6 +46,16 @@ export interface Split {
   endIndices: number[]
 }
 
+const endsWithQuoteSpace = (str: string, idx: number, lookFor: string): boolean => {
+  for (let ii = idx + 1; ii < str.length; ii++) {
+    if (str.charAt(ii) === lookFor) {
+      return ii === str.length - 1 || /\s/.test(str.charAt(ii + 1))
+    }
+  }
+
+  return false
+}
+
 export const _split = (
   str: string,
   removeOuterQuotes = true,
@@ -58,31 +68,21 @@ export const _split = (
 
   let cur = ''
 
-  const endsWithQuoteSpace = (idx: number, lookFor: string): boolean => {
-    for (let ii = idx + 1; ii < str.length; ii++) {
-      if (str.charAt(ii) === lookFor) {
-        return ii === str.length - 1 || /\s/.test(str.charAt(ii + 1))
-      }
-    }
-
-    return false
-  }
-
   const removedLastOpenQuote: boolean[] = []
   let escapeActive = false
   for (let idx = 0; idx < str.length; idx++) {
-    const char = str.charAt(idx)
+    let char = str.charAt(idx)
 
     if (char === '\\') {
       if (!escapeActive) {
         escapeActive = true
+        char = str.charAt(++idx)
       } else {
         escapeActive = false
         cur += '\\'
+        continue
       }
-
-      continue
-    } else if (!escapeActive) {
+    } else if (escapeActive) {
       escapeActive = false
     }
 
@@ -117,7 +117,7 @@ export const _split = (
         // found open quote
         const removeQuote =
           removeOuterQuotes &&
-          endsWithQuoteSpace(idx, char) &&
+          endsWithQuoteSpace(str, idx, char) &&
           (idx === 0 ||
             (stack.length === 0 && (removeInlineOuterQuotes || patterns.whitespace.test(str.charAt(idx - 1)))))
 
