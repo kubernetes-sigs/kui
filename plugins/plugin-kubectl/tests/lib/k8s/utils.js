@@ -226,7 +226,7 @@ exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
         return this.app.client.waitUntil(async () => {
           const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
           return text.include(content)
-        })
+        }, CLI.waitTimeout)
       }
     } catch (err) {
       await Common.oops(this, true)
@@ -253,5 +253,5 @@ exports.waitForTerminalText = async function(checker) {
       console.error(`still waiting for terminal text actualText=${text}`)
     }
     return typeof checker === 'string' ? text.indexOf(checker) >= 0 : checker(text)
-  })
+  }, CLI.waitTimeout)
 }

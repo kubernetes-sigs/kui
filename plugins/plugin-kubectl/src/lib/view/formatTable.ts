@@ -23,6 +23,7 @@ import {
   encodeComponent,
   Arguments,
   ExecType,
+  KResponse,
   MixedResponse,
   i18n,
   inBrowser
@@ -32,7 +33,11 @@ import TrafficLight from '../model/traffic-light'
 import { isClusterScoped } from '../model/resource'
 import { getCurrentDefaultNamespace } from '../../'
 import { RawResponse } from '../../controller/kubectl/response'
-import KubeOptions, { isForAllNamespaces, getNamespaceAsExpressed } from '../../controller/kubectl/options'
+import KubeOptions, {
+  isForAllNamespaces,
+  getNamespaceAsExpressed,
+  withKubeconfigFrom
+} from '../../controller/kubectl/options'
 
 import cssForValue from './css-for-value'
 
@@ -184,8 +189,8 @@ export async function getNamespaceBreadcrumbs(entityType: string, args: Argument
 }
 
 /** HELLO -> Hello, which is not possible to do with CSS */
-export function initialCapital(name: string): string {
-  return name[0] + name.slice(1).toLowerCase()
+export function initialCapital(name: string) {
+  return typeof name === 'string' ? name[0] + name.slice(1).toLowerCase() : name
 }
 
 export const formatTable = async <O extends KubeOptions>(
@@ -275,7 +280,7 @@ export const formatTable = async <O extends KubeOptions>(
         ''
 
       // idx === 0: don't click on header row
-      const onclick =
+      const onclick0 =
         idx === 0
           ? false
           : drilldownVerb
@@ -283,6 +288,7 @@ export const formatTable = async <O extends KubeOptions>(
               nameForDrilldown
             )} ${drilldownFormat} ${ns}`
           : false
+      const onclick = args && typeof onclick0 === 'string' ? withKubeconfigFrom(args, onclick0) : onclick0
       const header = idx === 0 ? 'header-cell' : ''
 
       // for `k get events`, show REASON and MESSAGE columns when sidecar open
@@ -438,7 +444,7 @@ export const stringToTable = async <O extends KubeOptions>(
     } else {
       return Promise.all(
         preTables.map(async preTable => {
-          const T = await formatTable(command, verb, entityType, args, preTable)
+          const T = await formatTable(command, verb, entityType, args, preTable, undefined)
           if (args.execOptions.filter) {
             T.body = args.execOptions.filter(T.body)
           }
@@ -450,4 +456,60 @@ export const stringToTable = async <O extends KubeOptions>(
     // otherwise, display the raw output
     return decodedResult
   }
+}
+
+/**
+ * Turn START and END columns into a DURATION column.
+ *
+ * TODO Kubectl gurus: Is there a way to get this directly from a
+ * jsonpath or go-template?  I think so from the latter?
+ *
+ */
+export function computeDurations(table: KResponse) {
+  if (isTable(table)) {
+    const header = table.header.attributes
+
+    const durationIdx = header.findIndex(_ => _.key === 'Duration')
+    if (durationIdx >= 0) {
+      table.durationColumnIdx = durationIdx
+      return table
+    }
+
+    const startIdx = header.findIndex(_ => _.key === 'START')
+    const endIdx = header.findIndex(_ => _.key === 'END')
+    if (startIdx >= 0 && endIdx >= 0) {
+      header[startIdx].key = header[startIdx].value = 'Duration'
+      header.splice(endIdx, 1)
+
+      table.durationColumnIdx = startIdx
+      table.body.forEach(row => {
+        const start = row.attributes[startIdx]
+        const end = row.attributes[endIdx]
+        const duration = new Date(end.value).getTime() - new Date(start.value).getTime()
+        start.key = 'Duration'
+        if (isNaN(duration)) {
+          start.value = ''
+        } else {
+          start.value = duration.toString()
+        }
+        row.attributes.splice(endIdx, 1)
+      })
+    }
+  }
+
+  return table
+}
+
+/** Change the namespace breadcrumb of the given maybe-Table */
+export function withNamespaceBreadcrumb(ns: string, table: Table | MixedResponse) {
+  if (isTable(table)) {
+    const nsCrumb = { label: ns }
+    if (table.breadcrumbs) {
+      table.breadcrumbs[0] = nsCrumb
+    } else {
+      table.breadcrumbs = [nsCrumb]
+    }
+  }
+
+  return table
 }

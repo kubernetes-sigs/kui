@@ -88,6 +88,20 @@ export function isWatchRequest(args: Arguments<KubeOptions>) {
   return args.parsedOptions.w || args.parsedOptions.watch || args.parsedOptions['watch-only']
 }
 
+export function watchRequestFrom(args: Arguments<KubeOptions>, forceWatch = false) {
+  if (forceWatch) {
+    return '--watch'
+  } else if (args.parsedOptions.w) {
+    return '-w'
+  } else if (args.parsedOptions.watch) {
+    return '--watch'
+  } else if (args.parsedOptions['watch-only']) {
+    return '--watch-only'
+  } else {
+    return ''
+  }
+}
+
 export function isTableWatchRequest(args: Arguments<KubeOptions>) {
   return isWatchRequest(args) && isTableRequest(args)
 }
@@ -148,8 +162,8 @@ export async function getNamespace(args: Arguments<KubeOptions>): Promise<string
  * A variant of getNamespace where you *only* want to use what was
  * provided by the user in their command line.
  */
-export function getNamespaceForArgv(args: Arguments<KubeOptions>): string {
-  const ns = args.parsedOptions.n || args.parsedOptions.namespace
+export function getNamespaceForArgv({ parsedOptions }: { parsedOptions: KubeOptions }): string {
+  const ns = parsedOptions.n || parsedOptions.namespace
   return !ns ? '' : `-n ${ns}`
 }
 
@@ -232,6 +246,34 @@ export interface KubeOptions extends ParsedOptions {
 
 export function isForAllNamespaces(parsedOptions: KubeOptions) {
   return parsedOptions.A || parsedOptions['all-namespaces']
+}
+
+/** Copy over any kubeconfig/context/cluster/namespace specifications from the given args */
+export function withKubeconfigFrom(args: { parsedOptions: KubeOptions }, cmdline: string): string {
+  let extras = ''
+
+  if (args.parsedOptions.kubeconfig) {
+    extras += ` --kubeconfig ${args.parsedOptions.kubeconfig}`
+  }
+
+  if (args.parsedOptions.context) {
+    extras += ` --context ${args.parsedOptions.context}`
+  }
+
+  if (args.parsedOptions.cluster) {
+    extras += ` --cluster ${args.parsedOptions.cluster}`
+  }
+
+  extras += ` ${getNamespaceForArgv(args)} `
+
+  // careful: respect any `--` on the cmdline, and insert our extras
+  // *before* that point
+  const insertionIndex = cmdline.indexOf('--')
+  if (insertionIndex < 0) {
+    return cmdline + extras
+  } else {
+    return cmdline.slice(0, insertionIndex) + extras + cmdline.slice(insertionIndex)
+  }
 }
 
 export default KubeOptions

@@ -124,7 +124,7 @@ export default (command: string) => async (args: Arguments) => {
       return {
         header: bodyToHeader(body),
         body,
-        gridableColumn: 1,
+        statusColumnIdx: 1,
         breadcrumbs: [{ label: 'Popeye' }, { label: ns }],
         title,
         footer

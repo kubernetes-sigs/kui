@@ -13,8 +13,10 @@ $grid-cell-size: 1.25rem;
     margin-right: 1ex;
     width: 0.875rem;
     height: 0.875rem;
-    background-color: var(--color-ui-05);
     border-radius: 1px;
+    [data-color-by='status'] {
+      background-color: var(--color-ui-05);
+    }
   }
   [data-tag='badge-circle'].green-background {
     background-color: var(--color-green);

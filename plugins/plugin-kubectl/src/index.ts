@@ -27,6 +27,7 @@ export {
   KubeStatus,
   KubeStatusCondition,
   Pod,
+  PodLikeSpec,
   isPod,
   Deployment,
   isDeployment,
@@ -70,14 +71,25 @@ export {
   isHelpRequest,
   getContainer,
   getNamespace,
+  watchRequestFrom,
+  withKubeconfigFrom,
+  isTableRequest,
   isForAllNamespaces
 } from './controller/kubectl/options'
 
 export { default as parseName } from './lib/util/name'
 
-export { stringToTable, formatTable, preprocessTable } from './lib/view/formatTable'
+export {
+  stringToTable,
+  formatTable,
+  preprocessTable,
+  computeDurations,
+  withNamespaceBreadcrumb
+} from './lib/view/formatTable'
 
-export { isUsage, doHelp } from './lib/util/help'
+export { mode as logsMode } from './lib/view/modes/logs-mode'
+
+export { isUsage, doHelp, withHelp } from './lib/util/help'
 
 export { getCommandFromArgs } from './lib/util/util'
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-const debug = Debug('plugins/kubeui/preload')
-debug('loading')
-
 import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
 
 /**
@@ -30,5 +26,3 @@ export default async (registrar: PreloadRegistrar) => {
     await preloader(registrar)
   }
 }
-
-debug('finished loading')

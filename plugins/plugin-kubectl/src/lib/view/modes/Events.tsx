@@ -37,7 +37,7 @@ import { getCommandFromArgs } from '../../util/util'
 import TrafficLight from '../../model/traffic-light'
 import { HYSTERESIS, Job, StreamingStatus } from './ContainerCommon'
 import { doExecWithPty } from '../../../controller/kubectl/exec'
-import { KubeOptions } from '../../../controller/kubectl/options'
+import { KubeOptions, withKubeconfigFrom } from '../../../controller/kubectl/options'
 import { Event, isEvent, KubeResource, isCrudableKubeResource, isNamespaced } from '../../model/resource'
 
 import '../../../../web/scss/components/Events.scss'
@@ -291,7 +291,7 @@ class Events extends React.PureComponent<Props, State> {
       'field-selector': filter,
       watch: true
     }
-    const command = argv.join(' ')
+    const command = withKubeconfigFrom(args, argv.join(' '))
 
     return Object.assign({}, this.props.args, {
       REPL: this.props.repl,

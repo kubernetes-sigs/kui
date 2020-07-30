@@ -26,7 +26,7 @@ const debug = Debug('webapp/views/registrar/modes')
 
 export type SidecarModeFilter<Resource extends MetadataBearing> = (resource: Resource) => boolean
 
-type ModeDeclaration<Resource extends MetadataBearing> = SidecarMode
+export type ModeDeclaration<Resource extends MetadataBearing> = SidecarMode
 //  | ((command: string, resource: { resource: Resource }) => SidecarMode)
 //  | Button
 
