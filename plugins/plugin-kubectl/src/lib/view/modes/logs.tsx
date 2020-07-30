@@ -16,15 +16,15 @@
 
 import Debug from 'debug'
 import * as React from 'react'
-import { i18n, Arguments, Button, Tab, ModeRegistration, ToolbarProps } from '@kui-shell/core'
+import { i18n, Arguments, Button, Tab, ToolbarProps } from '@kui-shell/core'
 
 import { Icons } from '@kui-shell/plugin-client-common'
 
-import { Pod, isPod } from '../../model/resource'
+import { Pod } from '../../model/resource'
 import { getCommandFromArgs } from '../../util/util'
 import { Terminal, TerminalState } from './ExecIntoPod'
 import { ContainerProps, StreamingStatus } from './ContainerCommon'
-import { KubeOptions, getContainer, hasLabel } from '../../../controller/kubectl/options'
+import { KubeOptions, getContainer, hasLabel, withKubeconfigFrom } from '../../../controller/kubectl/options'
 
 const debug = Debug('plugin-kubectl/Logs')
 const strings = i18n('plugin-kubectl', 'logs')
@@ -69,7 +69,9 @@ export class Logs extends Terminal<State> {
     }
 
     // undefined means all containers
-    return this.props.pod.spec.containers.length === 1 ? this.props.pod.spec.containers[0].name : undefined
+    return this.props.pod && this.props.pod.spec.containers && this.props.pod.spec.containers.length === 1
+      ? this.props.pod.spec.containers[0].name
+      : undefined
   }
 
   /** Text to display in the Toolbar. */
@@ -165,12 +167,15 @@ export class Logs extends Terminal<State> {
 
       const split = isMulti && containerName && containerName.split(/:/)
       const possibleMulti = split && split.length === 2 && split
-      const podName = possibleMulti ? possibleMulti[0] : pod.metadata.name
+      const podName = possibleMulti ? possibleMulti[0] : pod.spec._podName || pod.metadata.name
       const theContainer = possibleMulti ? `-c ${possibleMulti[1]}` : container
 
-      const command = `${getCommandFromArgs(args)} logs ${podName} -n ${
-        pod.metadata.namespace
-      } ${theContainer} ${dashF} ${previous} --tail ${defaultTail}`
+      const command = withKubeconfigFrom(
+        args,
+        `${getCommandFromArgs(args)} logs ${podName} -n ${
+          pod.metadata.namespace
+        } ${theContainer} ${dashF} ${previous} --tail ${defaultTail}`
+      )
       debug('log command', command)
 
       return {
@@ -258,26 +263,10 @@ export class Logs extends Terminal<State> {
  * The content renderer for the summary tab
  *
  */
-async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
+export async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
   return {
     react: function LogsProvider(toolbarController: ToolbarProps) {
       return <Logs tab={tab} pod={pod} args={args} toolbarController={toolbarController} />
     }
   }
 }
-
-/**
- * The Summary mode applies to all KubeResources, and uses
- * `renderContent` to render the view.
- *
- */
-const logsMode: ModeRegistration<Pod> = {
-  when: isPod,
-  mode: {
-    mode: 'logs',
-    label: strings('Logs'),
-    content
-  }
-}
-
-export default logsMode

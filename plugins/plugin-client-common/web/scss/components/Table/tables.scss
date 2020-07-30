@@ -144,24 +144,27 @@ body .bx--data-table {
         white-space: nowrap;
         text-overflow: ellipsis;
       }
-
-      .hide-with-sidecar {
-        display: none;
-      }
     }
   }
 }
 
-body[kui-theme-style] .repl.sidecar-visible {
+@mixin full-width-tables-with-constrained-width {
   @include full-width-tables;
-}
-@include narrow-window {
-  @include full-width-tables;
+  .hide-with-sidecar {
+    display: none;
+  }
 }
 
+body[kui-theme-style] .repl.sidecar-visible {
+  @include full-width-tables-with-constrained-width;
+}
+@include narrow-window {
+  @include full-width-tables-with-constrained-width;
+}
 .kui--scrollback div[data-table-watching] {
   @include full-width-tables;
 }
+
 .kui--scrollback {
   &:not([data-is-minisplit]):not([data-is-width-constrained]) .kui--data-table-container {
     div[data-table-watching] {

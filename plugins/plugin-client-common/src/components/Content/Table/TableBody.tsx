@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Row as KuiRow, Tab, REPL } from '@kui-shell/core'
+import { Table, Tab, REPL } from '@kui-shell/core'
 
 import * as React from 'react'
 import { DataTableCustomRenderProps, TableBody, TableRow } from 'carbon-components-react'
@@ -25,11 +25,11 @@ import { NamedDataTableRow } from './kui2carbon'
 /**
  * Render the TableBody part
  *
- * @param offset offset into the kuiBody model
+ * @param offset offset into the kuiTable.body model
  *
  */
 export default function renderBody(
-  kuiBody: KuiRow[],
+  kuiTable: Table,
   justUpdated: Record<string, boolean>, // rowKey index
   renderOpts: DataTableCustomRenderProps<NamedDataTableRow>,
   tab: Tab,
@@ -39,7 +39,7 @@ export default function renderBody(
   return (
     <TableBody>
       {renderOpts.rows.map((row, ridx) => {
-        const kuiRow = kuiBody[offset + ridx]
+        const kuiRow = kuiTable.body[offset + ridx]
         const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
 
         return (
@@ -47,10 +47,10 @@ export default function renderBody(
             key={row.id}
             {...renderOpts.getRowProps({
               row,
-              'data-name': kuiBody[offset + ridx].name
+              'data-name': kuiTable.body[offset + ridx].name
             })}
           >
-            {row.cells.map(renderCell(kuiRow, updated, tab, repl))}
+            {row.cells.map(renderCell(kuiTable, kuiRow, updated, tab, repl))}
           </TableRow>
         )
       })}

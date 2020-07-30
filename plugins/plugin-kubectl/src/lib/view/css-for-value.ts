@@ -42,6 +42,11 @@ export default {
   ErrImagePull: TrafficLight.Red,
   Error: TrafficLight.Red,
 
+  // 1/0 status
+  1: TrafficLight.Green,
+  0: TrafficLight.Red,
+  '<none>': TrafficLight.Yellow,
+
   // kube lifecycle
   CrashLoopBackOff: TrafficLight.Red,
   Failed: TrafficLight.Red,

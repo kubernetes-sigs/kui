@@ -21,8 +21,14 @@ import * as path from 'path'
 import * as assert from 'assert'
 
 import { expandHomeDir } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Keys } from '@kui-shell/test'
+import {
+  waitForGreen,
+  waitForRed,
+  createNS,
+  waitTillNone,
+  defaultModeForGet
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -79,11 +85,15 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           .catch(Common.oops(this))
       })
 
-      it(`should show the sample pod in namespace ${ns} in sidecar via ${kubectl}`, () => {
+      it(`should show the sample pod in namespace ${ns} in sidecar via ${kubectl}, then close the sidecar`, () => {
         return CLI.command(`${kubectl} get pod nginx -n ${ns} -o yaml`, this.app)
           .then(ReplExpect.justOK)
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+          .then(async () => {
+            await this.app.client.keys(Keys.ESCAPE)
+            await SidecarExpect.closed(this.app)
+          })
           .catch(Common.oops(this))
       })
     }
@@ -178,11 +188,30 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     }
 
     /** list pods and expect one entry */
-    const listPodsAndExpectOne = (name: string, ns?: string) => {
-      it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'}`, () => {
-        return CLI.command(`${kubectl} get pods ${ns ? '-n ' + ns : ''}`, this.app)
+    const listPodsAndExpectOne = (name: string, ns?: string, kubeconfig = '') => {
+      it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'} and kubeconfig ${kubeconfig ||
+        'nope'}`, () => {
+        return CLI.command(`${kubectl} get pods ${ns ? '-n ' + ns : ''} ${kubeconfig}`, this.app)
           .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
           .then(selector => waitForGreen(this.app, selector))
+          .catch(Common.oops(this))
+      })
+    }
+
+    const getPodInSidecar = (name: string, ns?: string, kubeconfig = '') => {
+      it(`should open pod ${name} in sidecar, and maybe in namespace ${ns || 'nope'} and kubeconfig ${kubeconfig ||
+        'nope'}`, () => {
+        return CLI.command(`${kubectl} get pod ${name} ${ns ? '-n ' + ns : ''} ${kubeconfig} -o yaml`, this.app)
+          .then(ReplExpect.justOK)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.mode(defaultModeForGet))
+          .then(SidecarExpect.yaml({ Name: 'nginx' }))
+          .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+          .then(async () => {
+            await this.app.client.keys(Keys.ESCAPE)
+            await SidecarExpect.closed(this.app)
+          })
+          .catch(Common.oops(this))
           .catch(Common.oops(this))
       })
     }
@@ -219,13 +248,16 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     // now start the tests
     //
     const ns: string = createNS()
+    const initialKubeConfig = getKUBECONFIGFilepath()
     listContextsAndExpectDefault()
     createIt(ns)
-    addNamespaceToKUBECONFIG(ns, 'holla') // add yoyo to the KUBECONFIG contexts
+    addNamespaceToKUBECONFIG(ns, 'holla') // add holla to the KUBECONFIG contexts
     listContextsAndExpectGiven('holla')
     listPodsAndExpectNone(ns)
-    createPod(ns) // create a pod in yoyo
+    createPod(ns) // create a pod in holla
     listPodsAndExpectOne('nginx', ns)
+    listPodsAndExpectOne('nginx', ns, `--kubeconfig ${initialKubeConfig}`)
+    getPodInSidecar('nginx', ns, `--kubeconfig ${initialKubeConfig}`)
     switchToContext('holla')
     listPodsAndExpectOne('nginx')
     deleteIt(ns)

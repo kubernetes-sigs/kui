@@ -15,8 +15,9 @@
  */
 
 import * as React from 'react'
+import * as prettyPrintDuration from 'pretty-ms'
 import { TableCell, DataTableCell } from 'carbon-components-react'
-import { Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
+import { Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
 
 import ErrorCell from './ErrorCell'
 
@@ -59,7 +60,7 @@ export function onClickForCell(
  * Render a TableCell part
  *
  */
-export default function renderCell(kuiRow: KuiRow, justUpdated: boolean, tab: Tab, repl: REPL) {
+export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated: boolean, tab: Tab, repl: REPL) {
   return function KuiTableCell(cell: DataTableCell, cidx: number) {
     // e.g. is this a badge/status-like cell?
     const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
@@ -83,7 +84,10 @@ export default function renderCell(kuiRow: KuiRow, justUpdated: boolean, tab: Ta
     const css = cidx > 0 ? kuiRow.attributes[cidx - 1].css : undefined
 
     // the text value of the cell
-    const innerText = (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
+    const innerText =
+      cidx - 1 === table.durationColumnIdx
+        ? prettyPrintDuration(parseInt(cell.value, 10))
+        : (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
 
     return (
       <TableCell

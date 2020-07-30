@@ -128,7 +128,7 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
 
   /** Render a selection component that allows user to select a container. */
   private containerOptions() {
-    const { containers } = this.props.pod.spec
+    const { containers = [] } = this.props.pod.spec
     const actions = containers
       .map(_ => ({
         label: _.name,

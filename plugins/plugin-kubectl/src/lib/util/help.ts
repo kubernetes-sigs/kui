@@ -17,6 +17,7 @@
 import Debug from 'debug'
 import {
   Arguments,
+  CommandHandler,
   NavResponse,
   ExecType,
   Table,
@@ -29,6 +30,7 @@ import {
   Breadcrumb
 } from '@kui-shell/core'
 
+import { getCommandFromArgs } from './util'
 import { KubeOptions, isHelpRequest, isDashHelp } from '../../controller/kubectl/options'
 import commandPrefix from '../../controller/command-prefix'
 import { doExecWithoutPty, Prepare, NoPrepare } from '../../controller/kubectl/exec'
@@ -483,4 +485,13 @@ export async function doHelp<O extends KubeOptions>(
   const entityType = isXHelp ? undefined : _entityType // k help -h or k help create, in either case, no entityType
 
   return renderHelp(response.content.stdout || response.content.stderr, args, command, verb, entityType)
+}
+
+/** Wrap the given command handler `this` with a help dispatcher. */
+export function withHelp<O extends KubeOptions>(this: CommandHandler<KResponse, O>, args: Arguments<O>) {
+  if (isUsage(args)) {
+    return doHelp(getCommandFromArgs(args), args)
+  } else {
+    return this(args)
+  }
 }

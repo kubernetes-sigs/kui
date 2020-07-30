@@ -35,7 +35,7 @@ import { FitAddon } from 'xterm-addon-fit'
 
 import { getCommandFromArgs } from '../../util/util'
 import { KubeResource, Pod, isPod } from '../../model/resource'
-import { KubeOptions, getContainer } from '../../../controller/kubectl/options'
+import { KubeOptions, getContainer, withKubeconfigFrom } from '../../../controller/kubectl/options'
 
 import { ContainerProps, ContainerState, ContainerComponent, HYSTERESIS, Job, StreamingStatus } from './ContainerCommon'
 
@@ -319,10 +319,13 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     const { container } = this.state
 
     const command =
-      (args.argsForMode && args.argsForMode.command) ||
-      `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
-        pod.metadata.namespace
-      } -- sh`
+      (args.argsForMode && withKubeconfigFrom(args.argsForMode, args.argsForMode.command)) ||
+      withKubeconfigFrom(
+        this.props.args,
+        `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
+          pod.metadata.namespace
+        } -- sh`
+      )
 
     // only use argsForMode once
     if (args.argsForMode && args.argsForMode.command) {

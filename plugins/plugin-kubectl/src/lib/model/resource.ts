@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { KResponse, ResourceWithMetadata, MultiModalResponse } from '@kui-shell/core'
+import { Arguments, KResponse, ResourceWithMetadata, MultiModalResponse } from '@kui-shell/core'
 
+import KubeOptions from '../../controller/kubectl/options'
 import kubeuiApiVersion from '../../controller/kubectl/apiVersion'
 
 export interface KubeStatusCondition {
@@ -161,7 +162,7 @@ export type KubeResource<Status = KubeStatus, Metadata = KubeMetadata> = Resourc
     spec?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // TODO we should factor these out into a trait
-    originatingCommand: string // the command that generated this raw data
+    originatingCommand: Arguments<KubeOptions> // the command that generated this raw data
     isSimulacrum?: boolean // is this a manufactured resource that does not exist on the api server?
     isKubeResource: true // this tag helps `isKubeResource()` to check if an `Entity` is KubeResource
   }
@@ -260,10 +261,13 @@ interface PodStatus extends KubeStatus {
   hostIP: string
   podIP: string
 }
+export interface PodLikeSpec {
+  _podName: string // allows pod-like resources to define the actual pod name
+}
 export interface Pod extends KubeResource<PodStatus> {
   apiVersion: 'v1'
   kind: 'Pod'
-  spec: {
+  spec: PodLikeSpec & {
     nodeName: string
     nominatedNodeName?: string
     readinessGates?: { conditionType: string }[]

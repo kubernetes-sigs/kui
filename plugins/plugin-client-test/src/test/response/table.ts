@@ -71,6 +71,55 @@ new TestTable('should test table with dilldown', {
   }
 }).run()
 
+/** test duration table */
+new TestTable('should test duration table', {
+  exec: {
+    command: 'test durationTable',
+    expectTable: {
+      header: { name: 'Name', attributes: [{ value: 'Foo' }, { value: 'Duration' }] },
+      body: [
+        { name: 'test 1', attributes: [{ value: 'foo' }, { value: '1s' }] },
+        { name: 'test 2', attributes: [{ value: 'foo' }, { value: '2s' }] },
+        { name: 'test 3', attributes: [{ value: 'foo' }, { value: '3s' }] },
+        { name: 'test 4', attributes: [{ value: 'foo' }, { value: '4s' }] },
+        { name: 'test 5', attributes: [{ value: 'foo' }, { value: '5s' }] },
+        { name: 'test 6', attributes: [{ value: 'foo' }, { value: '6s' }] },
+        { name: 'test 7', attributes: [{ value: 'foo' }, { value: '7s' }] },
+        { name: 'test 8', attributes: [{ value: 'foo' }, { value: '8s' }] },
+        { name: 'test 9', attributes: [{ value: 'foo' }, { value: '9s' }] },
+        { name: 'test 10', attributes: [{ value: 'foo' }, { value: '10s' }] },
+        { name: 'test 11', attributes: [{ value: 'foo' }, { value: '11s' }] },
+        { name: 'test 12', attributes: [{ value: 'foo' }, { value: '12s' }] },
+        { name: 'test 13', attributes: [{ value: 'foo' }, { value: '13s' }] },
+        { name: 'test 14', attributes: [{ value: 'foo' }, { value: '14s' }] },
+        { name: 'test 15', attributes: [{ value: 'foo' }, { value: '15s' }] },
+        { name: 'test 16', attributes: [{ value: 'foo' }, { value: '16s' }] },
+        { name: 'test 17', attributes: [{ value: 'foo' }, { value: '17s' }] },
+        { name: 'test 18', attributes: [{ value: 'foo' }, { value: '18s' }] },
+        { name: 'test 19', attributes: [{ value: 'foo' }, { value: '19s' }] },
+        { name: 'test 20', attributes: [{ value: 'foo' }, { value: '20s' }] },
+        { name: 'test 21', attributes: [{ value: 'foo' }, { value: '21s' }] }
+      ]
+    },
+    validation: {
+      hasGridButton: true,
+      asGrid: true,
+      switchToList: true,
+      cells: [
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, `test ${rowIdx + 1}`)
+        },
+        (value: string) => {
+          assert.strictEqual(value, 'foo')
+        },
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, `${rowIdx + 1}s`)
+        }
+      ]
+    }
+  }
+}).run()
+
 /** test table with push watcher, and the final status badge and message are correct */
 new TestTable('should test table with status and pusher', {
   status: {

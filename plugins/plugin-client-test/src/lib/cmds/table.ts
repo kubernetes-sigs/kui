@@ -22,7 +22,7 @@
 // Notes: this is part of the Kui core API
 import { Watchable, Table, Row, Arguments, ParsedOptions, Registrar, CodedError } from '@kui-shell/core'
 
-import tableContent from './content/table-with-drilldown'
+import tableContent, { durationTable } from './content/table-with-drilldown'
 
 interface Options extends ParsedOptions {
   watch: 'push'
@@ -132,5 +132,10 @@ export default (commandTree: Registrar) => {
       docs: 'A showcase of the Table view'
     },
     alwaysViewIn: 'Terminal'
+  })
+  commandTree.listen('/test/durationTable', () => durationTable(), {
+    usage: {
+      docs: 'A showcase of the Table view with duration column'
+    }
   })
 }

@@ -87,6 +87,6 @@ export async function projectList(args: Arguments<KubeOptions>) {
     kuiRawData,
     isSimulacrum: true, // this is not a real crudable resource
     isKubeResource: true,
-    originatingCommand: args.command
+    originatingCommand: args
   })
 }

@@ -277,7 +277,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
                 }
               >
                 {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(response.body, this.justUpdatedMap(), renderOpts, tab, repl, offset)}
+                {renderBody(response, this.justUpdatedMap(), renderOpts, tab, repl, offset)}
               </Table>
             </TableContainer>
           )}

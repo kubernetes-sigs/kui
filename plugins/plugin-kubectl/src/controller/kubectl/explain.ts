@@ -18,7 +18,7 @@ import Debug from 'debug'
 import { Arguments, Breadcrumb, Registrar, i18n } from '@kui-shell/core'
 
 import flags from './flags'
-import { KubeOptions } from './options'
+import { KubeOptions, withKubeconfigFrom } from './options'
 import { doExecWithStdout } from './exec'
 import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
@@ -178,7 +178,9 @@ export async function getKind(command: string, args: Arguments, kindAsProvidedBy
     // eslint-disable-next-line no-async-promise-executor
     cache[kindAsProvidedByUser] = new Promise<string>(async (resolve, reject) => {
       try {
-        const ourArgs = Object.assign({}, args, { command: `${command} explain ${kindAsProvidedByUser}` })
+        const ourArgs = Object.assign({}, args, {
+          command: withKubeconfigFrom(args, `${command} explain ${kindAsProvidedByUser}`)
+        })
         const explained = await doExecWithStdout(ourArgs, undefined, command).catch(err => {
           // e.g. trying to explain CustomResourceDefinition.v1beta1.apiextensions.k8s.io
           // or a resource kind that does not exist
