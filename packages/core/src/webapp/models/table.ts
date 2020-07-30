@@ -132,7 +132,11 @@ export class Table<RowType extends Row = Row> {
 
   // type?: string
 
-  gridableColumn?: number
+  /** Column index to be interpreted as a status column */
+  statusColumnIdx?: number
+
+  /** Column index to be interpreted as a duration column */
+  durationColumnIdx?: number
 
   style?: TableStyle
 

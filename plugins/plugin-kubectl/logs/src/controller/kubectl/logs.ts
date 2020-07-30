@@ -27,11 +27,11 @@ import {
   getTransformer,
   getCommandFromArgs,
   getContainer,
-  getNamespace,
   KubeItems,
   isKubeItems,
   isKubeItemsOfKind,
   KubeResource,
+  withKubeconfigFrom,
   Pod,
   isPod
 } from '@kui-shell/plugin-kubectl'
@@ -91,16 +91,13 @@ function getOrPty(verb: string) {
       if (!label) {
         const idx = args.argvNoOptions.indexOf(verb)
         const name = args.argvNoOptions[idx + 1]
-        return args.REPL.qexec(`${cmd} get pod ${name} -n ${await getNamespace(args)} -o yaml`, undefined, undefined, {
+        const getPodCmd = withKubeconfigFrom(args, `${cmd} get pod ${name} -o yaml`)
+        return args.REPL.qexec(getPodCmd, undefined, undefined, {
           tab: args.tab
         })
       } else {
-        return args.REPL.qexec(
-          `${cmd} get pod -l ${label} -n ${await getNamespace(args)} -o json`,
-          undefined,
-          undefined,
-          { tab: args.tab }
-        )
+        const getPodCmd = withKubeconfigFrom(args, `${cmd} get pod -l ${label} -o json`)
+        return args.REPL.qexec(getPodCmd, undefined, undefined, { tab: args.tab })
       }
     } else {
       return doExecWithPty(args)
