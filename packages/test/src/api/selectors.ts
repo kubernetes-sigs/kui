@@ -153,6 +153,10 @@ export const TABLE_FOOTER_MESSAGE_LINK = (N: number, M: number) => `${TABLE_FOOT
 
 const _TABLE_AS_GRID = '.kui--data-table-as-grid'
 export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} ${_TABLE_AS_GRID}`
+export const TABLE_AS_GRID_CELL = (N: number, name: string) =>
+  `${TABLE_AS_GRID(N)} [data-tag="badge"][data-entity-name="${name}"]`
+export const TABLE_AS_GRID_CELL_RED = (N: number, name: string) => `${TABLE_AS_GRID_CELL(N, name)} .red-background`
+export const TABLE_AS_GRID_CELL_GREEN = (N: number, name: string) => `${TABLE_AS_GRID_CELL(N, name)} .green-background`
 export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
 
 const _TABLE_TITLE = `.kui--data-table-title`
