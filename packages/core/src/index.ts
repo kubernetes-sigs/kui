@@ -33,6 +33,7 @@ export { CapabilityRegistration } from './models/plugin'
 // Commands
 export { default as AlwaysViewIn } from './models/AlwaysViewIn'
 export {
+  CommandHandler,
   CommandOptions,
   CommandLine,
   Evaluator,
@@ -100,6 +101,7 @@ export { prettyPrintTime } from './webapp/util/time'
 // registrars
 export {
   SidecarModeFilter as ModeFilter,
+  ModeDeclaration,
   ModeRegistration,
   registerModeWhen,
   registerSidecarMode as registerMode,

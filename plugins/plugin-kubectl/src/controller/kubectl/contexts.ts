@@ -183,7 +183,7 @@ const listContexts = async (args: Arguments): Promise<RawResponse<KubeContext[]>
       content: contexts.body.map(_ => ({
         apiVersion,
         kind: 'Context',
-        originatingCommand: args.command,
+        originatingCommand: args,
         isKubeResource: true,
         metadata: {
           name: valueOf('NAME', _),

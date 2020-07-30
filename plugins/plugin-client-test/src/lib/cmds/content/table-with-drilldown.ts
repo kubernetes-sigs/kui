@@ -20,7 +20,7 @@ export const firstSeen = 'FIRST SEEN'
 
 export default (): Table => ({
   title: 'noTitle',
-  gridableColumn: 2,
+  statusColumnIdx: 2,
   breadcrumbs: [{ label: 'noBreadcrumb' }],
   noSort: true,
   header: { name: 'NAME', attributes: [{ value: 'FOO' }, { value: firstSeen }] },

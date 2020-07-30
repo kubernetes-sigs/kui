@@ -29,7 +29,7 @@ async function doGet(
     return doHelp('helm', args)
   }
 
-  const { command, argvNoOptions } = args
+  const { argvNoOptions } = args
 
   const projIdx = argvNoOptions.indexOf('get') + 1
   const releaseIdx = argvNoOptions.length - 1
@@ -67,7 +67,7 @@ async function doGet(
       contentType: 'yaml'
     },
     isSimulacrum: true,
-    originatingCommand: command,
+    originatingCommand: args,
     isKubeResource: true,
     kuiRawData: response,
     modes: []

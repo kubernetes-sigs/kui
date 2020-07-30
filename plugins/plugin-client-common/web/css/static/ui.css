@@ -1214,6 +1214,25 @@ body[kui-theme-style="dark"] .kui--inverted-color-context {
   fill: currentColor;
 }
 
+.color-latency0 {
+  background-color: var(--color-latency-0);
+}
+.color-latency1 {
+  background-color: var(--color-latency-1);
+}
+.color-latency2 {
+  background-color: var(--color-latency-2);
+}
+.color-latency3 {
+  background-color: var(--color-latency-3);
+}
+.color-latency4 {
+  background-color: var(--color-latency-4);
+}
+.color-latency5 {
+  background-color: var(--color-latency-5);
+}
+
 @media all and (max-width: 1100px) {
   .log-lines .log-field.start-time-field {
     display: none;

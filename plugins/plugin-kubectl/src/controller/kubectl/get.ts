@@ -95,6 +95,7 @@ export async function doGetAsEntity(args: Arguments<KubeOptions>, response: RawR
 
     const kuiResponse = Object.assign(resource, {
       isKubeResource: true,
+      originatingCommand: args, // here, not in viewTransformer otherwise nested qexecs won't work
       kuiRawData: data
     })
 
@@ -156,7 +157,7 @@ export async function doGetAsMMR(
           namespace: await getNamespace(args)
         },
         isSimulacrum: true, // this is not a real crudable resource
-        originatingCommand: args.command,
+        originatingCommand: args,
         isKubeResource: true,
         modes: [],
         kuiRawData: resource.kuiRawData
@@ -168,7 +169,6 @@ export async function doGetAsMMR(
       nameHash,
       version,
       comparator: sameResourceVersion,
-      originatingCommand: args.command,
       isKubeResource: true,
       toolbarText: toolbarText(resource),
       onclick: {

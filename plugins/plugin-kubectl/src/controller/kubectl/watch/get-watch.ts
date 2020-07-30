@@ -38,6 +38,7 @@ import {
   getLabel,
   getNamespace,
   getResourceNamesForArgv,
+  withKubeconfigFrom,
   KubeOptions,
   KubeExecOptions
 } from '../options'
@@ -84,8 +85,10 @@ function preprocessTable(raw: string, nCols): { rows: Pair[][]; leftover: string
       }
     }
 
+    const leftover = raw.slice(lastNewlineIdx)
+    console.error('!!!!!!!!', leftover, rows)
     return {
-      leftover: raw.slice(lastNewlineIdx),
+      leftover,
       rows: rows
         .slice(0, lastFullRowIdx + 1)
         .map(line => line.map(value => ({ key: value, value })))
@@ -174,7 +177,7 @@ export class EventWatcher implements Abortable, Watcher {
           const message = row[2].value
           const eventName = row[3].value
           const onClick = `#kuiexec?command=${encodeURIComponent(
-            `kubectl get event ${eventName} -n ${this.namespace} -o yaml`
+            withKubeconfigFrom(this.args, `kubectl get event ${eventName} -o yaml`)
           )}&quiet`
           return `[[${agos[idx]}]](${onClick})` + ` **${involvedObjectName}**: ${message}`
         })
@@ -200,9 +203,9 @@ export class EventWatcher implements Abortable, Watcher {
     const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|"}{.metadata.name}{"|\\n"}'`
     const watch = this.watchOnly ? '--watch-only' : '-w'
 
-    const getEventCommand = `${this.command} get events ${watch} -n ${this.namespace} ${filter} ${output}`.replace(
-      /^k(\s)/,
-      'kubectl$1'
+    const getEventCommand = withKubeconfigFrom(
+      this.args,
+      `${this.command} get events ${watch} -n ${this.namespace} ${filter} ${output}`.replace(/^k(\s)/, 'kubectl$1')
     )
 
     // debug('getEventCommand', getEventCommand)
@@ -311,9 +314,12 @@ class KubectlWatcher implements Abortable, Watcher {
     namespace: string,
     rowNames: string[]
   ): Promise<Table | void> {
-    const getCommand = `${getCommandFromArgs(this.args)} get ${kindPart(apiVersion, kind)} ${rowNames.join(
-      ' '
-    )} -n ${namespace} ${this.output ? `-o ${this.output}` : ''}`
+    const getCommand = withKubeconfigFrom(
+      this.args,
+      `${getCommandFromArgs(this.args)} get ${kindPart(apiVersion, kind)} ${rowNames.join(' ')} -n ${namespace} ${
+        this.output ? `-o ${this.output}` : ''
+      }`
+    )
 
     if (isForAllNamespaces(this.args.parsedOptions)) {
       return this.allNamespaceOverride(namespace, getCommand, kind)
@@ -444,12 +450,14 @@ class KubectlWatcher implements Abortable, Watcher {
     // here, we initiate a kubectl watch, using a schema of our
     // choosing; we ask the PTY to stream output back to us, by using
     // the `onInit` API
-    const command =
+    const command = withKubeconfigFrom(
+      this.args,
       this.args.command
         .replace(/^k(\s)/, 'kubectl$1')
         .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '--watch') // force --watch
         .replace(new RegExp(`(-o|--output)(\\s+|=)${this.output}`), '') +
-      ` -o jsonpath='{.metadata.name}{"|"}{.kind}{"|"}{.apiVersion}{"|"}{.metadata.namespace}{"|\\n"}'`
+        ` -o jsonpath='{.metadata.name}{"|"}{.kind}{"|"}{.apiVersion}{"|"}{.metadata.namespace}{"|\\n"}'`
+    )
     // ^^^^^ keep these in sync with nCols above !!
 
     this.args.REPL.qexec(`sendtopty ${command}`, this.args.block, undefined, {
@@ -495,9 +503,12 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
     // we do a get, then (above) a --watch; this is the get part;
     // observe how we strip off any --watch requests from the user's
     // command line
-    const cmd = args.command
-      .replace(/^k(\s)/, 'kubectl$1')
-      .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '') // strip --watch
+    const cmd = withKubeconfigFrom(
+      args,
+      args.command
+        .replace(/^k(\s)/, 'kubectl$1')
+        .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '')
+    ) // strip --watch
     const initialTable = await args.REPL.qexec<Table>(cmd).catch((err: CodedError) => {
       if (err.code !== 404) {
         throw err

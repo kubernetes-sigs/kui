@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-// temporary with disabled popup test
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -31,7 +28,7 @@ const kubectl = 'kubectl'
 const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) {
   it(`should wait for deletion of resource named ${name}`, async () => {
     try {
-      await waitForRed(this.app, Selectors.BY_NAME(name))
+      await waitForRed(this.app, Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name))
     } catch (err) {
       return Common.oops(this)(err)
     }
@@ -68,24 +65,36 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
 
     try {
       // first wait for the table entry to turn green
-      await waitForGreen(this.app, Selectors.BY_NAME(name))
+      console.log('1')
+      await waitForGreen(this.app, Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name))
 
       // then click on the table row and switch back and forth between
       // raw and summary modes, each time ensuring that the editor
       // shows the expected content await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
-      await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
+      console.log('2')
+      await this.app.client.click(`${Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name)} .clickable`)
+      console.log('3')
       await SidecarExpect.open(this.app).then(SidecarExpect.mode(defaultModeForGet))
+      console.log('4')
       await waitForDescribeContent()
 
+      console.log('5')
       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
+      console.log('6')
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+      console.log('7')
       await waitForRawContent()
 
+      console.log('8')
       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('summary'))
+      console.log('9')
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary'))
+      console.log('10')
       await waitForDescribeContent()
 
+      console.log('11')
       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
+      console.log('12')
       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
     } catch (err) {
       return Common.oops(this, true)(err)

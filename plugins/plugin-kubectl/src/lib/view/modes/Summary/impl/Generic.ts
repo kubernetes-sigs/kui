@@ -19,6 +19,7 @@ import { REPL, Table } from '@kui-shell/core'
 
 import toMap from '../../table-to-map'
 import { KubeResource } from '../../../../model/resource'
+import { withKubeconfigFrom } from '../../../../../controller/kubectl/options'
 
 export function none() {
   return '<none>'
@@ -30,8 +31,10 @@ export function age({ metadata }: KubeResource) {
 
 export default async function GenericSummary(resource: KubeResource, repl: REPL) {
   // a command that will fetch a single-row table
-  const cmd = `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`
-  const table = repl.qexec<Table>(cmd)
+  const cmd = withKubeconfigFrom(
+    resource.originatingCommand,
+    `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`
+  )
 
-  return toMap(await table)
+  return toMap(await repl.qexec<Table>(cmd))
 }
