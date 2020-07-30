@@ -107,6 +107,7 @@ export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} ${_PROMPT}`
 export const NEW_SPLIT_BUTTON = '#kui--split-terminal-button'
 export const SPLITS = `${CURRENT_TAB} .kui--scrollback`
 export const SPLIT_N = (N: number) => `${SPLITS}:nth-child(${N})`
+export const SPLIT_N_FOCUS = (N: number) => `${SPLITS}:nth-child(${N}) .repl-input`
 export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-output`
 export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (splitIndex: number) => `${SPLIT_N(splitIndex)} ${current(_PROMPT_BLOCK)}`
 export const CURRENT_PROMPT_FOR_SPLIT = (splitIndex: number) =>

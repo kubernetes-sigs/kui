@@ -65,9 +65,11 @@ const updateInputAndMoveCaretToEOL = (
     if (input.props.navigateTo) {
       input.props.navigateTo(dir)
     }
-  } else {
+  } else if (entry) {
     input.state.prompt.value = entry.raw
     setTimeout(() => setCaretPositionToEnd(input.state.prompt), 0)
+  } else {
+    input.state.prompt.value = ''
   }
 }
 
