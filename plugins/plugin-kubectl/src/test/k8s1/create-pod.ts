@@ -88,8 +88,15 @@ commands.forEach(command => {
 
       it(`should delete the sample pod by name via ${command}`, () => {
         return CLI.command(`${command} delete pod nginx ${inNamespace}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
-          .then(selector => waitForRed(this.app, selector))
+          .then(async res => {
+            await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res).then(selector =>
+              waitForRed(this.app, selector)
+            )
+
+            await this.app.client.click(Selectors.TABLE_SHOW_AS_GRID(res.count))
+            await this.app.client.waitForVisible(Selectors.TABLE_AS_GRID(res.count))
+            await this.app.client.waitForVisible(`${Selectors.TABLE_AS_GRID_CELL_RED(res.count, 'nginx')}`)
+          })
           .catch(Common.oops(this))
       })
 

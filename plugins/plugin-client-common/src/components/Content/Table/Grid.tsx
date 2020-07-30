@@ -33,7 +33,7 @@ export type Props<T extends KuiTable = KuiTable> = {
 
 export const findGridableColumn = (response: KuiTable) => {
   return response.gridableColumn !== undefined
-    ? response.gridableColumn
+    ? response.gridableColumn - 1
     : response.body[0]
     ? response.header.attributes.findIndex(cell => /STATUS|REASON/i.test(cell.key))
     : -1
@@ -56,7 +56,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P> {
     return (
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
-          const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn - 1]
+          const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
           const title = `${kuiRow.name}\n${badgeCell ? badgeCell.value : ''}`
           const css = badgeCell ? badgeCell.css : 'kui--status-unknown'
 
