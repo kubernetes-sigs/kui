@@ -52,7 +52,7 @@ describe('command history with splits', function(this: Common.ISuite) {
 
   count(1)
   const cmd1 = echo(msg1)
-  validate1(cmd1)
+  validate1(cmd1, 1)
   count(1)
 
   split(2)

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
-describe('command history', function(this: Common.ISuite) {
+describe('command history plain', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -31,6 +31,30 @@ describe('command history', function(this: Common.ISuite) {
     CLI.command(listCommand, this.app)
       .then(ReplExpect.okWith('README.md'))
       .catch(Common.oops(this)))
+
+  it('should hit the up arrow and see previous command', async () => {
+    try {
+      await this.app.client.keys(Keys.ctrlP)
+      await this.app.client.waitUntil(async () => {
+        const promptValue = await this.app.client.getValue(Selectors.PROMPT_FINAL)
+        return promptValue === listCommand
+      })
+    } catch (err) {
+      await Common.oops(this, true)
+    }
+  })
+
+  it('should hit the down arrow and see previous command', async () => {
+    try {
+      await this.app.client.keys(Keys.ctrlN)
+      await this.app.client.waitUntil(async () => {
+        const promptValue = await this.app.client.getValue(Selectors.PROMPT_FINAL)
+        return promptValue.length === 0
+      })
+    } catch (err) {
+      await Common.oops(this, true)
+    }
+  })
 
   // 1 says it better be the last command we executed
   it(`should list history with filter 1`, () =>

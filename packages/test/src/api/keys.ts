@@ -14,5 +14,9 @@ export const keys = {
   META: '\uE03D',
   ESCAPE: '\uE00C',
   ctrlOrMeta: process.platform === 'darwin' ? '\uE03D' : '\uE009',
-  ctrlC: ['\uE009', 'c', 'NULL'] // Send NULL to release Control key at the end of the call, otherwise the state of Control is kept between calls
+
+  // Send NULL to release Control key at the end of the call, otherwise the state of Control is kept between calls
+  ctrlN: ['\uE009', 'n', 'NULL'],
+  ctrlP: ['\uE009', 'p', 'NULL'],
+  ctrlC: ['\uE009', 'c', 'NULL']
 }

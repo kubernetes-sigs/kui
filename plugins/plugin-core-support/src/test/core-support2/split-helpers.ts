@@ -53,7 +53,7 @@ export function close(this: Common.ISuite, splitCount: number, inSplit: number) 
 
 async function clickToFocus(this: Common.ISuite, toSplitIndex: number) {
   console.error('1')
-  await this.app.client.click(Selectors.SPLIT_N(toSplitIndex))
+  await this.app.client.click(Selectors.SPLIT_N_FOCUS(toSplitIndex))
   console.error('2')
   await this.app.client.waitUntil(
     () => this.app.client.hasFocus(Selectors.CURRENT_PROMPT_FOR_SPLIT(toSplitIndex)),

@@ -156,7 +156,7 @@ class InProcessExecutor implements Executor {
   private pushHistory(command: string, execOptions: ExecOptions, tab: Tab): number | void {
     if (!execOptions || !execOptions.noHistory) {
       if (!execOptions || !execOptions.quiet) {
-        if (!execOptions || execOptions.type === ExecType.TopLevel) {
+        if (!execOptions || execOptions.type !== ExecType.Nested) {
           const historyModel = getHistoryForTab(tab.uuid)
           return (execOptions.history = historyModel.add({
             raw: command,
