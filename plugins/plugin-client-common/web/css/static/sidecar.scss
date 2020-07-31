@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-@import "SidecarCommon.css";
-@import "../../scss/components/Navigation/common";
+@import 'SidecarCommon.css';
+@import '../../scss/components/Navigation/common';
 
 .kui--sidecar.visible.kui--nav-view {
   .kui--sidecar-content {
@@ -95,7 +95,7 @@
     /* carbon override */
     padding: 0;
 
-    &[aria-hidden="true"] {
+    &[aria-hidden='true'] {
       display: none;
     }
   }
@@ -206,5 +206,17 @@
   .bx--copy-btn__feedback {
     font-size: inherit;
     background-color: var(--color-base03);
+  }
+}
+
+@mixin sidecar-visible {
+  .repl.sidecar-visible .kui--terminal-split-container {
+    @content;
+  }
+}
+
+@mixin sidecar-maximized-no-user {
+  .toggle-sidecar-maximization-button {
+    display: none;
   }
 }
