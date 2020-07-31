@@ -69,7 +69,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
       })
     } catch (error) {
       const err = error as CodedError
-      if (err.code !== 128) {
+      if (err.code !== 128 && !/ambiguous argument 'HEAD'/.test(err.message)) {
         // 128: not a git repository; don't report those as errors
         console.error('unable to determine git branch', err.code, typeof err.code, err)
       }
