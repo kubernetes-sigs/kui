@@ -15,6 +15,8 @@
  */
 
 @import '../../scss/components/common/narrow-window';
+@import './sidecar';
+@import '../../scss/components/Terminal/Layout';
 
 $size: 0.25em;
 $opacity: 0.1;
@@ -85,35 +87,10 @@ $background-color: var(--color-base06);
   }
 }
 
-.SplitPane {
-  .Pane {
-    min-width: 0;
-
-    /* see https://github.com/IBM/kui/issues/3914 */
-    position: unset !important;
-  }
-
-  &.kui--sidecar-closed .Resizer.vertical {
-    display: none;
-  }
-}
-
 @include narrow-window {
-  .SplitPane.vertical:not(.kui--sidecar-closed) {
-    .Pane1 {
-      flex: 0 !important;
-    }
-    .Resizer {
-      /* see https://github.com/IBM/kui/issues/4179 */
-      display: none;
-    }
-    .Pane2 {
-      width: 100% !important;
-
-      .toggle-sidecar-maximization-button {
-        /* no need to maximize, if the sidecar is taking up the full screen */
-        display: none;
-      }
-    }
+  @include sidecar-visible {
+    @include sidecar-maximized-always;
+    /* no need to maximize, if the sidecar is taking up the full screen */
+    @include sidecar-maximized-no-user;
   }
 }

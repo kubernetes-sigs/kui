@@ -31,7 +31,7 @@ import sameCommand from '../util/same'
 import TitleBar, { Props as TitleBarProps } from './TitleBar'
 import CircularBuffer, { BaseHistoryEntry } from '../util/CircularBuffer'
 
-import '../../../../web/css/static/sidecar.css'
+import '../../../../web/css/static/sidecar.scss'
 import '../../../../web/css/static/sidecar-main.css'
 import '../../../../web/css/static/sidecar-carbon.css'
 
