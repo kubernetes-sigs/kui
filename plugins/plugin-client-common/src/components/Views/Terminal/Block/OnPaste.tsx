@@ -27,9 +27,11 @@ export const doPaste = (text: string, tab: KuiTab, prompt: HTMLInputElement) => 
       /* } else if (lines[idx] === '') {
       // then this is a blank line, so skip it
       return pasteLooper(idx + 1) */
+    } else if (lines[idx].length === 0) {
+      // skip
     } else if (idx <= lines.length - 2) {
       // then this is a command line with a trailing newline
-      tab.REPL.pexec(prompt.value + lines[idx], { tab })
+      await tab.REPL.pexec(prompt.value + lines[idx], { tab })
       pasteLooper(idx + 1)
     } else {
       // then this is the last line, but without a trailing newline.
