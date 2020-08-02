@@ -61,10 +61,8 @@ const updateInputAndMoveCaretToEOL = (
   entry: HistoryLine,
   dir: 'first' | 'last' | 'previous' | 'next'
 ) => {
-  if (input.props.isPartOfMiniSplit) {
-    if (input.props.navigateTo) {
-      input.props.navigateTo(dir)
-    }
+  if (input.props.isPartOfMiniSplit && input.props.navigateTo && input.props.idx > 0) {
+    input.props.navigateTo(dir)
   } else if (entry) {
     input.state.prompt.value = entry.raw
     setTimeout(() => setCaretPositionToEnd(input.state.prompt), 0)
