@@ -15,7 +15,7 @@
  */
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
-import { expectSplits, focus, splitViaButton } from './split-helpers'
+import { expectSplits, splitViaButton } from './split-helpers'
 
 function doEcho(this: Common.ISuite, msg: string, splitIndex = 1) {
   const cmd = `echo ${msg}`
@@ -41,7 +41,6 @@ describe('command history with splits', function(this: Common.ISuite) {
 
   const echo = doEcho.bind(this)
   const split = splitViaButton.bind(this)
-  const focusOnSplit = focus.bind(this)
   const validate1 = doValidate.bind(this, 1)
   const validate2 = doValidate.bind(this, 2)
   const validate5 = doValidate.bind(this, 5)
@@ -57,7 +56,6 @@ describe('command history with splits', function(this: Common.ISuite) {
 
   split(2)
   count(2)
-  // focusOnSplit(2)
 
   validate2(cmd1, 2) // history should have been copied over
   const cmd2 = echo(msg2, 2)
@@ -67,7 +65,6 @@ describe('command history with splits', function(this: Common.ISuite) {
   count(2)
 
   // msg2 better not be in the history for the first split
-  focusOnSplit(2, 1)
-  validate2(cmd1)
+  validate2(cmd1, 1)
   count(2)
 })
