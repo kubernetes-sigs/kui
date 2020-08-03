@@ -17,6 +17,7 @@
 import { CodedError } from '../models/errors'
 import { ExecOptions } from '../models/execOptions'
 import { Evaluator, EvaluatorArgs, KResponse, ParsedOptions } from '../models/command'
+import { MixedResponse } from '../models/entity'
 
 /**
  * repl.exec, and the family repl.qexec, repl.pexec, etc. are all
@@ -28,7 +29,7 @@ export interface Executor {
   exec<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions: ExecOptions
-  ): Promise<T | CodedError<number> | HTMLElement>
+  ): Promise<T | CodedError<number> | HTMLElement | MixedResponse>
 }
 
 /**

@@ -237,10 +237,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
  *
  */
 const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedResponse | HTMLElement | Table> => {
-  const semi = await opts.REPL.semicolonInvoke(opts)
-  if (semi) {
-    return semi
-  } else if (/\|/.test(opts.command)) {
+  if (/\|/.test(opts.command)) {
     // conservatively send possibly piped output to the PTY
     return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
   }
