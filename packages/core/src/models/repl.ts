@@ -15,8 +15,8 @@
  */
 
 import { Tab } from '../webapp/tab'
-import { MixedResponse, RawContent, RawResponse } from './entity'
-import { EvaluatorArgs, KResponse } from './command'
+import { RawContent, RawResponse } from './entity'
+import { KResponse } from './command'
 import { ExecOptions } from './execOptions'
 
 export default interface REPL {
@@ -63,13 +63,6 @@ export default interface REPL {
    *
    */
   update(tab: Tab, command: string, execOptions?: ExecOptions): Promise<void>
-
-  /**
-   * If the command is semicolon-separated, invoke each element of the
-   * split separately
-   *
-   */
-  semicolonInvoke(opts: EvaluatorArgs): Promise<MixedResponse>
 
   /**
    * Prepare a string to be part of a `command` argument to the *exec

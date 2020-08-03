@@ -40,7 +40,6 @@ import {
   CommandHandlerWithEvents,
   EvaluatorArgs as Arguments,
   ExecType,
-  EvaluatorArgs,
   KResponse,
   ParsedOptions,
   YargsParserFlags
@@ -310,7 +309,7 @@ class InProcessExecutor implements Executor {
   private async execUnsafe<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions = emptyExecOptions()
-  ): Promise<T | CodedError<number> | HTMLElement | CommandEvaluationError> {
+  ): Promise<T | CodedError<number> | HTMLElement | MixedResponse | CommandEvaluationError> {
     //
     const tab = execOptions.tab || getCurrentTab()
 
@@ -407,48 +406,54 @@ class InProcessExecutor implements Executor {
         createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID))
       }
 
-      let response: T | Promise<T>
-      try {
-        response = await Promise.resolve(
-          currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, args)
-        ).then(response => {
-          // indicate that the command was successfuly completed
-          evaluator.success({
-            tab,
-            type: (execOptions && execOptions.type) || ExecType.TopLevel,
-            isDrilldown: execOptions.isDrilldown,
-            command,
-            parsedOptions
-          })
+      let response: T | Promise<T> | MixedResponse
 
-          return response
-        })
-      } catch (err) {
-        evaluator.error(command, tab, execType, err)
-        if (execType === ExecType.Nested) {
-          throw err
+      const commands = command.split(/\s*;\s*/)
+      if (commands.length > 1) {
+        response = await semicolonInvoke(commands, execOptions)
+      } else {
+        try {
+          response = await Promise.resolve(
+            currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, args)
+          ).then(response => {
+            // indicate that the command was successfuly completed
+            evaluator.success({
+              tab,
+              type: (execOptions && execOptions.type) || ExecType.TopLevel,
+              isDrilldown: execOptions.isDrilldown,
+              command,
+              parsedOptions
+            })
+
+            return response
+          })
+        } catch (err) {
+          evaluator.error(command, tab, execType, err)
+          if (execType === ExecType.Nested) {
+            throw err
+          }
+          response = err
         }
-        response = err
-      }
 
-      if (evaluator.options.viewTransformer && execType !== ExecType.Nested) {
-        response = await Promise.resolve(response)
-          .then(async _ => {
-            const maybeAView = await evaluator.options.viewTransformer(args, _)
-            return maybeAView || _
-          })
-          .catch(err => {
-            // view transformer failed; treat this as the response to the user
-            return err
-          })
-      }
+        if (evaluator.options.viewTransformer && execType !== ExecType.Nested) {
+          response = await Promise.resolve(response)
+            .then(async _ => {
+              const maybeAView = await evaluator.options.viewTransformer(args, _)
+              return maybeAView || _
+            })
+            .catch(err => {
+              // view transformer failed; treat this as the response to the user
+              return err
+            })
+        }
 
-      // the || true part is a safeguard for cases where typescript
-      // didn't catch a command handler returning nothing; it
-      // shouldn't happen, but probably isn't a sign of a dire
-      // problem. issue a debug warning, in any case
-      if (!response) {
-        debug('warning: command handler returned nothing', commandUntrimmed)
+        // the || true part is a safeguard for cases where typescript
+        // didn't catch a command handler returning nothing; it
+        // shouldn't happen, but probably isn't a sign of a dire
+        // problem. issue a debug warning, in any case
+        if (!response) {
+          debug('warning: command handler returned nothing', commandUntrimmed)
+        }
       }
 
       this.emitCompletionEvent(
@@ -480,7 +485,7 @@ class InProcessExecutor implements Executor {
   public async exec<T extends KResponse, O extends ParsedOptions>(
     commandUntrimmed: string,
     execOptions = emptyExecOptions()
-  ): Promise<T | CodedError<number> | HTMLElement | CommandEvaluationError> {
+  ): Promise<T | CodedError<number> | HTMLElement | MixedResponse | CommandEvaluationError> {
     try {
       return await this.execUnsafe(commandUntrimmed, execOptions)
     } catch (err) {
@@ -623,31 +628,28 @@ export const setExecutorImpl = (impl: Executor): void => {
  * split separately
  *
  */
-export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedResponse> {
-  const commands = opts.command.split(/\s*;\s*/)
-  if (commands.length > 1) {
-    debug('semicolonInvoke', commands)
+async function semicolonInvoke(commands: string[], execOptions: ExecOptions): Promise<MixedResponse> {
+  debug('semicolonInvoke', commands)
 
-    const nonEmptyCommands = commands.filter(_ => _)
+  const nonEmptyCommands = commands.filter(_ => _)
 
-    const result: MixedResponse = await promiseEach(nonEmptyCommands, async command => {
-      const entity = await qexec<MixedResponsePart | true>(
-        command,
-        undefined,
-        undefined,
-        Object.assign({}, opts.execOptions, { quiet: false, /* block, */ execUUID: opts.execOptions.execUUID })
-      )
+  const result: MixedResponse = await promiseEach(nonEmptyCommands, async command => {
+    const entity = await qexec<MixedResponsePart | true>(
+      command,
+      undefined,
+      undefined,
+      Object.assign({}, execOptions, { quiet: false, /* block, */ execUUID: execOptions.execUUID })
+    )
 
-      if (entity === true) {
-        // pty output
-        return ''
-      } else {
-        return entity
-      }
-    })
+    if (entity === true) {
+      // pty output
+      return ''
+    } else {
+      return entity
+    }
+  })
 
-    return result
-  }
+  return result
 }
 
 /**
@@ -655,7 +657,7 @@ export async function semicolonInvoke(opts: EvaluatorArgs): Promise<MixedRespons
  *
  */
 export function getImpl(tab: Tab): REPL {
-  const impl = { qexec, rexec, pexec, click, semicolonInvoke, encodeComponent, split } as REPL
+  const impl = { qexec, rexec, pexec, click, encodeComponent, split } as REPL
   tab.REPL = impl
   return impl
 }
