@@ -178,6 +178,9 @@
 .red-text {
   white-space: pre-wrap;
 }
+.repl-input {
+  flex-wrap: wrap;
+}
 .repl-input,
 .repl-output {
   display: flex;
