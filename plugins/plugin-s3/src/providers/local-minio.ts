@@ -16,26 +16,20 @@
 
 import { REPL } from '@kui-shell/core'
 
-interface CodeEngineConfig {
-  /** KUBECONFIG file */
-  currentConfigFile: string
+import ClientOptions from './model'
 
-  latest_announcements: string
-  nameSpaceID: string
-  projectID: string
-  projectName: string
-  region: string
-  servingAPI: string
+class LocalMinioS3Provider implements ClientOptions {
+  public readonly endPoint = '127.0.0.1' // TODO? pull out of mc config?
+  public readonly port = 9000
+  public readonly useSSL = false
+  public readonly accessKey = process.env.MINIO_ACCESS_KEY || 'minioadmin'
+  public readonly secretKey = process.env.MINIO_SECRET_KEY || 'minioadmin'
 }
 
-export default async function getConfig({ REPL: repl }: { REPL: REPL }): Promise<CodeEngineConfig> {
-  try {
-    return JSON.parse(
-      (await repl.rexec<{ data: string }>(`vfs fstat ~/.bluemix/plugins/code-engine/config.json --with-data`)).content
-        .data
-    )
-  } catch (err) {
-    console.error('Error fetching CodeEngine config', err)
-    throw err
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default async function init(repl: REPL) {
+  const provider = new LocalMinioS3Provider()
+  if (provider.accessKey && provider.secretKey) {
+    return provider
   }
 }

@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core'
-
-export default async () => {
-  if (!isHeadless()) {
-    import('./lib/tab-completion').then(_ => _.preload())
-  }
-
-  import('./vfs/local').then(_ => _.default())
-}
+import forwarder from './vfs/forwarder'
+export default forwarder

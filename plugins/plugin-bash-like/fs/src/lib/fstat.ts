@@ -16,15 +16,7 @@
 
 import { readFile, stat } from 'fs'
 
-import {
-  Arguments,
-  ParsedOptions,
-  RawResponse,
-  Registrar,
-  CodedError,
-  findFileWithViewer,
-  expandHomeDir
-} from '@kui-shell/core'
+import { Arguments, ParsedOptions, CodedError, findFileWithViewer, expandHomeDir } from '@kui-shell/core'
 
 export interface FStat {
   viewer: string
@@ -34,7 +26,7 @@ export interface FStat {
   data?: string
 }
 
-interface Options extends ParsedOptions {
+export interface FStatOptions extends ParsedOptions {
   'enoent-ok': boolean
   'with-data': boolean
 }
@@ -43,8 +35,11 @@ interface Options extends ParsedOptions {
  * Kui command for fs.stat
  *
  */
-const fstat = ({ argvNoOptions, parsedOptions }: Arguments<Options>) => {
-  return new Promise<RawResponse<FStat>>((resolve, reject) => {
+export const fstat = ({
+  argvNoOptions,
+  parsedOptions
+}: Pick<Arguments<FStatOptions>, 'argvNoOptions' | 'parsedOptions'>) => {
+  return new Promise<FStat>((resolve, reject) => {
     const filepath = argvNoOptions[1]
 
     const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
@@ -58,14 +53,11 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments<Options>) => {
           if (parsedOptions['enoent-ok']) {
             // file does not exist; caller told us that's ok
             resolve({
-              mode: 'raw',
-              content: {
-                viewer,
-                filepath,
-                fullpath: prettyFullPath,
-                isDirectory: false,
-                data: ''
-              }
+              viewer,
+              filepath,
+              fullpath: prettyFullPath,
+              isDirectory: false,
+              data: ''
             })
           }
 
@@ -78,13 +70,10 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments<Options>) => {
         }
       } else if (stats.isDirectory() || !parsedOptions['with-data']) {
         resolve({
-          mode: 'raw',
-          content: {
-            viewer,
-            filepath,
-            fullpath: prettyFullPath,
-            isDirectory: stats.isDirectory()
-          }
+          viewer,
+          filepath,
+          fullpath: prettyFullPath,
+          isDirectory: stats.isDirectory()
         })
       } else {
         readFile(fullpath, (err, data) => {
@@ -92,32 +81,15 @@ const fstat = ({ argvNoOptions, parsedOptions }: Arguments<Options>) => {
             reject(err)
           } else {
             resolve({
-              mode: 'raw',
-              content: {
-                viewer,
-                filepath,
-                fullpath: prettyFullPath,
-                data: data.toString(),
-                isDirectory: false
-              }
+              viewer,
+              filepath,
+              fullpath: prettyFullPath,
+              data: data.toString(),
+              isDirectory: false
             })
           }
         })
       }
     })
-  })
-}
-
-/**
- * Register command handlers
- *
- */
-export default (commandTree: Registrar) => {
-  commandTree.listen('/fstat', fstat, {
-    hidden: true,
-    requiresLocal: true,
-    flags: {
-      boolean: ['with-data', 'enoent-ok']
-    }
   })
 }

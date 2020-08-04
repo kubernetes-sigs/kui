@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core'
+/** username to use for ls -l */
+export const username = 's3user'
 
-export default async () => {
-  if (!isHeadless()) {
-    import('./lib/tab-completion').then(_ => _.preload())
-  }
+/** uid to use for ls -l */
+export const uid = 0
 
-  import('./vfs/local').then(_ => _.default())
-}
+/** gid to use for ls -l */
+export const gid = 0

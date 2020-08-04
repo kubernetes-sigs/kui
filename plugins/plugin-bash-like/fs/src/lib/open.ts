@@ -57,7 +57,8 @@ function contentTypeOf(suffix: string): SupportedStringContent {
  * Decide how to display a given filepath
  *
  */
-async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
+async function open(args: Arguments): Promise<KResponse> {
+  const { argvNoOptions, REPL } = args
   const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
   debug('open', filepath)
 
@@ -90,7 +91,8 @@ async function open({ argvNoOptions, REPL }: Arguments): Promise<KResponse> {
     // fetch the data:
     //   --with-data says give us the file contents
     //   --enoent-ok says don't fail if the file does not exist
-    const stats = (await REPL.rexec<FStat>(`fstat ${REPL.encodeComponent(filepath)} --with-data --enoent-ok`)).content
+    const stats = (await REPL.rexec<FStat>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data --enoent-ok`))
+      .content
 
     if (stats.isDirectory) {
       debug('trying to open a directory; delegating to ls')

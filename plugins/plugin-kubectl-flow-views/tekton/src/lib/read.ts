@@ -37,7 +37,7 @@ export const parse = async (raw: string | PromiseLike<string>): Promise<KubeReso
  *
  */
 export const read = async (tab: Tab, filepath: string): Promise<string> => {
-  const stats = (await tab.REPL.rexec<{ data: string }>(`fstat ${tab.REPL.encodeComponent(filepath)} --with-data`))
+  const stats = (await tab.REPL.rexec<{ data: string }>(`vfs fstat ${tab.REPL.encodeComponent(filepath)} --with-data`))
     .content
 
   return stats.data

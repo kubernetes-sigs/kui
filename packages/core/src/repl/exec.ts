@@ -319,6 +319,7 @@ class InProcessExecutor implements Executor {
     const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
     const argv = split(command)
 
+    debug('command', commandUntrimmed)
     const evaluator = await lookupCommandEvaluator<T, O>(argv, execOptions)
     if (isSuccessfulCommandResolution(evaluator)) {
       const { argvNoOptions, parsedOptions } = this.parseOptions(argv, evaluator)

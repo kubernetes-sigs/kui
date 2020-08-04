@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core'
+import { ClientOptions } from 'minio'
+export default ClientOptions
 
-export default async () => {
-  if (!isHeadless()) {
-    import('./lib/tab-completion').then(_ => _.preload())
-  }
-
-  import('./vfs/local').then(_ => _.default())
-}
+export class UnsupportedS3ProviderError extends Error {}

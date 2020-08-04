@@ -16,6 +16,8 @@
 
 import REPL from '../models/repl'
 import TabState from '../models/tab-state'
+import { isHeadless } from '../core/capabilities'
+import { getImpl as getReplImpl } from '../repl/exec'
 
 export interface Tab extends HTMLDivElement {
   uuid: string
@@ -65,7 +67,13 @@ export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
 }
 
 export const getCurrentTab = (): Tab => {
-  return document.querySelector('.kui--tab-content.visible') as Tab
+  const tab = document.querySelector('.kui--tab-content.visible') as Tab
+
+  if (isHeadless() && !tab.REPL) {
+    getReplImpl(tab)
+  }
+
+  return tab
 }
 
 export const getTab = (idx: Tab | number): Tab => {
