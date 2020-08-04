@@ -134,7 +134,7 @@ export function fetchFile(repl: REPL, url: string): Promise<(string | Buffer)[]>
       } else {
         const filepath = url
         debug('fetch local', filepath)
-        const stats = (await repl.rexec<{ data: string }>(`fstat ${repl.encodeComponent(filepath)} --with-data`))
+        const stats = (await repl.rexec<{ data: string }>(`vfs fstat ${repl.encodeComponent(filepath)} --with-data`))
           .content
         return stats.data
       }

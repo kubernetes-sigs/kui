@@ -15,12 +15,11 @@
  */
 
 import ls from './lib/ls'
-import glob from './lib/glob'
 import edit from './lib/edit'
 import open from './lib/open'
-import fstat from './lib/fstat'
 import fwrite from './lib/fwrite'
 import mkTemp from './lib/mkTemp'
+import vfs from './vfs/controller'
 import { plugin as tabCompletion } from './lib/tab-completion'
 
 import { Registrar } from '@kui-shell/core'
@@ -30,12 +29,13 @@ import { Registrar } from '@kui-shell/core'
  *
  */
 export default async (registrar: Registrar) => {
-  ls(registrar)
-  edit(registrar)
-  open(registrar)
-  fstat(registrar)
-  fwrite(registrar)
-  mkTemp(registrar)
-  glob(registrar)
-  tabCompletion(registrar)
+  await Promise.all([
+    ls(registrar),
+    edit(registrar),
+    open(registrar),
+    fwrite(registrar),
+    mkTemp(registrar),
+    vfs(registrar),
+    tabCompletion(registrar)
+  ])
 }

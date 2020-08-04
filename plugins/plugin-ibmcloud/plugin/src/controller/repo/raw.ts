@@ -23,7 +23,7 @@ import { IBMCloudInstalledRepositoryRaw, IBMCloudInstalledRepositoriesRaw } from
  */
 export default async function getInstalledRepos({ REPL }: Arguments): Promise<IBMCloudInstalledRepositoryRaw[]> {
   const config: IBMCloudInstalledRepositoriesRaw = JSON.parse(
-    (await REPL.rexec<{ data: string }>(`fstat ~/.bluemix/config.json --with-data`)).content.data
+    (await REPL.rexec<{ data: string }>(`vfs fstat ~/.bluemix/config.json --with-data`)).content.data
   )
 
   return config.PluginRepos

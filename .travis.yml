@@ -38,12 +38,14 @@ after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov
 # default install script
 install:
   - if [ -n "$NEEDS_K8S" ]; then ./tools/travis/microk8s.sh & k8s=$!; fi
+  - if [ -n "$NEEDS_MINIO" ]; then ./tools/travis/minio.sh & minio=$!; fi
   - npm ci
   - if [ -n "$NEEDS_IBMCLOUD" ]; then ./tools/travis/ibmcloud.sh && ./tools/travis/ibmcloud-plugin-build-install.sh; fi
   - ./bin/switch-client.sh ${CLIENT-default}
   - ./tools/codecov/instrument.sh
   - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; if [ "$DEPLOY" = "cluster" ]; then npx kui-build-webpack && npx kui-build-docker-with-proxy && (kui-run-cproxy &); else npm run watch:webpack; fi; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
   - if [ -n "$k8s" ]; then wait $k8s; fi
+  - if [ -n "$minio" ]; then wait $minio; fi
 
 script:
   - if [ -n "$CODECOV_OF_PRESCAN" ]; then TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile; fi
@@ -68,12 +70,12 @@ jobs:
 
     # CLIENT=default | os=Darwin | TARGET=electron | core, core-support, editor, core-support2
     - os: osx
-      env: N="Mac core" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1
+      env: N="Mac core" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1 NEEDS_MINIO=true
       before_install: which jq || brew install jq
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
 
     # CLIENT=default | os=Linux | targets=webpack | core, core-support, editor, core-support2
-    - env: N="Webpack core" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
+    - env: N="Webpack core" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true" NEEDS_MINIO=true
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
 
     # CLIENT=default | os=Linux | targets=electron | bash-like
