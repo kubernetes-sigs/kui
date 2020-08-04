@@ -32,6 +32,10 @@ else
     ROOT=$SCRIPTDIR/../..
 fi
 
+if [ -n "$DEBUG_PROXY" ]; then
+    export DEBUG="*"
+fi
+
 start() {
     PID=$(echo $$)
     echo "$PID" > /tmp/kuiproxy.pid

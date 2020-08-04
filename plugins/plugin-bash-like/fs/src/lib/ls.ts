@@ -246,20 +246,17 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
     return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
   }
 
+  const cmdline =
+    `vfs ls ${opts.argv
+      .slice(opts.argv.indexOf(cmd) + 1)
+      .map(_ => opts.REPL.encodeComponent(_))
+      .join(' ')}` + (cmd === 'lls' && !opts.parsedOptions.l ? ' -l' : '')
+
   if (cmd === 'lls') {
     opts.parsedOptions.l = true
   }
 
-  const entries = (
-    await opts.REPL.rexec<GlobStats[]>(
-      `kuiglob ${opts.argvNoOptions
-        .slice(opts.argvNoOptions.indexOf(cmd) + 1)
-        .map(_ => opts.REPL.encodeComponent(_))
-        .join(' ')} ${opts.parsedOptions.l ? '-l' : ''} ${opts.parsedOptions.C ? '-C' : ''} ${
-        opts.parsedOptions.a || opts.parsedOptions.all || opts.parsedOptions.A ? '-a' : ''
-      } ${opts.parsedOptions.d ? '-d' : ''}`
-    )
-  ).content
+  const entries = (await opts.REPL.rexec<GlobStats[]>(cmdline)).content
 
   return toTable(entries, opts)
 }

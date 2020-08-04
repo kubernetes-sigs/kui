@@ -17,23 +17,17 @@
 import { userInfo } from 'os'
 import { stat, Stats, constants } from 'fs'
 
-import {
-  i18n,
-  isHeadless,
-  expandHomeDir,
-  CodedError,
-  RawResponse,
-  Arguments,
-  ParsedOptions,
-  Registrar
-} from '@kui-shell/core'
+import { i18n, isHeadless, expandHomeDir, CodedError, Arguments, ParsedOptions } from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
+
+/** Just the bits of fs.Stats that we need */
+type PartialStats = Pick<Stats, 'size' | 'mtimeMs' | 'uid' | 'gid' | 'mode'>
 
 interface BaseStats {
   name: string
   path: string
-  stats: Stats
+  stats: PartialStats
 }
 
 interface DirentStats {
@@ -67,7 +61,7 @@ export interface GlobStats extends BaseStats {
   dirent: DirentStats
 }
 
-interface KuiGlobOptions extends ParsedOptions {
+export interface KuiGlobOptions extends ParsedOptions {
   a: boolean
   all: boolean
   d: boolean
@@ -75,7 +69,7 @@ interface KuiGlobOptions extends ParsedOptions {
   C: boolean
 }
 
-function formatPermissions(stats: Stats, isFile: boolean, isDirectory: boolean, isSymbolicLink: boolean) {
+function formatPermissions(stats: PartialStats, isFile: boolean, isDirectory: boolean, isSymbolicLink: boolean) {
   const { mode } = stats
 
   const d = isDirectory ? 'd' : isSymbolicLink ? 'l' : isFile ? '-' : 's'
@@ -119,11 +113,11 @@ const yup = () => true
  * Kui command for globbing readdir
  *
  */
-async function kuiglob({
+export async function kuiglob({
   tab,
   argvNoOptions,
   parsedOptions
-}: Arguments<KuiGlobOptions>): Promise<RawResponse<GlobStats[]>> {
+}: Pick<Arguments<KuiGlobOptions>, 'tab' | 'argvNoOptions' | 'parsedOptions'>): Promise<GlobStats[]> {
   // Intentional require versus import... some typing issues right
   // now. Also intentionally lazy here, to avoid complications with
   // webpack bundling with browser targets.
@@ -221,50 +215,33 @@ async function kuiglob({
 
   const user = userInfo()
 
-  return {
-    mode: 'raw',
-    content: entries.map(({ name, path, dirent, stats }) => {
-      const isFile = dirent.isFile()
-      const isDirectory = dirent.isDirectory()
-      const isSymbolicLink = dirent.isSymbolicLink()
+  return entries.map(({ name, path, dirent, stats }) => {
+    const isFile = dirent.isFile()
+    const isDirectory = dirent.isDirectory()
+    const isSymbolicLink = dirent.isSymbolicLink()
 
-      const isExecutable = stats && !!(stats.mode & (constants.S_IXUSR | constants.S_IXGRP | constants.S_IXOTH))
+    const isExecutable = stats && !!(stats.mode & (constants.S_IXUSR | constants.S_IXGRP | constants.S_IXOTH))
 
-      const isSpecial = !isFile && !isDirectory && !isSymbolicLink
-      // dirent.isBlockDevice() || dirent.isCharacterDevice() || dirent.isFIFO() || dirent.isSocket()
+    const isSpecial = !isFile && !isDirectory && !isSymbolicLink
+    // dirent.isBlockDevice() || dirent.isCharacterDevice() || dirent.isFIFO() || dirent.isSocket()
 
-      // e.g. ls dir1 dir2... we want to display the dir1 and dir2 as part of the response
-      const nameForDisplay = toGlob.length > 1 ? path : name
+    // e.g. ls dir1 dir2... we want to display the dir1 and dir2 as part of the response
+    const nameForDisplay = toGlob.length > 1 ? path : name
 
-      return {
-        name,
-        path,
-        nameForDisplay,
-        stats,
-        dirent: {
-          isFile,
-          isDirectory,
-          isSymbolicLink,
-          isExecutable,
-          isSpecial,
-          permissions: parsedOptions.l ? formatPermissions(stats, isFile, isDirectory, isSymbolicLink) : '',
-          username: stats && user.uid === stats.uid ? user.username : ''
-        }
+    return {
+      name,
+      path,
+      nameForDisplay,
+      stats,
+      dirent: {
+        isFile,
+        isDirectory,
+        isSymbolicLink,
+        isExecutable,
+        isSpecial,
+        permissions: parsedOptions.l ? formatPermissions(stats, isFile, isDirectory, isSymbolicLink) : '',
+        username: stats && user.uid === stats.uid ? user.username : ''
       }
-    })
-  }
-}
-
-/**
- * Register command handlers
- *
- */
-export default (commandTree: Registrar) => {
-  commandTree.listen('/kuiglob', kuiglob, {
-    hidden: true,
-    requiresLocal: true,
-    flags: {
-      boolean: ['a', 'all', 'd', 'l', 'C']
     }
   })
 }

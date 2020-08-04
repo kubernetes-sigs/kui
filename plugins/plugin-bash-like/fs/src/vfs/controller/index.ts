@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
+import clientSide from './client-side'
+import serverSide from './server-side'
 
-export default async () => {
-  if (!isHeadless()) {
-    import('./lib/tab-completion').then(_ => _.preload())
-  }
-
-  import('./vfs/local').then(_ => _.default())
+export default async function(registrar: Registrar) {
+  await Promise.all([clientSide(registrar), serverSide(registrar)])
 }

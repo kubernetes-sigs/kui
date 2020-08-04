@@ -38,7 +38,7 @@ export default function RevertFileButton(
     command: async () => {
       try {
         const stats = (
-          await repl.rexec<FStat>(`fstat ${repl.encodeComponent(response.spec.fullpath)} --with-data --enoent-ok`)
+          await repl.rexec<FStat>(`vfs fstat ${repl.encodeComponent(response.spec.fullpath)} --with-data --enoent-ok`)
         ).content
         onRevert(true, stats.data)
       } catch (err) {

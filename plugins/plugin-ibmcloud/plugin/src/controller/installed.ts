@@ -23,6 +23,6 @@ import { InstalledPluginsRaw } from '../models/plugin'
  */
 export default async function getInstalledPlugins({ REPL }: Arguments): Promise<InstalledPluginsRaw> {
   return JSON.parse(
-    (await REPL.rexec<{ data: string }>(`fstat ~/.bluemix/plugins/config.json --with-data`)).content.data
+    (await REPL.rexec<{ data: string }>(`vfs fstat ~/.bluemix/plugins/config.json --with-data`)).content.data
   )
 }

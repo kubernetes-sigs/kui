@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core'
+import Debug from 'debug'
+import { REPL } from '@kui-shell/core'
 
-export default async () => {
-  if (!isHeadless()) {
-    import('./lib/tab-completion').then(_ => _.preload())
-  }
+import Provider from './model'
+import ibmcloud from './ibmcloud'
+import localMinio from './local-minio'
 
-  import('./vfs/local').then(_ => _.default())
+const debug = Debug('plugin/s3/providers')
+const providers = [ibmcloud, localMinio]
+
+export default async function findDefaultProvider(repl: REPL): Promise<Provider> {
+  const candidates = await Promise.all(
+    providers.map(async Provider => {
+      try {
+        return await Provider(repl)
+      } catch (err) {
+        debug('error initializing provider', err)
+      }
+    })
+  )
+
+  return candidates.filter(_ => _)[0]
 }

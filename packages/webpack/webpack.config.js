@@ -325,7 +325,6 @@ const externals = !inBrowser
       'module',
       'net',
       'webworker-threads', // wskflow
-      'xml2js', // used by plugins/plugin-apache-composer/@demos/combinators/http.js
       'nyc',
       'electron'
     ]

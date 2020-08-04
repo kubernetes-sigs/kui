@@ -16,3 +16,5 @@
 
 export { FStat } from './lib/fstat'
 export { default as File, isFile } from './lib/File'
+
+export { VFS, mount, DirEntry } from './vfs'
