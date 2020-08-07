@@ -202,8 +202,12 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
       frag.appendChild(cell)
     })
 
+    const em = 0
+    const ex = body.reduce((max, _) => Math.max(max, _.name.length), 0)
+
     const container = document.createElement('div')
     container.classList.add('grid-layout')
+    container.style.gridTemplateColumns = `repeat(auto-fill, minmax(calc(${ex}ex + ${em}em), auto))`
     container.appendChild(frag)
     return container
   } else {
