@@ -86,7 +86,6 @@ function preprocessTable(raw: string, nCols): { rows: Pair[][]; leftover: string
     }
 
     const leftover = raw.slice(lastNewlineIdx)
-    console.error('!!!!!!!!', leftover, rows)
     return {
       leftover,
       rows: rows
