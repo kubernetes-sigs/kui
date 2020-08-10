@@ -16,10 +16,13 @@
 
 import { v4 } from 'uuid'
 import { join } from 'path'
+import { tmpdir } from 'os'
+import { existsSync, unlinkSync } from 'fs'
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 const README = 'README.md'
 const README2 = 'README2.md'
+const README3 = `README3-${v4()}.md`
 const README_LOCAL_PATH = join(process.env.TEST_ROOT, `../../${README}`)
 
 if (process.env.NEEDS_MINIO) {
@@ -41,11 +44,28 @@ if (process.env.NEEDS_MINIO) {
           .then(ReplExpect.okWith(expectedName))
           .catch(Common.oops(this, true)))
     }
-    const cp = (bucketName: string, specifiedDest?: string) => {
-      it(`should copy a file to the bucket ${bucketName}`, () =>
+    const copyToS3 = (bucketName: string, specifiedDest?: string) => {
+      it(`should copy a file ->TO the bucket ${bucketName}`, () =>
         CLI.command(`cp ${README_LOCAL_PATH} /s3/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''), this.app)
           .then(ReplExpect.okWithString('Created object'))
           .catch(Common.oops(this, true)))
+    }
+    const copyFromS3 = (bucketName: string, srcFilename: string, destDir: string, destFilename?: string) => {
+      it(`should copy a file FROM-> the bucket ${bucketName}`, async () => {
+        try {
+          const specifiedDest = destFilename ? join(destDir, destFilename) : destDir
+          const expectedDest = destFilename ? specifiedDest : join(destDir, srcFilename)
+
+          await CLI.command(`cp /s3/${bucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
+            ReplExpect.okWithString(`Fetched object to ${expectedDest}`)
+          )
+
+          await existsSync(expectedDest)
+          await unlinkSync(expectedDest)
+        } catch (err) {
+          await Common.oops(this, true)
+        }
+      })
     }
     const rmdirExpectingError = (bucketName: string) => {
       it(`should remove the bucket ${bucketName}`, () =>
@@ -84,10 +104,12 @@ if (process.env.NEEDS_MINIO) {
 
       mkdir(bucketName)
       ls(bucketName) // ls /s3, expect bucketName
-      cp(bucketName)
+      copyToS3(bucketName)
       ls(README, bucketName) // ls /s3/bucketName, expect README
-      cp(bucketName, README2)
+      copyToS3(bucketName, README2)
       ls(README2, bucketName) // ls /s3/bucketName, expect README2
+      copyFromS3(bucketName, README2, tmpdir())
+      copyFromS3(bucketName, README2, tmpdir(), README3)
       rmdirExpectingError(bucketName)
       rm(bucketName, README)
       rm(bucketName, README2)
@@ -101,7 +123,7 @@ if (process.env.NEEDS_MINIO) {
       const bucketName = `kuitest-${v4()}`
 
       mkdir(bucketName)
-      cp(bucketName)
+      copyToS3(bucketName)
       rimraf(bucketName)
       lsExpecting404(bucketName)
     }

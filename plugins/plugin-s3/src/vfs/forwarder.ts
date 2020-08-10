@@ -18,9 +18,20 @@ import { Registrar } from '@kui-shell/core'
 import { responder } from '.'
 
 export default function(registrar: Registrar) {
-  registrar.listen('/vfs-s3/cp', args => responder.cp(undefined, args.argvNoOptions[2], args.argvNoOptions[3]), {
-    requiresLocal: true
-  })
+  registrar.listen(
+    '/vfs-s3/cp',
+    args =>
+      responder.cp(
+        undefined,
+        args.argvNoOptions[2],
+        args.argvNoOptions[3],
+        args.argvNoOptions[4] === 'true',
+        args.argvNoOptions[5] === 'true'
+      ),
+    {
+      requiresLocal: true
+    }
+  )
   registrar.listen(
     '/vfs-s3/rm',
     async args => {
