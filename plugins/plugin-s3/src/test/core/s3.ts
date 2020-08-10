@@ -67,6 +67,19 @@ if (process.env.NEEDS_MINIO) {
         }
       })
     }
+    const copyWithinS3 = (srcBucketName: string, srcFilename: string, dstBucketName: string, destFilename?: string) => {
+      it(`should copy a file within s3 from the bucket ${srcBucketName}`, async () => {
+        try {
+          const specifiedDest = join('/s3', dstBucketName, destFilename || '')
+
+          await CLI.command(`cp /s3/${srcBucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
+            ReplExpect.okWithString(`Copied to object`)
+          )
+        } catch (err) {
+          await Common.oops(this, true)
+        }
+      })
+    }
     const rmdirExpectingError = (bucketName: string) => {
       it(`should remove the bucket ${bucketName}`, () =>
         CLI.command(`rmdir /s3/${bucketName}`, this.app)
@@ -120,12 +133,19 @@ if (process.env.NEEDS_MINIO) {
     {
       // needs to be different; some s3 backends can't recreate a
       // bucketName immediately after deleting it
-      const bucketName = `kuitest-${v4()}`
+      const bucketName1 = `kuitest-${v4()}`
+      const bucketName2 = `kuitest-${v4()}`
 
-      mkdir(bucketName)
-      copyToS3(bucketName)
-      rimraf(bucketName)
-      lsExpecting404(bucketName)
+      mkdir(bucketName1)
+      mkdir(bucketName2)
+      copyToS3(bucketName1)
+      copyWithinS3(bucketName1, README, bucketName2)
+      copyWithinS3(bucketName1, README, bucketName2, README3)
+      copyFromS3(bucketName2, README3, tmpdir()) // copy out the intra-s3 copy
+      rimraf(bucketName1)
+      lsExpecting404(bucketName1)
+      rimraf(bucketName2)
+      lsExpecting404(bucketName2)
     }
   })
 }
