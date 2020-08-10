@@ -118,12 +118,51 @@ class S3VFSResponder extends S3VFS implements VFS {
     return { bucketName, fileName }
   }
 
+  private async fPutObject(srcFilepath: string, dstFilepath: string) {
+    const { bucketName, fileName } = this.split(dstFilepath)
+    const etag = await this.client.fPutObject(bucketName, fileName || basename(srcFilepath), srcFilepath, {})
+    return `Created object with etag ${etag}`
+  }
+
+  private async fGetObject(srcFilepath: string, dstFilepath: string) {
+    // NOTE: intentionally not lstat; we want what is referenced by
+    // the symlink
+    const { stat } = await import('fs')
+
+    const { bucketName, fileName } = this.split(srcFilepath)
+
+    const dst = await new Promise<string>((resolve, reject) => {
+      stat(dstFilepath, (err, stats) => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            resolve(dstFilepath)
+          } else {
+            reject(err)
+          }
+        } else {
+          resolve(stats.isDirectory() ? join(dstFilepath, fileName) : dstFilepath)
+        }
+      })
+    })
+
+    await this.client.fGetObject(bucketName, fileName, dst)
+    return `Fetched object to ${dst}`
+  }
+
   /** Insert filepath into directory */
-  public async cp(_, srcFilepath: string, dstFilepath: string): Promise<string> {
+  public async cp(
+    _,
+    srcFilepath: string,
+    dstFilepath: string,
+    srcIsLocal: boolean,
+    dstIsLocal: boolean
+  ): Promise<string> {
     try {
-      const { bucketName, fileName } = this.split(dstFilepath)
-      const etag = await this.client.fPutObject(bucketName, fileName || basename(srcFilepath), srcFilepath, {})
-      return `Created object with etag ${etag}`
+      if (srcIsLocal) {
+        return this.fPutObject(srcFilepath, dstFilepath)
+      } else if (dstIsLocal) {
+        return this.fGetObject(srcFilepath, dstFilepath)
+      }
     } catch (err) {
       const error: CodedError = new Error(err.message)
       error.code = err['httpstatuscode'] || err['code'] // missing types in @types/minio
@@ -249,10 +288,14 @@ class S3VFSForwarder extends S3VFS implements VFS {
   public cp(
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcFilepath: string,
-    dstFilepath: string
+    dstFilepath: string,
+    srcIsLocal: boolean,
+    dstIsLocal: boolean
   ): Promise<string> {
     return opts.REPL.qexec<string>(
-      `vfs-s3 cp ${opts.REPL.encodeComponent(srcFilepath)} ${opts.REPL.encodeComponent(dstFilepath)}`
+      `vfs-s3 cp ${opts.REPL.encodeComponent(srcFilepath)} ${opts.REPL.encodeComponent(
+        dstFilepath
+      )} ${srcIsLocal.toString()} ${dstIsLocal.toString()}`
     )
   }
 

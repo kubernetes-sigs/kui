@@ -14,72 +14,41 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar } from '@kui-shell/core'
+import { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 import { cp, rm, mkdir, rmdir } from '../delegates'
 
-/* function delegateToServer(this: Registrar, cmd: string) {
-  this.listen(`/${cmd}`, args => args.REPL.qexec(`vfs ${args.command}`, undefined, undefined, args.execOptions))
-  } */
-
-function withFilepathArg(
+/**
+ * Generic registration for commands with boolean flags.
+ *
+ * @param boolean: 'abc' is treated as meaning all of -a, -b, and -c
+ * are boolean flags
+ *
+ */
+function withBooleanFlags(
   this: Registrar,
   command: string,
-  handler: (args: Arguments, tgt: string, opt?: boolean) => void,
-  boolean: string[],
-  opt: (args: Arguments) => boolean
+  handler: CommandHandler<KResponse, ParsedOptions>,
+  booleans: string
 ) {
-  this.listen(
-    `/${command}`,
-    async args => {
-      const idx = args.argvNoOptions.indexOf(command)
-      const tgt = args.argvNoOptions[idx + 1]
-
-      const params: (Arguments | string | boolean)[] = [args, tgt]
-      if (opt) {
-        params.push(opt(args))
-      }
-
-      // eslint-disable-next-line prefer-spread
-      await handler.apply(undefined, params)
-      return true
-    },
-    {
-      flags: {
-        boolean
-      }
+  this.listen(`/${command}`, handler, {
+    flags: {
+      boolean: booleans.split('')
     }
-  )
+  })
 }
 
 export default function(registrar: Registrar) {
-  const on = withFilepathArg.bind(registrar)
-
-  // on('cp')
-  // on('rm')
-  // on('mkdir')
-  // on('rmdir')
+  const on = withBooleanFlags.bind(registrar)
 
   on(
     'rm',
-    rm,
-    ['f', 'r', 'R', 'i', 'd', 'P', 'v', 'W'],
-    (args: Arguments) => args.parsedOptions.r || args.parsedOptions.R
+    args => rm(args, args.argvNoOptions[1], !!(args.parsedOptions.r || args.parsedOptions.R)).then(() => true),
+    'frRidPvw'
   )
-  on('mkdir', mkdir, ['p', 'v'])
-  on('rmdir', rmdir, ['p'])
 
-  registrar.listen(
-    '/cp',
-    args => {
-      const idx = args.argvNoOptions.indexOf('cp')
-      const src = args.argvNoOptions[idx + 1]
-      const dst = args.argvNoOptions[idx + 2]
-      return cp(args, src, dst)
-    },
-    {
-      flags: {
-        boolean: ['a', 'f', 'H', 'i', 'L', 'n', 'P', 'p', 'R', 'v', 'X', 'c']
-      }
-    }
-  )
+  on('mkdir', args => mkdir(args, args.argvNoOptions[1]).then(() => true), 'pv')
+
+  on('rmdir', args => rmdir(args, args.argvNoOptions[1]).then(() => true), 'p')
+
+  on('cp', args => cp(args, args.argvNoOptions[1], args.argvNoOptions[2]), 'acfHiLnPpRvX')
 }
