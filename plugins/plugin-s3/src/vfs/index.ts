@@ -15,7 +15,7 @@
  */
 
 import { basename, join } from 'path'
-import { Client, ClientOptions } from 'minio'
+import { Client, ClientOptions, CopyConditions } from 'minio'
 import { DirEntry, FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, CodedError, REPL, flatten, inBrowser } from '@kui-shell/core'
 
@@ -149,6 +149,19 @@ class S3VFSResponder extends S3VFS implements VFS {
     return `Fetched object to ${dst}`
   }
 
+  private async fCopyObject(srcFilepath: string, dstFilepath: string) {
+    const { bucketName: srcBucket, fileName: srcFile } = this.split(srcFilepath)
+    const { bucketName: dstBucket, fileName: dstFile } = this.split(dstFilepath)
+
+    const { etag } = await this.client.copyObject(
+      dstBucket,
+      dstFile || srcFile,
+      `/${srcBucket}/${srcFile}`,
+      new CopyConditions()
+    )
+    return `Copied to object with etag ${etag}`
+  }
+
   /** Insert filepath into directory */
   public async cp(
     _,
@@ -159,9 +172,11 @@ class S3VFSResponder extends S3VFS implements VFS {
   ): Promise<string> {
     try {
       if (srcIsLocal) {
-        return this.fPutObject(srcFilepath, dstFilepath)
+        return await this.fPutObject(srcFilepath, dstFilepath)
       } else if (dstIsLocal) {
-        return this.fGetObject(srcFilepath, dstFilepath)
+        return await this.fGetObject(srcFilepath, dstFilepath)
+      } else {
+        return await this.fCopyObject(srcFilepath, dstFilepath)
       }
     } catch (err) {
       const error: CodedError = new Error(err.message)
