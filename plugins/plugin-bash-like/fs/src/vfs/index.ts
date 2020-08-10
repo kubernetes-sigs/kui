@@ -46,7 +46,9 @@ export interface VFS {
   cp(
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcFilepath: string,
-    dstFilepath: string
+    dstFilepath: string,
+    srcIsLocal: boolean,
+    dstIsLocal: boolean
   ): Promise<string>
 
   /** Remove filepath */

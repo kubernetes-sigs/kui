@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { flatten } from '@kui-shell/core'
+import { Arguments, flatten } from '@kui-shell/core'
 import { VFS, findMount, multiFindMount } from '.'
 
 /**
@@ -30,9 +30,15 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<ReturnTy
  * cp delegate
  *
  */
-export async function cp(...parameters: Parameters<VFS['cp']>): ReturnType<VFS['cp']> {
-  const mount = findMount(parameters[2])
-  return mount.cp(parameters[0], parameters[1], parameters[2])
+export async function cp(
+  opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
+  srcFilepath: string,
+  dstFilepath: string
+): ReturnType<VFS['cp']> {
+  const mount1 = findMount(srcFilepath)
+  const mount2 = findMount(dstFilepath)
+  const mountThatManagesTheCopy = mount1.isLocal ? mount2 : mount1
+  return mountThatManagesTheCopy.cp(opts, srcFilepath, dstFilepath, mount1.isLocal, mount2.isLocal)
 }
 
 /**
