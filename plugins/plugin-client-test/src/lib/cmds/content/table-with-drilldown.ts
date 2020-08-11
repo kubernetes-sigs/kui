@@ -20,7 +20,7 @@ export const firstSeen = 'FIRST SEEN'
 
 export default (): Table => ({
   title: 'noTitle',
-  statusColumnIdx: 2,
+  statusColumnIdx: 1,
   breadcrumbs: [{ label: 'noBreadcrumb' }],
   noSort: true,
   header: { name: 'NAME', attributes: [{ value: 'FOO' }, { value: firstSeen }] },
@@ -144,3 +144,59 @@ export const durationTable = (): Table => ({
     }
   ]
 })
+
+export const sequenceDiagram = (): Table => {
+  return {
+    title: 'noTitle',
+    statusColumnIdx: 1,
+    startColumnIdx: 1,
+    completeColumnIdx: 2,
+    breadcrumbs: [{ label: 'noBreadcrumb' }],
+    noSort: true,
+    header: { name: 'Name', attributes: [{ value: 'Status' }, { value: 'Start' }, { value: 'End' }] },
+    body: [
+      {
+        name: 'test 1',
+        attributes: [
+          { value: 'Running', css: 'green-background', tag: 'badge' },
+          { value: 'Mon Aug 10 2020 15:10:58' },
+          { value: 'Mon Aug 10 2020 15:13:13' }
+        ]
+      },
+      {
+        name: 'test 2',
+        attributes: [
+          { value: 'Running', css: 'green-background', tag: 'badge' },
+          { value: 'Mon Aug 10 2020 15:10:30' },
+          { value: 'Mon Aug 10 2020 15:13:52' }
+        ]
+      },
+      {
+        name: 'test 3',
+        attributes: [
+          { value: 'Error', css: 'red-background', tag: 'badge' },
+          { value: 'Mon Aug 10 2020 15:10:23' },
+          { value: 'Mon Aug 10 2020 15:14:19 ' }
+        ]
+      },
+      {
+        name: 'test 4',
+        onclickSilence: true,
+        attributes: [
+          { value: 'Running', css: 'green-background', tag: 'badge' },
+          { value: 'Mon Aug 10 2020 15:10:08' },
+          { value: 'Mon Aug 10 2020 15:13:38' }
+        ]
+      },
+      {
+        name: 'test 5',
+        onclick: `test string`,
+        attributes: [
+          { value: 'Error', css: 'red-background', tag: 'badge' },
+          { value: 'Mon Aug 10 2020 15:10:28' },
+          { value: 'Mon Aug 10 2020 15:14:26 ' }
+        ]
+      }
+    ]
+  }
+}
