@@ -134,6 +134,10 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
 
     await dispatchToShell(myArgs).catch(err => {
       console.error(err)
+
+      // if the PTY emitted anything on stdout, use this as the message
+      err.message = stdout || err.message
+
       reject(err)
     })
 
