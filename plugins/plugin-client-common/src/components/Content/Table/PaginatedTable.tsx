@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, Table as KuiTable, TableStyle, i18n, isWatchable } from '@kui-shell/core'
+import { Tab, REPL, Table as KuiTable, TableStyle, i18n, isTableWithTimestamp, isWatchable } from '@kui-shell/core'
 
 import * as React from 'react'
 import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-components-react'
@@ -27,6 +27,7 @@ import Toolbar, { Props as ToolbarProps } from './Toolbar'
 import Grid, { findGridableColumn } from './Grid'
 import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
+import Bar from './Bar'
 
 /** carbon styling */
 import 'carbon-components/scss/components/data-table/_data-table-core.scss'
@@ -138,6 +139,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         headers,
         rows,
         footer,
+        asSequence: false,
         asGrid: this.props.asGrid && findGridableColumn(this.props.response) >= 0,
         page: 1,
         pageSize: this.defaultPageSize
@@ -203,24 +205,27 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private bottomToolbar(lightweightTables = false) {
     const gridableColumn = findGridableColumn(this.props.response)
-
     return (
       <React.Fragment>
         {this.hasFooterLines() && <Toolbar stream={this.footerLines()} repl={this.props.repl} />}
-        {this.props.toolbars && (this.isPaginated() || gridableColumn >= 0) && (
-          <Toolbar
-            className="kui--data-table-toolbar-bottom"
-            repl={this.props.repl}
-            asGrid={this.state.asGrid}
-            gridableColumn={gridableColumn}
-            setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
-            paginate={this.isPaginated()}
-            setPage={(page: number) => this.setState({ page })}
-            page={this.state.page}
-            totalItems={this.state.rows.length}
-            pageSize={this.state.pageSize}
-          />
-        )}
+        {this.props.toolbars &&
+          (this.isPaginated() || gridableColumn >= 0 || isTableWithTimestamp(this.props.response)) && (
+            <Toolbar
+              className="kui--data-table-toolbar-bottom"
+              repl={this.props.repl}
+              asGrid={this.state.asGrid}
+              gridableColumn={gridableColumn}
+              setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
+              paginate={this.isPaginated()}
+              setPage={(page: number) => this.setState({ page })}
+              page={this.state.page}
+              totalItems={this.state.rows.length}
+              pageSize={this.state.pageSize}
+              hasSequenceButton={isTableWithTimestamp(this.props.response)}
+              asSequence={this.state.asSequence}
+              setAsSequence={(asSequence: boolean) => this.setState({ asSequence })}
+            />
+          )}
       </React.Fragment>
     )
   }
@@ -244,9 +249,84 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     }, {} as Record<string, boolean>)
   }
 
+  private transformTableWithTimestamp(kuiTable: KuiTable) {
+    const table = JSON.parse(JSON.stringify(kuiTable)) // deep copy
+    const startIdx = table.startColumnIdx
+    const endIdx = table.completeColumnIdx
+
+    // add 'hide-with-sidecar' css to start column and remove end column
+    table.header.attributes[startIdx].outerCSS = `${table.header.attributes[startIdx].outerCSS || ''} hide-with-sidecar`
+    table.header.attributes.splice(endIdx, 1)
+
+    // add duration header column if needed
+    if (table.durationColumnIdx === undefined) {
+      table.header.attributes.push({ key: 'Duration', value: 'Duration' })
+    }
+
+    // add interval header column
+    table.header.attributes.push({ key: 'Interval', value: 'Interval' })
+
+    // compute the max completion time and min start time
+    let minStart = -1
+    let maxEnd = -1
+
+    table.body.forEach(row => {
+      const start = new Date(row.attributes[startIdx].value).getTime()
+      const end = new Date(row.attributes[endIdx].value).getTime()
+
+      minStart = start < minStart || minStart === -1 ? start : minStart
+      maxEnd = end > maxEnd || maxEnd === -1 ? end : maxEnd
+    })
+
+    const getFraction = (numerator: number) => {
+      return `${((numerator / (maxEnd - minStart)) * 100).toFixed(2).toString()}%`
+    }
+
+    table.body.forEach(row => {
+      const durationCol =
+        table.durationColumnIdx >= 0 && new Date(row.attributes[table.durationColumnIdx].value).getTime()
+
+      const start = new Date(row.attributes[startIdx].value).getTime()
+      const end = new Date(row.attributes[endIdx].value).getTime()
+
+      const duration = durationCol || end - start
+      const width = getFraction(duration)
+      const left = getFraction(start - minStart)
+      const right = getFraction(maxEnd - end)
+
+      // add 'hide-with-sidecar' css to start column and remove end column
+      row.attributes[startIdx].outerCSS = `${row.attributes[startIdx].outerCSS || ''} hide-with-sidecar`
+      row.attributes.splice(endIdx, 1)
+
+      // add duration column if needed
+      if (table.durationColumnIdx === undefined) {
+        row.attributes.push({ key: 'Duration', value: duration.toString() })
+      }
+
+      // add interval column
+      row.attributes.push({
+        key: 'Interval',
+        value: duration.toString(),
+        valueDom: <Bar left={left} right={right} width={width} />
+      })
+    })
+
+    // add durationColumnIdx if needed
+    if (table.durationColumnIdx === undefined) {
+      table.durationColumnIdx = table.header.attributes.findIndex(_ => _.key === 'Duration')
+    }
+
+    return table
+  }
+
   private table() {
-    const { tab, repl, response } = this.props
-    const { headers, rows, page } = this.state
+    const { tab, repl } = this.props
+    const { page } = this.state
+
+    const response = !this.state.asSequence
+      ? this.props.response
+      : this.transformTableWithTimestamp(this.props.response)
+    const { headers, rows } = !this.state.asSequence ? this.state : kui2carbon(response)
 
     const isSortable = response.body.length > 1
     const dataTable = (visibleRows: NamedDataTableRow[], offset = 0) => (
@@ -310,6 +390,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       const className =
         'kui--data-table-wrapper' +
         (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
+        (this.state.asSequence ? ' kui--data-table-as-sequence' : '') +
         (lightweightTables ? ' kui--data-table-wrapper-lightweight' : '')
 
       return (

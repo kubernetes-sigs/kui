@@ -32,8 +32,11 @@ interface RowWithBadgeAndMessage {
 
 interface TableValidation {
   hasGridButton?: boolean
+  hasSequenceButton?: boolean
   cells?: ((value: string, rowIdx: number) => void)[]
   asGrid?: boolean
+  switchToSequence?: boolean
+  bars?: string[]
   switchToList?: boolean
 }
 
@@ -157,17 +160,38 @@ export class TestTable {
         .then(async res => {
           await res.app.client.waitForExist(Selectors.TABLE_TITLE(res.count - 1), CLI.waitTimeout, true)
 
-          if (validation && validation.hasGridButton) {
-            await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_GRID(res.count))
-          }
+          if (validation) {
+            if (validation.hasGridButton) {
+              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_GRID(res.count))
+            }
 
-          if (validation && validation.asGrid) {
-            await res.app.client.waitForVisible(Selectors.TABLE_AS_GRID(res.count))
-          }
+            if (validation.asGrid) {
+              await res.app.client.waitForVisible(Selectors.TABLE_AS_GRID(res.count))
+            }
 
-          if (validation && validation.switchToList) {
-            await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_LIST(res.count))
-            await res.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+            if (validation.hasSequenceButton) {
+              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
+            }
+
+            if (validation.switchToSequence) {
+              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
+              await res.app.client.click(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
+              await res.app.client.waitForVisible(Selectors.TABLE_AS_SEQUENCE(res.count))
+
+              if (validation.bars) {
+                await promiseEach(validation.bars, async width => {
+                  res.app.client.waitUntil(async () => {
+                    await res.app.client.waitForVisible(Selectors.TABLE_AS_SEQUENCE_BAR_WIDTH(res.count, width))
+                    return true
+                  })
+                })
+              }
+            }
+
+            if (validation.switchToList) {
+              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_LIST(res.count))
+              await res.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+            }
           }
 
           return res
