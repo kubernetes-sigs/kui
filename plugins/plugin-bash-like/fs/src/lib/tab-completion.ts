@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { lstat, realpath, readdir } from 'fs'
-import { basename, join, dirname as pathDirname } from 'path'
+import { basename, dirname as pathDirname } from 'path'
 
 import {
   Tab,
@@ -28,40 +27,45 @@ import {
   CompletionResponse
 } from '@kui-shell/core'
 
-/**
- * Is the given filepath a directory?
- *
- */
-const isDirectory = (filepath: string): Promise<boolean> =>
-  new Promise<boolean>((resolve, reject) => {
-    lstat(filepath, (err, stats) => {
-      if (err) {
-        reject(err)
-      } else {
-        if (stats.isSymbolicLink()) {
-          // debug('following symlink')
-          // TODO: consider turning these into the better async calls?
-          return realpath(filepath, (err, realpath) => {
-            if (err) {
-              reject(err)
-            } else {
-              isDirectory(realpath)
-                .then(resolve)
-                .catch(reject)
-            }
-          })
-        }
+import { ls } from '../vfs/delegates'
+import { GlobStats } from '../lib/glob'
 
-        resolve(stats.isDirectory())
+function findMatchingFilesFrom(files: GlobStats[], dirToScan: string, last: string, lastIsDir: boolean) {
+  const partial = basename(last) + (lastIsDir ? '/' : '')
+  const partialHasADot = partial.startsWith('.')
+
+  const matches = files.filter(_f => {
+    const f = _f.name
+
+    // exclude dot files from tab completion, also emacs ~ temp files just for fun
+    return (
+      (lastIsDir || f.indexOf(partial) === 0) &&
+      !f.endsWith('~') &&
+      f !== '.' &&
+      f !== '..' &&
+      (partialHasADot || !f.startsWith('.'))
+    )
+  })
+
+  // add a trailing slash to any matched directory names
+  const lastHasPath = /\//.test(last)
+  return {
+    mode: 'raw',
+    content: matches.map(matchStats => {
+      const match = matchStats.nameForDisplay
+      const completion = lastIsDir ? match : match.substring(partial.length)
+
+      // show a special label only if we have a dirname prefix
+      const label = lastHasPath ? basename(match) : undefined
+
+      if (matchStats.dirent.isDirectory) {
+        return { completion: `${completion}/`, label: label ? `${label}/` : undefined }
+      } else {
+        return { completion, addSpace: true, label }
       }
     })
-  }).catch(err => {
-    if (err.code === 'ENOENT') {
-      return false
-    } else {
-      throw err
-    }
-  })
+  }
+}
 
 /**
  * Tab completion handler for local files
@@ -75,7 +79,7 @@ async function completeLocalFiles(
   return (await tab.REPL.rexec<CompletionResponse[]>(`fscomplete -- "${toBeCompleted}"`)).content
 }
 
-function doComplete(args: Arguments) {
+async function doComplete(args: Arguments) {
   const last = args.command.substring(args.command.indexOf('-- ') + '-- '.length).replace(/^"(.*)"$/, '$1')
 
   // dirname will "foo" in the above example; it
@@ -84,55 +88,16 @@ function doComplete(args: Arguments) {
   const lastIsDir = last.charAt(last.length - 1) === '/'
   const dirname = lastIsDir ? last : pathDirname(last)
 
-  // debug('suggest local file', dirname, last)
-
   if (dirname) {
-    // then dirname exists! now scan the directory so we can find matches
-    return new Promise((resolve, reject) => {
+    try {
+      // Note: by passing a: true, we effect an `ls -a`, which will give us dot files
       const dirToScan = expandHomeDir(dirname)
-      readdir(dirToScan, async (err, files) => {
-        if (err) {
-          console.error('fs.readdir error', err)
-          reject(err)
-        } else {
-          const partial = basename(last) + (lastIsDir ? '/' : '')
-          const partialHasADot = partial.startsWith('.')
-
-          const matches: string[] = files.filter(_f => {
-            const f = _f
-
-            // exclude dot files from tab completion, also emacs ~ temp files just for fun
-            return (
-              (lastIsDir || f.indexOf(partial) === 0) &&
-              !f.endsWith('~') &&
-              f !== '.' &&
-              f !== '..' &&
-              (partialHasADot || !f.startsWith('.'))
-            )
-          })
-
-          // add a trailing slash to any matched directory names
-          const lastHasPath = /\//.test(last)
-          resolve({
-            mode: 'raw',
-            content: await Promise.all(
-              matches.map(async match => {
-                const completion = lastIsDir ? match : match.substring(partial.length)
-
-                // show a special label only if we have a dirname prefix
-                const label = lastHasPath ? basename(match) : undefined
-
-                if (await isDirectory(join(dirToScan, match))) {
-                  return { completion: `${completion}/`, label: label ? `${label}/` : undefined }
-                } else {
-                  return { completion, addSpace: true, label }
-                }
-              })
-            )
-          })
-        }
-      })
-    })
+      const fileList = await ls({ tab: args.tab, REPL: args.REPL, parsedOptions: { a: true } }, [dirToScan])
+      return findMatchingFilesFrom(fileList, dirToScan, last, lastIsDir)
+    } catch (err) {
+      console.error('tab completion vfs.ls error', err)
+      throw err
+    }
   }
 }
 
