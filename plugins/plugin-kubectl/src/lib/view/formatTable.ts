@@ -478,21 +478,17 @@ export function computeDurations(table: KResponse) {
     const startIdx = header.findIndex(_ => _.key === 'START')
     const endIdx = header.findIndex(_ => _.key === 'END')
     if (startIdx >= 0 && endIdx >= 0) {
-      header[startIdx].key = header[startIdx].value = 'Duration'
-      header.splice(endIdx, 1)
+      table.startColumnIdx = startIdx
+      table.completeColumnIdx = endIdx
+      table.durationColumnIdx = header.length
+      header.push({ key: 'Duration', value: 'Duration' })
 
-      table.durationColumnIdx = startIdx
       table.body.forEach(row => {
         const start = row.attributes[startIdx]
         const end = row.attributes[endIdx]
         const duration = new Date(end.value).getTime() - new Date(start.value).getTime()
-        start.key = 'Duration'
-        if (isNaN(duration)) {
-          start.value = ''
-        } else {
-          start.value = duration.toString()
-        }
-        row.attributes.splice(endIdx, 1)
+
+        row.attributes.push({ key: 'Duration', value: isNaN(duration) ? '' : duration.toString() })
       })
     }
   }
