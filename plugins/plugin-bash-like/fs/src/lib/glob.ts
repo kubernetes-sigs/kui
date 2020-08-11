@@ -62,11 +62,11 @@ export interface GlobStats extends BaseStats {
 }
 
 export interface KuiGlobOptions extends ParsedOptions {
-  a: boolean
-  all: boolean
-  d: boolean
-  l: boolean
-  C: boolean
+  a?: boolean
+  all?: boolean
+  d?: boolean
+  l?: boolean
+  C?: boolean
 }
 
 function formatPermissions(stats: PartialStats, isFile: boolean, isDirectory: boolean, isSymbolicLink: boolean) {
