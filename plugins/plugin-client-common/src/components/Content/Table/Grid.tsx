@@ -43,29 +43,31 @@ export const findGridableColumn = (response: KuiTable) => {
 
 const thresholds = [2000, 4000, 6000, 8000]
 
+export function durationCss(duration: number, isError: boolean) {
+  if (isError) {
+    return 'red-background'
+  } else if (duration < thresholds[0]) {
+    return 'color-latency0'
+  } else if (duration < thresholds[1]) {
+    return 'color-latency1'
+  } else if (duration < thresholds[2]) {
+    return 'color-latency3'
+  } else if (duration < thresholds[3]) {
+    return 'color-latency4'
+  } else {
+    return 'color-latency5'
+  }
+}
+
 /**
  * A Grid table
  *
  */
 export default class Grid<P extends Props> extends React.PureComponent<P> {
   private durationCss(row: KuiRow, isError: boolean) {
-    const { response } = this.props
-    const { durationColumnIdx } = response
+    const { durationColumnIdx } = this.props.response
     const duration = parseInt(row.attributes[durationColumnIdx].value, 10)
-
-    if (isError) {
-      return 'red-background'
-    } else if (duration < thresholds[0]) {
-      return 'color-latency0'
-    } else if (duration < thresholds[1]) {
-      return 'color-latency1'
-    } else if (duration < thresholds[2]) {
-      return 'color-latency3'
-    } else if (duration < thresholds[3]) {
-      return 'color-latency4'
-    } else {
-      return 'color-latency5'
-    }
+    return durationCss(duration, isError)
   }
 
   public render() {
