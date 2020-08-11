@@ -32,6 +32,7 @@ export const registration = {
 const listJob = doList.bind(ListJob)
 
 function exec(args: Arguments<KubeOptions>) {
+  args.execOptions.env = { IBMCLOUD_COLOR: 'false' }
   return doExecWithStdoutViaPty(args)
 }
 
