@@ -53,7 +53,7 @@
     opacity: 0.75;
   }
   .repl-input .repl-context {
-    align-items: center;
+    align-items: flex-start;
   }
   /* .repl-output {
     margin-top: 2px;
@@ -79,7 +79,7 @@
       border-left: none;
       border-right: none;
       border-radius: 1px;
-      opacity: 0.25;
+      opacity: 0.375;
       content: '';
       left: 0;
       position: absolute;
@@ -159,10 +159,7 @@
   border: none;
   flex: 1;
   caret-color: var(--color-caret);
-  overflow: hidden;
-  white-space: nowrap;
   padding: 0px; /* to match user-agent styling of <input/> */
-  /* text-overflow: ellipsis; see https://github.com/IBM/kui/issues/3539 */
 }
 .kui--prompt-like:empty {
   border-right: 1ex solid var(--color-caret);
@@ -282,7 +279,7 @@
     .kui--input-and-context {
       flex: 1;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
     }
   }
 
