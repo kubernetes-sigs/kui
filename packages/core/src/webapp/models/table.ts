@@ -138,6 +138,12 @@ export class Table<RowType extends Row = Row> {
   /** Column index to be interpreted as a duration column */
   durationColumnIdx?: number
 
+  /** Column index to be interpreted as a start timestamp column */
+  startColumnIdx?: number
+
+  /** Column index to be interpreted as a complete timestamp column */
+  completeColumnIdx?: number
+
   style?: TableStyle
 
   header?: RowType
@@ -164,6 +170,10 @@ export class Table<RowType extends Row = Row> {
   constructor(table: Table) {
     Object.assign(this, table)
   }
+}
+
+export function isTableWithTimestamp(table: Table) {
+  return table.startColumnIdx >= 0 && table.completeColumnIdx >= 0
 }
 
 export function isTable<C>(model: MetadataBearing<C> | Entity): model is Table {

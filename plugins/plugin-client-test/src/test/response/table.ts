@@ -120,6 +120,106 @@ new TestTable('should test duration table', {
   }
 }).run()
 
+/** test table with timestamps */
+const sequenceTableBody = [
+  {
+    name: 'test 1',
+    attributes: [{ value: 'Running' }, { value: 'Mon Aug 10 2020 15:10:58' }, { value: 'Mon Aug 10 2020 15:13:13' }]
+  },
+  {
+    name: 'test 2',
+    attributes: [{ value: 'Running' }, { value: 'Mon Aug 10 2020 15:10:30' }, { value: 'Mon Aug 10 2020 15:13:52' }]
+  },
+  {
+    name: 'test 3',
+    attributes: [{ value: 'Error' }, { value: 'Mon Aug 10 2020 15:10:23' }, { value: 'Mon Aug 10 2020 15:14:19' }]
+  },
+  {
+    name: 'test 4',
+    onclickSilence: true,
+    attributes: [{ value: 'Running' }, { value: 'Mon Aug 10 2020 15:10:08' }, { value: 'Mon Aug 10 2020 15:13:38' }]
+  },
+  {
+    name: 'test 5',
+    onclick: `test string`,
+    attributes: [{ value: 'Error' }, { value: 'Mon Aug 10 2020 15:10:28' }, { value: 'Mon Aug 10 2020 15:14:26' }]
+  }
+]
+
+new TestTable('should test table with timestamps', {
+  exec: {
+    command: 'test sequence',
+    expectTable: {
+      header: { name: 'Name', attributes: [{ value: 'Status' }, { value: 'Start' }, { value: 'End' }] },
+      body: sequenceTableBody
+    },
+    validation: {
+      hasGridButton: true,
+      hasSequenceButton: true,
+      switchToSequence: true,
+      bars: ['52.33%', '78.29%', '91.47%', '81.4%', '92.25%'],
+      switchToList: true,
+      cells: [
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, `test ${rowIdx + 1}`)
+        },
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, sequenceTableBody[rowIdx].attributes[0].value)
+        },
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, sequenceTableBody[rowIdx].attributes[1].value)
+        },
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, sequenceTableBody[rowIdx].attributes[2].value)
+        }
+      ]
+    }
+  }
+}).run()
+
+new TestTable('should watch table with timestamps', {
+  exec: {
+    command: 'test sequence --watch',
+    expectTable: {
+      header: { name: 'Name', attributes: [{ value: 'Status' }, { value: 'Start' }, { value: 'End' }] },
+      body: sequenceTableBody
+    },
+    validation: {
+      hasGridButton: true,
+      hasSequenceButton: true,
+      switchToSequence: true,
+      bars: ['66.96%', '11.27%', '13.17%', '11.72%', '13.28%'],
+      switchToList: true,
+      cells: [
+        (value: string, rowIdx: number) => {
+          assert.strictEqual(value, `test ${rowIdx + 1}`)
+        },
+        (value: string, rowIdx: number) => {
+          if (rowIdx === 0) {
+            assert.strictEqual(value, 'Pending')
+          } else {
+            assert.strictEqual(value, sequenceTableBody[rowIdx].attributes[0].value)
+          }
+        },
+        (value: string, rowIdx: number) => {
+          if (rowIdx === 0) {
+            assert.strictEqual(value, 'Mon Aug 10 2020 15:20:00')
+          } else {
+            assert.strictEqual(value, sequenceTableBody[rowIdx].attributes[1].value)
+          }
+        },
+        (value: string, rowIdx: number) => {
+          if (rowIdx === 0) {
+            assert.strictEqual(value, 'Mon Aug 10 2020 15:40:00')
+          } else {
+            assert.strictEqual(value, sequenceTableBody[rowIdx].attributes[2].value)
+          }
+        }
+      ]
+    }
+  }
+}).run()
+
 /** test table with push watcher, and the final status badge and message are correct */
 new TestTable('should test table with status and pusher', {
   status: {

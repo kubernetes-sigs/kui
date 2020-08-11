@@ -141,6 +141,7 @@ export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string, splitIndex = 
 export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th button[data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
+export const TABLE_SHOW_AS_SEQUENCE = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-sequence`
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
 export const TABLE_PAGINATION_FORWARD = (N: number) =>
   `${OUTPUT_N(N)} .kui--data-table-toolbar-pagination button.bx--pagination__button--forward`
@@ -158,6 +159,11 @@ export const TABLE_AS_GRID_CELL = (N: number, name: string) =>
 export const TABLE_AS_GRID_CELL_RED = (N: number, name: string) => `${TABLE_AS_GRID_CELL(N, name)} .red-background`
 export const TABLE_AS_GRID_CELL_GREEN = (N: number, name: string) => `${TABLE_AS_GRID_CELL(N, name)} .green-background`
 export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
+
+export const TABLE_AS_SEQUENCE = (N: number) => `${OUTPUT_N(N)} .kui--data-table-as-sequence`
+export const TABLE_AS_SEQUENCE_BAR = (N: number) => `${TABLE_AS_SEQUENCE(N)} .kui--bar`
+export const TABLE_AS_SEQUENCE_BAR_WIDTH = (N: number, width: string) =>
+  `${TABLE_AS_SEQUENCE(N)} .kui--bar[data-width="${width}]`
 
 const _TABLE_TITLE = `.kui--data-table-title`
 export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} ${_TABLE_TITLE}`

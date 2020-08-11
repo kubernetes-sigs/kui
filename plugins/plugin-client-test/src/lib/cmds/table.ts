@@ -22,7 +22,7 @@
 // Notes: this is part of the Kui core API
 import { Watchable, Table, Row, Arguments, ParsedOptions, Registrar, CodedError } from '@kui-shell/core'
 
-import tableContent, { durationTable } from './content/table-with-drilldown'
+import tableContent, { durationTable, sequenceDiagram } from './content/table-with-drilldown'
 
 interface Options extends ParsedOptions {
   watch: 'push'
@@ -122,6 +122,39 @@ const doTable = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) =
   }
 }
 
+const doSequenceDiagram = (): ((args: Arguments<Options>) => Table & Partial<Watchable>) => {
+  return (args: Arguments<Options>) => {
+    const table = sequenceDiagram()
+    if (args.parsedOptions.watch) {
+      const watch: Watchable = {
+        watch: {
+          abort: () => {
+            console.log('abort')
+          },
+          init: ({ update: updated }) => {
+            setTimeout(
+              () =>
+                updated({
+                  rowKey: 'test 1',
+                  name: 'test 1',
+                  attributes: [
+                    { value: 'Pending', css: 'yellow-background', tag: 'badge' },
+                    { value: 'Mon Aug 10 2020 15:20:00' },
+                    { value: 'Mon Aug 10 2020 15:40:00' }
+                  ]
+                }),
+              500
+            )
+          }
+        }
+      }
+      return Object.assign({}, table, watch)
+    } else {
+      return table
+    }
+  }
+}
+
 /**
  * Here is where we register our command.
  *
@@ -136,6 +169,11 @@ export default (commandTree: Registrar) => {
   commandTree.listen('/test/durationTable', () => durationTable(), {
     usage: {
       docs: 'A showcase of the Table view with duration column'
+    }
+  })
+  commandTree.listen('/test/sequence', doSequenceDiagram(), {
+    usage: {
+      docs: 'A showcase of the Table view with sequence diagram'
     }
   })
 }

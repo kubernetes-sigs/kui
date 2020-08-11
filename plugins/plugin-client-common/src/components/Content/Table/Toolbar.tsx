@@ -27,6 +27,7 @@ import '../../../../web/scss/components/Table/Events.scss'
 import '../../../../web/scss/components/Table/Toolbar.scss'
 
 export type Props = Partial<GridProps> &
+  Partial<SequenceProps> &
   Partial<PaginationProps> &
   Partial<BreadcrumbProps> &
   Partial<StreamProps> & {
@@ -38,6 +39,12 @@ interface GridProps {
   gridableColumn: number
   asGrid?: boolean
   setAsGrid: (asGrid: boolean) => void
+}
+
+interface SequenceProps {
+  hasSequenceButton?: boolean
+  asSequence: boolean
+  setAsSequence: (asSequence: boolean) => void
 }
 
 interface PaginationProps {
@@ -58,31 +65,53 @@ export default class Toolbar extends React.PureComponent<Props> {
   }
 
   private hasButtons() {
-    return this.hasGridButtons()
+    return this.hasGridButtons() || this.props.hasSequenceButton
   }
 
-  private gridController() {
-    if (this.hasGridButtons()) {
+  private viewController() {
+    if (this.hasGridButtons() || this.props.hasSequenceButton) {
       return (
         <React.Fragment>
           <a
             role="presentation"
             href="#"
             className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-list"
-            data-enabled={!this.props.asGrid}
-            onClick={() => this.props.setAsGrid(false)}
+            data-enabled={!this.props.asGrid && !this.props.asSequence}
+            onClick={() => {
+              this.props.setAsGrid(false)
+              this.props.setAsSequence(false)
+            }}
           >
             <Icons icon="List" />
           </a>
-          <a
-            role="presentation"
-            href="#"
-            className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-grid"
-            data-enabled={this.props.asGrid}
-            onClick={() => this.props.setAsGrid(true)}
-          >
-            <Icons icon="Grid" />
-          </a>
+          {this.hasGridButtons() && (
+            <a
+              role="presentation"
+              href="#"
+              className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-grid"
+              data-enabled={this.props.asGrid}
+              onClick={() => {
+                this.props.setAsSequence(false)
+                this.props.setAsGrid(true)
+              }}
+            >
+              <Icons icon="Grid" />
+            </a>
+          )}
+          {this.props.hasSequenceButton && (
+            <a
+              role="presentation"
+              href="#"
+              className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-sequence"
+              data-enabled={this.props.asSequence}
+              onClick={() => {
+                this.props.setAsGrid(false)
+                this.props.setAsSequence(true)
+              }}
+            >
+              <Icons icon="Sequence" />
+            </a>
+          )}
         </React.Fragment>
       )
     }
@@ -149,7 +178,7 @@ export default class Toolbar extends React.PureComponent<Props> {
 
   private buttons() {
     if (this.hasButtons()) {
-      return <div className="kui--data-table-toolbar-buttons">{this.gridController()}</div>
+      return <div className="kui--data-table-toolbar-buttons">{this.viewController()}</div>
     }
   }
 

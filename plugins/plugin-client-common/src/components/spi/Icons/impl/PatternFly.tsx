@@ -46,6 +46,7 @@ import {
   NetworkWiredIcon as Network,
   PauseCircleIcon as Pause,
   RebootingIcon as Retry,
+  SlidersHIcon as Sequence,
   BellIcon as Notification,
   PlayCircleIcon as Play
 } from '@patternfly/react-icons'
@@ -111,6 +112,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Server {...props} />
     case 'Settings':
       return <Settings {...props} />
+    case 'Sequence':
+      return <Sequence {...props} />
     case 'Screenshot':
       return <Screenshot {...props} />
     case 'ScreenshotInProgress':
