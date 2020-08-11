@@ -1,6 +1,6 @@
 import { Registrar } from '@kui-shell/core'
 import { metricDeleteCommand } from './models/metrics'
-
+import { printCatInLeftNavSidecar } from './modes/about'
 // Registers a custom command
 export default async (registrar: Registrar) => {
   registrar.listen('/create/exp', () => ({
@@ -20,4 +20,6 @@ export default async (registrar: Registrar) => {
 
   // @ts-ignore
   registrar.synonym('/iter8/delete/metrics', metricNames => metricDeleteCommand(metricNames), cmd)
+
+  registrar.listen('/iter8/about', () => printCatInLeftNavSidecar)
 }
