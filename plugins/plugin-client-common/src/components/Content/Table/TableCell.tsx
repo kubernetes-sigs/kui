@@ -84,10 +84,10 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
     const css = cidx > 0 ? kuiRow.attributes[cidx - 1].css : undefined
 
     // the text value of the cell
+    const valueDom = kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom
     const innerText =
-      cidx - 1 === table.durationColumnIdx && cell.value
-        ? prettyPrintDuration(parseInt(cell.value, 10))
-        : (kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom) || cell.value
+      valueDom ||
+      (cidx - 1 === table.durationColumnIdx && cell.value ? prettyPrintDuration(parseInt(cell.value, 10)) : cell.value)
 
     return (
       <TableCell
