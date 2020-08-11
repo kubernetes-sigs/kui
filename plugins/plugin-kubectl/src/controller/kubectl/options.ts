@@ -250,25 +250,27 @@ export function isForAllNamespaces(parsedOptions: KubeOptions) {
 
 /** Copy over any kubeconfig/context/cluster/namespace specifications from the given args */
 export function withKubeconfigFrom(args: { parsedOptions: KubeOptions }, cmdline: string): string {
-  let extras = ''
+  let extras = ' '
 
-  if (args.parsedOptions.kubeconfig) {
+  if (args.parsedOptions.kubeconfig && !/--kubeconfig/.test(cmdline)) {
     extras += ` --kubeconfig ${args.parsedOptions.kubeconfig}`
   }
 
-  if (args.parsedOptions.context) {
+  if (args.parsedOptions.context && !/--context/.test(cmdline)) {
     extras += ` --context ${args.parsedOptions.context}`
   }
 
-  if (args.parsedOptions.cluster) {
+  if (args.parsedOptions.cluster && !/--cluster/.test(cmdline)) {
     extras += ` --cluster ${args.parsedOptions.cluster}`
   }
 
-  extras += ` ${getNamespaceForArgv(args)} `
+  if (!/(-n|--namespace)/.test(cmdline)) {
+    extras += ` ${getNamespaceForArgv(args)} `
+  }
 
   // careful: respect any `--` on the cmdline, and insert our extras
   // *before* that point
-  const insertionIndex = cmdline.indexOf('--')
+  const insertionIndex = cmdline.indexOf(' -- ')
   if (insertionIndex < 0) {
     return cmdline + extras
   } else {
