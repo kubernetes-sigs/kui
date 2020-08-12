@@ -469,14 +469,20 @@ export function computeDurations(table: KResponse) {
   if (isTable(table)) {
     const header = table.header.attributes
 
+    const statusIdx = header.findIndex(_ => _.key === 'STATUS')
+    const startIdx = header.findIndex(_ => _.key === 'START')
+    const endIdx = header.findIndex(_ => _.key === 'END')
     const durationIdx = header.findIndex(_ => _.key === 'Duration')
+
     if (durationIdx >= 0) {
+      table.statusColumnIdx = statusIdx
+      table.startColumnIdx = startIdx
+      table.completeColumnIdx = endIdx
       table.durationColumnIdx = durationIdx
       return table
     }
 
-    const startIdx = header.findIndex(_ => _.key === 'START')
-    const endIdx = header.findIndex(_ => _.key === 'END')
+    table.statusColumnIdx = statusIdx
     if (startIdx >= 0 && endIdx >= 0) {
       table.startColumnIdx = startIdx
       table.completeColumnIdx = endIdx

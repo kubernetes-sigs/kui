@@ -35,12 +35,6 @@ function fixupStatus(response: KResponse) {
           : 'Fail'
       })
     }
-
-    response.body.sort(
-      (a, b) =>
-        new Date(a.attributes[response.startColumnIdx].value).getTime() -
-        new Date(b.attributes[response.startColumnIdx].value).getTime()
-    )
   }
 
   return response

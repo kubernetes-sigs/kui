@@ -23,11 +23,11 @@ import sortRow from './sort'
 import Card from '../../spi/Card'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
+import SequenceDiagram from './SequenceDiagram'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
-import Grid, { findGridableColumn, durationCss } from './Grid'
+import Grid, { findGridableColumn } from './Grid'
 import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
-import Bar from './Bar'
 
 /** carbon styling */
 import 'carbon-components/scss/components/data-table/_data-table-core.scss'
@@ -249,98 +249,12 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     }, {} as Record<string, boolean>)
   }
 
-  private transformTableWithTimestamp(kuiTable: KuiTable) {
-    const table = JSON.parse(JSON.stringify(kuiTable)) // deep copy
-    const startIdx = table.startColumnIdx
-    const endIdx = table.completeColumnIdx
-
-    // add 'hide-with-sidecar' css to start column and remove end column
-    table.header.attributes[startIdx].outerCSS = `${table.header.attributes[startIdx].outerCSS || ''} hide-with-sidecar`
-    table.header.attributes.splice(endIdx, 1)
-
-    // add duration header column if needed
-    if (table.durationColumnIdx === undefined) {
-      table.header.attributes.push({ key: 'Duration', value: 'Duration' })
-    }
-
-    // add interval header column
-    /* table.header.attributes.push({ key: 'Interval', value: 'Interval' })
-
-    // compute the max completion time and min start time
-    let minStart = -1
-    let maxEnd = -1
-
-    table.body.forEach(row => {
-      const start = new Date(row.attributes[startIdx].value).getTime()
-      const end = new Date(row.attributes[endIdx].value).getTime()
-
-      minStart = start < minStart || minStart === -1 ? start : minStart
-      maxEnd = end > maxEnd || maxEnd === -1 ? end : maxEnd
-    })
-
-    const getFraction = (numerator: number) => {
-      return `${((numerator / (maxEnd - minStart)) * 100).toFixed(10).toString()}%`
-      } */
-    const maxDuration = table.body.reduce((max, row) => {
-      const durationCol = table.durationColumnIdx >= 0 && parseInt(row.attributes[table.durationColumnIdx].value, 10)
-      return Math.max(
-        max,
-        durationCol ||
-          new Date(row.attributes[endIdx].value).getTime() - new Date(row.attributes[startIdx].value).getTime()
-      )
-    }, 0)
-
-    const getFraction = (numerator: number) => {
-      return `${((numerator / maxDuration) * 100).toFixed(10).toString()}%`
-    }
-
-    table.body.forEach(row => {
-      const durationCol = table.durationColumnIdx >= 0 && parseInt(row.attributes[table.durationColumnIdx].value, 10)
-
-      const start = new Date(row.attributes[startIdx].value).getTime()
-      const end = new Date(row.attributes[endIdx].value).getTime()
-
-      const duration = durationCol || end - start
-      const width = getFraction(duration)
-      const left = '0%' // getFraction(start - minStart)
-      const right = width // getFraction(maxEnd - end)
-      const className = durationCss(duration, false)
-
-      // add duration column if needed
-      if (table.durationColumnIdx === undefined) {
-        row.attributes.push({
-          key: 'Duration',
-          value: duration.toString(),
-          valueDom: <Bar left={left} right={right} width={width} className={className} />
-        })
-      } else {
-        row.attributes[table.durationColumnIdx].valueDom = (
-          <Bar left={left} right={right} width={width} className={className} />
-        )
-      }
-
-      // add 'hide-with-sidecar' css to start column and remove end column
-      row.attributes[startIdx].outerCSS = `${row.attributes[startIdx].outerCSS || ''} hide-with-sidecar`
-      row.attributes[startIdx].value = new Date(row.attributes[startIdx].value).toLocaleString()
-      row.attributes.splice(endIdx, 1)
-    })
-
-    // add durationColumnIdx if needed
-    if (table.durationColumnIdx === undefined) {
-      table.durationColumnIdx = table.header.attributes.findIndex(_ => _.key === 'Duration')
-    }
-
-    return table
-  }
-
   private table() {
     const { tab, repl } = this.props
     const { page } = this.state
 
-    const response = !this.state.asSequence
-      ? this.props.response
-      : this.transformTableWithTimestamp(this.props.response)
-    const { headers, rows } = !this.state.asSequence ? this.state : kui2carbon(response)
+    const response = this.props.response
+    const { headers, rows } = this.state
 
     const isSortable = response.body.length > 1
     const dataTable = (visibleRows: NamedDataTableRow[], offset = 0) => (
@@ -386,11 +300,15 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     )
   }
 
+  private sequence() {
+    return <SequenceDiagram {...this.props} />
+  }
+
   private content(includeToolbars = false, lightweightTables = false) {
     return (
       <React.Fragment>
         {includeToolbars && this.topToolbar(lightweightTables)}
-        {this.state.asGrid ? this.grid(this.state.rows) : this.table()}
+        {this.state.asGrid ? this.grid(this.state.rows) : this.state.asSequence ? this.sequence() : this.table()}
         {includeToolbars && this.bottomToolbar(lightweightTables)}
       </React.Fragment>
     )
