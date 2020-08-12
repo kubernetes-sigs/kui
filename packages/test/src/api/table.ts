@@ -191,6 +191,7 @@ export class TestTable {
             if (validation.switchToList) {
               await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_LIST(res.count))
               await res.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+              await res.app.client.waitForVisible(Selectors.TABLE_AS_LIST(res.count))
             }
           }
 
