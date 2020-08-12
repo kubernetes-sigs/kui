@@ -19,9 +19,9 @@ import '../../../../web/scss/components/Table/Bar.scss'
 
 interface Props {
   left: string
-  right: string
   width: string
   className?: string
+  title?: string
 }
 
 export default class Bar extends React.PureComponent<Props> {
@@ -30,12 +30,11 @@ export default class Bar extends React.PureComponent<Props> {
       <div className="kui--bar-wrapper">
         <div
           className={'kui--bar ' + (this.props.className || 'kui--bar-default-color')}
+          title={this.props.title}
           data-left={this.props.left}
-          data-right={this.props.right}
           data-width={this.props.width}
           style={{
             left: this.props.left,
-            right: this.props.right,
             width: this.props.width
           }}
         />
