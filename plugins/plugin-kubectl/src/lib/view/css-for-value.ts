@@ -41,6 +41,8 @@ export default {
   ImagePullBackOff: TrafficLight.Red,
   ErrImagePull: TrafficLight.Red,
   Error: TrafficLight.Red,
+  UnexpectedAdmissionError: TrafficLight.Red,
+  OOMKilled: TrafficLight.Red,
 
   // 1/0 status
   1: TrafficLight.Green,
