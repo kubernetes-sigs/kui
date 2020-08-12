@@ -17,22 +17,57 @@ function getLabelInfo(label) {
   return safeLoad(deployment)['spec']['template']['metadata']['labels']
 }
 
-export function applyDestinationRule(userDecision) {
-  const destinationRule = {
-    apiVersion: 'networking.istio.io/v1alpha3',
-    kind: 'DestinationRule',
-    metadata: {
-      name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
-      namespace: userDecision['service_namespace'],
-      labels: {
-        'iter8-tools/host': userDecision['service_name'],
-        'iter8-tools/role': 'stable'
+function drPresence(userDecision) {
+  var dr = execSync(`kubectl get dr -n ${userDecision['service_namespace']} -o jsonpath='{.items[*].metadata.name}'`, {
+    encoding: 'utf-8'
+  })
+  dr = dr.split(' ')
+  if (dr.length == 0) {
+    return false
+  } else {
+    var temp = {}
+    var drlabel = { 'iter8-tools/host': userDecision['service_name'], 'iter8-tools/role': 'stable' }
+    for (var i = 0; i < dr.length; i++) {
+      temp = execSync(`kubectl get dr -n ${userDecision['service_namespace']} ${dr[i]} -oyaml`, { encoding: 'utf-8' })
+      temp = safeLoad(temp)
+      if (temp.metadata.labels == drlabel) {
+        delete temp['metadata']['annotations']
+        delete temp['metadata']['creationTimestamp']
+        delete temp['metadata']['generation']
+        delete temp['metadata']['resourceVersion']
+        delete temp['metadata']['selfLink']
+        delete temp['metadata']['uid']
+        temp.metadata.namespace = userDecision['service_namespace']
+        return temp
       }
-    },
-    spec: {
-      host: 'productpage',
-      subsets: []
     }
+  }
+  return false
+}
+
+export function applyDestinationRule(userDecision) {
+  var drPresent = drPresence(userDecision)
+  var destinationRule = {}
+  if (drPresent === false) {
+    destinationRule = {
+      apiVersion: 'networking.istio.io/v1alpha3',
+      kind: 'DestinationRule',
+      metadata: {
+        name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
+        namespace: userDecision['service_namespace'],
+        labels: {
+          'iter8-tools/host': userDecision['service_name'],
+          'iter8-tools/role': 'stable'
+        }
+      },
+      spec: {
+        host: 'productpage',
+        subsets: []
+      }
+    }
+  } else {
+    destinationRule = drPresent
+    destinationRule.spec.subsets = []
   }
   for (const [key, value] of Object.entries(userDecision)) {
     if (key === 'service_name') {

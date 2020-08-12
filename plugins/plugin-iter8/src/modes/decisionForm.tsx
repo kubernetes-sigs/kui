@@ -125,10 +125,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       chartData: [], // Stores data for the criteria graphs
       chartOptions: {} // Stores options for criteria graphs
     }
-    // eventChannelUnsafe.on('/get/decision', formstate => {
-    //   this.setState({ experimentCreated: true, experimentRequest: formstate })
-    // })
-    // Bound NON-lambda functions to component's scope
     this.handleReset = this.handleReset.bind(this)
     this.handleApply = this.handleApply.bind(this)
     this.handleCloseNotif = this.handleCloseNotif.bind(this)
@@ -142,6 +138,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     console.log('Mounted Decision tab')
     this._isMounted = true
     eventChannelUnsafe.on('/get/decision', formstate => {
+      this.setState({ edgeService: formstate.edgeService, hostGateways: formstate.hostGateways })
+      delete formstate.edgeService
+      delete formstate.hostGateways
       console.log(formstate)
       this.setState({ experimentCreated: true, experimentRequest: formstate })
     })
@@ -544,6 +543,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     const namespace = this.state.experimentRequest.baseline.version_labels.destination_workload_namespace
     const service = this.state.experimentRequest.service_name
     const decision = getUserDecision(namespace, service, this.state.trafficSplit)
+    decision.edgeService = this.state.edgeService
+    decision.hostGateways = this.state.hostGateways
     applyTrafficSplit(decision)
     const d = new Date()
     const time = d.toISOString()

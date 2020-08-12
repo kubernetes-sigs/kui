@@ -51,6 +51,8 @@ interface DecisionState {
   chartData: Array<any>
   chartOptions: any
   endExperimentWinner: string
+  edgeService: boolean
+  hostGateways: Array<HostGateway>
 }
 
 export { CriterionState, Formstate, DecisionState }
