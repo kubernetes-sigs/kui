@@ -10,6 +10,10 @@ interface CriterionState {
   limitType: string
   limitValue: number
 }
+interface HostGateway {
+  name: string
+  gateway: string
+}
 interface Formstate {
   showCriteria: boolean
   invalidCandidate: boolean
@@ -19,6 +23,9 @@ interface Formstate {
   service: string
   baseline: string
   candidates: Array<string>
+  edgeService: boolean
+  hostGateways: Array<HostGateway>
+  invalidHostGateways: boolean
   criteria: Array<CriterionState>
   disableReward: boolean
 }

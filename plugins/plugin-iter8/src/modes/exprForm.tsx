@@ -60,7 +60,10 @@ class ExprBase extends React.Component<{}, Formstate> {
       baseline: '', // baseline deployment of microservice
       candidates: [], // list of candidates deployment names of microservice
       criteria: [{ name: '', type: '', reward: false, limitType: '', limitValue: 0 }], // metric attributes
-      disableReward: false // disables the reward select for selected metrics
+      disableReward: false, // disables the reward select for selected metrics
+      edgeService: true,
+      hostGateways: [],
+      invalidHostGateways: false
     }
     // Bound NON-lambda functions to component's scope
     this.submitForm = this.submitForm.bind(this)
@@ -102,7 +105,7 @@ class ExprBase extends React.Component<{}, Formstate> {
     const candList = value.target.value.split(',')
     const obj = []
     for (let i = 0; i < candList.length; i++) {
-      obj.push({ id: `c-${i}`, text: candList[i] })
+      obj.push({ id: `c-${i}`, text: candList[i].trim() })
     }
     this.handleAddCand(obj)
   }
@@ -129,6 +132,37 @@ class ExprBase extends React.Component<{}, Formstate> {
     } else {
       this.setState({ service: value.text, baseline: '', candidates: [] })
       this.deployList = this.kubeMethods.getDeployment(this.state.namespace, value.text)
+    }
+  }
+
+  private handleEdgeServiceChange = value => {
+    if (value === true) {
+      this.setState({ edgeService: true })
+    } else {
+      this.setState({ edgeService: false })
+      this.setState({ invalidHostGateways: false })
+    }
+  }
+
+  private addHostGatewayPairs = value => {
+    const hostgateway = value.target.value.split(';')
+    const obj = []
+    let temp = ''
+    for (let i = 0; i < hostgateway.length; i++) {
+      temp = hostgateway[i].trim()
+      temp = temp.split(',')
+      temp[0] = typeof temp[0] === typeof '' ? temp[0].trim() : ''
+      temp[1] = typeof temp[1] === typeof '' ? temp[1].trim() : ''
+      if (temp[0] === '' || temp[1] === '') {
+        continue
+      }
+      obj.push({ name: temp[0], gateway: temp[1] })
+    }
+    if (obj.length === 0) {
+      this.setState({ invalidHostGateways: true })
+    } else {
+      this.setState({ invalidHostGateways: false })
+      this.setState({ hostGateways: obj })
     }
   }
 
@@ -334,6 +368,30 @@ class ExprBase extends React.Component<{}, Formstate> {
               onChange={value => this.handleAddNs(value.selectedItem)}
               required
             />
+          </FormGroup>
+          <FormGroup legendText="">
+            <Toggle
+              aria-label=""
+              labelText="Edge Service"
+              id="edge-service"
+              defaultToggled
+              labelA="False"
+              labelB="True"
+              onToggle={value => this.handleEdgeServiceChange(value)}
+            />
+          </FormGroup>
+          <FormGroup legendText="" style={{ width: 350 }}>
+            <TextInput
+              id="hostGateway"
+              labelText="Host/Gateway pairs"
+              helperText="Enter Host and gateway names for edge service"
+              placeholder="Eg: hostname1, gatewayname1; hostname2, gatewayname2"
+              onChange={value => this.addHostGatewayPairs(value)}
+              type="text"
+              disabled={!this.state.edgeService}
+              invalid={this.state.invalidHostGateways}
+              invalidText="Invalid Host Gateway Pairs. Try again"
+            ></TextInput>
           </FormGroup>
           <FormGroup legendText="" style={{ width: 350 }}>
             <ComboBox

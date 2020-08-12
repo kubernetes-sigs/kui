@@ -65,6 +65,10 @@ export default function getRequestModel(time: string, formstate: Formstate): Obj
     candidates: getCandModel(formstate.namespace, formstate.candidates),
     traffic_control: {
       max_increment: 25
+    },
+    edgeServiceInformation: {
+      edgeService: formstate.edgeService,
+      hostGateways: formstate.hostGateways
     }
   }
 }
