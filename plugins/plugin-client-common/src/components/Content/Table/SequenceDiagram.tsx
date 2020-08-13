@@ -15,12 +15,14 @@
  */
 
 import * as React from 'react'
-import * as prettyPrintDuration from 'pretty-ms'
+import * as prettyMillis from 'pretty-ms'
 import { REPL, Row, Tab, Table, flatten } from '@kui-shell/core'
 
 import Bar from './Bar'
 import { durationCss } from './Grid'
 import renderCell, { onClickForCell } from './TableCell'
+
+import '../../../../web/scss/components/Table/SequenceDiagram.scss'
 
 interface DenseInterval {
   startMillis: number
@@ -37,6 +39,14 @@ interface Props {
 interface State {
   maxIntervalTimeSpan: number
   intervals: DenseInterval[]
+}
+
+function prettyPrintDuration(duration: number): string {
+  try {
+    return prettyMillis(duration)
+  } catch (err) {
+    console.error('error formatting duration', duration, err)
+  }
 }
 
 export default class SequenceDiagram extends React.PureComponent<Props, State> {
@@ -56,9 +66,14 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return SequenceDiagram.computeGapModel(props.response, SequenceDiagram.denseThreshold)
   }
 
-  private getFraction(numerator: number) {
+  private getFraction(numerator: number, interval?: DenseInterval) {
     // return `${((numerator / (interval.endMillis - interval.startMillis)) * 100).toFixed(10).toString()}%`
-    return `${((numerator / this.state.maxIntervalTimeSpan) * 100).toFixed(10).toString()}%`
+    return `${(
+      (numerator / (interval ? interval.endMillis - interval.startMillis : this.state.maxIntervalTimeSpan)) *
+      100
+    )
+      .toFixed(10)
+      .toString()}%`
   }
 
   private static computeGapModel(response: Table, denseThreshold: number) {
@@ -171,7 +186,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
               parseInt(row.attributes[this.props.response.durationColumnIdx].value, 10)
             const duration = durationCol || (!endMillis ? 0 : endMillis - startMillis)
 
-            const left = this.getFraction(startMillis - interval.startMillis)
+            const left = this.getFraction(startMillis - interval.startMillis, interval)
             const width = this.getFraction(duration)
             const className = durationCss(duration, false)
 
@@ -202,25 +217,26 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 <td className="kui--sequence-diagram-bar-cell">
                   <Bar left={left} width={width} className={className} title={prettyPrintDuration(duration)} />
                 </td>
-                <td className="even-smaller-text sub-text hide-with-sidecar">{gapText}</td>
-                {this.props.response.statusColumnIdx &&
-                  renderCell(
-                    this.props.response,
-                    row,
-                    false,
-                    this.props.tab,
-                    this.props.repl
-                  )(
-                    {
-                      id: '',
-                      value: row.attributes[this.props.response.statusColumnIdx].value,
-                      info: { header: 'Status' },
-                      isEditable: false,
-                      isEditing: false,
-                      isValid: true
-                    },
-                    this.props.response.statusColumnIdx + 1
-                  )}
+                <td className="sub-text hide-with-sidecar">{gapText}</td>
+                {this.props.response.statusColumnIdx >= 0
+                  ? renderCell(
+                      this.props.response,
+                      row,
+                      false,
+                      this.props.tab,
+                      this.props.repl
+                    )(
+                      {
+                        id: '',
+                        value: row.attributes[this.props.response.statusColumnIdx].value,
+                        info: { header: 'Status' },
+                        isEditable: false,
+                        isEditing: false,
+                        isValid: true
+                      },
+                      this.props.response.statusColumnIdx + 1
+                    )
+                  : undefined}
               </tr>
             ])
           })
