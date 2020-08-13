@@ -147,10 +147,9 @@ class ExprBase extends React.Component<{}, Formstate> {
   private addHostGatewayPairs = value => {
     const hostgateway = value.target.value.split(';')
     const obj = []
-    let temp = ''
+    let temp = []
     for (let i = 0; i < hostgateway.length; i++) {
-      temp = hostgateway[i].trim()
-      temp = temp.split(',')
+      temp = hostgateway[i].trim().split(',')
       temp[0] = typeof temp[0] === typeof '' ? temp[0].trim() : ''
       temp[1] = typeof temp[1] === typeof '' ? temp[1].trim() : ''
       if (temp[0] === '' || temp[1] === '') {

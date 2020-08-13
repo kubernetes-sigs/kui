@@ -123,7 +123,9 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       experimentDecision: 'rollback', // ID final experiment decision. Defaults to rollback
       endExperimentWinner: '', // Name of the service/deployment which gets all the traffic when experiment ends
       chartData: [], // Stores data for the criteria graphs
-      chartOptions: {} // Stores options for criteria graphs
+      chartOptions: {}, // Stores options for criteria graphs
+      edgeService: true,
+      hostGateways: []
     }
     this.handleReset = this.handleReset.bind(this)
     this.handleApply = this.handleApply.bind(this)
@@ -543,8 +545,8 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     const namespace = this.state.experimentRequest.baseline.version_labels.destination_workload_namespace
     const service = this.state.experimentRequest.service_name
     const decision = getUserDecision(namespace, service, this.state.trafficSplit)
-    decision.edgeService = this.state.edgeService
-    decision.hostGateways = this.state.hostGateways
+    decision['edgeService'] = this.state.edgeService
+    decision['hostGateways'] = this.state.hostGateways
     applyTrafficSplit(decision)
     const d = new Date()
     const time = d.toISOString()
