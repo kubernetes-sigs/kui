@@ -1,0 +1,72 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.kui--data-table-container .kui--sequence-diagram {
+  .kui--sequence-diagram-bar-cell {
+    vertical-align: middle;
+  }
+  tr {
+    height: 1rem;
+  }
+  td {
+    line-height: 0.875rem;
+    font-size: 0.75rem;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+  tr:not(.kui--interval-start),
+  tr:not(.kui--interval-start):hover {
+    td {
+      border: none;
+    }
+  }
+  .kui--interval-blank {
+    height: 0.5rem;
+    &,
+    &:hover td {
+      background-color: transparent !important;
+    }
+  }
+  .kui--interval-start {
+    height: 1rem;
+    td.kui--gap-cell {
+      opacity: 0.75;
+      font-size: 0.6875rem;
+      text-align: left;
+      padding: 0 0 0.25rem 0.25rem;
+    }
+  }
+  .kui--interval-start,
+  .kui--interval-start:hover {
+    &,
+    td {
+      /* background-color: var(--color-table-border1) !important; */
+      background-color: transparent !important;
+    }
+    td {
+      border-top: 1px dashed var(--color-base03);
+      border-bottom: none;
+    }
+  }
+  td.sub-text {
+    color: var(--color-text-02);
+  }
+
+  [data-tag='badge-circle'] {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
