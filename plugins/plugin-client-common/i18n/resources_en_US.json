@@ -1,4 +1,6 @@
 {
+  "ExperimentalTag": "Experimental",
+  "HoverExperimentalTag": "This command is highly experimental, and may change radically in the near future. Proceed with caution.",
   "Remove": "Remove",
   "ok": "ok",
   "Status Grid": "Status Grid",

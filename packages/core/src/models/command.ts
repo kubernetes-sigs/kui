@@ -94,6 +94,12 @@ export interface CommandOptions extends CapabilityRequirements {
 
   /** model to view transformer */
   viewTransformer?: ViewTransformer<KResponse, ParsedOptions>
+
+  /**
+   * Is the command experimental? e.g. initial release, lack of test coverage
+   *
+   */
+  isExperimental?: boolean
 }
 
 export interface Event {

@@ -25,6 +25,7 @@ export interface CommandStartEvent {
   execUUID: string
   execType: ExecType
   echo: boolean
+  evaluatorOptions: CommandOptions
 }
 
 export type ResponseType = 'MultiModalResponse' | 'NavResponse' | 'ScalarResponse' | 'Incomplete' | 'Error'

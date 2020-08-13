@@ -135,6 +135,13 @@
     fill: var(--color-error);
     margin-right: 0.5rem;
   }
+  .kui--repl-block-experimental-tag {
+    margin-right: 0.5rem;
+    .bx--tag.bx--tag--warm-gray {
+      background-color: var(--color-latency-3);
+      color: inherit;
+    }
+  }
 }
 
 [kui-theme-style] .kui--repl-block-right-element {

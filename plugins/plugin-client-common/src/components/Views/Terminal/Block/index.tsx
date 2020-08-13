@@ -22,6 +22,7 @@ import Output from './Output'
 import { BlockModel, isActive, isEmpty, isFinished, isProcessing, isAnnouncement, hasUUID } from './BlockModel'
 
 export type BlockViewTraits = {
+  isExperimental?: boolean
   isFocused?: boolean
   prefersTerminalPresentation?: boolean
   isPartOfMiniSplit?: boolean
@@ -132,6 +133,7 @@ export default class Block extends React.PureComponent<Props, State> {
           uuid={this.props.uuid}
           tab={this.props.tab}
           model={this.props.model}
+          isExperimental={this.props.isExperimental}
           {...this.props}
           willScreenshot={this.state._block && this.props.willRemove ? () => this.willScreenshot() : undefined}
           _block={this.state._block}

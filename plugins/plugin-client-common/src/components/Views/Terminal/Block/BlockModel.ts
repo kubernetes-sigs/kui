@@ -28,7 +28,7 @@ const enum BlockState {
 /** Traits that Blocks might have */
 type WithCWD = { cwd: string }
 type WithUUID = { execUUID: string }
-type WithCommand = { command: string } & WithCWD
+type WithCommand = { command: string; isExperimental?: boolean } & WithCWD
 type WithStartTime = { startTime: Date }
 type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
@@ -139,9 +139,15 @@ export function Announcement(response: ScalarResponse): AnnouncementBlock {
 }
 
 /** Transform to Processing */
-export function Processing(block: BlockModel, command: string, execUUID: string): ProcessingBlock {
+export function Processing(
+  block: BlockModel,
+  command: string,
+  execUUID: string,
+  isExperimental = false
+): ProcessingBlock {
   return {
     command,
+    isExperimental,
     cwd: block.cwd,
     execUUID: execUUID,
     startTime: new Date(),
@@ -188,6 +194,7 @@ export function Finished(
       historyIdx,
       cwd: block.cwd,
       command: block.command,
+      isExperimental: block.isExperimental,
       state: BlockState.Error,
       execUUID: block.execUUID,
       startTime: block.startTime
@@ -198,6 +205,7 @@ export function Finished(
       historyIdx,
       cwd: block.cwd,
       command: block.command,
+      isExperimental: block.isExperimental,
       execUUID: block.execUUID,
       startTime: block.startTime,
       prefersTerminalPresentation,

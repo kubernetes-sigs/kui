@@ -46,6 +46,7 @@ import {
   isActive,
   isOk,
   isProcessing,
+  hasCommand,
   hasUUID,
   BlockModel
 } from './Block/BlockModel'
@@ -342,7 +343,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         return {
           blocks: curState.blocks
             .slice(0, idx)
-            .concat([Processing(curState.blocks[idx], event.command, event.execUUID)])
+            .concat([
+              Processing(curState.blocks[idx], event.command, event.execUUID, event.evaluatorOptions.isExperimental)
+            ])
         }
       })
     }
@@ -766,6 +769,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   onOutputRender={this.onOutputRender.bind(this, scrollback)}
                   willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                   willLoseFocus={() => this.doFocus(scrollback)}
+                  isExperimental={hasCommand(_) && _.isExperimental}
                   isFocused={sbidx === this.state.focusedIdx && isActive(_)}
                   prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                   isPartOfMiniSplit={isMiniSplit}

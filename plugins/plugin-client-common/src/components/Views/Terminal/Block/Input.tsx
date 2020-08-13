@@ -28,6 +28,7 @@ import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, ha
 import { BlockViewTraits } from './'
 
 import DropDown, { DropDownAction } from '../../../spi/DropDown'
+import Tag from '../../../spi/Tag'
 
 const strings = i18n('plugin-client-common')
 const strings2 = i18n('plugin-client-common', 'screenshot')
@@ -97,6 +98,9 @@ type InputProps = {
 
   /** state of the Block, e.g. Processing? Active/accepting input? */
   model?: BlockModel
+
+  /** is the command experimental? */
+  isExperimental?: boolean
 }
 
 export type Props = InputOptions & InputProps & BlockViewTraits
@@ -387,6 +391,21 @@ export default class Input extends InputProvider {
     }
   }
 
+  /** render a tag for experimental command */
+  private experimentalTag() {
+    if (this.props.isExperimental) {
+      return (
+        <Tag
+          spanclassname="kui--repl-block-experimental-tag kui--repl-block-right-element"
+          title={strings('HoverExperimentalTag')}
+          type="warning"
+        >
+          {strings('ExperimentalTag')}
+        </Tag>
+      )
+    }
+  }
+
   /** render the time the block started processing */
   private timestamp() {
     if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
@@ -482,6 +501,7 @@ export default class Input extends InputProvider {
     return (
       <span className="repl-prompt-right-elements">
         {this.errorIcon()}
+        {this.experimentalTag()}
         {this.timestamp()}
         {this.dropdown()}
         {/* this.close() */}

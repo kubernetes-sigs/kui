@@ -58,7 +58,7 @@ const sayTime3 = async () => {
   return prettyPrintTime(t2, 'long', t1)
 }
 
-const options: CommandOptions = {}
+const options: CommandOptions = { isExperimental: true }
 const options2: CommandOptions = Object.assign(
   {
     usage: {

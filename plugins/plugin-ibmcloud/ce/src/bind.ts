@@ -19,6 +19,7 @@ import { KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import doListWith from './controller/generic/list'
 import doGetWith, { registration as getReg } from './controller/generic/get'
+import defaultOption from './controller/generic/option'
 
 type Handler = CommandHandler<KResponse, KubeOptions>
 type FlexHandler = string | Handler
@@ -36,7 +37,7 @@ export default function Bind(
         this.listen(
           `/ibmcloud/${ce}/${cmd}/get`,
           typeof provider.Get === 'string' ? doGetWith.bind(provider.Get) : provider.Get,
-          getReg
+          Object.assign({}, getReg, defaultOption)
         )
       )
     }
@@ -45,13 +46,14 @@ export default function Bind(
       cmds.forEach(cmd =>
         this.listen(
           `/ibmcloud/${ce}/${cmd}/list`,
-          typeof provider.List === 'string' ? doListWith.bind(provider.List) : provider.List
+          typeof provider.List === 'string' ? doListWith.bind(provider.List) : provider.List,
+          defaultOption
         )
       )
     }
 
     if (provider.Run) {
-      cmds.forEach(cmd => this.listen(`/ibmcloud/${ce}/${cmd}/run`, provider.Run))
+      cmds.forEach(cmd => this.listen(`/ibmcloud/${ce}/${cmd}/run`, provider.Run, defaultOption))
     }
   })
 }
