@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react'
-
-interface Props {
-  id?: string
-  title?: string
-  type?: 'ok' | 'error' | 'warning'
-  className?: string
-  spanclassname?: string
-  children: ReactNode
-  onClick?: () => void
-}
-
-export default Props
+export default { isExperimental: true }

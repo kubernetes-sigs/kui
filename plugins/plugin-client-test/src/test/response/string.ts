@@ -22,7 +22,7 @@
  *
  */
 
-import { TestStringResponse } from '@kui-shell/test'
+import { Common, CLI, Selectors, TestStringResponse } from '@kui-shell/test'
 
 /**
  * pty streaming
@@ -162,3 +162,13 @@ new TestStringResponse({
   expect: '+', // e.g. +102ms
   exact: false
 }).string()
+
+describe(`experimental command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it('should execute an experimental command', () =>
+    CLI.command('test string', this.app)
+      .then(() => this.app.client.waitForExist(Selectors.EXPERIMENTAL_PROMPT_BLOCK_TAG))
+      .catch(Common.oops(this, true)))
+})

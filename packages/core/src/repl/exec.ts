@@ -340,6 +340,7 @@ class InProcessExecutor implements Executor {
         tab,
         route: evaluator.route,
         command,
+        evaluatorOptions,
         execType,
         execUUID,
         echo: execOptions.echo
