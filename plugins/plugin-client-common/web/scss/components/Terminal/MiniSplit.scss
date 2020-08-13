@@ -38,6 +38,16 @@
     padding-right: 0.25rem;
   }
 
+  /** Do not wrap input in minisplit (we don't have a lot of space) */
+  .repl-input {
+    flex-wrap: nowrap;
+  }
+  .repl-input-element {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .repl-block.kui--maximize-candidate {
     &:not(.repl-active):not(.processing) {
       flex: 1;
