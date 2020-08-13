@@ -45,9 +45,10 @@ export default {
   // kube lifecycle
   CrashLoopBackOff: TrafficLight.Red,
   Failed: TrafficLight.Red,
+  Fail: TrafficLight.Red,
   Running: TrafficLight.Green,
   Pending: TrafficLight.Yellow,
-  Succeeded: TrafficLight.Gray, // successfully terminated; don't use a color
+  Succeeded: TrafficLight.Green,
   Completed: TrafficLight.Gray, // successfully terminated; don't use a color
   Unknown: '',
   Propagated: TrafficLight.Green,
