@@ -190,6 +190,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
 
   if (!args.parsedOptions.l) {
     const frag = document.createDocumentFragment()
+    let longest = ''
 
     body.forEach(_ => {
       const cell = document.createElement('div')
@@ -200,10 +201,17 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
       cell.classList.add('clickable')
       cell.onclick = () => args.REPL.pexec(_.onclick)
       frag.appendChild(cell)
+
+      longest = _.name.length >= longest.length ? _.name : longest
     })
 
-    const em = 0
-    const ex = body.reduce((max, _) => Math.max(max, _.name.length), 0)
+    let ex = 0
+    let em = 2 // <-- for good measure
+    for (let idx = 0; idx < longest.length; idx++) {
+      const char = longest.charAt(idx)
+      if (char === 'm') em++
+      else ex++
+    }
 
     const container = document.createElement('div')
     container.classList.add('grid-layout')
