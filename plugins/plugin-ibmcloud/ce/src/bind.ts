@@ -26,7 +26,7 @@ type FlexHandler = string | Handler
 
 const ces = ['code-engine', 'ce']
 
-export default function Bind(
+export default function bind(
   this: Registrar,
   provider: { Get?: FlexHandler; List?: FlexHandler; Run?: Handler },
   ...cmds: string[]
@@ -59,5 +59,8 @@ export default function Bind(
 }
 
 export function bindGet(this: Registrar, handler: Handler, ...cmds: string[]) {
-  cmds.forEach(cmd => this.listen(`/kubectl/get/${cmd}`, handler, getReg))
+  cmds.forEach(cmd => {
+    this.listen(`/k/get/${cmd}`, handler, getReg)
+    this.listen(`/kubectl/get/${cmd}`, handler, getReg)
+  })
 }

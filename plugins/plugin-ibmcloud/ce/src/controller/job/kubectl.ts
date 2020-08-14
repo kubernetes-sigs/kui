@@ -32,7 +32,9 @@ export default async function KubectlGetJob(args: Arguments<KubeOptions>) {
     args.command = args.command.replace(/([^\\])\\([^\\])/g, '$1\\\\$2')
 
     const table = await args.REPL.qexec(
-      `ibmcloud ce kubectl get pod -o custom-columns=JOB:.metadata.labels.jobrun,POD:.metadata.name,STATUS:.status.phase,START:.status.startTime,START2:.status.containerStatuses[0].state.terminated.startedAt,END:.status.containerStatuses[0].state.terminated.finishedAt`,
+      `ibmcloud ce kubectl get pod -o custom-columns=JOB:.metadata.labels.jobrun,POD:.metadata.name,STATUS:.status.phase,START:.status.startTime,START2:.status.containerStatuses[0].state.terminated.startedAt,END:.status.containerStatuses[0].state.terminated.finishedAt ${
+        args.parsedOptions.limit ? `--limit ${args.parsedOptions.limit}` : ''
+      }`,
       undefined,
       undefined,
       args.execOptions

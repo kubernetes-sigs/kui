@@ -271,3 +271,13 @@ export function splitCount(expectedSplitCount: number) {
     }, waitTimeout)
   }
 }
+
+/** Expect table with N rows */
+export function tableWithNRows(N: number) {
+  return (res: AppAndCount) => {
+    return res.app.client.waitUntil(async () => {
+      const rows = await res.app.client.elements(Selectors.LIST_RESULTS_N(res.count))
+      return rows.value.length === N
+    }, waitTimeout)
+  }
+}
