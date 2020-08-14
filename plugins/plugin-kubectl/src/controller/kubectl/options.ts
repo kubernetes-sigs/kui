@@ -242,6 +242,8 @@ export interface KubeOptions extends ParsedOptions {
 
   h?: boolean
   help?: boolean
+
+  limit?: number
 }
 
 export function isForAllNamespaces(parsedOptions: KubeOptions) {
