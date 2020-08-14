@@ -16,13 +16,15 @@
 
 import * as React from 'react'
 import * as prettyMillis from 'pretty-ms'
-import { REPL, Row, Tab, Table, flatten } from '@kui-shell/core'
+import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
 
 import Bar from './Bar'
 import { durationCss } from './Grid'
 import renderCell, { onClickForCell } from './TableCell'
 
 import '../../../../web/scss/components/Table/SequenceDiagram.scss'
+
+const strings = i18n('plugin-client-common')
 
 interface DenseInterval {
   startMillis: number
@@ -89,7 +91,19 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
         if (!aStartCell || !bStartCell || !aStartCell.value || !bStartCell.value) {
           return 0
         } else {
-          return new Date(aStartCell.value).getTime() - new Date(bStartCell.value).getTime()
+          const startDelta = new Date(aStartCell.value).getTime() - new Date(bStartCell.value).getTime()
+          if (startDelta === 0) {
+            const aEndCell = a.attributes[idx2]
+            const bEndCell = b.attributes[idx2]
+            if (!aEndCell || !bEndCell || !aEndCell.value || !bEndCell.value) {
+              return 0
+            } else {
+              const endDelta = new Date(aEndCell.value).getTime() - new Date(bEndCell.value).getTime()
+              return endDelta
+            }
+          } else {
+            return startDelta
+          }
         }
       })
       .reduce((intervals, row) => {
@@ -188,6 +202,13 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
             const left = this.getFraction(startMillis - interval.startMillis, interval)
             const width = this.getFraction(duration)
+            const coldStart =
+              this.props.response.coldStartColumnIdx >= 0
+                ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
+                : undefined
+            const widthB = coldStart ? this.getFraction(coldStart) : undefined
+            const title = strings('Duration', prettyPrintDuration(duration))
+            const titleB = coldStart ? strings('Cold Start', prettyPrintDuration(coldStart), title) : undefined
             const className = durationCss(duration, false)
 
             const gap =
@@ -215,7 +236,14 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   </span>
                 </td>
                 <td className="kui--sequence-diagram-bar-cell">
-                  <Bar left={left} width={width} className={className} title={prettyPrintDuration(duration)} />
+                  <Bar
+                    left={left}
+                    width={width}
+                    widthOverlay={widthB}
+                    className={className}
+                    title={title}
+                    titleOverlay={titleB}
+                  />
                 </td>
                 <td className="sub-text hide-with-sidecar">{gapText}</td>
                 {this.props.response.statusColumnIdx >= 0
