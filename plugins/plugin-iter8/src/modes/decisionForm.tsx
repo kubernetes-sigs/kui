@@ -140,11 +140,12 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     console.log('Mounted Decision tab')
     this._isMounted = true
     eventChannelUnsafe.on('/get/decision', formstate => {
-      this.setState({ edgeService: formstate.edgeService, hostGateways: formstate.hostGateways })
-      delete formstate.edgeService
-      delete formstate.hostGateways
-      console.log(formstate)
-      this.setState({ experimentCreated: true, experimentRequest: formstate })
+      this.setState({
+        edgeService: formstate.edgeServiceInformation.edgeService,
+        hostGateways: formstate.edgeServiceInformation.hostGateways,
+        experimentCreated: true,
+        experimentRequest: formstate
+      })
     })
   }
 

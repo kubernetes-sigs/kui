@@ -1,6 +1,6 @@
 /*eslint-disable */
 import { safeLoad, safeDump } from 'js-yaml'
-
+import _ from 'lodash'
 import { execSync } from 'child_process'
 
 export function kubectlApplyRule(rule) {
@@ -38,7 +38,7 @@ function drPresence(userDecision) {
     for (var i = 0; i < dr.length; i++) {
       temp = execSync(`kubectl get dr -n ${userDecision['service_namespace']} ${dr[i]} -oyaml`, { encoding: 'utf-8' })
       temp = safeLoad(temp)
-      if (temp['metadata']['labels'] == drlabel) {
+      if (_.isEqual(temp['metadata']['labels'], drlabel)) {
         delete temp['metadata']['annotations']
         delete temp['metadata']['creationTimestamp']
         delete temp['metadata']['generation']
@@ -69,7 +69,7 @@ export function applyDestinationRule(userDecision) {
         }
       },
       spec: {
-        host: 'productpage',
+        host: userDecision['service_name'],
         subsets: []
       }
     }
@@ -81,6 +81,10 @@ export function applyDestinationRule(userDecision) {
     if (key === 'service_name') {
       continue
     } else if (key === 'service_namespace') {
+      continue
+    } else if (key === 'edgeService') {
+      continue
+    } else if (key === 'hostGateways') {
       continue
     }
     destinationRule['spec']['subsets'].push({ labels: getLabelInfo(value['version_labels']), name: key })
@@ -105,7 +109,7 @@ function vsPresence(userDecision) {
     for (var i = 0; i < vs.length; i++) {
       temp = execSync(`kubectl get vs -n ${userDecision['service_namespace']} ${vs[i]} -oyaml`, { encoding: 'utf-8' })
       temp = safeLoad(temp)
-      if (temp['metadata']['labels'] == vslabel) {
+      if (_.isEqual(temp['metadata']['labels'], vslabel)) {
         delete temp['metadata']['annotations']
         delete temp['metadata']['creationTimestamp']
         delete temp['metadata']['generation']
@@ -136,15 +140,15 @@ export function applyVirtualService(dr, userDecision) {
         }
       },
       spec: {
-        hosts: [userDecision['service_namespace']],
+        hosts: [userDecision['service_name']],
+        gateways: ['mesh'],
         http: [{ route: [] }]
       }
     }
     if (userDecision.edgeService === true) {
-      virtualService['spec']['gateway'] = ['mesh']
       for (var i = 0; i < userDecision.hostGateways.length; i++) {
-        virtualService['spec']['hosts'].push(userDecision.hostGateways[i][0])
-        virtualService['spec']['gateway'].push(userDecision.hostGateways[i][1])
+        virtualService['spec']['hosts'].push(userDecision.hostGateways[i].name)
+        virtualService['spec']['gateways'].push(userDecision.hostGateways[i].gateway)
       }
     }
   } else {
@@ -152,6 +156,7 @@ export function applyVirtualService(dr, userDecision) {
   }
   var port = getportnumber(userDecision.service_name, userDecision.service_namespace)
   const subsets = dr['spec']['subsets']
+  virtualService['spec']['http'][0]['route'] = []
   for (let i = 0; i < subsets.length; i++) {
     virtualService['spec']['http'][0]['route'].push({
       destination: { host: dr['spec']['host'], subset: subsets[i]['name'], port: { number: port } },

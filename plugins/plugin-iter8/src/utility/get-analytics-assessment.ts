@@ -9,7 +9,7 @@ export default class GetAnalyticsAssessment {
     // If Iter8 Analytics URL is not defined as an Environment Variable- Use default
     if (process.env.ITER8_ANALYTICS_URL === undefined) {
       console.log('URL not defined')
-      this.url = 'http://0.0.0.0:8000/assessment'
+      this.url = 'http://0.0.0.0:8080/assessment'
       console.log(this.url)
     }
     // If Iter8 Analytics URL is defined as an Environment Variable
