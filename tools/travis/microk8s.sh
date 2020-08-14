@@ -64,6 +64,8 @@ echo "smashing microk8s kubeconfig into .kube/config [SUCCESS]"
 # Pods running in kube-system namespace should have cluster-admin role
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 
+kubectl version -o json
+
 if [ -n "$NEEDS_HELM" ]; then
     # Install tiller into the cluster
     /usr/local/bin/helm init --service-account default
