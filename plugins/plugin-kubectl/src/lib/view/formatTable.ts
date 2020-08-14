@@ -412,6 +412,26 @@ function withNotFound(table: Table, stderr: string) {
   return table
 }
 
+/** Part of `getLimit` */
+function hasRecord(data: Arguments['execOptions']['data']): data is Record<string, any> {
+  return typeof data === 'object' && data.constructor !== Buffer
+}
+
+/** Part of `getLimit`: to make TypeScript happy: a Buffer is an 'object', ... */
+function hasBuffer(data: Arguments['execOptions']['data']): data is Buffer {
+  return typeof data === 'object' && data.constructor === Buffer
+}
+
+/** Extract the `limit` execOptions, if it exists */
+function getLimit(args: Arguments<KubeOptions>): number | void {
+  const { data } = args.execOptions
+  if (hasRecord(data) && !hasBuffer(data)) {
+    if (typeof data.limit === 'number') {
+      return data.limit
+    }
+  }
+}
+
 /**
  * Display the given string as a REPL table
  *
@@ -436,6 +456,11 @@ export const stringToTable = async <O extends KubeOptions>(
   } else if (preTables && preTables.length >= 1) {
     // try use display this as a table
     if (preTables.length === 1) {
+      const limit = getLimit(args)
+      if (limit) {
+        preTables[0] = preTables[0].slice(-limit)
+      }
+
       const T = await formatTable(command, verb, entityType, args, preTables[0], nameColumn)
       if (args.execOptions.filter) {
         T.body = args.execOptions.filter(T.body)

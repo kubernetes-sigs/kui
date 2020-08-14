@@ -19,11 +19,26 @@ import { KubeOptions, watchRequestFrom, withNamespaceBreadcrumb } from '@kui-she
 
 import getConfig from '../config'
 
-export default async function(this: string, args: Arguments<KubeOptions>, { extraArgs = [''], watch = false } = {}) {
+export interface ListOptions extends KubeOptions {
+  limit?: number
+}
+
+const defaultLimit = 200
+
+export default async function(this: string, args: Arguments<ListOptions>, { extraArgs = [''], watch = false } = {}) {
   const { currentConfigFile, projectName } = await getConfig(args)
 
   // this is the kubectl command line equivalent
   const cmd = `${this} --kubeconfig "${currentConfigFile}" ${watchRequestFrom(args, watch)} ${extraArgs.join(' ')}`
 
-  return withNamespaceBreadcrumb(projectName, await args.REPL.qexec<Table | MixedResponse>(cmd))
+  const limit = args.parsedOptions.limit || defaultLimit
+  return withNamespaceBreadcrumb(
+    projectName,
+    await args.REPL.qexec<Table | MixedResponse>(
+      cmd,
+      undefined,
+      undefined,
+      Object.assign({}, args.execOptions, { data: { limit } })
+    )
+  )
 }

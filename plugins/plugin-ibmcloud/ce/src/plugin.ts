@@ -15,7 +15,6 @@
  */
 
 import { Registrar } from '@kui-shell/core'
-// import { withHelp } from '@kui-shell/plugin-kubectl'
 
 import bind, { bindGet } from './bind'
 
@@ -27,6 +26,9 @@ import * as Application from './controller/application'
 
 // special case to handle a Duration column
 import KubectlGetJob from './controller/job/kubectl'
+
+// ibmcloud ce kubectl ... adds the kubeconfig for ce
+import Kubectl from './controller/kubectl'
 
 export default async (registrar: Registrar) => {
   const Bind = bind.bind(registrar)
@@ -40,4 +42,6 @@ export default async (registrar: Registrar) => {
 
   // special case to handle a Duration column
   BindGet(KubectlGetJob, 'jobrun', 'JobRun', 'JobRun.v1alpha1.codeengine.cloud.ibm.com')
+
+  Kubectl(registrar)
 }

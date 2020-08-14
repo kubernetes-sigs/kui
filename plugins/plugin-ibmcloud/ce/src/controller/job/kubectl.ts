@@ -14,31 +14,12 @@
  * limitations under the License.
  */
 
-import { Arguments, KResponse, isTable } from '@kui-shell/core'
+import { Arguments, isTable } from '@kui-shell/core'
 import { doGet, KubeOptions, isTableRequest, computeDurations } from '@kui-shell/plugin-kubectl'
 
 import JobRun from '../../lib/kinds/JobRun'
 
 const get = doGet('kubectl')
-
-/** Status 0/1 -> Fail/Success */
-function fixupStatus(response: KResponse) {
-  if (isTable(response)) {
-    const statusIdx = response.header.attributes.findIndex(_ => /STATUS/i.test(_.key))
-    if (statusIdx >= 0) {
-      response.body.forEach(_ => {
-        const { value } = _.attributes[statusIdx]
-        _.attributes[statusIdx].value = /^1|Success$/.test(value)
-          ? 'Success'
-          : /^<none>|Pending$/.test(value)
-          ? 'Pending'
-          : 'Fail'
-      })
-    }
-  }
-
-  return response
-}
 
 /**
  * This serves only to add a `Duration` column to table requests for
@@ -50,7 +31,32 @@ export default async function KubectlGetJob(args: Arguments<KubeOptions>) {
     // get-watch uses the stripped option; we need to unstrip it :(
     args.command = args.command.replace(/([^\\])\\([^\\])/g, '$1\\\\$2')
 
-    return fixupStatus(computeDurations(await get(args)))
+    const table = await args.REPL.qexec(
+      `ibmcloud ce kubectl get pod -o custom-columns=JOB:.metadata.labels.jobrun,POD:.metadata.name,STATUS:.status.phase,START:.status.startTime,START2:.status.containerStatuses[0].state.terminated.startedAt,END:.status.containerStatuses[0].state.terminated.finishedAt`,
+      undefined,
+      undefined,
+      args.execOptions
+    )
+    if (isTable(table)) {
+      // in case we want to limit the numbre of jobs displayed
+      /* const jobIndices = table.body.reduce((indices, job, idx) => {
+        if (idx === 0 || table.body[idx - 1].name !== job.name) {
+          indices.push(idx)
+        }
+        return indices
+        }, [] as number[]) */
+      table.title = 'Job'
+      const hide = [2, 3]
+      const hideWithSidecar = [1]
+      hide.forEach(idx => (table.header.attributes[idx].outerCSS = 'hide'))
+      hideWithSidecar.forEach(idx => (table.header.attributes[idx].outerCSS = 'hide-with-sidecar'))
+      table.body.forEach(_ => {
+        hide.forEach(idx => (_.attributes[idx].outerCSS = 'hide'))
+        hideWithSidecar.forEach(idx => (_.attributes[idx].outerCSS = 'hide-with-sidecar'))
+        _.onclick = `ibmcloud ce kubectl get pod ${_.attributes[0].value} -o yaml`
+      })
+    }
+    return computeDurations(table)
   } else {
     const job = (await get(args)) as JobRun
     job.spec._podName = `${job.metadata.name}-0-0` // TODO
