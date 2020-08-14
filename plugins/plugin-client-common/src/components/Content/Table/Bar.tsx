@@ -22,6 +22,9 @@ interface Props {
   width: string
   className?: string
   title?: string
+
+  widthOverlay?: string
+  titleOverlay?: string
 }
 
 export default class Bar extends React.PureComponent<Props> {
@@ -38,6 +41,15 @@ export default class Bar extends React.PureComponent<Props> {
             width: this.props.width
           }}
         />
+
+        {/* overlay, make sure this comes last:  */}
+        {this.props.widthOverlay && (
+          <div
+            className="kui--bar kui--bar-overlay"
+            title={this.props.titleOverlay}
+            style={{ left: this.props.left, width: this.props.widthOverlay }}
+          />
+        )}
       </div>
     )
   }
