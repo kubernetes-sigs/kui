@@ -458,7 +458,7 @@ export const stringToTable = async <O extends KubeOptions>(
     if (preTables.length === 1) {
       const limit = getLimit(args)
       if (limit) {
-        preTables[0] = preTables[0].slice(-limit)
+        preTables[0] = [preTables[0][0]].concat(preTables[0].slice(-limit))
       }
 
       const T = await formatTable(command, verb, entityType, args, preTables[0], nameColumn)

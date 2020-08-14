@@ -262,6 +262,17 @@ export const doGet = (command: string) =>
       }
     }
 
+    if (args.parsedOptions.limit) {
+      args.command = args.command.replace(/--limit \d+/g, '')
+      const idx = args.argv.indexOf('--limit')
+      if (idx >= 0) {
+        args.argv.splice(idx, 2)
+      }
+      if (!args.execOptions.data) {
+        args.execOptions.data = { limit: args.parsedOptions.limit }
+      }
+    }
+
     const response = await rawGet(args, command)
 
     if (isKubeTableResponse(response)) {
