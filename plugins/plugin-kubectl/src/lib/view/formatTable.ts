@@ -471,6 +471,7 @@ export function computeDurations(table: KResponse) {
 
     const statusIdx = header.findIndex(_ => _.key === 'STATUS')
     const startIdx = header.findIndex(_ => _.key === 'START')
+    const start2Idx = header.findIndex(_ => _.key === 'START2')
     const endIdx = header.findIndex(_ => _.key === 'END')
     const durationIdx = header.findIndex(_ => _.key === 'Duration')
 
@@ -487,14 +488,31 @@ export function computeDurations(table: KResponse) {
       table.startColumnIdx = startIdx
       table.completeColumnIdx = endIdx
       table.durationColumnIdx = header.length
+
       header.push({ key: 'Duration', value: 'Duration' })
+      if (start2Idx >= 0) {
+        table.coldStartColumnIdx = header.length
+        header.push({ key: 'Cold Start', value: 'Cold Start', outerCSS: 'hide-with-sidecar' })
+        header[start2Idx].outerCSS = 'hide'
+      }
 
       table.body.forEach(row => {
         const start = row.attributes[startIdx]
         const end = row.attributes[endIdx]
-        const duration = new Date(end.value).getTime() - new Date(start.value).getTime()
+        const startTime = new Date(start.value).getTime()
+        const duration = new Date(end.value).getTime() - startTime
 
         row.attributes.push({ key: 'Duration', value: isNaN(duration) ? '' : duration.toString() })
+
+        if (start2Idx >= 0) {
+          const start2Time = new Date(row.attributes[start2Idx].value).getTime()
+          const coldStart = start2Time - startTime
+          row.attributes.push({
+            key: 'Cold Start',
+            value: isNaN(coldStart) ? '' : coldStart.toString(),
+            outerCSS: 'hide-with-sidecar'
+          })
+        }
       })
     }
   }

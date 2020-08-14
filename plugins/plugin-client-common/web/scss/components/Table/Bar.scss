@@ -22,8 +22,21 @@
   outline: 1px dotted var(--color-table-border3);
 }
 
+.kui--bar-overlay {
+  background: repeating-linear-gradient(
+    -55deg,
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0.4) 4px,
+    rgba(255, 255, 255, 0.3) 4px,
+    rgba(255, 255, 255, 0.3) 8px
+  );
+  mix-blend-mode: overlay;
+}
+
 .kui--bar {
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom: 0;
 
   &.kui--bar-default-color {
     background-color: var(--color-latency-1);

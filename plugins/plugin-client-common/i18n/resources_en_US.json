@@ -8,6 +8,8 @@
   "nRows": "{0} rows",
   "nRows1": "1 row",
   "New Tab": "Open a new tab",
+  "Duration": "Duration: {0}",
+  "Cold Start": "Cold start delay: {0}. {1}",
   "Close this tab": "Close this tab",
   "Split the Terminal": "Split the Terminal",
   "Output has been pinned to a watch pane": "Output has been **pinned** to a watch pane",

@@ -138,6 +138,9 @@ export class Table<RowType extends Row = Row> {
   /** Column index to be interpreted as a duration column */
   durationColumnIdx?: number
 
+  /** Column index to be interpreted as a time to initialize the computation */
+  coldStartColumnIdx?: number
+
   /** Column index to be interpreted as a start timestamp column */
   startColumnIdx?: number
 
