@@ -523,7 +523,9 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
     ) // strip --watch
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const kubeServerVersion = args.REPL.qexec<any>(`${getCommandFromArgs(args)} version -o json`)
+    const kubeServerVersion = args.REPL.qexec<any>(
+      withKubeconfigFrom(args, `${getCommandFromArgs(args)} version -o json`)
+    )
       .then(_ => (typeof _ === 'string' ? JSON.parse(_) : _))
       .then(({ serverVersion }) => ({
         major: parseInt(serverVersion.major),
