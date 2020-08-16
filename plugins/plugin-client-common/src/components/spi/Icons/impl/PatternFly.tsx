@@ -20,6 +20,7 @@ import {
   CameraIcon as Screenshot,
   CameraRetroIcon as ScreenshotInProgress,
   CheckCircleIcon as Checkmark,
+  ChartBarIcon as ChartBar,
   PlusIcon as Add,
   OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
@@ -76,10 +77,12 @@ export default function PatternFly4Icons(props: Props) {
       return <Add style={size20} {...props} />
     case 'Back':
       return <Back style={Sidecar} {...props} />
-    case 'CodeBranch':
-      return <CodeBranch style={StatusStripe} {...props} />
+    case 'ChartBar':
+      return <ChartBar {...props} />
     case 'Checkmark':
       return <Checkmark {...props} />
+    case 'CodeBranch':
+      return <CodeBranch style={StatusStripe} {...props} />
     case 'Edit':
       return <Edit {...props} />
     case 'Error':

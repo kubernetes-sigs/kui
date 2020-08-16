@@ -28,6 +28,7 @@ import '../../../../web/scss/components/Table/Toolbar.scss'
 
 export type Props = Partial<GridProps> &
   Partial<SequenceProps> &
+  Partial<TimelineProps> &
   Partial<PaginationProps> &
   Partial<BreadcrumbProps> &
   Partial<StreamProps> & {
@@ -45,6 +46,12 @@ interface SequenceProps {
   hasSequenceButton?: boolean
   asSequence: boolean
   setAsSequence: (asSequence: boolean) => void
+}
+
+interface TimelineProps {
+  hasTimelineButton?: boolean
+  asTimeline: boolean
+  setAsTimeline: (asTimeline: boolean) => void
 }
 
 interface PaginationProps {
@@ -76,7 +83,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             role="presentation"
             href="#"
             className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-list"
-            data-enabled={!this.props.asGrid && !this.props.asSequence}
+            data-enabled={!this.props.asGrid && !this.props.asSequence && !this.props.asTimeline}
             onClick={() => {
               this.props.setAsGrid(false)
               this.props.setAsSequence(false)
@@ -93,6 +100,7 @@ export default class Toolbar extends React.PureComponent<Props> {
               onClick={() => {
                 this.props.setAsSequence(false)
                 this.props.setAsGrid(true)
+                this.props.setAsTimeline(false)
               }}
             >
               <Icons icon="Grid" />
@@ -107,9 +115,25 @@ export default class Toolbar extends React.PureComponent<Props> {
               onClick={() => {
                 this.props.setAsGrid(false)
                 this.props.setAsSequence(true)
+                this.props.setAsTimeline(false)
               }}
             >
               <Icons icon="Sequence" />
+            </a>
+          )}
+          {this.props.hasTimelineButton && (
+            <a
+              role="presentation"
+              href="#"
+              className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-timeline"
+              data-enabled={this.props.asTimeline}
+              onClick={() => {
+                this.props.setAsGrid(false)
+                this.props.setAsSequence(false)
+                this.props.setAsTimeline(true)
+              }}
+            >
+              <Icons icon="ChartBar" />
             </a>
           )}
         </React.Fragment>
