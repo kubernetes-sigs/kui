@@ -32,13 +32,14 @@ export default async function KubectlGetJob(args: Arguments<KubeOptions>) {
     args.command = args.command.replace(/([^\\])\\([^\\])/g, '$1\\\\$2')
 
     const table = await args.REPL.qexec(
-      `ibmcloud ce kubectl get pod -o custom-columns=JOB:.metadata.labels.jobrun,POD:.metadata.name,STATUS:.status.phase,START:.status.startTime,START2:.status.containerStatuses[0].state.terminated.startedAt,END:.status.containerStatuses[0].state.terminated.finishedAt ${
+      `ibmcloud ce kubectl get pod --sort-by={.status.startTime} -o custom-columns=JOB:.metadata.labels.jobrun,POD:.metadata.name,STATUS:.status.phase,START:.status.startTime,START2:.status.containerStatuses[0].state.terminated.startedAt,END:.status.containerStatuses[0].state.terminated.finishedAt ${
         args.parsedOptions.limit ? `--limit ${args.parsedOptions.limit}` : ''
       }`,
       undefined,
       undefined,
       args.execOptions
     )
+
     if (isTable(table)) {
       // in case we want to limit the numbre of jobs displayed
       /* const jobIndices = table.body.reduce((indices, job, idx) => {

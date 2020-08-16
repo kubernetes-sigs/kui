@@ -24,6 +24,7 @@ export type SupportedIcon =
   | 'Add'
   | 'At'
   | 'Back'
+  | 'ChartBar'
   | 'Checkmark'
   | 'CodeBranch'
   | 'Edit'
