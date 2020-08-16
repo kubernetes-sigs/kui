@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
-
 import * as React from 'react'
+import * as prettyPrintDuration from 'pretty-ms'
+import { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
 
 import ErrorCell from './ErrorCell'
 import { onClickForCell } from './TableCell'
@@ -43,19 +43,41 @@ export const findGridableColumn = (response: KuiTable) => {
 
 const thresholds = [2000, 4000, 6000, 8000]
 
+export function nDurationBuckets() {
+  return 5
+}
+
+export function durationRangeOfSplit(idx: number) {
+  return idx === 0
+    ? `<{prettyPrintDuration(thresholds[0])}`
+    : idx === thresholds.length
+    ? `>${prettyPrintDuration(thresholds[idx - 1])}`
+    : `${prettyPrintDuration(thresholds[idx - 1])}\u2014${prettyPrintDuration(thresholds[idx])}`
+}
+
+export function durationBucket(duration: number) {
+  if (duration < thresholds[0]) {
+    return 0
+  } else if (duration < thresholds[1]) {
+    return 1
+  } else if (duration < thresholds[2]) {
+    return 3
+  } else if (duration < thresholds[3]) {
+    return 4
+  } else {
+    return 5
+  }
+}
+
+export function durationCssForBucket(idx: number) {
+  return `color-latency${idx}`
+}
+
 export function durationCss(duration: number, isError: boolean) {
   if (isError) {
     return 'red-background'
-  } else if (duration < thresholds[0]) {
-    return 'color-latency0'
-  } else if (duration < thresholds[1]) {
-    return 'color-latency1'
-  } else if (duration < thresholds[2]) {
-    return 'color-latency3'
-  } else if (duration < thresholds[3]) {
-    return 'color-latency4'
   } else {
-    return 'color-latency5'
+    return durationCssForBucket(durationBucket(duration))
   }
 }
 

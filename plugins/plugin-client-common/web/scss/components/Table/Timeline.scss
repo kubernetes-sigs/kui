@@ -1,0 +1,78 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'Bar';
+
+.kui--timeline {
+  position: relative;
+}
+
+.kui--timeline-y-axis {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+
+  .kui--timeline-tick {
+    left: 0;
+    right: 0;
+  }
+}
+
+.kui--timeline-ticks {
+  position: relative;
+  height: 100%;
+}
+
+.kui--timeline-tick {
+  position: absolute;
+  border-top: 1px dashed var(--color-base03);
+}
+
+.kui--timeline-occupancy-line {
+  top: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 0.5rem;
+}
+
+.kui--timeline-occupancy-line-label {
+  font-size: 0.625rem;
+  background-color: var(--pf-c-card--BackgroundColor);
+  padding: 3px;
+  border-radius: 2px / 4px;
+  margin: 2px 0;
+  opacity: 0.6;
+}
+
+.kui--timeline-buckets {
+  display: flex;
+  height: 12rem;
+}
+
+.kui--timeline-bucket {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1px;
+
+  [data-is='execution'],
+  [data-is='cold-start'] {
+    background-color: var(--color-latency-1);
+  }
+}

@@ -212,7 +212,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const className = durationCss(duration, false)
 
             const gap =
-              intervalIdx === 0
+              intervalIdx === 0 && rowIdx === 0
                 ? 0
                 : rowIdx === 0
                 ? startMillis - this.state.intervals[intervalIdx - 1].endMillis

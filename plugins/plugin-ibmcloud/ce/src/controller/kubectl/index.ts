@@ -20,16 +20,18 @@ import { defaultFlags, getTransformer as viewTransformer } from '@kui-shell/plug
 import kubeconfig from '../config/kubeconfig'
 
 export default async function(registrar: Registrar) {
-  registrar.listen(
-    '/ibmcloud/ce/kubectl',
-    async args =>
-      args.REPL.qexec(
-        args.command.slice(args.command.indexOf('kubectl')) +
-          ` --kubeconfig ${args.REPL.encodeComponent(await kubeconfig(args))}`,
-        undefined,
-        undefined,
-        args.execOptions
-      ),
-    Object.assign({ viewTransformer }, defaultFlags)
+  ;['kubectl', 'k'].forEach(kubectl =>
+    registrar.listen(
+      `/ibmcloud/ce/${kubectl}`,
+      async args =>
+        args.REPL.qexec(
+          args.command.slice(args.command.indexOf(kubectl)) +
+            ` --kubeconfig ${args.REPL.encodeComponent(await kubeconfig(args))}`,
+          undefined,
+          undefined,
+          args.execOptions
+        ),
+      Object.assign({ viewTransformer }, defaultFlags)
+    )
   )
 }

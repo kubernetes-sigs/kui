@@ -21,6 +21,7 @@ import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-compon
 
 import sortRow from './sort'
 import Card from '../../spi/Card'
+import Timeline from './Timeline'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
 import SequenceDiagram from './SequenceDiagram'
@@ -139,8 +140,9 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         headers,
         rows,
         footer,
-        asSequence: false,
         asGrid: this.props.asGrid && findGridableColumn(this.props.response) >= 0,
+        asSequence: false,
+        asTimeline: false,
         page: 1,
         pageSize: this.defaultPageSize
       } as S
@@ -205,6 +207,9 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private bottomToolbar(lightweightTables = false) {
     const gridableColumn = findGridableColumn(this.props.response)
+    const hasSequenceButton = isTableWithTimestamp(this.props.response)
+    const hasTimelineButton = hasSequenceButton // same
+
     return (
       <React.Fragment>
         {this.hasFooterLines() && <Toolbar stream={this.footerLines()} repl={this.props.repl} />}
@@ -221,9 +226,12 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
               page={this.state.page}
               totalItems={this.state.rows.length}
               pageSize={this.state.pageSize}
-              hasSequenceButton={isTableWithTimestamp(this.props.response)}
+              hasSequenceButton={hasSequenceButton}
               asSequence={this.state.asSequence}
               setAsSequence={(asSequence: boolean) => this.setState({ asSequence })}
+              hasTimelineButton={hasTimelineButton}
+              asTimeline={this.state.asTimeline}
+              setAsTimeline={(asTimeline: boolean) => this.setState({ asTimeline })}
             />
           )}
       </React.Fragment>
@@ -304,11 +312,21 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return <SequenceDiagram {...this.props} />
   }
 
+  private timeline() {
+    return <Timeline {...this.props} />
+  }
+
   private content(includeToolbars = false, lightweightTables = false) {
     return (
       <React.Fragment>
         {includeToolbars && this.topToolbar(lightweightTables)}
-        {this.state.asGrid ? this.grid(this.state.rows) : this.state.asSequence ? this.sequence() : this.table()}
+        {this.state.asGrid
+          ? this.grid(this.state.rows)
+          : this.state.asSequence
+          ? this.sequence()
+          : this.state.asTimeline
+          ? this.timeline()
+          : this.table()}
         {includeToolbars && this.bottomToolbar(lightweightTables)}
       </React.Fragment>
     )
@@ -323,6 +341,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         'kui--data-table-wrapper' +
         (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
         (this.state.asSequence ? ' kui--data-table-as-sequence' : '') +
+        (this.state.asTimeline ? ' kui--data-table-as-timeline' : '') +
         (lightweightTables ? ' kui--data-table-wrapper-lightweight' : '')
 
       return (
