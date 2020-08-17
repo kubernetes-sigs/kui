@@ -1,5 +1,5 @@
 /* eslint-disable */
-import GetMetricConfig from '../components/metric-config'
+import { GetMetricConfig } from '../components/metric-config'
 import { CriterionState, Formstate } from '../modes/state-models'
 //Convert the list of criteria in API request format
 function getCriteriaModel(definedCriteria: Array<CriterionState>): Array<Object> {
