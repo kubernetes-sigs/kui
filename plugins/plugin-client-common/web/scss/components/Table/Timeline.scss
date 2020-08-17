@@ -15,6 +15,21 @@
  */
 
 @import 'Bar';
+@import './_mixins';
+@import '../Terminal/_mixins';
+
+@include PlainTerminal {
+  @include TableContainer {
+    &.kui--timeline-container {
+      width: 35rem;
+    }
+  }
+}
+
+.kui--timeline-container,
+.kui--timeline {
+  height: 100%;
+}
 
 .kui--timeline {
   position: relative;
@@ -62,7 +77,16 @@
 
 .kui--timeline-buckets {
   display: flex;
-  height: 12rem;
+  height: 19.6875rem; /* 16:9, see 35rem above */
+}
+
+@include MiniSplit {
+  .kui--timeline-occupancy-line {
+    padding: 0;
+  }
+  .kui--timeline-buckets {
+    height: 100%;
+  }
 }
 
 .kui--timeline-bucket {
