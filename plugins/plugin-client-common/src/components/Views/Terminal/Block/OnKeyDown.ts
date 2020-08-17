@@ -56,14 +56,8 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
 const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
 
 /** Update the given input to reflect the given HistoryLine */
-const updateInputAndMoveCaretToEOL = (
-  input: Input,
-  entry: HistoryLine,
-  dir: 'first' | 'last' | 'previous' | 'next'
-) => {
-  if (input.props.isPartOfMiniSplit && input.props.navigateTo && input.props.idx > 0) {
-    input.props.navigateTo(dir)
-  } else if (entry) {
+const updateInputAndMoveCaretToEOL = (input: Input, entry: HistoryLine) => {
+  if (entry) {
     input.state.prompt.value = entry.raw
     setTimeout(() => setCaretPositionToEnd(input.state.prompt), 0)
   } else {
@@ -90,7 +84,7 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     const historyModel = await (await import('@kui-shell/core')).History(tab)
     const entry = historyModel.previous()
     if (entry) {
-      updateInputAndMoveCaretToEOL(this, entry, 'previous')
+      updateInputAndMoveCaretToEOL(this, entry)
     }
   } else if (char === KeyCodes.D && event.ctrlKey) {
     if (prompt.value === '') {
@@ -103,12 +97,18 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
       debug('pageup')
       const { height } = document.body.getBoundingClientRect()
       document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, -height)
+    } else if (this.props.isPartOfMiniSplit) {
+      // in minisplits, pageup means navigate to previous Block
+      this.props.navigateTo('previous')
     }
   } else if (char === KeyCodes.PAGEDOWN) {
     if (inBrowser()) {
       debug('pagedown')
       const { height } = document.body.getBoundingClientRect()
       document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, +height)
+    } else if (this.props.isPartOfMiniSplit) {
+      // in minisplits, pageup means navigate to next Block
+      this.props.navigateTo('next')
     }
   } else if (char === KeyCodes.C && event.ctrlKey) {
     // Ctrl+C, cancel
@@ -133,18 +133,18 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     const historyModel = await (await import('@kui-shell/core')).History(tab)
     const entry = historyModel.first()
     if (entry) {
-      updateInputAndMoveCaretToEOL(this, entry, 'first')
+      updateInputAndMoveCaretToEOL(this, entry)
     }
   } else if (char === KeyCodes.END) {
     // go to last command in history
     const historyModel = await (await import('@kui-shell/core')).History(tab)
     const entry = historyModel.last()
-    updateInputAndMoveCaretToEOL(this, entry, 'last')
+    updateInputAndMoveCaretToEOL(this, entry)
   } else if (char === KeyCodes.DOWN || (char === KeyCodes.N && event.ctrlKey)) {
     // going DOWN past the last history item will result in '', i.e. a blank line
     const historyModel = await (await import('@kui-shell/core')).History(tab)
     const entry = historyModel.next()
-    updateInputAndMoveCaretToEOL(this, entry, 'next')
+    updateInputAndMoveCaretToEOL(this, entry)
   } else if (event.key === 'w' && event.ctrlKey) {
     const { prompt } = this.state
     const idx = prompt.value.lastIndexOf(
