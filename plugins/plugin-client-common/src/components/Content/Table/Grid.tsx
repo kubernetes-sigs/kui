@@ -44,13 +44,13 @@ export const findGridableColumn = (response: KuiTable) => {
 const thresholds = [2000, 4000, 6000, 8000]
 
 export function nDurationBuckets() {
-  return 5
+  return thresholds.length + 1
 }
 
 export function durationRangeOfSplit(idx: number) {
   return idx === 0
     ? `<{prettyPrintDuration(thresholds[0])}`
-    : idx === thresholds.length
+    : idx === nDurationBuckets() - 1
     ? `>${prettyPrintDuration(thresholds[idx - 1])}`
     : `${prettyPrintDuration(thresholds[idx - 1])}\u2014${prettyPrintDuration(thresholds[idx])}`
 }
@@ -61,16 +61,17 @@ export function durationBucket(duration: number) {
   } else if (duration < thresholds[1]) {
     return 1
   } else if (duration < thresholds[2]) {
-    return 3
+    return 2
   } else if (duration < thresholds[3]) {
-    return 4
+    return 3
   } else {
-    return 5
+    return 4
   }
 }
 
 export function durationCssForBucket(idx: number) {
-  return `color-latency${idx}`
+  // we want to skip over color-latency-2
+  return `color-latency${idx < 2 ? idx : idx + 1}`
 }
 
 export function durationCss(duration: number, isError: boolean) {
