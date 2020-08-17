@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export default 'kubectl get jobrun -o custom-columns=NAME:.metadata.name,JOBDEF:.metadata.labels.codeengine\\\\.cloud\\\\.ibm\\\\.com/job-definition,STATUS:.status.succeeded,START:.status.startTime,END:.status.completionTime'
+export const JobRunKind = 'JobRun.v1alpha1.codeengine.cloud.ibm.com'
+
+export default `kubectl get ${JobRunKind} -o custom-columns=NAME:.metadata.name,JOBDEF:.metadata.labels.codeengine\\\\.cloud\\\\.ibm\\\\.com/job-definition,STATUS:.status.succeeded,START:.status.startTime,END:.status.completionTime`

@@ -26,6 +26,7 @@ import * as Application from './controller/application'
 
 // special case to handle a Duration column
 import KubectlGetJob from './controller/job/kubectl'
+import { JobRunKind } from './controller/job/list'
 
 // ibmcloud ce kubectl ... adds the kubeconfig for ce
 import Kubectl from './controller/kubectl'
@@ -41,7 +42,7 @@ export default async (registrar: Registrar) => {
   Bind(Secret, 'secret')
 
   // special case to handle a Duration column
-  BindGet(KubectlGetJob, 'jobrun', 'JobRun', 'JobRun.v1alpha1.codeengine.cloud.ibm.com')
+  BindGet(KubectlGetJob, JobRunKind)
 
   Kubectl(registrar)
 }
