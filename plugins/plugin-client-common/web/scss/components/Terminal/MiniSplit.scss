@@ -22,8 +22,19 @@
   display: flex;
   flex-direction: column;
 
-  .repl-block + .repl-block.repl-active {
-    margin-top: 0.5rem;
+  .repl-block {
+    & + .repl-block.repl-active,
+    & + .repl-block.processing {
+      margin-top: 0.5rem;
+    }
+  }
+
+  .kui--repl-block-experimental-tag {
+    margin: 0;
+    .kui--tag {
+      height: 1.25rem;
+      font-size: 0.625rem;
+    }
   }
 
   .kui--repl-block-timestamp {
@@ -32,6 +43,7 @@
 
   .repl-block {
     margin: 0;
+    padding-bottom: 0;
   }
 
   .repl-prompt {
