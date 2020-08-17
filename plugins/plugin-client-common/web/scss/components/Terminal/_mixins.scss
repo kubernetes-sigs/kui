@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export const JobRunKind = 'JobRun.v1alpha1.codeengine.cloud.ibm.com'
+@mixin MiniSplit {
+  .kui--scrollback[data-is-minisplit] {
+    @content;
+  }
+}
 
-export default `kubectl get ${JobRunKind} -o custom-columns=NAME:.metadata.name,JOBDEF:.metadata.labels.codeengine\\\\.cloud\\\\.ibm\\\\.com/job-definition,STATUS:.status.succeeded,START:.status.startTime,END:.status.completionTime`
+@mixin PlainTerminal {
+  .kui--scrollback:not([data-is-minisplit]):not([data-is-width-constrained]) {
+    @content;
+  }
+}
