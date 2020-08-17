@@ -2,7 +2,7 @@ import { NavResponse } from '@kui-shell/core'
 import { about, commands, controller, analytics } from '../utility/iter8about'
 
 /** A no-argument Command Handler */
-export const printCatInLeftNavSidecar: NavResponse = {
+export const printiter8about: NavResponse = {
   apiVersion: 'kui-shell/v1',
   kind: 'NavResponse',
   breadcrumbs: [{ label: 'iter8' }, { label: 'about', command: 'iter8 about' }],

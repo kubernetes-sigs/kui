@@ -1,6 +1,8 @@
 import { Registrar } from '@kui-shell/core'
 import { metricDeleteCommand } from './models/metrics'
-import { printCatInLeftNavSidecar } from './modes/about'
+import { printiter8about } from './modes/about'
+import { getiter8config } from './modes/config'
+
 // Registers a custom command
 export default async (registrar: Registrar) => {
   registrar.listen('/iter8/create/experiment', () => ({
@@ -19,5 +21,7 @@ export default async (registrar: Registrar) => {
 
   registrar.synonym('/iter8/delete/metrics', metricNames => metricDeleteCommand(metricNames), cmd)
 
-  registrar.listen('/iter8/about', () => printCatInLeftNavSidecar)
+  registrar.listen('/iter8/about', () => printiter8about)
+
+  registrar.listen('/iter8/config', () => getiter8config())
 }
