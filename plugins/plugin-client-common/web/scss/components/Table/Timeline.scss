@@ -77,6 +77,10 @@
 
 .kui--timeline-buckets {
   display: flex;
+}
+
+.kui--timeline-buckets,
+.kui--timeline-y-axis {
   height: 19.6875rem; /* 16:9, see 35rem above */
 }
 
