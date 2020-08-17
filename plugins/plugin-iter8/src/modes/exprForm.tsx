@@ -24,10 +24,10 @@ import 'carbon-components/scss/components/button/_button.scss'
 import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 // Functionality Imports
 import GetKubeInfo from '../components/cluster-info'
-import GetMetricConfig from '../components/metric-config'
+import { GetMetricConfig } from '../components/metric-config'
 import getRequestModel from '../utility/get-iter8-req'
 import { Formstate } from '../modes/state-models'
-
+import { CounterMetrics } from '../components/metric-config-types'
 import { experimentTypes } from '../utility/variables'
 
 /*
@@ -210,7 +210,9 @@ class ExprBase extends React.Component<{}, Formstate> {
     else {
       metricName = value.name
       metricType = 'Ratio'
-      for (let i = 0; i < this.countMetricsList.length; i++) {
+
+      // TODO: handle error
+      for (let i = 0; i < (this.countMetricsList as CounterMetrics).length; i++) {
         if (this.countMetricsList[i].name === value.name) metricType = 'Counter'
       }
     }
@@ -234,64 +236,6 @@ class ExprBase extends React.Component<{}, Formstate> {
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
     this.setState({ criteria: newMetric })
   }
-
-  /*
-   * ==== Sets the basic experiment state attributes =====
-   */
-  private handleNameChange(event) {
-    this.setState({ name: event.target.value.toLowerCase() })
-  }
-
-  private handleAddCand = value => {
-    // Convert all input into an iterable array
-    const versionValue = value.map(data => {
-      return data.text
-    })
-    this.setState({ invalidCand: false })
-    // Check for invalid selections
-    for (let i = 0; i < versionValue.length; i++) {
-      if (this.state.base === versionValue[i]) {
-        this.setState({ invalidCand: true })
-        versionValue.splice(i, 1)
-      }
-    }
-
-    handleSubmit(event){
-    	event.preventDefault();
-    }
-    // Adds the candidate value to the state if not already there and not base
-    handleAddCand = (e) => {
-    	if(!this.state.cand.includes((ReactDOM.findDOMNode(this.refs.candSelect) as HTMLInputElement).value) &&
-    		this.state.base !== (ReactDOM.findDOMNode(this.refs.candSelect) as HTMLInputElement).value){
-
-    		this.setState((prevState) => ({
-			cand: [...prevState.cand, (ReactDOM.findDOMNode(this.refs.candSelect) as HTMLInputElement).value],
-			}));
-    	}
-    	this.setState({
-			cand: versionValue
-		});
-	}
-
-	handleAddNs = (e) => {
-		this.setState({ns: e.target.value, svc: '', base:'', cand:[]});
-	}
-	private handleAddBase = (value) => {
-
-		if(value == null){
-			console.log("The value is null");
-			this.setState({base: '', cand: []});
-		}
-		else{
-			console.log("Baseline: ", value.text);
-			this.setState({base: value.text, cand: []});
-		}
-	}
-
-	private handleMetric = (e) => {
-		this.setState({showMetrics: !this.state.showMetrics});
-		event.preventDefault();
-	}
 
   // Disables all the other checkboxes
   private handleRewardChange = idx => {
@@ -540,16 +484,10 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 }
 
-  private handleLimitValChange = (value, idx) => {
-    const limitValue = value === '' ? 0 : parseInt(value)
-    console.log(limitValue)
-    const newMetric = [...this.state.metric]
-    newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
-    this.setState({ metric: newMetric })
+export function renderForm() {
+  return {
+    react: function renderComponent() {
+      return <ExprBase />
+    }
   }
-
-export function renderForm(){
-	return {
-		react: () => <Base />
-	}
 }

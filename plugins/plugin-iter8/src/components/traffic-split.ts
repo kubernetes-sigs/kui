@@ -188,29 +188,29 @@ export function checkTrafficSplit(trafficPerVersion) {
 }
 
 // Utility wrapper for traffic check
-export function trafficCheck(result: Array<any>){
-  let trafficArr = [];
-  for(let i = 0; i < result.length; i++){
-    trafficArr.push(result[i].split);
+export function trafficCheck(result: Array<any>) {
+  let trafficArr = []
+  for (let i = 0; i < result.length; i++) {
+    trafficArr.push(result[i].split)
   }
-  return(checkTrafficSplit(trafficArr));
+  return checkTrafficSplit(trafficArr)
 }
 // Organizes relevant information for building vs
-export function getUserDecision(ns: string, service: string, trafficDecision: Array<any>){
+export function getUserDecision(ns: string, service: string, trafficDecision: Array<any>) {
   let trafficObj = {
-    "service_name": service,
-    "service_namespace": ns,
+    service_name: service,
+    service_namespace: ns
   }
-  for(let i = 0; i < trafficDecision.length; i++){
+  for (let i = 0; i < trafficDecision.length; i++) {
     trafficObj[`${trafficDecision[i].version}`] = {
       version_labels: {
         destination_workload_namespace: ns,
         destination_workload: trafficDecision[i].version
       },
-      "traffic_percentage": trafficDecision[i].split
+      traffic_percentage: trafficDecision[i].split
     }
   }
-  return(trafficObj)
+  return trafficObj
 }
 // To apply traffic split:
 // const sample = {

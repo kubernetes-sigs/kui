@@ -48,10 +48,12 @@ function roundoff(value, fix = 4) {
 
 // Model for exprForm.tsx state
 interface TableProps {
+  id: string
   rows: any
   headers: any
   getHeaderProps: any
   title: string
+  params: any
 }
 
 const renderTable = TableProps => (
@@ -765,17 +767,13 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 <h4> No Criteria Assessment to show</h4>
               )}
             </FormGroup>
-            <FormGroup legendText="">
-              <h4 className="titletexts"> Advanced Statistics </h4>
-              <Button
-                style={{ position: 'relative' }}
-                size="default"
-                kind="ghost"
-                renderIcon={Data132}
-                onClick={this.toggleAdvancedStatistics}
-              >
-                Advanced Statistics
-              </Button>
+            <FormGroup className="advancedstats" legendText="">
+              <h4 onClick={this.toggleAdvancedStatistics}>
+                Advanced Statistics{' '}
+                <sup>
+                  <Help16 /> <div> Advanced Statistics is only available for Ratio Metrics </div>{' '}
+                </sup>
+              </h4>
             </FormGroup>
             {this.state.showAdvancedStatistics && this.state.haveAdvancedStatistics ? (
               <FormGroup legendText="">
@@ -792,7 +790,14 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                   headers={this.advancedStatiticsHeaders}
                   rows={this.state.advancedStatisticsRows}
                   render={({ rows, headers, getHeaderProps }) =>
-                    renderTable({ rows, headers, getHeaderProps, title: 'Advanced Metric Assessment' })
+                    renderTable({
+                      rows,
+                      headers,
+                      getHeaderProps,
+                      title: 'Advanced Metric Assessment',
+                      id: 'advanced',
+                      params: {}
+                    })
                   }
                 />
               </FormGroup>
@@ -872,8 +877,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   }
 }
 
-export function renderDecisionTab(){
-	return {
-		react: () => <DecisionBase />
-	}
+export function renderDecisionTab() {
+  return {
+    react: function renderComponent() {
+      return <DecisionBase />
+    }
+  }
 }

@@ -101,7 +101,6 @@ export class GetMetricConfig {
     // TODO: This seems inefficient, to YAML parse twice whenever you need this
     return safeLoad(safeLoad(this.output['configmaps'])['data']['counter_metrics.yaml'])
   }
-  }
 
   public getRatioMetrics() {
     if ({}.hasOwnProperty.call(this.output, 'error')) {
@@ -109,7 +108,6 @@ export class GetMetricConfig {
     }
     // TODO: This seems inefficient, to YAML parse twice whenever you need this
     return safeLoad(safeLoad(this.output['configmaps'])['data']['ratio_metrics.yaml'])
-  }
   }
 
   // Return list of names of counter and ratio metrics in the config map

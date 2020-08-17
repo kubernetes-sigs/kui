@@ -38,7 +38,7 @@ export default class GetAnalyticsAssessment {
             const respJson = JSON.stringify(resp)
             resolve(respJson)
           } else {
-            reject(JSON.stringify({ error: xhr.status }))
+            reject(xhr.status)
             console.log('Request failed')
           }
         } else {

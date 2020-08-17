@@ -6,17 +6,15 @@ $trans-grey: #5e6367;
   fill: $light-grey;
 }
 
-.textinputDiv {
-  height: 100px;
-  width: 450px;
+.helper {
+  color: $trans-grey !important;
 }
 
-.helpDiv {
-  height: 20px;
-  width: 20px;
-  position: relative;
-  top: -103px;
-  left: 40px;
+.extendwidth {
+  width: 350px;
+}
+.bx--list-box__label {
+  color: #737373;
 }
 
 .helpDiv {
@@ -30,10 +28,6 @@ $trans-grey: #5e6367;
 p {
   font-size: 0.75rem !important;
   line-height: 1rem !important;
-}
-
-.helper {
-  color: $trans-grey !important;
 }
 
 .bx--list-box__field {

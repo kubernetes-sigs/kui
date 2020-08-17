@@ -3,7 +3,7 @@ import { metricDeleteCommand } from './models/metrics'
 import { printCatInLeftNavSidecar } from './modes/about'
 // Registers a custom command
 export default async (registrar: Registrar) => {
-  registrar.listen('/create/exp', () => ({
+  registrar.listen('/iter8/create/experiment', () => ({
     kind: 'Command',
     metadata: { name: 'Experiment Creation' },
     modes: []
@@ -15,10 +15,8 @@ export default async (registrar: Registrar) => {
     modes: []
   }))
 
-  // @ts-ignore
   const cmd = registrar.listen('/iter8/delete/metric', metricNames => metricDeleteCommand(metricNames))
 
-  // @ts-ignore
   registrar.synonym('/iter8/delete/metrics', metricNames => metricDeleteCommand(metricNames), cmd)
 
   registrar.listen('/iter8/about', () => printCatInLeftNavSidecar)
