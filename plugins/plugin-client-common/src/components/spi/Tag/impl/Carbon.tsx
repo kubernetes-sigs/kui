@@ -24,7 +24,11 @@ import '../../../../../web/scss/components/Tag/Carbon.scss'
 export default function CarbonTag(props: Props) {
   return (
     <span title={props.title} className={props.spanclassname}>
-      <Tag {...props} type={props.type === 'error' ? 'red' : props.type === 'warning' ? 'warm-gray' : 'blue'} />
+      <Tag
+        {...props}
+        className={['kui--tag', props.className].join(' ')}
+        type={props.type === 'error' ? 'red' : props.type === 'warning' ? 'warm-gray' : 'blue'}
+      />
     </span>
   )
 }

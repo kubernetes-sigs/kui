@@ -20,7 +20,7 @@ import { Badge as KuiBadge, Tab, MultiModalResponse } from '@kui-shell/core'
 
 import HTMLDom from '../../Content/Scalar/HTMLDom'
 
-import '../../../../web/css/static/Tag.scss'
+import '../../../../web/scss/components/Tag/Tag.scss'
 
 interface Props {
   tab: Tab
