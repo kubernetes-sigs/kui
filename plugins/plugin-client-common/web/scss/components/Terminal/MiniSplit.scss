@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+@import '_mixins';
+
 /** distinguish the mini splits */
-.kui--scrollback[data-is-minisplit] {
+@include MiniSplit {
   background-color: var(--color-base02);
   box-shadow: 1px 1px var(--color-base01);
   border: 1px dotted var(--color-base03);
