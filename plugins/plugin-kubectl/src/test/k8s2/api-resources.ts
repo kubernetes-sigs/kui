@@ -94,8 +94,8 @@ describe('kubectl api-resources', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 
   it('should get a list of api resources', () =>
-    CLI.command('kubectl api-resources --api-group=extensions', this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('daemonsets') }))
+    CLI.command('kubectl api-resources --api-group=apps', this.app)
+      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('statefulsets') }))
       .catch(Common.oops(this, true)))
 
   const help = doHelp.bind(this)

@@ -15,8 +15,9 @@ env:
     - IBMCLOUD_TRACE=true
     - CSP_ALLOWED_HOSTS="http://localhost:8081 ws://localhost:8081 http://localhost:9953 ws://localhost:9080 http://localhost:9080 ws://localhost:9081 http://localhost:9081 ws://localhost:9082 http://localhost:9082 ws://localhost:9084 http://localhost:9084"
     - PATH=bin:$PATH
-    - TRAVIS_KUBE_VERSION=1.15.7
-    - TRAVIS_HELM_VERSION=2.13.0
+    - TRAVIS_KUBE_SERVER_VERSION=17
+    - TRAVIS_KUBE_VERSION=1.18.3
+    - TRAVIS_HELM_VERSION=2.16.10
     - TRAVIS_OC_VERISON=4.3.3
     - WINDOW_WIDTH=1400         # ! important ! so that clicks don't fail due to elements being off-viewport
     - WINDOW_HEIGHT=1050        # ! ibid !
