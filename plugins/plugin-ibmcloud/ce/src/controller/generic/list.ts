@@ -15,7 +15,8 @@
  */
 
 import { Arguments, Table, MixedResponse } from '@kui-shell/core'
-import { KubeOptions, watchRequestFrom, withNamespaceBreadcrumb } from '@kui-shell/plugin-kubectl'
+import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
+import { KubeOptions, watchRequestFrom, withNamespaceBreadcrumb, isUsage } from '@kui-shell/plugin-kubectl'
 
 import getConfig from '../config'
 
@@ -26,6 +27,10 @@ export interface ListOptions extends KubeOptions {
 const defaultLimit = 200
 
 export default async function(this: string, args: Arguments<ListOptions>, { extraArgs = [''], watch = false } = {}) {
+  if (isUsage(args)) {
+    return doExecWithStdoutViaPty(args)
+  }
+
   const { currentConfigFile, projectName } = await getConfig(args)
 
   // this is the kubectl command line equivalent
