@@ -20,9 +20,9 @@ export default class NameDict {
 
   //Dictionary for displaying Advanced statistics
   public advancedStatisticsNames = {
-    'Improvement Over Baseline': 'improvement_over_baseline',
-    'Probability Of Beating Baseline': 'probability_of_beating_baseline',
-    'Probability Of Being The Best Version': 'probability_of_being_best_version',
+    // 'Improvement Over Baseline': 'improvement_over_baseline',
+    // 'Probability Of Beating Baseline': 'probability_of_beating_baseline',
+    // 'Probability Of Being The Best Version': 'probability_of_being_best_version',
     'Credible Interval': 'credible_interval'
   }
 
