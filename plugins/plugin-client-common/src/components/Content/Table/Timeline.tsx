@@ -183,7 +183,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
                     {this.bar(
                       split.coldStart,
                       durationCssForBucket(splitIdx),
-                      strings(`concurrencyColdStartInDurationSplit`, split.execution, range),
+                      strings(`concurrencyColdStartInDurationSplit`, split.coldStart, range),
                       true
                     )}
                   </React.Fragment>
