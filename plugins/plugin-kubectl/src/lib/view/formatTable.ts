@@ -457,7 +457,7 @@ export const stringToTable = async <O extends KubeOptions>(
     // try use display this as a table
     if (preTables.length === 1) {
       const limit = getLimit(args)
-      if (limit) {
+      if (limit && preTables[0].length > limit) {
         preTables[0] = [preTables[0][0]].concat(preTables[0].slice(-limit))
       }
 

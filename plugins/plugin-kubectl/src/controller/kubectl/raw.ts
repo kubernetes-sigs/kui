@@ -77,11 +77,14 @@ export const doNativeExec = (args: Arguments): Promise<RawResponse> =>
       if (stderr.length > 0 || code !== 0) {
         debug('exec has stderr with code %s', code)
         debug('exec stderr command', args.command)
+        debug('exec stdeout', stdout)
         debug('exec stderr', stderr)
       }
 
       const noResources = /no resources found/i.test(stderr)
-      if (stdout.length === 0 && (code !== 0 || noResources)) {
+      // const errorFromServer = /Error from server/i.test(stderr)
+
+      if (/* errorFromServer || */ stdout.length === 0 && (code !== 0 || noResources)) {
         const message = stderr
         const fileNotFound = /error: the path/.test(message)
         const codeForREPL =
