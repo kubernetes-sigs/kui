@@ -23,21 +23,30 @@ import { KubeOptions } from './options'
 
 import { FinalState } from '../../lib/model/states'
 import { isUsage, doHelp } from '../../lib/util/help'
+import getServerVersion, { KubernetesVersion } from '../../lib/util/version'
 
 /**
  * To get the status of a `run`, we look for the corresponding `deployment`
  *
  */
-function prepareArgsForStatus(cmd: string, args: Arguments<KubeOptions>) {
+async function prepareArgsForStatus(this: Promise<KubernetesVersion>, cmd: string, args: Arguments<KubeOptions>) {
+  // before 1.16, kubectl run created a deployment; after, it creates a pod
+  const { major, minor } = await this
+  const kind = major === 1 && minor < 16 ? 'deployment' : 'pod'
+
   const name = args.argvNoOptions[args.argvNoOptions.indexOf(cmd) + 1]
-  return `deployment ${name}`
+  return `${kind} ${name}`
 }
 
 export const doRun = (command = 'kubectl') => (args: Arguments<KubeOptions>): Promise<KResponse> => {
   if (isUsage(args)) {
     return doHelp(command, args)
   } else {
-    return doExecWithStatus('run', FinalState.OnlineLike, command, undefined, prepareArgsForStatus)(args)
+    // this is intentionally async; we'll await it in prepareArgsForStatus
+    const serverVersion = getServerVersion(args)
+    const prepare = prepareArgsForStatus.bind(serverVersion)
+
+    return doExecWithStatus('run', FinalState.OnlineLike, command, undefined, prepare)(args)
   }
 }
 

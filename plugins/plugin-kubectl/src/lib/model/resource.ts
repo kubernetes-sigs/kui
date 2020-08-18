@@ -334,17 +334,32 @@ export function isJob(resource: KubeResource): resource is Job {
  * Kubernetes Deployment resource type
  *
  */
-export interface Deployment extends KubeResource {
+interface Deployment1 extends KubeResource {
   apiVersion: 'extensions/v1beta1'
   kind: 'Deployment'
 }
+
+/**
+ * Kubernetes Deployment resource type
+ *
+ */
+interface Deployment2 extends KubeResource {
+  apiVersion: 'apps/v1'
+  kind: 'Deployment'
+}
+
+export type Deployment = Deployment1 | Deployment2
 
 /**
  * @return whether the given resource is an instance of a Deployment
  *
  */
 export function isDeployment(resource: KubeResource): resource is Deployment {
-  return isKubeResource(resource) && resource.apiVersion === 'extensions/v1beta1' && resource.kind === 'Deployment'
+  return (
+    isKubeResource(resource) &&
+    resource.kind === 'Deployment' &&
+    (resource.apiVersion === 'extensions/v1beta1' || resource.apiVersion === 'apps/v1')
+  )
 }
 
 /**
