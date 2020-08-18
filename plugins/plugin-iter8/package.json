@@ -12,13 +12,14 @@
     "plugin",
     "iter8"
   ],
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
-    "apexcharts": "^3.19.0",
-    "jquery": "^3.4.1",
+    "apexcharts": "3.19.0",
     "js-yaml": "3.13.1",
-    "react": "^16.13.1",
-    "react-apexcharts": "^1.3.7",
-    "react-dom": "^16.13.1",
-    "xmlhttprequest": "^1.8.0"
+    "react-apexcharts": "1.3.7",
+    "xmlhttprequest": "1.8.0"
   }
 }

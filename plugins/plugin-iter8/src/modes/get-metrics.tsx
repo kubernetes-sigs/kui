@@ -1,3 +1,19 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import * as React from 'react'
 import { TrashCan20, Reset20, Add20, Edit20 } from '@carbon/icons-react'
 import { Button, DataTable, Form, FormGroup, Select, SelectItem, TextInput } from 'carbon-components-react'
@@ -446,14 +462,14 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
       try {
         counterMetricsState[metric.numerator].alsoDelete.push(metric.name)
       } catch (e) {
-        throw new Error(`Ratio metric '${metric.name}' has numerator metric 
+        throw new Error(`Ratio metric '${metric.name}' has numerator metric
           '${metric.numerator}' which is not defined.`)
       }
 
       try {
         counterMetricsState[metric.denominator].alsoDelete.push(metric.name)
       } catch (e) {
-        throw new Error(`Ratio metric '${metric.name}' has denominator metric 
+        throw new Error(`Ratio metric '${metric.name}' has denominator metric
           '${metric.denominator}' which is not defined.`)
       }
     })
