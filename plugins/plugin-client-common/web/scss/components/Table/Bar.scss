@@ -25,10 +25,10 @@
 .kui--bar-overlay {
   background: repeating-linear-gradient(
     -55deg,
-    rgba(0, 0, 0, 0.4),
-    rgba(0, 0, 0, 0.4) 4px,
-    rgba(255, 255, 255, 0.3) 4px,
-    rgba(255, 255, 255, 0.3) 8px
+    rgba(0, 0, 0, 0.9),
+    rgba(0, 0, 0, 0.4) 1px,
+    rgba(255, 255, 255, 0.1) 2px,
+    rgba(255, 255, 255, 0.3) 3px
   );
   mix-blend-mode: overlay;
   height: 100%;
