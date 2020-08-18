@@ -6,9 +6,9 @@ export function iter8ServiceStatus(svc) {
   })
   const s = svcStr.split(' ')
   if (s.includes(svc)) {
-    return `Available`
+    return true
   } else {
-    return `Unavailable`
+    return false
   }
 }
 
