@@ -3,7 +3,7 @@
 set -e
 set -o pipefail
 
-sudo snap install microk8s --classic --channel=1.15/stable
+sudo snap install microk8s --classic --channel=1.17/stable
 
 # do this in advance, so that microk8s running as sudo doesn't create it
 mkdir -p ~/.kube
@@ -69,6 +69,10 @@ kubectl version -o json
 if [ -n "$NEEDS_HELM" ]; then
     # Install tiller into the cluster
     /usr/local/bin/helm init --service-account default
+
+    # helm 2 versus kubernetes 1.16+
+    # See https://github.com/helm/helm/issues/6374#issuecomment-533427268
+    # helm init --service-account tiller --override spec.selector.matchLabels.'name'='tiller',spec.selector.matchLabels.'app'='helm' --output yaml | sed 's@apiVersion: extensions/v1beta1@apiVersion: apps/v1@' | kubectl apply -f -
 
     # Wait for tiller to be ready
     TIMEOUT=0

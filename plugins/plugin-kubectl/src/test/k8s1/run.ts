@@ -29,15 +29,19 @@ describe(`kubectl run ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Com
     const ns: string = createNS()
     allocateNS(this, ns)
 
-    it(`should create deployment from ${kubectl} run`, () => {
+    it(`should create pod/deployment from ${kubectl} run`, () => {
       return CLI.command(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this))
     })
 
-    it(`should delete the deployment by name via ${kubectl}`, () => {
-      return CLI.command(`${kubectl} delete deployment nginx -n ${ns}`, this.app)
+    const kind =
+      process.env.TRAVIS_KUBE_SERVER_VERSION && parseInt(process.env.TRAVIS_KUBE_SERVER_VERSION, 10) < 16
+        ? 'deployment'
+        : 'pod'
+    it(`should delete the ${kind} by name via ${kubectl}`, () => {
+      return CLI.command(`${kubectl} delete ${kind} nginx -n ${ns}`, this.app)
         .then(ReplExpect.okWithAny)
         .catch(Common.oops(this))
     })

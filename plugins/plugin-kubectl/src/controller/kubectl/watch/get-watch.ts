@@ -251,11 +251,7 @@ class KubectlWatcher implements Abortable, Watcher {
    * schema the *user* requested satisfies this requirement.
    */
   // eslint-disable-next-line no-useless-constructor
-  public constructor(
-    private readonly args: Arguments<KubeOptions>,
-    private readonly output = formatOf(args),
-    private readonly kubeServerVersion: { major: number; minor: number }
-  ) {}
+  public constructor(private readonly args: Arguments<KubeOptions>, private readonly output = formatOf(args)) {}
 
   /**
    * Our impl of `Abortable` for use by the table view
@@ -450,15 +446,7 @@ class KubectlWatcher implements Abortable, Watcher {
   public async init(pusher: WatchPusher) {
     this.pusher = pusher
 
-    // prior to kubenetest sever version 1.17, it seems that the json output of watching
-    // a list of objects, e.g. kubectl get pods, doesn't have kind:List,
-    // whereas with 1.17, they fixed that, and you now need to specify that range in your jsonpath.
-    // see issue: https://github.com/IBM/kui/issues/5360
-    debug('kubeServerVersion', this.kubeServerVersion.major, this.kubeServerVersion.minor)
-    const jsonpathByVersion =
-      this.kubeServerVersion.major === 1 && this.kubeServerVersion.minor < 17
-        ? `'{.metadata.name}{"|"}{.kind}{"|"}{.apiVersion}{"|"}{.metadata.namespace}{"|\\n"}'`
-        : `'{range .items[*]}{.metadata.name}{"|"}{.kind}{"|"}{.apiVersion}{"|"}{.metadata.namespace}{"|\\n"}{end}'`
+    const jsonpathByVersion = `'{.metadata.name}{"|"}{.kind}{"|"}{.apiVersion}{"|"}{.metadata.namespace}{"|\\n"}'`
 
     // here, we initiate a kubectl watch, using a schema of our
     // choosing; we ask the PTY to stream output back to us, by using
@@ -522,16 +510,6 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
         .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '')
     ) // strip --watch
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const kubeServerVersion = args.REPL.qexec<any>(
-      withKubeconfigFrom(args, `${getCommandFromArgs(args)} version -o json`)
-    )
-      .then(_ => (typeof _ === 'string' ? JSON.parse(_) : _))
-      .then(({ serverVersion }) => ({
-        major: parseInt(serverVersion.major),
-        minor: parseInt(serverVersion.minor)
-      }))
-
     const initialTable = await args.REPL.qexec<Table>(cmd).catch((err: CodedError) => {
       if (err.code !== 404) {
         throw err
@@ -576,7 +554,7 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
         title:
           initialTable.title ||
           (await getKind(getCommandFromArgs(args), args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])),
-        watch: new KubectlWatcher(args, undefined, await kubeServerVersion) // <-- our watcher
+        watch: new KubectlWatcher(args, undefined) // <-- our watcher
       }
     }
   } catch (err) {
