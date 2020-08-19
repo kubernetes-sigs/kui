@@ -455,6 +455,8 @@ class KubectlWatcher implements Abortable, Watcher {
       this.args,
       this.args.command
         .replace(/^k(\s)/, 'kubectl$1')
+        .replace(/--limit \d+/g, '')
+        .replace(/--sort-by=\S+/g, '')
         .replace(/--watch=true|-w=true|--watch-only=true|--watch|-w|--watch-only/g, '--watch') // force --watch
         .replace(new RegExp(`(-o|--output)(\\s+|=)${this.output}`), '') + ` -o jsonpath=${jsonpathByVersion}`
     )
@@ -547,15 +549,13 @@ export default async function doGetWatchTable(args: Arguments<KubeOptions>): Pro
       return ((args.execOptions as KubeExecOptions).initialResponse as string) || initialTable
     } else {
       // otherwise, we got a table back; now splice in our watcher
-      return {
-        header: initialTable.header,
-        body: initialTable.body,
+      return Object.assign({}, initialTable, {
         breadcrumbs: initialTable.breadcrumbs || (await getNamespaceBreadcrumbs(initialTable.title, args)),
         title:
           initialTable.title ||
           (await getKind(getCommandFromArgs(args), args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])),
         watch: new KubectlWatcher(args, undefined) // <-- our watcher
-      }
+      })
     }
   } catch (err) {
     const message = ((args.execOptions as KubeExecOptions).initialResponse as string) || err.message

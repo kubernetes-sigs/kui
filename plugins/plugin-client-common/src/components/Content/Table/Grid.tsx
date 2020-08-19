@@ -63,8 +63,12 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
 
   private durationCss(row: KuiRow, isError: boolean) {
     const { durationColumnIdx } = this.props.response
-    const duration = parseInt(row.attributes[durationColumnIdx].value, 10)
-    return this.state.coloring.durationCss(duration, isError)
+    if (row.attributes[durationColumnIdx]) {
+      const duration = parseInt(row.attributes[durationColumnIdx].value, 10)
+      return this.state.coloring.durationCss(duration, isError)
+    } else {
+      return ''
+    }
   }
 
   public render() {

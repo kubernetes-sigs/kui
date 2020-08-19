@@ -26,7 +26,7 @@ import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
-import { stringToTable, KubeTableResponse, isKubeTableResponse } from '../../lib/view/formatTable'
+import { stringToTable, KubeTableResponse, isKubeTableResponse, computeDurations } from '../../lib/view/formatTable'
 import {
   KubeResource,
   isKubeResource,
@@ -54,7 +54,7 @@ function prepareArgsForGet(args: Arguments<KubeOptions>) {
  * `kubectl get` as a table response
  *
  */
-export function doGetAsTable(
+export async function doGetAsTable(
   command: string,
   args: Arguments<KubeOptions>,
   response: RawResponse,
@@ -67,7 +67,8 @@ export function doGetAsTable(
 
   const entityType = fullKind || args.argvNoOptions[args.argvNoOptions.indexOf(verb) + 1]
 
-  return stringToTable(stdout, stderr, args, command, verb, entityType)
+  const table = await stringToTable(stdout, stderr, args, command, verb, entityType)
+  return computeDurations(table)
 }
 
 /**

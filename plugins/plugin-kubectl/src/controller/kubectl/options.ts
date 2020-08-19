@@ -266,7 +266,7 @@ export function withKubeconfigFrom(args: { parsedOptions: KubeOptions }, cmdline
     extras += ` --cluster ${args.parsedOptions.cluster}`
   }
 
-  if (!/(-n|--namespace)/.test(cmdline)) {
+  if (!/\s(-n|--namespace)/.test(cmdline)) {
     extras += ` ${getNamespaceForArgv(args)} `
   }
 

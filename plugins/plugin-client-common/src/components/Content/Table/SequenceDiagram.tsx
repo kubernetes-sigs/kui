@@ -197,14 +197,15 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const endMillis = !row.attributes[idx2].value ? startMillis : new Date(row.attributes[idx2].value).getTime()
 
             const durationCol =
-              this.props.response.durationColumnIdx >= 0 &&
-              parseInt(row.attributes[this.props.response.durationColumnIdx].value, 10)
+              this.props.response.durationColumnIdx >= 0 && row.attributes[this.props.response.durationColumnIdx]
+                ? parseInt(row.attributes[this.props.response.durationColumnIdx].value, 10)
+                : undefined
             const duration = durationCol || (!endMillis ? 0 : endMillis - startMillis)
 
             const left = this.getFraction(startMillis - interval.startMillis, interval)
             const width = this.getFraction(duration)
             const coldStart =
-              this.props.response.coldStartColumnIdx >= 0
+              this.props.response.coldStartColumnIdx >= 0 && row.attributes[this.props.response.coldStartColumnIdx]
                 ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
                 : undefined
             const widthB = coldStart ? this.getFraction(coldStart) : undefined
