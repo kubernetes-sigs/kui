@@ -2,10 +2,10 @@ language: node_js
 node_js: 12   # Note: windows requires 10 or higher
 dist: xenial # Note: dist>=xenial required by microk8s
 cache: false # as of 20190709 trav-ci.org started loading garbage from the build cache
-​
+
 services:
   - docker
-​
+
 env:
   global:
     - NYC=true # we want code coverage stats
@@ -24,17 +24,17 @@ env:
     - MOCHA_RUN_TARGET=electron # to save some verbosity below, use this as the default; it will be adjusted to "webpack" as needed
     - NO_OPT=true               # we don't need any webpack bundle optimizations while running tests
     - NO_INSTALLER=true         # we don't need to bother building electron package tarballs or DMGs
-​
+
 before_script:
   - export DISPLAY=:1; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
   - export DISPLAY=:2; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
   - export DISPLAY=:3; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
   - export DISPLAY=:4; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
   - ${TRAVIS_BUILD_DIR}/tools/travis/cleanupNvm.sh
-​
+
 # upload codecov
 after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov/report.sh; fi
-​
+
 # default install script
 install:
   - if [ -n "$NEEDS_K8S" ]; then ./tools/travis/microk8s.sh & k8s=$!; fi
@@ -45,39 +45,43 @@ install:
   - ./tools/codecov/instrument.sh
   - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; if [ "$DEPLOY" = "cluster" ]; then npx kui-build-webpack && npx kui-build-docker-with-proxy && (kui-run-cproxy &); else npm run watch:webpack; fi; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
   - if [ -n "$k8s" ]; then wait $k8s; fi
-​
+  - if [ -n "$minio" ]; then wait $minio; fi
+
 script:
   - if [ -n "$CODECOV_OF_PRESCAN" ]; then TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile; fi
   - npm run testv2 $LAYERS
-​
+
 jobs:
   allow_failures:
     - if: os = windows AND env(NO_WINDOWS) IS present
-​
+
   include:
-#    - env: DEPLOY="cluster" LAYERS="core" MOCHA_RUN_TARGET=webpack
-#    - env: LAYERS="k8s k8s-popup helm logs" NEEDS_K8S=true NEEDS_HELM=true TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" KUI_DIST_PATH=${TEST_FROM_BUILD} NEEDS_IBMCLOUD=true
-​
-#    - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
-#    - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
-#    - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true
+    # not sure what this is: - env: DEPLOY="cluster" LAYERS="core" MOCHA_RUN_TARGET=webpack
+    - env: LAYERS="k8s k8s-popup helm" NEEDS_K8S=true NEEDS_HELM=true TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" KUI_DIST_PATH=${TEST_FROM_BUILD} NEEDS_IBMCLOUD=true
+
+    # kubectl
+    - env: LAYERS=logs MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
+    - env: LAYERS=k8s1 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true
+    - env: LAYERS=k8s2 MOCHA_RUN_TARGET=webpack  NEEDS_K8S=true NEEDS_OC=true   NEEDS_TOP=true
+
+    - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="webpack" LAYERS="response" CODECOV_OF_PRESCAN=true
     - env: N="API" CLIENT="test" MOCHA_RUN_TARGET="electron" LAYERS="response"
-#    - env: N="bottom-input" CLIENT="alternate" MOCHA_RUN_TARGET="webpack" LAYERS="bottom-input"
-​
+    - env: N="bottom-input" CLIENT="alternate" MOCHA_RUN_TARGET="webpack" LAYERS="bottom-input" BOTTOM_INPUT_MODE=true
+
     # CLIENT=default | os=Darwin | TARGET=electron | core, core-support, editor, core-support2
     - os: osx
       env: N="Mac core" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1 NEEDS_MINIO=true
       before_install: which jq || brew install jq
       script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
-​
+
     # CLIENT=default | os=Linux | targets=webpack | core, core-support, editor, core-support2
-#    - env: N="Webpack core" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
-#      script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
-​
+    - env: N="Webpack core" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true" NEEDS_MINIO=true
+      script: concurrently -n CORE,SUP1,EDIT,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
+
     # CLIENT=default | os=Linux | targets=electron | bash-like
     - env: N="Linux bash" CLIENT="default" TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui"
       script: npm run test1 bash-like
-​
+
     # CLIENT=default | os=Linux | targets=webpack | bash-like
-#    - env: N="Webpack bash" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
-#      script: npm run test1 bash-like-wait && npm run test1 bash-like
+    - env: N="Webpack bash" CLIENT="default" MOCHA_RUN_TARGET="webpack" KUI_USE_PROXY="true"
+      script: npm run test1 bash-like-wait && npm run test1 bash-like
