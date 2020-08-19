@@ -31,6 +31,7 @@ import run from './controller/kubectl/run'
 import status from './controller/kubectl/status'
 import top from './controller/kubectl/top'
 import config from './controller/kubectl/config'
+import jobList from './controller/kubectl/job/list'
 import applySubcommands from './controller/kubectl/apply-subcommands'
 
 import fetchFile from './controller/fetch-file'
@@ -44,6 +45,7 @@ export default async (registrar: Registrar) => {
   explain(registrar)
   edit(registrar)
   kdelete(registrar)
+  jobList(registrar)
   kget(registrar)
   kgetNs(registrar)
   kustomize(registrar)

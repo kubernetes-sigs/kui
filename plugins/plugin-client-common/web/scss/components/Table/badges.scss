@@ -22,6 +22,10 @@ $grid-cell-size: 1.25rem;
     background-color: var(--color-green);
     color: var(--color-ui-01);
   }
+  [data-tag='badge-circle'].blue-background {
+    background-color: var(--color-latency-1);
+    color: var(--color-text-01);
+  }
   [data-tag='badge-circle'].yellow-background,
   button.yellow-background {
     background: var(--color-yellow);

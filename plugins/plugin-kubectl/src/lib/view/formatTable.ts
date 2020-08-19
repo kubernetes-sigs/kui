@@ -490,7 +490,7 @@ export const stringToTable = async <O extends KubeOptions>(
  * jsonpath or go-template?  I think so from the latter?
  *
  */
-export function computeDurations(table: KResponse) {
+export function computeDurations<T extends Table | KResponse>(table: T): T {
   if (isTable(table)) {
     const header = table.header.attributes
 
@@ -532,6 +532,7 @@ export function computeDurations(table: KResponse) {
         if (start2Idx >= 0) {
           const start2Time = new Date(row.attributes[start2Idx].value).getTime()
           const coldStart = start2Time - startTime
+          row.attributes[start2Idx].outerCSS = 'hide'
           row.attributes.push({
             key: 'Cold Start',
             value: isNaN(coldStart) ? '' : coldStart.toString(),

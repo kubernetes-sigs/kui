@@ -326,8 +326,8 @@ export interface Job extends KubeResource {
  * @return whether the given resource is an instance of a Deploymemt
  *
  */
-export function isJob(resource: KubeResource): resource is Job {
-  return isKubeResource(resource) && resource.apiVersion === 'batch/v1' && resource.kind === 'Job'
+export function isJob(resource: Pick<KubeResource, 'apiVersion' | 'kind'>): resource is Job {
+  return resource.apiVersion === 'batch/v1' && resource.kind === 'Job'
 }
 
 /**

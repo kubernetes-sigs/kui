@@ -55,7 +55,7 @@ export default {
   Fail: TrafficLight.Red,
   Running: TrafficLight.Green,
   Pending: TrafficLight.Yellow,
-  Succeeded: TrafficLight.Green,
+  Succeeded: TrafficLight.Blue,
   Completed: TrafficLight.Gray, // successfully terminated; don't use a color
   Unknown: '',
 

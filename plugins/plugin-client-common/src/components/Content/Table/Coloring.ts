@@ -34,11 +34,16 @@ abstract class AbstractColoring implements Coloring {
   }
 
   public durationRangeOfSplit(idx: number) {
-    return idx === 0
-      ? `<${prettyPrintDuration(this.thresholds[0])}`
-      : idx === this.nDurationBuckets() - 1
-      ? `>${prettyPrintDuration(this.thresholds[idx - 1])}`
-      : `${prettyPrintDuration(this.thresholds[idx - 1])}\u2014${prettyPrintDuration(this.thresholds[idx])}`
+    try {
+      return idx === 0
+        ? `<${prettyPrintDuration(this.thresholds[0])}`
+        : idx === this.nDurationBuckets() - 1
+        ? `>${prettyPrintDuration(this.thresholds[idx - 1])}`
+        : `${prettyPrintDuration(this.thresholds[idx - 1])}\u2014${prettyPrintDuration(this.thresholds[idx])}`
+    } catch (err) {
+      console.error('Internal error', idx, err)
+      return ''
+    }
   }
 
   public durationCssForBucket(idx: number) {
@@ -87,15 +92,18 @@ export class StdevColoring extends AbstractColoring {
     const idx1 = table.startColumnIdx
     const idx2 = table.completeColumnIdx
 
-    return table.body.map(row => {
-      const startCell = row.attributes[idx1]
-      const startTime = startCell && startCell.value ? new Date(startCell.value).getTime() : 0
+    const datapoints = table.body
+      .map(row => {
+        const startCell = row.attributes[idx1]
+        const startTime = startCell && startCell.value ? new Date(startCell.value).getTime() : 0
 
-      const endCell = row.attributes[idx2]
-      const endTime = endCell && endCell.value ? new Date(endCell.value).getTime() : 0
+        const endCell = row.attributes[idx2]
+        const endTime = endCell && endCell.value ? new Date(endCell.value).getTime() : 0
 
-      return endTime - startTime
-    })
+        return endTime - startTime
+      })
+      .filter(_ => !isNaN(_))
+    return datapoints
   }
 
   private static computeThresholdsFrom(datapoints: number[]) {
