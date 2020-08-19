@@ -111,10 +111,13 @@ export default class ActiveISearch {
   /**
    * Search command history for a match, skipping over identicals.
    *
+   * @param startIdx start searching backwards from here
+   * @param userHitCtrlR is this a request to find another match further in the past?
+   *
    * @return a command history index, or -1 if not match is found
    *
    */
-  private findPrevious(startIdx: number): number {
+  private findPrevious(startIdx: number, userHitCtrlR: boolean): number {
     if (startIdx < 0) {
       return -1
     }
@@ -122,11 +125,16 @@ export default class ActiveISearch {
     const { prompt } = this.input.state
 
     const newSearchIdx = prompt.value ? this.history.findIndex(prompt.value, startIdx) : -1
-    if (newSearchIdx < 0 || this.currentSearchIdx < 0 || this.matchAt(newSearchIdx) !== this.matchAt()) {
+    if (
+      !userHitCtrlR ||
+      newSearchIdx < 0 ||
+      this.currentSearchIdx < 0 ||
+      this.matchAt(newSearchIdx) !== this.matchAt()
+    ) {
       return newSearchIdx
     } else {
       // skip this match because it is the same as the current match
-      return this.findPrevious(newSearchIdx - 1)
+      return this.findPrevious(newSearchIdx - 1, userHitCtrlR)
     }
   }
 
@@ -135,15 +143,15 @@ export default class ActiveISearch {
    *
    */
   public doSearch(evt: React.KeyboardEvent) {
-    debug('doSearch', evt)
     // where do we want to start the search? if the user is just
     // typing, then start from the end of history; if the user hit
     // ctrl+r, then they want to search for the next match
     const userHitCtrlR = evt.ctrlKey && evt.key === 'r'
     const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : undefined
+    debug('doSearch', userHitCtrlR, startIdx)
 
     const { prompt } = this.input.state
-    const newSearchIdx = this.findPrevious(startIdx)
+    const newSearchIdx = this.findPrevious(startIdx, userHitCtrlR)
     debug('search index', prompt.value, newSearchIdx)
 
     if (newSearchIdx > 0) {
