@@ -91,16 +91,27 @@
   .kui--timeline-buckets {
     height: 100%;
   }
+  .kui--timeline-bucket {
+    padding: 0;
+  }
 }
 
 .kui--timeline-bucket {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 1px;
+  padding: 0 2px;
 
   [data-is='execution'],
   [data-is='cold-start'] {
     background-color: var(--color-latency-1);
+  }
+
+  & > div:not(.leftover) {
+    /* box-shadow: inset -0.5px 0px var(--color-table-border1); */
+
+    &:hover {
+      filter: saturate(2) brightness(1.25);
+    }
   }
 }
