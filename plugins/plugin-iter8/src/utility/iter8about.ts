@@ -16,7 +16,7 @@
 
 export const about = `#### Iter8
 
-[Iter8](https://github.com/iter8-tools/iter8) enables statistically robust Continuous experimentation of microservices in your CI/CD pipelines
+[Iter8](https://github.com/iter8-tools/iter8) enables statistically robust continuous experimentation of microservices in your CI/CD pipelines
 
 Iter8’s expressive model of cloud experimentation supports a variety of CI/CD scenarios. Using an iter8 experiment, you can:
 

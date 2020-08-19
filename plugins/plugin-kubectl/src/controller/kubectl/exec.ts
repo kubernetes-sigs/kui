@@ -45,7 +45,7 @@ export type Prepare<O extends KubeOptions> = (args: Arguments<O>) => string
 export const NoPrepare = <O extends KubeOptions>(args: Arguments<O>) => args.command
 
 /** Special case preparation for status */
-export type PrepareForStatus<O extends KubeOptions> = (cmd: string, args: Arguments<O>) => string
+export type PrepareForStatus<O extends KubeOptions> = (cmd: string, args: Arguments<O>) => string | Promise<string>
 
 /** Standard status preparation */
 function DefaultPrepareForStatus<O extends KubeOptions>(cmd: string, args: Arguments<O>) {
@@ -269,7 +269,7 @@ export const doExecWithStatus = <O extends KubeOptions>(
     // from the exec command
     const errorReportingArgs = `--response "${response.content.stdout}"`
 
-    const statusArgs = prepareForStatus(cmd, args)
+    const statusArgs = await prepareForStatus(cmd, args)
 
     const commandArgs = `--command ${command}`
 

@@ -383,7 +383,6 @@ class ExprBase extends React.Component<{}, Formstate> {
               <span className="helper"> The version(s) of the service to be used as experimental candidate(s).</span>
             </p>
             <MultiSelect
-              classname="extendwidth"
               id="candidates-select"
               items={this.deployList}
               itemToString={item => (item ? item.text : '')}

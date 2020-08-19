@@ -553,6 +553,13 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     else this.setState({ trafficSplit: newSplit, trafficErr: true })
   }
 
+  // Do Nothing
+  private doNothing(num) {
+    if (num === 'undefined') {
+      console.log('Updating')
+    }
+  }
+
   // Copy trafficRecs into new array and reset state
   private handleReset() {
     const newTraffic = Array.from(this.trafficRecs)
@@ -582,12 +589,12 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     this.setState({ experimentDecision: value })
     const baseline = this.state.experimentResult.baseline_assessment.id
     if (value === 'rollback') {
-      this.updateEndExperimentWinner(baseline)
+      this.updateEndExperimentWinner({ selectedItem: baseline })
     } else if (value === 'rollforwardwinner') {
       const winner = this.state.experimentResult.winner_assessment.winning_version_found
         ? this.state.experimentResult.winner_assessment.current_best_version
         : baseline
-      this.updateEndExperimentWinner(winner)
+      this.updateEndExperimentWinner({ selectedItem: winner })
     }
   }
 
@@ -679,6 +686,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
               <Dropdown
                 id="analyticsAlgo"
                 label="Traffic Routing Goal"
+                ariaLabel="Routing Goal Unavailable"
                 items={this.algoList}
                 itemToString={item => (item ? item.text : '')}
                 initialSelectedItem={this.algoList[0]}
@@ -744,6 +752,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                     labelText={val.version}
                     style={{ width: 200 }}
                     onRelease={num => this.handleTrafficChange(num.value, val.version)}
+                    onChange={num => this.doNothing(num)}
                   />
                 )
               })}
@@ -796,6 +805,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
                 <Dropdown
                   id="advancedStatistics"
                   label="Advanced Statistics"
+                  ariaLabel="Advanced Statistics Unavailable"
                   items={Object.keys(this.advancedStatisticsNames)}
                   initialSelectedItem={this.state.selectedAdvancedStatistic}
                   titleText=""
@@ -850,12 +860,11 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
               <RadioButtonGroup
                 defaultSelected="rollback"
                 labelPosition="right"
-                legend="Group Legend"
                 name="end-experiment"
                 onChange={value => this.updateExperimentDecision(value)}
                 orientation="vertical"
                 valueSelected="rollback"
-                style={{ padding: 10 }}
+                className="pad10"
               >
                 <RadioButton id="rollback" labelText="Roll Back to Baseline" value="rollback" />
                 <RadioButton id="rollforwardwinner" labelText="Roll Forward to Winner" value="rollforwardwinner" />

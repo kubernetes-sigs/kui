@@ -17,8 +17,7 @@
 import * as React from 'react'
 import { REPL, Tab, Table, i18n } from '@kui-shell/core'
 
-import { durationBucket, nDurationBuckets, durationCssForBucket, durationRangeOfSplit } from './Grid'
-
+import DefaultColoring, { Coloring } from './Coloring'
 import '../../../../web/scss/components/Table/Timeline.scss'
 
 const strings = i18n('plugin-client-common')
@@ -42,6 +41,7 @@ interface State {
   bucketTimeRange: number
   maxBucketOccupancy: number
   buckets: Bucket[]
+  coloring: Coloring
 }
 
 export default class Timeline extends React.PureComponent<Props, State> {
@@ -49,7 +49,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
    * Default number of buckets in the timeline
    *
    */
-  private static readonly defaultNBuckets = 25
+  private static readonly defaultNBuckets = 20
 
   public constructor(props: Props) {
     super(props)
@@ -63,6 +63,8 @@ export default class Timeline extends React.PureComponent<Props, State> {
   private static computeBuckets(response: Table, nBuckets: number) {
     const idx1 = response.startColumnIdx
     const idx2 = response.completeColumnIdx
+
+    const coloring = new DefaultColoring(response)
 
     const { minStart, maxEnd } = response.body.reduce(
       (range, row) => {
@@ -97,7 +99,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
         endMillis: idx === nBuckets - 1 ? maxEnd : minStart + timeRangePerBucket * (idx + 1),
         coldStart: 0,
         execution: 0,
-        durationSplit: Array(nDurationBuckets())
+        durationSplit: Array(coloring.nDurationBuckets())
           .fill(0)
           .map(() => ({ execution: 0, coldStart: 0 }))
       }))
@@ -110,21 +112,21 @@ export default class Timeline extends React.PureComponent<Props, State> {
           ? startMillis
           : new Date(row.attributes[idx2].value).getTime()
 
-      const coldStart =
-        response.coldStartColumnIdx >= 0 ? parseInt(row.attributes[response.coldStartColumnIdx].value, 10) : 0
+      // const coldStart =
+      // response.coldStartColumnIdx >= 0 ? parseInt(row.attributes[response.coldStartColumnIdx].value, 10) : 0
 
       const startBucketIdx = bucketOf(startMillis)
-      const coldStartEndBucketIdx = bucketOf(startMillis + coldStart)
+      const coldStartEndBucketIdx = startBucketIdx // bucketOf(startMillis + coldStart)
       const endBucketIdx = bucketOf(endMillis)
 
       // const nColdBucketsSpanned = coldStartEndBucketIdx - startBucketIdx + 1
       // const nExecutionBucketsSpanned = endBucketIdx - coldStartEndBucketIdx + 1
 
-      const splitIdx = durationBucket(endMillis - startMillis)
-      for (let bucketIdx = startBucketIdx; bucketIdx < coldStartEndBucketIdx + 1; bucketIdx++) {
+      const splitIdx = coloring.durationBucket(endMillis - startMillis)
+      /* for (let bucketIdx = startBucketIdx; bucketIdx < coldStartEndBucketIdx + 1; bucketIdx++) {
         buckets[bucketIdx].coldStart++
         buckets[bucketIdx].durationSplit[splitIdx].coldStart++
-      }
+      } */
       for (let bucketIdx = coldStartEndBucketIdx; bucketIdx < endBucketIdx + 1; bucketIdx++) {
         buckets[bucketIdx].execution++
         buckets[bucketIdx].durationSplit[splitIdx].execution++
@@ -136,6 +138,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
     return {
       bucketTimeRange,
       maxBucketOccupancy: buckets.reduce((max, bucket) => Math.max(max, bucket.coldStart + bucket.execution), 0),
+      coloring,
       buckets
     }
   }
@@ -172,17 +175,17 @@ export default class Timeline extends React.PureComponent<Props, State> {
               {this.bar(leftover, 'leftover')}
               {durationSplit.reverse().map((split, idx) => {
                 const splitIdx = durationSplit.length - idx - 1
-                const range = durationRangeOfSplit(splitIdx)
+                const range = this.state.coloring.durationRangeOfSplit(splitIdx)
                 return (
                   <React.Fragment key={splitIdx}>
                     {this.bar(
                       split.execution,
-                      durationCssForBucket(splitIdx),
+                      this.state.coloring.durationCssForBucket(splitIdx),
                       strings(`concurrencyInDurationSplit`, split.execution, range)
                     )}
                     {this.bar(
                       split.coldStart,
-                      durationCssForBucket(splitIdx),
+                      this.state.coloring.durationCssForBucket(splitIdx),
                       strings(`concurrencyColdStartInDurationSplit`, split.coldStart, range),
                       true
                     )}

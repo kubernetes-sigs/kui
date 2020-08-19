@@ -157,16 +157,10 @@ $trans-grey: #5e6367;
     }
   }
 }
-/*
-foreignObject {
-  background: #ffffff;
+
+.pad10 {
+  padding: 10px;
 }
-*/
-// span {
-//   .apexcharts-legend-text {
-//       color: $darkteal;
-//   }
-// }
 .apexcharts-yaxis-label {
   fill: $darkteal;
 }

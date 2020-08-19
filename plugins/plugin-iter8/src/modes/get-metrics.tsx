@@ -479,7 +479,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
 
   private getInitialRowsFromObjectKeys = (object: object) => {
     return Object.keys(object).map(propertyName => {
-      return { id: propertyName }
+      return { id: propertyName, isExpanded: false }
     })
   }
 
@@ -1083,7 +1083,7 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
                 <TableBody>
                   {rows.map(row => (
                     <React.Fragment key={row.id}>
-                      <TableExpandRow {...getRowProps({ row })}>
+                      <TableExpandRow {...getRowProps({ row, ariaLabel: 'Information Unavailable' })}>
                         <TableCell>{row.id}</TableCell>
                         <TableCell>
                           <div
