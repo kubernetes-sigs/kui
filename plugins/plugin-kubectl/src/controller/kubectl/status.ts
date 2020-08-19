@@ -33,12 +33,20 @@ import {
 import { flags } from './flags'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
 import { initialCapital } from '../../lib/view/formatTable'
-import { KubeOptions as Options, fileOf, kustomizeOf, getNamespace, getContextForArgv } from './options'
+import {
+  KubeOptions as Options,
+  fileOf,
+  kustomizeOf,
+  getNamespace,
+  getContextForArgv,
+  withKubeconfigFrom
+} from './options'
 import commandPrefix from '../command-prefix'
 import { EventWatcher } from './watch/get-watch'
+import KubeResource, { isJob } from '../../lib/model/resource'
 
 import fetchFile, { fetchFileKustomize } from '../../lib/util/fetch-file'
-import KubeResource from '../../lib/model/resource'
+
 import TrafficLight from '../../lib/model/traffic-light'
 import { isDone, FinalState } from '../../lib/model/states'
 
@@ -253,7 +261,9 @@ class StatusPoller implements Abortable {
     debug('pollOnce', this.ref, sleepTime, fqnOfRef(this.ref))
 
     try {
-      const table = await this.tab.REPL.qexec<Table>(`${this.command} get ${fqnOfRef(this.ref)} ${this.contextArgs}`)
+      const table = await this.tab.REPL.qexec<Table>(
+        `${this.command} get ${fqnOfRef(this.ref)} ${this.contextArgs} -o wide`
+      )
       debug('pollOnce table', table)
       if (table && table.body && table.body.length === 1) {
         const row = table.body[0]
@@ -490,6 +500,17 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
       ? await getResourcesReferencedByKustomize(kusto, args)
       : await getResourcesReferencedByCommandLine(rest, args)
     debug('resourcesToWaitFor', resourcesToWaitFor)
+
+    if (resourcesToWaitFor.length === 1) {
+      const { group, version, kind, name } = resourcesToWaitFor[0]
+      if (isJob({ apiVersion: `${group}/${version}`, kind })) {
+        const watchJobs = withKubeconfigFrom(
+          args,
+          `${command || 'kubectl'} get ${kind}.${version}.${group} ${name} --watch`
+        )
+        return args.REPL.qexec(watchJobs)
+      }
+    }
 
     /* if (nResourcesToWaitFor > 1) {
     // we don't yet support this; return whatever kubectl emitted from

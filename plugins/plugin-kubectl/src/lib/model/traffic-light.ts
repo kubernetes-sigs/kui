@@ -22,6 +22,7 @@ enum TrafficLight {
   Gray = 'gray-background',
   Red = 'red-background',
   Yellow = 'yellow-background',
+  Blue = 'blue-background',
   Green = 'green-background'
 }
 
