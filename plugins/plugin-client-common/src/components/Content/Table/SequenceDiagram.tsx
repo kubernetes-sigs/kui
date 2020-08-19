@@ -19,7 +19,7 @@ import * as prettyMillis from 'pretty-ms'
 import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
 
 import Bar from './Bar'
-import { durationCss } from './Grid'
+import DefaultColoring from './Coloring'
 import renderCell, { onClickForCell } from './TableCell'
 
 import '../../../../web/scss/components/Table/SequenceDiagram.scss'
@@ -186,6 +186,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
   private rows() {
     const idx1 = this.props.response.startColumnIdx
     const idx2 = this.props.response.completeColumnIdx
+    const coloring = new DefaultColoring(this.props.response)
 
     return flatten(
       this.state.intervals.map((interval, intervalIdx) =>
@@ -209,7 +210,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const widthB = coldStart ? this.getFraction(coldStart) : undefined
             const title = strings('Duration', prettyPrintDuration(duration))
             const titleB = coldStart ? strings('Cold Start', prettyPrintDuration(coldStart), title) : undefined
-            const className = durationCss(duration, false)
+            const className = coloring.durationCss(duration, false)
 
             const gap =
               intervalIdx === 0 && rowIdx === 0

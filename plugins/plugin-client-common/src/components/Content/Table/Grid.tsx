@@ -15,12 +15,12 @@
  */
 
 import * as React from 'react'
-import * as prettyPrintDuration from 'pretty-ms'
 import { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
 
 import ErrorCell from './ErrorCell'
 import { onClickForCell } from './TableCell'
 import { NamedDataTableRow } from './kui2carbon'
+import DefaultColoring, { Coloring } from './Coloring'
 
 /** parameters to Grid component */
 export type Props<T extends KuiTable = KuiTable> = {
@@ -41,56 +41,30 @@ export const findGridableColumn = (response: KuiTable) => {
     : -1
 }
 
-const thresholds = [2000, 4000, 6000, 8000]
-
-export function nDurationBuckets() {
-  return thresholds.length + 1
-}
-
-export function durationRangeOfSplit(idx: number) {
-  return idx === 0
-    ? `<{prettyPrintDuration(thresholds[0])}`
-    : idx === nDurationBuckets() - 1
-    ? `>${prettyPrintDuration(thresholds[idx - 1])}`
-    : `${prettyPrintDuration(thresholds[idx - 1])}\u2014${prettyPrintDuration(thresholds[idx])}`
-}
-
-export function durationBucket(duration: number) {
-  if (duration < thresholds[0]) {
-    return 0
-  } else if (duration < thresholds[1]) {
-    return 1
-  } else if (duration < thresholds[2]) {
-    return 2
-  } else if (duration < thresholds[3]) {
-    return 3
-  } else {
-    return 4
-  }
-}
-
-export function durationCssForBucket(idx: number) {
-  // we want to skip over color-latency-2
-  return `color-latency${idx < 2 ? idx : idx + 1}`
-}
-
-export function durationCss(duration: number, isError: boolean) {
-  if (isError) {
-    return 'red-background'
-  } else {
-    return durationCssForBucket(durationBucket(duration))
-  }
+interface State {
+  coloring: Coloring
 }
 
 /**
  * A Grid table
  *
  */
-export default class Grid<P extends Props> extends React.PureComponent<P> {
+export default class Grid<P extends Props> extends React.PureComponent<P, State> {
+  public constructor(props: P) {
+    super(props)
+    this.state = Grid.getDerivedStateFromProps(props)
+  }
+
+  public static getDerivedStateFromProps(props: Props) {
+    return {
+      coloring: new DefaultColoring(props.response)
+    }
+  }
+
   private durationCss(row: KuiRow, isError: boolean) {
     const { durationColumnIdx } = this.props.response
     const duration = parseInt(row.attributes[durationColumnIdx].value, 10)
-    return durationCss(duration, isError)
+    return this.state.coloring.durationCss(duration, isError)
   }
 
   public render() {
