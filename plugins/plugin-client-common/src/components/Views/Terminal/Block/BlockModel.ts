@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ScalarResponse, UsageError, inBrowser } from '@kui-shell/core'
+import {
+  CommandStartEvent,
+  CommandCompleteEvent,
+  ScalarResponse,
+  SnapshotBlock,
+  UsageError,
+  inBrowser
+} from '@kui-shell/core'
 
 const enum BlockState {
   Active = 'repl-active',
@@ -35,6 +42,8 @@ type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
 type WithAnnouncement = { isAnnouncement: boolean }
 type WithPreferences = { prefersTerminalPresentation: boolean }
+type WithCommandStart = { startEvent: CommandStartEvent }
+type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -43,14 +52,26 @@ export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithCWD &
   WithAnnouncement
 type EmptyBlock = WithState<BlockState.Empty> & WithCWD
-type ErrorBlock = WithState<BlockState.Error> & WithCommand & WithResponse<Error> & WithUUID & WithHistoryIndex
+type ErrorBlock = WithState<BlockState.Error> &
+  WithCommand &
+  WithResponse<Error> &
+  WithUUID &
+  WithHistoryIndex &
+  WithCommandStart &
+  WithCommandComplete
 type OkBlock = WithState<BlockState.ValidResponse> &
   WithCommand &
   WithResponse<ScalarResponse> &
   WithUUID &
   WithHistoryIndex &
+  WithCommandStart &
+  WithCommandComplete &
   WithPreferences
-export type ProcessingBlock = WithState<BlockState.Processing> & WithCommand & WithUUID & WithStartTime
+export type ProcessingBlock = WithState<BlockState.Processing> &
+  WithCommand &
+  WithUUID &
+  WithStartTime &
+  WithCommandStart
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
 
 /** Blocks with an association to the History model */
@@ -139,17 +160,13 @@ export function Announcement(response: ScalarResponse): AnnouncementBlock {
 }
 
 /** Transform to Processing */
-export function Processing(
-  block: BlockModel,
-  command: string,
-  execUUID: string,
-  isExperimental = false
-): ProcessingBlock {
+export function Processing(block: BlockModel, startEvent: CommandStartEvent, isExperimental = false): ProcessingBlock {
   return {
-    command,
+    command: startEvent.command,
     isExperimental,
     cwd: block.cwd,
-    execUUID: execUUID,
+    execUUID: startEvent.execUUID,
+    startEvent,
     startTime: new Date(),
     state: BlockState.Processing
   }
@@ -181,12 +198,14 @@ export function Cancelled(block: BlockModel): CancelledBlock | EmptyBlock {
 /** Transform to Finished */
 export function Finished(
   block: ProcessingBlock,
-  response: ScalarResponse,
-  cancelled: boolean,
-  historyIdx: number,
+  event: CommandCompleteEvent,
   prefersTerminalPresentation = false
 ): FinishedBlock {
-  if (cancelled) {
+  const response = event.responseType === 'ScalarResponse' ? (event.response as ScalarResponse) : true
+  const { historyIdx } = event
+  const { startEvent } = block
+
+  if (event.cancelled) {
     return Cancelled(block)
   } else if (isError(response)) {
     return {
@@ -194,6 +213,8 @@ export function Finished(
       historyIdx,
       cwd: block.cwd,
       command: block.command,
+      startEvent,
+      completeEvent: event,
       isExperimental: block.isExperimental,
       state: BlockState.Error,
       execUUID: block.execUUID,
@@ -205,11 +226,47 @@ export function Finished(
       historyIdx,
       cwd: block.cwd,
       command: block.command,
+      startEvent,
+      completeEvent: event,
       isExperimental: block.isExperimental,
       execUUID: block.execUUID,
       startTime: block.startTime,
       prefersTerminalPresentation,
       state: BlockState.ValidResponse
     }
+  }
+}
+
+export function snapshot(block: BlockModel): SnapshotBlock {
+  if (!isAnnouncement(block) && (isOops(block) || isOk(block))) {
+    const execOptions = Object.assign(
+      {},
+      block.completeEvent.execOptions,
+      { block: undefined },
+      { tab: block.completeEvent.execOptions.tab.uuid }
+    )
+    const evaluatorOptions = Object.assign({}, block.completeEvent.evaluatorOptions, {
+      usage: undefined,
+      flags: undefined
+    })
+
+    return {
+      startTime: new Date(block.startTime).getTime(),
+      startEvent: Object.assign({}, block.startEvent, { tab: block.startEvent.tab.uuid }),
+      completeEvent: Object.assign(
+        {},
+        block.completeEvent,
+        { execOptions, evaluatorOptions },
+        { tab: block.completeEvent.tab.uuid }
+      )
+    }
+  }
+}
+
+export function isHidden(block: BlockModel) {
+  if (isActive(block) || isAnnouncement(block) || isCancelled(block) || isEmpty(block)) {
+    return false
+  } else {
+    return block.startEvent.echo === false
   }
 }

@@ -43,13 +43,14 @@ interface WithTab {
 export type TabContentOptions = TerminalOptions & {
   /** [Optional] elements to be placed below the Terminal */
   bottom?: React.ReactElement<WithTabUUID & WithTab>
+
+  onTabReady?: (tab: KuiTab) => void
 }
 
 type Props = TabContentOptions &
   WithTabUUID & {
     active: boolean
     state: TabState
-    onTabReady?: (tab: KuiTab) => void
     willUpdateTopTabButtons?: (buttons: TopTabButton[]) => void
   }
 

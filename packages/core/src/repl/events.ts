@@ -55,3 +55,33 @@ export type CommandStartHandler = (event: CommandStartEvent) => void
 export type CommandCompleteHandler<R extends KResponse = KResponse, T extends ResponseType = ResponseType> = (
   event: CommandCompleteEvent<R, T>
 ) => void
+
+/**
+ * SnapshotBlock: captures the start and complete of the command
+ * execution.
+ *
+ */
+export type SnapshotBlock = {
+  startTime: number
+  startEvent: Omit<CommandStartEvent, 'tab'> & { tab: Pick<CommandStartEvent['tab'], 'uuid'> }
+  completeEvent: Omit<CommandCompleteEvent, 'tab'> & { tab: Pick<CommandStartEvent['tab'], 'uuid'> }
+}
+
+export type SnapshotTab = {
+  uuid: string
+  blocks: SnapshotBlock[]
+}
+
+export type SnapshotWindow = {
+  uuid: string
+  tabs: SnapshotTab[]
+}
+
+/**
+ * Snapshot: captures the block-level snapshots across the entire
+ * session.
+ *
+ */
+export type Snapshot = {
+  windows: SnapshotWindow[]
+}

@@ -23,6 +23,7 @@ import {
   i18n,
   REPL,
   Theme,
+  pexecInCurrentTab,
   inBrowser,
   eventChannelUnsafe,
   findThemeByName,
@@ -207,6 +208,14 @@ export class Kui extends React.PureComponent<Props, State> {
     console.error(error, errorInfo)
   }
 
+  private onTabReady() {
+    if (this.props.commandLine) {
+      pexecInCurrentTab(this.props.commandLine.join(' '))
+    }
+  }
+
+  private readonly _onTabReady = this.onTabReady.bind(this)
+
   public render() {
     if (!this.state.isBootstrapped) {
       return <Loading />
@@ -222,11 +231,14 @@ export class Kui extends React.PureComponent<Props, State> {
       )
     } else {
       const bottom = !!this.props.bottomInput && <InputStripe>{this.props.bottomInput}</InputStripe>
-
       return (
         <KuiContext.Provider value={this.state}>
           <div className="kui--full-height">
-            <TabContainer noActiveInput={!!this.props.bottomInput} bottom={bottom}>
+            <TabContainer
+              noActiveInput={!!this.props.bottomInput}
+              bottom={bottom}
+              onTabReady={this.props.commandLine && this._onTabReady}
+            >
               <ComboSidecar />
             </TabContainer>
             {this.props.toplevel}

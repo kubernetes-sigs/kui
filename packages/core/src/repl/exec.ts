@@ -158,8 +158,7 @@ class InProcessExecutor implements Executor {
         if (!execOptions || execOptions.type !== ExecType.Nested) {
           const historyModel = getHistoryForTab(tab.uuid)
           return (execOptions.history = historyModel.add({
-            raw: command,
-            isCurrentlyShown: true
+            raw: command
           }))
         }
       }

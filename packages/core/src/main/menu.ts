@@ -18,6 +18,7 @@
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 import { Menu, MenuItemConstructorOptions } from 'electron'
+import open from './open'
 
 const isDev = false
 
@@ -64,9 +65,25 @@ const closeTab = () => tellRendererToExecute('tab close')
 const isDarwin = process.platform === 'darwin'
 const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
 
-export const install = (createWindow: () => void) => {
+export const install = (createWindow: (executeThisArgvPlease?: string[]) => void) => {
   if (!isDev) {
     const fileMenuItems: MenuItemConstructorOptions[] = [
+      {
+        label: 'Open',
+        click: () => open(createWindow),
+        accelerator: 'CommandOrControl+O'
+      },
+      {
+        label: 'Open Recent',
+        role: 'recentdocuments' as any, // electron.d.ts insufficiency
+        submenu: [
+          {
+            label: 'Clear Recent',
+            role: 'clearrecentdocuments' as any // ibid
+          }
+        ]
+      },
+      { type: 'separator' },
       {
         label: 'New Window',
         click: () => createWindow(),

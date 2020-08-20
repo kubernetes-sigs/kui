@@ -29,7 +29,8 @@ import {
   History,
   CommandStartEvent,
   CommandCompleteEvent,
-  isWatchable
+  isWatchable,
+  SnapshotBlock
 } from '@kui-shell/core'
 
 import Block from './Block'
@@ -44,9 +45,11 @@ import {
   Cancelled,
   Processing,
   isActive,
+  isHidden,
   isOk,
   isProcessing,
   hasCommand,
+  snapshot,
   hasUUID,
   BlockModel
 } from './Block/BlockModel'
@@ -269,7 +272,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     // prefetch command history; this helps with master history
     History(sbuuid)
 
+    // associate a tab facade with the split
     this.tabFor(state)
+
+    const onSnapshot = (handler: (snapshot: SnapshotBlock[]) => void) => {
+      const scrollbackIdx = this.findSplit(this.state, sbuuid)
+      if (scrollbackIdx < 0) {
+        throw new Error('Invalid state')
+      } else {
+        const { blocks } = this.state.splits[scrollbackIdx]
+        handler(blocks.map(snapshot).filter(_ => _))
+      }
+    }
+    eventBus.emitAddSnapshotable()
+    eventBus.onSnapshotRequest(onSnapshot)
+    state.cleaners.push(() => eventBus.offSnapshotRequest(onSnapshot))
 
     eventBus.onceWithTabId('/tab/close/request', sbuuid, async () => {
       // async, to allow for e.g. command completion events to finish
@@ -324,12 +341,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** the REPL started executing a command */
   private onExecStart(uuid = this.currentUUID, event: CommandStartEvent) {
-    if (event.echo === false) {
-      // then the command wants to be incognito; e.g. onclickSilence for tables
-      return
-    }
-
-    if (isPopup() && this.isSidecarVisible()) {
+    if (event.echo !== false && isPopup() && this.isSidecarVisible()) {
       // see https://github.com/IBM/kui/issues/4183
       this.props.closeSidecar()
     }
@@ -343,9 +355,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         return {
           blocks: curState.blocks
             .slice(0, idx)
-            .concat([
-              Processing(curState.blocks[idx], event.command, event.execUUID, event.evaluatorOptions.isExperimental)
-            ])
+            .concat([Processing(curState.blocks[idx], event, event.evaluatorOptions.isExperimental)])
         }
       })
     }
@@ -361,11 +371,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** the REPL finished executing a command */
   private onExecEnd(uuid = this.currentUUID, event: CommandCompleteEvent<ScalarResponse>) {
-    if (event.echo === false) {
-      // then the command wants to be incognito; e.g. onclickSilence for tables
-      return
-    }
-
     if (!uuid) return
 
     this.splice(uuid, curState => {
@@ -381,15 +386,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
-              .concat([
-                Finished(
-                  inProcess,
-                  event.responseType === 'ScalarResponse' ? event.response : true,
-                  event.cancelled,
-                  event.historyIdx,
-                  prefersTerminalPresentation
-                )
-              ]) // mark as finished
+              .concat([Finished(inProcess, event, prefersTerminalPresentation)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
               .concat([Active()]) // plus a new block!
             return {
@@ -570,6 +567,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private removeSplit(sbuuid: string) {
     this.setState(curState => {
+      eventBus.emitRemoveSnapshotable()
       eventBus.emitTabLayoutChange(this.props.tab.uuid)
 
       const idx = this.findSplit(this.state, sbuuid)
@@ -757,33 +755,35 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 ref: ref => this.tabRefFor(scrollback, ref),
                 onClick: this.onClick.bind(this, scrollback)
               },
-              scrollback.blocks.map((_, idx) => (
-                <Block
-                  key={(hasUUID(_) ? _.execUUID : idx) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
-                  idx={idx}
-                  displayedIdx={idx - scrollback.nAnnouncements + 1}
-                  model={_}
-                  uuid={scrollback.uuid}
-                  tab={tab}
-                  noActiveInput={this.props.noActiveInput}
-                  onOutputRender={this.onOutputRender.bind(this, scrollback)}
-                  willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
-                  willLoseFocus={() => this.doFocus(scrollback)}
-                  isExperimental={hasCommand(_) && _.isExperimental}
-                  isFocused={sbidx === this.state.focusedIdx && isActive(_)}
-                  prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
-                  isPartOfMiniSplit={isMiniSplit}
-                  isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
-                  isWidthConstrained={isWidthConstrained}
-                  navigateTo={this.navigateTo.bind(this, scrollback)}
-                  ref={c => {
-                    if (isActive(_)) {
-                      // grab a ref to the active block, to help us maintain focus
-                      scrollback._activeBlock = c
-                    }
-                  }}
-                />
-              ))
+              scrollback.blocks
+                .filter(_ => !isHidden(_))
+                .map((_, idx) => (
+                  <Block
+                    key={(hasUUID(_) ? _.execUUID : idx) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
+                    idx={idx}
+                    displayedIdx={idx - scrollback.nAnnouncements + 1}
+                    model={_}
+                    uuid={scrollback.uuid}
+                    tab={tab}
+                    noActiveInput={this.props.noActiveInput}
+                    onOutputRender={this.onOutputRender.bind(this, scrollback)}
+                    willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
+                    willLoseFocus={() => this.doFocus(scrollback)}
+                    isExperimental={hasCommand(_) && _.isExperimental}
+                    isFocused={sbidx === this.state.focusedIdx && isActive(_)}
+                    prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
+                    isPartOfMiniSplit={isMiniSplit}
+                    isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
+                    isWidthConstrained={isWidthConstrained}
+                    navigateTo={this.navigateTo.bind(this, scrollback)}
+                    ref={c => {
+                      if (isActive(_)) {
+                        // grab a ref to the active block, to help us maintain focus
+                        scrollback._activeBlock = c
+                      }
+                    }}
+                  />
+                ))
             )
           })}
 
