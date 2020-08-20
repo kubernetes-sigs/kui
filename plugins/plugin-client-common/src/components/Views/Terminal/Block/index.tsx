@@ -19,7 +19,16 @@ import { Tab as KuiTab, eventChannelUnsafe } from '@kui-shell/core'
 
 import Input, { InputOptions } from './Input'
 import Output from './Output'
-import { BlockModel, isActive, isEmpty, isFinished, isProcessing, isAnnouncement, hasUUID } from './BlockModel'
+import {
+  BlockModel,
+  isActive,
+  isEmpty,
+  isFinished,
+  isOutputOnly,
+  isProcessing,
+  isAnnouncement,
+  hasUUID
+} from './BlockModel'
 
 export type BlockViewTraits = {
   isExperimental?: boolean
@@ -162,7 +171,7 @@ export default class Block extends React.PureComponent<Props, State> {
           data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
           ref={c => this.setState({ _block: c })}
         >
-          {isAnnouncement(this.props.model) ? (
+          {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
             this.output()
           ) : isActive(this.props.model) || isEmpty(this.props.model) ? (
             this.input()

@@ -100,6 +100,12 @@ export interface CommandOptions extends CapabilityRequirements {
    *
    */
   isExperimental?: boolean
+
+  /**
+   * Is the command only want to show output and hide input?
+   *
+   */
+  outputOnly?: boolean
 }
 
 export interface Event {
