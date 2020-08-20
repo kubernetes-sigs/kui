@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [8.12.0](https://github.com/IBM/kui/compare/v4.5.0...v8.12.0) (2020-08-20)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** spurious warning in the console re: Tag ([93982de](https://github.com/IBM/kui/commit/93982de)), closes [#4959](https://github.com/IBM/kui/issues/4959)
+- **plugins/plugin-proxy-support:** improved display of ProxyOffline state ([23b3206](https://github.com/IBM/kui/commit/23b3206)), closes [#4955](https://github.com/IBM/kui/issues/4955)
+- make inBrowserOk the default ([2a3c811](https://github.com/IBM/kui/commit/2a3c811)), closes [#4275](https://github.com/IBM/kui/issues/4275)
+- **plugins/plugin-proxy-support:** fixed env for proxy executor ([c8de22b](https://github.com/IBM/kui/commit/c8de22b))
+- some code is dependent on the existence of static config files ([cdc6487](https://github.com/IBM/kui/commit/cdc6487)), closes [#3813](https://github.com/IBM/kui/issues/3813)
+- **plugins/plugin-proxy-support:** proxy offline indicicator shows up in electron clients ([783b304](https://github.com/IBM/kui/commit/783b304)), closes [#3747](https://github.com/IBM/kui/issues/3747)
+- propagate statusCode back from the proxy ([275240a](https://github.com/IBM/kui/commit/275240a)), closes [#3318](https://github.com/IBM/kui/issues/3318)
+- **packages/core:** remove old EntitySpec support ([e45fb7b](https://github.com/IBM/kui/commit/e45fb7b)), closes [#3268](https://github.com/IBM/kui/issues/3268)
+
+### Features
+
+- simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/IBM/kui/commit/00af4b4)), closes [#4213](https://github.com/IBM/kui/issues/4213)
+- SPI for icons ([3d034e3](https://github.com/IBM/kui/commit/3d034e3)), closes [#4441](https://github.com/IBM/kui/issues/4441) [#4364](https://github.com/IBM/kui/issues/4364)
+- support generating es6 modules ([c1ed680](https://github.com/IBM/kui/commit/c1ed680)), closes [#2431](https://github.com/IBM/kui/issues/2431)
+
+### BREAKING CHANGES
+
+- removes support for inBrowserOk
+- **packages/core:** remove old EntitySpec support
+
 # [8.11.0](https://github.com/IBM/kui/compare/v4.5.0...v8.11.0) (2020-07-21)
 
 ### Bug Fixes

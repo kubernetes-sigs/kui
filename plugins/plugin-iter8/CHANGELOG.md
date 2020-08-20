@@ -5,8 +5,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [8.12.0](https://github.com/IBM/kui/compare/v4.5.0...v8.12.0) (2020-08-20)
 
-**Note:** Version bump only for package @kui-shell/plugin-electron-components
+### Features
 
-# [8.11.0](https://github.com/IBM/kui/compare/v4.5.0...v8.11.0) (2020-07-21)
-
-**Note:** Version bump only for package @kui-shell/plugin-electron-components
+- **plugins/plugin-iter8:** added new iter8 plugin ([82989ab](https://github.com/IBM/kui/commit/82989ab)), closes [#5400](https://github.com/IBM/kui/issues/5400)
