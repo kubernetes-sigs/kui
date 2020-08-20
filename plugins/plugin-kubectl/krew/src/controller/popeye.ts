@@ -124,7 +124,7 @@ export default (command: string) => async (args: Arguments) => {
       return {
         header: bodyToHeader(body),
         body,
-        statusColumnIdx: 1,
+        statusColumnIdx: 0,
         breadcrumbs: [{ label: 'Popeye' }, { label: ns }],
         title,
         footer
