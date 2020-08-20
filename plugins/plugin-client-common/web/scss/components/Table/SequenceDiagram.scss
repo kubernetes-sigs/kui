@@ -33,12 +33,17 @@
       border: none;
     }
   }
+  tr:hover {
+    &,
+    td {
+      background-color: transparent !important;
+      .kui--bar {
+        filter: saturate(2) brightness(1.25);
+      }
+    }
+  }
   .kui--interval-blank {
     height: 0.5rem;
-    &,
-    &:hover td {
-      background-color: transparent !important;
-    }
   }
   .kui--interval-start {
     height: 1rem;
@@ -61,8 +66,13 @@
       border-bottom: none;
     }
   }
-  td.sub-text {
-    color: var(--color-text-02);
+  tr {
+    &,
+    &:hover {
+      td.sub-text {
+        color: var(--color-text-02);
+      }
+    }
   }
 
   [data-tag='badge-circle'] {
