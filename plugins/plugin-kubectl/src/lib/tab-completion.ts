@@ -58,10 +58,10 @@ async function completeResourceNames(tab: Tab, commandLine: CommandLine, spec: T
   const { argvNoOptions, argv, parsedOptions } = commandLine
   const command = getCommandFromArgs({ argvNoOptions })
 
-  const verb = argvNoOptions[1]
-
   // index of the arg just before the one to be completed
   const previous = spec.toBeCompletedIdx === -1 ? commandLine.argv.length - 1 : spec.toBeCompletedIdx - 1
+  const verb = argvNoOptions[1]
+
   if (previous > 0 && (argv[previous] === '-n' || argv[previous] === '--namespace')) {
     //
     // then we are being asked to complete a namespace
@@ -70,6 +70,7 @@ async function completeResourceNames(tab: Tab, commandLine: CommandLine, spec: T
     return getMatchingStrings(tab, cmd, spec)
   } else if (
     (argvNoOptions[0] === 'kubectl' || argvNoOptions[0] === 'k' || argvNoOptions[0] === 'oc') &&
+    !/^-/.test(argv[previous]) &&
     (verb === 'get' ||
       verb === 'annotate' ||
       verb === 'describe' ||
