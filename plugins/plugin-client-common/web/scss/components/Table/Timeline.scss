@@ -42,6 +42,8 @@
   right: 0;
   bottom: 0;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
 
   .kui--timeline-tick {
     left: 0;
@@ -50,13 +52,16 @@
 }
 
 .kui--timeline-ticks {
-  position: relative;
-  height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.09) 15%, rgba(0, 0, 0, 0.03) 45%, rgba(0, 0, 0, 0.01));
 }
 
 .kui--timeline-tick {
-  position: absolute;
-  border-top: 1px dashed var(--color-base03);
+  flex: 1;
+  opacity: 0.15;
+  border-top: 1px dashed var(--color-base05);
 }
 
 .kui--timeline-occupancy-line {
@@ -64,6 +69,9 @@
   display: flex;
   justify-content: flex-end;
   padding: 0 0.5rem;
+  opacity: 1;
+  border-style: solid;
+  border-color: var(--color-base-03);
 }
 
 .kui--timeline-occupancy-line-label {
@@ -91,16 +99,12 @@
   .kui--timeline-buckets {
     height: 100%;
   }
-  .kui--timeline-bucket {
-    padding: 0;
-  }
 }
 
 .kui--timeline-bucket {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 2px;
 
   [data-is='execution'],
   [data-is='cold-start'] {
