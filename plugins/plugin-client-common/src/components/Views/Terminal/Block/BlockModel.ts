@@ -41,7 +41,7 @@ type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
 type WithAnnouncement = { isAnnouncement: boolean }
-type WithPreferences = { prefersTerminalPresentation: boolean }
+type WithPreferences = { prefersTerminalPresentation: boolean; outputOnly?: boolean }
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 
@@ -199,7 +199,8 @@ export function Cancelled(block: BlockModel): CancelledBlock | EmptyBlock {
 export function Finished(
   block: ProcessingBlock,
   event: CommandCompleteEvent,
-  prefersTerminalPresentation = false
+  prefersTerminalPresentation = false,
+  outputOnly = false
 ): FinishedBlock {
   const response = event.responseType === 'ScalarResponse' ? (event.response as ScalarResponse) : true
   const { historyIdx } = event
@@ -232,6 +233,7 @@ export function Finished(
       execUUID: block.execUUID,
       startTime: block.startTime,
       prefersTerminalPresentation,
+      outputOnly,
       state: BlockState.ValidResponse
     }
   }
@@ -269,4 +271,8 @@ export function isHidden(block: BlockModel) {
   } else {
     return block.startEvent.echo === false
   }
+}
+
+export function isOutputOnly(block: BlockModel) {
+  return isOk(block) && block.outputOnly
 }
