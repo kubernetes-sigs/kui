@@ -49,7 +49,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
    * Default number of buckets in the timeline
    *
    */
-  private static readonly defaultNBuckets = 20
+  private static readonly defaultNBuckets = 50
 
   public constructor(props: Props) {
     super(props)
@@ -214,7 +214,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
           {Array(nTicks)
             .fill(0)
             .map((_, idx) => (
-              <div key={idx} className="kui--timeline-tick" style={{ top: ~~((100 * (idx + 1)) / (nTicks + 1)) + '%' }}>
+              <div key={idx} className="kui--timeline-tick">
                 &nbsp;
               </div>
             ))}
