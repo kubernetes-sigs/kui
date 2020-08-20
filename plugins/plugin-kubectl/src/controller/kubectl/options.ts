@@ -24,8 +24,9 @@ type TableFormat = 'wide' | string // want: 'custom-columns-file=' | 'custom-col
 type CustomFormat = string // want: 'go-template' | 'go-template-file' | 'jsonpath' | 'jsonpath-file'
 type OutputFormat = EntityFormat | TableFormat | CustomFormat
 
-export function fileOf(args: Arguments<KubeOptions>): string {
-  return args.parsedOptions.f || args.parsedOptions.filename
+export function fileOf(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string {
+  const filename = args.parsedOptions.f || args.parsedOptions.filename
+  return typeof filename === 'string' ? filename : undefined
 }
 
 export function kustomizeOf(args: Arguments<KubeOptions>): string {
@@ -207,11 +208,26 @@ export interface KubeExecOptions extends ExecOptions {
   initialResponse: string
 }
 
+/** Options that specify a filepath */
+export type FilepathOption =
+  | 'kubeconfig'
+  | 'f'
+  | 'filename'
+  | 'k'
+  | 'kustomize'
+  | 'client-key'
+  | 'client-certificate'
+  | 'certificate-authority'
+  | 'cache-dir'
+
+/** An incomplete set of kubectl options */
 export interface KubeOptions extends ParsedOptions {
   A?: boolean
   'all-namespaces'?: boolean
 
+  cluster?: string
   context?: string
+  kubeconfig?: string
 
   n?: string
   namespace?: string
