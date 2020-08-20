@@ -17,21 +17,38 @@
 import Debug from 'debug'
 import { spawn } from 'child_process'
 
-import { expandHomeDir, split, CodedError, inBrowser, ExecOptions, Registrar } from '@kui-shell/core'
+import { Arguments, expandHomeDir, split, CodedError, inBrowser, ExecOptions, Registrar } from '@kui-shell/core'
 
 import flags from './flags'
 import RawResponse from './response'
-import { KubeOptions } from './options'
 import commandPrefix from '../command-prefix'
+import { KubeOptions, FilepathOption } from './options'
 
 const debug = Debug('plugin-kubeui/controller/kubectl/raw')
 
-/** this is the subset of Commands.Arguments that we need */
-interface Arguments {
-  command: string
-  argv: string[]
-  parsedOptions: KubeOptions
-  execOptions: ExecOptions
+/** this is the subset of Arguments that we need */
+type Args = Pick<Arguments<KubeOptions>, 'command' | 'argv' | 'parsedOptions' | 'execOptions'>
+
+/** Part of expandTildes: replace one option with the tilde expansion */
+function expand(args: Args, option: FilepathOption) {
+  const idx = args.argv.indexOf(option.length === 1 ? `-${option}` : `--${option}`)
+  if (idx >= 0) {
+    const orig = args.argv[idx + 1]
+    if (orig) {
+      args.argv[idx + 1] = expandHomeDir(orig)
+    }
+  }
+}
+
+/** Expand ~ to the full path of the user's home directory */
+function expandTildes(args: Args) {
+  expand(args, 'cache-dir')
+  expand(args, 'certificate-authority')
+  expand(args, 'client-key')
+  expand(args, 'client-certificate')
+  expand(args, 'kubeconfig')
+  expand(args, args.parsedOptions.f ? 'f' : 'filename')
+  expand(args, args.parsedOptions.k ? 'k' : 'kustomize')
 }
 
 /**
@@ -39,18 +56,12 @@ interface Arguments {
  * executable.
  *
  */
-export const doNativeExec = (args: Arguments): Promise<RawResponse> =>
+export const doNativeExec = (args: Args): Promise<RawResponse> =>
   new Promise((resolve, reject) => {
     const env = Object.assign({}, !inBrowser() ? process.env : {}, args.execOptions.env)
     delete env.DEBUG
 
-    if ((args.parsedOptions.f || args.parsedOptions.filename) && typeof args.parsedOptions.f === 'string') {
-      const filename = expandHomeDir(args.parsedOptions.f || args.parsedOptions.filename)
-      const idx = args.argv.indexOf(args.parsedOptions.f ? '-f' : '--filename')
-      if (idx >= 0) {
-        args.argv[idx + 1] = filename
-      }
-    }
+    expandTildes(args)
 
     const executable = args.argv[0].replace(/^_/, '')
     const child = spawn(executable, args.argv.slice(1), { env })
