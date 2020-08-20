@@ -23,7 +23,13 @@ import { ScalarResponse } from '../models/entity'
 import MultiModalResponse from '../models/mmr/types'
 import NavResponse from '../models/NavResponse'
 import Tab, { getPrimaryTabId } from '../webapp/tab'
-import { CommandStartEvent, CommandCompleteEvent, CommandStartHandler, CommandCompleteHandler } from '../repl/events'
+import {
+  CommandStartEvent,
+  CommandCompleteEvent,
+  CommandStartHandler,
+  CommandCompleteHandler,
+  SnapshotBlock
+} from '../repl/events'
 
 const eventChannelUnsafe = new EventEmitter()
 eventChannelUnsafe.setMaxListeners(100)
@@ -91,6 +97,21 @@ class WriteEventBus extends EventBusBase {
     }
   }
 
+  /** Indicate a new snapshotable element */
+  public emitAddSnapshotable(): void {
+    this.eventBus.emit('/snapshot/element/add')
+  }
+
+  /** Indicate a snapshotable element no longer exists */
+  public emitRemoveSnapshotable(): void {
+    this.eventBus.emit('/snapshot/element/remove')
+  }
+
+  /** Request a Snapshot of the given Tab */
+  public emitSnapshotRequest(cb: (snapshot: SnapshotBlock[]) => void): void {
+    this.eventBus.emit('/snapshot/request', cb)
+  }
+
   public emitWithTabId(channel: '/tab/offline' | '/tab/close/request', tabId: string, tab?: Tab): void {
     this.eventBus.emit(`${channel}/${tabId}`, tabId, tab)
   }
@@ -106,6 +127,25 @@ class ReadEventBus extends WriteEventBus {
   public on(channel: '/tab/switch/request', listener: (tabId: number) => void): void
   public on(channel: string, listener: any) {
     return this.eventBus.on(channel, listener)
+  }
+
+  /** Listen for snapshotable elements coming and going */
+  public onAddSnapshotable(listener: () => void) {
+    this.eventBus.on('/snapshot/element/add', listener)
+  }
+
+  public onRemoveSnapshotable(listener: () => void) {
+    this.eventBus.on('/snapshot/element/remove', listener)
+  }
+
+  /** Snapshot the Block state of the given Tab */
+  public onSnapshotRequest(listener: (cb: (snapshot: SnapshotBlock[]) => void) => void) {
+    this.eventBus.on(`/snapshot/request`, listener)
+  }
+
+  /** Snapshot the Block state of the given Tab */
+  public offSnapshotRequest(listener: (cb: (snapshot: SnapshotBlock[]) => void) => void) {
+    this.eventBus.off('/snapshot', listener)
   }
 
   /** User switching focus from one Split to another, within one Tab */
