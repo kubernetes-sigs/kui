@@ -18,6 +18,10 @@
 $light-grey: #c6ccd8;
 $trans-grey: #5e6367;
 
+html.kui[data-zoom] .bx--list-box__menu-icon > svg[width] {
+  height: 100%;
+}
+
 .iconprops {
   fill: $light-grey;
 }
