@@ -141,6 +141,122 @@ export const durationTable = (): Table => ({
     {
       name: 'test 21',
       attributes: [{ value: 'foo' }, { value: '21000' }]
+    },
+    {
+      name: 'test 22',
+      attributes: [{ value: 'foo' }, { value: '22000' }]
+    },
+    {
+      name: 'test 23',
+      attributes: [{ value: 'foo' }, { value: '23000' }]
+    },
+    {
+      name: 'test 24',
+      attributes: [{ value: 'foo' }, { value: '24000' }]
+    },
+    {
+      name: 'test 25',
+      attributes: [{ value: 'foo' }, { value: '25000' }]
+    },
+    {
+      name: 'test 26',
+      attributes: [{ value: 'foo' }, { value: '26000' }]
+    },
+    {
+      name: 'test 27',
+      attributes: [{ value: 'foo' }, { value: '27000' }]
+    },
+    {
+      name: 'test 28',
+      attributes: [{ value: 'foo' }, { value: '28000' }]
+    },
+    {
+      name: 'test 29',
+      attributes: [{ value: 'foo' }, { value: '29000' }]
+    },
+    {
+      name: 'test 30',
+      attributes: [{ value: 'foo' }, { value: '30000' }]
+    },
+    {
+      name: 'test 31',
+      attributes: [{ value: 'foo' }, { value: '31000' }]
+    },
+    {
+      name: 'test 32',
+      attributes: [{ value: 'foo' }, { value: '32000' }]
+    },
+    {
+      name: 'test 33',
+      attributes: [{ value: 'foo' }, { value: '33000' }]
+    },
+    {
+      name: 'test 34',
+      attributes: [{ value: 'foo' }, { value: '34000' }]
+    },
+    {
+      name: 'test 35',
+      attributes: [{ value: 'foo' }, { value: '35000' }]
+    },
+    {
+      name: 'test 36',
+      attributes: [{ value: 'foo' }, { value: '36000' }]
+    },
+    {
+      name: 'test 37',
+      attributes: [{ value: 'foo' }, { value: '37000' }]
+    },
+    {
+      name: 'test 38',
+      attributes: [{ value: 'foo' }, { value: '38000' }]
+    },
+    {
+      name: 'test 39',
+      attributes: [{ value: 'foo' }, { value: '39000' }]
+    },
+    {
+      name: 'test 40',
+      attributes: [{ value: 'foo' }, { value: '40000' }]
+    },
+    {
+      name: 'test 41',
+      attributes: [{ value: 'foo' }, { value: '41000' }]
+    },
+    {
+      name: 'test 42',
+      attributes: [{ value: 'foo' }, { value: '42000' }]
+    },
+    {
+      name: 'test 43',
+      attributes: [{ value: 'foo' }, { value: '43000' }]
+    },
+    {
+      name: 'test 44',
+      attributes: [{ value: 'foo' }, { value: '44000' }]
+    },
+    {
+      name: 'test 45',
+      attributes: [{ value: 'foo' }, { value: '45000' }]
+    },
+    {
+      name: 'test 46',
+      attributes: [{ value: 'foo' }, { value: '46000' }]
+    },
+    {
+      name: 'test 47',
+      attributes: [{ value: 'foo' }, { value: '47000' }]
+    },
+    {
+      name: 'test 48',
+      attributes: [{ value: 'foo' }, { value: '48000' }]
+    },
+    {
+      name: 'test 49',
+      attributes: [{ value: 'foo' }, { value: '49000' }]
+    },
+    {
+      name: 'test 50',
+      attributes: [{ value: 'foo' }, { value: '50000' }]
     }
   ]
 })
