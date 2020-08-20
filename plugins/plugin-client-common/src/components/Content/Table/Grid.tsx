@@ -35,7 +35,7 @@ export const findGridableColumn = (response: KuiTable) => {
   return response.durationColumnIdx >= 0
     ? response.durationColumnIdx
     : response.statusColumnIdx !== undefined
-    ? response.statusColumnIdx - 1
+    ? response.statusColumnIdx
     : response.body[0]
     ? response.header.attributes.findIndex(cell => /STATUS|REASON/i.test(cell.key))
     : -1
