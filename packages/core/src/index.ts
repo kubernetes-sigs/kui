@@ -122,7 +122,7 @@ export { split, _split, Split } from './repl/split'
 export { ReplEval, DirectReplEval } from './repl/types'
 export { default as encodeComponent } from './repl/encode'
 export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl, doEval } from './repl/exec'
-export { CommandStartEvent, CommandCompleteEvent } from './repl/events'
+export { CommandStartEvent, CommandCompleteEvent, Snapshot, SnapshotBlock } from './repl/events'
 
 // Tabs
 export { Tab, getTab, getCurrentTab, pexecInCurrentTab, getTabId, getPrimaryTabId, sameTab } from './webapp/tab'
