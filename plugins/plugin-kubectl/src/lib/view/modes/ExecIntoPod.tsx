@@ -25,6 +25,7 @@ import {
   ToolbarText,
   i18n,
   getPrimaryTabId,
+  eventBus,
   eventChannelUnsafe
 } from '@kui-shell/core'
 
@@ -124,22 +125,28 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
     this.updateToolbar(this.state.isLive)
 
+    // tab uuid
+    const uuid = getPrimaryTabId(this.props.tab)
+
     const focus = () => {
       this.doFocus()
       this.doXon()
     }
-    const focusOnEvent = `/mode/focus/on/tab/${getPrimaryTabId(this.props.tab)}/mode/terminal`
+    const focusOnEvent = `/mode/focus/on/tab/${uuid}/mode/terminal`
     eventChannelUnsafe.on(focusOnEvent, focus)
     this.cleaners.push(() => eventChannelUnsafe.off(focusOnEvent, focus))
 
     const xoff = this.doXoff.bind(this)
-    const focusOffEvent = `/mode/focus/off/tab/${getPrimaryTabId(this.props.tab)}/mode/terminal`
+    const focusOffEvent = `/mode/focus/off/tab/${uuid}/mode/terminal`
     eventChannelUnsafe.on(focusOffEvent, xoff)
     this.cleaners.push(() => eventChannelUnsafe.off(focusOffEvent, xoff))
 
     const resizeListener = this.onResize.bind(this)
     window.addEventListener('resize', resizeListener)
     this.cleaners.push(() => window.removeEventListener('resize', resizeListener))
+
+    eventBus.onTabLayoutChange(uuid, resizeListener)
+    this.cleaners.push(() => eventBus.offTabLayoutChange(uuid, resizeListener))
   }
 
   /** Which container should we focus on by default? */
