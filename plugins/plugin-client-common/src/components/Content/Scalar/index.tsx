@@ -91,7 +91,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         )
       } else if (isTable(response)) {
         const renderBottomToolbar = true
-        const isLargeTable = response.body.length > 20
+        const isLargeTable = response.body.length >= 50
         const isLargeMiniTable = this.props.isPartOfMiniSplit && response.body.length > 5
         const renderGrid = !this.props.prefersTerminalPresentation && (isLargeTable || isLargeMiniTable)
         return renderTable(
