@@ -13,9 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as assert from 'assert'
+import { dirname } from 'path'
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+
+const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
 describe('card command', function(this: Common.ISuite) {
   before(Common.before(this))
@@ -37,6 +41,16 @@ describe('card command', function(this: Common.ISuite) {
         await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
         const text = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
         return assert.ok(text.includes('foo') && text.includes('bar'))
+      })
+      .catch(Common.oops(this)))
+
+  it('should show card with file', () =>
+    CLI.command(`card -f=${ROOT}/tests/data/comment.md`, this.app)
+      .then(async () => {
+        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
+        const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD} h1`)
+        const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD} h2`)
+        return assert.ok(head1 === 'The Kui Framework for Graphical Terminals' && head2 === 'Installation')
       })
       .catch(Common.oops(this)))
 

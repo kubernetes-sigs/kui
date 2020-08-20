@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, ParsedOptions, UsageModel, ReactResponse } from '@kui-shell/core'
+import {
+  Arguments,
+  Registrar,
+  ParsedOptions,
+  UsageModel,
+  ReactResponse,
+  findFile,
+  expandHomeDir
+} from '@kui-shell/core'
+import { FStat } from '@kui-shell/plugin-bash-like/fs'
 import card from '../components/spi/Card'
 
 /**
@@ -23,6 +32,8 @@ import card from '../components/spi/Card'
 interface CardOptions extends ParsedOptions {
   title: string
   icon: string
+  filename: string
+  f: string
 }
 
 /**
@@ -33,13 +44,11 @@ const usage: UsageModel = {
   strict: 'card',
   example: 'card [<card body text>] [--title <card title text>]',
   docs: 'Card',
-  required: [
+  optional: [
     {
       name: 'body',
       docs: 'card body text'
-    }
-  ],
-  optional: [
+    },
     {
       name: '--title',
       docs: 'Content rendered inside the CardTitle'
@@ -47,6 +56,14 @@ const usage: UsageModel = {
     {
       name: '--icon',
       docs: 'Attribute that specifies the URL of the image to put on the card.'
+    },
+    {
+      name: '-f',
+      docs: 'File that contains the texts'
+    },
+    {
+      name: '--file',
+      docs: 'File that contains the texts'
     }
   ]
 }
@@ -55,13 +72,40 @@ const usage: UsageModel = {
  * card command handler
  *
  */
-function doCard(opts: Arguments<CardOptions>): ReactResponse {
+async function doCard(opts: Arguments<CardOptions>): Promise<ReactResponse> {
   const argv = opts.argvNoOptions
   const option = opts.parsedOptions
-  const body = argv.slice(1)
   const { title, icon } = option
 
-  return { react: card({ title, children: body, icon }) }
+  const filepath = option.filename || option.f
+  if (filepath) {
+    const fullpath = findFile(expandHomeDir(filepath))
+    const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
+
+    if (suffix !== 'md') {
+      throw new Error('File extension not support')
+    } else {
+      // fetch the data:
+      //   --with-data says give us the file contents
+      const stats = (
+        await opts.tab.REPL.rexec<FStat>(`vfs fstat ${opts.tab.REPL.encodeComponent(fullpath)} --with-data`)
+      ).content
+
+      if (stats.isDirectory) {
+        throw new Error('Invalid filepath')
+      } else {
+        const data: string = stats.data
+        return { react: card({ title, children: data, icon }) }
+      }
+    }
+  } else {
+    const body = argv.slice(1)
+    if (body) {
+      return { react: card({ title, children: body, icon }) }
+    } else {
+      throw new Error('Invalid arguments: need card body text')
+    }
+  }
 }
 
 /**

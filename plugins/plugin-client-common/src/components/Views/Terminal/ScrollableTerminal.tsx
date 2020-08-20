@@ -47,6 +47,7 @@ import {
   isActive,
   isHidden,
   isOk,
+  isOutputOnly,
   isProcessing,
   hasCommand,
   snapshot,
@@ -384,9 +385,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               (event.evaluatorOptions && event.evaluatorOptions.alwaysViewIn === 'Terminal') ||
               (event.execOptions && event.execOptions.alwaysViewIn === 'Terminal')
 
+            const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly
+
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
-              .concat([Finished(inProcess, event, prefersTerminalPresentation)]) // mark as finished
+              .concat([Finished(inProcess, event, prefersTerminalPresentation, outputOnly)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
               .concat([Active()]) // plus a new block!
             return {
@@ -744,6 +747,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 ? nBlocks + scrollback.showThisIdxInMiniSplit
                 : scrollback.showThisIdxInMiniSplit
 
+            // nOutputOnlyBlocks records the indices of commentary blocks
+            const nOutputOnlyBlocks = scrollback.blocks
+              .map((_, idx) => {
+                if (isOutputOnly(_)) {
+                  return idx
+                }
+              })
+              .filter(_ => _ !== undefined)
+
+            const findDisplayedIdx = (idx: number) => {
+              const idxWithAnnouncements = idx - scrollback.nAnnouncements + 1
+              const nOutputOnlyBlocksSofar = nOutputOnlyBlocks.filter(x => x < idx).length
+              return idxWithAnnouncements - nOutputOnlyBlocksSofar
+            }
+
             return React.createElement(
               'div',
               {
@@ -761,7 +779,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   <Block
                     key={(hasUUID(_) ? _.execUUID : idx) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
                     idx={idx}
-                    displayedIdx={idx - scrollback.nAnnouncements + 1}
+                    displayedIdx={findDisplayedIdx(idx)}
                     model={_}
                     uuid={scrollback.uuid}
                     tab={tab}

@@ -22,5 +22,6 @@ export default async (registrar: Registrar) => {
     await import(/* webpackMode: "lazy" */ './controller/split').then(_ => registrar.listen('/split', _.default))
     await import(/* webpackMode: "lazy" */ './controller/alert').then(_ => _.default(registrar))
     await import(/* webpackMode: "lazy" */ './controller/card').then(_ => _.default(registrar))
+    await import(/* webpackMode: "lazy" */ './controller/commentary').then(_ => _.default(registrar))
   }
 }
