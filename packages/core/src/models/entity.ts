@@ -21,6 +21,7 @@ import { UsageModel } from '../core/usage-error'
 import isMultiModalResponse from './mmr/is'
 import MultiModalResponse from './mmr/types'
 import { NavResponse, isNavResponse } from './NavResponse'
+import { CommentaryResponse } from './CommentaryResponse'
 import RadioTable from './RadioTable'
 import Presentation from '../webapp/views/presentation'
 import { ReactNode, isValidElement } from 'react'
@@ -182,7 +183,11 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
  * that views may wish to interpret into fancier views.
  *
  */
-export type ScalarResponse<RowType extends Row = Row> = SimpleEntity | Table<RowType> | MixedResponse
+export type ScalarResponse<RowType extends Row = Row> =
+  | SimpleEntity
+  | Table<RowType>
+  | MixedResponse
+  | CommentaryResponse
 
 export function isScalarResponse(response: Entity): response is ScalarResponse {
   return !isMultiModalResponse(response) && !isNavResponse(response)

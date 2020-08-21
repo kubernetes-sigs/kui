@@ -19,6 +19,7 @@ import * as React from 'react'
 import {
   i18n,
   isCodedError,
+  isCommentaryResponse,
   isHTML,
   isReactResponse,
   isMarkdownResponse,
@@ -199,6 +200,7 @@ export default class Output extends React.PureComponent<Props, State> {
     if (isFinished(block) && !isCancelled(block) && !isEmpty(block)) {
       const { response } = block
       return (
+        isCommentaryResponse(response) ||
         isReactResponse(response) ||
         isHTML(response) ||
         isMarkdownResponse(response) ||

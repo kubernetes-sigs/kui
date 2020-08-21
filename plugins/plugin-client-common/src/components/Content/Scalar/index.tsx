@@ -20,6 +20,7 @@ import {
   isMessageWithCode,
   Tab as KuiTab,
   ScalarResponse,
+  isCommentaryResponse,
   isHTML,
   isMarkdownResponse,
   isReactResponse,
@@ -29,6 +30,7 @@ import {
   isUsageError
 } from '@kui-shell/core'
 
+import Commentary from '../Commentary'
 import HTMLDom from './HTMLDom'
 import renderTable from '../Table'
 import Markdown from '../Markdown'
@@ -83,6 +85,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <React.Fragment />
       } else if (typeof response === 'number' || typeof response === 'string') {
         return <pre>{response}</pre>
+      } else if (isCommentaryResponse(response)) {
+        return <Commentary {...response.props} />
       } else if (isRadioTable(response)) {
         return (
           <KuiContext.Consumer>
