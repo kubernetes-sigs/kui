@@ -121,6 +121,9 @@ export interface State {
   /** spinner? */
   spinner?: ReturnType<typeof setInterval>
   spinnerDom?: HTMLSpanElement
+
+  /** typeahead completion? */
+  typeahead?: string
 }
 
 export abstract class InputProvider<S extends State = State> extends React.PureComponent<Props, S> {
@@ -333,29 +336,32 @@ export default class Input extends InputProvider {
       }
 
       return (
-        <input
-          type="text"
-          autoFocus
-          autoCorrect="off"
-          autoComplete="off"
-          spellCheck="false"
-          autoCapitalize="off"
-          className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
-          aria-label="Command Input"
-          tabIndex={1}
-          placeholder={this.props.promptPlaceholder}
-          onBlur={this.props.onInputBlur}
-          onFocus={this.props.onInputFocus}
-          onMouseDown={this.props.onInputMouseDown}
-          onMouseMove={this.props.onInputMouseMove}
-          onChange={this.props.onInputChange}
-          onClick={this.props.onInputClick}
-          onKeyPress={this._onKeyPress}
-          onKeyDown={this._onKeyDown}
-          onKeyUp={this._onKeyUp}
-          onPaste={this._onPaste}
-          ref={this._onRef}
-        />
+        <React.Fragment>
+          <input
+            type="text"
+            autoFocus
+            autoCorrect="off"
+            autoComplete="off"
+            spellCheck="false"
+            autoCapitalize="off"
+            className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
+            aria-label="Command Input"
+            tabIndex={1}
+            placeholder={this.props.promptPlaceholder}
+            onBlur={this.props.onInputBlur}
+            onFocus={this.props.onInputFocus}
+            onMouseDown={this.props.onInputMouseDown}
+            onMouseMove={this.props.onInputMouseMove}
+            onChange={this.props.onInputChange}
+            onClick={this.props.onInputClick}
+            onKeyPress={this._onKeyPress}
+            onKeyDown={this._onKeyDown}
+            onKeyUp={this._onKeyUp}
+            onPaste={this._onPaste}
+            ref={this._onRef}
+          />
+          {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
+        </React.Fragment>
       )
     } else {
       const value =

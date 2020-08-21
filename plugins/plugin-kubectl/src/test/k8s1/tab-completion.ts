@@ -35,6 +35,10 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     const ns2 = `${commonPrefix}-bbbb` // we want ns to be lexicographically < ns2
     const ns3 = `${uniquePrefix}-cccc` // something prefix-distinct from the first two
 
+    it(`should tab complete kubectl command`, () => {
+      return tabby(this, 'kubect', 'kubectl')
+    })
+
     allocateNS(this, ns)
     allocateNS(this, ns2)
     allocateNS(this, ns3)
