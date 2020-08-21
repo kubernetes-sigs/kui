@@ -27,12 +27,19 @@ describe('commentary command', function(this: Common.ISuite) {
 
   const addComment = () => {
     it('should show comment with file', () =>
-      CLI.command(`commentary -f=${ROOT}/tests/data/comment.md`, this.app)
+      CLI.command(`commentary --title "hello there" -f=${ROOT}/tests/data/comment.md`, this.app)
         .then(async () => {
-          await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
-          const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD} h1`)
-          const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD} h2`)
-          return assert.ok(head1 === 'The Kui Framework for Graphical Terminals' && head2 === 'Installation')
+          await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+          const title: string = await this.app.client.getText(
+            `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`
+          )
+          assert.strictEqual(title, 'hello there')
+
+          const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
+          assert.strictEqual(head1, 'The Kui Framework for Graphical Terminals')
+
+          const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
+          assert.strictEqual(head2, 'Installation')
         })
         .catch(Common.oops(this)))
   }

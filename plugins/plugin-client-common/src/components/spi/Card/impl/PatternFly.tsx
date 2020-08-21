@@ -120,7 +120,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
 
   private title() {
     if (this.props.title) {
-      return <CardTitle> {this.props.title} </CardTitle>
+      return <CardTitle className="kui--card-title">{this.props.title}</CardTitle>
     }
   }
 
