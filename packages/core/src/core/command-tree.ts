@@ -48,7 +48,6 @@ import { PluginResolver } from '../plugins/resolver'
 
 import { getModelInternal } from '../commands/tree'
 import { Context, getCurrentContext } from '../commands/context'
-
 debug('finished loading modules')
 
 /**
