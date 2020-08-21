@@ -286,7 +286,7 @@ class ExprBase extends React.Component<{}, Formstate> {
   public render() {
     const { criteria } = this.state
     return (
-      <Form className="formProps" onSubmit={this.preventFormRefresh}>
+      <Form className="plugin-iter8-formProps" onSubmit={this.preventFormRefresh}>
         <div>
           <FormGroup legendText="" style={{ width: 600 }}>
             <h3>
