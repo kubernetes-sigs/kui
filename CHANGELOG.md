@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.12.1](https://github.com/IBM/kui/compare/v8.12.0...v8.12.1) (2020-08-21)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** improve row hover effect for SequenceDiagram ([133970a](https://github.com/IBM/kui/commit/133970a)), closes [#5426](https://github.com/IBM/kui/issues/5426)
+- **plugins/plugin-client-common:** refine Timeline a bit more ([c6fbb75](https://github.com/IBM/kui/commit/c6fbb75)), closes [#5409](https://github.com/IBM/kui/issues/5409)
+- **plugins/plugin-client-common:** switching table from Table to Timeline and back to Table does not work ([2542ddc](https://github.com/IBM/kui/commit/2542ddc)), closes [#5430](https://github.com/IBM/kui/issues/5430)
+- **plugins/plugin-client-common:** threshold for auto-grid is too low ([9931ba8](https://github.com/IBM/kui/commit/9931ba8)), closes [#5424](https://github.com/IBM/kui/issues/5424)
+- **plugins/plugin-iter8:** avoid collisions with global css rules ([fe6647f](https://github.com/IBM/kui/commit/fe6647f)), closes [#5432](https://github.com/IBM/kui/issues/5432)
+- grid colors are sometimes off ([51eae0c](https://github.com/IBM/kui/commit/51eae0c)), closes [#5422](https://github.com/IBM/kui/issues/5422)
+- **plugins/plugin-client-common:** table screenshots include a gray stripe at the top ([e5a48b5](https://github.com/IBM/kui/commit/e5a48b5)), closes [#5410](https://github.com/IBM/kui/issues/5410)
+- **plugins/plugin-iter8:** iter8 create experiment combo boxes have misplaced svg ([46e9272](https://github.com/IBM/kui/commit/46e9272)), closes [#5419](https://github.com/IBM/kui/issues/5419)
+- **plugins/plugin-kubectl:** certain filepath options to kubectl were not tilde-expanded ([e56819b](https://github.com/IBM/kui/commit/e56819b)), closes [#5415](https://github.com/IBM/kui/issues/5415)
+- **plugins/plugin-kubectl:** kubectl Logs/Events/Terminal tabs do not reflow on sidecar maximize ([8250dca](https://github.com/IBM/kui/commit/8250dca)), closes [#5417](https://github.com/IBM/kui/issues/5417)
+- **plugins/plugin-kubectl:** kubectl tab completion does not let me tab-complete some filepaths ([6ad0cce](https://github.com/IBM/kui/commit/6ad0cce)), closes [#5413](https://github.com/IBM/kui/issues/5413)
+
 # [8.12.0](https://github.com/IBM/kui/compare/v4.5.0...v8.12.0) (2020-08-20)
 
 ### Bug Fixes

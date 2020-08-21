@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.12.1](https://github.com/IBM/kui/compare/v8.12.0...v8.12.1) (2020-08-21)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** threshold for auto-grid is too low ([9931ba8](https://github.com/IBM/kui/commit/9931ba8)), closes [#5424](https://github.com/IBM/kui/issues/5424)
+- grid colors are sometimes off ([51eae0c](https://github.com/IBM/kui/commit/51eae0c)), closes [#5422](https://github.com/IBM/kui/issues/5422)
+
 # [8.12.0](https://github.com/IBM/kui/compare/v4.5.0...v8.12.0) (2020-08-20)
 
 ### Bug Fixes
