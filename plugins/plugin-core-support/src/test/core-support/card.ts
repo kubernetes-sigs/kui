@@ -38,8 +38,8 @@ describe('card command', function(this: Common.ISuite) {
   it('should execute the command and show card with foo bar: card foo --title=bar', () =>
     CLI.command('card foo --title=bar', this.app)
       .then(async () => {
-        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
-        const text = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
+        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+        const text = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
         return assert.ok(text.includes('foo') && text.includes('bar'))
       })
       .catch(Common.oops(this)))
@@ -47,9 +47,9 @@ describe('card command', function(this: Common.ISuite) {
   it('should show card with file', () =>
     CLI.command(`card -f=${ROOT}/tests/data/comment.md`, this.app)
       .then(async () => {
-        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
-        const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD} h1`)
-        const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD} h2`)
+        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+        const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
+        const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
         return assert.ok(head1 === 'The Kui Framework for Graphical Terminals' && head2 === 'Installation')
       })
       .catch(Common.oops(this)))
@@ -57,8 +57,8 @@ describe('card command', function(this: Common.ISuite) {
   it('should execute the command and show card with image: card foo --title=bar --icon="icons/png/TestIcon.png"', () =>
     CLI.command('card foo --title=bar --icon="icons/png/TestIcon.png"', this.app)
       .then(async () => {
-        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
-        const text = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
+        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+        const text = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
         return assert.ok(text.includes('foo') && text.includes('bar'))
       })
       .then(async () => {
@@ -70,7 +70,7 @@ describe('card command', function(this: Common.ISuite) {
               .getAttribute('src')
             const fs = require('fs')
             return fs.statSync(`${__dirname}/${imageSrc}`)
-          }, `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
+          }, `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
         }
 
         if (process.env.MOCHA_RUN_TARGET === 'webpack') {
@@ -82,7 +82,7 @@ describe('card command', function(this: Common.ISuite) {
             const image = new Image()
             image.src = `${window.location.origin}/${imageSrc}`
             if (image.height === 0) throw new Error(`image not found: ${window.location.origin}/${imageSrc}`)
-          }, `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAl_CARD}`)
+          }, `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
         }
       })
       .catch(Common.oops(this)))
