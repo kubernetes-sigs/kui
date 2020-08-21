@@ -21,26 +21,25 @@ import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
-describe('commentary command', function(this: Common.ISuite) {
+describe('commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
+  const verifyComment = async () => {
+    await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+    const title: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`)
+    assert.strictEqual(title, 'hello there')
+
+    const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
+    assert.strictEqual(head1, 'The Kui Framework for Graphical Terminals')
+
+    const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
+    assert.strictEqual(head2, 'Installation')
+  }
   const addComment = () => {
     it('should show comment with file', () =>
       CLI.command(`commentary --title "hello there" -f=${ROOT}/tests/data/comment.md`, this.app)
-        .then(async () => {
-          await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
-          const title: string = await this.app.client.getText(
-            `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`
-          )
-          assert.strictEqual(title, 'hello there')
-
-          const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
-          assert.strictEqual(head1, 'The Kui Framework for Graphical Terminals')
-
-          const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
-          assert.strictEqual(head2, 'Installation')
-        })
+        .then(() => verifyComment())
         .catch(Common.oops(this)))
   }
 
@@ -50,4 +49,16 @@ describe('commentary command', function(this: Common.ISuite) {
       .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
       .catch(Common.oops(this)))
   addComment()
+
+  it('should snapshot', () =>
+    CLI.command('snapshot /tmp/test.kui', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  it('should refresh', () => Common.refresh(this))
+
+  it('should replay', () =>
+    CLI.command('replay /tmp/test.kui', this.app)
+      .then(() => verifyComment())
+      .catch(Common.oops(this)))
 })

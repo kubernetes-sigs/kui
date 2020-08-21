@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  Arguments,
-  Registrar,
-  ParsedOptions,
-  UsageModel,
-  ReactResponse,
-  findFile,
-  expandHomeDir
-} from '@kui-shell/core'
-import { FStat } from '@kui-shell/plugin-bash-like/fs'
+import { Arguments, Registrar, ParsedOptions, UsageModel, ReactResponse } from '@kui-shell/core'
+
 import card from '../components/spi/Card'
+import { fetchMarkdownFile } from './commentary'
 
 /**
  * card command parsedOptions type
@@ -79,25 +72,8 @@ async function doCard(opts: Arguments<CardOptions>): Promise<ReactResponse> {
 
   const filepath = option.filename || option.f
   if (filepath) {
-    const fullpath = findFile(expandHomeDir(filepath))
-    const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
-
-    if (suffix !== 'md') {
-      throw new Error('File extension not support')
-    } else {
-      // fetch the data:
-      //   --with-data says give us the file contents
-      const stats = (
-        await opts.tab.REPL.rexec<FStat>(`vfs fstat ${opts.tab.REPL.encodeComponent(fullpath)} --with-data`)
-      ).content
-
-      if (stats.isDirectory) {
-        throw new Error('Invalid filepath')
-      } else {
-        const data: string = stats.data
-        return { react: card({ title, children: data, icon }) }
-      }
-    }
+    const data = await fetchMarkdownFile(filepath, opts)
+    return { react: card({ title, children: data, icon }) }
   } else {
     const body = argv.slice(1)
     if (body) {

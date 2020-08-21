@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, UsageModel } from '@kui-shell/core'
+import {
+  Arguments,
+  CommentaryResponse,
+  ParsedOptions,
+  Registrar,
+  UsageModel,
+  findFile,
+  expandHomeDir
+} from '@kui-shell/core'
+import { FStat } from '@kui-shell/plugin-bash-like/fs'
+
+/**
+ * commentary command parsedOptions type
+ */
+interface CommentaryOptions extends ParsedOptions {
+  title: string
+  file: string
+  f: string
+}
 
 /**
  * commentary command usage
@@ -38,9 +56,43 @@ const usage: UsageModel = {
   ]
 }
 
-async function addComment(args: Arguments) {
-  // delegate to the card command
-  return args.tab.REPL.qexec(args.command.replace(/^commentary/, 'card'))
+export async function fetchMarkdownFile(filepath: string, args: Arguments): Promise<string> {
+  const fullpath = findFile(expandHomeDir(filepath))
+  const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
+
+  if (suffix !== 'md') {
+    throw new Error('File extension not support')
+  } else {
+    // fetch the data:
+    //   --with-data says give us the file contents
+    const stats = (await args.tab.REPL.rexec<FStat>(`vfs fstat ${args.tab.REPL.encodeComponent(fullpath)} --with-data`))
+      .content
+
+    if (stats.isDirectory) {
+      throw new Error('Invalid filepath')
+    } else {
+      return stats.data as string
+    }
+  }
+}
+
+async function addComment(args: Arguments<CommentaryOptions>): Promise<CommentaryResponse> {
+  const { title } = args.parsedOptions
+  const filepath = args.parsedOptions.file || args.parsedOptions.f
+
+  if (filepath) {
+    const data = await fetchMarkdownFile(filepath, args)
+    return {
+      apiVersion: 'kui-shell/v1',
+      kind: 'CommentaryResponse',
+      props: {
+        title,
+        children: data
+      }
+    }
+  } else {
+    throw new Error('Insufficient arguments: must specify --file or -f')
+  }
 }
 
 /**
