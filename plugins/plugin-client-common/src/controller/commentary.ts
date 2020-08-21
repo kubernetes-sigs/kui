@@ -26,11 +26,13 @@ const usage: UsageModel = {
   docs: 'Commentary',
   optional: [
     {
-      name: '-f',
-      docs: 'File that contains the texts'
+      name: '--title',
+      alias: '-t',
+      docs: 'Title for the commentary'
     },
     {
       name: '--file',
+      alias: '-f',
       docs: 'File that contains the texts'
     }
   ]
