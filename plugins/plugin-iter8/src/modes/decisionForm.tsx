@@ -621,7 +621,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     ++this.notifKey // To regenerate notification
     const { trafficSplit } = this.state
     return (
-      <Form className="formProps" style={{ display: 'block' }}>
+      <Form className="plugin-iter8-formProps" style={{ display: 'block' }}>
         <FormGroup legendText="">
           <InlineLoading
             description={
