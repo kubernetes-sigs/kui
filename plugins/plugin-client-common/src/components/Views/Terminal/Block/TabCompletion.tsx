@@ -21,6 +21,7 @@ import * as React from 'react'
 import * as minimist from 'yargs-parser'
 import { Button } from 'carbon-components-react'
 import {
+  typeahead,
   getCurrentTab,
   CompletionResponse,
   findCompletions as findCompletionsFromRegistrar,
@@ -39,13 +40,14 @@ const shellescape = (str: string): string => {
 }
 
 /** Ibid, but only escape if the given prefix does not end with a backslash escape */
-function shellescapeIfNeeded(str: string, prefix: string): string {
-  return prefix.charAt(prefix.length - 1) === '\\' ? str : shellescape(str)
+function shellescapeIfNeeded(str: string, prefix: string, shellEscapeNotNeeded: boolean): string {
+  return shellEscapeNotNeeded ? str : prefix.charAt(prefix.length - 1) === '\\' ? str : shellescape(str)
 }
 
 /** User has typed `partial`, and we have `completions` to offer them. */
 interface Completions {
   partial: string
+  shellEscapeNotNeeded?: boolean
   completions: CompletionResponse[]
 }
 
@@ -67,6 +69,10 @@ export abstract class TabCompletionState {
     this.lastIdx = this.input.state.prompt.selectionEnd
   }
 
+  private findCommandCompletions(last: string) {
+    return typeahead(last)
+  }
+
   protected async findCompletions(lastIdx = this.input.state.prompt.selectionEnd) {
     const input = this.input
     const { prompt } = this.input.state
@@ -81,6 +87,11 @@ export abstract class TabCompletionState {
       const last = completingTrailingEmpty
         ? ''
         : prompt.value.substring(endIndices[toBeCompletedIdx - 1], lastIdx).replace(/^\s+/, '')
+
+      const commandCompletions = this.findCommandCompletions(prompt.value)
+      if (commandCompletions && commandCompletions.length > 0) {
+        return { partial: last, completions: commandCompletions, shellEscapeNotNeeded: true }
+      }
 
       // argvNoOptions is argv without the options; we can get
       // this directly from yargs-parser's '_'
@@ -154,7 +165,7 @@ export abstract class TabCompletionState {
         !completions || completions.length === 0
           ? undefined
           : completions.length === 1
-          ? new TabCompletionStateWithSingleSuggestion(this.input, completions[0])
+          ? new TabCompletionStateWithSingleSuggestion(this.input, completions[0], spec.shellEscapeNotNeeded)
           : new TabCompletionStateWithMultipleSuggestions(this.input, spec)
     })
   }
@@ -219,7 +230,11 @@ function setPromptValue(prompt: HTMLInputElement, newValue: string, selectionSta
 class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
   private _rendered = false
 
-  public constructor(input: Input, private readonly completion: CompletionResponse) {
+  public constructor(
+    input: Input,
+    private readonly completion: CompletionResponse,
+    private readonly shellEscapeNotNeeded: boolean
+  ) {
     super(input)
   }
 
@@ -237,8 +252,9 @@ class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
 
     const extra =
       typeof this.completion === 'string'
-        ? shellescapeIfNeeded(this.completion, prefix)
-        : shellescapeIfNeeded(this.completion.completion, prefix) + (this.completion.addSpace ? ' ' : '')
+        ? shellescapeIfNeeded(this.completion, prefix, this.shellEscapeNotNeeded)
+        : shellescapeIfNeeded(this.completion.completion, prefix, this.shellEscapeNotNeeded) +
+          (this.completion.addSpace ? ' ' : '')
 
     const newValue = prefix + extra + suffix
     const selectionStart = lastIdx + extra.length
@@ -292,7 +308,11 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
   /** User has selected one of the N completions. Transition to a SingleSuggestion state. */
   private completeWith(idx: number) {
     this.input.setState({
-      tabCompletion: new TabCompletionStateWithSingleSuggestion(this.input, this.completions.completions[idx])
+      tabCompletion: new TabCompletionStateWithSingleSuggestion(
+        this.input,
+        this.completions.completions[idx],
+        this.completions.shellEscapeNotNeeded
+      )
     })
   }
 

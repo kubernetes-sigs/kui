@@ -31,6 +31,7 @@ export {
 export { CapabilityRegistration } from './models/plugin'
 
 // Commands
+export { default as typeahead } from './commands/typeahead'
 export { default as AlwaysViewIn } from './models/AlwaysViewIn'
 export {
   CommandHandler,
