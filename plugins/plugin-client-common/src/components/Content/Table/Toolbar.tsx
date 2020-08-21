@@ -87,6 +87,7 @@ export default class Toolbar extends React.PureComponent<Props> {
             onClick={() => {
               this.props.setAsGrid(false)
               this.props.setAsSequence(false)
+              this.props.setAsTimeline(false)
             }}
           >
             <Icons icon="List" />
