@@ -15,9 +15,8 @@
  */
 
 import { Registrar } from '@kui-shell/core'
-import { metricDeleteCommand } from './models/metrics'
 import { printiter8about } from './modes/about'
-import { getiter8config } from './modes/config'
+import { getConfig } from './modes/config'
 
 // Registers a custom command
 export default async (registrar: Registrar) => {
@@ -41,13 +40,7 @@ export default async (registrar: Registrar) => {
     { isExperimental: true }
   )
 
-  const cmd = registrar.listen('/iter8/delete/metric', metricNames => metricDeleteCommand(metricNames), {
-    isExperimental: true
-  })
-
-  registrar.synonym('/iter8/delete/metrics', metricNames => metricDeleteCommand(metricNames), cmd)
-
   registrar.listen('/iter8/about', () => printiter8about, { isExperimental: true })
 
-  registrar.listen('/iter8/config/verify', () => JSON.stringify(getiter8config()), { isExperimental: true })
+  registrar.listen('/iter8/config/verify', getConfig, { isExperimental: true })
 }

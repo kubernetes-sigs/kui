@@ -43,7 +43,6 @@ import GetKubeInfo from '../components/cluster-info'
 import { GetMetricConfig } from '../components/metric-config'
 import getRequestModel from '../utility/get-iter8-req'
 import { Formstate } from '../modes/state-models'
-import { CounterMetrics } from '../components/metric-config-types'
 import { experimentTypes } from '../utility/variables'
 
 /*
@@ -55,17 +54,11 @@ class ExprBase extends React.Component<{}, Formstate> {
   private kubeMethods = new GetKubeInfo()
   private GetMetricConfig = new GetMetricConfig()
   // Lists of dropdown menu items
-  private nsList = this.kubeMethods.getNamespace()
-  private countMetricsList = this.GetMetricConfig.getCounterMetrics()
-  private ratioMetricsList = this.GetMetricConfig.getRatioMetrics()
-
-  private totMetricsList = []
-
-  private svcList = []
-  private deployList = []
+  private args
 
   public constructor(props) {
     super(props)
+    this.args = props
     this.state = {
       showCriteria: false, // determines the visibility of metric config section
       invalidCandidate: false, // determines whether candidates values are valid
@@ -79,15 +72,33 @@ class ExprBase extends React.Component<{}, Formstate> {
       disableReward: false, // disables the reward select for selected metrics
       edgeService: true,
       hostGateways: [],
-      invalidHostGateways: false
+      invalidHostGateways: false,
+      nsList: [],
+      svcList: [],
+      deployList: [],
+      countMetricsList: [],
+      ratioMetricsList: [],
+      totalMetricsList: []
     }
+    setTimeout(async () => {
+      const [nsList] = await Promise.all([this.kubeMethods.getNamespace(this.args)])
+      this.setState({ nsList })
+    })
+
+    setTimeout(async () => {
+      const [countMetricsList] = await Promise.all([this.GetMetricConfig.getCounterMetrics(this.args)])
+      this.setState({ countMetricsList })
+    })
+
+    setTimeout(async () => {
+      const [ratioMetricsList] = await Promise.all([this.GetMetricConfig.getRatioMetrics(this.args)])
+      this.setState({ ratioMetricsList })
+    })
+
     // Bound NON-lambda functions to component's scope
     this.submitForm = this.submitForm.bind(this)
     this.handleNameChange = this.handleNameChange.bind(this)
     this.addCriterion = this.addCriterion.bind(this)
-    if (Array.isArray(this.countMetricsList) && Array.isArray(this.ratioMetricsList)) {
-      this.totMetricsList = this.countMetricsList.concat(this.ratioMetricsList)
-    }
   }
 
   /*
@@ -133,21 +144,33 @@ class ExprBase extends React.Component<{}, Formstate> {
   private handleAddNs = value => {
     if (value == null) {
       this.setState({ namespace: '', service: '', baseline: '', candidates: [] })
-      this.svcList = []
+      const svcList = []
+      this.setState({ svcList })
     } else {
       this.setState({ namespace: value.text, service: '', baseline: '', candidates: [] })
-      this.svcList = this.kubeMethods.getSvc(value.text)
+
+      setTimeout(async () => {
+        const [svcList] = await Promise.all([this.kubeMethods.getSvc(value.text, this.args)])
+        this.setState({ svcList })
+      })
     }
-    this.deployList = []
+    this.setState({ deployList: [] })
   }
 
   private handleAddSvc = value => {
     if (value == null) {
       this.setState({ service: '', baseline: '', candidates: [] })
-      this.deployList = []
+      const deployList = []
+      this.setState({ deployList })
     } else {
       this.setState({ service: value.text, baseline: '', candidates: [] })
-      this.deployList = this.kubeMethods.getDeployment(this.state.namespace, value.text)
+
+      setTimeout(async () => {
+        const [deployList] = await Promise.all([
+          this.kubeMethods.getDeployment(this.state.namespace, value.text, this.args)
+        ])
+        this.setState({ deployList })
+      })
     }
   }
 
@@ -192,6 +215,8 @@ class ExprBase extends React.Component<{}, Formstate> {
 
   // Method for Add Metric (+) button
   private addCriterion() {
+    this.setState({ totalMetricsList: this.state.countMetricsList.concat(this.state.ratioMetricsList) })
+
     if (this.state.showCriteria) {
       // If a criterion is already shown, add a new criterion
       this.setState(prevState => ({
@@ -228,8 +253,8 @@ class ExprBase extends React.Component<{}, Formstate> {
       metricType = 'Ratio'
 
       // TODO: handle error
-      for (let i = 0; i < (this.countMetricsList as CounterMetrics).length; i++) {
-        if (this.countMetricsList[i].name === value.name) metricType = 'Counter'
+      for (let i = 0; i < this.state.countMetricsList.length; i++) {
+        if (this.state.countMetricsList[i].name === value.name) metricType = 'Counter'
       }
     }
     const newMetric = [...this.state.criteria]
@@ -267,11 +292,9 @@ class ExprBase extends React.Component<{}, Formstate> {
    *	==== Form Submission Handlers ====
    */
   private submitForm() {
-    // Get the current time in ISO form
     const d = new Date(Date.now() - 20000)
     const time = d.toISOString()
-    // Reorganize form input into Iter8 Request model
-    const jsonOutput = getRequestModel(time, this.state)
+    const jsonOutput = getRequestModel(time, this.state, this.args)
     // Transmit data to Decision form using eventBus
     eventChannelUnsafe.emit('/get/decision', jsonOutput)
   }
@@ -322,7 +345,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               titleText="Service Namespace"
               helperText="Namespace where the target service resides"
               placeholder="Select a Namespace"
-              items={this.nsList}
+              items={this.state.nsList}
               itemToString={item => (item ? item.text : '')}
               onChange={value => this.handleAddNs(value.selectedItem)}
               required
@@ -358,7 +381,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               titleText="Service"
               helperText="Name of the target service"
               placeholder="Select a Service"
-              items={this.svcList}
+              items={this.state.svcList}
               itemToString={item => (item ? item.text : '')}
               onChange={value => this.handleAddSvc(value.selectedItem)}
               required
@@ -370,7 +393,7 @@ class ExprBase extends React.Component<{}, Formstate> {
               titleText="Baseline Deployment"
               helperText="The version of the service to be used as experimental baseline"
               placeholder="Select a Baseline Deployment"
-              items={this.deployList}
+              items={this.state.deployList}
               itemToString={item => (item ? item.text : '')}
               onChange={value => this.handleAddBase(value.selectedItem)}
               required
@@ -384,7 +407,7 @@ class ExprBase extends React.Component<{}, Formstate> {
             </p>
             <MultiSelect
               id="candidates-select"
-              items={this.deployList}
+              items={this.state.deployList}
               itemToString={item => (item ? item.text : '')}
               label="Select Candidate Deployment(s)"
               onChange={value => this.handleAddCand(value.selectedItems)}
@@ -418,7 +441,7 @@ class ExprBase extends React.Component<{}, Formstate> {
                         titleText="Metric name"
                         helperText="Metric to be used for this critetion"
                         placeholder="Select a Metric"
-                        items={this.totMetricsList}
+                        items={this.state.totalMetricsList}
                         itemToString={item => (item ? item.name : '')}
                         onChange={value => this.handleMetricName(value.selectedItem, idx)}
                       />
@@ -499,10 +522,10 @@ class ExprBase extends React.Component<{}, Formstate> {
   }
 }
 
-export function renderForm() {
+export function renderForm(tab) {
   return {
     react: function renderComponent() {
-      return <ExprBase />
+      return <ExprBase {...tab} />
     }
   }
 }

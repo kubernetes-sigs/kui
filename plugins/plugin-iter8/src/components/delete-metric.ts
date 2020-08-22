@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { safeDump } from 'js-yaml'
+import { safeDump, safeLoad } from 'js-yaml'
 import { kubectlApplyRule } from './traffic-split'
 import { MetricTypes } from '../modes/get-metrics'
-import { getMetricConfig, removeExtraneousMetaData } from './metric-config'
+import { Arguments } from '@kui-shell/core'
+import { removeExtraneousMetaData } from './metric-config'
 
-export default function deleteMetric(metricName: string, type: MetricTypes): boolean {
+export default function deleteMetric(configMap: any, metricName: string, type: MetricTypes, args: Arguments): boolean {
   try {
-    const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
+    // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig(args)
+    const counterMetrics = safeLoad(configMap.data['counter_metrics.yaml'])
+    const ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml'])
     const newConfigMap = removeExtraneousMetaData(configMap)
-    console.log(`Delteing metric: ${metricName} Type: ${type}`)
+    console.log(`Deleting metric: ${metricName} Type: ${type}`)
     newConfigMap.data['counter_metrics.yaml'] = safeDump(
       counterMetrics.filter(counterMetric => counterMetric.name !== metricName)
     )
@@ -30,7 +33,7 @@ export default function deleteMetric(metricName: string, type: MetricTypes): boo
       ratioMetrics.filter(ratioMetric => ratioMetric.name !== metricName)
     )
 
-    kubectlApplyRule(newConfigMap)
+    kubectlApplyRule(newConfigMap, args)
 
     return true
   } catch (err) {

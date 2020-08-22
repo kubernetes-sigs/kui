@@ -14,57 +14,36 @@
  * limitations under the License.
  */
 
-import { safeLoad } from 'js-yaml'
-import { execSync } from 'child_process'
+import { Arguments } from '@kui-shell/core'
+import { KubeResource, KubeItems } from '@kui-shell/plugin-kubectl'
 
 export default class GetKubeInfo {
   private rawOutput = ''
 
-  public getNamespace(): Array<any> {
-    this.rawOutput = execSync('kubectl get ns -o yaml', { encoding: 'utf-8' })
-    const rawQuery = safeLoad(this.rawOutput)['items']
-    const dataArr = []
-    for (let i = 0; i < rawQuery.length; i++) {
-      const name = rawQuery[i]['metadata']['name']
-      dataArr.push({
+  public async getNamespace(args: Arguments): Promise<{ id: string; text: string }[]> {
+    return (await args.REPL.qexec<KubeItems<KubeResource>>(`kubectl get ns -o json`)).items
+      .map(ns => ns.metadata.name)
+      .map((name, i) => ({
         id: `ns-${i}`,
         text: name
-      })
-    }
-    return dataArr
+      }))
   }
 
-  public getSvc(ns: string): Array<any> {
-    this.rawOutput = execSync(`kubectl get svc -n ${ns} -o yaml`, { encoding: 'utf-8' })
-    const rawQuery = safeLoad(this.rawOutput)['items']
-    const dataArr = []
-    for (let i = 0; i < rawQuery.length; i++) {
-      const name = rawQuery[i]['metadata']['name']
-      dataArr.push({
+  public async getSvc(ns: string, args: Arguments): Promise<{ id: string; text: string }[]> {
+    return (await args.REPL.qexec<KubeItems<KubeResource>>(`kubectl get svc -n ${ns} -o yaml`)).items
+      .map(svc => svc.metadata.name)
+      .map((name, i) => ({
         id: `svc-${i}`,
         text: name
-      })
-    }
-    return dataArr
+      }))
   }
 
-  public getDeployment(ns: string, svc: string): Array<any> {
-    this.rawOutput = execSync(`kubectl get deployments -n ${ns} -o yaml`, { encoding: 'utf-8' })
-    const rawQuery = safeLoad(this.rawOutput)['items']
-    const dataArr = []
-    for (let i = 0; i < rawQuery.length; i++) {
-      const name = rawQuery[i]['metadata']['labels']['app']
-      if (name === svc) {
-        dataArr.push({
-          id: `dep-${i}`,
-          text: rawQuery[i]['metadata']['name']
-        })
-      }
-    }
-    return dataArr
+  public async getDeployment(ns: string, svc: string, args: Arguments): Promise<{ id: string; text: string }[]> {
+    return (await args.REPL.qexec<KubeItems<KubeResource>>(`kubectl get deployments -n ${ns} -o yaml`)).items
+      .map(d => d.metadata.name)
+      .map((name, i) => ({
+        id: `d-${i}`,
+        text: name
+      }))
   }
 }
-// const ob = new GetKubeInfo()
-// const query = ob.getDeployment('bookinfo-iter8', 'reviews');
-
-// console.log(query)
