@@ -16,180 +16,105 @@
 /*eslint-disable */
 import { safeLoad, safeDump } from 'js-yaml'
 import _ from 'lodash'
-import { execSync } from 'child_process'
+import { Arguments } from '@kui-shell/core'
+import { KubeResource } from '@kui-shell/plugin-kubectl'
 
-export function kubectlApplyRule(rule) {
+export async function kubectlApplyRule(rule, args: Arguments) {
+  delete rule['originatingCommand']
+  delete rule['kuiRawData']
+  delete rule['isKubeResource']
   const yamlRule = safeDump(rule)
-  const command = `cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`
-  execSync(command, { encoding: 'utf-8' })
+
+  return await args.REPL.qexec(`cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`)
 }
 
-function getLabelInfo(label) {
-  const deployment = execSync(
-    `kubectl get deployments -n ${label['destination_workload_namespace']} ${label['destination_workload']} -oyaml`,
-    { encoding: 'utf-8' }
+async function getLabelInfo(label, args: Arguments) {
+  var deployment = await args.REPL.qexec<KubeResource>(
+    `kubectl get deployments -n ${label['destination_workload_namespace']} ${label['destination_workload']} -o json`
   )
-  return safeLoad(deployment)['spec']['template']['metadata']['labels']
+  return deployment['spec']['template']['metadata']['labels']
 }
 
-function getportnumber(svc, ns) {
-  const s = execSync(`kubectl get svc -n ${ns} ${svc} -oyaml`, { encoding: 'utf-8' })
-  return safeLoad(s)['spec']['ports'][0]['port']
+async function getportnumber(svc, ns, args: Arguments) {
+  return (await args.REPL.qexec(`kubectl get svc -n ${ns} ${svc} -o json`))['spec']['ports'][0]['port']
 }
 
-function drPresence(userDecision) {
-  var dr_str = execSync(
-    `kubectl get dr -n ${userDecision['service_namespace']} -o jsonpath='{.items[*].metadata.name}'`,
-    {
-      encoding: 'utf-8'
-    }
-  )
-  var dr = dr_str.split(' ')
-  if (dr.length == 0) {
-    return false
-  } else {
-    var temp = {}
-    var drlabel = { 'iter8-tools/host': userDecision['service_name'], 'iter8-tools/role': 'stable' }
-    for (var i = 0; i < dr.length; i++) {
-      temp = execSync(`kubectl get dr -n ${userDecision['service_namespace']} ${dr[i]} -oyaml`, { encoding: 'utf-8' })
-      temp = safeLoad(temp)
-      if (_.isEqual(temp['metadata']['labels'], drlabel)) {
-        delete temp['metadata']['annotations']
-        delete temp['metadata']['creationTimestamp']
-        delete temp['metadata']['generation']
-        delete temp['metadata']['resourceVersion']
-        delete temp['metadata']['selfLink']
-        delete temp['metadata']['uid']
-        temp['metadata']['namespace'] = userDecision['service_namespace']
-        return temp
-      }
-    }
-  }
-  return false
-}
-
-export function applyDestinationRule(userDecision) {
-  var drPresent = drPresence(userDecision)
+export function applyTrafficSplit(userDecision, args: Arguments) {
   var destinationRule = {}
-  if (drPresent === false) {
-    destinationRule = {
-      apiVersion: 'networking.istio.io/v1alpha3',
-      kind: 'DestinationRule',
-      metadata: {
-        name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
-        namespace: userDecision['service_namespace'],
-        labels: {
-          'iter8-tools/host': userDecision['service_name'],
-          'iter8-tools/role': 'stable'
-        }
-      },
-      spec: {
-        host: userDecision['service_name'],
-        subsets: []
+  destinationRule = {
+    apiVersion: 'networking.istio.io/v1alpha3',
+    kind: 'DestinationRule',
+    metadata: {
+      name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
+      namespace: userDecision['service_namespace'],
+      labels: {
+        'iter8-tools/host': userDecision['service_name'],
+        'iter8-tools/role': 'stable'
       }
+    },
+    spec: {
+      host: userDecision['service_name'],
+      subsets: []
     }
-  } else {
-    destinationRule = drPresent
-    destinationRule['spec']['subsets'] = []
   }
-  for (const [key, value] of Object.entries(userDecision)) {
-    if (key === 'service_name') {
-      continue
-    } else if (key === 'service_namespace') {
-      continue
-    } else if (key === 'edgeService') {
-      continue
-    } else if (key === 'hostGateways') {
-      continue
+  setTimeout(async () => {
+    for (const [key, value] of Object.entries(userDecision)) {
+      if (key === 'service_name') {
+        continue
+      } else if (key === 'service_namespace') {
+        continue
+      } else if (key === 'edgeService') {
+        continue
+      } else if (key === 'hostGateways') {
+        continue
+      }
+      let [l] = await Promise.all([getLabelInfo(value['version_labels'], args)])
+      destinationRule['spec']['subsets'].push({ labels: l, name: key })
     }
-    destinationRule['spec']['subsets'].push({ labels: getLabelInfo(value['version_labels']), name: key })
-  }
-  kubectlApplyRule(destinationRule)
-  return destinationRule
+    console.log('Applying Destination Rule')
+    kubectlApplyRule(destinationRule, args)
+    applyVirtualService(destinationRule, userDecision, args)
+  })
 }
 
-function vsPresence(userDecision) {
-  var vs_str = execSync(
-    `kubectl get vs -n ${userDecision['service_namespace']} -o jsonpath='{.items[*].metadata.name}'`,
-    {
-      encoding: 'utf-8'
-    }
-  )
-  var vs = vs_str.split(' ')
-  if (vs.length == 0) {
-    return false
-  } else {
-    var temp = {}
-    var vslabel = { 'iter8-tools/host': userDecision['service_name'], 'iter8-tools/role': 'stable' }
-    for (var i = 0; i < vs.length; i++) {
-      temp = execSync(`kubectl get vs -n ${userDecision['service_namespace']} ${vs[i]} -oyaml`, { encoding: 'utf-8' })
-      temp = safeLoad(temp)
-      if (_.isEqual(temp['metadata']['labels'], vslabel)) {
-        delete temp['metadata']['annotations']
-        delete temp['metadata']['creationTimestamp']
-        delete temp['metadata']['generation']
-        delete temp['metadata']['resourceVersion']
-        delete temp['metadata']['selfLink']
-        delete temp['metadata']['uid']
-        temp['metadata']['namespace'] = userDecision['service_namespace']
-        return temp
-      }
-    }
-  }
-  return false
-}
-
-export function applyVirtualService(dr, userDecision) {
-  var vspresent = vsPresence(userDecision)
+export function applyVirtualService(dr, userDecision, args: Arguments) {
   var virtualService = {}
-  if (vspresent === false) {
-    virtualService = {
-      apiVersion: 'networking.istio.io/v1alpha3',
-      kind: 'VirtualService',
-      metadata: {
-        name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
-        namespace: userDecision['service_namespace'],
-        labels: {
-          'iter8-tools/host': userDecision['service_name'],
-          'iter8-tools/role': 'stable'
-        }
-      },
-      spec: {
-        hosts: [userDecision['service_name']],
-        gateways: ['mesh'],
-        http: [{ route: [] }]
+  virtualService = {
+    apiVersion: 'networking.istio.io/v1alpha3',
+    kind: 'VirtualService',
+    metadata: {
+      name: userDecision['service_name'] + '.' + userDecision['service_namespace'] + '.' + 'iter8-experiment',
+      namespace: userDecision['service_namespace'],
+      labels: {
+        'iter8-tools/host': userDecision['service_name'],
+        'iter8-tools/role': 'stable'
       }
+    },
+    spec: {
+      hosts: [userDecision['service_name']],
+      gateways: ['mesh'],
+      http: [{ route: [] }]
     }
-    if (userDecision.edgeService === true) {
-      for (var i = 0; i < userDecision.hostGateways.length; i++) {
-        virtualService['spec']['hosts'].push(userDecision.hostGateways[i].name)
-        virtualService['spec']['gateways'].push(userDecision.hostGateways[i].gateway)
-      }
+  }
+  if (userDecision.edgeService === true) {
+    for (var i = 0; i < userDecision.hostGateways.length; i++) {
+      virtualService['spec']['hosts'].push(userDecision.hostGateways[i].name)
+      virtualService['spec']['gateways'].push(userDecision.hostGateways[i].gateway)
     }
-  } else {
-    virtualService = vspresent
   }
-  var port = getportnumber(userDecision.service_name, userDecision.service_namespace)
-  const subsets = dr['spec']['subsets']
-  virtualService['spec']['http'][0]['route'] = []
-  for (let i = 0; i < subsets.length; i++) {
-    virtualService['spec']['http'][0]['route'].push({
-      destination: { host: dr['spec']['host'], subset: subsets[i]['name'], port: { number: port } },
-      weight: userDecision[subsets[i]['name']]['traffic_percentage']
-    })
-  }
-  kubectlApplyRule(virtualService)
-}
-
-export function applyTrafficSplit(userDecision) {
-  try {
-    const dr = applyDestinationRule(userDecision)
-    applyVirtualService(dr, userDecision)
-    return JSON.stringify({ success: 200 })
-  } catch (err) {
-    console.log(err)
-    return JSON.stringify({ error: err })
-  }
+  setTimeout(async () => {
+    const [port] = await Promise.all([getportnumber(userDecision.service_name, userDecision.service_namespace, args)])
+    const subsets = dr['spec']['subsets']
+    virtualService['spec']['http'][0]['route'] = []
+    for (let i = 0; i < subsets.length; i++) {
+      virtualService['spec']['http'][0]['route'].push({
+        destination: { host: dr['spec']['host'], subset: subsets[i]['name'], port: { number: port } },
+        weight: userDecision[subsets[i]['name']]['traffic_percentage']
+      })
+    }
+    console.log('Applying Virtual Service')
+    kubectlApplyRule(virtualService, args)
+  })
 }
 
 const arrSum = arr => arr.reduce((accumulator, currentValue) => accumulator + currentValue, 0)
@@ -227,37 +152,3 @@ export function getUserDecision(ns: string, service: string, trafficDecision: Ar
   }
   return trafficObj
 }
-// To apply traffic split:
-// const sample = {
-//     "service_name": "reviews",
-//     "service_namespace": "bookinfo-iter8",
-//     "reviews-v3": {
-//         "version_labels": {
-//                 'destination_workload_namespace': "bookinfo-iter8",
-//                 'destination_workload': "reviews-v3"
-//             },
-//             "traffic_percentage": 25
-//     },
-//     "reviews-v4": {
-//         "version_labels": {
-//                 'destination_workload_namespace': "bookinfo-iter8",
-//                 'destination_workload': "reviews-v4"
-//             },
-//             "traffic_percentage": 25
-//     },
-//     "reviews-v5": {
-//         "version_labels": {
-//                 'destination_workload_namespace': "bookinfo-iter8",
-//                 'destination_workload': "reviews-v5"
-//             },
-//             "traffic_percentage": 25
-//     },
-//     "reviews-v6": {
-//         "version_labels": {
-//                 'destination_workload_namespace': "bookinfo-iter8",
-//                 'destination_workload': "reviews-v6"
-//             },
-//             "traffic_percentage": 25
-//     },
-// }
-// applyTrafficSplit(sample)

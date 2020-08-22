@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import { execSync } from 'child_process'
-
-export function iter8ServiceStatus(svc) {
-  const svcStr = execSync(`kubectl get svc -n iter8 -o jsonpath='{.items[*].metadata.name}'`, {
-    encoding: 'utf-8'
-  })
-  const s = svcStr.split(' ')
-  if (s.includes(svc)) {
-    return true
-  } else {
-    return false
-  }
+export async function iter8ServiceStatus(svc, args) {
+  const svcStr = await args.REPL.qexec(`kubectl get svc -n iter8 -o jsonpath='{.items[*].metadata.name}'`)
+  return svcStr
+    .substring(1, svcStr.length - 1)
+    .split(' ')
+    .includes(svc)
 }
 
 export function getAnalyticsURL() {

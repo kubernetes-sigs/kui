@@ -118,9 +118,11 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   private advancedStatisticsObject = {}
   private advancedStatisticsNames = {}
   private advancedStatiticsHeaders = []
+  private args
 
   public constructor(props) {
     super(props)
+    this.args = props
     this.state = {
       selectedAlgo: 'progressive', // Assumes that progressive is always the first algorithm
       trafficSplit: [{ version: '', split: 0 }], // Traffic split to be applied to each service (modified by analytics service or on toggle)
@@ -316,7 +318,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       }
     }
     this.setState({ chartData: tempChartData, chartOptions: tempChartOptions })
-    console.log(tempChartData)
   }
 
   // Get details for the criteria charts
@@ -360,8 +361,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         }
       }
       this.setState({ chartData: tempChartData, chartOptions: tempChartOptions })
-      console.log('After updating')
-      console.log(tempChartData)
     }
   }
 
@@ -487,7 +486,6 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
       newIterationRequest['last_state'] = this.state.experimentResult.last_state
       this.setState({ experimentRequest: newIterationRequest })
     }
-    console.log(this.state.experimentRequest)
     const AnalyticsAssess = new GetAnalyticsAssessment(this.state.experimentRequest)
     AnalyticsAssess.getAnalyticsAssessment()
       .then(result => {
@@ -573,7 +571,7 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
     const decision = getUserDecision(namespace, service, this.state.trafficSplit)
     decision['edgeService'] = this.state.edgeService
     decision['hostGateways'] = this.state.hostGateways
-    applyTrafficSplit(decision)
+    applyTrafficSplit(decision, this.args)
     const d = new Date()
     const time = d.toISOString()
     this.setState({ notifyTime: time, notifyUser: true, currentSplit: this.state.trafficSplit })
@@ -902,10 +900,10 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
   }
 }
 
-export function renderDecisionTab() {
+export function renderDecisionTab(tab) {
   return {
     react: function renderComponent() {
-      return <DecisionBase />
+      return <DecisionBase {...tab} />
     }
   }
 }
