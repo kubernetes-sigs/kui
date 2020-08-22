@@ -167,7 +167,7 @@ export const compile = async (
     // NOTE ON relativization: this is important so that webpack can
     // be instructed to pull in the plugins into the build see the
     // corresponding NOTE in ./plugins.ts and ./preloader.ts
-    const pattern = new RegExp(`^(.*\\${sep})(plugin-.*)$`)
+    const pattern = new RegExp(`^(.*\\${sep})(client.*|plugin-.*)$`)
     const fixed = externalOnly ? filepath : relative(pluginRoot, filepath).replace(pattern, '$2')
     return fixed
   }

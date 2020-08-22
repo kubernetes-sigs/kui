@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import { eventBus, Snapshot, SnapshotBlock, Registrar, UsageModel, promiseEach } from '@kui-shell/core'
+import {
+  eventBus,
+  inElectron,
+  KResponse,
+  ParsedOptions,
+  Snapshot,
+  SnapshotBlock,
+  Registrar,
+  promiseEach
+} from '@kui-shell/core'
 
 /**
  * Schema for a serialized snapshot of the Inputs and Outputs of
@@ -33,8 +42,17 @@ function isSerializedSnapshot(raw: Record<string, any>): raw is SerializedSnapsh
 }
 
 /** For the Kui command registration: enforce one mandatory positional parameter */
-function usage(cmd: string): { usage: UsageModel } {
-  return { usage: { strict: cmd, required: [{ name: '<filepath>', docs: 'path to saved snapshot' }] } }
+function usage(cmd: string) {
+  return {
+    usage: {
+      strict: cmd,
+      required: [{ name: '<filepath>', docs: 'path to saved snapshot' }],
+      optional: [{ name: '--new-window', alias: '-w', boolean: true, docs: 'Replay in a new window (Electron only)' }]
+    },
+    flags: {
+      boolean: ['new-window', 'w']
+    }
+  }
 }
 
 let nSnapshotable = 0
@@ -43,13 +61,24 @@ export function preload() {
   eventBus.onRemoveSnapshotable(() => nSnapshotable--)
 }
 
+interface Options extends ParsedOptions {
+  'new-window': boolean
+}
+
 /** Command registration */
 export default function(registrar: Registrar) {
   // register the `replay` command
-  registrar.listen(
+  registrar.listen<KResponse, Options>(
     '/replay',
-    async ({ argvNoOptions, REPL, tab }) => {
-      const filepath = argvNoOptions[argvNoOptions.indexOf('replay') + 1]
+    async ({ argvNoOptions, parsedOptions, REPL, tab }) => {
+      const filepath = argvNoOptions[1]
+
+      if (parsedOptions['new-window'] && inElectron()) {
+        // the electron bits are sequestered in plugin-electron, to
+        // avoid pulling in electron for purely browser-based clients
+        return REPL.qexec(`replay-electron ${filepath}`)
+      }
+
       const model = JSON.parse(
         (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
       )

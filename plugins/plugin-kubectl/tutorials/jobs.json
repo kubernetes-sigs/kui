@@ -1,0 +1,1161 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Snapshot",
+  "spec": {
+    "windows": [
+      {
+        "uuid": "0",
+        "tabs": [
+          {
+            "uuid": "0",
+            "blocks": [
+              {
+                "startTime": 1598094358790,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/kubeui/k/get/jobs",
+                  "command": "k get jobs",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                      "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "f697c928-4ac1-4d7f-855e-d906d1ea038b"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "k get jobs",
+                  "argvNoOptions": ["k", "get", "jobs"],
+                  "parsedOptions": { "_": ["k", "get", "jobs"] },
+                  "execUUID": "f697c928-4ac1-4d7f-855e-d906d1ea038b",
+                  "cancelled": false,
+                  "evaluatorOptions": { "plugin": "plugin-kubectl" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "f697c928-4ac1-4d7f-855e-d906d1ea038b",
+                    "history": 250,
+                    "env": {}
+                  },
+                  "response": {
+                    "header": {
+                      "key": "JOB",
+                      "name": "Job",
+                      "rowKey": "NAME",
+                      "fontawesome": false,
+                      "onclick": false,
+                      "onclickSilence": true,
+                      "css": "",
+                      "rowCSS": [],
+                      "outerCSS": "header-cell ",
+                      "attributes": [
+                        {
+                          "key": "NAME",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell entity-name-group",
+                          "css": "  ",
+                          "value": "Name"
+                        },
+                        {
+                          "key": "STATUS",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell ",
+                          "css": "  ",
+                          "value": "Status"
+                        },
+                        {
+                          "key": "START",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell  hide-with-sidecar",
+                          "css": "  ",
+                          "value": "Start"
+                        },
+                        {
+                          "key": "START2",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "hide",
+                          "css": "  ",
+                          "value": "Start2"
+                        },
+                        {
+                          "key": "END",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell  hide-with-sidecar",
+                          "css": "  ",
+                          "value": "End"
+                        },
+                        { "key": "Duration", "value": "Duration" },
+                        { "key": "Cold Start", "value": "Cold Start", "outerCSS": "hide-with-sidecar" }
+                      ]
+                    },
+                    "body": [
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-6q7jn",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-6q7jn -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-6q7jn"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:37Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:39Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:50Z"
+                          },
+                          { "key": "Duration", "value": "13000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-29mbp",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-29mbp -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-29mbp"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:37Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:39Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:51Z"
+                          },
+                          { "key": "Duration", "value": "14000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-wblj9",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-wblj9 -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-wblj9"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:37Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:40Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:51Z"
+                          },
+                          { "key": "Duration", "value": "14000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-48zw8",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-48zw8 -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-48zw8"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:37Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:40Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:50Z"
+                          },
+                          { "key": "Duration", "value": "13000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-2glnx",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-2glnx -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-2glnx"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:50Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:51Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:57Z"
+                          },
+                          { "key": "Duration", "value": "7000" },
+                          { "key": "Cold Start", "value": "1000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-hwmvg",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-hwmvg -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-hwmvg"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:51Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:53Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:03Z"
+                          },
+                          { "key": "Duration", "value": "12000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-rs9dq",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-rs9dq -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-rs9dq"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:51Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:53Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:01Z"
+                          },
+                          { "key": "Duration", "value": "10000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-vx5z5",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-vx5z5 -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-vx5z5"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:52Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:54Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:04Z"
+                          },
+                          { "key": "Duration", "value": "12000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-58kdg",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-58kdg -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-58kdg"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:58Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:24:59Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:08Z"
+                          },
+                          { "key": "Duration", "value": "10000" },
+                          { "key": "Cold Start", "value": "1000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-t5bnw",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-t5bnw -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-t5bnw"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:01Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:03Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:09Z"
+                          },
+                          { "key": "Duration", "value": "8000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-2qvdb",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-2qvdb -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-2qvdb"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:03Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:05Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:11Z"
+                          },
+                          { "key": "Duration", "value": "8000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-d2v2k",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-d2v2k -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-d2v2k"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:05Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:07Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:14Z"
+                          },
+                          { "key": "Duration", "value": "9000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-tqp6d",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-tqp6d -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-tqp6d"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:08Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:10Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:18Z"
+                          },
+                          { "key": "Duration", "value": "10000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-zzl6c",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-zzl6c -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-zzl6c"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:10Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:11Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:20Z"
+                          },
+                          { "key": "Duration", "value": "10000" },
+                          { "key": "Cold Start", "value": "1000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-mq427",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-mq427 -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-mq427"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:12Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:13Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:19Z"
+                          },
+                          { "key": "Duration", "value": "7000" },
+                          { "key": "Cold Start", "value": "1000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-6kpd5",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-6kpd5 -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-6kpd5"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:14Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:16Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:23Z"
+                          },
+                          { "key": "Duration", "value": "9000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-mkfkl",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-mkfkl -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-mkfkl"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:18Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:20Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:27Z"
+                          },
+                          { "key": "Duration", "value": "9000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-2wj7k",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-2wj7k -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-2wj7k"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:20Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:21Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:28Z"
+                          },
+                          { "key": "Duration", "value": "8000" },
+                          { "key": "Cold Start", "value": "1000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-vz59r",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-vz59r -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-vz59r"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:21Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:23Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:29Z"
+                          },
+                          { "key": "Duration", "value": "8000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi2",
+                        "rowKey": "pi2-vjbcs",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi2-vjbcs -o yaml    ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi2-vjbcs"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:24Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:26Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-19T17:25:32Z"
+                          },
+                          { "key": "Duration", "value": "8000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      }
+                    ],
+                    "noSort": true,
+                    "title": "Job",
+                    "statusColumnIdx": 1,
+                    "startColumnIdx": 2,
+                    "completeColumnIdx": 4,
+                    "durationColumnIdx": 5,
+                    "coldStartColumnIdx": 6
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 250
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
