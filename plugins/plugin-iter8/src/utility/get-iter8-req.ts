@@ -59,16 +59,13 @@ function getCandModel(namespace: string, candList: Array<string>): Array<Object>
   return candObjs
 }
 //Converts the current time and form state in API request format
-export default function getRequestModel(time: string, formstate: Formstate): Object {
-  let MetricMethods = new GetMetricConfig()
-  let counterRlts = MetricMethods.getCounterMetrics()
-  let ratioRlts = MetricMethods.getRatioMetrics()
+export default function getRequestModel(time: string, formstate: Formstate, args): Object {
   return {
     start_time: time,
     service_name: formstate.service,
     metric_specs: {
-      counter_metrics: counterRlts,
-      ratio_metrics: ratioRlts
+      counter_metrics: formstate.countMetricsList,
+      ratio_metrics: formstate.ratioMetricsList
     },
     criteria: getCriteriaModel(formstate.criteria),
     baseline: {

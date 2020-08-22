@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { iter8ServiceStatus } from '../utility/iter8-svc-status'
 
-export function getiter8config(): boolean {
-  if (iter8ServiceStatus('iter8-controller') && iter8ServiceStatus('iter8-analytics')) {
-    return true
-  }
-  return false
+export async function getConfig(args) {
+  const [c, a] = await Promise.all([
+    iter8ServiceStatus('iter8-controller', args),
+    iter8ServiceStatus('iter8-analytics', args)
+  ])
+  return (c && a).toString()
 }

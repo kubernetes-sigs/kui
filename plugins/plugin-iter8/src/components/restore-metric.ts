@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { safeDump } from 'js-yaml'
+import { safeDump, safeLoad } from 'js-yaml'
 import { kubectlApplyRule } from './traffic-split'
 import { CounterMetric, RatioMetric } from './metric-config-types'
 import { MetricTypes } from '../modes/get-metrics'
-import { getMetricConfig, removeExtraneousMetaData } from './metric-config'
+import { Arguments } from '@kui-shell/core'
+import { removeExtraneousMetaData } from './metric-config'
 
-export default function restoreMetric(metric: CounterMetric | RatioMetric, type: MetricTypes): boolean {
+export default function restoreMetric(
+  configMap: any,
+  metric: CounterMetric | RatioMetric,
+  type: MetricTypes,
+  args: Arguments
+): boolean {
   try {
-    const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
+    // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
+    const counterMetrics = safeLoad(configMap.data['counter_metrics.yaml'])
+    const ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml'])
+
     const newConfigMap = removeExtraneousMetaData(configMap)
 
     if (type === MetricTypes.counter) {
@@ -33,7 +42,7 @@ export default function restoreMetric(metric: CounterMetric | RatioMetric, type:
     newConfigMap.data['counter_metrics.yaml'] = safeDump(counterMetrics)
     newConfigMap.data['ratio_metrics.yaml'] = safeDump(ratioMetrics)
 
-    kubectlApplyRule(newConfigMap)
+    kubectlApplyRule(newConfigMap, args)
 
     return true
   } catch (err) {
