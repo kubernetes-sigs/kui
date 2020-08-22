@@ -32,6 +32,7 @@ const registration: PreloadRegistration = () => {
     asyncs.push(import('./lib/cmds/replay').then(_ => _.preload()))
   }
 
+  asyncs.push(import('./tutorials/vfs').then(_ => _.preload()))
   return Promise.all(asyncs)
 }
 

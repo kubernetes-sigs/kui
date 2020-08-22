@@ -89,7 +89,8 @@ export function createWindow(
   noHeadless = false,
   executeThisArgvPlease?: string[],
   subwindowPlease?: boolean,
-  subwindowPrefs?: ISubwindowPrefs
+  subwindowPrefs?: ISubwindowPrefs,
+  secondary = false
 ) {
   debug('createWindow', executeThisArgvPlease)
 
@@ -332,94 +333,99 @@ export function createWindow(
       nWindows--
     })
 
-    //
-    // set up ipc from renderer
-    //
-    const { ipcMain } = await import('electron')
+    if (!secondary) {
+      //
+      // set up ipc from renderer
+      //
+      const { ipcMain } = await import('electron')
 
-    //
-    // take a screenshot; note that this has to be done in the main
-    // process, due to the way clipboard.writeImage is implemented on
-    // Linux. on macOS, this could be done entirely in the renderer
-    // process. on Linux, however, the nativeImages aren't
-    // translatable between the renderer and main processes as fluidly
-    // as they are on macOS. oh well! this is why the screenshot
-    // plugin has to pollute main.js
-    //
-    debug('ipc registration')
-    ipcMain.on('capture-page-to-clipboard', async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
-      try {
-        const { clipboard, nativeImage, webContents } = await import('electron')
-        const image = await webContents.fromId(parseInt(contentsId, 10)).capturePage(rect)
+      //
+      // take a screenshot; note that this has to be done in the main
+      // process, due to the way clipboard.writeImage is implemented on
+      // Linux. on macOS, this could be done entirely in the renderer
+      // process. on Linux, however, the nativeImages aren't
+      // translatable between the renderer and main processes as fluidly
+      // as they are on macOS. oh well! this is why the screenshot
+      // plugin has to pollute main.js
+      //
+      debug('ipc registration')
+      ipcMain.on('capture-page-to-clipboard', async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
         try {
-          const buf = image.toPNG()
-          clipboard.writeImage(nativeImage.createFromBuffer(buf))
-          event.sender.send('capture-page-to-clipboard-done', buf)
+          const { clipboard, nativeImage, webContents } = await import('electron')
+          const image = await webContents.fromId(parseInt(contentsId, 10)).capturePage(rect)
+          try {
+            const buf = image.toPNG()
+            clipboard.writeImage(nativeImage.createFromBuffer(buf))
+            event.sender.send('capture-page-to-clipboard-done', buf)
+          } catch (err) {
+            console.log(err)
+            event.sender.send('capture-page-to-clipboard-done')
+          }
         } catch (err) {
           console.log(err)
           event.sender.send('capture-page-to-clipboard-done')
         }
-      } catch (err) {
-        console.log(err)
-        event.sender.send('capture-page-to-clipboard-done')
-      }
-    })
-    // end of screenshot logic
+      })
+      // end of screenshot logic
 
-    ipcMain.on('synchronous-message', (event, arg: string) => {
-      const message = JSON.parse(arg)
-      switch (message.operation) {
-        case 'quit':
-          app.quit()
-          break
-        case 'open-graphical-shell':
-          createWindow(true)
-          break
-        case 'enlarge-window':
-          mainWindow.setContentSize(1400, 1050, true)
-          break
-        case 'reduce-window':
-          mainWindow.setContentSize(1024, 768, true)
-          break
-        case 'maximize-window':
-          mainWindow.maximize()
-          break
-        case 'unmaximize-window':
-          mainWindow.unmaximize()
-          break
-      }
-      event.returnValue = 'ok'
-    })
-    ipcMain.on('/exec/invoke', async (event, arg: string) => {
-      const message = JSON.parse(arg)
-      const channel = `/exec/response/${message.hash}`
-      debug('invoke', message)
+      ipcMain.on('synchronous-message', (event, arg: string) => {
+        const message = JSON.parse(arg)
+        switch (message.operation) {
+          case 'quit':
+            app.quit()
+            break
+          case 'new-window':
+            createWindow(true, message.argv, undefined, undefined, true)
+            break
+          case 'open-graphical-shell':
+            createWindow(true)
+            break
+          case 'enlarge-window':
+            mainWindow.setContentSize(1400, 1050, true)
+            break
+          case 'reduce-window':
+            mainWindow.setContentSize(1024, 768, true)
+            break
+          case 'maximize-window':
+            mainWindow.maximize()
+            break
+          case 'unmaximize-window':
+            mainWindow.unmaximize()
+            break
+        }
+        event.returnValue = 'ok'
+      })
+      ipcMain.on('/exec/invoke', async (event, arg: string) => {
+        const message = JSON.parse(arg)
+        const channel = `/exec/response/${message.hash}`
+        debug('invoke', message)
 
-      try {
-        const mod = await import(message.module)
-        debug('invoke got module')
+        try {
+          const mod = await import(message.module)
+          debug('invoke got module')
 
-        const returnValue = await mod[message.main || 'main'](message.args)
-        debug('invoke got returnValue', returnValue)
+          const returnValue = await mod[message.main || 'main'](message.args)
+          debug('invoke got returnValue', returnValue)
 
-        event.sender.send(
-          channel,
-          JSON.stringify({
-            success: true,
-            returnValue
-          })
-        )
-      } catch (error) {
-        debug('error in exec', error)
-        event.sender.send(
-          channel,
-          JSON.stringify({
-            success: false,
-            error
-          })
-        )
-      }
-    })
+          event.sender.send(
+            channel,
+            JSON.stringify({
+              success: true,
+              returnValue
+            })
+          )
+        } catch (error) {
+          debug('error in exec', error)
+          event.sender.send(
+            channel,
+            JSON.stringify({
+              success: false,
+              error
+            })
+          )
+        }
+      })
+    }
 
     debug('createWindow done')
   })

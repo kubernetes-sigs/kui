@@ -33,4 +33,13 @@ export default async (registrar: PreloadRegistrar) => {
     registrar.registerModes(drilldownButtonWithString, drilldownButtonWithFunction, mode1, mode2, mode5, mode3)
     registrar.registerBadges(badge1, badge2, badge3)
   }
+
+  // mount tutorials
+  try {
+    const { tutorialVFS } = await import('@kui-shell/plugin-core-support')
+    tutorialVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/test'] })
+    tutorialVFS.cp(undefined, 'plugin://client/tutorials/ls.json', '/kui/test')
+  } catch (err) {
+    console.error('Error mounting test tutorials', err)
+  }
 }

@@ -36,6 +36,8 @@ import { eventsMode, eventsBadge } from './lib/view/modes/Events'
 
 import tabCompletionProvider from './lib/tab-completion'
 
+import { tutorialVFS } from '@kui-shell/plugin-core-support'
+
 export default async (registrar: PreloadRegistrar) => {
   // register modes
   await registrar.registerModes(
@@ -59,6 +61,10 @@ export default async (registrar: PreloadRegistrar) => {
 
   // register badges
   await registrar.registerBadges(eventsBadge)
+
+  // mount tutorials
+  tutorialVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })
+  tutorialVFS.cp(undefined, 'plugin://plugin-kubectl/tutorials/jobs.json', '/kui/kubernetes')
 
   // register tab completion provider
   try {

@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
-export { default as Search } from './components/Search'
-export { default as Screenshot } from './components/Screenshot'
-export { default as UpdateChecker } from './components/UpdateChecker'
+import { CLI, Common, ReplExpect } from '@kui-shell/test'
+
+describe(`tutorial vfs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it('should list our test tutorial directory', () =>
+    CLI.command('ls -l /kui', this.app)
+      .then(ReplExpect.okWith('test'))
+      .catch(Common.oops(this, true)))
+
+  it('should list our test tutorial', () =>
+    CLI.command('ls -l /kui/test', this.app)
+      .then(ReplExpect.okWith('ls.json'))
+      .catch(Common.oops(this, true)))
+})

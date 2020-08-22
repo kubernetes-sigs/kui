@@ -20,11 +20,10 @@ import { inBrowser } from '@kui-shell/core'
 import { Kui, KuiProps, ContextWidgets, MeterWidgets, CurrentWorkingDirectory } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
-import { UpdateChecker } from '@kui-shell/plugin-core-support'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
 // import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
-import { Screenshot, Search } from '@kui-shell/plugin-electron-components'
+import { Screenshot, Search, UpdateChecker } from '@kui-shell/plugin-electron-components'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
