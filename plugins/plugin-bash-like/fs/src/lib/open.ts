@@ -98,6 +98,12 @@ async function open(args: Arguments): Promise<KResponse> {
       debug('trying to open a directory; delegating to ls')
       return REPL.qexec(`ls ${REPL.encodeComponent(filepath)}`)
     } else {
+      if (stats.viewer && stats.viewer !== 'open') {
+        const cmdline = `${stats.viewer} ${REPL.encodeComponent(filepath)}`
+        debug('delegating to fstat-provided viewer', cmdline)
+        return REPL.qexec(cmdline)
+      }
+
       const enclosingDirectory = dirname(filepath)
 
       const data: string | Element = stats.data

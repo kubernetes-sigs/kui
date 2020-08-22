@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve } from 'path'
+import { isAbsolute, join } from 'path'
 import { Arguments, REPL, eventBus, getCurrentTab } from '@kui-shell/core'
 
 import { FStat } from '../lib/fstat'
@@ -67,7 +67,10 @@ export interface VFS {
   ): Promise<FStat>
 
   /** Create a directory/bucket */
-  mkdir(opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>, filepath: string): Promise<void>
+  mkdir(
+    opts: Pick<Arguments, 'command' | 'REPL' | 'argvNoOptions' | 'parsedOptions' | 'execOptions'>,
+    filepath: string
+  ): Promise<void>
 
   /** remove a directory/bucket */
   rmdir(opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>, filepath: string): Promise<void>
@@ -132,7 +135,7 @@ export async function mount(vfs: VFS | ((repl: REPL) => VFS | Promise<VFS>)) {
 
 /** @return the absolute path to `filepath` */
 function absolute(filepath: string): string {
-  return resolve(filepath) // isAbsolute(filepath) ? filepath : join(process.env.PWD, filepath)
+  return isAbsolute(filepath) ? filepath : join(process.env.PWD, filepath)
 }
 
 /** Lookup compiatible mount */
