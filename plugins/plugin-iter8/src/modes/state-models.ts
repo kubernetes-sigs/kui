@@ -44,6 +44,12 @@ interface Formstate {
   invalidHostGateways: boolean
   criteria: Array<CriterionState>
   disableReward: boolean
+  nsList: Array<{ id: string; text: string }>
+  svcList: Array<{ id: string; text: string }>
+  deployList: Array<{ id: string; text: string }>
+  countMetricsList: Array<any>
+  ratioMetricsList: Array<any>
+  totalMetricsList: Array<any>
 }
 // Model for decisionForm.tsx
 interface DecisionState {
