@@ -34,7 +34,7 @@ const metricYamlMode: ModeRegistration<KubeResource> = {
   mode: {
     mode: 'Metric Yaml',
     label: 'Config Map',
-    content: getMetricsYaml(),
+    content: getMetricsYaml,
     contentType: 'yaml'
   }
 }
