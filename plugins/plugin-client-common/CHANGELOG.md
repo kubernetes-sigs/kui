@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.12.2](https://github.com/IBM/kui/compare/v8.12.1...v8.12.2) (2020-08-24)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** defer loading of both icon sets ([5849a5c](https://github.com/IBM/kui/commit/5849a5c)), closes [#5444](https://github.com/IBM/kui/issues/5444)
+
+### Features
+
+- initial typeahead for commands ([84a1d62](https://github.com/IBM/kui/commit/84a1d62)), closes [#5437](https://github.com/IBM/kui/issues/5437)
+
 ## [8.12.1](https://github.com/IBM/kui/compare/v8.12.0...v8.12.1) (2020-08-21)
 
 ### Bug Fixes

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.12.2](https://github.com/IBM/kui/compare/v8.12.1...v8.12.2) (2020-08-24)
+
+### Bug Fixes
+
+- **plugins/plugin-iter8:** Removed execSync from iter8 plugin ([eaffd5e](https://github.com/IBM/kui/commit/eaffd5e)), closes [#5408](https://github.com/IBM/kui/issues/5408)
+
 ## [8.12.1](https://github.com/IBM/kui/compare/v8.12.0...v8.12.1) (2020-08-21)
 
 ### Bug Fixes
