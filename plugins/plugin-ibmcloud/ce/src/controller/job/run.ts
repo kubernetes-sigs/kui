@@ -43,7 +43,7 @@ async function runOne(args: Arguments<KubeOptions>) {
   if (!name || !name[1]) {
     return response
   } else {
-    return listJob(args, { extraArgs: [name[1]], watch: true }).catch(err => {
+    return listJob(args, { names: [name[1]], watch: true }).catch(err => {
       console.error('error in list-after-run', err)
       return response
     })

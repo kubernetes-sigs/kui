@@ -15,7 +15,14 @@
  */
 
 import { Arguments, isTable } from '@kui-shell/core'
-import { doGet, KubeOptions, isTableRequest, computeDurations } from '@kui-shell/plugin-kubectl'
+import {
+  doGet,
+  KubeOptions,
+  getLabel,
+  isTableRequest,
+  computeDurations,
+  watchRequestFrom
+} from '@kui-shell/plugin-kubectl'
 
 import JobRun from '../../lib/kinds/JobRun'
 
@@ -31,14 +38,13 @@ export default async function KubectlGetJob(args: Arguments<KubeOptions>) {
     // get-watch uses the stripped option; we need to unstrip it :(
     args.command = args.command.replace(/([^\\])\\([^\\])/g, '$1\\\\$2')
 
-    const table = await args.REPL.qexec(
-      `ibmcloud ce kubectl get pod --sort-by={.status.startTime} -o custom-columns=JOB:.metadata.labels.jobrun,POD:.metadata.name,STATUS:.status.phase,START:.status.startTime,START2:.status.containerStatuses[0].state.terminated.startedAt,END:.status.containerStatuses[0].state.terminated.finishedAt ${
-        args.parsedOptions.limit ? `--limit ${args.parsedOptions.limit}` : ''
-      }`,
-      undefined,
-      undefined,
-      args.execOptions
-    )
+    const label = getLabel(args)
+    const filter = label ? `-l '${label}'` : ''
+    const cmdline = `ibmcloud ce kubectl get pod ${filter} --sort-by={.status.startTime} -o custom-columns=JOB:.metadata.labels.jobrun,NAME:.metadata.name,STATUS:.status.phase,START:.status.startTime,START2:.status.containerStatuses[0].state.terminated.startedAt,END:.status.containerStatuses[0].state.terminated.finishedAt ${
+      args.parsedOptions.limit ? `--limit ${args.parsedOptions.limit}` : ''
+    } ${watchRequestFrom(args)}`
+
+    const table = await args.REPL.qexec(cmdline, undefined, undefined, args.execOptions)
 
     if (isTable(table)) {
       // in case we want to limit the numbre of jobs displayed
