@@ -43,13 +43,7 @@ export default function bind(
     }
 
     if (provider.List) {
-      cmds.forEach(cmd =>
-        this.listen(
-          `/ibmcloud/${ce}/${cmd}/list`,
-          typeof provider.List === 'string' ? doListWith.bind(provider.List) : provider.List,
-          defaultOption
-        )
-      )
+      cmds.forEach(cmd => this.listen(`/ibmcloud/${ce}/${cmd}/list`, doListWith.bind(provider.List), defaultOption))
     }
 
     if (provider.Run) {

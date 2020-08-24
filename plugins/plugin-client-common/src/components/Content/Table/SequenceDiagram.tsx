@@ -48,6 +48,7 @@ function prettyPrintDuration(duration: number): string {
     return prettyMillis(duration)
   } catch (err) {
     console.error('error formatting duration', duration, err)
+    return ''
   }
 }
 
