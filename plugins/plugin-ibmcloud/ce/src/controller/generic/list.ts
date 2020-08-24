@@ -26,21 +26,28 @@ export interface ListOptions extends KubeOptions {
 
 const defaultLimit = 200
 
-export default async function(this: string, args: Arguments<ListOptions>, { extraArgs = [''], watch = false } = {}) {
+export default async function(
+  this: string | ((names: string[]) => string),
+  args: Arguments<ListOptions>,
+  { names, watch = false }: { names?: string[]; watch?: boolean } = {}
+) {
   if (isUsage(args)) {
     return doExecWithStdoutViaPty(args)
   }
 
+  const jobNames = names || args.argvNoOptions.slice(args.argvNoOptions.indexOf('list') + 1)
+
   const { currentConfigFile, projectName } = await getConfig(args)
 
   // this is the kubectl command line equivalent
-  const cmd = `${this} --kubeconfig "${currentConfigFile}" ${watchRequestFrom(args, watch)} ${extraArgs.join(' ')}`
+  const baseCmdline = typeof this === 'string' ? this : this(jobNames)
+  const cmdline = `${baseCmdline} --kubeconfig "${currentConfigFile}" ${watchRequestFrom(args, watch)}`
 
   const limit = args.parsedOptions.limit || defaultLimit
   return withNamespaceBreadcrumb(
     projectName,
     await args.REPL.qexec<Table | MixedResponse>(
-      cmd,
+      cmdline,
       undefined,
       undefined,
       Object.assign({}, args.execOptions, { data: { limit } })
