@@ -187,6 +187,8 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    *
    */
   private footer(streams: string[]) {
+    this.props.response.footer = this.props.response.footer ? this.props.response.footer.concat(streams) : streams
+
     this.setState(curState => {
       return {
         footer: curState.footer ? curState.footer.concat(streams) : streams
