@@ -20,6 +20,7 @@ import {
   ScalarResponse,
   SnapshotBlock,
   UsageError,
+  isWatchable,
   inBrowser
 } from '@kui-shell/core'
 
@@ -252,6 +253,17 @@ export function snapshot(block: BlockModel): SnapshotBlock {
       flags: undefined
     })
 
+    /**
+     * We excluded watch for now since a `Watchable` instance is not serializable
+     * see issue: https://github.com/IBM/kui/issues/5399
+     * and issue: https://github.com/IBM/kui/issues/5452
+     *
+     */
+    const response =
+      block.completeEvent.response && isWatchable(block.completeEvent.response)
+        ? Object.assign({}, block.completeEvent.response, { watch: undefined })
+        : block.completeEvent.response
+
     return {
       startTime: new Date(block.startTime).getTime(),
       startEvent: Object.assign({}, block.startEvent, { tab: block.startEvent.tab.uuid }),
@@ -259,7 +271,8 @@ export function snapshot(block: BlockModel): SnapshotBlock {
         {},
         block.completeEvent,
         { execOptions, evaluatorOptions },
-        { tab: block.completeEvent.tab.uuid }
+        { tab: block.completeEvent.tab.uuid },
+        { response }
       )
     }
   }
