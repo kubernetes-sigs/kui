@@ -17,8 +17,9 @@
 import * as React from 'react'
 
 import KuiContext from '../../Client/context'
-import Carbon from './impl/Carbon'
-import PatternFly from './impl/PatternFly'
+
+const Carbon = React.lazy(() => import('./impl/Carbon'))
+const PatternFly = React.lazy(() => import('./impl/PatternFly'))
 
 export type SupportedIcon =
   | 'Add'
@@ -68,8 +69,10 @@ export default function iconImpl(props: Props): React.ReactElement {
     return <Carbon {...props} />
   }
   return (
-    <KuiContext.Consumer>
-      {config => (config.components === 'patternfly' ? <PatternFly {...props} /> : <Carbon {...props} />)}
-    </KuiContext.Consumer>
+    <React.Suspense fallback={<div />}>
+      <KuiContext.Consumer>
+        {config => (config.components === 'patternfly' ? <PatternFly {...props} /> : <Carbon {...props} />)}
+      </KuiContext.Consumer>
+    </React.Suspense>
   )
 }
