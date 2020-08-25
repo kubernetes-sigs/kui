@@ -25,6 +25,7 @@ import {
   ToolbarText,
   i18n,
   getPrimaryTabId,
+  TabLayoutChangeEvent,
   eventBus,
   eventChannelUnsafe
 } from '@kui-shell/core'
@@ -141,12 +142,13 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     eventChannelUnsafe.on(focusOffEvent, xoff)
     this.cleaners.push(() => eventChannelUnsafe.off(focusOffEvent, xoff))
 
-    const resizeListener = this.onResize.bind(this)
+    const resizeListener = this.onWindowResize.bind(this)
     window.addEventListener('resize', resizeListener)
     this.cleaners.push(() => window.removeEventListener('resize', resizeListener))
 
-    eventBus.onTabLayoutChange(uuid, resizeListener)
-    this.cleaners.push(() => eventBus.offTabLayoutChange(uuid, resizeListener))
+    const layoutListener = this.onTabLayoutChange.bind(this)
+    eventBus.onTabLayoutChange(uuid, layoutListener)
+    this.cleaners.push(() => eventBus.offTabLayoutChange(uuid, layoutListener))
   }
 
   /** Which container should we focus on by default? */
@@ -233,8 +235,14 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     }
   }
 
-  private onResize() {
+  private onWindowResize() {
     if (this.state.xterm) {
+      this.state.doResize()
+    }
+  }
+
+  private onTabLayoutChange(evt: TabLayoutChangeEvent) {
+    if (this.state.xterm && !evt.isSidecarNowHidden) {
       this.state.doResize()
     }
   }
