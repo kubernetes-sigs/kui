@@ -315,7 +315,12 @@ class InProcessExecutor implements Executor {
     const execType = (execOptions && execOptions.type) || ExecType.TopLevel
     const REPL = tab.REPL || getImpl(tab)
 
-    const command = commandUntrimmed.trim().replace(patterns.commentLine, '')
+    // trim suffix comments, e.g. "kubectl get pods # comments start here"
+    // insert whitespace for whitespace-free prefix comments, e.g. "#comments" -> "# comments"
+    const command = commandUntrimmed
+      .trim()
+      .replace(patterns.suffixComments, '$1')
+      .replace(patterns.prefixComments, '# $1')
     const argv = split(command)
 
     debug('command', commandUntrimmed)

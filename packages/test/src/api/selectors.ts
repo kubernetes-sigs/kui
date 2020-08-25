@@ -199,6 +199,7 @@ export const WATCHER_N_SHOW_AS_TABLE = (N: number) => WATCHER_N_DROPDOWN_ITEM(N,
 // terminal card
 export const TERMINAL_CARD = `.kui--card`
 export const TERMINAL_CARD_TITLE = `${TERMINAL_CARD} .kui--card-title`
+export const TERMINAL_CARD_BODY = `${TERMINAL_CARD} .kui--card-body`
 
 export const CURRENT_GRID_FOR_SPLIT = (N: number) => `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(N)} ${_PROMPT} ${_TABLE_AS_GRID}`
 export const CURRENT_GRID_BY_NAME_FOR_SPLIT = (N: number, name: string) =>

@@ -281,3 +281,21 @@ export function tableWithNRows(N: number) {
     }, waitTimeout)
   }
 }
+
+/** Expect a CommentaryResponse */
+export function comment(expectedBody: string, expectedTitle?: string) {
+  return async (res: AppAndCount) => {
+    const output = Selectors.OUTPUT_N(res.count)
+
+    if (expectedTitle) {
+      await res.app.client.waitForVisible(`${output} ${Selectors.TERMINAL_CARD}`)
+      const actualTitle: string = await res.app.client.getText(`${output} ${Selectors.TERMINAL_CARD_TITLE}`)
+      assert.strictEqual(actualTitle, expectedTitle)
+    }
+
+    const actualBody: string = await res.app.client.getText(`${output} ${Selectors.TERMINAL_CARD_BODY}`)
+    assert.strictEqual(actualBody, expectedBody)
+
+    return res.app
+  }
+}
