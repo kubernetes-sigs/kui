@@ -164,6 +164,7 @@ export default class Block extends React.PureComponent<Props, State> {
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
         <div
           className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
+          data-is-output-only={isOutputOnly(this.props.model) || undefined}
           data-announcement={isAnnouncement(this.props.model) || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}
