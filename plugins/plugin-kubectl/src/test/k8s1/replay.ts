@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
+import {
+  defaultModeForGet,
+  waitForGreen,
+  waitForRed,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { AppAndCount } from '@kui-shell/test/mdist/api/repl-expect'
 
-describe(`kubectl replay watch updates ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -26,7 +34,27 @@ describe(`kubectl replay watch updates ${process.env.MOCHA_RUN_TARGET || ''}`, f
 
   allocateNS(this, ns, 'kubectl')
 
-  it(`should create and delete the sample pod from URL via kubectl, and replay`, async () => {
+  it(`should create, get and delete the sample pod from URL via kubectl, and replay`, async () => {
+    const verifySidecar = async () => {
+      console.error('verifying sidecar')
+      await SidecarExpect.open(this.app)
+        .then(SidecarExpect.mode(defaultModeForGet))
+        .then(SidecarExpect.showing('nginx'))
+        .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
+    }
+
+    const verifyCreation = async (createRes: AppAndCount, createSelector: string) => {
+      console.error('verifying creation')
+      await waitForGreen(this.app, createSelector)
+      await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
+    }
+
+    const verifyDeletion = async (deleteSelector: string) => {
+      console.error('verifying deletion')
+      await waitForRed(this.app, deleteSelector)
+    }
+
+    // here comes the tests
     try {
       console.error('creating')
       const createRes = await CLI.command(
@@ -35,8 +63,10 @@ describe(`kubectl replay watch updates ${process.env.MOCHA_RUN_TARGET || ''}`, f
       )
 
       const createSelector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(createRes)
-      await waitForGreen(this.app, createSelector)
-      await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
+      await verifyCreation(createRes, createSelector)
+      await this.app.client.waitForExist(`${createSelector} .clickable`)
+      await this.app.client.click(`${createSelector} .clickable`)
+      await verifySidecar()
 
       console.error('deleting')
       const deleteRes = await CLI.command(
@@ -45,7 +75,7 @@ describe(`kubectl replay watch updates ${process.env.MOCHA_RUN_TARGET || ''}`, f
       )
 
       const deleteSelector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(deleteRes)
-      await waitForRed(this.app, deleteSelector)
+      await verifyDeletion(deleteSelector)
 
       console.error('snapshoting')
       await CLI.command('snapshot /tmp/test.kui', this.app).then(ReplExpect.justOK)
@@ -55,12 +85,9 @@ describe(`kubectl replay watch updates ${process.env.MOCHA_RUN_TARGET || ''}`, f
 
       await CLI.command('replay /tmp/test.kui', this.app)
 
-      console.error('verifying creation')
-      await waitForGreen(this.app, createSelector)
-      await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
-
-      console.error('verifying deletion')
-      await waitForRed(this.app, deleteSelector)
+      await verifyCreation(createRes, createSelector)
+      await verifySidecar()
+      await verifyDeletion(deleteSelector)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
