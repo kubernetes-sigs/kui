@@ -71,7 +71,13 @@ export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-err
 export { isMessageWithUsageModel, isMessageWithCode } from './core/usage-error'
 
 // eventChannelUnsafe
-export { default as eventChannelUnsafe, wireToTabEvents, wireToStandardEvents, eventBus } from './core/events'
+export {
+  default as eventChannelUnsafe,
+  wireToTabEvents,
+  wireToStandardEvents,
+  eventBus,
+  TabLayoutChangeEvent
+} from './core/events'
 
 // i18n
 export { fromMap as i18nFromMap, default as i18n } from './util/i18n'

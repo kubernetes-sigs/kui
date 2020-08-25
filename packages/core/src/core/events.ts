@@ -36,6 +36,9 @@ eventChannelUnsafe.setMaxListeners(100)
 
 export default eventChannelUnsafe
 
+export type TabLayoutChangeEvent = { isSidecarNowHidden: boolean }
+type TabLayoutChangeHandler = (evt: TabLayoutChangeEvent) => void
+
 class EventBusBase {
   protected readonly eventBus: EventEmitter
 
@@ -59,8 +62,8 @@ class WriteEventBus extends EventBusBase {
     this.eventBus.emit('/tab/switch/split', tab)
   }
 
-  public emitTabLayoutChange(tabUUID: string): void {
-    setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`))
+  public emitTabLayoutChange(tabUUID: string, evt: TabLayoutChangeEvent = { isSidecarNowHidden: false }): void {
+    setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`, evt))
   }
 
   private emitCommandEvent(which: 'start' | 'complete', event: CommandStartEvent | CommandCompleteEvent) {
@@ -158,11 +161,11 @@ class ReadEventBus extends WriteEventBus {
     this.eventBus.off('/tab/switch/split', listener)
   }
 
-  public onTabLayoutChange(tabUUID: string, listener: () => void): void {
+  public onTabLayoutChange(tabUUID: string, listener: TabLayoutChangeHandler): void {
     this.eventBus.on(`/tab/layout/change/${tabUUID}`, listener)
   }
 
-  public offTabLayoutChange(tabUUID: string, listener: () => void): void {
+  public offTabLayoutChange(tabUUID: string, listener: TabLayoutChangeHandler): void {
     this.eventBus.off(`/tab/layout/change/${tabUUID}`, listener)
   }
 

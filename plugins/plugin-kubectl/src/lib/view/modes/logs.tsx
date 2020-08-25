@@ -98,6 +98,9 @@ export class Logs extends Terminal<State> {
 
     if (!msgAndType) {
       return
+    } else if (!msgAndType[status]) {
+      console.error(`Unknown streaming status: ${status}`)
+      return
     }
 
     const msg1 = msgAndType[status].message
