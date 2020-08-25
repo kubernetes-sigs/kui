@@ -15,7 +15,8 @@
  */
 
 export const patterns = {
-  commentLine: /\s+#.*$/,
+  suffixComments: /^(\s*[^#\s].*)\s+#.*$/,
+  prefixComments: /^\s*#(.*)$/,
   dash: /-([^\s]*)/,
   whitespace: /\s/
 }
@@ -84,6 +85,17 @@ export const _split = (
       }
     } else if (escapeActive) {
       escapeActive = false
+    } else if (char === '#' && cur.length === 0) {
+      // stop parsing till end of line
+      if (idx < str.length - 2 && str[idx + 1] === ' ') {
+        // e.g. "kubectl get pod#comment"
+        A.push(char)
+        cur = str.slice(idx + 1)
+      } else {
+        // e.g. "# comment"
+        cur = str.slice(idx)
+      }
+      break
     }
 
     if (stack.length === 0 && !escapeActive && patterns.whitespace.test(char)) {
