@@ -250,7 +250,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
   private onWillChangeSize(desiredWidth: Width) {
     this.setState(curState => {
-      eventBus.emitTabLayoutChange(curState.tab.uuid)
+      eventBus.emitTabLayoutChange(curState.tab.uuid, { isSidecarNowHidden: desiredWidth === Width.Closed })
 
       const sidecarWidth = desiredWidth
 
