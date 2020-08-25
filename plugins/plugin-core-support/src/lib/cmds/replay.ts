@@ -109,7 +109,7 @@ export default function(registrar: Registrar) {
   // register the `snapshot` command
   registrar.listen(
     '/snapshot',
-    ({ argvNoOptions, REPL }) =>
+    ({ argvNoOptions, REPL, tab }) =>
       new Promise((resolve, reject) => {
         let nSplits = 0
         let blocks: SnapshotBlock[] = []
@@ -141,7 +141,27 @@ export default function(registrar: Registrar) {
                   ]
                 }
               }
-              const data = JSON.stringify(snapshot)
+
+              /**
+               * We have excluded block and replaced tab with uuid in the top level
+               * completeEvent and startEvent of a snapshot,
+               * but there are still some underlying properties have tab and block,
+               * so we filter out HTML tab and block in the replacer,
+               * see issue: https://github.com/IBM/kui/issues/5458
+               *
+               */
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const replacer = (key: string, value: any) => {
+                if (key === 'tab' && typeof value === typeof tab) {
+                  return undefined
+                } else if (key === 'block') {
+                  return undefined
+                } else {
+                  return value
+                }
+              }
+
+              const data = JSON.stringify(snapshot, replacer)
               await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(filepath)}`, { data })
 
               resolve(true)
