@@ -25,6 +25,8 @@ interface Props {
 
   widthOverlay?: string
   titleOverlay?: string
+
+  onClick?: () => void
 }
 
 export default class Bar extends React.PureComponent<Props> {
@@ -32,10 +34,13 @@ export default class Bar extends React.PureComponent<Props> {
     return (
       <div className="kui--bar-wrapper">
         <div
-          className={'kui--bar ' + (this.props.className || 'kui--bar-default-color')}
+          className={
+            'kui--bar ' + (this.props.className || 'kui--bar-default-color') + (this.props.onClick ? ' clickable' : '')
+          }
           title={this.props.title}
           data-left={this.props.left}
           data-width={this.props.width}
+          onClick={this.props.onClick}
           style={{
             left: this.props.left,
             width: this.props.width

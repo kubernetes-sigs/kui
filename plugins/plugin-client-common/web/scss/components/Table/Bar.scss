@@ -25,12 +25,11 @@
 .kui--bar-overlay {
   background: repeating-linear-gradient(
     -55deg,
-    rgba(0, 0, 0, 0.9),
-    rgba(0, 0, 0, 0.4) 1px,
-    rgba(255, 255, 255, 0.1) 2px,
-    rgba(255, 255, 255, 0.3) 3px
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.6) 1px,
+    rgba(255, 255, 255, 0.7) 2px,
+    rgba(255, 255, 255, 0.5) 3px
   );
-  mix-blend-mode: overlay;
   height: 100%;
 }
 
@@ -38,6 +37,10 @@
   position: absolute;
   top: 0;
   bottom: 0;
+
+  &.clickable:hover {
+    cursor: pointer;
+  }
 
   &.kui--bar-default-color {
     background-color: var(--color-latency-1);
