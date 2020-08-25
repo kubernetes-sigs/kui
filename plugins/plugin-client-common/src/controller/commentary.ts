@@ -76,22 +76,39 @@ export async function fetchMarkdownFile(filepath: string, args: Arguments): Prom
   }
 }
 
-async function addComment(args: Arguments<CommentaryOptions>): Promise<CommentaryResponse> {
+async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
   const { title } = args.parsedOptions
   const filepath = args.parsedOptions.file || args.parsedOptions.f
 
-  if (filepath) {
-    const data = await fetchMarkdownFile(filepath, args)
-    return {
-      apiVersion: 'kui-shell/v1',
-      kind: 'CommentaryResponse',
-      props: {
-        title,
-        children: data
+  // the markdown data either comes from a file, or directly from the
+  // command line
+  const data = filepath
+    ? await fetchMarkdownFile(filepath, args) // from file
+    : args.command // directly from command lien
+        .trim()
+        .slice(args.command.indexOf(' ') + 1)
+        .trim()
+        .replace(/\\n/g, '\n')
+        .replace(/(-t|--title)\s+\S+/, '')
+
+  if (data) {
+    if (data === '#') {
+      // empty comment
+      return true
+    } else {
+      return {
+        apiVersion: 'kui-shell/v1',
+        kind: 'CommentaryResponse',
+        props: {
+          title,
+          children: data
+        }
       }
     }
   } else {
-    throw new Error('Insufficient arguments: must specify --file or -f')
+    throw new Error(
+      'Insufficient arguments: must specify either --file or -f, or provide a comment on the command line'
+    )
   }
 }
 
@@ -101,4 +118,5 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<Commentar
  */
 export default async (commandTree: Registrar) => {
   commandTree.listen('/commentary', addComment, { usage, outputOnly: true })
+  commandTree.listen('/#', addComment, { usage, outputOnly: true })
 }

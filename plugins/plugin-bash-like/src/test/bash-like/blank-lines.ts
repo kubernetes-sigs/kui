@@ -44,41 +44,53 @@ describe('Comments and blank line handling', function(this: Common.ISuite) {
     CLI.command(`open ../../README.md  #hello  `, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('README.md')))
+      .then(SidecarExpect.showing('README.md'))
+      .catch(Common.oops(this, true)))
 
   it('should handle a command with suffix comment', () =>
     CLI.command(`open ../../LICENSE ### ### # #    hello  `, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE')))
+      .then(SidecarExpect.showing('LICENSE'))
+      .catch(Common.oops(this, true)))
 
+  const comment = 'open ../../README.md'
   it('should handle a commented-out command', () =>
-    CLI.command(`#open ../../README.md`, this.app)
-      .then(ReplExpect.blank)
+    CLI.command(`#${comment}`, this.app)
+      .then(ReplExpect.comment(comment))
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE'))) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .catch(Common.oops(this, true)))
 
   it('should handle a commented-out command with intermingled whitespace', () =>
-    CLI.command(`#     open ../../README.md`, this.app)
-      .then(ReplExpect.blank)
+    CLI.command(`#     ${comment}`, this.app)
+      .then(ReplExpect.comment(comment))
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE'))) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .catch(Common.oops(this, true)))
 
   it('should handle a commented-out command with suffix comment', () =>
     CLI.command(`#open ../../README.md ### ### # #    hello  `, this.app)
       .then(ReplExpect.blank)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE'))) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .catch(Common.oops(this, true)))
 
+  const comment2In = 'openfoobar ../../README.md ### ### # #    hello   '
+  const comment2Out = 'openfoobar ../../README.md ### ### # # hello'
   it('should handle a commented-out parse-error', () =>
-    CLI.command(`#openfoobar ../../README.md ### ### # #    hello  `, this.app)
-      .then(ReplExpect.blank)
+    CLI.command(`#${comment2In}`, this.app)
+      .then(ReplExpect.comment(comment2Out))
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE'))) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .catch(Common.oops(this, true)))
 
+  const comment3In = 'open ../../README.md =))))- -(((( x=>x ### ### # #    hello   '
+  const comment3Out = 'open ../../README.md =))))- -(((( x=>x ### ### # # hello'
   it('should handle a commented-out parse-error 2', () =>
-    CLI.command(`#open ../../README.md =))))- -(((( x=>x ### ### # #    hello  `, this.app)
-      .then(ReplExpect.blank)
+    CLI.command(`#${comment3In}`, this.app)
+      .then(ReplExpect.comment(comment3Out))
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE'))) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .catch(Common.oops(this, true)))
 })

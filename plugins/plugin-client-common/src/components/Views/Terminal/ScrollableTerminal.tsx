@@ -385,7 +385,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               (event.evaluatorOptions && event.evaluatorOptions.alwaysViewIn === 'Terminal') ||
               (event.execOptions && event.execOptions.alwaysViewIn === 'Terminal')
 
-            const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly
+            // note: even if the command registration asked for
+            // `outputOnly`, we ignore that if the response is a plain
+            // `true`; e.g. the `commentary` controller uses this to
+            // indicate an empty comment
+            const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly && event.response !== true
 
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
