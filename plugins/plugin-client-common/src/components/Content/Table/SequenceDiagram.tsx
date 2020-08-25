@@ -71,12 +71,11 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
   private getFraction(numerator: number, interval?: DenseInterval) {
     // return `${((numerator / (interval.endMillis - interval.startMillis)) * 100).toFixed(10).toString()}%`
-    return `${(
-      (numerator / (interval ? interval.endMillis - interval.startMillis : this.state.maxIntervalTimeSpan)) *
-      100
+    const fraction = Math.min(
+      1,
+      numerator / (interval ? interval.endMillis - interval.startMillis : this.state.maxIntervalTimeSpan)
     )
-      .toFixed(10)
-      .toString()}%`
+    return `${(fraction * 100).toFixed(10).toString()}%`
   }
 
   private static computeGapModel(response: Table, denseThreshold: number) {
@@ -222,18 +221,21 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 : startMillis - new Date(interval.rows[0].attributes[idx1].value).getTime()
 
             const gapText =
-              intervalIdx === 0 && rowIdx === 0
-                ? 0 // very first row
+              (intervalIdx === 0 && rowIdx === 0) || gap === 0
+                ? '' // very first row
                 : (gap >= 0 ? '+' : '') + prettyPrintDuration(gap)
 
             const interGroupGapRow = rowIdx === 0 ? this.gapRow(startMillis, intervalIdx) : []
+
+            // drilldown to underlying resource, e.g. Pod for Kubernetes Jobs
+            const onClick = onClickForCell(row, this.props.tab, this.props.repl)
 
             return interGroupGapRow.concat([
               <tr key={`${intervalIdx}-${rowIdx}`}>
                 <td>
                   <span
                     className={'kui--table-cell-is-name cell-inner ' + (row.onclick ? 'clickable' : '')}
-                    onClick={onClickForCell(row, this.props.tab, this.props.repl)}
+                    onClick={onClick}
                   >
                     {row.name}
                   </span>
@@ -244,6 +246,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                     width={width}
                     widthOverlay={widthB}
                     className={className}
+                    onClick={onClick}
                     title={title}
                     titleOverlay={titleB}
                   />
