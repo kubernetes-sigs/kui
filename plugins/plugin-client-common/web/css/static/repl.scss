@@ -70,38 +70,6 @@
     }
   } */
 
-  /** Coloring the context border by status of the block */
-  .repl-block {
-    position: relative;
-
-    &:before {
-      background-color: var(--color-table-border2);
-      border-left: none;
-      border-right: none;
-      border-radius: 1px;
-      opacity: 0.375;
-      content: '';
-      left: 0;
-      position: absolute;
-      top: 0.1875rem;
-      bottom: 0.1875rem;
-      width: 4px;
-    }
-    &[data-is-focused]:before {
-      opacity: 1;
-    }
-    &.error:before {
-      opacity: 1;
-      background-color: var(--color-error);
-    }
-    &[data-is-focused] .repl-context {
-      opacity: 1;
-    }
-    &:hover .repl-output .repl-context:after {
-      border-color: var(--color-base03);
-    }
-  }
-
   .repl-prompt-righty {
     font-weight: 700;
     text-shadow: 0 0 1px var(--color-text-02);

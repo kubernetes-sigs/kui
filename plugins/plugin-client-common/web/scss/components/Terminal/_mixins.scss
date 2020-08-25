@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-@mixin MiniSplit {
-  .kui--scrollback[data-is-minisplit] {
+@mixin Scrollback {
+  .kui--scrollback {
     @content;
   }
 }
 
+@mixin MiniSplit {
+  @include Scrollback {
+    &[data-is-minisplit] {
+      @content;
+    }
+  }
+}
+
 @mixin PlainTerminal {
-  .kui--scrollback:not([data-is-minisplit]):not([data-is-width-constrained]) {
-    @content;
+  @include Scrollback {
+    &:not([data-is-minisplit]):not([data-is-width-constrained]) {
+      @content;
+    }
   }
 }
