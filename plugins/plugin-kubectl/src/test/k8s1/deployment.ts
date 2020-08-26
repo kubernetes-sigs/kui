@@ -70,6 +70,8 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
           ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('myapp') })
         )
 
+        await waitForGreen(this.app, selector)
+
         await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
 
         const selectorPrefix = selector.replace(Selectors.BY_NAME('myapp'), '')

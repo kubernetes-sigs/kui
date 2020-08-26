@@ -115,7 +115,8 @@ export class NotFoundError extends StatusError {
 }
 
 export const getCommandFromArgs = (args: { argvNoOptions: string[] }) => {
-  return args.argvNoOptions[0] === commandPrefix ? args.argvNoOptions[1] : args.argvNoOptions[0]
+  const cmd = args.argvNoOptions[0] === commandPrefix ? args.argvNoOptions[1] : args.argvNoOptions[0]
+  return cmd === 'k' ? 'kubectl' : cmd
 }
 
 /**

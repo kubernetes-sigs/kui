@@ -19,6 +19,7 @@ import { Registrar } from '@kui-shell/core'
 import apiResources from './controller/kubectl/api-resources'
 import contexts from './controller/kubectl/contexts'
 import create from './controller/kubectl/create'
+import deployment from './controller/kubectl/deployment'
 import describe from './controller/kubectl/describe'
 import edit from './controller/kubectl/edit'
 import explain from './controller/kubectl/explain'
@@ -48,6 +49,7 @@ export default async (registrar: Registrar) => {
   jobList(registrar)
   kget(registrar)
   kgetNs(registrar)
+  deployment(registrar)
   kustomize(registrar)
   raw(registrar)
   run(registrar)
