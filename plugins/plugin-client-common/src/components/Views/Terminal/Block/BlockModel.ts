@@ -281,11 +281,26 @@ export function snapshot(block: BlockModel): SnapshotBlock {
 export function isHidden(block: BlockModel) {
   if (isActive(block) || isAnnouncement(block) || isCancelled(block) || isEmpty(block)) {
     return false
-  } else {
-    return block.startEvent.echo === false
   }
 }
 
 export function isOutputOnly(block: BlockModel) {
-  return isOk(block) && block.outputOnly
+  if (isProcessing(block)) {
+    return block.startEvent.echo === false
+  } else if (isOk(block)) {
+    return (
+      (block.completeEvent && block.completeEvent.echo === false) ||
+      (block.startEvent && block.startEvent.echo === false) ||
+      block.outputOnly
+    )
+  }
+}
+
+/**
+ * If the `responseType` of the `completeEvent` is not 'ScalarResponse',
+ * it's not presented in `ScrollableTerminal`
+ *
+ */
+export function isPresentedElsewhere(block: BlockModel) {
+  return isOk(block) && block.completeEvent && block.completeEvent.responseType !== 'ScalarResponse'
 }

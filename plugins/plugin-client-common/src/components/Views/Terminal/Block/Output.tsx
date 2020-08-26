@@ -43,10 +43,12 @@ import {
   isOk,
   isCancelled,
   isEmpty,
+  isPresentedElsewhere,
   isOops
 } from './BlockModel'
 
 import Scalar from '../../../Content/Scalar/'
+import Else from './Else'
 
 const strings = i18n('plugin-client-common')
 
@@ -218,6 +220,15 @@ export default class Output extends React.PureComponent<Props, State> {
     if (isOk(this.props.model)) {
       if (hasContent) {
         return <div className="ok" />
+      } else if (isPresentedElsewhere(this.props.model)) {
+        // Else signifies where the content is presented,
+        // and provides ways to re-interact with the content if it's gone
+        return (
+          <React.Fragment>
+            <Else completeEvent={this.props.model.completeEvent} />
+            <span className="ok" />
+          </React.Fragment>
+        )
       } else {
         return <div className="ok">{strings('ok')}</div>
       }
