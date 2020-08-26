@@ -15,16 +15,7 @@
  */
 
 import { UTC as speedDate } from 'speed-date'
-import {
-  i18n,
-  Arguments,
-  ParsedOptions,
-  MixedResponse,
-  Registrar,
-  Table,
-  TableStyle
-  // withLanguage
-} from '@kui-shell/core'
+import { i18n, Arguments, ParsedOptions, MixedResponse, Registrar, Table } from '@kui-shell/core'
 
 import { GlobStats } from './glob'
 import { localFilepath } from './usage-helpers'
@@ -238,8 +229,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
       header,
       body,
       noSort: true,
-      noEntityColors: true,
-      style: TableStyle.Light
+      noEntityColors: true
     }
   }
 }
