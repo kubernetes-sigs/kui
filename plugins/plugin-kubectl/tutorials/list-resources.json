@@ -1,0 +1,595 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Snapshot",
+  "spec": {
+    "windows": [
+      {
+        "uuid": "0",
+        "tabs": [
+          {
+            "uuid": "0",
+            "blocks": [
+              {
+                "startTime": 1598457173543,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#  ## Creating a Resource from Config \\n Create a Kubernetes Resources from Remote Config.",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "18e20096-6767-4c6f-b9ae-f2517dec3588"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "# ## Creating a Resource from Config \\n Create a Kubernetes Resources from Remote Config.",
+                  "argvNoOptions": [
+                    "#",
+                    "  ## Creating a Resource from Config \\n Create a Kubernetes Resources from Remote Config."
+                  ],
+                  "parsedOptions": {
+                    "_": [
+                      "#",
+                      "  ## Creating a Resource from Config \\n Create a Kubernetes Resources from Remote Config."
+                    ]
+                  },
+                  "execUUID": "18e20096-6767-4c6f-b9ae-f2517dec3588",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "18e20096-6767-4c6f-b9ae-f2517dec3588",
+                    "history": 250,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "## Creating a Resource from Config \n Create a Kubernetes Resources from Remote Config."
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 250
+                }
+              },
+              {
+                "startTime": 1598457190765,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/kubeui/kubectl/apply",
+                  "command": "kubectl apply -f plugins/plugin-kubectl/tests/data/k8s/deployment.yaml",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                      "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "alwaysViewIn": "Terminal",
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "3e6fd9f4-186b-4524-a287-e9c8916e3bd6"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "kubectl apply -f plugins/plugin-kubectl/tests/data/k8s/deployment.yaml",
+                  "argvNoOptions": ["kubectl", "apply"],
+                  "parsedOptions": {
+                    "_": ["kubectl", "apply"],
+                    "f": "plugins/plugin-kubectl/tests/data/k8s/deployment.yaml"
+                  },
+                  "execUUID": "3e6fd9f4-186b-4524-a287-e9c8916e3bd6",
+                  "cancelled": false,
+                  "evaluatorOptions": { "alwaysViewIn": "Terminal", "plugin": "plugin-kubectl" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "3e6fd9f4-186b-4524-a287-e9c8916e3bd6",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "header": {
+                      "key": "NAME",
+                      "name": "Name",
+                      "attributes": [
+                        { "key": "NAMESPACE", "value": "Namespace" },
+                        { "key": "KIND", "value": "Kind", "outerCSS": "" },
+                        { "key": "STATUS", "value": "Status", "outerCSS": "" }
+                      ]
+                    },
+                    "body": [
+                      {
+                        "name": "myapp",
+                        "onclick": "kubectl get Deployment.v1.apps -n demo myapp -o yaml",
+                        "onclickSilence": true,
+                        "attributes": [
+                          { "key": "NAMESPACE", "value": "demo" },
+                          { "key": "KIND", "value": "Deployment.v1.apps", "outerCSS": "", "css": "" },
+                          { "key": "STATUS", "tag": "badge", "value": "1/1", "outerCSS": "", "css": "green-background" }
+                        ],
+                        "key": "NAME"
+                      }
+                    ]
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              },
+              {
+                "startTime": 1598457207936,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#      ## Listing Kubernetes Resources\\n List the Kubernetes Deployment Resources. \\n\\n **Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 1,
+                  "execUUID": "1e400054-c2fa-487b-bd22-61a05e6906ad",
+                  "echo": true
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 1,
+                  "command": "#     ## Listing Kubernetes Resources\\n List the Kubernetes Deployment Resources. \\n\\n **Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
+                  "argvNoOptions": [
+                    "#",
+                    "      ## Listing Kubernetes Resources\\n List the Kubernetes Deployment Resources. \\n\\n **Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                  ],
+                  "parsedOptions": {
+                    "_": [
+                      "#",
+                      "      ## Listing Kubernetes Resources\\n List the Kubernetes Deployment Resources. \\n\\n **Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                    ]
+                  },
+                  "execUUID": "1e400054-c2fa-487b-bd22-61a05e6906ad",
+                  "cancelled": false,
+                  "echo": true,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "echo": true,
+                    "type": 1,
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "1e400054-c2fa-487b-bd22-61a05e6906ad",
+                    "history": 252,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "## Listing Kubernetes Resources\n List the Kubernetes Deployment Resources. \n\n **Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 252
+                }
+              },
+              {
+                "startTime": 1598457218679,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/kubeui/kubectl/get",
+                  "command": "kubectl get deployments",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                      "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "57c55350-b2ba-4b54-bb48-73919729a837"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "kubectl get deployments",
+                  "argvNoOptions": ["kubectl", "get", "deployments"],
+                  "parsedOptions": { "_": ["kubectl", "get", "deployments"] },
+                  "execUUID": "57c55350-b2ba-4b54-bb48-73919729a837",
+                  "cancelled": false,
+                  "evaluatorOptions": { "plugin": "plugin-kubectl" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "57c55350-b2ba-4b54-bb48-73919729a837",
+                    "history": 253,
+                    "env": {}
+                  },
+                  "response": {
+                    "header": {
+                      "key": "NAME",
+                      "name": "Name",
+                      "rowKey": "NAME",
+                      "fontawesome": false,
+                      "onclick": false,
+                      "onclickSilence": true,
+                      "css": " kui--table-cell-is-name",
+                      "rowCSS": [],
+                      "outerCSS": "header-cell entity-name-group",
+                      "attributes": [
+                        {
+                          "key": "READY",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell a-few-numbers-wide kui--hide-in-narrower-windows",
+                          "css": "  yellow-background",
+                          "value": "Ready"
+                        },
+                        {
+                          "key": "UP-TO-DATE",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell ",
+                          "css": "  ",
+                          "value": "Up-to-date"
+                        },
+                        {
+                          "key": "AVAILABLE",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell  hide-with-sidecar",
+                          "css": "  ",
+                          "value": "Available"
+                        },
+                        {
+                          "key": "AGE",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell hide-with-sidecar hide-with-sidecar",
+                          "css": "  ",
+                          "value": "Age"
+                        }
+                      ]
+                    },
+                    "body": [
+                      {
+                        "key": "NAME",
+                        "name": "myapp",
+                        "rowKey": "myapp",
+                        "fontawesome": false,
+                        "onclick": "kubectl get Deployment myapp -o yaml    ",
+                        "onclickSilence": true,
+                        "css": " kui--table-cell-is-name",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group",
+                        "attributes": [
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "UP-TO-DATE",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AVAILABLE",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "28s"
+                          }
+                        ]
+                      }
+                    ],
+                    "noSort": true,
+                    "title": "Deployment",
+                    "breadcrumbs": [{ "label": "demo" }],
+                    "statusColumnIdx": -1
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 253
+                }
+              },
+              {
+                "startTime": 1598457226251,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#  Print detailed information about the myapp Deployment",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "2f6369bd-445d-4606-a4de-e9f50168834a"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "# Print detailed information about the myapp Deployment",
+                  "argvNoOptions": ["#", "  Print detailed information about the myapp Deployment"],
+                  "parsedOptions": { "_": ["#", "  Print detailed information about the myapp Deployment"] },
+                  "execUUID": "2f6369bd-445d-4606-a4de-e9f50168834a",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "2f6369bd-445d-4606-a4de-e9f50168834a",
+                    "history": 254,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": { "children": "Print detailed information about the myapp Deployment" }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 254
+                }
+              },
+              {
+                "startTime": 1598457230207,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/kubeui/kubectl/describe",
+                  "command": "kubectl describe deployment myapp",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                      "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "a05cba70-d60f-4721-b070-9251a203e32e"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "kubectl describe deployment myapp",
+                  "argvNoOptions": ["kubectl", "describe", "deployment", "myapp"],
+                  "parsedOptions": { "_": ["kubectl", "describe", "deployment", "myapp"] },
+                  "execUUID": "a05cba70-d60f-4721-b070-9251a203e32e",
+                  "cancelled": false,
+                  "evaluatorOptions": { "plugin": "plugin-kubectl" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "a05cba70-d60f-4721-b070-9251a203e32e",
+                    "history": 255,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {
+                      "annotations": {
+                        "deployment.kubernetes.io/revision": "1",
+                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"drone-app\"},\"name\":\"myapp\",\"namespace\":\"demo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"drone-app\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"drone-app\"}},\"spec\":{\"affinity\":{\"podAntiAffinity\":{\"requiredDuringSchedulingIgnoredDuringExecution\":[{\"labelSelector\":{\"matchExpressions\":[{\"key\":\"app\",\"operator\":\"In\",\"values\":[\"drone-app\"]}]},\"topologyKey\":\"kubernetes.io/hostname\"}]}},\"containers\":[{\"image\":\"rvennam/drone-app:latest\",\"name\":\"drone-app\",\"ports\":[{\"containerPort\":3000}],\"resources\":{\"limits\":{\"cpu\":\"100m\",\"memory\":\"128Mi\"},\"requests\":{\"cpu\":\"50m\",\"memory\":\"64Mi\"}}}],\"terminationGracePeriodSeconds\":0}}}}\n"
+                      },
+                      "creationTimestamp": "2020-08-26T15:53:10Z",
+                      "generation": 1,
+                      "labels": { "app": "drone-app" },
+                      "name": "myapp",
+                      "namespace": "demo",
+                      "resourceVersion": "20812",
+                      "selfLink": "/apis/apps/v1/namespaces/demo/deployments/myapp",
+                      "uid": "b3e2860d-9ff1-4e01-836b-823c215f0e2f"
+                    },
+                    "spec": {
+                      "progressDeadlineSeconds": 600,
+                      "replicas": 1,
+                      "revisionHistoryLimit": 10,
+                      "selector": { "matchLabels": { "app": "drone-app" } },
+                      "strategy": {
+                        "rollingUpdate": { "maxSurge": "25%", "maxUnavailable": "25%" },
+                        "type": "RollingUpdate"
+                      },
+                      "template": {
+                        "metadata": { "creationTimestamp": null, "labels": { "app": "drone-app" } },
+                        "spec": {
+                          "affinity": {
+                            "podAntiAffinity": {
+                              "requiredDuringSchedulingIgnoredDuringExecution": [
+                                {
+                                  "labelSelector": {
+                                    "matchExpressions": [{ "key": "app", "operator": "In", "values": ["drone-app"] }]
+                                  },
+                                  "topologyKey": "kubernetes.io/hostname"
+                                }
+                              ]
+                            }
+                          },
+                          "containers": [
+                            {
+                              "image": "rvennam/drone-app:latest",
+                              "imagePullPolicy": "Always",
+                              "name": "drone-app",
+                              "ports": [{ "containerPort": 3000, "protocol": "TCP" }],
+                              "resources": {
+                                "limits": { "cpu": "100m", "memory": "128Mi" },
+                                "requests": { "cpu": "50m", "memory": "64Mi" }
+                              },
+                              "terminationMessagePath": "/dev/termination-log",
+                              "terminationMessagePolicy": "File"
+                            }
+                          ],
+                          "dnsPolicy": "ClusterFirst",
+                          "restartPolicy": "Always",
+                          "schedulerName": "default-scheduler",
+                          "securityContext": {},
+                          "terminationGracePeriodSeconds": 0
+                        }
+                      }
+                    },
+                    "status": {
+                      "availableReplicas": 1,
+                      "conditions": [
+                        {
+                          "lastTransitionTime": "2020-08-26T15:53:13Z",
+                          "lastUpdateTime": "2020-08-26T15:53:13Z",
+                          "message": "Deployment has minimum availability.",
+                          "reason": "MinimumReplicasAvailable",
+                          "status": "True",
+                          "type": "Available"
+                        },
+                        {
+                          "lastTransitionTime": "2020-08-26T15:53:10Z",
+                          "lastUpdateTime": "2020-08-26T15:53:13Z",
+                          "message": "ReplicaSet \"myapp-6446557848\" has successfully progressed.",
+                          "reason": "NewReplicaSetAvailable",
+                          "status": "True",
+                          "type": "Progressing"
+                        }
+                      ],
+                      "observedGeneration": 1,
+                      "readyReplicas": 1,
+                      "replicas": 1,
+                      "updatedReplicas": 1
+                    },
+                    "isKubeResource": true,
+                    "originatingCommand": {
+                      "REPL": {},
+                      "argv": ["kubectl", "describe", "deployment", "myapp"],
+                      "command": "kubectl describe deployment myapp",
+                      "execOptions": {
+                        "type": 0,
+                        "language": "en-US",
+                        "execUUID": "a05cba70-d60f-4721-b070-9251a203e32e",
+                        "history": 255,
+                        "env": {}
+                      },
+                      "argvNoOptions": ["kubectl", "describe", "deployment", "myapp"],
+                      "parsedOptions": { "_": ["kubectl", "describe", "deployment", "myapp"] }
+                    },
+                    "kuiRawData": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  annotations:\n    deployment.kubernetes.io/revision: \"1\"\n    kubectl.kubernetes.io/last-applied-configuration: |\n      {\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"drone-app\"},\"name\":\"myapp\",\"namespace\":\"demo\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"drone-app\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"drone-app\"}},\"spec\":{\"affinity\":{\"podAntiAffinity\":{\"requiredDuringSchedulingIgnoredDuringExecution\":[{\"labelSelector\":{\"matchExpressions\":[{\"key\":\"app\",\"operator\":\"In\",\"values\":[\"drone-app\"]}]},\"topologyKey\":\"kubernetes.io/hostname\"}]}},\"containers\":[{\"image\":\"rvennam/drone-app:latest\",\"name\":\"drone-app\",\"ports\":[{\"containerPort\":3000}],\"resources\":{\"limits\":{\"cpu\":\"100m\",\"memory\":\"128Mi\"},\"requests\":{\"cpu\":\"50m\",\"memory\":\"64Mi\"}}}],\"terminationGracePeriodSeconds\":0}}}}\n  creationTimestamp: \"2020-08-26T15:53:10Z\"\n  generation: 1\n  labels:\n    app: drone-app\n  name: myapp\n  namespace: demo\n  resourceVersion: \"20812\"\n  selfLink: /apis/apps/v1/namespaces/demo/deployments/myapp\n  uid: b3e2860d-9ff1-4e01-836b-823c215f0e2f\nspec:\n  progressDeadlineSeconds: 600\n  replicas: 1\n  revisionHistoryLimit: 10\n  selector:\n    matchLabels:\n      app: drone-app\n  strategy:\n    rollingUpdate:\n      maxSurge: 25%\n      maxUnavailable: 25%\n    type: RollingUpdate\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        app: drone-app\n    spec:\n      affinity:\n        podAntiAffinity:\n          requiredDuringSchedulingIgnoredDuringExecution:\n          - labelSelector:\n              matchExpressions:\n              - key: app\n                operator: In\n                values:\n                - drone-app\n            topologyKey: kubernetes.io/hostname\n      containers:\n      - image: rvennam/drone-app:latest\n        imagePullPolicy: Always\n        name: drone-app\n        ports:\n        - containerPort: 3000\n          protocol: TCP\n        resources:\n          limits:\n            cpu: 100m\n            memory: 128Mi\n          requests:\n            cpu: 50m\n            memory: 64Mi\n        terminationMessagePath: /dev/termination-log\n        terminationMessagePolicy: File\n      dnsPolicy: ClusterFirst\n      restartPolicy: Always\n      schedulerName: default-scheduler\n      securityContext: {}\n      terminationGracePeriodSeconds: 0\nstatus:\n  availableReplicas: 1\n  conditions:\n  - lastTransitionTime: \"2020-08-26T15:53:13Z\"\n    lastUpdateTime: \"2020-08-26T15:53:13Z\"\n    message: Deployment has minimum availability.\n    reason: MinimumReplicasAvailable\n    status: \"True\"\n    type: Available\n  - lastTransitionTime: \"2020-08-26T15:53:10Z\"\n    lastUpdateTime: \"2020-08-26T15:53:13Z\"\n    message: ReplicaSet \"myapp-6446557848\" has successfully progressed.\n    reason: NewReplicaSetAvailable\n    status: \"True\"\n    type: Progressing\n  observedGeneration: 1\n  readyReplicas: 1\n  replicas: 1\n  updatedReplicas: 1\n",
+                    "toolbarText": {
+                      "type": "info",
+                      "text": "Created on **8/26/2020, 11:53:10 AM**. Showing resource version **20812**."
+                    },
+                    "onclick": {
+                      "kind": "kubectl get Deployment.v1.apps -n demo",
+                      "name": "kubectl get Deployment.v1.apps -n demo myapp",
+                      "namespace": "kubectl get ns demo -o yaml"
+                    },
+                    "modes": []
+                  },
+                  "responseType": "MultiModalResponse",
+                  "historyIdx": 255
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
