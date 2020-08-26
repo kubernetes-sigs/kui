@@ -559,3 +559,41 @@ export function withNamespaceBreadcrumb(ns: string, table: Table | MixedResponse
 
   return table
 }
+
+/** Don't hide this attribute with the sidecar open */
+export function showAlways(attr: number | string, table: Table) {
+  const pattern = typeof attr === 'string' ? new RegExp(`^${attr}$`, 'i') : undefined
+  const idx = typeof attr === 'number' ? attr : table.header.attributes.findIndex(_ => pattern.test(_.key))
+
+  if (idx >= 0) {
+    const header = table.header.attributes[idx]
+    header.outerCSS = header.outerCSS.replace(/kui--hide-in-narrower-windows/, '')
+    header.outerCSS = header.outerCSS.replace(/hide-with-sidecar/, '')
+
+    table.body.forEach(row => {
+      const attr = row.attributes[idx]
+      if (attr && attr.outerCSS) {
+        attr.outerCSS = attr.outerCSS.replace(/kui--hide-in-narrower-windows/, '')
+        attr.outerCSS = attr.outerCSS.replace(/hide-with-sidecar/, '')
+      }
+    })
+  }
+}
+
+/** Don't show this attribute with the sidecar open */
+export function hideWithSidecar(attr: number | string, table: Table) {
+  const pattern = typeof attr === 'string' ? new RegExp(`^${attr}$`, 'i') : undefined
+  const idx = typeof attr === 'number' ? attr : table.header.attributes.findIndex(_ => pattern.test(_.key))
+
+  if (idx >= 0) {
+    const header = table.header.attributes[idx]
+    header.outerCSS += 'kui--hide-in-narrower-windows'
+
+    table.body.forEach(row => {
+      const attr = row.attributes[idx]
+      if (attr && attr.outerCSS) {
+        attr.outerCSS += 'kui--hide-in-narrower-windows'
+      }
+    })
+  }
+}

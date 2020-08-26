@@ -131,6 +131,10 @@ body .bx--data-table {
     width: 100%;
   }
 
+  .kui--header-cell svg {
+    display: none;
+  }
+
   .bx--data-table-container {
     width: 100%;
     .bx--data-table {
