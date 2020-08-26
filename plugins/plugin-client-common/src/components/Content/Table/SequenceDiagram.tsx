@@ -58,7 +58,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
    * part of the same dense region of time.
    *
    */
-  private static readonly denseThreshold = 30 * 1000
+  private static readonly denseThreshold = 60 * 1000
 
   public constructor(props: Props) {
     super(props)
@@ -162,10 +162,12 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
   }
 
   private gapRow(startMillis: number, intervalIdx: number) {
+    const endMillis = this.state.intervals[intervalIdx].endMillis
     const gap = [
       <tr key={`gaprowB-${intervalIdx}`} className="kui--interval-start">
         <td className="kui--gap-cell sub-text" colSpan={this.nCols()}>
           {new Date(startMillis).toLocaleString()}
+          {endMillis ? ` (${prettyPrintDuration(endMillis - startMillis)} interval)` : ''}
         </td>
       </tr>
     ]
