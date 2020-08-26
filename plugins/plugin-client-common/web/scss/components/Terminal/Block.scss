@@ -40,6 +40,7 @@
     }
     &[data-is-focused]:before {
       opacity: 1;
+      background-color: var(--color-brand-01);
     }
     &.error:before {
       opacity: 1;
@@ -51,5 +52,63 @@
     &:hover .repl-output .repl-context:after {
       border-color: var(--color-base03);
     }
+  }
+
+  .repl-block {
+    .repl-output {
+      margin-top: 0.5rem;
+    }
+    .repl-input,
+    .repl-output {
+      padding-left: 1rem;
+    }
+    .repl-context {
+      color: var(--color-text-02);
+      display: flex;
+      justify-content: flex-end;
+      flex-basis: 3rem;
+      text-align: end;
+      margin-right: 0.5rem;
+      position: relative;
+      opacity: 0.75;
+    }
+
+    .repl-input .repl-context:before {
+      left: -1rem !important;
+    }
+
+    .repl-input {
+      .repl-context,
+      .repl-prompt-right-elements {
+        padding-top: 0.25rem;
+      }
+
+      .repl-input-element-wrapper {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid transparent;
+      }
+    }
+    &:not(.repl-active) {
+      .repl-input-element-wrapper {
+        background-color: rgba(100, 100, 100, 0.1);
+        border-color: rgba(100, 100, 100, 0.05);
+      }
+    }
+    .repl-output .repl-context {
+      opacity: 0;
+    }
+
+    &[data-is-output-only] .repl-result .kui--card {
+      padding: 0;
+      background: none;
+      box-shadow: none;
+      .kui--card-body {
+        padding: 0;
+      }
+    }
+  }
+  .kui--repl-block-right-element {
+    color: var(--color-text-02);
+    font-size: 0.625rem;
   }
 }
