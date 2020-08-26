@@ -1,0 +1,3266 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Snapshot",
+  "spec": {
+    "windows": [
+      {
+        "uuid": "0",
+        "tabs": [
+          {
+            "uuid": "0",
+            "blocks": [
+              {
+                "startTime": 1598462564282,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#   # Creating a Job \\n You can create a Job using `kubectl apply` with a manifest file",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "a43c9890-1a80-492e-a883-d4569c95f371"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "#  # Creating a Job \\n You can create a Job using `kubectl apply` with a manifest file",
+                  "argvNoOptions": [
+                    "#",
+                    "   # Creating a Job \\n You can create a Job using `kubectl apply` with a manifest file"
+                  ],
+                  "parsedOptions": {
+                    "_": [
+                      "#",
+                      "   # Creating a Job \\n You can create a Job using `kubectl apply` with a manifest file"
+                    ]
+                  },
+                  "execUUID": "a43c9890-1a80-492e-a883-d4569c95f371",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "execUUID": "a43c9890-1a80-492e-a883-d4569c95f371",
+                    "history": 250,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "# Creating a Job \n You can create a Job using `kubectl apply` with a manifest file"
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 250
+                }
+              },
+              {
+                "startTime": 1598462564309,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/kubeui/k/apply",
+                  "command": "k apply -f plugins/plugin-kubectl/tests/data/k8s/job.yaml",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                      "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "alwaysViewIn": "Terminal",
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "e96dc305-9fe0-45f3-80c5-a0b5ef135f5f"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "k apply -f plugins/plugin-kubectl/tests/data/k8s/job.yaml",
+                  "argvNoOptions": ["k", "apply"],
+                  "parsedOptions": { "_": ["k", "apply"], "f": "plugins/plugin-kubectl/tests/data/k8s/job.yaml" },
+                  "execUUID": "e96dc305-9fe0-45f3-80c5-a0b5ef135f5f",
+                  "cancelled": false,
+                  "evaluatorOptions": { "alwaysViewIn": "Terminal", "plugin": "plugin-kubectl" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "execUUID": "e96dc305-9fe0-45f3-80c5-a0b5ef135f5f",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "header": {
+                      "key": "JOB",
+                      "name": "Job",
+                      "rowKey": "NAME",
+                      "fontawesome": false,
+                      "onclick": false,
+                      "onclickSilence": true,
+                      "css": "",
+                      "rowCSS": [],
+                      "outerCSS": "header-cell ",
+                      "attributes": [
+                        {
+                          "key": "NAME",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell entity-name-group",
+                          "css": "  ",
+                          "value": "Name"
+                        },
+                        {
+                          "key": "STATUS",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell ",
+                          "css": "  ",
+                          "value": "Status"
+                        },
+                        {
+                          "key": "START",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell  hide-with-sidecar",
+                          "css": "  ",
+                          "value": "Start"
+                        },
+                        {
+                          "key": "START2",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "hide",
+                          "css": "  ",
+                          "value": "Start2"
+                        },
+                        {
+                          "key": "END",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell  hide-with-sidecar",
+                          "css": "  ",
+                          "value": "End"
+                        },
+                        { "key": "Duration", "value": "Duration" },
+                        { "key": "Cold Start", "value": "Cold Start", "outerCSS": "hide-with-sidecar" }
+                      ]
+                    },
+                    "body": [
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-hrlks",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-hrlks -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-hrlks"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:56Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:57Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:19Z"
+                          },
+                          { "key": "Duration", "value": "23000" },
+                          { "key": "Cold Start", "value": "1000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-njh2b",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-njh2b -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-njh2b"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:56Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:59Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:22Z"
+                          },
+                          { "key": "Duration", "value": "26000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-k7z5w",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-k7z5w -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-k7z5w"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:56Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:58Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:20Z"
+                          },
+                          { "key": "Duration", "value": "24000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-xnk7r",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-xnk7r -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-xnk7r"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:56Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:41:59Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:22Z"
+                          },
+                          { "key": "Duration", "value": "26000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-tw8zm",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-tw8zm -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-tw8zm"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:20Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:22Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:45Z"
+                          },
+                          { "key": "Duration", "value": "25000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-q9nsw",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-q9nsw -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-q9nsw"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:21Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:23Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:45Z"
+                          },
+                          { "key": "Duration", "value": "24000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-cz8ws",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-cz8ws -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-cz8ws"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:23Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:26Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:50Z"
+                          },
+                          { "key": "Duration", "value": "27000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-5wrv4",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-5wrv4 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-5wrv4"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:23Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:26Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:49Z"
+                          },
+                          { "key": "Duration", "value": "26000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-5ft9w",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-5ft9w -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-5ft9w"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:46Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:48Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:10Z"
+                          },
+                          { "key": "Duration", "value": "24000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-9tbr8",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-9tbr8 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-9tbr8"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:46Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:48Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:11Z"
+                          },
+                          { "key": "Duration", "value": "25000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-2ltt4",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-2ltt4 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-2ltt4"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:49Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:51Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:14Z"
+                          },
+                          { "key": "Duration", "value": "25000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-4thcw",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-4thcw -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-4thcw"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:50Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:42:52Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:14Z"
+                          },
+                          { "key": "Duration", "value": "24000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-wncc5",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-wncc5 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-wncc5"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:12Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:14Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:36Z"
+                          },
+                          { "key": "Duration", "value": "24000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-5btxb",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-5btxb -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-5btxb"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:12Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:15Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:38Z"
+                          },
+                          { "key": "Duration", "value": "26000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-s7qzx",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-s7qzx -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-s7qzx"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:14Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:17Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:39Z"
+                          },
+                          { "key": "Duration", "value": "25000" },
+                          { "key": "Cold Start", "value": "3000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-wj4zr",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-wj4zr -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-wj4zr"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:16Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:18Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:40Z"
+                          },
+                          { "key": "Duration", "value": "24000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-fvqn2",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-fvqn2 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-fvqn2"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:38Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:40Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:44:02Z"
+                          },
+                          { "key": "Duration", "value": "24000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-95lj7",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-95lj7 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-95lj7"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:39Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:40Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:44:01Z"
+                          },
+                          { "key": "Duration", "value": "22000" },
+                          { "key": "Cold Start", "value": "1000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-jw87c",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-jw87c -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-jw87c"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:40Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:42Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:44:03Z"
+                          },
+                          { "key": "Duration", "value": "23000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      },
+                      {
+                        "key": "JOB",
+                        "name": "pi",
+                        "rowKey": "pi-b8s2x",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " ",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-b8s2x -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-b8s2x"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  blue-background",
+                            "value": "Succeeded"
+                          },
+                          {
+                            "key": "START",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:41Z"
+                          },
+                          {
+                            "key": "START2",
+                            "onclick": false,
+                            "outerCSS": "hide",
+                            "css": "  ",
+                            "value": "2020-08-26T16:43:43Z"
+                          },
+                          {
+                            "key": "END",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2020-08-26T16:44:04Z"
+                          },
+                          { "key": "Duration", "value": "23000" },
+                          { "key": "Cold Start", "value": "2000", "outerCSS": "hide-with-sidecar" }
+                        ]
+                      }
+                    ],
+                    "noSort": true,
+                    "title": "Job",
+                    "breadcrumbs": [{ "label": "demo" }],
+                    "statusColumnIdx": 1,
+                    "startColumnIdx": 2,
+                    "completeColumnIdx": 4,
+                    "durationColumnIdx": 5,
+                    "coldStartColumnIdx": 6
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              },
+              {
+                "startTime": 1598462611186,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#  # Inspecting a Job\\nTo check a Job's status, run the following command:",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "ae92826c-927f-4f14-9acd-67b5f38bd81a"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "# # Inspecting a Job\\nTo check a Job's status, run the following command:",
+                  "argvNoOptions": ["#", "  # Inspecting a Job\\nTo check a Job's status, run the following command:"],
+                  "parsedOptions": {
+                    "_": ["#", "  # Inspecting a Job\\nTo check a Job's status, run the following command:"]
+                  },
+                  "execUUID": "ae92826c-927f-4f14-9acd-67b5f38bd81a",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "ae92826c-927f-4f14-9acd-67b5f38bd81a",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": { "children": "# Inspecting a Job\nTo check a Job's status, run the following command:" }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              },
+              {
+                "startTime": 1598462615977,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/kubeui/kubectl/describe",
+                  "command": "kubectl describe job pi",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                      "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "de840c61-a964-401d-b59c-fa4eb60c4579"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "kubectl describe job pi",
+                  "argvNoOptions": ["kubectl", "describe", "job", "pi"],
+                  "parsedOptions": { "_": ["kubectl", "describe", "job", "pi"] },
+                  "execUUID": "de840c61-a964-401d-b59c-fa4eb60c4579",
+                  "cancelled": false,
+                  "evaluatorOptions": { "plugin": "plugin-kubectl" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "de840c61-a964-401d-b59c-fa4eb60c4579",
+                    "history": 252,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "batch/v1",
+                    "kind": "Job",
+                    "metadata": {
+                      "annotations": {
+                        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"batch/v1\",\"kind\":\"Job\",\"metadata\":{\"annotations\":{},\"name\":\"pi\",\"namespace\":\"demo\"},\"spec\":{\"backoffLimit\":4,\"completions\":20,\"parallelism\":4,\"template\":{\"spec\":{\"containers\":[{\"command\":[\"perl\",\"-Mbignum=bpi\",\"-wle\",\"print bpi(2000)\"],\"image\":\"perl\",\"name\":\"pi\"}],\"restartPolicy\":\"Never\"}}}}\n"
+                      },
+                      "creationTimestamp": "2020-08-26T16:41:55Z",
+                      "labels": { "controller-uid": "2403b972-ad67-4e73-8f6b-d3bdab795f70", "job-name": "pi" },
+                      "name": "pi",
+                      "namespace": "demo",
+                      "resourceVersion": "25654",
+                      "selfLink": "/apis/batch/v1/namespaces/demo/jobs/pi",
+                      "uid": "2403b972-ad67-4e73-8f6b-d3bdab795f70"
+                    },
+                    "spec": {
+                      "backoffLimit": 4,
+                      "completions": 20,
+                      "parallelism": 4,
+                      "selector": { "matchLabels": { "controller-uid": "2403b972-ad67-4e73-8f6b-d3bdab795f70" } },
+                      "template": {
+                        "metadata": {
+                          "creationTimestamp": null,
+                          "labels": { "controller-uid": "2403b972-ad67-4e73-8f6b-d3bdab795f70", "job-name": "pi" }
+                        },
+                        "spec": {
+                          "containers": [
+                            {
+                              "command": ["perl", "-Mbignum=bpi", "-wle", "print bpi(2000)"],
+                              "image": "perl",
+                              "imagePullPolicy": "Always",
+                              "name": "pi",
+                              "resources": {},
+                              "terminationMessagePath": "/dev/termination-log",
+                              "terminationMessagePolicy": "File"
+                            }
+                          ],
+                          "dnsPolicy": "ClusterFirst",
+                          "restartPolicy": "Never",
+                          "schedulerName": "default-scheduler",
+                          "securityContext": {},
+                          "terminationGracePeriodSeconds": 30
+                        }
+                      }
+                    },
+                    "status": {
+                      "completionTime": "2020-08-26T16:44:04Z",
+                      "conditions": [
+                        {
+                          "lastProbeTime": "2020-08-26T16:44:04Z",
+                          "lastTransitionTime": "2020-08-26T16:44:04Z",
+                          "status": "True",
+                          "type": "Complete"
+                        }
+                      ],
+                      "startTime": "2020-08-26T16:41:56Z",
+                      "succeeded": 20
+                    },
+                    "isKubeResource": true,
+                    "originatingCommand": {
+                      "REPL": {},
+                      "argv": ["kubectl", "describe", "job", "pi"],
+                      "command": "kubectl describe job pi",
+                      "execOptions": {
+                        "type": 0,
+                        "language": "en-US",
+                        "execUUID": "de840c61-a964-401d-b59c-fa4eb60c4579",
+                        "history": 252,
+                        "env": {}
+                      },
+                      "argvNoOptions": ["kubectl", "describe", "job", "pi"],
+                      "parsedOptions": { "_": ["kubectl", "describe", "job", "pi"] }
+                    },
+                    "kuiRawData": "apiVersion: batch/v1\nkind: Job\nmetadata:\n  annotations:\n    kubectl.kubernetes.io/last-applied-configuration: |\n      {\"apiVersion\":\"batch/v1\",\"kind\":\"Job\",\"metadata\":{\"annotations\":{},\"name\":\"pi\",\"namespace\":\"demo\"},\"spec\":{\"backoffLimit\":4,\"completions\":20,\"parallelism\":4,\"template\":{\"spec\":{\"containers\":[{\"command\":[\"perl\",\"-Mbignum=bpi\",\"-wle\",\"print bpi(2000)\"],\"image\":\"perl\",\"name\":\"pi\"}],\"restartPolicy\":\"Never\"}}}}\n  creationTimestamp: \"2020-08-26T16:41:55Z\"\n  labels:\n    controller-uid: 2403b972-ad67-4e73-8f6b-d3bdab795f70\n    job-name: pi\n  name: pi\n  namespace: demo\n  resourceVersion: \"25654\"\n  selfLink: /apis/batch/v1/namespaces/demo/jobs/pi\n  uid: 2403b972-ad67-4e73-8f6b-d3bdab795f70\nspec:\n  backoffLimit: 4\n  completions: 20\n  parallelism: 4\n  selector:\n    matchLabels:\n      controller-uid: 2403b972-ad67-4e73-8f6b-d3bdab795f70\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        controller-uid: 2403b972-ad67-4e73-8f6b-d3bdab795f70\n        job-name: pi\n    spec:\n      containers:\n      - command:\n        - perl\n        - -Mbignum=bpi\n        - -wle\n        - print bpi(2000)\n        image: perl\n        imagePullPolicy: Always\n        name: pi\n        resources: {}\n        terminationMessagePath: /dev/termination-log\n        terminationMessagePolicy: File\n      dnsPolicy: ClusterFirst\n      restartPolicy: Never\n      schedulerName: default-scheduler\n      securityContext: {}\n      terminationGracePeriodSeconds: 30\nstatus:\n  completionTime: \"2020-08-26T16:44:04Z\"\n  conditions:\n  - lastProbeTime: \"2020-08-26T16:44:04Z\"\n    lastTransitionTime: \"2020-08-26T16:44:04Z\"\n    status: \"True\"\n    type: Complete\n  startTime: \"2020-08-26T16:41:56Z\"\n  succeeded: 20\n",
+                    "toolbarText": {
+                      "type": "info",
+                      "text": "Created on **8/26/2020, 12:41:55 PM**. Showing resource version **25654**."
+                    },
+                    "onclick": {
+                      "kind": "kubectl get Job.v1.batch -n demo",
+                      "name": "kubectl get Job.v1.batch -n demo pi",
+                      "namespace": "kubectl get ns demo -o yaml"
+                    },
+                    "modes": []
+                  },
+                  "responseType": "MultiModalResponse",
+                  "historyIdx": 252
+                }
+              },
+              {
+                "startTime": 1598462748750,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#  To view all Pod resources in your cluster, including Pods created by the Job which have completed, run:",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "eadf0bf8-5be8-48c2-a278-0fe1ab8c7251"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "# To view all Pod resources in your cluster, including Pods created by the Job which have completed, run:",
+                  "argvNoOptions": [
+                    "#",
+                    "  To view all Pod resources in your cluster, including Pods created by the Job which have completed, run:"
+                  ],
+                  "parsedOptions": {
+                    "_": [
+                      "#",
+                      "  To view all Pod resources in your cluster, including Pods created by the Job which have completed, run:"
+                    ]
+                  },
+                  "execUUID": "eadf0bf8-5be8-48c2-a278-0fe1ab8c7251",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "eadf0bf8-5be8-48c2-a278-0fe1ab8c7251",
+                    "history": 250,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "To view all Pod resources in your cluster, including Pods created by the Job which have completed, run:"
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 250
+                }
+              },
+              {
+                "startTime": 1598462752004,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/kubeui/kubectl/get",
+                  "command": "kubectl get pods -A",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                      "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "145bf565-618a-4a24-83b7-080e29be64f8"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "kubectl get pods -A",
+                  "argvNoOptions": ["kubectl", "get", "pods"],
+                  "parsedOptions": { "_": ["kubectl", "get", "pods"], "A": true },
+                  "execUUID": "145bf565-618a-4a24-83b7-080e29be64f8",
+                  "cancelled": false,
+                  "evaluatorOptions": { "plugin": "plugin-kubectl" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "145bf565-618a-4a24-83b7-080e29be64f8",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "header": {
+                      "key": "NAMESPACE",
+                      "name": "Namespace",
+                      "rowKey": "NAMESPACE-NAME",
+                      "fontawesome": false,
+                      "onclick": false,
+                      "onclickSilence": true,
+                      "css": "",
+                      "rowCSS": [],
+                      "outerCSS": "header-cell entity-name-group hide-with-sidecar not-a-name",
+                      "attributes": [
+                        {
+                          "key": "NAME",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell entity-name-group",
+                          "css": "  ",
+                          "value": "Name"
+                        },
+                        {
+                          "key": "READY",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell a-few-numbers-wide kui--hide-in-narrower-windows",
+                          "css": "  yellow-background",
+                          "value": "Ready"
+                        },
+                        {
+                          "key": "STATUS",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell ",
+                          "css": "  ",
+                          "value": "Status"
+                        },
+                        {
+                          "key": "RESTARTS",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell  hide-with-sidecar",
+                          "css": "  ",
+                          "value": "Restarts"
+                        },
+                        {
+                          "key": "AGE",
+                          "tag": false,
+                          "onclick": false,
+                          "outerCSS": "header-cell hide-with-sidecar hide-with-sidecar",
+                          "css": "  ",
+                          "value": "Age"
+                        }
+                      ]
+                    },
+                    "body": [
+                      {
+                        "key": "NAMESPACE",
+                        "name": "default",
+                        "rowKey": "default-nginx",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod nginx -o yaml -n default ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "nginx"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-example-job-jc4gk",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod example-job-jc4gk -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "example-job-jc4gk"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "8m18s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-2ltt4",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-2ltt4 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-2ltt4"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m43s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-4thcw",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-4thcw -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-4thcw"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m42s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-5btxb",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-5btxb -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-5btxb"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m20s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-5ft9w",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-5ft9w -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-5ft9w"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m46s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-5wrv4",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-5wrv4 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-5wrv4"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-95lj7",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-95lj7 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-95lj7"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "8m53s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-9tbr8",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-9tbr8 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-9tbr8"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m46s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-b8s2x",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-b8s2x -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-b8s2x"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "8m51s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-cz8ws",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-cz8ws -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-cz8ws"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-fvqn2",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-fvqn2 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-fvqn2"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "8m54s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-hrlks",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-hrlks -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-hrlks"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-jw87c",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-jw87c -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-jw87c"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "8m52s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-k7z5w",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-k7z5w -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-k7z5w"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-njh2b",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-njh2b -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-njh2b"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-q9nsw",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-q9nsw -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-q9nsw"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-s7qzx",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-s7qzx -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-s7qzx"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m18s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-tw8zm",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-tw8zm -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-tw8zm"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-wj4zr",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-wj4zr -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-wj4zr"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m16s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-wncc5",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-wncc5 -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-wncc5"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "9m20s"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "demo",
+                        "rowKey": "demo-pi-xnk7r",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod pi-xnk7r -o yaml -n demo ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "pi-xnk7r"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  yellow-background",
+                            "value": "0/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  gray-background",
+                            "value": "Completed"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  red-background",
+                            "value": "0"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "10m"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-coredns-5644d7b6d9-2mrm2",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod coredns-5644d7b6d9-2mrm2 -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "coredns-5644d7b6d9-2mrm2"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-coredns-5644d7b6d9-dtmns",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod coredns-5644d7b6d9-dtmns -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "coredns-5644d7b6d9-dtmns"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-etcd-minikube",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod etcd-minikube -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "etcd-minikube"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-kube-addon-manager-minikube",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod kube-addon-manager-minikube -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "kube-addon-manager-minikube"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-kube-apiserver-minikube",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod kube-apiserver-minikube -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "kube-apiserver-minikube"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-kube-controller-manager-minikube",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod kube-controller-manager-minikube -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "kube-controller-manager-minikube"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-kube-proxy-ntdjn",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod kube-proxy-ntdjn -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "kube-proxy-ntdjn"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-kube-scheduler-minikube",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod kube-scheduler-minikube -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "kube-scheduler-minikube"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "19h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kube-system",
+                        "rowKey": "kube-system-storage-provisioner",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod storage-provisioner -o yaml -n kube-system ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "storage-provisioner"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "16h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kubernetes-dashboard",
+                        "rowKey": "kubernetes-dashboard-dashboard-metrics-scraper-76585494d8-vd95f",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod dashboard-metrics-scraper-76585494d8-vd95f -o yaml -n kubernetes-dashboard ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "dashboard-metrics-scraper-76585494d8-vd95f"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  green-background",
+                            "value": "1"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "16h"
+                          }
+                        ]
+                      },
+                      {
+                        "key": "NAMESPACE",
+                        "name": "kubernetes-dashboard",
+                        "rowKey": "kubernetes-dashboard-kubernetes-dashboard-57f4cb4545-9b6b4",
+                        "fontawesome": false,
+                        "onclick": false,
+                        "onclickSilence": true,
+                        "css": "",
+                        "rowCSS": [],
+                        "outerCSS": " entity-name-group hide-with-sidecar not-a-name",
+                        "attributes": [
+                          {
+                            "key": "NAME",
+                            "onclick": "kubectl get Pod kubernetes-dashboard-57f4cb4545-9b6b4 -o yaml -n kubernetes-dashboard ",
+                            "outerCSS": " entity-name-group",
+                            "css": " entity-name ",
+                            "value": "kubernetes-dashboard-57f4cb4545-9b6b4"
+                          },
+                          {
+                            "key": "READY",
+                            "onclick": false,
+                            "outerCSS": " a-few-numbers-wide kui--hide-in-narrower-windows",
+                            "css": "  green-background",
+                            "value": "1/1"
+                          },
+                          {
+                            "key": "STATUS",
+                            "tag": "badge",
+                            "onclick": false,
+                            "outerCSS": " ",
+                            "css": "  green-background",
+                            "value": "Running"
+                          },
+                          {
+                            "key": "RESTARTS",
+                            "onclick": false,
+                            "outerCSS": "  hide-with-sidecar",
+                            "css": "  ",
+                            "value": "2"
+                          },
+                          {
+                            "key": "AGE",
+                            "onclick": false,
+                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                            "css": " slightly-deemphasize ",
+                            "value": "16h"
+                          }
+                        ]
+                      }
+                    ],
+                    "noSort": true,
+                    "title": "Pod",
+                    "breadcrumbs": [{ "label": "all" }],
+                    "statusColumnIdx": 2
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              },
+              {
+                "startTime": 1598462754762,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#  The -A flag specifies that all resources of the type specified (in this case, Pods) should be shown.",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "c2450910-c313-4639-8fc5-47ca1548783d"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "# The -A flag specifies that all resources of the type specified (in this case, Pods) should be shown.",
+                  "argvNoOptions": [
+                    "#",
+                    "  The -A flag specifies that all resources of the type specified (in this case, Pods) should be shown."
+                  ],
+                  "parsedOptions": {
+                    "_": [
+                      "#",
+                      "  The -A flag specifies that all resources of the type specified (in this case, Pods) should be shown."
+                    ]
+                  },
+                  "execUUID": "c2450910-c313-4639-8fc5-47ca1548783d",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "c2450910-c313-4639-8fc5-47ca1548783d",
+                    "history": 252,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "The -A flag specifies that all resources of the type specified (in this case, Pods) should be shown."
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 252
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
