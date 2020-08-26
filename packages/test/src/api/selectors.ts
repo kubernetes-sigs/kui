@@ -123,7 +123,7 @@ export const OUTPUT_N_STREAMING = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} [data-stream]`
 export const OUTPUT_N_PTY = (N: number) => OUTPUT_N_STREAMING(N)
 export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
-export const EXPERIMENTAL_PROMPT_BLOCK_TAG = `${PROMPT_BLOCK_LAST} .repl-prompt-right-elements .kui--repl-block-experimental-tag`
+export const EXPERIMENTAL_PROMPT_BLOCK_TAG = `${PROMPT_BLOCK_LAST} .kui--repl-block-experimental-tag`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
 export const OVERFLOW_MENU = '.kui--repl-block-right-element.kui--toolbar-button-with-icon'
 export const PROMPT_BLOCK_MENU = (N: number) => `${PROMPT_BLOCK_N(N)} ${OVERFLOW_MENU}`

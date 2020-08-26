@@ -19,21 +19,6 @@
 .repl.sidecar-visible p {
   white-space: normal;
 }
-.repl .kui--scrollback/*[data-is-width-constrained]*/ .repl-block {
-  .repl-input,
-  .repl-output {
-    padding-left: 1rem;
-  }
-  .repl-input .repl-context {
-    flex-basis: unset;
-    &:before {
-      left: -1rem !important;
-    }
-  }
-  .repl-output .repl-context {
-    display: none;
-  }
-}
 .repl {
   .repl-prompt {
     --color-prompt-text: var(--color-brand-01);
@@ -41,16 +26,6 @@
   }
   .repl-block:hover .repl-context {
     opacity: 1;
-  }
-  .repl-context {
-    color: var(--color-text-02);
-    display: flex;
-    justify-content: flex-end;
-    flex-basis: 4rem;
-    text-align: end;
-    margin-right: 0.5rem;
-    position: relative;
-    opacity: 0.75;
   }
   .repl-input .repl-context {
     align-items: flex-start;
@@ -86,7 +61,6 @@
     align-items: center;
     flex: 0;
     white-space: nowrap;
-    margin-left: 1rem;
     height: 1.25rem; /* so kui--repl-block-spinner doesn't cause shift */
   }
   .kui--repl-prompt-buttons {
@@ -102,14 +76,6 @@
   .kui--repl-block-error-icon {
     fill: var(--color-error);
     margin-right: 0.5rem;
-  }
-  .kui--repl-block-experimental-tag {
-    margin-right: 0.5rem;
-    .kui--tag {
-      background-color: var(--color-latency-3);
-      font-family: var(--font-sans-serif);
-      color: var(--color-sidecar-background-01);
-    }
   }
 }
 

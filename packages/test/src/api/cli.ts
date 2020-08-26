@@ -179,8 +179,12 @@ export const expectInput = (selector: string, expectedText: string) => async (ap
 }
 
 export const expectPriorInput = (selector: string, expectedText: string) => async (app: Application) => {
+  let idx = 0
   await app.client.waitUntil(async () => {
     const inputText = await app.client.getText(selector)
+    if (++idx > 5) {
+      console.error(`still waiting for prior input actual=${inputText} expected=${expectedText}`)
+    }
     return inputText === expectedText
   }, waitTimeout)
   return app

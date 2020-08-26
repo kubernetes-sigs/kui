@@ -344,7 +344,9 @@ export default class Input extends InputProvider {
             autoComplete="off"
             spellCheck="false"
             autoCapitalize="off"
-            className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
+            className={
+              'repl-input-element-wrapper repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')
+            }
             aria-label="Command Input"
             tabIndex={1}
             placeholder={this.props.promptPlaceholder}
@@ -376,7 +378,7 @@ export default class Input extends InputProvider {
         // for processing blocks, we still need an input, albeit
         // readOnly, to handle ctrl+C
         return (
-          <span className="flex-layout flex-fill">
+          <span className="repl-input-element-wrapper flex-layout flex-fill">
             <input
               className="repl-input-element"
               readOnly
@@ -388,11 +390,17 @@ export default class Input extends InputProvider {
               }}
               ref={c => c && c.focus()}
             />
+            {this.inputStatus()}
           </span>
         )
       } else {
         // for "done" blocks, render the value as a plain div
-        return <div className="repl-input-element">{value}</div>
+        return (
+          <div className="repl-input-element-wrapper flex-layout flex-fill">
+            <span className="repl-input-element flex-fill">{value}</span>
+            {this.inputStatus()}
+          </div>
+        )
       }
     }
   }
@@ -498,20 +506,28 @@ export default class Input extends InputProvider {
   } */
 
   /**
-   * Status elements associated with the block; even though these
-   * pertain to the Output part of a Block, these are currently placed
-   * in the Input area.
+   * Status elements associated with the block as a whole; even though
+   * these also pertain to the Output part of a Block, these are
+   * currently housed in this Input component.
    *
    */
   protected status() {
     return (
       <span className="repl-prompt-right-elements">
         {this.errorIcon()}
-        {this.experimentalTag()}
-        {this.timestamp()}
         {this.dropdown()}
         {/* this.close() */}
       </span>
+    )
+  }
+
+  /** Status elements placed in with <input> part of the block */
+  protected inputStatus() {
+    return (
+      <React.Fragment>
+        {this.experimentalTag()}
+        {this.timestamp()}
+      </React.Fragment>
     )
   }
 }
