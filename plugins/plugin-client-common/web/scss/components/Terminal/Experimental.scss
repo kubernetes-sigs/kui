@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-@import 'Commentary';
-@import 'Experimental';
-@import 'Layout';
-@import 'MiniSplit';
-@import 'Scrollback';
+@import '_mixins';
+
+@include Scrollback {
+  .kui--repl-block-experimental-tag {
+    .kui--tag {
+      background-color: var(--color-latency-3);
+      font-family: var(--font-sans-serif);
+      color: var(--color-sidecar-background-01);
+      font-size: 0.5625rem;
+      height: 1.125rem;
+    }
+  }
+}
