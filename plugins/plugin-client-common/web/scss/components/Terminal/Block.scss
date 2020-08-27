@@ -61,7 +61,7 @@
     display: flex;
     flex-direction: column;
 
-    &[data-is-elsewhere] {
+    &[data-is-quietly-elsewhere] {
       padding-top: 0;
       repl-output {
         margin-top: 0;
@@ -128,11 +128,14 @@
     }
 
     .kui--repl-result-else {
-      font-family: var(--font-sans-serif);
       font-size: 0.75rem;
+      font-family: var(--font-sans-serif);
       &,
       a {
         color: var(--color-text-02);
+      }
+      a {
+        font-weight: bold;
       }
     }
   }

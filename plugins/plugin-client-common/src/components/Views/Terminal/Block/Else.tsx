@@ -16,12 +16,14 @@
 
 import * as React from 'react'
 
-import { eventBus, CommandCompleteEvent, i18n, isResourceWithMetadata } from '@kui-shell/core'
+import { eventBus, i18n, isResourceWithMetadata } from '@kui-shell/core'
+
+import { CompleteBlock, isResultOfClick } from './BlockModel'
 
 const strings = i18n('plugin-client-common')
 
 type Props = {
-  completeEvent: CommandCompleteEvent
+  block: CompleteBlock
 }
 
 /**
@@ -33,14 +35,15 @@ type Props = {
  */
 export default class Else extends React.PureComponent<Props> {
   public render() {
-    const response = this.props.completeEvent.response
+    const response = this.props.block.completeEvent.response
+    const isClick = isResultOfClick(this.props.block)
 
     const drilldownText = isResourceWithMetadata(response)
-      ? `${strings('Drilling down to show the')} ${response.kind}`
+      ? `${strings(isClick ? 'You clicked to show' : 'Drilling down to show the')} ${response.kind}`
       : strings('Drilling down to show the')
 
     const drilldownLink = (
-      <a href="#" onClick={() => eventBus.emitCommandComplete(this.props.completeEvent)}>
+      <a href="#" onClick={() => eventBus.emitCommandComplete(this.props.block.completeEvent)}>
         {isResourceWithMetadata(response) ? response.metadata.name : 'result'}
       </a>
     )
