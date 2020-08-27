@@ -1,10 +1,56 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 $font-size: 0.75rem;
+
+/** StatusStripeChangeEvent.type */
+$fg-type-default: var(--color-text-01);
+$bg-type-default: var(--color-sidecar-header);
+
+$fg-type-blue: var(--color-base00);
+$bg-type-blue: var(--color-brand-03);
+
+$bg-type-yellow: var(--color-yellow);
+$bg-type-red: var(--color-red);
 
 .kui--status-stripe {
   display: flex;
   flex-basis: 2.25rem;
-  background-color: var(--color-sidecar-header);
-  color: var(--color-text-01);
+  background-color: $bg-type-default;
+  color: $fg-type-default;
+
+  &[data-type='blue'] {
+    color: $fg-type-blue;
+    background-color: $bg-type-blue;
+  }
+  &[data-type='yellow'] {
+    background-color: $bg-type-yellow;
+  }
+  &[data-type='red'] {
+    background-color: $bg-type-red;
+  }
+
+  /* markdown */
+  p {
+    letter-spacing: 0.16px;
+    code {
+      font-family: var(--font-sans-serif);
+      color: var(--color-base01);
+    }
+  }
 
   z-index: 10;
   box-shadow: 0 -1px 1px var(--color-base05);
@@ -22,16 +68,16 @@ $font-size: 0.75rem;
   .kui--status-stripe-element svg {
     fill: currentColor;
   }
-  .kui--status-stripe-element[data-view="obscured"] {
+  .kui--status-stripe-element[data-view='obscured'] {
     color: var(--color-text-02);
   }
-  .kui--status-stripe-element[data-view="obscured"] svg {
+  .kui--status-stripe-element[data-view='obscured'] svg {
     fill: var(--color-text-02);
   }
-  .kui--status-stripe-element[data-view="ok"] svg {
+  .kui--status-stripe-element[data-view='ok'] svg {
     fill: var(--color-green);
   }
-  .kui--status-stripe-element:not(.kui--status-stripe-tag-element)[data-view="warn"] {
+  .kui--status-stripe-element:not(.kui--status-stripe-tag-element)[data-view='warn'] {
     filter: grayscale(0.15) brightness(0.9);
 
     &,
@@ -43,10 +89,10 @@ $font-size: 0.75rem;
       filter: none;
     }
   }
-  .kui--status-stripe-element[data-view="error"] svg {
+  .kui--status-stripe-element[data-view='error'] svg {
     fill: var(--color-error);
   }
-  .kui--status-stripe-element[data-view="hidden"] {
+  .kui--status-stripe-element[data-view='hidden'] {
     display: none;
   }
 

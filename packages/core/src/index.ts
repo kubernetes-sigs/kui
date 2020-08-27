@@ -76,6 +76,7 @@ export {
   wireToTabEvents,
   wireToStandardEvents,
   eventBus,
+  StatusStripeChangeEvent,
   TabLayoutChangeEvent
 } from './core/events'
 
