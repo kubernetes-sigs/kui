@@ -70,6 +70,7 @@ type Props = {
 } & BlockViewTraits
 
 interface State {
+  alreadyListen: boolean
   assertHasContent?: boolean
   isResultRendered: boolean
 
@@ -82,13 +83,9 @@ export default class Output extends React.PureComponent<Props, State> {
     super(props)
 
     const streamingConsumer = this.streamingConsumer.bind(this)
-    const tabUUID = props.uuid
-
-    if (isProcessing(props.model)) {
-      eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, streamingConsumer)
-    }
 
     this.state = {
+      alreadyListen: false,
       isResultRendered: false,
       streamingOutput: [],
       streamingConsumer
@@ -107,7 +104,15 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if (isFinished(props.model) && !state.isResultRendered) {
+    if (isProcessing(props.model) && !state.alreadyListen) {
+      const tabUUID = props.uuid
+      eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+      return {
+        alreadyListen: true,
+        isResultRendered: false,
+        streamingOutput: []
+      }
+    } else if (isFinished(props.model) && !state.isResultRendered) {
       const tabUUID = props.uuid
 
       if (!isEmpty(props.model)) {
@@ -119,8 +124,8 @@ export default class Output extends React.PureComponent<Props, State> {
       }
 
       return {
-        isResultRendered: true,
-        streamingConsumer: undefined
+        alreadyListen: false,
+        isResultRendered: true
       }
     } else {
       return state

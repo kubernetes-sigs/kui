@@ -46,6 +46,7 @@ type WithAnnouncement = { isAnnouncement: boolean }
 type WithPreferences = { prefersTerminalPresentation: boolean; outputOnly?: boolean }
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
+type WithRerun = { isRerun: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -73,6 +74,7 @@ export type ProcessingBlock = WithState<BlockState.Processing> &
   WithCommand &
   WithUUID &
   WithStartTime &
+  WithRerun &
   WithCommandStart
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
 export type CompleteBlock = OkBlock | ErrorBlock
@@ -163,12 +165,18 @@ export function Announcement(response: ScalarResponse): AnnouncementBlock {
 }
 
 /** Transform to Processing */
-export function Processing(block: BlockModel, startEvent: CommandStartEvent, isExperimental = false): ProcessingBlock {
+export function Processing(
+  block: BlockModel,
+  startEvent: CommandStartEvent,
+  isExperimental = false,
+  isRerun = false
+): ProcessingBlock {
   return {
     command: startEvent.command,
     isExperimental,
     cwd: block.cwd,
     execUUID: startEvent.execUUID,
+    isRerun,
     startEvent,
     startTime: new Date(),
     state: BlockState.Processing

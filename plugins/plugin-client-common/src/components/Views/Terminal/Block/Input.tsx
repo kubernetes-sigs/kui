@@ -390,7 +390,7 @@ export default class Input extends InputProvider {
               }}
               ref={c => c && c.focus()}
             />
-            {this.inputStatus()}
+            {this.inputStatus(value)}
           </span>
         )
       } else {
@@ -398,7 +398,7 @@ export default class Input extends InputProvider {
         return (
           <div className="repl-input-element-wrapper flex-layout flex-fill">
             <span className="repl-input-element flex-fill">{value}</span>
-            {this.inputStatus()}
+            {this.inputStatus(value)}
           </div>
         )
       }
@@ -452,6 +452,27 @@ export default class Input extends InputProvider {
     } */
   }
 
+  private rerunAction(command: string): DropDownAction[] {
+    return [
+      {
+        label: strings('Rerun'),
+        handler: () =>
+          hasUUID(this.props.model)
+            ? this.props.tab.REPL.pexec(command, { execUUID: this.props.model.execUUID })
+            : this.props.tab.REPL.pexec(command)
+      }
+    ]
+  }
+
+  private copyAction(command: string): DropDownAction[] {
+    return [
+      {
+        label: strings('Copy'),
+        handler: () => navigator.clipboard.writeText(command)
+      }
+    ]
+  }
+
   private removeAction(): DropDownAction[] {
     return !this.props.willRemove
       ? []
@@ -475,9 +496,13 @@ export default class Input extends InputProvider {
   }
 
   /** DropDown menu for completed blocks */
-  private dropdown() {
+  private dropdown(command: string) {
     if (!isActive(this.props.model)) {
-      const actions = this.screenshotAction().concat(this.removeAction())
+      const actions = this.screenshotAction().concat(
+        this.copyAction(command),
+        this.rerunAction(command),
+        this.removeAction()
+      )
       return (
         <DropDown
           actions={actions}
@@ -521,12 +546,12 @@ export default class Input extends InputProvider {
   }
 
   /** Status elements placed in with <input> part of the block */
-  protected inputStatus() {
+  protected inputStatus(input: string) {
     return (
       <React.Fragment>
         {this.experimentalTag()}
         {this.timestamp()}
-        {this.dropdown()}
+        {this.dropdown(input)}
       </React.Fragment>
     )
   }
