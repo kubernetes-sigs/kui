@@ -23,7 +23,6 @@ import '../web/css/static/carbon-overrides-common.css'
 import '../web/css/static/inverted-colors.css'
 import '../web/css/static/ui.css'
 import '../web/css/static/repl.scss'
-import '../web/css/static/status-stripe.css'
 
 // default client
 export { default as Kui, Props as KuiProps } from './components/Client/Kui'

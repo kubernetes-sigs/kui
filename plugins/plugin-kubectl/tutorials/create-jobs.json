@@ -2,6 +2,7 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Snapshot",
   "spec": {
+    "title": "Learning Kubernetes &mdash; `Working with Jobs`",
     "windows": [
       {
         "uuid": "0",
