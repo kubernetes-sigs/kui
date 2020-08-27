@@ -352,11 +352,23 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.splice(uuid, curState => {
         const idx = curState.blocks.length - 1
 
-        // Transform the last block to Processing
-        return {
-          blocks: curState.blocks
-            .slice(0, idx)
-            .concat([Processing(curState.blocks[idx], event, event.evaluatorOptions.isExperimental)])
+        const rerunIdx = curState.blocks.findIndex(_ => hasUUID(_) && _.execUUID === event.execUUID)
+
+        if (rerunIdx >= 0) {
+          // Transform the rerun block to Processing
+          return {
+            blocks: curState.blocks
+              .slice(0, rerunIdx) // everything before
+              .concat([Processing(curState.blocks[rerunIdx], event, event.evaluatorOptions.isExperimental, true)])
+              .concat(curState.blocks.slice(rerunIdx + 1)) // everything after
+          }
+        } else {
+          // Transform the last block to Processing
+          return {
+            blocks: curState.blocks
+              .slice(0, idx)
+              .concat([Processing(curState.blocks[idx], event, event.evaluatorOptions.isExperimental)])
+          }
         }
       })
     }
@@ -395,7 +407,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .slice(0, inProcessIdx) // everything before
               .concat([Finished(inProcess, event, prefersTerminalPresentation, outputOnly)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
-              .concat([Active()]) // plus a new block!
+              .concat(!inProcess.isRerun ? [Active()] : []) // plus a new block!
             return {
               blocks
             }
