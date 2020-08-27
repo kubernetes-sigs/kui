@@ -515,7 +515,6 @@ export default class Input extends InputProvider {
     return (
       <span className="repl-prompt-right-elements">
         {this.errorIcon()}
-        {this.dropdown()}
         {/* this.close() */}
       </span>
     )
@@ -527,6 +526,7 @@ export default class Input extends InputProvider {
       <React.Fragment>
         {this.experimentalTag()}
         {this.timestamp()}
+        {this.dropdown()}
       </React.Fragment>
     )
   }

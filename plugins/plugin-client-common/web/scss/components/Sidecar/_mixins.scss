@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@mixin sidecar-visible {
+  .repl.sidecar-visible .kui--terminal-split-container {
+    @content;
+  }
+}
 
-@include Scrollback {
-  .kui--repl-block-experimental-tag {
-    .kui--tag {
-      background-color: var(--color-base05);
-      font-family: var(--font-sans-serif);
-      color: var(--color-sidecar-background-01);
-      font-size: 0.5625rem;
-      height: 1.125rem;
-      margin: 0 0.5rem 0 0;
-    }
+@mixin sidecar-maximized-no-user {
+  .toggle-sidecar-maximization-button {
+    display: none;
   }
 }
