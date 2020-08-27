@@ -21,6 +21,7 @@ import {
   isSummarizableKubeResource,
   isKubeResourceWithItsOwnSummary,
   isDeployment,
+  isJob,
   isNode,
   isPod,
   isReplicaSet
@@ -28,6 +29,7 @@ import {
 
 import DeploymentSummary from './impl/Deployment'
 import GenericSummary from './impl/Generic'
+import JobSummary from './impl/Job'
 import NodeSummary from './impl/Node'
 import PodSummary from './impl/Pod'
 import ReplicaSetSummary from './impl/ReplicaSet'
@@ -53,6 +55,8 @@ async function renderSummary({ REPL }: Tab, resource: KubeResource) {
       ? ReplicaSetSummary(resource)
       : isNode(resource)
       ? NodeSummary(resource)
+      : isJob(resource)
+      ? JobSummary(resource)
       : GenericSummary(resource, REPL)
 
     // our content is that map, rendered as yaml
