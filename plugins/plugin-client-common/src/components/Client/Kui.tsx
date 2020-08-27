@@ -35,7 +35,8 @@ import {
 import Card from '../spi/Card'
 import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
-import { ComboSidecar, InputStripe, StatusStripe, TabContainer, Loading, Alert } from '../..'
+import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
+import { ComboSidecar, InputStripe, TabContainer, Loading, Alert } from '../..'
 
 import KuiIcon from '../../../icons/png/WelcomeLight.png'
 
@@ -204,6 +205,25 @@ export class Kui extends React.PureComponent<Props, State> {
     })
   }
 
+  /**
+   * Props to pass to StatusStripe. This allows us to set the desired
+   * status stripe color at startup time, rather than seeing the
+   * default color, followed quickly by a change to the color desired
+   * by the controller backing the given `props.commandLine`. The
+   * controller may still want to specialize the status stripe
+   * further, but at least we can avoid that odd
+   * e.g. defaultColor-then-blue effect.
+   *
+   */
+  private statusStripeProps(): StatusStripeProps {
+    if (this.props.commandLine) {
+      const statusStripeIdx = this.props.commandLine.findIndex(_ => _ === '--status-stripe')
+      if (statusStripeIdx >= 0) {
+        return { type: this.props.commandLine[statusStripeIdx + 1] as StatusStripeProps['type'] }
+      }
+    }
+  }
+
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error(error, errorInfo)
   }
@@ -242,7 +262,7 @@ export class Kui extends React.PureComponent<Props, State> {
               <ComboSidecar />
             </TabContainer>
             {this.props.toplevel}
-            <StatusStripe>{this.props.children}</StatusStripe>
+            <StatusStripe {...this.statusStripeProps()}>{this.props.children}</StatusStripe>
           </div>
         </KuiContext.Provider>
       )

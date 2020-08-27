@@ -19,9 +19,11 @@ import { Registrar } from '@kui-shell/core'
 export default function(registrar: Registrar) {
   registrar.listen('/replay-electron', async args => {
     const filepath = args.argvNoOptions[1]
-    console.error('!!!!!!', args)
     const { ipcRenderer } = await import('electron')
-    ipcRenderer.send('synchronous-message', JSON.stringify({ operation: 'new-window', argv: ['replay', filepath] }))
+    ipcRenderer.send(
+      'synchronous-message',
+      JSON.stringify({ operation: 'new-window', argv: ['replay', filepath, '--status-stripe', 'blue'] })
+    )
     return true
   })
 }

@@ -36,6 +36,11 @@ eventChannelUnsafe.setMaxListeners(100)
 
 export default eventChannelUnsafe
 
+export type StatusStripeChangeEvent = {
+  type: 'default' | 'blue' | 'yellow' | 'red'
+  message?: string
+}
+
 export type TabLayoutChangeEvent = { isSidecarNowHidden: boolean }
 type TabLayoutChangeHandler = (evt: TabLayoutChangeEvent) => void
 
@@ -115,6 +120,11 @@ class WriteEventBus extends EventBusBase {
     this.eventBus.emit('/snapshot/request', cb)
   }
 
+  /** Request a status stripe change */
+  public emitStatusStripeChangeRequest(evt: StatusStripeChangeEvent): void {
+    this.eventBus.emit('/status-stripe/change', evt)
+  }
+
   public emitWithTabId(channel: '/tab/offline' | '/tab/close/request', tabId: string, tab?: Tab): void {
     this.eventBus.emit(`${channel}/${tabId}`, tabId, tab)
   }
@@ -149,6 +159,16 @@ class ReadEventBus extends WriteEventBus {
   /** Snapshot the Block state of the given Tab */
   public offSnapshotRequest(listener: (cb: (snapshot: SnapshotBlock[]) => void) => void) {
     this.eventBus.off('/snapshot', listener)
+  }
+
+  /** Request a status stripe change */
+  public onStatusStripeChangeRequest(listener: (evt: StatusStripeChangeEvent) => void): void {
+    this.eventBus.on('/status-stripe/change', listener)
+  }
+
+  /** Request a status stripe change */
+  public offStatusStripeChangeRequest(listener: (evt: StatusStripeChangeEvent) => void): void {
+    this.eventBus.off('/status-stripe/change', listener)
   }
 
   /** User switching focus from one Split to another, within one Tab */

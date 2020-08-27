@@ -19,9 +19,10 @@ import {
   inElectron,
   KResponse,
   ParsedOptions,
+  Registrar,
   Snapshot,
   SnapshotBlock,
-  Registrar,
+  StatusStripeChangeEvent,
   promiseEach
 } from '@kui-shell/core'
 
@@ -42,16 +43,32 @@ function isSerializedSnapshot(raw: Record<string, any>): raw is SerializedSnapsh
 }
 
 /** For the Kui command registration: enforce one mandatory positional parameter */
-function usage(cmd: string) {
-  return {
-    usage: {
-      strict: cmd,
-      required: [{ name: '<filepath>', docs: 'path to saved snapshot' }],
-      optional: [{ name: '--new-window', alias: '-w', boolean: true, docs: 'Replay in a new window (Electron only)' }]
-    },
-    flags: {
-      boolean: ['new-window', 'w']
-    }
+const required = [{ name: '<filepath>', docs: 'path to saved snapshot' }]
+
+/** Usage for the replay command */
+const replayUsage = {
+  usage: {
+    strict: 'replay',
+    required,
+    optional: [
+      { name: '--new-window', alias: '-w', boolean: true, docs: 'Replay in a new window (Electron only)' },
+      { name: '--status-stripe', docs: 'Modify status stripe', allowed: ['default', 'blue', 'yellow', 'red'] }
+    ]
+  },
+  flags: {
+    boolean: ['new-window', 'w']
+  }
+}
+
+/** Usage for the snapshot command */
+const snapshotUsage = {
+  usage: {
+    strict: 'snapshot',
+    required,
+    optional: [
+      { name: '--description', alias: '-d', docs: 'Description for this snapshot' },
+      { name: '--title', alias: '-t', docs: 'Title for this snapshot' }
+    ]
   }
 }
 
@@ -61,14 +78,27 @@ export function preload() {
   eventBus.onRemoveSnapshotable(() => nSnapshotable--)
 }
 
-interface Options extends ParsedOptions {
+interface ReplayOptions extends ParsedOptions {
   'new-window': boolean
+  'status-stripe': StatusStripeChangeEvent['type']
+}
+
+interface SnapshotOptions extends ParsedOptions {
+  d?: string
+  description?: string
+  t?: string
+  title?: string
+}
+
+/** Format a Markdown string that describes the given snapshot */
+function formatMessage(snapshot: SerializedSnapshot) {
+  return `**Now Playing**: ${snapshot.spec.title || 'a snapshot'}`
 }
 
 /** Command registration */
 export default function(registrar: Registrar) {
   // register the `replay` command
-  registrar.listen<KResponse, Options>(
+  registrar.listen<KResponse, ReplayOptions>(
     '/replay',
     async ({ argvNoOptions, parsedOptions, REPL, tab }) => {
       const filepath = argvNoOptions[1]
@@ -87,6 +117,13 @@ export default function(registrar: Registrar) {
         console.error('invalid snapshot', model)
         throw new Error('Invalid snapshot')
       } else {
+        if (parsedOptions['status-stripe']) {
+          eventBus.emitStatusStripeChangeRequest({
+            type: parsedOptions['status-stripe'],
+            message: formatMessage(model)
+          })
+        }
+
         await promiseEach(model.spec.windows[0].tabs[0].blocks, async ({ startEvent, completeEvent }) => {
           // NOTE: work around the replayability issue of split command not returning a replayable model: https://github.com/IBM/kui/issues/5399
           if (startEvent.command === 'split') {
@@ -103,13 +140,13 @@ export default function(registrar: Registrar) {
         return true
       }
     },
-    usage('replay')
+    replayUsage
   )
 
   // register the `snapshot` command
-  registrar.listen(
+  registrar.listen<KResponse, SnapshotOptions>(
     '/snapshot',
-    ({ argvNoOptions, REPL, tab }) =>
+    ({ argvNoOptions, parsedOptions, REPL, tab }) =>
       new Promise((resolve, reject) => {
         let nSplits = 0
         let blocks: SnapshotBlock[] = []
@@ -128,6 +165,8 @@ export default function(registrar: Registrar) {
                 apiVersion: 'kui-shell/v1',
                 kind: 'Snapshot',
                 spec: {
+                  title: parsedOptions.t || parsedOptions.title,
+                  description: parsedOptions.d || parsedOptions.description,
                   windows: [
                     {
                       uuid: '0',
@@ -171,6 +210,6 @@ export default function(registrar: Registrar) {
           }
         })
       }),
-    usage('snapshot')
+    snapshotUsage
   )
 }
