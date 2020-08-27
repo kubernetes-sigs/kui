@@ -25,7 +25,7 @@ import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeOptions, isEntityRequest, isTableRequest, formatOf, isWatchRequest, getNamespace } from './options'
+import { KubeOptions, isEntityRequest, isTableRequest, fileOf, formatOf, isWatchRequest, getNamespace } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse, computeDurations } from '../../lib/view/formatTable'
 import {
   KubeResource,
@@ -242,9 +242,10 @@ export const doGet = (command: string) =>
 
     // first, we do the raw exec of the given command
     const isTableReq = isTableRequest(args)
-    const fullKind = isTableReq
-      ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
-      : undefined
+    const fullKind =
+      isTableReq && !fileOf(args) // <-- don't call getKind for `get -f`
+        ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
+        : undefined
 
     if (!isHeadless() && isWatchRequest(args)) {
       // special case: get --watch/watch-only
