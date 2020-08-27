@@ -208,15 +208,3 @@
     background-color: var(--color-base03);
   }
 }
-
-@mixin sidecar-visible {
-  .repl.sidecar-visible .kui--terminal-split-container {
-    @content;
-  }
-}
-
-@mixin sidecar-maximized-no-user {
-  .toggle-sidecar-maximization-button {
-    display: none;
-  }
-}

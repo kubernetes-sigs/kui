@@ -173,18 +173,6 @@
   color: var(--color-text-01);
 }
 
-/* timestamp */
-.kui--repl-block-timestamp {
-  margin-right: 0.5em;
-}
-/* timestamp when sidecar is visible */
-.repl.sidecar-visible .repl-block {
-  .kui--repl-block-timestamp {
-    /* hide repl timestamp  */
-    display: none;
-  }
-}
-
 /* e.g. reverse-i-search; see Input.tsx */
 .repl-input-element.repl-input-hidden {
   opacity: 0;
@@ -206,11 +194,6 @@
 .repl-inner {
   overflow-y: auto;
   flex: 1;
-}
-.repl-block {
-  padding: 0.5rem 0;
-  display: flex;
-  flex-direction: column;
 }
 .repl,
 .repl-input .repl-input-element {

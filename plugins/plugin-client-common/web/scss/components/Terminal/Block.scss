@@ -15,7 +15,9 @@
  */
 
 @import '_mixins';
+@import '../Sidecar/_mixins';
 
+.repl-input,
 .repl-output {
   padding-right: calc(1rem - 6px);
 }
@@ -55,18 +57,27 @@
   }
 
   .repl-block {
+    padding: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
+
     .repl-output {
-      margin-top: 0.5rem;
+      margin-top: 0.25rem;
     }
     .repl-input,
     .repl-output {
       padding-left: 1rem;
+    }
+    .repl-input .kui--toolbar-button-with-icon {
+      /* have buttons fit inside the input region */
+      height: 1.125rem;
     }
     .repl-context {
       color: var(--color-text-02);
       display: flex;
       justify-content: flex-end;
       flex-basis: 3rem;
+      max-width: 3rem; /* Out[1] overflows, but it is currently hidden */
       text-align: end;
       margin-right: 0.5rem;
       position: relative;
@@ -77,15 +88,17 @@
       left: -1rem !important;
     }
 
-    .repl-input {
-      .repl-context,
-      .repl-prompt-right-elements {
-        padding-top: 0.25rem;
+    &:not(.repl-active) {
+      .repl-input {
+        .repl-context,
+        .repl-prompt-right-elements {
+          padding-top: 0.25rem;
+        }
       }
-
       .repl-input-element-wrapper {
-        padding: 0.25rem 0.5rem;
+        padding: 0.25rem 0 0.25rem 0.5rem;
         border: 1px solid transparent;
+        align-items: stretch;
       }
     }
     &:not(.repl-active) {
@@ -110,5 +123,29 @@
   .kui--repl-block-right-element {
     color: var(--color-text-02);
     font-size: 0.625rem;
+  }
+}
+
+@include sidecar-visible {
+  @include Scrollback {
+    .repl-context {
+      display: none;
+    }
+  }
+}
+
+/* timestamp */
+.repl-block {
+  .kui--repl-block-timestamp {
+    margin-right: 0.5em;
+    display: flex;
+    align-items: center;
+  }
+}
+@include sidecar-visible {
+  /* timestamp when sidecar is visible */
+  .kui--repl-block-timestamp {
+    /* hide repl timestamp  */
+    display: none;
   }
 }
