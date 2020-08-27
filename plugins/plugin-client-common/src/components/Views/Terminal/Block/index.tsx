@@ -25,7 +25,7 @@ import {
   isEmpty,
   isFinished,
   isOutputOnly,
-  isPresentedElsewhere,
+  isQuietlyPresentedElsewhere,
   isProcessing,
   isAnnouncement,
   hasUUID
@@ -166,7 +166,7 @@ export default class Block extends React.PureComponent<Props, State> {
         <div
           className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
           data-is-output-only={isOutputOnly(this.props.model) || undefined}
-          data-is-elsewhere={isPresentedElsewhere(this.props.model) || undefined}
+          data-is-quietly-elsewhere={isQuietlyPresentedElsewhere(this.props.model) || undefined}
           data-announcement={isAnnouncement(this.props.model) || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-input-count={this.props.idx}

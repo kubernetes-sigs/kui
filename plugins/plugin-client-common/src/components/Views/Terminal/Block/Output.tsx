@@ -225,7 +225,7 @@ export default class Output extends React.PureComponent<Props, State> {
         // and provides ways to re-interact with the content if it's gone
         return (
           <React.Fragment>
-            <Else completeEvent={this.props.model.completeEvent} />
+            <Else block={this.props.model} />
             <span className="ok" />
           </React.Fragment>
         )

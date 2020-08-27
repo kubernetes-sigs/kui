@@ -20,6 +20,7 @@ import {
   ScalarResponse,
   SnapshotBlock,
   UsageError,
+  ExecType,
   isWatchable,
   inBrowser
 } from '@kui-shell/core'
@@ -74,6 +75,7 @@ export type ProcessingBlock = WithState<BlockState.Processing> &
   WithStartTime &
   WithCommandStart
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
+export type CompleteBlock = OkBlock | ErrorBlock
 
 /** Blocks with an association to the History model */
 type WithHistoryIndex = { historyIdx: number }
@@ -303,4 +305,27 @@ export function isOutputOnly(block: BlockModel) {
  */
 export function isPresentedElsewhere(block: BlockModel) {
   return isOk(block) && block.completeEvent && block.completeEvent.responseType !== 'ScalarResponse'
+}
+
+/** @return whether the block has a completeEvent trait */
+export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
+  return isOk(block) || isOops(block)
+}
+
+/**
+ * Same as `isPresentedElsewhere`, but also for commands that ask not
+ * to echo their execution.
+ */
+export function isQuietlyPresentedElsewhere(block: BlockModel) {
+  return isPresentedElsewhere(block) && isWithCompleteEvent(block) && block.completeEvent.echo === false
+}
+
+/**
+ * Is this block the result of the user clicking somewhere? (i.e. in
+ * contrast to the user typing a command in a terminal and hitting
+ * enter)
+ *
+ */
+export function isResultOfClick(block: BlockModel) {
+  return isWithCompleteEvent(block) && block.completeEvent.execOptions.type === ExecType.ClickHandler
 }
