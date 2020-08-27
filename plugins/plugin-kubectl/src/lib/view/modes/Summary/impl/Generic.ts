@@ -25,8 +25,10 @@ export function none() {
   return '<none>'
 }
 
-export function age({ metadata }: KubeResource) {
-  return prettyPrintDuration(new Date().getTime() - new Date(metadata.creationTimestamp).getTime())
+export function age({ metadata }: KubeResource, now: string | Date = new Date()) {
+  return prettyPrintDuration(
+    (typeof now === 'string' ? new Date(now) : now).getTime() - new Date(metadata.creationTimestamp).getTime()
+  )
 }
 
 export default async function GenericSummary(resource: KubeResource, repl: REPL) {

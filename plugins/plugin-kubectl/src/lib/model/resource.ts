@@ -252,6 +252,21 @@ export interface CRDResource extends KubeResource {
   }
 }
 
+interface ContainerSpec {
+  args: string[]
+  command: string[]
+  env: { name: string; value: string }[]
+  image: string
+  imagePullPolicy: string
+  name: string
+  resource: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
+  terminationMessagePath: string
+  terminationMessagePolicy: string
+  volumeMounts: { mountPath: string; name: string }[]
+  ports?: { containerPort: string; protocol: string }[]
+  workingDir: string
+}
+
 /**
  * Kubernetes Pod resource type
  *
@@ -271,20 +286,7 @@ export interface Pod extends KubeResource<PodStatus> {
     nodeName: string
     nominatedNodeName?: string
     readinessGates?: { conditionType: string }[]
-    containers: {
-      args: string[]
-      command: string[]
-      env: { name: string; value: string }[]
-      image: string
-      imagePullPolicy: string
-      name: string
-      resource: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
-      terminationMessagePath: string
-      terminationMessagePolicy: string
-      volumeMounts: { mountPath: string; name: string }[]
-      ports?: { containerPort: string; protocol: string }[]
-      workingDir: string
-    }[]
+    containers: ContainerSpec[]
   }
 }
 
@@ -313,6 +315,20 @@ export function isNamespace(resource: KubeResource): resource is Namespace {
   return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'Namespace'
 }
 
+interface ContainerTemplate<Labels extends Record<string, any>> {
+  metadata: {
+    creationTimestamp: string
+    labels: Labels
+  }
+  spec: {
+    containers: ContainerSpec[]
+  }
+}
+
+export interface Selector {
+  matchLabels: Record<string, any>
+}
+
 /**
  * Kubernetes Job resource type
  *
@@ -320,6 +336,22 @@ export function isNamespace(resource: KubeResource): resource is Namespace {
 export interface Job extends KubeResource {
   apiVersion: 'batch/v1'
   kind: 'Job'
+  spec: {
+    backoffLimit: number
+    completions: number
+    parallelism: number
+    selector: Selector
+    template: ContainerTemplate<{
+      'controller-uid': string
+      'job-name': string
+    }>
+  }
+  status: {
+    succeeded: number
+    startTime: string
+    completionTime: string
+    conditions: KubeStatusCondition[]
+  }
 }
 
 /**
