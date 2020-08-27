@@ -15,7 +15,7 @@
  */
 
 @import '../../scss/components/common/narrow-window';
-@import './sidecar';
+@import '../../scss/components/Sidecar/_mixins';
 @import '../../scss/components/Terminal/Layout';
 
 $size: 0.25em;
