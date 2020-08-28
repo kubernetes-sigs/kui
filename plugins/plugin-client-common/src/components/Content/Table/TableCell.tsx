@@ -19,6 +19,7 @@ import * as prettyPrintDuration from 'pretty-ms'
 import { TableCell, DataTableCell } from 'carbon-components-react'
 import { Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
 
+import Markdown from '../Markdown'
 import ErrorCell from './ErrorCell'
 
 /**
@@ -114,7 +115,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
               {/red-background/.test(css) ? <ErrorCell /> : undefined}
             </span>
           )}
-          <span className="kui--cell-inner-text">{innerText}</span>
+          <span className="kui--cell-inner-text">{table.markdown ? <Markdown source={innerText} /> : innerText}</span>
         </span>
       </TableCell>
     )

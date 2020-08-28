@@ -130,7 +130,8 @@ export enum TableStyle {
 export class Table<RowType extends Row = Row> {
   body: RowType[]
 
-  // type?: string
+  /** Markdown cells? */
+  markdown?: boolean
 
   /** Column index to be interpreted as a status column */
   statusColumnIdx?: number

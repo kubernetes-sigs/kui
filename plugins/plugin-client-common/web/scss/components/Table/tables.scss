@@ -40,6 +40,14 @@ body .bx--data-table-container {
   .bx--data-table {
     font-family: var(--font-sans-serif);
 
+    /* markdown */
+    p {
+      padding: 0;
+      font-size: inherit;
+      line-height: inherit;
+      font-weight: inherit;
+    }
+
     /* td [data-key='NAME'],
     td .kui--table-cell-is-name {
       font-weight: 700;

@@ -30,7 +30,7 @@ import {
  * Schema for a serialized snapshot of the Inputs and Outputs of
  * command executions.
  */
-interface SerializedSnapshot {
+export interface SerializedSnapshot {
   apiVersion: 'kui-shell/v1'
   kind: 'Snapshot'
   spec: Snapshot
