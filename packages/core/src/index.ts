@@ -75,6 +75,8 @@ export {
   default as eventChannelUnsafe,
   wireToTabEvents,
   wireToStandardEvents,
+  unwireToTabEvents,
+  unwireToStandardEvents,
   eventBus,
   StatusStripeChangeEvent,
   TabLayoutChangeEvent
