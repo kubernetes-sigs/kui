@@ -221,6 +221,7 @@ export const NOSPLIT_ALT_BUFFER_N = (N: number) => `${CURRENT_TAB}.xterm-alt-buf
 
 /** Status Stripe widgets */
 const STATUS_STRIPE = '#kui--status-stripe'
+export const STATUS_STRIPE_TYPE = (type: 'default' | 'blue') => `#kui--status-stripe[data-type="${type}"]`
 export const STATUS_STRIPE_WIDGET = (which: string) => `${STATUS_STRIPE} .${which}`
 export const STATUS_STRIPE_WIDGET_WITH_ATTR = (which: string, key: string, value: string) =>
   `${STATUS_STRIPE_WIDGET(which)}[data-${key}="${value}"]`

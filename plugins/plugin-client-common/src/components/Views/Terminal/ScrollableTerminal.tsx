@@ -315,6 +315,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.props.onClear()
     }
 
+    // if we want to close the sidecar, too:
+    /* if (this.props.closeSidecar) {
+      this.props.closeSidecar()
+    } */
+
     this.splice(uuid, ({ _activeBlock, blocks, cleaners }) => {
       cleaners.forEach(cleaner => cleaner())
       blocks.forEach(this.removeWatchableBlock)

@@ -17,7 +17,7 @@
 import * as React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { wireToStandardEvents, getCurrentTab, i18n, CodedError } from '@kui-shell/core'
+import { wireToStandardEvents, unwireToStandardEvents, getCurrentTab, i18n, CodedError } from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
 const strings2 = i18n('plugin-git')
@@ -32,6 +32,8 @@ interface State {
 }
 
 export default class CurrentGitBranch extends React.PureComponent<Props, State> {
+  private readonly handler = this.reportCurrentBranch.bind(this)
+
   public constructor(props: Props) {
     super(props)
 
@@ -88,8 +90,13 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
    *
    */
   public componentDidMount() {
-    this.reportCurrentBranch()
-    wireToStandardEvents(this.reportCurrentBranch.bind(this))
+    this.handler()
+    wireToStandardEvents(this.handler)
+  }
+
+  /** Make sure to unsubscribe! */
+  public componentWillUnmount() {
+    unwireToStandardEvents(this.handler)
   }
 
   public render() {

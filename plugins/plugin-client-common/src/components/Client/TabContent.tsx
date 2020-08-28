@@ -233,6 +233,11 @@ export default class TabContent extends React.PureComponent<Props, State> {
                 closeSidecar={() => this.setState({ sidecarWidth: Width.Closed })}
                 onClear={() => {
                   this.setState({ showSessionInitDone: false })
+
+                  // reset the status stripe on clearing of the terminal
+                  eventBus.emitStatusStripeChangeRequest({
+                    type: 'default'
+                  })
                 }}
                 ref={c => {
                   // so that we can refocus/blur
