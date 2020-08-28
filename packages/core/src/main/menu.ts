@@ -67,6 +67,37 @@ const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
 
 export const install = (createWindow: (executeThisArgvPlease?: string[]) => void) => {
   if (!isDev) {
+    const notebookMenuItem: MenuItemConstructorOptions = {
+      label: 'Notebook',
+      submenu: [
+        {
+          label: 'Learning Kubernetes',
+          submenu: [
+            {
+              label: 'Listing Resources',
+              click: () => {
+                try {
+                  tellRendererToExecute('open /kui/kubernetes/list-resources.json', 'pexec')
+                } catch (err) {
+                  console.log(err)
+                }
+              }
+            },
+            {
+              label: 'Working with Jobs',
+              click: () => {
+                try {
+                  tellRendererToExecute('open /kui/kubernetes/create-jobs.json', 'pexec')
+                } catch (err) {
+                  console.log(err)
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+
     const fileMenuItems: MenuItemConstructorOptions[] = [
       {
         label: 'Open',
@@ -177,7 +208,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
           { role: 'togglefullscreen' }
         ]
       },
-
+      notebookMenuItem,
       {
         role: 'window',
         submenu: [{ role: 'minimize' }, { role: 'close', accelerator: closeAccelerator }]
