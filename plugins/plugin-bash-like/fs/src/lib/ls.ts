@@ -105,8 +105,8 @@ function cssOf(glob: GlobStats): string {
  * Decorate the name according to its nature
  *
  */
-function nameOf(glob: GlobStats): string {
-  return `${glob.nameForDisplay}${
+function nameOf(glob: GlobStats, wide: boolean): string {
+  return `${wide ? glob.nameForDisplay : glob.name}${
     glob.dirent.isDirectory
       ? !glob.nameForDisplay.endsWith('/')
         ? '/'
@@ -136,25 +136,35 @@ function formatGid(entry: GlobStats) {
   return entry.stats.gid.toString()
 }
 
-function attrs(entry: GlobStats, args: Arguments<LsOptions>) {
+function attrs(
+  entry: GlobStats,
+  args: Arguments<LsOptions>,
+  hasPermissions: boolean,
+  hasSize: boolean,
+  hasUid: boolean,
+  hasGid: boolean,
+  hasMtime: boolean
+) {
   // const language = withLanguage(args.execOptions).language
 
   const wide = args.parsedOptions.l
-  const perms = wide ? [{ value: formatPermissions(entry), outerCSS: outerCSSSecondary }] : []
-  const uid = wide ? [{ value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
-  const gid = wide ? [{ value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
-  const size = wide
-    ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: `${outerCSSSecondary} text-right` }]
-    : []
-  const lastMod = wide
-    ? [
-        {
-          value: prettyTime(entry.stats.mtimeMs),
-          outerCSS: outerCSSLesser,
-          css: `${cssLesser} ${cssSecondary} pre-wrap`
-        }
-      ]
-    : []
+  const perms = wide && hasPermissions ? [{ value: formatPermissions(entry), outerCSS: outerCSSSecondary }] : []
+  const uid = wide && hasUid ? [{ value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
+  const gid = wide && hasGid ? [{ value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
+  const size =
+    wide && hasSize
+      ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: `${outerCSSSecondary} text-right` }]
+      : []
+  const lastMod =
+    wide && hasMtime
+      ? [
+          {
+            value: prettyTime(entry.stats.mtimeMs),
+            outerCSS: outerCSSLesser,
+            css: `${cssLesser} ${cssSecondary} pre-wrap`
+          }
+        ]
+      : []
 
   return perms
     .concat(uid)
@@ -171,12 +181,18 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
   const rev = args.parsedOptions.r ? -1 : 1
   const sorter = args.parsedOptions.S ? bySize(rev) : args.parsedOptions.t ? byTime(rev) : byLex(rev)
 
+  const hasPermissions = entries.some(_ => _.dirent && _.dirent.permissions)
+  const hasSize = entries.some(_ => _.stats && _.stats.size)
+  const hasUid = entries.some(_ => (_.dirent && _.dirent.username) || (_.stats && _.stats.uid >= 0))
+  const hasGid = entries.some(_ => _.stats && _.stats.gid >= 0)
+  const hasMtime = entries.some(_ => _.stats && _.stats.mtimeMs)
+
   const body = entries.sort(sorter).map(_ => ({
-    name: nameOf(_),
+    name: nameOf(_, args.parsedOptions.l),
     css: cssOf(_),
     onclickExec: 'pexec' as const,
     onclick: `${_.dirent.isDirectory ? 'ls' : 'open'} ${args.REPL.encodeComponent(_.path)}`,
-    attributes: attrs(_, args)
+    attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))
 
   if (!args.parsedOptions.l) {
@@ -210,11 +226,11 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
     container.appendChild(frag)
     return container
   } else {
-    const perms = [{ value: 'Permissions', outerCSS: outerCSSSecondary }]
-    const uid = [{ value: 'User', outerCSS: outerCSSSecondary }]
-    const gid = [{ value: 'Group', outerCSS: outerCSSSecondary }]
-    const size = [{ value: 'Size', outerCSS: `${outerCSSSecondary} text-right` }]
-    const lastMod = [{ value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }]
+    const perms = hasPermissions ? [{ value: 'Permissions', outerCSS: outerCSSSecondary }] : []
+    const uid = hasUid ? [{ value: 'User', outerCSS: outerCSSSecondary }] : []
+    const gid = hasGid ? [{ value: 'Group', outerCSS: outerCSSSecondary }] : []
+    const size = hasSize ? [{ value: 'Size', outerCSS: `${outerCSSSecondary} text-right` }] : []
+    const lastMod = hasMtime ? [{ value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }] : []
 
     const header = {
       name: 'Name',
@@ -228,6 +244,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
     return {
       header,
       body,
+      markdown: true,
       noSort: true,
       noEntityColors: true
     }
