@@ -142,6 +142,10 @@ class ReadEventBus extends WriteEventBus {
     return this.eventBus.on(channel, listener)
   }
 
+  public off(channel: string, listener: any) {
+    return this.eventBus.off(channel, listener)
+  }
+
   /** Listen for snapshotable elements coming and going */
   public onAddSnapshotable(listener: () => void) {
     this.eventBus.on('/snapshot/element/add', listener)
@@ -222,15 +226,15 @@ class ReadEventBus extends WriteEventBus {
   }
 
   public offAnyCommandStart(handler: CommandStartHandler) {
-    this.eventBus.on('/command/start/fromuser', handler)
+    this.eventBus.off('/command/start/fromuser', handler)
   }
 
-  public onAnyCommandComplete(handler: CommandStartHandler) {
+  public onAnyCommandComplete(handler: CommandStartHandler | (() => void)) {
     this.eventBus.on('/command/complete/fromuser', handler)
   }
 
-  public offAnyCommandComplete(handler: CommandStartHandler) {
-    this.eventBus.on('/command/complete/fromuser', handler)
+  public offAnyCommandComplete(handler: CommandStartHandler | (() => void)) {
+    this.eventBus.off('/command/complete/fromuser', handler)
   }
 
   public onCommandStart(
@@ -385,11 +389,32 @@ export function wireToTabEvents(listener: (tab?: Tab | number) => void) {
 }
 
 /**
+ * Unhook
+ *
+ */
+export function unwireToTabEvents(listener: (tab?: Tab | number) => void) {
+  eventBus.off('/tab/new', listener)
+  eventBus.off('/tab/switch/request', listener)
+  eventBus.offSplitSwitch(listener)
+}
+
+/**
  * Hook an event listener up to the family of standard user
  * interaction events.
  *
  */
 export function wireToStandardEvents(listener: (tab?: Tab | number) => void) {
   wireToTabEvents(listener)
-  eventBus.onAnyCommandComplete(() => listener())
+  eventBus.onAnyCommandComplete(listener)
+  eventChannelUnsafe.on('/terminal/clear', listener)
+}
+
+/**
+ * Unhook
+ *
+ */
+export function unwireToStandardEvents(listener: (tab?: Tab | number) => void) {
+  unwireToTabEvents(listener)
+  eventBus.offAnyCommandComplete(listener)
+  eventChannelUnsafe.off('/terminal/clear', listener)
 }

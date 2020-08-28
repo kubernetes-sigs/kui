@@ -17,7 +17,7 @@
 import * as React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '../../../'
-import { inBrowser, wireToStandardEvents, i18n } from '@kui-shell/core'
+import { inBrowser, wireToStandardEvents, unwireToStandardEvents, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-client-common')
 
@@ -31,6 +31,8 @@ interface State {
 }
 
 export default class CurrentWorkingDirectory extends React.PureComponent<Props, State> {
+  private readonly handler = this.reportCurrentDirectory.bind(this)
+
   public constructor(props: Props) {
     super(props)
 
@@ -55,8 +57,13 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
    *
    */
   public componentDidMount() {
-    this.reportCurrentDirectory()
-    wireToStandardEvents(this.reportCurrentDirectory.bind(this))
+    this.handler()
+    wireToStandardEvents(this.handler)
+  }
+
+  /** Make sure to unsubscribe! */
+  public componentWillUnmount() {
+    unwireToStandardEvents(this.handler)
   }
 
   public render() {

@@ -23,6 +23,8 @@ import {
   Tab,
   wireToTabEvents,
   wireToStandardEvents,
+  unwireToTabEvents,
+  unwireToStandardEvents,
   inBrowser,
   i18n
 } from '@kui-shell/core'
@@ -40,7 +42,7 @@ interface State {
 const strings = i18n('plugin-kubectl')
 
 export default class CurrentContext extends React.PureComponent<{}, State> {
-  private handler = this.reportCurrentContext.bind(this)
+  private readonly handler = this.reportCurrentContext.bind(this)
 
   public constructor(props = {}) {
     super(props)
@@ -106,6 +108,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
    *
    */
   public componentDidMount() {
+    this.handler()
     if (inBrowser()) {
       wireToTabEvents(this.handler)
       onKubectlConfigChangeEvents(this.handler)
@@ -118,9 +121,11 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
   /** Bye! */
   public componentWillUnmount() {
     if (inBrowser()) {
+      unwireToTabEvents(this.handler)
       offKubectlConfigChangeEvents(this.handler)
     } else {
-      // FIXME wireToStandardEvents(handler)
+      unwireToStandardEvents(this.handler)
+      offKubectlConfigChangeEvents(this.handler)
     }
   }
 

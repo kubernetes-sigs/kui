@@ -123,6 +123,7 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     // clear screen; capture and restore the current
     // prompt value, in keeping with unix terminal
     // behavior
+    eventChannelUnsafe.emit('/terminal/clear')
     eventChannelUnsafe.emit(`/terminal/clear/${this.props.uuid}`)
     eventChannelUnsafe.emit(`/close/views/${this.props.uuid}`)
     // restore the prompt cursor position

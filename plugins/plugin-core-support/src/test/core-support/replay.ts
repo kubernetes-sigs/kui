@@ -39,7 +39,9 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
   it('should replay', async () => {
     try {
-      const { count } = await CLI.command('replay /tmp/test.kui', this.app)
+      const { count } = await CLI.command('replay /tmp/test.kui --status-stripe blue', this.app)
+
+      await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'))
 
       // verify the base64 command replay
       let idx = 0
@@ -56,6 +58,12 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     } catch (err) {
       await Common.oops(this, true)
     }
+  })
+
+  it('should clear and show default status stripe', async () => {
+    await CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app))
+
+    await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('default'))
   })
 })
 
