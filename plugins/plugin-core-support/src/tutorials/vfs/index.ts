@@ -18,7 +18,8 @@ import TrieSearch from 'trie-search'
 import { basename, dirname, join } from 'path'
 import { Arguments, CodedError, flatten } from '@kui-shell/core'
 import { FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { productName } from '@kui-shell/client/config.d/name.json'
+
+import { SerializedSnapshot } from '../../lib/cmds/replay'
 
 interface Tutorial {
   name: string
@@ -28,23 +29,25 @@ interface Tutorial {
   nameForDisplay: string
 }
 
-interface Entry {
+interface BaseEntry {
   mountPath: string
 }
 
-type Directory = Entry
+type Directory = BaseEntry
 
-interface Leaf extends Entry {
-  data: Record<string, any> // FIXME snapshot type
+interface Leaf extends BaseEntry {
+  data: SerializedSnapshot
 }
 
-function isDirectory(entry: Entry): entry is Directory {
-  return (entry as Leaf).data === undefined
+type Entry = Leaf | Directory
+
+function isLeaf(entry: Entry): entry is Leaf {
+  return (entry as Leaf).data !== undefined
 }
 
-const uid = 0
-const gid = 0
-const username = productName
+const uid = -1
+const gid = -1
+const username = ''
 
 class TutorialVFS implements VFS {
   public readonly mountPath = '/kui'
@@ -83,13 +86,14 @@ class TutorialVFS implements VFS {
   }
 
   private enumerate({ entries }: { entries: Entry[] }) {
-    return entries.map(mount => {
+    return entries.map((mount: Entry) => {
       const name = basename(mount.mountPath)
-      const isFile = !isDirectory(mount)
+      const nameForDisplay = isLeaf(mount) ? mount.data.spec.title || mount.data.spec.description || name : name
+      const isDir = !isLeaf(mount)
 
       return {
         name,
-        nameForDisplay: name,
+        nameForDisplay,
         path: mount.mountPath,
         stats: {
           size: 0,
@@ -99,8 +103,8 @@ class TutorialVFS implements VFS {
           gid
         },
         dirent: {
-          isFile,
-          isDirectory: !isFile,
+          isFile: !isDir,
+          isDirectory: isDir,
           isSymbolicLink: false,
           isSpecial: false,
           isExecutable: false,
@@ -178,8 +182,8 @@ class TutorialVFS implements VFS {
         viewer: 'replay --new-window',
         filepath: entry.mountPath,
         fullpath: entry.mountPath,
-        isDirectory: isDirectory(entry),
-        data: withData && !isDirectory(entry) ? JSON.stringify(entry.data, undefined, 2) : undefined
+        isDirectory: !isLeaf(entry),
+        data: withData && isLeaf(entry) ? JSON.stringify(entry.data, undefined, 2) : undefined
       }
     }
   }
