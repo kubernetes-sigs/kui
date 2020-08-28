@@ -68,7 +68,7 @@ const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
 export const install = (createWindow: (executeThisArgvPlease?: string[]) => void) => {
   if (!isDev) {
     const notebookMenuItem: MenuItemConstructorOptions = {
-      label: 'Notebook',
+      label: 'Notebooks',
       submenu: [
         {
           label: 'Learning Kubernetes',
