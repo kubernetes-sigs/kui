@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-import { RawResponse, Registrar } from '@kui-shell/core'
+import { Arguments, RawResponse, Registrar } from '@kui-shell/core'
 
 import { ls, fstat } from '../delegates'
 import { KuiGlobOptions, GlobStats } from '../../lib/glob'
 
-export default function(registrar: Registrar) {
-  registrar.listen<RawResponse<GlobStats[]>, KuiGlobOptions>(
-    '/vfs/ls',
-    async args => ({
-      mode: 'raw',
-      content: await ls(args, args.argvNoOptions.slice(2))
-    }),
-    {
-      requiresLocal: true,
-      flags: {
-        boolean: ['A', 'a', 'd', 'c', 'C', 'l', 'h', 't', 'r', 's', 'S']
-      }
-    }
-  )
+export async function lsImpl(args: Arguments<KuiGlobOptions>): Promise<RawResponse<GlobStats[]>> {
+  return {
+    mode: 'raw',
+    content: await ls(args, args.argvNoOptions.slice(2))
+  }
+}
 
-  registrar.listen(
-    '/vfs/fstat',
-    async args => ({
-      mode: 'raw',
-      content: await fstat(
-        args,
-        args.argvNoOptions[2],
-        !!args.parsedOptions['with-data'],
-        !!args.parsedOptions['enoent-ok']
-      )
-    }),
-    {
-      requiresLocal: true,
-      flags: {
-        boolean: ['with-data', 'enoent-ok']
-      }
+export async function fstatImpl(args: Arguments) {
+  return {
+    mode: 'raw',
+    content: await fstat(
+      args,
+      args.argvNoOptions[2],
+      !!args.parsedOptions['with-data'],
+      !!args.parsedOptions['enoent-ok']
+    )
+  }
+}
+
+export default function(registrar: Registrar) {
+  registrar.listen('/vfs/_ls', lsImpl, {
+    requiresLocal: true,
+    flags: {
+      boolean: ['A', 'a', 'd', 'c', 'C', 'l', 'h', 't', 'r', 's', 'S']
     }
-  )
+  })
+
+  registrar.listen('/vfs/_fstat', fstatImpl, {
+    requiresLocal: true,
+    flags: {
+      boolean: ['with-data', 'enoent-ok']
+    }
+  })
 }

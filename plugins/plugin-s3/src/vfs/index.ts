@@ -16,15 +16,18 @@
 
 import { basename, join } from 'path'
 import { Client, ClientOptions, CopyConditions } from 'minio'
-import { DirEntry, FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, REPL, flatten, inBrowser } from '@kui-shell/core'
+import { Arguments, CodedError, REPL, flatten, inBrowser, i18n } from '@kui-shell/core'
+import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 
 import findProvider from '../providers'
 import { username, uid, gid } from './username'
 
+const strings = i18n('plugin-s3')
+
 export abstract class S3VFS {
   public readonly mountPath = '/s3'
   public readonly isLocal = false
+  public readonly isVirtual = false
 
   protected readonly s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
 }
@@ -118,10 +121,50 @@ class S3VFSResponder extends S3VFS implements VFS {
     return { bucketName, fileName }
   }
 
-  private async fPutObject(srcFilepath: string, dstFilepath: string) {
+  /**
+   * Upload one or more object. We consult the `vfs ls` API to
+   * enumerate the source files. If parsedOptions.P is provided, we
+   * set the uploaded objects to public.
+   *
+   */
+  private async fPutObject(
+    { REPL, parsedOptions }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+    srcFilepath: string,
+    dstFilepath: string
+  ) {
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${REPL.encodeComponent(srcFilepath)}`)
     const { bucketName, fileName } = this.split(dstFilepath)
-    const etag = await this.client.fPutObject(bucketName, fileName || basename(srcFilepath), srcFilepath, {})
-    return `Created object with etag ${etag}`
+
+    // make public?
+    const metadata = parsedOptions.P
+      ? {
+          'x-amz-acl': 'public-read'
+        }
+      : {}
+
+    const etagsP = Promise.all(
+      (await sources).content.map(_ => {
+        return this.client.fPutObject(bucketName, fileName || basename(_.path), _.path, metadata)
+      })
+    )
+
+    const etags = await etagsP
+
+    if (parsedOptions.P) {
+      const endPoint = /^http/.test(this.options.endPoint) ? this.options.endPoint : `https://${this.options.endPoint}`
+      const srcs = (await sources).content
+      if (etags.length === 1) {
+        return strings('Published object as', `${endPoint}/${bucketName}/${basename(srcs[0].path)}`)
+      } else if (srcs.find(_ => /index.html$/.test(_.path))) {
+        return strings('Published object as', `${endPoint}/${bucketName}/${basename(srcs[0].path)}/index.html`)
+      } else {
+        return strings('Published N objects to', etags.length, `${endPoint}/${bucketName}`)
+      }
+    } else if (etags.length === 1) {
+      return strings('Created object with etag', etags[0])
+    } else {
+      return strings('Created objects with etags', etags.join(', '))
+    }
   }
 
   private async fGetObject(srcFilepath: string, dstFilepath: string) {
@@ -164,7 +207,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Insert filepath into directory */
   public async cp(
-    _,
+    args: Pick<Arguments, 'REPL' | 'parsedOptions'>,
     srcFilepath: string,
     dstFilepath: string,
     srcIsLocal: boolean,
@@ -172,7 +215,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   ): Promise<string> {
     try {
       if (srcIsLocal) {
-        return await this.fPutObject(srcFilepath, dstFilepath)
+        return await this.fPutObject(args, srcFilepath, dstFilepath)
       } else if (dstIsLocal) {
         return await this.fGetObject(srcFilepath, dstFilepath)
       } else {

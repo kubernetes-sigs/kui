@@ -15,6 +15,8 @@
  */
 
 import { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
+
+import { fstatImpl, lsImpl } from './server-side'
 import { cp, rm, mkdir, rmdir } from '../delegates'
 
 /**
@@ -28,17 +30,45 @@ function withBooleanFlags(
   this: Registrar,
   command: string,
   handler: CommandHandler<KResponse, ParsedOptions>,
-  booleans: string
+  booleans: string | string[]
 ) {
   this.listen(`/${command}`, handler, {
     flags: {
-      boolean: booleans.split('')
+      boolean: typeof booleans === 'string' ? booleans.split('') : booleans
     }
   })
 }
 
 export default function(registrar: Registrar) {
   const on = withBooleanFlags.bind(registrar)
+
+  on(
+    'vfs/ls',
+    async args => {
+      try {
+        return await lsImpl(args)
+      } catch (err) {
+        // no virtual (client-only) mount found; try contacting the
+        // proxy server
+        return args.REPL.qexec(args.command.replace('vfs ls', 'vfs _ls'))
+      }
+    },
+    'AadcClhtrsS'
+  )
+
+  on(
+    'vfs/fstat',
+    async args => {
+      try {
+        return await fstatImpl(args)
+      } catch (err) {
+        // no virtual (client-only) mount found; try contacting the
+        // proxy server
+        return args.REPL.qexec(args.command.replace('vfs fstat', 'vfs _fstat'))
+      }
+    },
+    ['with-data', 'enoent-ok']
+  )
 
   on(
     'rm',

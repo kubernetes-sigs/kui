@@ -15,7 +15,7 @@
  */
 
 import { isAbsolute, join } from 'path'
-import { Arguments, REPL, eventBus, getCurrentTab } from '@kui-shell/core'
+import { Arguments, REPL, eventBus, getCurrentTab, inBrowser } from '@kui-shell/core'
 
 import { FStat } from '../lib/fstat'
 import { KuiGlobOptions, GlobStats } from '../lib/glob'
@@ -35,6 +35,9 @@ export interface VFS {
 
   /** Is this a local mount? */
   isLocal: boolean
+
+  /** Is this a virtual mount? i.e. one that works in a browser without server-side proxy support */
+  isVirtual: boolean
 
   /** Directory listing */
   ls(
@@ -139,22 +142,26 @@ function absolute(filepath: string): string {
 }
 
 /** Lookup compiatible mount */
-export function findMount(filepath: string): VFS {
+export function findMount(filepath: string, checkClient = false): VFS {
+  const isClient = inBrowser()
   filepath = absolute(filepath)
-  return _currentMounts.find(mount => filepath.startsWith(mount.mountPath))
+  return _currentMounts.find(
+    mount => filepath.startsWith(mount.mountPath) && (!checkClient || !isClient || mount.isVirtual)
+  )
 }
 
 /** Lookup compatible mounts */
-export function multiFindMount(filepaths: string[]): { filepaths: string[]; mount: VFS }[] {
+export function multiFindMount(filepaths: string[], checkClient = false): { filepaths: string[]; mount: VFS }[] {
   if (filepaths.length === 0) {
-    return multiFindMount([process.env.PWD])
+    return multiFindMount([process.env.PWD], checkClient)
   }
 
   return filepaths
     .map(filepath => ({
       filepaths: [filepath],
-      mount: findMount(filepath)
+      mount: findMount(filepath, checkClient)
     }))
+    .filter(_ => _.mount !== undefined)
     .reduce((mounts, mount) => {
       if (mounts.length === 0 || mounts[mounts.length - 1].mount.mountPath !== mount.mount.mountPath) {
         mounts.push(mount)

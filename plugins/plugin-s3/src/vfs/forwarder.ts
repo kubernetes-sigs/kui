@@ -22,7 +22,7 @@ export default function(registrar: Registrar) {
     '/vfs-s3/cp',
     args =>
       responder.cp(
-        undefined,
+        args,
         args.argvNoOptions[2],
         args.argvNoOptions[3],
         args.argvNoOptions[4] === 'true',
@@ -35,7 +35,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/rm',
     async args => {
-      await responder.rm(undefined, args.argvNoOptions[2], args.argvNoOptions[3] === 'true')
+      await responder.rm(args, args.argvNoOptions[2], args.argvNoOptions[3] === 'true')
       return true
     },
     { requiresLocal: true }
@@ -43,7 +43,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/rmdir',
     async args => {
-      await responder.rmdir(undefined, args.argvNoOptions[2])
+      await responder.rmdir(args, args.argvNoOptions[2])
       return true
     },
     { requiresLocal: true }
@@ -51,7 +51,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/mkdir',
     async args => {
-      await responder.mkdir(undefined, args.argvNoOptions[2])
+      await responder.mkdir(args, args.argvNoOptions[2])
       return true
     },
     { requiresLocal: true }
