@@ -36,7 +36,7 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
   public constructor(props: Props) {
     super(props)
 
-    const proxyEnabled = !proxyServer['enabled'] || proxyServer['enabled'] !== false
+    const proxyEnabled = proxyServer['enabled'] === undefined || proxyServer['enabled'] !== false
     this.state = {
       proxyEnabled,
       offline: true

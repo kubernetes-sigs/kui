@@ -23,6 +23,7 @@ import { fstat, FStat } from '../lib/fstat'
 class LocalVFS implements VFS {
   public readonly mountPath = '/'
   public readonly isLocal = true
+  public readonly isVirtual = false
 
   public async ls(opts: Pick<Arguments<KuiGlobOptions>, 'tab' | 'REPL' | 'parsedOptions'>, filepaths: string[]) {
     return kuiglob({

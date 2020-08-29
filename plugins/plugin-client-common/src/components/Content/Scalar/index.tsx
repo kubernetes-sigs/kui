@@ -83,8 +83,15 @@ export default class Scalar extends React.PureComponent<Props, State> {
     try {
       if (typeof response === 'boolean') {
         return <React.Fragment />
-      } else if (typeof response === 'number' || typeof response === 'string') {
+      } else if (typeof response === 'number') {
         return <pre>{response}</pre>
+      } else if (typeof response === 'string') {
+        // Markdown interpretes escapes, so we need to double-escape
+        return (
+          <pre>
+            <Markdown tab={tab} repl={tab.REPL} source={response.replace(/\\/g, '\\\\')} />
+          </pre>
+        )
       } else if (isCommentaryResponse(response)) {
         return <Commentary {...response.props} />
       } else if (isRadioTable(response)) {
@@ -138,7 +145,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         // checks that we've covered every case of ScalarResponse
         return <HTMLDom content={response} />
       } else if (isMarkdownResponse(response)) {
-        return <Markdown source={response.content} />
+        return <Markdown tab={tab} repl={tab.REPL} source={response.content} />
       }
     } catch (err) {
       console.error('catastrophic error rendering Scalar', err)

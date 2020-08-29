@@ -213,22 +213,22 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             response: { react: announcement },
             responseType: 'ScalarResponse'
           })
-        }
-        const welcomeBlocks: BlockModel[] = !announcement
-          ? []
-          : [
-              Announcement({
-                react: this.props.config.loadingDone && (
-                  <div className="kui--repl-message kui--session-init-done">{announcement}</div>
-                )
-              })
-            ]
+          const welcomeBlocks: BlockModel[] = !announcement
+            ? []
+            : [
+                Announcement({
+                  react: this.props.config.loadingDone && (
+                    <div className="kui--repl-message kui--session-init-done">{announcement}</div>
+                  )
+                })
+              ]
 
-        scrollback.nAnnouncements++
-        scrollback.blocks = welcomeBlocks.concat(scrollback.blocks)
+          scrollback.nAnnouncements++
+          scrollback.blocks = welcomeBlocks.concat(scrollback.blocks)
 
-        if (welcomeMax !== -1) {
-          localStorage.setItem(NUM_WELCOMED, (welcomed + 1).toString())
+          if (welcomeMax !== -1) {
+            localStorage.setItem(NUM_WELCOMED, (welcomed + 1).toString())
+          }
         }
       }
     }

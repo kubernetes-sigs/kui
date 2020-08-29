@@ -15,11 +15,26 @@
  */
 
 import * as React from 'react'
-import { CommentaryResponse } from '@kui-shell/core'
-import Card from '../spi/Card'
 
-export default class Commentary extends React.PureComponent<CommentaryResponse['props']> {
-  public render() {
-    return <Card {...this.props} className="kui--commentary-card" />
-  }
+import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
+
+import { productName } from '@kui-shell/client/config.d/name.json'
+
+/**
+ * Format our body, with extra status stripe widgets
+ *   - <CurrentGitBranch />
+ *   - <ProxyOfflineIndicator />
+ *
+ */
+export default function renderMain(props: KuiProps) {
+  return (
+    <Kui
+      productName={productName}
+      splitTerminals
+      lightweightTables
+      {...props}
+      commandLine={props.commandLine || ['replay', '/kui/welcome.json']}
+      loadingDone={() => undefined}
+    />
+  )
 }

@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
+import { v4 as uuid } from 'uuid'
+
 import {
   eventBus,
+  isTable,
   inElectron,
+  CommandStartEvent,
+  CommandCompleteEvent,
   KResponse,
   ParsedOptions,
   Registrar,
   Snapshot,
   SnapshotBlock,
+  SnapshottedEvent,
   StatusStripeChangeEvent,
+  Tab,
   promiseEach
 } from '@kui-shell/core'
+
+/** Schema for a record of onclick (startEvent, completeEvent) pairs */
+interface ClickSnapshot {
+  startEvents: Record<string, CommandStartEvent[]>
+  completeEvents: Record<string, CommandCompleteEvent[]>
+}
 
 /**
  * Schema for a serialized snapshot of the Inputs and Outputs of
@@ -33,7 +46,7 @@ import {
 export interface SerializedSnapshot {
   apiVersion: 'kui-shell/v1'
   kind: 'Snapshot'
-  spec: Snapshot
+  spec: Snapshot & { clicks: ClickSnapshot }
 }
 
 /** @return wether or not the given `raw` json is an instance of SerializedSnapshot */
@@ -95,6 +108,136 @@ function formatMessage(snapshot: SerializedSnapshot) {
   return `**Now Playing**: ${snapshot.spec.title || 'a snapshot'}`
 }
 
+/** Re-emit prior start event in new tab */
+function reEmitStartInTab(tab: Tab, startEvent: SnapshotBlock['startEvent']) {
+  eventBus.emitCommandStart(Object.assign({}, startEvent, { tab: Object.assign({}, tab, { uuid: startEvent.tab }) }))
+}
+
+/** Re-emit prior complete event in new tab */
+function reEmitCompleteInTab(tab: Tab, completeEvent: SnapshotBlock['completeEvent']) {
+  const evt = Object.assign({}, completeEvent, { tab: Object.assign({}, tab, { uuid: completeEvent.tab }) })
+  eventBus.emitCommandComplete(evt)
+}
+
+/**
+ * The command name we use to replay the click in a given block
+ * (`execUUID`) and table row (`rowIdx`).
+ *
+ */
+function replayClickFor(execUUID: string, rowIdx: number) {
+  return `replay-click-${execUUID}-${rowIdx}`
+}
+
+/**
+ * Record clicks
+ *
+ */
+type Click = { completeEvent: SnapshotBlock['completeEvent']; onClicks: { rowIdx: number; onClick: string }[] }
+class FlightRecorder {
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(private readonly tab: Tab, private readonly blocks: SnapshotBlock[]) {}
+
+  /** Find onclick handlers that we should crawl */
+  private collectOnClicks(): Click[] {
+    return this.blocks
+      .map(_ =>
+        _.completeEvent && isTable(_.completeEvent.response)
+          ? {
+              completeEvent: _.completeEvent,
+              onClicks: _.completeEvent.response.body
+                .map((_, rowIdx) => (typeof _.onclick === 'string' ? { rowIdx, onClick: _.onclick } : undefined))
+                .filter(_ => _)
+            }
+          : undefined
+      )
+      .filter(_ => _)
+  }
+
+  /**
+   * Transform a E=Command*Event into the matching
+   * SnapshottedEvent<E>, by splicing in the tab uuid in place of the
+   * tab object. This allows us to replay in a repeatible way, since
+   * tab uuids are a v5 sequence. See ScrollableTerminal for the
+   * origin of the v5 sequence.
+   *
+   * Note: That we have to place this an a separate function is due to
+   * typescript
+   * limitations. https://github.com/microsoft/TypeScript/issues/35858
+   *
+   */
+  private static xform<E extends CommandStartEvent | CommandCompleteEvent>(
+    this: Pick<Click, 'completeEvent'>,
+    evt: E
+  ): SnapshottedEvent<E> {
+    return Object.assign(Object.assign({}, evt, { tab: undefined }), { tab: this.completeEvent.tab })
+  }
+
+  /**
+   * Accept a Command*Event pass it through `xform` (just above) and
+   * store the resulting SnapshottedEvent in the given `this`
+   * record. We should have an array of these, one per click handler
+   * in a table; this is where the T[] comes from: that array is
+   * parallel to the rows of the table being crawled.
+   *
+   */
+  private static handler<E extends CommandStartEvent | CommandCompleteEvent, T extends SnapshottedEvent<E>>(
+    this: Record<string, T[]>,
+    click: Pick<Click, 'completeEvent'>,
+    rowIdx: number,
+    xform: (evt: E) => T,
+    event: E
+  ) {
+    const events = this[click.completeEvent.execUUID] || []
+    if (events.length === 0) {
+      this[click.completeEvent.execUUID] = events
+    }
+
+    if (isTable(click.completeEvent.response)) {
+      const row = click.completeEvent.response.body[rowIdx]
+      row.onclick = replayClickFor(click.completeEvent.execUUID, rowIdx)
+    }
+
+    events[rowIdx] = xform(event)
+  }
+
+  /**
+   * Run through the rows of a Table response, issue the onclick
+   * handler, and store the (start,complete) event pairs, indexed by
+   * row of the table; that's a ClickSnapshot.
+   *
+   */
+  public async record(): Promise<ClickSnapshot> {
+    const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
+    const startEvents: Record<string, CommandStartEvent[]> = {}
+    const completeEvents: Record<string, CommandCompleteEvent[]> = {}
+
+    const onclicks = this.collectOnClicks()
+
+    await Promise.all(
+      onclicks.map(async click => {
+        await Promise.all(
+          click.onClicks.map(async _ => {
+            const xform = FlightRecorder.xform.bind(click)
+            const onCommandStart = FlightRecorder.handler.bind(startEvents, click, _.rowIdx, xform)
+            const onCommandComplete = FlightRecorder.handler.bind(completeEvents, click, _.rowIdx, xform)
+            eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
+            eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
+
+            try {
+              await fakeTab.REPL.pexec(_.onClick, { tab: fakeTab })
+            } finally {
+              eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
+              eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+            }
+          })
+        )
+      })
+    )
+
+    return { startEvents, completeEvents }
+  }
+}
+
 /** Command registration */
 export default function(registrar: Registrar) {
   // register the `replay` command
@@ -124,18 +267,34 @@ export default function(registrar: Registrar) {
           })
         }
 
+        if (model.spec.clicks) {
+          Object.keys(model.spec.clicks.startEvents).forEach(execUUID => {
+            const startEvents = model.spec.clicks.startEvents[execUUID]
+            const completeEvents = model.spec.clicks.completeEvents[execUUID]
+            if (startEvents && completeEvents && startEvents.length === completeEvents.length) {
+              startEvents.forEach((startEvent, rowIdx) => {
+                const completeEvent = completeEvents[rowIdx]
+                if (startEvent && completeEvent) {
+                  const channel = `/${replayClickFor(execUUID, rowIdx)}`
+                  registrar.listen(channel, async () => {
+                    reEmitStartInTab(tab, startEvent)
+                    reEmitCompleteInTab(tab, completeEvent)
+                    return true
+                  })
+                }
+              })
+            }
+          })
+        }
+
         await promiseEach(model.spec.windows[0].tabs[0].blocks, async ({ startEvent, completeEvent }) => {
           // NOTE: work around the replayability issue of split command not returning a replayable model: https://github.com/IBM/kui/issues/5399
           if (startEvent.command === 'split') {
             await REPL.qexec('split')
           }
 
-          eventBus.emitCommandStart(
-            Object.assign({}, startEvent, { tab: Object.assign({}, tab, { uuid: startEvent.tab }) })
-          )
-          eventBus.emitCommandComplete(
-            Object.assign({}, completeEvent, { tab: Object.assign({}, tab, { uuid: completeEvent.tab }) })
-          )
+          reEmitStartInTab(tab, startEvent)
+          reEmitCompleteInTab(tab, completeEvent)
         })
         return true
       }
@@ -159,6 +318,10 @@ export default function(registrar: Registrar) {
             // sort blocks by startTime
             blocks.sort((a, b) => (a.startTime > b.startTime ? 1 : -1))
 
+            // if needed, we could optimize this by recording per
+            // blocksInSplit, as they arrive
+            const clicks = await new FlightRecorder(tab, blocks).record()
+
             try {
               const filepath = argvNoOptions[argvNoOptions.indexOf('snapshot') + 1]
               const snapshot: SerializedSnapshot = {
@@ -167,6 +330,7 @@ export default function(registrar: Registrar) {
                 spec: {
                   title: parsedOptions.t || parsedOptions.title,
                   description: parsedOptions.d || parsedOptions.description,
+                  clicks,
                   windows: [
                     {
                       uuid: '0',

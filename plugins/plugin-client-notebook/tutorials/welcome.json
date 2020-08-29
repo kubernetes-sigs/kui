@@ -1,0 +1,310 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Snapshot",
+  "spec": {
+    "windows": [
+      {
+        "uuid": "0",
+        "tabs": [
+          {
+            "uuid": "0",
+            "blocks": [
+              {
+                "startTime": 1598724256175,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#   # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "6542f689-2504-4e0c-9330-68eea698d9de"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "#  # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:",
+                  "argvNoOptions": [
+                    "#",
+                    "   # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:"
+                  ],
+                  "parsedOptions": {
+                    "_": ["#", "   # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:"]
+                  },
+                  "execUUID": "6542f689-2504-4e0c-9330-68eea698d9de",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "6542f689-2504-4e0c-9330-68eea698d9de",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "# Welcome to Kui Notebooks\nTry clicking on one of the following notebooks:"
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              },
+              {
+                "startTime": 1598724256175,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#   # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        { "name": "--title", "alias": "-t", "docs": "Title for the commentary" },
+                        { "name": "--file", "alias": "-f", "docs": "File that contains the texts" }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "6542f689-2504-4e0c-9330-68eea698d9de"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "#  # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:",
+                  "argvNoOptions": [
+                    "#",
+                    "   # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:"
+                  ],
+                  "parsedOptions": {
+                    "_": ["#", "   # Welcome to Kui Notebooks\\nTry clicking on one of the following notebooks:"]
+                  },
+                  "execUUID": "6542f689-2504-4e0c-9330-68eea698d9de",
+                  "cancelled": false,
+                  "evaluatorOptions": { "outputOnly": true, "plugin": "plugin-client-common" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "6542f689-2504-4e0c-9330-68eea698d9de",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "# Welcome to Kui Notebooks\nTry clicking on one of the following notebooks:"
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              },
+              {
+                "startTime": 1598724275856,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/ls",
+                  "command": "ls -l /kui/kubernetes/",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "ls",
+                      "title": "local file list",
+                      "header": "Directory listing of your local filesystem",
+                      "noHelpAlias": true,
+                      "optional": [
+                        { "name": "path", "docs": "local file path", "file": true, "positional": true },
+                        { "name": "-A", "boolean": true, "docs": "List all entries except for . and .." },
+                        {
+                          "name": "-a",
+                          "boolean": true,
+                          "docs": "Include directory entries whose names begin with a dot (.)"
+                        },
+                        { "name": "-d", "boolean": true, "docs": "Directories are listed as plain files" },
+                        {
+                          "name": "-c",
+                          "boolean": true,
+                          "docs": "Use time when file status was last changed for sorting"
+                        },
+                        { "name": "-C", "boolean": true, "hidden": true },
+                        { "name": "-l", "boolean": true, "hidden": true },
+                        { "name": "-h", "boolean": true, "hidden": true },
+                        {
+                          "name": "-t",
+                          "boolean": true,
+                          "docs": "Sort by time modified (most recently modified first)"
+                        },
+                        { "name": "-r", "boolean": true, "docs": "Reverse the natural sort order" },
+                        { "name": "-s", "boolean": true, "hidden": true },
+                        { "name": "-S", "boolean": true, "docs": "Sort files by size" }
+                      ]
+                    },
+                    "flags": { "boolean": ["A", "a", "d", "c", "C", "l", "h", "t", "r", "s", "S"] },
+                    "plugin": "plugin-bash-like/fs"
+                  },
+                  "execType": 0,
+                  "execUUID": "63c949f8-5166-4609-9778-550f00ab9bc8"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "ls -l /kui/kubernetes/",
+                  "argvNoOptions": ["ls", "/kui/kubernetes/"],
+                  "parsedOptions": { "_": ["ls", "/kui/kubernetes/"], "l": true },
+                  "execUUID": "63c949f8-5166-4609-9778-550f00ab9bc8",
+                  "cancelled": false,
+                  "evaluatorOptions": { "plugin": "plugin-bash-like/fs" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "63c949f8-5166-4609-9778-550f00ab9bc8",
+                    "history": 252,
+                    "env": {}
+                  },
+                  "response": {
+                    "header": { "name": "Name", "attributes": [] },
+                    "body": [
+                      {
+                        "name": "Learning Kubernetes &mdash; `Listing Resources`",
+                        "css": "",
+                        "onclickExec": "pexec",
+                        "onclick": "open /kui/kubernetes/list-resources.json",
+                        "attributes": [],
+                        "key": "Name"
+                      },
+                      {
+                        "name": "Learning Kubernetes &mdash; `Working with Jobs`",
+                        "css": "",
+                        "onclickExec": "pexec",
+                        "onclick": "open /kui/kubernetes/create-jobs.json",
+                        "attributes": [],
+                        "key": "Name"
+                      }
+                    ],
+                    "markdown": true,
+                    "noSort": true,
+                    "noEntityColors": true
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 252
+                }
+              },
+              {
+                "startTime": 1598724275856,
+                "startEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/ls",
+                  "command": "ls -l /kui/kubernetes/",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "ls",
+                      "title": "local file list",
+                      "header": "Directory listing of your local filesystem",
+                      "noHelpAlias": true,
+                      "optional": [
+                        { "name": "path", "docs": "local file path", "file": true, "positional": true },
+                        { "name": "-A", "boolean": true, "docs": "List all entries except for . and .." },
+                        {
+                          "name": "-a",
+                          "boolean": true,
+                          "docs": "Include directory entries whose names begin with a dot (.)"
+                        },
+                        { "name": "-d", "boolean": true, "docs": "Directories are listed as plain files" },
+                        {
+                          "name": "-c",
+                          "boolean": true,
+                          "docs": "Use time when file status was last changed for sorting"
+                        },
+                        { "name": "-C", "boolean": true, "hidden": true },
+                        { "name": "-l", "boolean": true, "hidden": true },
+                        { "name": "-h", "boolean": true, "hidden": true },
+                        {
+                          "name": "-t",
+                          "boolean": true,
+                          "docs": "Sort by time modified (most recently modified first)"
+                        },
+                        { "name": "-r", "boolean": true, "docs": "Reverse the natural sort order" },
+                        { "name": "-s", "boolean": true, "hidden": true },
+                        { "name": "-S", "boolean": true, "docs": "Sort files by size" }
+                      ]
+                    },
+                    "flags": { "boolean": ["A", "a", "d", "c", "C", "l", "h", "t", "r", "s", "S"] },
+                    "plugin": "plugin-bash-like/fs"
+                  },
+                  "execType": 0,
+                  "execUUID": "63c949f8-5166-4609-9778-550f00ab9bc8"
+                },
+                "completeEvent": {
+                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "ls -l /kui/kubernetes/",
+                  "argvNoOptions": ["ls", "/kui/kubernetes/"],
+                  "parsedOptions": { "_": ["ls", "/kui/kubernetes/"], "l": true },
+                  "execUUID": "63c949f8-5166-4609-9778-550f00ab9bc8",
+                  "cancelled": false,
+                  "evaluatorOptions": { "plugin": "plugin-bash-like/fs" },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "63c949f8-5166-4609-9778-550f00ab9bc8",
+                    "history": 252,
+                    "env": {}
+                  },
+                  "response": {
+                    "header": { "name": "Name", "attributes": [] },
+                    "body": [
+                      {
+                        "name": "Learning Kubernetes &mdash; `Listing Resources`",
+                        "css": "",
+                        "onclickExec": "pexec",
+                        "onclick": "open /kui/kubernetes/list-resources.json",
+                        "attributes": [],
+                        "key": "Name"
+                      },
+                      {
+                        "name": "Learning Kubernetes &mdash; `Working with Jobs`",
+                        "css": "",
+                        "onclickExec": "pexec",
+                        "onclick": "open /kui/kubernetes/create-jobs.json",
+                        "attributes": [],
+                        "key": "Name"
+                      }
+                    ],
+                    "markdown": true,
+                    "noSort": true,
+                    "noEntityColors": true
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 252
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

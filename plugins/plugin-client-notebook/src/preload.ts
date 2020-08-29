@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { CommentaryResponse } from '@kui-shell/core'
-import Card from '../spi/Card'
-
-export default class Commentary extends React.PureComponent<CommentaryResponse['props']> {
-  public render() {
-    return <Card {...this.props} className="kui--commentary-card" />
-  }
+/**
+ * Register the welcome notebook
+ *
+ */
+export default async () => {
+  const { tutorialVFS } = await import('@kui-shell/plugin-core-support')
+  tutorialVFS.cp(undefined, 'plugin://client/tutorials/welcome.json', '/kui')
 }

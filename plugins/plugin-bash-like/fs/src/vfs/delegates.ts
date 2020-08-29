@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, flatten } from '@kui-shell/core'
+import { Arguments, CodedError, flatten } from '@kui-shell/core'
 import { VFS, findMount, multiFindMount } from '.'
 
 /**
@@ -22,7 +22,13 @@ import { VFS, findMount, multiFindMount } from '.'
  *
  */
 export async function ls(...parameters: Parameters<VFS['ls']>): Promise<ReturnType<VFS['ls']>> {
-  const mounts = multiFindMount(parameters[1])
+  const mounts = multiFindMount(parameters[1], true)
+  if (mounts.length === 0) {
+    const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
+    err.code = 404
+    throw err
+  }
+
   return flatten(await Promise.all(mounts.map(({ filepaths, mount }) => mount.ls(parameters[0], filepaths))))
 }
 

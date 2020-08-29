@@ -15,10 +15,48 @@
  */
 
 @import '_mixins';
+@import '../Sidecar/_mixins';
+@import '../common/_narrow-window';
 
-@include Scrollback {
+@mixin MajorHeaders {
   h1,
   h2 {
-    font-weight: 600;
+    @content;
   }
+}
+
+@mixin Paragraphs {
+  p {
+    @content;
+  }
+}
+
+@mixin FullWidth {
+  @include Scrollback {
+    .kui--commentary-card {
+      flex: 1;
+    }
+  }
+}
+
+@include Scrollback {
+  @include MajorHeaders {
+    font-weight: 500;
+    font-size: 2.125rem;
+    letter-spacing: 0.32px;
+    padding: 0.5rem 1rem 0.5rem 0.25rem;
+    border-bottom: 1px solid var(--color-table-border2);
+  }
+
+  @include Paragraphs {
+    font-size: 1rem;
+  }
+}
+
+@include narrow-window {
+  @include FullWidth;
+}
+
+@include sidecar-visible {
+  @include FullWidth;
 }

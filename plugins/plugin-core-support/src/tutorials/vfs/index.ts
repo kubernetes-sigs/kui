@@ -52,6 +52,7 @@ const username = ''
 class TutorialVFS implements VFS {
   public readonly mountPath = '/kui'
   public readonly isLocal = false
+  public readonly isVirtual = true
 
   protected readonly prefix = new RegExp(`^${this.mountPath}\\/?`)
 
@@ -179,7 +180,7 @@ class TutorialVFS implements VFS {
     } else {
       const entry = entries[0]
       return {
-        viewer: 'replay --new-window',
+        viewer: 'replay --new-window --status-stripe blue',
         filepath: entry.mountPath,
         fullpath: entry.mountPath,
         isDirectory: !isLeaf(entry),
