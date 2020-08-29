@@ -23,17 +23,6 @@ body td {
   transition-timing-function: var(--transition-timing-function);
 }
 
-li.bx--tabs__nav-item.sidecar-bottom-stripe-button,
-li.bx--tabs__nav-item.sidecar-bottom-stripe-button a {
-  flex: 1;
-}
-
-a.bx--tabs__nav-link:focus,
-a.bx--tabs__nav-link:active {
-  width: 100%;
-  padding: 0.5rem 1rem;
-}
-
 a.bx--tabs__nav-link:focus,
 a.bx--tabs__nav-link:active {
   outline-color: var(--color-brand-01);
@@ -57,9 +46,6 @@ a.kui-new-tab__plus:active,
 }
 
 body[kui-theme-style] .bx--link {
-  font-weight: 600;
-  /* text-decoration: underline; */
-  transition-duration: 250ms;
   pointer-events: unset;
   touch-action: unset;
   color: var(--color-text-01);
@@ -73,11 +59,6 @@ body[kui-theme-style] .bx--link {
   &:hover {
     color: var(--color-hover-primary-text);
   }
-}
-
-.repl-block.processing .repl-prompt-right-element-status-icon .kui--icon-processing svg circle.bx--loading__stroke-kui {
-  /* stroke: var(--color-base0C); */
-  stroke-dashoffset: 30;
 }
 
 body[kui-theme-style] {

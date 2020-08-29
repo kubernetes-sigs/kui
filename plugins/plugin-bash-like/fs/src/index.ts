@@ -15,6 +15,7 @@
  */
 
 export { FStat } from './lib/fstat'
+export { GlobStats } from './lib/glob'
 export { default as File, isFile } from './lib/File'
 
 export { VFS, mount, DirEntry } from './vfs'

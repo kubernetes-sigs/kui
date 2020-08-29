@@ -50,6 +50,9 @@
       "path": "plugins/plugin-client-alternate"
     },
     {
+      "path": "plugins/plugin-client-notebook"
+    },
+    {
       "path": "plugins/plugin-s3"
     },
     {
@@ -61,6 +64,5 @@
     {
       "path": "plugins/plugin-iter8"
     }
-
   ]
 }
