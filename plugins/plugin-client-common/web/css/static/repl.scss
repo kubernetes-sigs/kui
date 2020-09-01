@@ -166,12 +166,6 @@
   margin: 2px 0; /* firefox needs some vertical padding, otherwise descenders like "y" crop; weird */
   white-space: pre-wrap;
 }
-.repl-result code {
-  /* more invocation results */
-  /* here, we override the highlight.js theme, when rendering in the repl */
-  background: transparent;
-  color: var(--color-text-01);
-}
 
 /* e.g. reverse-i-search; see Input.tsx */
 .repl-input-element.repl-input-hidden {

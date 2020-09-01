@@ -47,6 +47,9 @@ body .bx--data-table-container {
       line-height: inherit;
       font-weight: inherit;
     }
+    .clickable:not(:hover) p code {
+      color: var(--color-text-02);
+    }
 
     /* td [data-key='NAME'],
     td .kui--table-cell-is-name {
