@@ -66,7 +66,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
   private message() {
     if (this.state.type !== 'default' && this.state.message) {
       return (
-        <div className="kui--status-stripe-element left-pad">
+        <div className="kui--status-stripe-element left-pad kui--status-stripe-message-element">
           <Markdown source={this.state.message} />
         </div>
       )

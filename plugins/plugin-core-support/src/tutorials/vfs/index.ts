@@ -180,7 +180,7 @@ class TutorialVFS implements VFS {
     } else {
       const entry = entries[0]
       return {
-        viewer: 'replay --new-window --status-stripe blue',
+        viewer: 'replay --new-tab',
         filepath: entry.mountPath,
         fullpath: entry.mountPath,
         isDirectory: !isLeaf(entry),

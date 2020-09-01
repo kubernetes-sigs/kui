@@ -58,7 +58,7 @@ export type CommandCompleteHandler<R extends KResponse = KResponse, T extends Re
 
 /** In order to snapshot an event, we'll need to remember just the tab uuid */
 export type SnapshottedEvent<E extends CommandStartEvent | CommandCompleteEvent> = Omit<E, 'tab'> & {
-  tab: Pick<E['tab'], 'uuid'>
+  tab: E['tab']['uuid']
 }
 
 /**

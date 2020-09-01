@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TabState } from '@kui-shell/core'
+import { StatusStripeChangeEvent, TabState } from '@kui-shell/core'
 
 /** cheapo uuid; we only need single-threaded uniqueness */
 let _uuidCounter = 1
@@ -29,10 +29,12 @@ export interface TopTabButton<P extends { key: string } = { key: string }> {
 export default class TabModel {
   public constructor(
     private readonly _uuid = uuid(),
-    private readonly _state = new TabState(_uuid),
+    desiredStatusStripeDecoration?: StatusStripeChangeEvent,
+    private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
     private readonly _buttons: TopTabButton[] = []
   ) {
     this._state.capture()
+    this._state.updateStatusStripe()
   }
 
   public get uuid() {
@@ -48,6 +50,6 @@ export default class TabModel {
   }
 
   public update(buttons: TopTabButton[]) {
-    return new TabModel(this.uuid, this.state, buttons)
+    return new TabModel(this.uuid, undefined, this.state, buttons)
   }
 }

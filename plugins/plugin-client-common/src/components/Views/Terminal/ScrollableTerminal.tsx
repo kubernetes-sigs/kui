@@ -513,7 +513,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Split the view */
-  private onSplit(resolve: (response: true) => void, reject: (err: Error) => void) {
+  private onSplit(resolve: (response: string) => void, reject: (err: Error) => void) {
     const nTerminals = this.state.splits.length
 
     if (nTerminals === MAX_TERMINALS) {
@@ -521,11 +521,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     } else {
       eventBus.emitTabLayoutChange(this.props.tab.uuid)
 
+      const newScrollback = this.scrollback()
       this.setState(({ splits, focusedIdx }) => {
         const newFocus = focusedIdx + 1
         const newSplits = splits
           .slice(0, newFocus)
-          .concat(this.scrollback())
+          .concat(newScrollback)
           .concat(splits.slice(newFocus))
 
         return {
@@ -533,7 +534,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           splits: newSplits
         }
       })
-      resolve(true)
+      resolve(newScrollback.facade.uuid)
     }
   }
 

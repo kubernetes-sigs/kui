@@ -164,7 +164,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
         initializeSession(state.tab)
           .then(() => {
             eventBus.emit('/tab/new', state.tab)
-            eventChannelUnsafe.emit(`/tab/new/${props.uuid}`)
+            eventChannelUnsafe.emit(`/tab/new/${props.uuid}`, state.tab)
           })
           .catch(TabContent.onSessionInitError.bind(undefined, props.uuid))
 
@@ -235,9 +235,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
                   this.setState({ showSessionInitDone: false })
 
                   // reset the status stripe on clearing of the terminal
-                  eventBus.emitStatusStripeChangeRequest({
-                    type: 'default'
-                  })
+                  // eslint false positive:
+                  // eslint-disable-next-line react/no-direct-mutation-state
+                  this.state.tab.state.desiredStatusStripeDecoration = { type: 'default' }
                 }}
                 ref={c => {
                   // so that we can refocus/blur

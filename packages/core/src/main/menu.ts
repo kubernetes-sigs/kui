@@ -77,7 +77,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
               label: 'Listing Resources',
               click: () => {
                 try {
-                  tellRendererToExecute('open /kui/kubernetes/list-resources.json', 'pexec')
+                  tellRendererToExecute('replay /kui/kubernetes/list-resources.json --new-window', 'pexec')
                 } catch (err) {
                   console.log(err)
                 }
@@ -87,7 +87,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
               label: 'Working with Jobs',
               click: () => {
                 try {
-                  tellRendererToExecute('open /kui/kubernetes/create-jobs.json', 'pexec')
+                  tellRendererToExecute('replay /kui/kubernetes/create-jobs.json --new-window', 'pexec')
                 } catch (err) {
                   console.log(err)
                 }
