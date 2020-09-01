@@ -18,6 +18,7 @@ import Debug from 'debug'
 
 import { WatchableJob } from '../core/jobs/job'
 import { inBrowser } from '../core/capabilities'
+import { eventBus, StatusStripeChangeEvent } from '../core/events'
 
 const debug = Debug('core/models/TabState')
 
@@ -63,7 +64,11 @@ export default class TabState {
   public drilldownInProgress: Promise<void>
 
   // eslint-disable-next-line no-useless-constructor
-  public constructor(public readonly uuid: string) {}
+  public constructor(
+    public readonly uuid: string,
+    private _desiredStatusStripeDecoration: StatusStripeChangeEvent = { type: 'default' },
+    private _parent?: TabState
+  ) {}
 
   public get env() {
     return this._env
@@ -84,7 +89,7 @@ export default class TabState {
   /** Clone the captured state */
   public cloneWithUUID(uuid: string) {
     this.capture()
-    const clone = new TabState(uuid)
+    const clone = new TabState(uuid, this.desiredStatusStripeDecoration, this)
     clone._env = Object.assign({}, this.env)
     clone._cwd = this.cwd
     debug('cloned tab state', clone.uuid, clone.cwd)
@@ -160,6 +165,28 @@ export default class TabState {
     this._age[idx] = undefined
   }
 
+  /** Enforce our desired status stripe decorations */
+  public updateStatusStripe() {
+    if (this._parent) {
+      this._parent.updateStatusStripe()
+    } else {
+      eventBus.emitStatusStripeChangeRequest(this.desiredStatusStripeDecoration)
+    }
+  }
+
+  public get desiredStatusStripeDecoration() {
+    return this._desiredStatusStripeDecoration
+  }
+
+  public set desiredStatusStripeDecoration(decor: StatusStripeChangeEvent) {
+    this._desiredStatusStripeDecoration = decor
+    if (this._parent) {
+      this._parent.desiredStatusStripeDecoration = decor
+    } else {
+      this.updateStatusStripe()
+    }
+  }
+
   /**
    * Restore tab state
    *
@@ -177,5 +204,7 @@ export default class TabState {
         process.chdir(this._cwd)
       }
     }
+
+    this.updateStatusStripe()
   }
 }

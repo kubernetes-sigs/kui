@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { Tab, eventBus } from '@kui-shell/core'
+import { StatusStripeChangeEvent, Tab, eventBus } from '@kui-shell/core'
 
 import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
@@ -60,8 +60,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       activeIdx: 0
     }
 
-    eventBus.on('/tab/new/request', () => {
-      this.onNewTab()
+    eventBus.on('/tab/new/request', ({ uuid, statusStripeDecoration } = {}) => {
+      this.onNewTab(uuid, statusStripeDecoration)
     })
 
     eventBus.on('/tab/switch/request', (idx: number) => {
@@ -152,8 +152,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  private newTabModel() {
-    const model = new TabModel()
+  private newTabModel(useThisUUID?: string, statusStripeDecoration?: StatusStripeChangeEvent) {
+    const model = new TabModel(useThisUUID, statusStripeDecoration)
     this.listenForTabClose(model)
     return model
   }
@@ -162,10 +162,10 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * New Tab event
    *
    */
-  private onNewTab() {
+  private onNewTab(useThisUUID?: string, statusStripeDecoration?: StatusStripeChangeEvent) {
     this.captureState()
 
-    const model = this.newTabModel()
+    const model = this.newTabModel(useThisUUID, statusStripeDecoration)
 
     this.setState(curState => ({
       tabs: curState.tabs.concat(model),

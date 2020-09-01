@@ -54,9 +54,14 @@ class EventBusBase {
   }
 }
 
+interface NewTabRequestEvent {
+  uuid?: string
+  statusStripeDecoration?: StatusStripeChangeEvent
+}
+
 class WriteEventBus extends EventBusBase {
   public emit(channel: '/tab/new' | '/tab/close' | '/tab/offline', tab: Tab): void
-  public emit(channel: '/tab/new/request'): void
+  public emit(channel: '/tab/new/request', evt?: NewTabRequestEvent): void
   public emit(channel: '/tab/switch/request', idx: number): void
   public emit(channel: string, args?: any) {
     return this.eventBus.emit(channel, args)
@@ -136,7 +141,7 @@ class ReadEventBus extends WriteEventBus {
     listener: (tab: Tab) => void
   ): void
 
-  public on(channel: '/tab/new/request', listener: () => void): void
+  public on(channel: '/tab/new/request', listener: (evt: NewTabRequestEvent) => void): void
   public on(channel: '/tab/switch/request', listener: (tabId: number) => void): void
   public on(channel: string, listener: any) {
     return this.eventBus.on(channel, listener)
