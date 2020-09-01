@@ -87,11 +87,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <pre>{response}</pre>
       } else if (typeof response === 'string') {
         // Markdown interpretes escapes, so we need to double-escape
-        return (
-          <pre>
-            <Markdown tab={tab} repl={tab.REPL} source={response.replace(/\\/g, '\\\\')} />
-          </pre>
-        )
+        return <Markdown tab={tab} repl={tab.REPL} source={response.replace(/\\/g, '\\\\')} />
       } else if (isCommentaryResponse(response)) {
         return <Commentary {...response.props} />
       } else if (isRadioTable(response)) {

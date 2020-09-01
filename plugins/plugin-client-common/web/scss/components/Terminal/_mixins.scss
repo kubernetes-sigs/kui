@@ -35,3 +35,25 @@
     }
   }
 }
+
+@mixin Block {
+  .repl-block {
+    @content;
+  }
+}
+
+@mixin ActiveBlock {
+  @include Block {
+    &.repl-active {
+      @content;
+    }
+  }
+}
+
+@mixin FinishedBlock {
+  @include Block {
+    &:not(.repl-active) {
+      @content;
+    }
+  }
+}
