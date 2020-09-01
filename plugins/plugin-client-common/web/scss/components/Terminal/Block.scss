@@ -17,6 +17,9 @@
 @import '_mixins';
 @import '../Sidecar/_mixins';
 
+/** Inset of the <input> element w.r.t. the bordered/backgrounded region */
+$inset: 0.375rem;
+
 .repl-input,
 .repl-output {
   padding-right: calc(1rem - 6px);
@@ -69,7 +72,7 @@
     }
 
     .repl-output {
-      margin-top: 0.25rem;
+      margin-top: $inset;
     }
     .repl-input,
     .repl-output {
@@ -84,7 +87,6 @@
       display: flex;
       justify-content: flex-end;
       flex-basis: 3rem;
-      max-width: 3rem; /* Out[1] overflows, but it is currently hidden */
       text-align: end;
       margin-right: 0.5rem;
       position: relative;
@@ -99,11 +101,11 @@
       .repl-input {
         .repl-context,
         .repl-prompt-right-elements {
-          padding-top: 0.25rem;
+          padding-top: $inset;
         }
       }
       .repl-input-element-wrapper {
-        padding: 0.25rem 0 0.25rem 0.5rem;
+        padding: $inset 0 $inset 0.5rem;
         border: 1px solid transparent;
         align-items: stretch;
       }

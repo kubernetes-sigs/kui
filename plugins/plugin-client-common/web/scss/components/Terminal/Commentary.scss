@@ -18,22 +18,32 @@
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
 
-@mixin MajorHeaders {
-  h1,
-  h2 {
+@mixin Card {
+  .kui--commentary-card {
     @content;
   }
 }
 
+@mixin MajorHeaders {
+  @include Card {
+    h1,
+    h2 {
+      @content;
+    }
+  }
+}
+
 @mixin Paragraphs {
-  p {
-    @content;
+  @include Card {
+    p {
+      @content;
+    }
   }
 }
 
 @mixin FullWidth {
   @include Scrollback {
-    .kui--commentary-card {
+    @include Card {
       flex: 1;
     }
   }
@@ -46,6 +56,14 @@
     letter-spacing: 0.32px;
     padding: 0.5rem 1rem 0.5rem 0.25rem;
     border-bottom: 1px solid var(--color-table-border2);
+  }
+
+  @include Block {
+    &:not(:first-child) {
+      @include MajorHeaders {
+        margin-top: 0.5rem;
+      }
+    }
   }
 
   @include Paragraphs {
