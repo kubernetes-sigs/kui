@@ -2630,7 +2630,7 @@
                 "startEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
-                  "command": "#   # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config.",
+                  "command": "#   # Creating a Resource\\nCreate a Kubernetes Resource from configuration file.",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -2651,16 +2651,13 @@
                 "completeEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
-                  "command": "#  # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config.",
+                  "command": "#  # Creating a Resource\\nCreate a Kubernetes Resource from configuration file.",
                   "argvNoOptions": [
                     "#",
-                    "   # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config."
+                    "   # Creating a Resource\\nCreate a Kubernetes Resource from configuration file."
                   ],
                   "parsedOptions": {
-                    "_": [
-                      "#",
-                      "   # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config."
-                    ]
+                    "_": ["#", "   # Creating a Resource\\nCreate a Kubernetes Resource from configuration file."]
                   },
                   "execUUID": "59604d45-a8da-40fe-8652-4c372272cc82",
                   "cancelled": false,
@@ -2677,7 +2674,7 @@
                     "apiVersion": "kui-shell/v1",
                     "kind": "CommentaryResponse",
                     "props": {
-                      "children": "# Creating a Resource from Config\nCreate a Kubernetes Resource from Remote Config."
+                      "children": "# Creating a Resource\nCreate a Kubernetes Resource from configuration file."
                     }
                   },
                   "responseType": "ScalarResponse",
@@ -2689,7 +2686,7 @@
                 "startEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
-                  "command": "#   # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config.",
+                  "command": "#   # Creating a Resource\\nCreate a Kubernetes Resource from configuration file.",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -2710,16 +2707,13 @@
                 "completeEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
-                  "command": "#  # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config.",
+                  "command": "#  # Creating a Resource\\nCreate a Kubernetes Resource from configuration file.",
                   "argvNoOptions": [
                     "#",
-                    "   # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config."
+                    "   # Creating a Resource\\nCreate a Kubernetes Resource from configuration file."
                   ],
                   "parsedOptions": {
-                    "_": [
-                      "#",
-                      "   # Creating a Resource from Config\\nCreate a Kubernetes Resource from Remote Config."
-                    ]
+                    "_": ["#", "   # Creating a Resource\\nCreate a Kubernetes Resource from configuration file."]
                   },
                   "execUUID": "59604d45-a8da-40fe-8652-4c372272cc82",
                   "cancelled": false,
@@ -2736,7 +2730,7 @@
                     "apiVersion": "kui-shell/v1",
                     "kind": "CommentaryResponse",
                     "props": {
-                      "children": "# Creating a Resource from Config\nCreate a Kubernetes Resource from Remote Config."
+                      "children": "# Creating a Resource\nCreate a Kubernetes Resource from configuration file."
                     }
                   },
                   "responseType": "ScalarResponse",
@@ -2914,7 +2908,7 @@
                 "startEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
-                  "command": "#   # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
+                  "command": "#   # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -2935,15 +2929,15 @@
                 "completeEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
-                  "command": "#  # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
+                  "command": "#  # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
                   "argvNoOptions": [
                     "#",
-                    "   # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                    "   # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "   # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                      "   # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
                     ]
                   },
                   "execUUID": "79d5216d-6f1a-4a46-ab02-3078ff992136",
@@ -2961,7 +2955,7 @@
                     "apiVersion": "kui-shell/v1",
                     "kind": "CommentaryResponse",
                     "props": {
-                      "children": "# Listing Kubernetes Resources\nList the Kubernetes Deployment Resources.\n\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                      "children": "# Listing Resources\nUse the following command to list your Kubernetes Deployment Resources.\n\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
                     }
                   },
                   "responseType": "ScalarResponse",
@@ -2973,7 +2967,7 @@
                 "startEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
-                  "command": "#   # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
+                  "command": "#   # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -2994,15 +2988,15 @@
                 "completeEvent": {
                   "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
-                  "command": "#  # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
+                  "command": "#  # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
                   "argvNoOptions": [
                     "#",
-                    "   # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                    "   # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "   # Listing Kubernetes Resources\\nList the Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                      "   # Listing Resources\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
                     ]
                   },
                   "execUUID": "79d5216d-6f1a-4a46-ab02-3078ff992136",
@@ -3020,7 +3014,7 @@
                     "apiVersion": "kui-shell/v1",
                     "kind": "CommentaryResponse",
                     "props": {
-                      "children": "# Listing Kubernetes Resources\nList the Kubernetes Deployment Resources.\n\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
+                      "children": "# Listing Resources\nUse the following command to list your Kubernetes Deployment Resources.\n\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)"
                     }
                   },
                   "responseType": "ScalarResponse",
