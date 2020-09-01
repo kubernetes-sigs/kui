@@ -41,7 +41,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     try {
       const { count } = await CLI.command('replay /tmp/test.kui --status-stripe blue', this.app)
 
-      await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'))
+      await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'), CLI.waitTimeout)
 
       // verify the base64 command replay
       let idx = 0

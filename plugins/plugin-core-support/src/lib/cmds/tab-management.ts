@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { eventBus, Registrar, Tab } from '@kui-shell/core'
+import {
+  eventBus,
+  eventChannelUnsafe,
+  pexecInCurrentTab,
+  KResponse,
+  Registrar,
+  StatusStripeChangeEvent,
+  Tab
+} from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
@@ -35,15 +43,6 @@ function closeTab(tab: Tab) {
 }
 
 /**
- * Create and initialize a new tab
- *
- */
-const newTabAsync = () => {
-  eventBus.emit('/tab/new/request')
-  return true
-}
-
-/**
  * The goal here is to offer a simple command structure for managing tabs
  *
  */
@@ -58,7 +57,51 @@ export default function plugin(commandTree: Registrar) {
     { usage }
   )
 
-  commandTree.listen('/tab/new', newTabAsync)
+  /**
+   * Create and initialize a new tab
+   *
+   */
+  commandTree.listen<
+    KResponse,
+    { cmdline?: string; 'status-stripe-type'?: StatusStripeChangeEvent['type']; 'status-stripe-message'?: string }
+  >(
+    '/tab/new',
+    async args => {
+      const message =
+        args.parsedOptions['status-stripe-message'] ||
+        (args.execOptions.data ? args.execOptions.data['status-stripe-message'] : undefined)
+      const statusStripeDecoration = { type: args.parsedOptions['status-stripe-type'], message }
+
+      if (args.parsedOptions.cmdline) {
+        const { allocateTabUUID } = await import('@kui-shell/plugin-client-common')
+
+        return new Promise(resolve => {
+          const uuid = allocateTabUUID()
+          eventBus.emit('/tab/new/request', {
+            uuid,
+            statusStripeDecoration
+          })
+
+          eventChannelUnsafe.once(`/tab/new/${uuid}`, (tab: Tab) => {
+            pexecInCurrentTab(args.parsedOptions.cmdline, tab)
+            resolve(true)
+          })
+        })
+      } else {
+        eventBus.emit('/tab/new/request', { statusStripeDecoration })
+        return true
+      }
+    },
+    {
+      usage: {
+        optional: [
+          { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
+          { name: '--status-stripe-type', docs: 'Desired status stripe coloration', allowed: ['default', 'blue'] },
+          { name: '--status-stripe-message', docs: 'Desired status stripe message' }
+        ]
+      }
+    }
+  )
 
   commandTree.listen('/tab/close', ({ tab }) => closeTab(tab))
 }

@@ -38,7 +38,7 @@ export function splitViaButton(this: Common.ISuite, splitCount: number) {
 export function splitViaCommand(this: Common.ISuite, splitCount: number, expectErr = false) {
   it(`should split the terminal via command in the current tab and expect splitCount=${splitCount}`, () =>
     CLI.commandInSplit('split', this.app, splitCount - 1)
-      .then(expectErr ? ReplExpect.error(500) : ReplExpect.justOK)
+      .then(expectErr ? ReplExpect.error(500) : ReplExpect.okWithAny)
       .then(ReplExpect.splitCount(splitCount))
       .catch(Common.oops(this, true)))
 }

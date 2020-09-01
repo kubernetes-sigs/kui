@@ -46,6 +46,51 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 })
 
+describe('core new tab with status stripe decoration', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const validateDecorations = async () => {
+    // blue status stripe
+    await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'), CLI.waitTimeout)
+
+    // and our hello world message
+    await this.app.client.waitUntil(async () => {
+      const actualText = await this.app.client.getText(Selectors.STATUS_STRIPE_MESSAGE)
+      return actualText === 'hello world'
+    }, CLI.waitTimeout)
+  }
+
+  it('should create a new tab with special status stripe decoration', async () => {
+    try {
+      await CLI.command('tab new --status-stripe-type blue --status-stripe-message "hello world"', this.app)
+      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
+      await CLI.waitForSession(this) // should have an active repl
+      await validateDecorations()
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it(`switch back to first tab via command`, () =>
+    CLI.command('tab switch 1', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this, true)))
+
+  it('should show a status stripe with default decoration', async () => {
+    await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('default'), CLI.waitTimeout)
+  })
+
+  it(`switch back to second tab via command`, () =>
+    CLI.command('tab switch 2', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .catch(Common.oops(this, true)))
+
+  it('should show a status stripe with blue decoration', async () => {
+    await validateDecorations()
+  })
+})
+
 Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))

@@ -35,8 +35,8 @@ import {
 
 /** Schema for a record of onclick (startEvent, completeEvent) pairs */
 interface ClickSnapshot {
-  startEvents: Record<string, CommandStartEvent[]>
-  completeEvents: Record<string, CommandCompleteEvent[]>
+  startEvents: Record<string, SnapshottedEvent<CommandStartEvent>[]>
+  completeEvents: Record<string, SnapshottedEvent<CommandCompleteEvent>[]>
 }
 
 /**
@@ -65,11 +65,12 @@ const replayUsage = {
     required,
     optional: [
       { name: '--new-window', alias: '-w', boolean: true, docs: 'Replay in a new window (Electron only)' },
+      { name: '--new-tab', alias: '-t', boolean: true, docs: 'Replay in a tab' },
       { name: '--status-stripe', docs: 'Modify status stripe', allowed: ['default', 'blue', 'yellow', 'red'] }
     ]
   },
   flags: {
-    boolean: ['new-window', 'w']
+    boolean: ['new-window', 'w', 'new-tab', 't']
   }
 }
 
@@ -92,6 +93,7 @@ export function preload() {
 }
 
 interface ReplayOptions extends ParsedOptions {
+  'new-tab': boolean
   'new-window': boolean
   'status-stripe': StatusStripeChangeEvent['type']
 }
@@ -109,13 +111,13 @@ function formatMessage(snapshot: SerializedSnapshot) {
 }
 
 /** Re-emit prior start event in new tab */
-function reEmitStartInTab(tab: Tab, startEvent: SnapshotBlock['startEvent']) {
-  eventBus.emitCommandStart(Object.assign({}, startEvent, { tab: Object.assign({}, tab, { uuid: startEvent.tab }) }))
+function reEmitStartInTab(tab: Tab, uuid: string, startEvent: SnapshotBlock['startEvent']) {
+  eventBus.emitCommandStart(Object.assign({}, startEvent, { tab: Object.assign({}, tab, { uuid }) }))
 }
 
 /** Re-emit prior complete event in new tab */
-function reEmitCompleteInTab(tab: Tab, completeEvent: SnapshotBlock['completeEvent']) {
-  const evt = Object.assign({}, completeEvent, { tab: Object.assign({}, tab, { uuid: completeEvent.tab }) })
+function reEmitCompleteInTab(tab: Tab, uuid: string, completeEvent: SnapshotBlock['completeEvent']) {
+  const evt = Object.assign({}, completeEvent, { tab: Object.assign({}, tab, { uuid }) })
   eventBus.emitCommandComplete(evt)
 }
 
@@ -208,8 +210,8 @@ class FlightRecorder {
    */
   public async record(): Promise<ClickSnapshot> {
     const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
-    const startEvents: Record<string, CommandStartEvent[]> = {}
-    const completeEvents: Record<string, CommandCompleteEvent[]> = {}
+    const startEvents: Record<string, SnapshottedEvent<CommandStartEvent>[]> = {}
+    const completeEvents: Record<string, SnapshottedEvent<CommandCompleteEvent>[]> = {}
 
     const onclicks = this.collectOnClicks()
 
@@ -260,12 +262,26 @@ export default function(registrar: Registrar) {
         console.error('invalid snapshot', model)
         throw new Error('Invalid snapshot')
       } else {
-        if (parsedOptions['status-stripe']) {
-          eventBus.emitStatusStripeChangeRequest({
+        const message = formatMessage(model)
+
+        if (parsedOptions['new-tab']) {
+          return REPL.qexec(
+            `tab new --cmdline "replay ${filepath}" --status-stripe-type ${parsedOptions['status-stripe'] || 'blue'}`,
+            undefined,
+            undefined,
+            { data: { 'status-stripe-message': message } }
+          )
+        } else if (parsedOptions['status-stripe']) {
+          tab.state.desiredStatusStripeDecoration = {
             type: parsedOptions['status-stripe'],
-            message: formatMessage(model)
-          })
+            message
+          }
         }
+
+        // we need to map the split uuids in the snapshot to those in
+        // the current tab
+        const splits = [tab.uuid]
+        const splitAlignment: Record<string, string> = {}
 
         if (model.spec.clicks) {
           Object.keys(model.spec.clicks.startEvents).forEach(execUUID => {
@@ -277,8 +293,9 @@ export default function(registrar: Registrar) {
                 if (startEvent && completeEvent) {
                   const channel = `/${replayClickFor(execUUID, rowIdx)}`
                   registrar.listen(channel, async () => {
-                    reEmitStartInTab(tab, startEvent)
-                    reEmitCompleteInTab(tab, completeEvent)
+                    const uuid = splitAlignment[startEvent.tab]
+                    reEmitStartInTab(tab, uuid, startEvent)
+                    reEmitCompleteInTab(tab, uuid, completeEvent)
                     return true
                   })
                 }
@@ -288,13 +305,18 @@ export default function(registrar: Registrar) {
         }
 
         await promiseEach(model.spec.windows[0].tabs[0].blocks, async ({ startEvent, completeEvent }) => {
-          // NOTE: work around the replayability issue of split command not returning a replayable model: https://github.com/IBM/kui/issues/5399
-          if (startEvent.command === 'split') {
-            await REPL.qexec('split')
+          if (!splitAlignment[startEvent.tab]) {
+            splitAlignment[startEvent.tab] = splits[splits.length - 1]
           }
 
-          reEmitStartInTab(tab, startEvent)
-          reEmitCompleteInTab(tab, completeEvent)
+          // NOTE: work around the replayability issue of split command not returning a replayable model: https://github.com/IBM/kui/issues/5399
+          if (startEvent.command === 'split') {
+            splits.push(await REPL.qexec('split'))
+          }
+
+          const uuid = splitAlignment[startEvent.tab]
+          reEmitStartInTab(tab, uuid, startEvent)
+          reEmitCompleteInTab(tab, uuid, completeEvent)
         })
         return true
       }

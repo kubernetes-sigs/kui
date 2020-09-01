@@ -317,7 +317,7 @@ class InProcessExecutor implements Executor {
 
     // trim suffix comments, e.g. "kubectl get pods # comments start here"
     // insert whitespace for whitespace-free prefix comments, e.g. "#comments" -> "# comments"
-    const command = commandUntrimmed
+    const command = (commandUntrimmed || '')
       .trim()
       .replace(patterns.suffixComments, '$1')
       .replace(patterns.prefixComments, '# $1')
