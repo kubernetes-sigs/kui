@@ -20,6 +20,7 @@ import getKuiFontSize from './fonts'
 export interface Options {
   readOnly?: boolean
   simple?: boolean
+  fontSize?: number
 }
 
 export default (options: Options): editor.IEditorConstructionOptions => ({
@@ -35,7 +36,7 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   scrollBeyondLastColumn: 2,
   // cursorStyle: 'block',
   fontFamily: 'var(--font-monospace)',
-  fontSize: getKuiFontSize(),
+  fontSize: options.fontSize || getKuiFontSize(),
 
   // specifics for readOnly mode
   glyphMargin: !options.readOnly, // needed for error indicators

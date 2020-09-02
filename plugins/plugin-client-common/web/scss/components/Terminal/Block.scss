@@ -21,6 +21,7 @@
 $inset: 0.375rem;
 
 .repl-input,
+.repl-input-sourceref,
 .repl-output {
   padding-right: calc(1rem - 6px);
 }
@@ -75,6 +76,7 @@ $inset: 0.375rem;
       margin-top: $inset;
     }
     .repl-input,
+    .repl-input-sourceref,
     .repl-output {
       padding-left: 1rem;
     }
@@ -112,8 +114,8 @@ $inset: 0.375rem;
     }
     &:not(.repl-active) {
       .repl-input-element-wrapper {
-        background-color: rgba(100, 100, 100, 0.1);
-        border-color: rgba(100, 100, 100, 0.05);
+        background-color: $input-bg;
+        border-color: $input-border;
       }
     }
     .repl-output .repl-context {

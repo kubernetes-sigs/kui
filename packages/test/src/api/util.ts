@@ -166,8 +166,8 @@ export const expectArray = (expected: Array<string>, failFast = true, subset = f
 }
 
 /** get the monaco editor text */
-export const getValueFromMonaco = async (app: Application) => {
-  const selector = '.bx--tab-content[aria-hidden="false"] .monaco-editor-wrapper'
+export const getValueFromMonaco = async (app: Application, container = '.bx--tab-content[aria-hidden="false"]') => {
+  const selector = `${container} .monaco-editor-wrapper`
   try {
     await app.client.waitForExist(selector, CLI.waitTimeout)
   } catch (err) {

@@ -41,13 +41,13 @@
   min-width: 0;
 }
 
-.kui--sidecar .monaco-editor,
-.kui--sidecar .monaco-editor .margin,
-.kui--sidecar .monaco-editor-background {
-  background: transparent;
+.kui .monaco-editor,
+.kui .monaco-editor .margin,
+.kui .monaco-editor-background {
+  background: var(--color-sidecar-background-01);
 }
 
-.kui--sidecar .monaco-editor .view-lines {
+.kui .monaco-editor .view-lines {
   -webkit-app-region: no-drag;
 
   /* monaco doesn't let us do this; we have to hard-wire it in the editor constructor in edit.js */
@@ -84,7 +84,7 @@
 }
 
 /* wskflow container while editing compositions */
-#sidecar .monaco-editor-wrapper.half-height {
+.kui--sidecar .monaco-editor-wrapper.half-height {
   max-height: 30%; /* hmm.. monaco is persistent in its height */
   flex: 3;
 }

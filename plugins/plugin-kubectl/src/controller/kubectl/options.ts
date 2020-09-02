@@ -24,11 +24,23 @@ type TableFormat = 'wide' | string // want: 'custom-columns-file=' | 'custom-col
 type CustomFormat = string // want: 'go-template' | 'go-template-file' | 'jsonpath' | 'jsonpath-file'
 type OutputFormat = EntityFormat | TableFormat | CustomFormat
 
+/** @return the -f or --filename option */
 export function fileOf(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string {
   const filename = args.parsedOptions.f || args.parsedOptions.filename
   return typeof filename === 'string' ? filename : undefined
 }
 
+/** @return same as fileOf, but also specify whether this came from a -f or --filename option */
+export function fileOfWithDetail(
+  args: Pick<Arguments<KubeOptions>, 'parsedOptions'>
+): { filepath: string; isFor: 'f' | 'filename' } {
+  return {
+    filepath: fileOf(args),
+    isFor: args.parsedOptions.f ? 'f' : 'filename'
+  }
+}
+
+/** @return the -k or --kustomize option */
 export function kustomizeOf(args: Arguments<KubeOptions>): string {
   return args.parsedOptions.k || args.parsedOptions.kustomize
 }
