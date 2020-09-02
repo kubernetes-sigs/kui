@@ -26,10 +26,10 @@ import { cp, rm, mkdir, rmdir } from '../delegates'
  * are boolean flags
  *
  */
-function withBooleanFlags(
+function withBooleanFlags<Handler extends CommandHandler<KResponse, ParsedOptions>>(
   this: Registrar,
   command: string,
-  handler: CommandHandler<KResponse, ParsedOptions>,
+  handler: Handler,
   booleans: string | string[]
 ) {
   this.listen(`/${command}`, handler, {
@@ -80,5 +80,14 @@ export default function(registrar: Registrar) {
 
   on('rmdir', args => rmdir(args, args.argvNoOptions[1]).then(() => true), 'p')
 
-  on('cp', args => cp(args, args.argvNoOptions[1], args.argvNoOptions[2]), 'acfHiLnPpRvX')
+  on(
+    'cp',
+    args => {
+      const N = args.argvNoOptions.length
+      const srcs: string[] = args.argvNoOptions.slice(1, N - 1)
+      const dst = args.argvNoOptions[N - 1]
+      return cp(args, srcs, dst)
+    },
+    'acfHiLnPpRvX'
+  )
 }
