@@ -48,7 +48,7 @@ export interface VFS {
   /** Insert filepath into directory */
   cp(
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    srcFilepath: string,
+    srcFilepaths: string[],
     dstFilepath: string,
     srcIsLocal: boolean,
     dstIsLocal: boolean

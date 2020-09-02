@@ -38,13 +38,13 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<ReturnTy
  */
 export async function cp(
   opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-  srcFilepath: string,
+  srcFilepaths: string[],
   dstFilepath: string
 ): ReturnType<VFS['cp']> {
-  const mount1 = findMount(srcFilepath)
+  const mount1 = findMount(srcFilepaths[0]) // FIXME
   const mount2 = findMount(dstFilepath)
   const mountThatManagesTheCopy = mount1.isLocal ? mount2 : mount1
-  return mountThatManagesTheCopy.cp(opts, srcFilepath, dstFilepath, mount1.isLocal, mount2.isLocal)
+  return mountThatManagesTheCopy.cp(opts, srcFilepaths, dstFilepath, mount1.isLocal, mount2.isLocal)
 }
 
 /**

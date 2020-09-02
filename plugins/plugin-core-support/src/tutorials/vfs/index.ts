@@ -126,33 +126,37 @@ class TutorialVFS implements VFS {
   }
 
   /** Insert filepath into directory */
-  public async cp(_, srcFilepath: string, dstFilepath: string): Promise<string> {
-    const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/tutorials\/(.*)\.json$/)
-    const match2 = srcFilepath.match(/^plugin:\/\/client\/tutorials\/(.*)\.json$/)
-    const match = match1 || match2
-    if (match) {
-      try {
-        // require versus import to work with babelized headless
-        const file = match1 ? match1[2] : match2[1]
-        const data = match1
-          ? require('@kui-shell/plugin-' + match1[1] + '/tutorials/' + file + '.json')
-          : require('@kui-shell/client/tutorials/' + file + '.json')
+  public cp(_, srcFilepaths: string[], dstFilepath: string): Promise<string> {
+    return Promise.all(
+      srcFilepaths.map(srcFilepath => {
+        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/tutorials\/(.*)\.json$/)
+        const match2 = srcFilepath.match(/^plugin:\/\/client\/tutorials\/(.*)\.json$/)
+        const match = match1 || match2
+        if (match) {
+          try {
+            // require versus import to work with babelized headless
+            const file = match1 ? match1[2] : match2[1]
+            const data = match1
+              ? require('@kui-shell/plugin-' + match1[1] + '/tutorials/' + file + '.json')
+              : require('@kui-shell/client/tutorials/' + file + '.json')
 
-        const dir = dirname(dstFilepath)
-        if (!this.trie.get(dir)) {
-          throw new Error(`Directory does not exist: ${dir}`)
+            const dir = dirname(dstFilepath)
+            if (!this.trie.get(dir)) {
+              throw new Error(`Directory does not exist: ${dir}`)
+            } else {
+              const mountPath = join(dstFilepath, file + '.json')
+              this.trie.map(mountPath, { mountPath, data })
+            }
+
+            return
+          } catch (err) {
+            throw new Error(`Unable to copy given source into the tutorials VFS: ${srcFilepath}. ${err.message}`)
+          }
         } else {
-          const mountPath = join(dstFilepath, file + '.json')
-          this.trie.map(mountPath, { mountPath, data })
+          throw new Error(`Unable to copy given source into the tutorials VFS: ${srcFilepath}`)
         }
-
-        return 'ok'
-      } catch (err) {
-        throw new Error(`Unable to copy given source into the tutorials VFS: ${srcFilepath}. ${err.message}`)
-      }
-    } else {
-      throw new Error(`Unable to copy given source into the tutorials VFS: ${srcFilepath}`)
-    }
+      })
+    ).then(() => 'ok')
   }
 
   /** Remove filepath */
