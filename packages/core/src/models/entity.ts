@@ -185,7 +185,7 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
  */
 export type ScalarResponse<RowType extends Row = Row> =
   | SimpleEntity
-  | Table<RowType>
+  | (Table<RowType> & Partial<WithSourceReferences>)
   | MixedResponse
   | CommentaryResponse
 
@@ -199,6 +199,22 @@ export type StructuredResponse<
   Content = void,
   SomeSortOfResource extends MetadataBearing<Content> = MetadataBearing<Content>
 > = ViewableResponse | UsageModel | SomeSortOfResource | RawResponse<Content> | SomeSortOfResource[]
+
+export interface SourceRef {
+  templates: { filepath: string; data: string; isFor: string; kind?: 'source' | 'template'; contentType?: string }[]
+  customization?: { filepath: string; data: string; isFor: string }
+}
+
+export interface WithSourceReferences {
+  kuiSourceRef: SourceRef
+}
+
+export function hasSourceReferences(
+  response: Partial<WithSourceReferences>
+): response is Required<WithSourceReferences> {
+  const trait = response as WithSourceReferences
+  return trait && trait.kuiSourceRef !== undefined
+}
 
 /**
  * A potentially more complex entity with a "spec"

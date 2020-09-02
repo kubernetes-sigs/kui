@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-@import 'Commentary';
-@import 'Experimental';
-@import 'Layout';
-@import 'MiniSplit';
-@import 'Scrollback';
-@import 'SourceRef';
+@import '_mixins';
+
+@include ExpandableSectionButton {
+  font-size: 0.825rem;
+  font-family: var(--font-sans-serif);
+}
+
+@include ExpandableSectionButtonText {
+  margin-left: $expandablesection--spacing;
+}

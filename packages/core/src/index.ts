@@ -54,7 +54,9 @@ export {
   MixedResponse,
   isMixedResponse,
   RawResponse,
-  //  ResourceModification,
+  hasSourceReferences,
+  WithSourceReferences,
+  SourceRef,
   MetadataBearingByReference as ResourceByReference,
   MetadataBearingByReferenceWithContent as ResourceByReferenceWithContent,
   isMetadataBearingByReference as isResourceByReference

@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-@import 'Commentary';
-@import 'Experimental';
-@import 'Layout';
-@import 'MiniSplit';
-@import 'Scrollback';
-@import 'SourceRef';
+import { ReactNode } from 'react'
+
+interface Props {
+  className?: string
+  expanded?: boolean
+  showMore?: string
+  showLess?: string
+  onToggle?: (isExpanded: boolean) => void
+  children: ReactNode
+}
+
+export default Props

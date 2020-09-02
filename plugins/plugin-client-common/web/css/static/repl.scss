@@ -122,7 +122,8 @@
   flex-wrap: wrap;
 }
 .repl-input,
-.repl-output {
+.repl-output,
+.repl-input-sourceref {
   display: flex;
 }
 .repl-block .result-vertical {
