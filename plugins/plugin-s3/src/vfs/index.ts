@@ -44,71 +44,102 @@ class S3VFSResponder extends S3VFS implements VFS {
     return flatten(await Promise.all(filepaths.map(filepath => this.dirstat(filepath.replace(this.s3Prefix, '')))))
   }
 
+  /** Degenerate case for `ls /s3`: list all buckets */
+  private async listBuckets(): Promise<DirEntry[]> {
+    const buckets = await this.client.listBuckets()
+
+    return buckets.map(({ name /* , creationDate */ }) => ({
+      name,
+      path: join(this.mountPath, name),
+      stats: {
+        size: 0,
+        mtimeMs: 0,
+        mode: 0,
+        uid,
+        gid
+      },
+      nameForDisplay: name,
+      dirent: {
+        isFile: false,
+        isDirectory: true,
+        isSymbolicLink: false,
+        isSpecial: false,
+        isExecutable: false,
+        permissions: '',
+        username
+      }
+    }))
+  }
+
+  /** This is incomplete */
+  private globToRegExp(prefix: string, suffixGlob: string): RegExp {
+    return new RegExp('^' + prefix + suffixGlob.replace(/\*/g, '.*') + '$')
+  }
+
+  /** Enumerate matching objects */
+  private listObjects(filepath: string): Promise<DirEntry[]> {
+    const [, bucketName, prefix, wildcardSuffix] = filepath.match(/([^/]+)\/?([^*]*)(.*)/)
+
+    const pattern =
+      prefix.length === 0 && (wildcardSuffix.length === 0 || wildcardSuffix === '*')
+        ? /.*/ // e.g. ls /s3/myBucket
+        : this.globToRegExp(prefix, wildcardSuffix) // e.g. ls /s3/myBucket/he*lo
+
+    return this.listObjectsMatching(bucketName, prefix, pattern)
+  }
+
+  /** Enumerate objects with a suffix wildcard, e.g. C* */
+  private async listObjectsMatching(bucketName: string, prefix: string, pattern: RegExp): Promise<DirEntry[]> {
+    const objectStream = await this.client.listObjects(bucketName, prefix)
+
+    return new Promise((resolve, reject) => {
+      const objects: DirEntry[] = []
+
+      objectStream.on('end', () => resolve(objects))
+      objectStream.on('close', () => resolve(objects))
+
+      objectStream.on('error', err => {
+        console.error('Error in S3Vfs.listObjects', err)
+        const error: CodedError = new Error(err.message || 'Error listing s3 objects')
+        error.code = err['httpstatuscode'] || err['code'] // missing types in @types/minio
+        reject(error)
+      })
+
+      objectStream.on('data', ({ name, size, lastModified }) => {
+        if (pattern.test(name)) {
+          objects.push({
+            name,
+            path: join(this.mountPath, bucketName, name),
+            stats: {
+              size,
+              mtimeMs: lastModified.getTime(),
+              mode: 0,
+              uid,
+              gid
+            },
+            nameForDisplay: name,
+            dirent: {
+              isFile: true,
+              isDirectory: false,
+              isSymbolicLink: false,
+              isSpecial: false,
+              isExecutable: false,
+              permissions: '',
+              username
+            }
+          })
+        }
+      })
+    })
+  }
+
+  /** Enumerate the objects specified by the given filepath */
   private async dirstat(filepath: string): Promise<DirEntry[]> {
     try {
       if (filepath.length === 0) {
-        const buckets = await this.client.listBuckets()
-        return buckets.map(({ name /* , creationDate */ }) => ({
-          name,
-          path: join(this.mountPath, name),
-          stats: {
-            size: 0,
-            mtimeMs: 0,
-            mode: 0,
-            uid,
-            gid
-          },
-          nameForDisplay: name,
-          dirent: {
-            isFile: false,
-            isDirectory: true,
-            isSymbolicLink: false,
-            isSpecial: false,
-            isExecutable: false,
-            permissions: '',
-            username
-          }
-        }))
+        return this.listBuckets()
       } else {
-        const [, bucketName, prefix] = filepath.match(/([^/]+)\/?(.*)\*?/)
-        const objectStream = await this.client.listObjects(bucketName, prefix)
-
-        return new Promise((resolve, reject) => {
-          const objects: DirEntry[] = []
-
-          objectStream.on('end', () => resolve(objects))
-          objectStream.on('close', () => resolve(objects))
-          objectStream.on('error', err => {
-            console.error('Error in S3Vfs.listObjects', err)
-            const error: CodedError = new Error(err.message || 'Error listing s3 objects')
-            error.code = err['httpstatuscode'] || err['code'] // missing types in @types/minio
-            reject(error)
-          })
-
-          objectStream.on('data', ({ name, size, lastModified }) => {
-            objects.push({
-              name,
-              path: join(this.mountPath, bucketName, name),
-              stats: {
-                size,
-                mtimeMs: lastModified.getTime(),
-                mode: 0,
-                uid,
-                gid
-              },
-              nameForDisplay: name,
-              dirent: {
-                isFile: true,
-                isDirectory: false,
-                isSymbolicLink: false,
-                isSpecial: false,
-                isExecutable: false,
-                permissions: '',
-                username
-              }
-            })
-          })
-        })
+        return this.listObjects(filepath)
       }
     } catch (err) {
       console.error('Error in S3VFS.ls', err)
@@ -129,10 +160,10 @@ class S3VFSResponder extends S3VFS implements VFS {
    */
   private async fPutObject(
     { REPL, parsedOptions }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
-    srcFilepath: string,
+    srcFilepaths: string[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${REPL.encodeComponent(srcFilepath)}`)
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
     const { bucketName, fileName } = this.split(dstFilepath)
 
     // make public?
@@ -167,59 +198,98 @@ class S3VFSResponder extends S3VFS implements VFS {
     }
   }
 
-  private async fGetObject(srcFilepath: string, dstFilepath: string) {
+  private async fGetObject(
+    { REPL }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+    srcFilepaths: string[],
+    dstFilepath: string
+  ) {
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+
     // NOTE: intentionally not lstat; we want what is referenced by
     // the symlink
     const { stat } = await import('fs')
 
-    const { bucketName, fileName } = this.split(srcFilepath)
-
-    const dst = await new Promise<string>((resolve, reject) => {
+    const dstIsDirectory = await new Promise<boolean>((resolve, reject) => {
       stat(dstFilepath, (err, stats) => {
         if (err) {
           if (err.code === 'ENOENT') {
-            resolve(dstFilepath)
+            // copying to new file
+            resolve(false)
           } else {
+            // some other error
             reject(err)
           }
         } else {
-          resolve(stats.isDirectory() ? join(dstFilepath, fileName) : dstFilepath)
+          resolve(stats.isDirectory())
         }
       })
     })
 
-    await this.client.fGetObject(bucketName, fileName, dst)
-    return `Fetched object to ${dst}`
+    if (!dstIsDirectory && srcFilepaths.length > 1) {
+      throw new Error('Destination is not a directory')
+    }
+
+    const fetched = await Promise.all(
+      (await sources).content
+        .map(_ => _.path)
+        .map(async srcFilepath => {
+          const { bucketName, fileName } = this.split(srcFilepath)
+          const dst = dstIsDirectory ? join(dstFilepath, fileName) : dstFilepath
+
+          await this.client.fGetObject(bucketName, fileName, dst)
+          return basename(srcFilepath)
+        })
+    )
+
+    const N = fetched.length
+    return `Fetched ${fetched.slice(0, N - 2).join(', ')}${N <= 2 ? '' : ', '}${fetched
+      .slice(N - 2)
+      .join(N === 2 ? ' and ' : ', and ')} to ${dstFilepath}`
   }
 
-  private async fCopyObject(srcFilepath: string, dstFilepath: string) {
-    const { bucketName: srcBucket, fileName: srcFile } = this.split(srcFilepath)
-    const { bucketName: dstBucket, fileName: dstFile } = this.split(dstFilepath)
+  private async fCopyObject(
+    { REPL }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+    srcFilepaths: string[],
+    dstFilepath: string
+  ) {
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
 
-    const { etag } = await this.client.copyObject(
-      dstBucket,
-      dstFile || srcFile,
-      `/${srcBucket}/${srcFile}`,
-      new CopyConditions()
+    const etags = await Promise.all(
+      (await sources).content
+        .map(_ => _.path)
+        .map(async srcFilepath => {
+          const { bucketName: srcBucket, fileName: srcFile } = this.split(srcFilepath)
+          const { bucketName: dstBucket, fileName: dstFile } = this.split(dstFilepath)
+
+          const { etag } = await this.client.copyObject(
+            dstBucket,
+            dstFile || srcFile,
+            `/${srcBucket}/${srcFile}`,
+            new CopyConditions()
+          )
+          return etag
+        })
     )
-    return `Copied to object with etag ${etag}`
+
+    const N = etags.length
+    return `Copied to ${N === 1 ? 'object' : 'objects'} with ${N === 1 ? 'etag' : 'etags'} ${etags.join(', ')}`
   }
 
   /** Insert filepath into directory */
   public async cp(
     args: Pick<Arguments, 'REPL' | 'parsedOptions'>,
-    srcFilepath: string,
+    srcFilepaths: string[],
     dstFilepath: string,
     srcIsLocal: boolean,
     dstIsLocal: boolean
   ): Promise<string> {
     try {
       if (srcIsLocal) {
-        return await this.fPutObject(args, srcFilepath, dstFilepath)
+        return await this.fPutObject(args, srcFilepaths, dstFilepath)
       } else if (dstIsLocal) {
-        return await this.fGetObject(srcFilepath, dstFilepath)
+        return await this.fGetObject(args, srcFilepaths, dstFilepath)
       } else {
-        return await this.fCopyObject(srcFilepath, dstFilepath)
+        return await this.fCopyObject(args, srcFilepaths, dstFilepath)
       }
     } catch (err) {
       const error: CodedError = new Error(err.message)
@@ -345,13 +415,13 @@ class S3VFSForwarder extends S3VFS implements VFS {
   /** Insert filepath into directory */
   public cp(
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    srcFilepath: string,
+    srcFilepaths: string[],
     dstFilepath: string,
     srcIsLocal: boolean,
     dstIsLocal: boolean
   ): Promise<string> {
     return opts.REPL.qexec<string>(
-      `vfs-s3 cp ${opts.REPL.encodeComponent(srcFilepath)} ${opts.REPL.encodeComponent(
+      `vfs-s3 cp ${srcFilepaths.map(_ => opts.REPL.encodeComponent(_)).join(' ')} ${opts.REPL.encodeComponent(
         dstFilepath
       )} ${srcIsLocal.toString()} ${dstIsLocal.toString()}`
     )

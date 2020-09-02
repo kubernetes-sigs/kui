@@ -20,5 +20,5 @@
  */
 export default async () => {
   const { tutorialVFS } = await import('@kui-shell/plugin-core-support')
-  tutorialVFS.cp(undefined, 'plugin://client/tutorials/welcome.json', '/kui')
+  tutorialVFS.cp(undefined, ['plugin://client/tutorials/welcome.json'], '/kui')
 }

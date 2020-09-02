@@ -25,6 +25,9 @@ const README2 = 'README2.md'
 const README3 = `README3-${v4()}.md`
 const README_LOCAL_PATH = join(process.env.TEST_ROOT, `../../${README}`)
 
+const PJSON = 'package.json'
+const PJSON_LOCAL_PATH = join(process.env.TEST_ROOT, `../../${PJSON}`)
+
 if (process.env.NEEDS_MINIO) {
   describe('s3 vfs', function(this: Common.ISuite) {
     before(Common.before(this))
@@ -36,11 +39,16 @@ if (process.env.NEEDS_MINIO) {
           .then(ReplExpect.justOK)
           .catch(Common.oops(this, true)))
     }
-    const ls = (expectedName: string, specifiedBucketName?: string) => {
+    const ls = (expectedName: string, specifiedBucketName?: string, specifiedObjectName?: string) => {
       it(`should list buckets and show ${expectedName} ${
         specifiedBucketName ? 'using specified bucket name' : ''
       }`, () =>
-        CLI.command('ls -l /s3' + (specifiedBucketName ? `/${specifiedBucketName}` : ''), this.app)
+        CLI.command(
+          'ls -l /s3' +
+            (specifiedBucketName ? `/${specifiedBucketName}` : '') +
+            (specifiedObjectName ? `/${specifiedObjectName}` : ''),
+          this.app
+        )
           .then(ReplExpect.okWith(expectedName))
           .catch(Common.oops(this, true)))
     }
@@ -50,6 +58,15 @@ if (process.env.NEEDS_MINIO) {
           .then(ReplExpect.okWithString('Created object'))
           .catch(Common.oops(this, true)))
     }
+    const multiCopyToS3 = (bucketName: string, specifiedDest?: string) => {
+      it(`should copy a file1, file2 ->TO the bucket ${bucketName}`, () =>
+        CLI.command(
+          `cp ${README_LOCAL_PATH} ${PJSON_LOCAL_PATH} /s3/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''),
+          this.app
+        )
+          .then(ReplExpect.okWithString('Created objects'))
+          .catch(Common.oops(this, true)))
+    }
     const copyFromS3 = (bucketName: string, srcFilename: string, destDir: string, destFilename?: string) => {
       it(`should copy a file FROM-> the bucket ${bucketName}`, async () => {
         try {
@@ -57,7 +74,7 @@ if (process.env.NEEDS_MINIO) {
           const expectedDest = destFilename ? specifiedDest : join(destDir, srcFilename)
 
           await CLI.command(`cp /s3/${bucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
-            ReplExpect.okWithString(`Fetched object to ${expectedDest}`)
+            ReplExpect.okWithString(`Fetched`)
           )
 
           await existsSync(expectedDest)
@@ -73,7 +90,7 @@ if (process.env.NEEDS_MINIO) {
           const specifiedDest = join('/s3', dstBucketName, destFilename || '')
 
           await CLI.command(`cp /s3/${srcBucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
-            ReplExpect.okWithString(`Copied to object`)
+            ReplExpect.okWithString(`Copied`)
           )
         } catch (err) {
           await Common.oops(this, true)
@@ -117,13 +134,19 @@ if (process.env.NEEDS_MINIO) {
 
       mkdir(bucketName)
       ls(bucketName) // ls /s3, expect bucketName
-      copyToS3(bucketName)
+      multiCopyToS3(bucketName)
+      ls(PJSON, bucketName) // ls /s3/bucketName, expect package.json
       ls(README, bucketName) // ls /s3/bucketName, expect README
+      ls(README, bucketName, '*') // ls /s3/bucketName/*, expect README
+      ls(README, bucketName, 'R*') // ls /s3/bucketName/R*, expect README
+      ls(README, bucketName, '*EADME.md') // ls /s3/bucketName/*EADME.md, expect README
+      ls(README, bucketName, '*EADME*') // ls /s3/bucketName/*EADME*, expect README
       copyToS3(bucketName, README2)
       ls(README2, bucketName) // ls /s3/bucketName, expect README2
-      copyFromS3(bucketName, README2, tmpdir())
+      copyFromS3(bucketName, README2.replace(/.md$/, '*'), tmpdir()) // wildcard in source
       copyFromS3(bucketName, README2, tmpdir(), README3)
       rmdirExpectingError(bucketName)
+      rm(bucketName, PJSON)
       rm(bucketName, README)
       rm(bucketName, README2)
       rmdir(bucketName)
@@ -139,7 +162,7 @@ if (process.env.NEEDS_MINIO) {
       mkdir(bucketName1)
       mkdir(bucketName2)
       copyToS3(bucketName1)
-      copyWithinS3(bucketName1, README, bucketName2)
+      copyWithinS3(bucketName1, '*.md', bucketName2)
       copyWithinS3(bucketName1, README, bucketName2, README3)
       copyFromS3(bucketName2, README3, tmpdir()) // copy out the intra-s3 copy
       rimraf(bucketName1)

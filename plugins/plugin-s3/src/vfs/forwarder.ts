@@ -20,14 +20,16 @@ import { responder } from '.'
 export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/cp',
-    args =>
-      responder.cp(
+    args => {
+      const N = args.argvNoOptions.length
+      return responder.cp(
         args,
-        args.argvNoOptions[2],
-        args.argvNoOptions[3],
-        args.argvNoOptions[4] === 'true',
-        args.argvNoOptions[5] === 'true'
-      ),
+        args.argvNoOptions.slice(2, N - 3),
+        args.argvNoOptions[N - 3],
+        args.argvNoOptions[N - 2] === 'true',
+        args.argvNoOptions[N - 1] === 'true'
+      )
+    },
     {
       requiresLocal: true
     }

@@ -38,7 +38,7 @@ export default async (registrar: PreloadRegistrar) => {
   try {
     const { tutorialVFS } = await import('@kui-shell/plugin-core-support')
     tutorialVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/test'] })
-    tutorialVFS.cp(undefined, 'plugin://client/tutorials/ls.json', '/kui/test')
+    tutorialVFS.cp(undefined, ['plugin://client/tutorials/ls.json'], '/kui/test')
   } catch (err) {
     console.error('Error mounting test tutorials', err)
   }

@@ -64,8 +64,11 @@ export default async (registrar: PreloadRegistrar) => {
 
   // mount tutorials
   tutorialVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })
-  tutorialVFS.cp(undefined, 'plugin://plugin-kubectl/tutorials/create-jobs.json', '/kui/kubernetes/')
-  tutorialVFS.cp(undefined, 'plugin://plugin-kubectl/tutorials/list-resources.json', '/kui/kubernetes')
+  tutorialVFS.cp(
+    undefined,
+    ['plugin://plugin-kubectl/tutorials/create-jobs.json', 'plugin://plugin-kubectl/tutorials/list-resources.json'],
+    '/kui/kubernetes/'
+  )
 
   // register tab completion provider
   try {
