@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-@import 'Commentary';
-@import 'Experimental';
-@import 'Layout';
-@import 'MiniSplit';
-@import 'Scrollback';
-@import 'SourceRef';
+import * as React from 'react'
+import Props from './model'
+
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
+
+// FIXME There's no ideal Card component in Carbon Component Libary, so we use Patternfly
+export default function CardSpi(props: Props): React.ReactElement {
+  return (
+    <React.Suspense fallback={<div />}>
+      <PatternFly4 {...props} />
+    </React.Suspense>
+  )
+}

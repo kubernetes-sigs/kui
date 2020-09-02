@@ -15,8 +15,9 @@
  */
 
 import * as React from 'react'
+import { basename } from 'path'
 import { dots as spinnerFrames } from 'cli-spinners'
-import { Tab as KuiTab, inBrowser, doCancel, i18n } from '@kui-shell/core'
+import { Tab as KuiTab, inBrowser, doCancel, i18n, isTable, hasSourceReferences, eventBus } from '@kui-shell/core'
 
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
@@ -24,11 +25,24 @@ import onKeyPress from './OnKeyPress'
 import KuiContext from '../../../Client/context'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
-import { BlockModel, isActive, isProcessing, isFinished, hasCommand, isEmpty, hasUUID, hasValue } from './BlockModel'
+import {
+  BlockModel,
+  isActive,
+  isProcessing,
+  isFinished,
+  hasCommand,
+  isEmpty,
+  isWithCompleteEvent,
+  hasUUID,
+  hasValue
+} from './BlockModel'
 import { BlockViewTraits } from './'
 
-import DropDown, { DropDownAction } from '../../../spi/DropDown'
 import Tag from '../../../spi/Tag'
+import ExpandableSection from '../../../spi/ExpandableSection'
+import DropDown, { DropDownAction } from '../../../spi/DropDown'
+
+const SimpleEditor = React.lazy(() => import('../../../Content/Editor/SimpleEditor'))
 
 const strings = i18n('plugin-client-common')
 const strings2 = i18n('plugin-client-common', 'screenshot')
@@ -198,17 +212,59 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     }
   }
 
+  protected sourceRef() {
+    const { model } = this.props
+
+    if (model && isWithCompleteEvent(model) && isTable(model.response) && hasSourceReferences(model.response)) {
+      const sourceRef = model.response.kuiSourceRef
+      return (
+        <div className="repl-input-sourceref">
+          <div className="repl-context"></div>
+          <div className="flex-layout flex-fill">
+            {sourceRef.templates.map((_, idx) => {
+              const name = basename(_.filepath)
+              return (
+                <ExpandableSection
+                  key={idx}
+                  className="flex-fill"
+                  showMore={strings('Show X', name)}
+                  showLess={strings('Hide X', name)}
+                  onToggle={() => eventBus.emitTabLayoutChange(this.props.tab.uuid)}
+                >
+                  <SimpleEditor
+                    tabUUID={this.props.tab.uuid}
+                    content={_.data}
+                    contentType={_.contentType}
+                    className="kui--source-ref-editor kui--inverted-color-context"
+                    fontSize={12}
+                  />
+                </ExpandableSection>
+              )
+            })}
+          </div>
+        </div>
+      )
+    }
+
+    // if (this.state.sourceRef) {
+    //      return 'hi'
+    //    }
+  }
+
   public render() {
     return (
-      <div className={'repl-input' + (this.state && this.state.isearch ? ' kui--isearch-active' : '')}>
-        {this.prompt()}
-        <div className="kui--input-and-context">
-          {this.props.children}
-          {this.input()}
-          {this.status()}
+      <React.Fragment>
+        <div className={'repl-input' + (this.state && this.state.isearch ? ' kui--isearch-active' : '')}>
+          {this.prompt()}
+          <div className="kui--input-and-context">
+            {this.props.children}
+            {this.input()}
+            {this.status()}
+          </div>
+          {this.state && this.state.tabCompletion && this.state.tabCompletion.render()}
         </div>
-        {this.state && this.state.tabCompletion && this.state.tabCompletion.render()}
-      </div>
+        {this.sourceRef()}
+      </React.Fragment>
     )
   }
 }

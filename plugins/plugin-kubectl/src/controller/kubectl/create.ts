@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar, Arguments } from '@kui-shell/core'
+import { Registrar, Arguments, WithSourceReferences, Table, isTable } from '@kui-shell/core'
 
 import { crudFlags } from './flags'
 import { doExecWithStatus } from './exec'
@@ -23,6 +23,7 @@ import commandPrefix from '../command-prefix'
 
 import { FinalState } from '../../lib/model/states'
 import { isUsage, doHelp } from '../../lib/util/help'
+import getSourceRefs from './source'
 
 const verbs = ['create', 'apply']
 
@@ -32,7 +33,14 @@ export const doCreate = (verb: string, command = 'kubectl') => async (args: Argu
   if (isUsage(args)) {
     return doHelp(command, args)
   } else {
-    return doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
+    const kuiSourceRef = getSourceRefs(args)
+    const table = await doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
+    if (isTable(table)) {
+      const response: Table & WithSourceReferences = Object.assign({}, table, { kuiSourceRef: await kuiSourceRef })
+      return response
+    } else {
+      return table
+    }
   }
 }
 

@@ -14,48 +14,41 @@
  * limitations under the License.
  */
 
-$input-bg: rgba(100, 100, 100, 0.1);
-$input-border: rgba(100, 100, 100, 0.05);
+$expandablesection--spacing: 0.125rem;
 
-@mixin Scrollback {
-  .kui--scrollback {
+@mixin ExpandableSection {
+  .kui--expandable-section {
     @content;
   }
 }
 
-@mixin MiniSplit {
-  @include Scrollback {
-    &[data-is-minisplit] {
+@mixin ExpandableSectionContent {
+  @include ExpandableSection {
+    .pf-c-expandable-section__content {
       @content;
     }
   }
 }
 
-@mixin PlainTerminal {
-  @include Scrollback {
-    &:not([data-is-minisplit]):not([data-is-width-constrained]) {
+@mixin ExpandableSectionButton {
+  @include ExpandableSection {
+    .pf-c-expandable-section__toggle {
       @content;
     }
   }
 }
 
-@mixin Block {
-  .repl-block {
-    @content;
-  }
-}
-
-@mixin ActiveBlock {
-  @include Block {
-    &.repl-active {
+@mixin ExpandableSectionButtonIcon {
+  @include ExpandableSectionButton {
+    .pf-c-expandable-section__toggle-icon {
       @content;
     }
   }
 }
 
-@mixin FinishedBlock {
-  @include Block {
-    &:not(.repl-active) {
+@mixin ExpandableSectionButtonText {
+  @include ExpandableSectionButton {
+    .pf-c-expandable-section__toggle-text {
       @content;
     }
   }

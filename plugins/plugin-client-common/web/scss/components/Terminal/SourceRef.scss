@@ -1,0 +1,67 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Window dressings for the "Show deployment.yaml" bits; see Input.tsx
+ * for the component implementation.
+ *
+ */
+
+@import '_mixins';
+@import '../Sidecar/_mixins';
+@import '../common/_narrow-window';
+@import '../ExpandableSection/_mixins';
+
+@mixin Editor {
+  @include Scrollback {
+    .kui--source-ref-editor {
+      @content;
+    }
+  }
+}
+
+@mixin FullWidthEditor {
+  @include Editor {
+    width: 100%;
+  }
+}
+
+@include Scrollback {
+  @include ExpandableSectionButton {
+    background-color: transparent;
+    padding-bottom: $expandablesection--spacing;
+  }
+
+  @include ExpandableSectionButtonIcon {
+    color: var(--color-text-02);
+    width: 1.25rem; /* avoids some odd Focus outline rendering */
+  }
+
+  @include ExpandableSectionContent {
+    margin-top: 0;
+  }
+}
+
+@include Editor {
+  width: 40rem;
+  height: 20rem;
+}
+@include sidecar-visible {
+  @include FullWidthEditor;
+}
+@include narrow-window {
+  @include FullWidthEditor;
+}

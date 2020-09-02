@@ -27,7 +27,6 @@ import {
   ToolbarText,
   ToolbarProps,
   MultiModalResponse,
-  TabLayoutChangeEvent,
   eventChannelUnsafe,
   eventBus,
   i18n
@@ -294,10 +293,8 @@ export default class Editor extends React.PureComponent<Props, State> {
       eventChannelUnsafe.on('/zoom', onZoom)
       cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
 
-      const onTabLayoutChange = (evt: TabLayoutChangeEvent) => {
-        if (!evt.isSidecarNowHidden) {
-          editor.layout()
-        }
+      const onTabLayoutChange = () => {
+        editor.layout()
       }
       eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
       cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
