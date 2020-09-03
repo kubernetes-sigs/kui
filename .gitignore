@@ -43,6 +43,7 @@ keys
 *flycheck*.js
 *flycheck*.js.map
 /build
+*.bak.json
 
 # these seem to come from node-pty or xterm.js
 .swp

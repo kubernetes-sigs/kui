@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import { existsSync, unlinkSync, statSync } from 'fs'
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect, testAbout } from '@kui-shell/test'
+
 import { splitViaCommand, focus } from '../core-support2/split-helpers'
 
 const base64Input = 'hi'
@@ -64,6 +66,43 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     await CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app))
 
     await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('default'))
+  })
+
+  it('should freshen the snapshot', async () => {
+    try {
+      unlinkSync('/tmp/test.bak.kui')
+    } catch (err) {
+      if (err.code !== 'ENOENT') {
+        throw err
+      }
+    }
+
+    const { mtimeMs } = statSync('/tmp/test.kui')
+
+    // wait a few seconds, so that the mtimeMs will change
+    await new Promise(resolve => setTimeout(resolve, 2000))
+
+    await CLI.command('replay --freshen /tmp/test.kui', this.app)
+
+    console.log('1')
+    // Snapshot backup file had better exist
+    await this.app.client.waitUntil(async () => {
+      console.log('1a')
+      const e1 = existsSync('/tmp/test.kui')
+      console.log('1b', e1)
+      const e2 = existsSync('/tmp/test.bak.kui')
+      console.log('1c', e2)
+      return e1 && e2
+    }, CLI.waitTimeout)
+    console.log('2')
+
+    // Snapshot file had better have been modified
+    await this.app.client.waitUntil(async () => {
+      const { mtimeMs: mtimeMs2 } = statSync('/tmp/test.kui')
+      console.log('3', mtimeMs2 - mtimeMs)
+
+      return mtimeMs2 > mtimeMs
+    }, CLI.waitTimeout)
   })
 })
 

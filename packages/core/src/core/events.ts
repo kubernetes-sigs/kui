@@ -41,6 +41,11 @@ export type StatusStripeChangeEvent = {
   message?: string
 }
 
+export type SnapshotRequestEvent = {
+  cb: (snapshot: SnapshotBlock[]) => void
+  filter?: (evt: CommandStartEvent) => boolean
+}
+
 export type TabLayoutChangeEvent = { isSidecarNowHidden: boolean }
 type TabLayoutChangeHandler = (evt: TabLayoutChangeEvent) => void
 
@@ -121,8 +126,8 @@ class WriteEventBus extends EventBusBase {
   }
 
   /** Request a Snapshot of the given Tab */
-  public emitSnapshotRequest(cb: (snapshot: SnapshotBlock[]) => void): void {
-    this.eventBus.emit('/snapshot/request', cb)
+  public emitSnapshotRequest(evt: SnapshotRequestEvent): void {
+    this.eventBus.emit('/snapshot/request', evt)
   }
 
   /** Request a status stripe change */
@@ -161,12 +166,12 @@ class ReadEventBus extends WriteEventBus {
   }
 
   /** Snapshot the Block state of the given Tab */
-  public onSnapshotRequest(listener: (cb: (snapshot: SnapshotBlock[]) => void) => void) {
+  public onSnapshotRequest(listener: (evt: SnapshotRequestEvent) => void) {
     this.eventBus.on(`/snapshot/request`, listener)
   }
 
   /** Snapshot the Block state of the given Tab */
-  public offSnapshotRequest(listener: (cb: (snapshot: SnapshotBlock[]) => void) => void) {
+  public offSnapshotRequest(listener: (evt: SnapshotRequestEvent) => void) {
     this.eventBus.off('/snapshot', listener)
   }
 

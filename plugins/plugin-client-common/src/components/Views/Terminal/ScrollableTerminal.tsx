@@ -30,7 +30,7 @@ import {
   CommandStartEvent,
   CommandCompleteEvent,
   isWatchable,
-  SnapshotBlock
+  SnapshotRequestEvent
 } from '@kui-shell/core'
 
 import Block from './Block'
@@ -49,6 +49,7 @@ import {
   isOk,
   isOutputOnly,
   isProcessing,
+  hasStartEvent,
   hasCommand,
   snapshot,
   hasUUID,
@@ -276,13 +277,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     // associate a tab facade with the split
     this.tabFor(state)
 
-    const onSnapshot = (handler: (snapshot: SnapshotBlock[]) => void) => {
+    const onSnapshot = (evt: SnapshotRequestEvent) => {
       const scrollbackIdx = this.findSplit(this.state, sbuuid)
       if (scrollbackIdx < 0) {
         throw new Error('Invalid state')
       } else {
         const { blocks } = this.state.splits[scrollbackIdx]
-        handler(blocks.map(snapshot).filter(_ => _))
+        const { filter = () => true } = evt
+        evt.cb(
+          blocks
+            .filter(_ => hasStartEvent(_) && filter(_.startEvent))
+            .map(snapshot)
+            .filter(_ => _)
+        )
       }
     }
     eventBus.emitAddSnapshotable()
