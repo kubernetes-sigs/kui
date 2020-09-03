@@ -135,7 +135,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
       return (
         <CardBody className="kui--card-body">
           {typeof this.props.children === 'string' ? (
-            <Markdown source={this.props.children} repl={this.props.repl} />
+            <Markdown nested source={this.props.children} repl={this.props.repl} />
           ) : (
             this.props.children
           )}

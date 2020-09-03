@@ -51,6 +51,9 @@ interface Props {
 
   /** Do not linkify external links */
   noExternalLinks?: boolean
+
+  /** If true, don't provide scrollability */
+  nested?: boolean
 }
 
 export default class Markdown extends React.PureComponent<Props> {
@@ -69,7 +72,9 @@ export default class Markdown extends React.PureComponent<Props> {
       <ReactMarkdown
         source={this.props.source}
         className={
-          this.props.className || 'padding-content scrollable scrollable-x scrollable-auto marked-content page-content'
+          this.props.className ||
+          'padding-content marked-content page-content' +
+            (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
         }
         renderers={{
           link: props => {
