@@ -228,8 +228,10 @@ export class Kui extends React.PureComponent<Props, State> {
     console.error(error, errorInfo)
   }
 
+  private firstTab = true
   private onTabReady() {
-    if (this.props.commandLine) {
+    if (this.props.commandLine && this.firstTab) {
+      this.firstTab = false
       pexecInCurrentTab(this.props.commandLine.join(' '))
     }
   }
