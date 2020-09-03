@@ -32,6 +32,7 @@ export interface Tab extends HTMLDivElement {
   addClass(cls: string): void
   removeClass(cls: string): void
 
+  scrollToTop(): void
   scrollToBottom(): void
   getSize(): { width: number; height: number }
 }

@@ -318,6 +318,8 @@ export default function(registrar: Registrar) {
           reEmitStartInTab(tab, uuid, startEvent)
           reEmitCompleteInTab(tab, uuid, completeEvent)
         })
+
+        setTimeout(() => tab.scrollToTop())
         return true
       }
     },

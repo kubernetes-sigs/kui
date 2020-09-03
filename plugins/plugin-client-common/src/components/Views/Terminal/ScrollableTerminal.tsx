@@ -662,6 +662,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         ref.scrollTop = ref.scrollHeight
       }
 
+      scrollback.facade.scrollToTop = () => {
+        ref.scrollTop = 0
+      }
+
       scrollback.facade.addClass = (cls: string) => {
         ref.classList.add(cls)
       }
