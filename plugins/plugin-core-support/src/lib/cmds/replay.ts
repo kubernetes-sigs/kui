@@ -15,11 +15,14 @@
  */
 
 import { v4 as uuid } from 'uuid'
+import { basename, dirname, extname, join } from 'path'
 
 import {
   eventBus,
   isTable,
   inElectron,
+  Arguments,
+  CodedError,
   CommandStartEvent,
   CommandCompleteEvent,
   KResponse,
@@ -64,13 +67,14 @@ const replayUsage = {
     strict: 'replay',
     required,
     optional: [
+      { name: '--freshen', alias: '-f', boolean: true, docs: 'Regenerate snapshot' },
       { name: '--new-window', alias: '-w', boolean: true, docs: 'Replay in a new window (Electron only)' },
       { name: '--new-tab', alias: '-t', boolean: true, docs: 'Replay in a tab' },
       { name: '--status-stripe', docs: 'Modify status stripe', allowed: ['default', 'blue', 'yellow', 'red'] }
     ]
   },
   flags: {
-    boolean: ['new-window', 'w', 'new-tab', 't']
+    boolean: ['new-window', 'w', 'new-tab', 't', 'freshen', 'f']
   }
 }
 
@@ -240,6 +244,34 @@ class FlightRecorder {
   }
 }
 
+/** @return name of backup file or void if backup not needed */
+function backup(REPL: Arguments['REPL'], filepath: string): Promise<string | void> {
+  const ext = extname(filepath)
+  const bak = join(dirname(filepath), basename(filepath, ext) + '.bak' + ext)
+  return REPL.rexec(`cp ${REPL.encodeComponent(filepath)} ${REPL.encodeComponent(bak)}`, { quiet: undefined })
+    .then(() => bak)
+    .catch((err: CodedError<string>) => {
+      if (err.code !== 'ENOENT') {
+        throw err
+      } else {
+      }
+    })
+}
+
+/** Regenerate snapshot */
+async function freshen(REPL: Arguments['REPL'], filepath: string) {
+  const bak = await backup(REPL, filepath)
+  await REPL.qexec(`tab new --cmdline "kui-freshen ${filepath}"`)
+  return `Notebook has been freshened${bak ? `. Backup placed in ${bak}.` : ''}`
+}
+
+/** Load snapshot model from disk */
+async function loadSnapshot(REPL: Arguments['REPL'], filepath: string): Promise<SerializedSnapshot> {
+  return JSON.parse(
+    (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
+  )
+}
+
 /** Command registration */
 export default function(registrar: Registrar) {
   // register the `replay` command
@@ -252,12 +284,11 @@ export default function(registrar: Registrar) {
         // the electron bits are sequestered in plugin-electron, to
         // avoid pulling in electron for purely browser-based clients
         return REPL.qexec(`replay-electron ${filepath}`)
+      } else if (parsedOptions.freshen) {
+        return freshen(REPL, filepath)
       }
 
-      const model = JSON.parse(
-        (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
-      )
-
+      const model = await loadSnapshot(REPL, filepath)
       if (!isSerializedSnapshot(model)) {
         console.error('invalid snapshot', model)
         throw new Error('Invalid snapshot')
@@ -334,70 +365,93 @@ export default function(registrar: Registrar) {
         let nSplits = 0
         let blocks: SnapshotBlock[] = []
 
-        eventBus.emitSnapshotRequest(async (blocksInSplit: SnapshotBlock[]) => {
-          blocks = blocks.concat(blocksInSplit)
-          nSplits++
+        eventBus.emitSnapshotRequest({
+          filter: (evt: CommandStartEvent) => !/^kui-freshen/.test(evt.command) && evt.tab.uuid === tab.uuid,
+          cb: async (blocksInSplit: SnapshotBlock[]) => {
+            blocks = blocks.concat(blocksInSplit)
+            nSplits++
 
-          if (nSplits === nSnapshotable) {
-            // sort blocks by startTime
-            blocks.sort((a, b) => (a.startTime > b.startTime ? 1 : -1))
+            if (nSplits === nSnapshotable) {
+              // sort blocks by startTime
+              blocks.sort((a, b) => (a.startTime > b.startTime ? 1 : -1))
 
-            // if needed, we could optimize this by recording per
-            // blocksInSplit, as they arrive
-            const clicks = await new FlightRecorder(tab, blocks).record()
+              // if needed, we could optimize this by recording per
+              // blocksInSplit, as they arrive
+              const clicks = await new FlightRecorder(tab, blocks).record()
 
-            try {
-              const filepath = argvNoOptions[argvNoOptions.indexOf('snapshot') + 1]
-              const snapshot: SerializedSnapshot = {
-                apiVersion: 'kui-shell/v1',
-                kind: 'Snapshot',
-                spec: {
-                  title: parsedOptions.t || parsedOptions.title,
-                  description: parsedOptions.d || parsedOptions.description,
-                  clicks,
-                  windows: [
-                    {
-                      uuid: '0',
-                      tabs: [
-                        {
-                          uuid: '0',
-                          blocks
-                        }
-                      ]
-                    }
-                  ]
+              try {
+                const filepath = argvNoOptions[argvNoOptions.indexOf('snapshot') + 1]
+                const snapshot: SerializedSnapshot = {
+                  apiVersion: 'kui-shell/v1',
+                  kind: 'Snapshot',
+                  spec: {
+                    title: parsedOptions.t || parsedOptions.title,
+                    description: parsedOptions.d || parsedOptions.description,
+                    clicks,
+                    windows: [
+                      {
+                        uuid: '0',
+                        tabs: [
+                          {
+                            uuid: '0',
+                            blocks
+                          }
+                        ]
+                      }
+                    ]
+                  }
                 }
-              }
 
-              /**
-               * We have excluded block and replaced tab with uuid in the top level
-               * completeEvent and startEvent of a snapshot,
-               * but there are still some underlying properties have tab and block,
-               * so we filter out HTML tab and block in the replacer,
-               * see issue: https://github.com/IBM/kui/issues/5458
-               *
-               */
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const replacer = (key: string, value: any) => {
-                if (key === 'tab' && typeof value === typeof tab) {
-                  return undefined
-                } else if (key === 'block') {
-                  return undefined
-                } else {
-                  return value
+                /**
+                 * We have excluded block and replaced tab with uuid in the top level
+                 * completeEvent and startEvent of a snapshot,
+                 * but there are still some underlying properties have tab and block,
+                 * so we filter out HTML tab and block in the replacer,
+                 * see issue: https://github.com/IBM/kui/issues/5458
+                 *
+                 */
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const replacer = (key: string, value: any) => {
+                  if (key === 'tab' && typeof value === typeof tab) {
+                    return undefined
+                  } else if (key === 'block') {
+                    return undefined
+                  } else {
+                    return value
+                  }
                 }
+
+                const data = JSON.stringify(snapshot, replacer, 2)
+                await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(filepath)}`, { data })
+
+                resolve(true)
+              } catch (err) {
+                reject(err)
               }
-
-              const data = JSON.stringify(snapshot, replacer)
-              await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(filepath)}`, { data })
-
-              resolve(true)
-            } catch (err) {
-              reject(err)
             }
           }
         })
       }),
     snapshotUsage
   )
+
+  registrar.listen('/kui-freshen', async args => {
+    const filepath = args.argvNoOptions[1]
+    const model = await loadSnapshot(args.REPL, filepath)
+
+    // some older snapshots have duplicates due to an earlier bug
+    const seenExecUUIDs: Record<string, boolean> = {}
+
+    await promiseEach(model.spec.windows[0].tabs[0].blocks, ({ startEvent }) => {
+      if (!seenExecUUIDs[startEvent.execUUID]) {
+        seenExecUUIDs[startEvent.execUUID] = true
+        return args.REPL.pexec(startEvent.command)
+      }
+    })
+
+    await args.REPL.qexec(`snapshot ${args.REPL.encodeComponent(filepath)}`)
+    await args.REPL.pexec('tab close')
+
+    return true
+  })
 }

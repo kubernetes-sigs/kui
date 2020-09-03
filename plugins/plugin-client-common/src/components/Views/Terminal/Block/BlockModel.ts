@@ -315,6 +315,11 @@ export function isPresentedElsewhere(block: BlockModel) {
   return isOk(block) && block.completeEvent && block.completeEvent.responseType !== 'ScalarResponse'
 }
 
+/** @return whether the block as a startEvent trait */
+export function hasStartEvent(block: BlockModel): block is BlockModel & WithCommandStart {
+  return !isAnnouncement(block) && (isProcessing(block) || isOk(block) || isOops(block))
+}
+
 /** @return whether the block has a completeEvent trait */
 export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
   return isOk(block) || isOops(block)
