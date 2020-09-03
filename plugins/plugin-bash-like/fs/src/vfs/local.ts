@@ -39,7 +39,7 @@ class LocalVFS implements VFS {
       `sendtopty ${opts.command.replace(/^vfs/, '')}`,
       undefined,
       undefined,
-      Object.assign(opts.execOptions, { quiet: false })
+      Object.assign(opts.execOptions, { quiet: opts.parsedOptions.i ? false : opts.execOptions.quiet })
     )
   }
 
