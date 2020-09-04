@@ -60,8 +60,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       activeIdx: 0
     }
 
-    eventBus.on('/tab/new/request', ({ uuid, statusStripeDecoration } = {}) => {
-      this.onNewTab(uuid, statusStripeDecoration)
+    eventBus.on('/tab/new/request', ({ uuid, statusStripeDecoration, title } = {}) => {
+      this.onNewTab(uuid, statusStripeDecoration, title)
     })
 
     eventBus.on('/tab/switch/request', (idx: number) => {
@@ -152,8 +152,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  private newTabModel(useThisUUID?: string, statusStripeDecoration?: StatusStripeChangeEvent) {
-    const model = new TabModel(useThisUUID, statusStripeDecoration)
+  private newTabModel(useThisUUID?: string, statusStripeDecoration?: StatusStripeChangeEvent, title?: string) {
+    const model = new TabModel(useThisUUID, statusStripeDecoration, title)
     this.listenForTabClose(model)
     return model
   }
@@ -162,10 +162,10 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * New Tab event
    *
    */
-  private onNewTab(useThisUUID?: string, statusStripeDecoration?: StatusStripeChangeEvent) {
+  private onNewTab(useThisUUID?: string, statusStripeDecoration?: StatusStripeChangeEvent, title?: string) {
     this.captureState()
 
-    const model = this.newTabModel(useThisUUID, statusStripeDecoration)
+    const model = this.newTabModel(useThisUUID, statusStripeDecoration, title)
 
     this.setState(curState => ({
       tabs: curState.tabs.concat(model),

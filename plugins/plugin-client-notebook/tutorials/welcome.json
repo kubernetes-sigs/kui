@@ -188,7 +188,7 @@
                     "header": { "name": "Name", "attributes": [] },
                     "body": [
                       {
-                        "name": "Learning Kubernetes &mdash; `Listing Resources`",
+                        "name": "Kubernetes &mdash; `Listing Resources`",
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/kubernetes/list-resources.json",
@@ -196,7 +196,7 @@
                         "key": "Name"
                       },
                       {
-                        "name": "Learning Kubernetes &mdash; `Working with Jobs`",
+                        "name": "Kubernetes &mdash; `Working with Jobs`",
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/kubernetes/create-jobs.json",
@@ -278,7 +278,7 @@
                     "header": { "name": "Name", "attributes": [] },
                     "body": [
                       {
-                        "name": "Learning Kubernetes &mdash; `Listing Resources`",
+                        "name": "Kubernetes &mdash; `Listing Resources`",
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/kubernetes/list-resources.json",
@@ -286,7 +286,7 @@
                         "key": "Name"
                       },
                       {
-                        "name": "Learning Kubernetes &mdash; `Working with Jobs`",
+                        "name": "Kubernetes &mdash; `Working with Jobs`",
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/kubernetes/create-jobs.json",

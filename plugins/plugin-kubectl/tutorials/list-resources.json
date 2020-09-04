@@ -2,6 +2,7 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Snapshot",
   "spec": {
+    "title": "Kubernetes &mdash; `Listing Resources`",
     "clicks": {
       "startEvents": {
         "f3fa797b-f7a5-4639-a458-5347813d970c": [
