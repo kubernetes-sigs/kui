@@ -805,7 +805,7 @@ $kui--page-content-paragraph-padding: 0.375rem;
 .page-content p {
   padding: $kui--page-content-paragraph-padding 0;
 }
-.repl-output .page-content p {
+.repl-output .page-content p:first-child {
   padding: 0;
 }
 .page-content h1 {
