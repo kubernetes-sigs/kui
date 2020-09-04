@@ -88,9 +88,13 @@ const snapshotUsage = {
     strict: 'snapshot',
     required,
     optional: [
+      { name: '--shallow', alias: '-s', boolean: true, docs: 'Do not record click events' },
       { name: '--description', alias: '-d', docs: 'Description for this snapshot' },
       { name: '--title', alias: '-t', docs: 'Title for this snapshot' }
     ]
+  },
+  flags: {
+    boolean: ['--shallow', '-s']
   }
 }
 
@@ -107,6 +111,8 @@ interface ReplayOptions extends ParsedOptions {
 }
 
 interface SnapshotOptions extends ParsedOptions {
+  s?: boolean
+  shallow?: boolean
   d?: string
   description?: string
   t?: string
@@ -383,7 +389,7 @@ export default function(registrar: Registrar) {
 
               // if needed, we could optimize this by recording per
               // blocksInSplit, as they arrive
-              const clicks = await new FlightRecorder(tab, blocks).record()
+              const clicks = parsedOptions.shallow ? undefined : await new FlightRecorder(tab, blocks).record()
 
               try {
                 const filepath = argvNoOptions[argvNoOptions.indexOf('snapshot') + 1]
