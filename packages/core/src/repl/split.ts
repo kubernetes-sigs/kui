@@ -85,7 +85,7 @@ export const _split = (
       }
     } else if (escapeActive) {
       escapeActive = false
-    } else if (char === '#' && cur.length === 0) {
+    } else if (char === '#' && cur.length === 0 && stack.length === 0) {
       // stop parsing till end of line
       if (idx < str.length - 2 && str[idx + 1] === ' ') {
         // e.g. "kubectl get pod#comment"
@@ -162,4 +162,38 @@ export const _split = (
 
 export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): string[] => {
   return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as string[]
+}
+
+/** Look for cmd1; cmd2 patterns */
+export function semiSplit(command: string): string[] {
+  if (command.indexOf(';') < 0) {
+    return []
+  } else {
+    const argv = split(command, false)
+
+    let inStatement = false
+    let statementTerminator = ''
+    return argv.reduce(
+      (sofar, a, idx) => {
+        if (a === 'while' || a === 'for' || a === 'if' || a === 'case') {
+          inStatement = true
+          statementTerminator = a === 'if' ? 'fi' : a === 'case' ? 'esac' : 'done'
+        } else if (inStatement && a === statementTerminator) {
+          inStatement = false
+        }
+
+        if (!inStatement && a === ';') {
+          sofar.A.push(sofar.cur)
+          sofar.cur = ''
+        } else if ((!inStatement && /;$/.test(a)) || idx === argv.length - 1) {
+          sofar.A.push(sofar.cur + ' ' + a)
+          sofar.cur = ''
+        } else {
+          sofar.cur += ' ' + a
+        }
+        return sofar
+      },
+      { A: [], cur: '' }
+    ).A
+  }
 }
