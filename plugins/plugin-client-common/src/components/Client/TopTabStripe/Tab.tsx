@@ -29,12 +29,14 @@ import {
 import { HeaderMenuItem } from 'carbon-components-react'
 
 import Icons from '../../spi/Icons'
+import Markdown from '../../Content/Markdown'
 
 const strings = i18n('plugin-core-support')
 const strings2 = i18n('plugin-client-common')
 
 export interface TabConfiguration {
   topTabNames?: 'command' | 'fixed' // was { topTabs } from '@kui-shell/client/config.d/style.json'
+  title?: string
 }
 
 type Props = TabConfiguration & {
@@ -62,7 +64,7 @@ export default class Tab extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      title: strings('Tab'),
+      title: props.title || strings('Tab'),
       processing: false,
       isFreshlyCreated: true,
       topTabNames: props.topTabNames || 'command'
@@ -149,6 +151,7 @@ export default class Tab extends React.PureComponent<Props, State> {
         href="#"
         data-tab-names={this.state.topTabNames}
         data-fresh={this.state.isFreshlyCreated}
+        data-custom-label={this.props.title ? true : undefined}
         className={
           'kui--tab kui--tab-navigatable' +
           (this.props.active ? ' kui--tab--active' : '') +
@@ -166,7 +169,11 @@ export default class Tab extends React.PureComponent<Props, State> {
       >
         <div className="kui--tab--label">
           {this.isUsingCommandName() && this.state.title}
-          {!this.isUsingCommandName() && <span className="kui--tab--label-text">{strings('Tab')} </span>}
+          {!this.isUsingCommandName() && (
+            <span className="kui--tab--label-text">
+              {this.props.title ? <Markdown nested source={this.props.title} /> : strings('Tab')}{' '}
+            </span>
+          )}
           {!this.isUsingCommandName() && <span className="kui--tab--label-index"></span>}
         </div>
 

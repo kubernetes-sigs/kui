@@ -18,8 +18,6 @@ import * as React from 'react'
 
 import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
 
-import { productName } from '@kui-shell/client/config.d/name.json'
-
 /**
  * Format our body, with extra status stripe widgets
  *   - <CurrentGitBranch />
@@ -29,7 +27,7 @@ import { productName } from '@kui-shell/client/config.d/name.json'
 export default function renderMain(props: KuiProps) {
   return (
     <Kui
-      productName={productName}
+      productName="Kui Notebooks"
       splitTerminals
       lightweightTables
       {...props}

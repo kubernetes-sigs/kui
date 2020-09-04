@@ -121,6 +121,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
               key={idx}
               idx={idx}
               uuid={tab.uuid}
+              title={tab.title}
               closeable={this.props.tabs.length > 1}
               active={idx === this.props.activeIdx}
               onCloseTab={(idx: number) => this.props.onCloseTab(idx)}

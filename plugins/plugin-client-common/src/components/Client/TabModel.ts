@@ -30,6 +30,7 @@ export default class TabModel {
   public constructor(
     private readonly _uuid = uuid(),
     desiredStatusStripeDecoration?: StatusStripeChangeEvent,
+    private readonly _title?: string,
     private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
     private readonly _buttons: TopTabButton[] = []
   ) {
@@ -49,7 +50,11 @@ export default class TabModel {
     return this._buttons
   }
 
+  public get title() {
+    return this._title
+  }
+
   public update(buttons: TopTabButton[]) {
-    return new TabModel(this.uuid, undefined, this.state, buttons)
+    return new TabModel(this.uuid, undefined, this.title, this.state, buttons)
   }
 }

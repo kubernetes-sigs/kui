@@ -63,7 +63,12 @@ export default function plugin(commandTree: Registrar) {
    */
   commandTree.listen<
     KResponse,
-    { cmdline?: string; 'status-stripe-type'?: StatusStripeChangeEvent['type']; 'status-stripe-message'?: string }
+    {
+      cmdline?: string
+      'status-stripe-type'?: StatusStripeChangeEvent['type']
+      'status-stripe-message'?: string
+      title?: string
+    }
   >(
     '/tab/new',
     async args => {
@@ -79,6 +84,7 @@ export default function plugin(commandTree: Registrar) {
           const uuid = allocateTabUUID()
           eventBus.emit('/tab/new/request', {
             uuid,
+            title: args.parsedOptions.title,
             statusStripeDecoration
           })
 
@@ -88,7 +94,7 @@ export default function plugin(commandTree: Registrar) {
           })
         })
       } else {
-        eventBus.emit('/tab/new/request', { statusStripeDecoration })
+        eventBus.emit('/tab/new/request', { statusStripeDecoration, title: args.parsedOptions.title })
         return true
       }
     },
@@ -97,7 +103,8 @@ export default function plugin(commandTree: Registrar) {
         optional: [
           { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
           { name: '--status-stripe-type', docs: 'Desired status stripe coloration', allowed: ['default', 'blue'] },
-          { name: '--status-stripe-message', docs: 'Desired status stripe message' }
+          { name: '--status-stripe-message', docs: 'Desired status stripe message' },
+          { name: '--title', alias: '-t', docs: 'Title to display in the UI' }
         ]
       }
     }
