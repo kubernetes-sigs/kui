@@ -19,7 +19,6 @@ import { i18n, pexecInCurrentTab } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import KuiContext from '../context'
-import onSplit from '../../../controller/split'
 
 const strings = i18n('plugin-client-common')
 
@@ -41,7 +40,7 @@ export default class SplitTerminalButtonButton extends React.PureComponent {
               aria-label="Split terminal"
               tabIndex={0}
               title={strings('Split the Terminal')}
-              onClick={() => onSplit().catch(() => pexecInCurrentTab('split'))}
+              onClick={() => pexecInCurrentTab('split')}
             >
               <Icons icon="Split" />
             </a>

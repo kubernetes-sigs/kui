@@ -17,23 +17,38 @@
 import { Entity } from './entity'
 import REPL from './repl'
 
-export type CommentaryResponse = {
+/** Commentary describing actions in a different tab/split */
+type Elsewhere = {
+  elsewhere: true
+  tabUUID: string
+}
+
+type DefaultProps = Partial<Elsewhere> & {
+  /** Content rendered inside the CardTitle */
+  title?: string
+
+  /** Body of the Card. It will be passed through as the source <Markdown source="..." /> */
+  children: string
+
+  /** [Optional] REPL controller, but required if you want your Card
+   * to have functional kuiexec?command=... links via Markdown */
+  repl?: REPL
+}
+
+type ElsewhereProps = DefaultProps & Required<Elsewhere>
+export type ElsewhereCommentaryResponse = CommentaryResponse<ElsewhereProps>
+
+export type CommentaryResponse<Props extends DefaultProps = DefaultProps> = {
   apiVersion: 'kui-shell/v1'
   kind: 'CommentaryResponse'
-  props: {
-    /** Content rendered inside the CardTitle */
-    title?: string
-
-    /** Body of the Card. It will be passed through as the source <Markdown source="..." /> */
-    children: string
-
-    /** [Optional] REPL controller, but required if you want your Card
-     * to have functional kuiexec?command=... links via Markdown */
-    repl?: REPL
-  }
+  props: Props
 }
 
 export function isCommentaryResponse(entity: Entity): entity is CommentaryResponse {
   const response = entity as CommentaryResponse
   return response.apiVersion === 'kui-shell/v1' && response.kind === 'CommentaryResponse'
+}
+
+export function isElsewhereCommentaryResponse(entity: Entity): entity is ElsewhereCommentaryResponse {
+  return isCommentaryResponse(entity) && entity.props.elsewhere === true
 }

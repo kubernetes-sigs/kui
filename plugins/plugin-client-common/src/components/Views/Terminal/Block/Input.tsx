@@ -395,7 +395,7 @@ export default class Input extends InputProvider {
         <React.Fragment>
           <input
             type="text"
-            autoFocus
+            autoFocus={this.props.isFocused}
             autoCorrect="off"
             autoComplete="off"
             spellCheck="false"
