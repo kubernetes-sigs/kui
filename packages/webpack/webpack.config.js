@@ -239,6 +239,9 @@ plugins.push(
 )
 
 const clientOptions = requireAll(path.resolve(path.join(clientBase, 'config.d')))
+if (!clientOptions.opengraph) {
+  clientOptions.opengraph = {}
+}
 
 clientOptions.style.bodyCss = (inBrowser ? ['not-electron'] : ['in-electron']).concat(clientOptions.style.bodyCss)
 clientOptions.style.htmlCss = !clientOptions.style.htmlCss
