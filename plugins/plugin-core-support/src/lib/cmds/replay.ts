@@ -49,7 +49,11 @@ interface ClickSnapshot {
 export interface SerializedSnapshot {
   apiVersion: 'kui-shell/v1'
   kind: 'Snapshot'
-  spec: Snapshot & { clicks: ClickSnapshot }
+  spec: Snapshot & {
+    clicks: ClickSnapshot
+    title?: string
+    description?: string
+  }
 }
 
 /** @return wether or not the given `raw` json is an instance of SerializedSnapshot */
@@ -261,7 +265,7 @@ function backup(REPL: Arguments['REPL'], filepath: string): Promise<string | voi
 /** Regenerate snapshot */
 async function freshen(REPL: Arguments['REPL'], filepath: string) {
   const bak = await backup(REPL, filepath)
-  await REPL.qexec(`tab new --cmdline "kui-freshen ${filepath}"`)
+  await REPL.qexec(`tab new --cmdline "kui-freshen ${filepath} --in-new-tab" --title "Freshening ${basename(filepath)}`)
   return `Notebook has been freshened${bak ? `. Backup placed in ${bak}.` : ''}`
 }
 
@@ -296,8 +300,10 @@ export default function(registrar: Registrar) {
         const message = formatMessage(model)
 
         if (parsedOptions['new-tab']) {
+          const titleOption = model.spec.title ? `--title "${model.spec.title}"` : ''
           return REPL.qexec(
-            `tab new --cmdline "replay ${filepath}" --status-stripe-type ${parsedOptions['status-stripe'] || 'blue'}`,
+            `tab new --cmdline "replay ${filepath}" --status-stripe-type ${parsedOptions['status-stripe'] ||
+              'blue'} ${titleOption}`,
             undefined,
             undefined,
             { data: { 'status-stripe-message': message } }
@@ -435,23 +441,36 @@ export default function(registrar: Registrar) {
     snapshotUsage
   )
 
-  registrar.listen('/kui-freshen', async args => {
-    const filepath = args.argvNoOptions[1]
-    const model = await loadSnapshot(args.REPL, filepath)
+  /** Freshen command handler */
+  registrar.listen<KResponse, { 'in-new-tab': boolean }>(
+    '/kui-freshen',
+    async args => {
+      const filepath = args.argvNoOptions[1]
+      const model = await loadSnapshot(args.REPL, filepath)
 
-    // some older snapshots have duplicates due to an earlier bug
-    const seenExecUUIDs: Record<string, boolean> = {}
+      // some older snapshots have duplicates due to an earlier bug
+      const seenExecUUIDs: Record<string, boolean> = {}
 
-    await promiseEach(model.spec.windows[0].tabs[0].blocks, ({ startEvent }) => {
-      if (!seenExecUUIDs[startEvent.execUUID]) {
-        seenExecUUIDs[startEvent.execUUID] = true
-        return args.REPL.pexec(startEvent.command)
+      // reexecute the commands
+      await promiseEach(model.spec.windows[0].tabs[0].blocks, ({ startEvent }) => {
+        if (!seenExecUUIDs[startEvent.execUUID]) {
+          seenExecUUIDs[startEvent.execUUID] = true
+          return args.REPL.pexec(startEvent.command)
+        }
+      })
+
+      // save the snapshot
+      const titleOption = model.spec.title ? ` --title "${model.spec.title}"` : ''
+      const descrOption = model.spec.description ? ` --description "${model.spec.description}"` : ''
+      await args.REPL.qexec(`snapshot ${args.REPL.encodeComponent(filepath)} ${titleOption} ${descrOption}`)
+
+      // close our temporary tab
+      if (args.parsedOptions['in-new-tab']) {
+        await args.REPL.pexec('tab close')
       }
-    })
 
-    await args.REPL.qexec(`snapshot ${args.REPL.encodeComponent(filepath)}`)
-    await args.REPL.pexec('tab close')
-
-    return true
-  })
+      return true
+    },
+    { flags: { boolean: ['in-new-tab'] } }
+  )
 }

@@ -88,7 +88,5 @@ export type SnapshotWindow = {
  *
  */
 export type Snapshot = {
-  title?: string
-  description?: string
   windows: SnapshotWindow[]
 }

@@ -46,6 +46,35 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 })
 
+describe('core new tab with custom title', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const newTabWithTitle = (title: string, N: number, expectedTitle = title) => {
+    it(`new tab via command with custom title: ${title}`, () =>
+      CLI.command(`tab new --title ${/s/.test(title) ? `"${title}"` : title}`, this.app)
+        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(N)))
+        .then(() => CLI.waitForSession(this)) // should have an active repl
+        .then(() =>
+          this.app.client.waitUntil(async () => {
+            const actualTitle = await this.app.client.getText(Selectors.CURRENT_TAB_TITLE)
+            return actualTitle === expectedTitle
+          }, CLI.waitTimeout)
+        )
+        .catch(Common.oops(this, true)))
+  }
+
+  // single word title
+  newTabWithTitle('smurf', 2)
+
+  // title with whitespace
+  newTabWithTitle('space cadet', 3)
+
+  // title with markdown, plus test semicolon parsing
+  newTabWithTitle('splash &mdash; bros', 4, 'splash — bros')
+  //                                                ^ unicode!
+})
+
 describe('core new tab with status stripe decoration', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))

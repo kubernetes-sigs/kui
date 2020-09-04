@@ -62,6 +62,7 @@ class EventBusBase {
 interface NewTabRequestEvent {
   uuid?: string
   statusStripeDecoration?: StatusStripeChangeEvent
+  title?: string
 }
 
 class WriteEventBus extends EventBusBase {
