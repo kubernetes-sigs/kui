@@ -11,6 +11,27 @@
 
     <!-- <meta http-equiv="Content-Security-Policy" content="<%= htmlWebpackPlugin.options.client.contentSecurityPolicy %>" /> -->
 
+    <!-- opengraph properties -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= htmlWebpackPlugin.options.opengraph.ogUrl %>" />
+    <meta property="og:site_name" content="<%= htmlWebpackPlugin.options.opengraph.ogSiteName %>" />
+    <meta property="og:title" content="<%= htmlWebpackPlugin.options.opengraph.ogTitle %>" />
+    <meta property="og:description" content="<%= htmlWebpackPlugin.options.opengraph.ogDescription %>" />
+    <meta property="og:image" content="<%= htmlWebpackPlugin.options.opengraph.ogImage %>" />
+
+    <!-- twitter card properties -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="<%= htmlWebpackPlugin.options.opengraph.ogUrl %>" />
+    <meta name="twitter:description" content="<%= htmlWebpackPlugin.options.opengraph.ogDescription %>" />
+    <meta name="twitter:image" content="<%= htmlWebpackPlugin.options.opengraph.ogImage %>" />
+    <meta name="twitter:label1" value="<%= htmlWebpackPlugin.options.opengraph.ogLabel1 %>" />
+    <meta name="twitter:data1" value="<%= htmlWebpackPlugin.options.opengraph.ogData1 %>" />
+    <meta name="twitter:label2" value="<%= htmlWebpackPlugin.options.opengraph.ogLabel2 %>" />
+    <meta name="twitter:data2" value="<%= htmlWebpackPlugin.options.opengraph.ogData2 %>" />
+
+
+    <meta http-equiv="Content-Security-Policy" content="${contentSecurityPolicy}" />
+    <meta http-equiv="Content-Security-Policy" content="<%= htmlWebpackPlugin.options.client.contentSecurityPolicy %>" />    
     <script nonce="kuiDefaultNonce">
       window['_kuiNonce'] = 'kuiDefaultNonce'
       window['_kuiWebpackHash'] = '${hash}'
