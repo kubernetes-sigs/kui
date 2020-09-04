@@ -36,11 +36,12 @@ export function splitViaButton(this: Common.ISuite, splitCount: number) {
 
 /** Split the terminal in the current tab by using the "split" command */
 export function splitViaCommand(this: Common.ISuite, splitCount: number, expectErr = false) {
-  it(`should split the terminal via command in the current tab and expect splitCount=${splitCount}`, () =>
-    CLI.commandInSplit('split', this.app, splitCount - 1)
-      .then(expectErr ? ReplExpect.error(500) : ReplExpect.okWithAny)
+  it(`should split the terminal via command in the current tab and expect splitCount=${splitCount}`, () => {
+    return CLI.commandInSplit('split', this.app, splitCount - 1)
+      .then(expectErr ? ReplExpect.error(500) : ReplExpect.elsewhere('Created a new split'))
       .then(ReplExpect.splitCount(splitCount))
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
 }
 
 /** Close the split in the current tab by using the "exit" command */

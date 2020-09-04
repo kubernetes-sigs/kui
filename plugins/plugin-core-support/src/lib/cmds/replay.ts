@@ -25,6 +25,7 @@ import {
   CodedError,
   CommandStartEvent,
   CommandCompleteEvent,
+  ElsewhereCommentaryResponse,
   KResponse,
   ParsedOptions,
   Registrar,
@@ -33,6 +34,7 @@ import {
   SnapshottedEvent,
   StatusStripeChangeEvent,
   Tab,
+  getPrimaryTabId,
   promiseEach
 } from '@kui-shell/core'
 
@@ -323,7 +325,6 @@ export default function(registrar: Registrar) {
 
         // we need to map the split uuids in the snapshot to those in
         // the current tab
-        const splits = [tab.uuid]
         const splitAlignment: Record<string, string> = {}
 
         if (model.spec.clicks) {
@@ -348,13 +349,19 @@ export default function(registrar: Registrar) {
         }
 
         await promiseEach(model.spec.windows[0].tabs[0].blocks, async ({ startEvent, completeEvent }) => {
-          if (!splitAlignment[startEvent.tab]) {
-            splitAlignment[startEvent.tab] = splits[splits.length - 1]
-          }
+          // if (!splitAlignment[startEvent.tab]) {
+          // splitAlignment[startEvent.tab] = splits[splits.length - 1]
+          // }
 
           // NOTE: work around the replayability issue of split command not returning a replayable model: https://github.com/IBM/kui/issues/5399
           if (startEvent.command === 'split') {
-            splits.push(await REPL.qexec('split'))
+            const ourUUID = (await REPL.qexec<ElsewhereCommentaryResponse>('split')).props.tabUUID
+            const theirUUID = (completeEvent.response as ElsewhereCommentaryResponse).props.tabUUID
+            splitAlignment[theirUUID] = ourUUID
+          } else if (!splitAlignment[startEvent.tab]) {
+            const ourUUID = tab.uuid
+            const theirUUID = startEvent.tab
+            splitAlignment[theirUUID] = ourUUID
           }
 
           const uuid = splitAlignment[startEvent.tab]
@@ -377,8 +384,21 @@ export default function(registrar: Registrar) {
         let nSplits = 0
         let blocks: SnapshotBlock[] = []
 
+        // debounce block callbacks
+        const seenExecUUIDs: Record<string, boolean> = {}
+
+        const ourMainTab = getPrimaryTabId(tab)
         eventBus.emitSnapshotRequest({
-          filter: (evt: CommandStartEvent) => !/^kui-freshen/.test(evt.command) && evt.tab.uuid === tab.uuid,
+          filter: (evt: CommandStartEvent) => {
+            if (
+              !/^kui-freshen/.test(evt.command) &&
+              getPrimaryTabId(evt.tab) === ourMainTab &&
+              !seenExecUUIDs[evt.execUUID]
+            ) {
+              seenExecUUIDs[evt.execUUID] = true
+              return true
+            }
+          },
           cb: async (blocksInSplit: SnapshotBlock[]) => {
             blocks = blocks.concat(blocksInSplit)
             nSplits++

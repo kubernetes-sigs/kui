@@ -159,7 +159,12 @@ export { disableInputQueueing } from './webapp/queueing'
 export { isPopup } from './webapp/popup-core'
 export { removeAllDomChildren as empty } from './webapp/util/dom'
 export { default as Presentation } from './webapp/views/presentation'
-export { CommentaryResponse, isCommentaryResponse } from './models/CommentaryResponse'
+export {
+  CommentaryResponse,
+  ElsewhereCommentaryResponse,
+  isCommentaryResponse,
+  isElsewhereCommentaryResponse
+} from './models/CommentaryResponse'
 export {
   ModeOrButton as Mode,
   Button,
