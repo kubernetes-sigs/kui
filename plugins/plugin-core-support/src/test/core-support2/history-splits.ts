@@ -42,8 +42,8 @@ describe('command history with splits', function(this: Common.ISuite) {
   const echo = doEcho.bind(this)
   const split = splitViaButton.bind(this)
   const validate1 = doValidate.bind(this, 1)
-  const validate2 = doValidate.bind(this, 2)
-  const validate5 = doValidate.bind(this, 5)
+  const validate2 = doValidate.bind(this, 3)
+  const validate5 = doValidate.bind(this, 6)
   const count = expectSplits.bind(this)
 
   const msg1 = 'xxxx'

@@ -282,13 +282,31 @@ export function tableWithNRows(N: number) {
   }
 }
 
+/** Expect an ElsewhereCommentaryResponse */
+export function elsewhere(expectedBody: string) {
+  return async (res: AppAndCount) => {
+    let idx = 0
+    await res.app.client.waitUntil(async () => {
+      const actualBody = await res.app.client.getText(
+        `${Selectors.OUTPUT_N(res.count, res.splitIndex)} .kui--repl-result-else`
+      )
+      if (++idx > 5) {
+        console.error(`still waiting for body; actual=${actualBody}; expected=${expectedBody}`)
+      }
+      return actualBody === expectedBody
+    }, waitTimeout)
+
+    return res.app
+  }
+}
+
 /** Expect a CommentaryResponse */
 export function comment(expectedBody: string, expectedTitle?: string) {
   return async (res: AppAndCount) => {
     const output = Selectors.OUTPUT_N(res.count)
 
     if (expectedTitle) {
-      await res.app.client.waitForVisible(`${output} ${Selectors.TERMINAL_CARD}`)
+      await res.app.client.waitForVisible(`${output} ${Selectors.TERMINAL_CARD}`, waitTimeout)
       const actualTitle: string = await res.app.client.getText(`${output} ${Selectors.TERMINAL_CARD_TITLE}`)
       assert.strictEqual(actualTitle, expectedTitle)
     }

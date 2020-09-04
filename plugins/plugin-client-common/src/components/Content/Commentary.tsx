@@ -20,6 +20,10 @@ import Card from '../spi/Card'
 
 export default class Commentary extends React.PureComponent<CommentaryResponse['props']> {
   public render() {
-    return <Card {...this.props} className="kui--commentary-card" />
+    if (this.props.elsewhere) {
+      return <span className="kui--repl-result-else">{this.props.children}</span>
+    } else {
+      return <Card {...this.props} className="kui--commentary-card" />
+    }
   }
 }

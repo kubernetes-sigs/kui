@@ -21,6 +21,7 @@ import {
   SnapshotBlock,
   UsageError,
   ExecType,
+  isElsewhereCommentaryResponse,
   isWatchable,
   inBrowser
 } from '@kui-shell/core'
@@ -312,7 +313,12 @@ export function isOutputOnly(block: BlockModel) {
  *
  */
 export function isPresentedElsewhere(block: BlockModel) {
-  return isOk(block) && block.completeEvent && block.completeEvent.responseType !== 'ScalarResponse'
+  return (
+    isOk(block) &&
+    block.completeEvent &&
+    (block.completeEvent.responseType !== 'ScalarResponse' ||
+      isElsewhereCommentaryResponse(block.completeEvent.response))
+  )
 }
 
 /** @return whether the block as a startEvent trait */
@@ -330,7 +336,11 @@ export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
  * to echo their execution.
  */
 export function isQuietlyPresentedElsewhere(block: BlockModel) {
-  return isPresentedElsewhere(block) && isWithCompleteEvent(block) && block.completeEvent.echo === false
+  return (
+    isPresentedElsewhere(block) &&
+    isWithCompleteEvent(block) &&
+    (isElsewhereCommentaryResponse(block.completeEvent.response) || block.completeEvent.echo === false)
+  )
 }
 
 /**

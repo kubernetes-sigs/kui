@@ -26,10 +26,19 @@ interface Options extends ParsedOptions {
  */
 export default async function split(args?: Arguments<Options>) {
   if (args && args.parsedOptions.debug) {
-    // for debugging
+    // for debugging, this returns the tab uuid of the current split
     return args.tab.uuid
   }
 
   const { doSplitView } = await import('../components/Views/Terminal/ScrollableTerminal')
-  return doSplitView(args ? args.tab : getCurrentTab())
+  const tabUUID = await doSplitView(args ? args.tab : getCurrentTab())
+  return {
+    apiVersion: 'kui-shell/v1',
+    kind: 'CommentaryResponse',
+    props: {
+      elsewhere: true,
+      tabUUID,
+      children: 'Created a new split'
+    }
+  }
 }
