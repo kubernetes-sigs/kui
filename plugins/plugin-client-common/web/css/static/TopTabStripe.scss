@@ -160,6 +160,9 @@ $tab-shadow: inset 0 -3px 0 0;
         font-size: inherit;
         font-weight: inherit;
         line-height: initial;
+        code {
+          font-family: var(--font-sans-serif);
+        }
       }
     }
 
