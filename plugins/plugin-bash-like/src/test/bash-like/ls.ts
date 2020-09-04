@@ -50,12 +50,12 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
   it('should ls with semicolons 3', () =>
     CLI.command(`ls -l ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
-      .then(ReplExpect.okWith('package.json'))
+      .then(ReplExpect.okWithPtyOutput('syntax error near unexpected token'))
       .catch(Common.oops(this)))
 
   it('should ls with semicolons 4', () =>
     CLI.command(`ls -l ../../;; ;; ; ; ;;;;; ;echo ${echoString}`, this.app)
-      .then(ReplExpect.okWithPtyOutput(echoString))
+      .then(ReplExpect.okWithPtyOutput('syntax error near unexpected token'))
       .catch(Common.oops(this)))
 
   it('should use ls -l ../../README.md', () =>

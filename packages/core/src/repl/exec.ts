@@ -27,7 +27,7 @@ debug('loading')
 
 import { v4 as uuid } from 'uuid'
 import encodeComponent from './encode'
-import { split, patterns } from './split'
+import { split, patterns, semiSplit } from './split'
 import { RawContent, RawResponse, isRawResponse, MixedResponse, MixedResponsePart } from '../models/entity'
 import { getHistoryForTab } from '../models/history'
 import { Executor, ReplEval, DirectReplEval } from './types'
@@ -414,7 +414,7 @@ class InProcessExecutor implements Executor {
 
       let response: T | Promise<T> | MixedResponse
 
-      const commands = command.split(/\s*;\s*/)
+      const commands = semiSplit(command)
       if (commands.length > 1) {
         response = await semicolonInvoke(commands, execOptions)
       } else {
@@ -640,18 +640,22 @@ async function semicolonInvoke(commands: string[], execOptions: ExecOptions): Pr
   const nonEmptyCommands = commands.filter(_ => _)
 
   const result: MixedResponse = await promiseEach(nonEmptyCommands, async command => {
-    const entity = await qexec<MixedResponsePart | true>(
-      command,
-      undefined,
-      undefined,
-      Object.assign({}, execOptions, { quiet: false, /* block, */ execUUID: execOptions.execUUID })
-    )
+    try {
+      const entity = await qexec<MixedResponsePart | true>(
+        command,
+        undefined,
+        undefined,
+        Object.assign({}, execOptions, { quiet: false, /* block, */ execUUID: execOptions.execUUID })
+      )
 
-    if (entity === true) {
-      // pty output
-      return ''
-    } else {
-      return entity
+      if (entity === true) {
+        // pty output
+        return ''
+      } else {
+        return entity
+      }
+    } catch (err) {
+      return err.message
     }
   })
 
