@@ -35,11 +35,15 @@ export function splitViaButton(this: Common.ISuite, splitCount: number) {
 }
 
 /** Split the terminal in the current tab by using the "split" command */
-export function splitViaCommand(this: Common.ISuite, splitCount: number, expectErr = false) {
+export function splitViaCommand(this: Common.ISuite, splitCount: number, expectErr = false, inverseColors = false) {
   it(`should split the terminal via command in the current tab and expect splitCount=${splitCount}`, () => {
-    return CLI.commandInSplit('split', this.app, splitCount - 1)
-      .then(expectErr ? ReplExpect.error(500) : ReplExpect.elsewhere('Created a new split'))
-      .then(ReplExpect.splitCount(splitCount))
+    return CLI.commandInSplit(`split ${inverseColors ? ' --inverse' : ''}`, this.app, splitCount - 1)
+      .then(
+        expectErr
+          ? ReplExpect.error(500)
+          : ReplExpect.elsewhere(inverseColors ? 'Created a split with inverted colors' : 'Created a split')
+      )
+      .then(ReplExpect.splitCount(splitCount, inverseColors))
       .catch(Common.oops(this, true))
   })
 }

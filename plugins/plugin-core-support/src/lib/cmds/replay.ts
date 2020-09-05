@@ -354,8 +354,8 @@ export default function(registrar: Registrar) {
           // }
 
           // NOTE: work around the replayability issue of split command not returning a replayable model: https://github.com/IBM/kui/issues/5399
-          if (startEvent.command === 'split') {
-            const ourUUID = (await REPL.qexec<ElsewhereCommentaryResponse>('split')).props.tabUUID
+          if (startEvent.route === '/split') {
+            const ourUUID = (await REPL.qexec<ElsewhereCommentaryResponse>(startEvent.command)).props.tabUUID
             const theirUUID = (completeEvent.response as ElsewhereCommentaryResponse).props.tabUUID
             splitAlignment[theirUUID] = ourUUID
           } else if (!splitAlignment[startEvent.tab]) {
