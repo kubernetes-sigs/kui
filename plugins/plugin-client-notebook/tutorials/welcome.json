@@ -2,7 +2,7 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Snapshot",
   "spec": {
-    "title": true,
+    "title": "Welcome to Kui",
     "windows": [
       {
         "uuid": "0",
@@ -63,7 +63,7 @@
                 "startEvent": {
                   "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/split",
-                  "command": "split",
+                  "command": "split --inverse",
                   "evaluatorOptions": {
                     "outputOnly": true,
                     "plugin": "plugin-client-common"
@@ -74,9 +74,10 @@
                 "completeEvent": {
                   "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
-                  "command": "split",
+                  "command": "split --inverse",
                   "argvNoOptions": ["split"],
                   "parsedOptions": {
+                    "inverse": true,
                     "_": ["split"]
                   },
                   "execUUID": "45576d3b-3a21-4120-a358-bc2801cfdcb1",
@@ -111,7 +112,7 @@
                 "startEvent": {
                   "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
-                  "command": "#                           # Notebooks with Kui!\\nUsing Kui, you may now craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
+                  "command": "#                           # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -140,15 +141,15 @@
                 "completeEvent": {
                   "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
-                  "command": "#                          # Notebooks with Kui!\\nUsing Kui, you may now craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
+                  "command": "#                          # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
                   "argvNoOptions": [
                     "#",
-                    "                           # Notebooks with Kui!\\nUsing Kui, you may now craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                    "                           # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "                           # Notebooks with Kui!\\nUsing Kui, you may now craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                      "                           # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                     ]
                   },
                   "execUUID": "c0d2c1cb-2274-4509-8af2-60f39efb924e",
@@ -169,7 +170,7 @@
                     "apiVersion": "kui-shell/v1",
                     "kind": "CommentaryResponse",
                     "props": {
-                      "children": "# Notebooks with Kui!\nUsing Kui, you may now craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                      "children": "# Notebooks with Kui!\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                     }
                   },
                   "responseType": "ScalarResponse",
@@ -388,7 +389,7 @@
                 "startEvent": {
                   "tab": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/#",
-                  "command": "#    If you would like to contribute to Kui, either by contributing new Notebooks or new core features, join us!\\n\\nhttps://github.com/IBM/kui",
+                  "command": "#    If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, join us!\\n\\nhttps://github.com/IBM/kui",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -417,15 +418,15 @@
                 "completeEvent": {
                   "tab": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
-                  "command": "#   If you would like to contribute to Kui, either by contributing new Notebooks or new core features, join us!\\n\\nhttps://github.com/IBM/kui",
+                  "command": "#   If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, join us!\\n\\nhttps://github.com/IBM/kui",
                   "argvNoOptions": [
                     "#",
-                    "    If you would like to contribute to Kui, either by contributing new Notebooks or new core features, join us!\\n\\nhttps://github.com/IBM/kui"
+                    "    If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, join us!\\n\\nhttps://github.com/IBM/kui"
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "    If you would like to contribute to Kui, either by contributing new Notebooks or new core features, join us!\\n\\nhttps://github.com/IBM/kui"
+                      "    If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, join us!\\n\\nhttps://github.com/IBM/kui"
                     ]
                   },
                   "execUUID": "8213e543-6b21-47ed-98ae-c5df3d3457a1",

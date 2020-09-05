@@ -12,6 +12,8 @@
   "Show X": "Show {0}",
   "Hide X": "Hide {0}",
   "New Tab": "Open a new tab",
+  "Created a split": "Created a split",
+  "Created a split with inverted colors": "Created a split with inverted colors",
   "Duration": "Duration: {0}",
   "Cold Start": "Cold start delay: {0}. {1}",
   "Close this tab": "Close this tab",
