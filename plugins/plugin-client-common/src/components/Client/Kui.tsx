@@ -64,6 +64,9 @@ export type Props = Partial<KuiConfiguration> & {
 
   /** if in popup mode, execute the given command line */
   commandLine?: string[]
+
+  /** initial tab title */
+  tabTitle?: string
 }
 
 type State = KuiConfiguration & {
@@ -259,6 +262,7 @@ export class Kui extends React.PureComponent<Props, State> {
             <TabContainer
               noActiveInput={!!this.props.bottomInput}
               bottom={bottom}
+              title={this.props.tabTitle}
               onTabReady={this.props.commandLine && this._onTabReady}
             >
               <ComboSidecar />
