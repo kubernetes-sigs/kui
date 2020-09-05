@@ -153,7 +153,14 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   private newTabModel(useThisUUID?: string, statusStripeDecoration?: StatusStripeChangeEvent, title?: string) {
-    const model = new TabModel(useThisUUID, statusStripeDecoration, title)
+    // !this.state means: if this is the very first tab we've ever
+    // !created, *and* we were given an initial title (via
+    // !this.props.title), then use that
+    const model = new TabModel(
+      useThisUUID,
+      statusStripeDecoration,
+      title || (!this.state && this.props.title ? this.props.title : undefined)
+    )
     this.listenForTabClose(model)
     return model
   }
