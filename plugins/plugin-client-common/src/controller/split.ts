@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Arguments, ParsedOptions, getCurrentTab } from '@kui-shell/core'
+import { Arguments, ParsedOptions, getCurrentTab, i18n } from '@kui-shell/core'
+
+const strings = i18n('plugin-client-common')
 
 interface Options extends ParsedOptions {
   debug: boolean
+  inverse: boolean
 }
 
 /**
@@ -31,14 +34,17 @@ export default async function split(args?: Arguments<Options>) {
   }
 
   const { doSplitView } = await import('../components/Views/Terminal/ScrollableTerminal')
-  const tabUUID = await doSplitView(args ? args.tab : getCurrentTab())
+
+  const opts = args.parsedOptions.inverse ? { inverseColors: true } : undefined
+  const tabUUID = await doSplitView(args ? args.tab : getCurrentTab(), opts)
+
   return {
     apiVersion: 'kui-shell/v1',
     kind: 'CommentaryResponse',
     props: {
       elsewhere: true,
       tabUUID,
-      children: 'Created a new split'
+      children: strings(args.parsedOptions.inverse ? 'Created a split with inverted colors' : 'Created a split')
     }
   }
 }

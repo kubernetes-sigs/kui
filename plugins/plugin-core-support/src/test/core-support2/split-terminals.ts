@@ -89,7 +89,7 @@ describe(`split terminals ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
   cd(dir1, 1)
   cwdIs(dir1, 1)
   count(1)
-  splitTheTerminalViaCommand(2)
+  splitTheTerminalViaCommand(2, false, true)
   count(2)
   focusOnSplit(1, 2)
   cwdIs(dir1, 2)

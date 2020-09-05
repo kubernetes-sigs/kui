@@ -40,7 +40,6 @@ import KuiConfiguration from '../../Client/KuiConfiguration'
 import {
   Active,
   Finished,
-  FinishedBlock,
   Announcement,
   Cancelled,
   Processing,
@@ -97,7 +96,12 @@ type Props = TerminalOptions & {
   closeSidecar: () => void
 }
 
-interface ScrollbackState {
+interface ScrollbackOptions {
+  /** use inverse colors in this split? */
+  inverseColors?: boolean
+}
+
+type ScrollbackState = ScrollbackOptions & {
   uuid: string
   blocks: BlockModel[]
   nAnnouncements: number
@@ -128,10 +132,10 @@ interface State {
   splits: ScrollbackState[]
 }
 
-function doSplitViewViaId(uuid: string, focusBlock?: FinishedBlock) {
+function doSplitViewViaId(uuid: string, opts?: ScrollbackOptions) {
   const res = new Promise((resolve, reject) => {
     const requestChannel = `/kui-shell/TabContent/v1/tab/${uuid}`
-    setTimeout(() => eventChannelUnsafe.emit(requestChannel, resolve, reject, focusBlock))
+    setTimeout(() => eventChannelUnsafe.emit(requestChannel, resolve, reject, opts))
   }).catch(err => {
     console.error('doSplitViewViaId', err)
     throw err
@@ -140,12 +144,12 @@ function doSplitViewViaId(uuid: string, focusBlock?: FinishedBlock) {
 }
 
 /** Split the given tab uuid */
-export function doSplitView(tab: KuiTab) {
+export function doSplitView(tab: KuiTab, opts?: ScrollbackOptions) {
   const uuid = isScrollback(tab) ? tab.uuid : tab.querySelector('.kui--scrollback').getAttribute('data-scrollback-id')
-  return doSplitViewViaId(uuid)
+  return doSplitViewViaId(uuid, opts)
 }
 
-type SplitHandler = (resolve: (response: true) => void, reject: (err: Error) => void) => void
+type SplitHandler = (resolve: (response: true) => void, reject: (err: Error) => void, opts?: ScrollbackOptions) => void
 
 function onSplit(uuid: string, handler: SplitHandler) {
   const requestChannel = `/kui-shell/TabContent/v1/tab/${uuid}`
@@ -261,12 +265,17 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return []
   }
 
-  private scrollback(capturedValue?: string, sbuuid = this.allocateUUIDForScrollback()): ScrollbackState {
+  private scrollback(
+    capturedValue?: string,
+    sbuuid = this.allocateUUIDForScrollback(),
+    opts: ScrollbackOptions = {}
+  ): ScrollbackState {
     const state: ScrollbackState = {
       uuid: sbuuid,
       cleaners: [],
       forceMiniSplit: false,
       nAnnouncements: 0,
+      inverseColors: opts.inverseColors,
       showThisIdxInMiniSplit: -2,
       blocks: (capturedValue !== undefined ? [] : this.restoreBlocks(sbuuid)).concat([Active(capturedValue)])
     }
@@ -520,7 +529,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Split the view */
-  private onSplit(resolve: (response: string) => void, reject: (err: Error) => void) {
+  private onSplit(resolve: (response: string) => void, reject: (err: Error) => void, opts?: ScrollbackOptions) {
     const nTerminals = this.state.splits.length
 
     if (nTerminals === MAX_TERMINALS) {
@@ -528,7 +537,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     } else {
       eventBus.emitTabLayoutChange(this.props.tab.uuid)
 
-      const newScrollback = this.scrollback()
+      const newScrollback = this.scrollback(undefined, undefined, opts)
       this.setState(({ splits, focusedIdx }) => {
         const newFocus = focusedIdx + 1
         const newSplits = splits
@@ -798,7 +807,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             return React.createElement(
               'div',
               {
-                className: 'kui--scrollback scrollable scrollable-auto',
+                className:
+                  'kui--scrollback scrollable scrollable-auto' +
+                  (scrollback.inverseColors ? ' kui--inverted-color-context' : ''),
                 'data-is-minisplit': isMiniSplit,
                 'data-is-width-constrained': isWidthConstrained || undefined,
                 key: tab.uuid,
