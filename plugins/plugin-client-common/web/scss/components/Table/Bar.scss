@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
+@import '../Sidecar/_mixins';
+@import '../common/_narrow-window';
+
 .kui--bar-wrapper {
   display: flex;
   height: 0.75rem;
-  min-width: 10rem;
+  min-width: 25rem;
   position: relative;
   outline: 1px dotted var(--color-table-border3);
+}
+
+@include sidecar-visible {
+  .kui--bar-wrapper {
+    min-width: 10rem;
+  }
+}
+@include narrow-window {
+  .kui--bar-wrapper {
+    min-width: 10rem;
+  }
 }
 
 .kui--bar-overlay {
