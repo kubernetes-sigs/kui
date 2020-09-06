@@ -16,4 +16,4 @@
 
 // this file defines the external API
 
-export { default as tutorialVFS } from './tutorials/vfs'
+export { default as notebookVFS } from './tutorials/vfs'

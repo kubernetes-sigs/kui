@@ -22,6 +22,7 @@ interface KuiWindow extends BrowserWindow {
     fullscreen?: boolean
     viewName?: string
     title?: string
+    initialTabTitle?: string
     partialExec?: string
     noEcho?: boolean
     theme?: string
@@ -56,7 +57,7 @@ export async function preinit() {
     const { remote } = await import('electron')
     const window = remote && (remote.getCurrentWindow() as KuiWindow)
     const subwindow = window.subwindow
-    if (subwindow && subwindow.fullscreen !== false) {
+    if (subwindow && subwindow.fullscreen === true) {
       const titleOverride = typeof subwindow === 'string' ? subwindow : subwindow.title
       if (titleOverride && typeof titleOverride === 'string') {
         document.title = titleOverride
@@ -94,5 +95,10 @@ export async function render(client: Client, root: Element) {
   const maybeExecuteThis = argv && argv.length > 0 ? argv : undefined
   const fullShell = maybeExecuteThis && maybeExecuteThis.length === 1 && maybeExecuteThis[0] === 'shell'
 
-  client(root, !!prefs, !fullShell ? maybeExecuteThis : undefined)
+  client(
+    root,
+    !!prefs && prefs.fullscreen,
+    !fullShell ? maybeExecuteThis : undefined,
+    prefs ? prefs.initialTabTitle : undefined
+  )
 }

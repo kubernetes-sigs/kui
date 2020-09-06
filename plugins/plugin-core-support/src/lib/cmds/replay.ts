@@ -292,11 +292,7 @@ export default function(registrar: Registrar) {
     async ({ argvNoOptions, parsedOptions, REPL, tab }) => {
       const filepath = argvNoOptions[1]
 
-      if (parsedOptions['new-window'] && inElectron()) {
-        // the electron bits are sequestered in plugin-electron, to
-        // avoid pulling in electron for purely browser-based clients
-        return REPL.qexec(`replay-electron ${filepath}`)
-      } else if (parsedOptions.freshen) {
+      if (parsedOptions.freshen) {
         return freshen(REPL, filepath)
       }
 
@@ -306,9 +302,13 @@ export default function(registrar: Registrar) {
         throw new Error('Invalid snapshot')
       } else {
         const message = formatMessage(model)
+        const titleOption = model.spec.title ? `--title "${model.spec.title}"` : ''
 
-        if (parsedOptions['new-tab']) {
-          const titleOption = model.spec.title ? `--title "${model.spec.title}"` : ''
+        if (parsedOptions['new-window'] && inElectron()) {
+          // the electron bits are sequestered in plugin-electron, to
+          // avoid pulling in electron for purely browser-based clients
+          return REPL.qexec(`replay-electron ${filepath} ${titleOption}`)
+        } else if (parsedOptions['new-tab']) {
           return REPL.qexec(
             `tab new --cmdline "replay ${filepath}" --status-stripe-type ${parsedOptions['status-stripe'] ||
               'blue'} ${titleOption}`,

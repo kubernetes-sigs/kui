@@ -375,7 +375,7 @@ export function createWindow(
             app.quit()
             break
           case 'new-window':
-            createWindow(true, message.argv, undefined, undefined, true)
+            createWindow(true, message.argv, undefined, { initialTabTitle: message.title }, true)
             break
           case 'open-graphical-shell':
             createWindow(true)

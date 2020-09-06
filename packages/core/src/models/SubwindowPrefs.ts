@@ -20,6 +20,7 @@ interface SubwindowPrefs {
   synonymFor?: object
   width?: number
   height?: number
+  initialTabTitle?: string
   position?: () => Promise<{ x: number; y: number }>
   bringYourOwnWindow?: () => void
 }

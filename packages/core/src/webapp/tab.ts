@@ -87,13 +87,19 @@ export const getTab = (idx: Tab | number): Tab => {
   }
 }
 
-export function pexecInCurrentTab(command: string, topLevelTab?: Tab) {
+/**
+ * Execute the given command in the current (or given) tab.
+ *
+ * @param quiet Execute the command quietly, i.e. without echo
+ *
+ */
+export function pexecInCurrentTab(command: string, topLevelTab?: Tab, quiet = false) {
   const { facade: tab } = ((topLevelTab || document).querySelector(
     (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback:not([data-is-minisplit])'
   ) as any) as {
     facade: Tab
   }
-  return tab.REPL.pexec(command, { tab })
+  return quiet ? tab.REPL.qexec(command, undefined, undefined, { tab }) : tab.REPL.pexec(command, { tab })
 }
 
 export default Tab
