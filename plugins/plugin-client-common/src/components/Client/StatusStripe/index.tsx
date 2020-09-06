@@ -29,17 +29,31 @@ const strings = i18n('plugin-client-common')
 type State = StatusStripeChangeEvent
 export type Props = Partial<State>
 
+/** see https://github.com/microsoft/TypeScript/issues/10485 */
+function hasType(evt: Partial<StatusStripeChangeEvent>): evt is Pick<Required<StatusStripeChangeEvent>, 'type'> {
+  return evt.type !== undefined
+}
+
 export default class StatusStripe extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
     eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
 
-    this.state = Object.assign({ type: 'default' }, props)
+    this.state = this.withStateDefaults(props)
+  }
+
+  /** Overlay default values for required state variables */
+  private withStateDefaults(evt: Partial<StatusStripeChangeEvent>): Omit<Required<StatusStripeChangeEvent>, 'message'> {
+    if (hasType(evt)) {
+      return evt
+    } else {
+      return Object.assign({}, evt, { type: 'default' })
+    }
   }
 
   /** Status Stripe change request */
   private onChangeRequest(evt: StatusStripeChangeEvent) {
-    this.setState(evt)
+    this.setState(this.withStateDefaults(evt))
   }
 
   /**
