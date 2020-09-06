@@ -17,7 +17,16 @@
 import * as React from 'react'
 import { basename } from 'path'
 import { dots as spinnerFrames } from 'cli-spinners'
-import { Tab as KuiTab, inBrowser, doCancel, i18n, isTable, hasSourceReferences, eventBus } from '@kui-shell/core'
+import {
+  Tab as KuiTab,
+  inBrowser,
+  doCancel,
+  i18n,
+  isTable,
+  hasSourceReferences,
+  eventBus,
+  getPrimaryTabId
+} from '@kui-shell/core'
 
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
@@ -229,10 +238,10 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
                   className="flex-fill"
                   showMore={strings('Show X', name)}
                   showLess={strings('Hide X', name)}
-                  onToggle={() => eventBus.emitTabLayoutChange(this.props.tab.uuid)}
+                  onToggle={() => eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))}
                 >
                   <SimpleEditor
-                    tabUUID={this.props.tab.uuid}
+                    tabUUID={getPrimaryTabId(this.props.tab)}
                     content={_.data}
                     contentType={_.contentType}
                     className="kui--source-ref-editor kui--inverted-color-context"
