@@ -252,7 +252,9 @@ export default class Output extends React.PureComponent<Props, State> {
 
     return (
       <div className={'repl-output ' + (hasContent ? ' repl-result-has-content' : '')}>
-        {!this.props.isPartOfMiniSplit && isFinished(this.props.model) && this.ctx()}
+        {!this.props.isPartOfMiniSplit &&
+          (isProcessing(this.props.model) || isFinished(this.props.model)) &&
+          this.ctx()}
         <div className="result-vertical">
           {this.stream()}
           {this.result()}
