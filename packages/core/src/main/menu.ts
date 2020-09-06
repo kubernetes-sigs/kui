@@ -65,34 +65,31 @@ const closeTab = () => tellRendererToExecute('tab close')
 const isDarwin = process.platform === 'darwin'
 const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
 
+/** @return a menu item that opens the given notebook */
+function openNotebook(label: string, filepath: string) {
+  return {
+    label,
+    click: () => {
+      try {
+        tellRendererToExecute(`replay ${filepath} --new-window`, 'pexec')
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
+}
+
 export const install = (createWindow: (executeThisArgvPlease?: string[]) => void) => {
   if (!isDev) {
     const notebookMenuItem: MenuItemConstructorOptions = {
       label: 'Notebooks',
       submenu: [
+        openNotebook('Welcome to Kui', '/kui/welcome.json'),
         {
           label: 'Learning Kubernetes',
           submenu: [
-            {
-              label: 'Listing Resources',
-              click: () => {
-                try {
-                  tellRendererToExecute('replay /kui/kubernetes/list-resources.json --new-window', 'pexec')
-                } catch (err) {
-                  console.log(err)
-                }
-              }
-            },
-            {
-              label: 'Working with Jobs',
-              click: () => {
-                try {
-                  tellRendererToExecute('replay /kui/kubernetes/create-jobs.json --new-window', 'pexec')
-                } catch (err) {
-                  console.log(err)
-                }
-              }
-            }
+            openNotebook('Listing Resources', '/kui/kubernetes/list-resources.json'),
+            openNotebook('Working with Jobs', '/kui/kubernetes/create-jobs.json')
           ]
         }
       ]

@@ -35,7 +35,24 @@ import { productName } from '@kui-shell/client/config.d/name.json'
  */
 export default function renderMain(props: KuiProps) {
   return (
-    <Kui productName={productName} splitTerminals lightweightTables {...props} toplevel={!inBrowser() && <Search />}>
+    <Kui
+      productName={productName}
+      splitTerminals
+      lightweightTables
+      {...props}
+      toplevel={!inBrowser() && <Search />}
+      commandLine={
+        props.commandLine || [
+          'tab',
+          'new',
+          '--cmdline',
+          'replay /kui/welcome.json',
+          '--bg',
+          '--title',
+          'Welcome to Kui'
+        ]
+      }
+    >
       <ContextWidgets>
         <CurrentWorkingDirectory />
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />

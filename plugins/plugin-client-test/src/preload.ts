@@ -34,12 +34,12 @@ export default async (registrar: PreloadRegistrar) => {
     registrar.registerBadges(badge1, badge2, badge3)
   }
 
-  // mount tutorials
+  // mount notebooks
   try {
-    const { tutorialVFS } = await import('@kui-shell/plugin-core-support')
-    tutorialVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/test'] })
-    tutorialVFS.cp(undefined, ['plugin://client/tutorials/ls.json'], '/kui/test')
+    const { notebookVFS } = await import('@kui-shell/plugin-core-support')
+    notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/test'] })
+    notebookVFS.cp(undefined, ['plugin://client/notebooks/ls.json'], '/kui/test')
   } catch (err) {
-    console.error('Error mounting test tutorials', err)
+    console.error('Error mounting test notebooks', err)
   }
 }

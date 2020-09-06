@@ -36,7 +36,7 @@ import { eventsMode, eventsBadge } from './lib/view/modes/Events'
 
 import tabCompletionProvider from './lib/tab-completion'
 
-import { tutorialVFS } from '@kui-shell/plugin-core-support'
+import { notebookVFS } from '@kui-shell/plugin-core-support'
 
 export default async (registrar: PreloadRegistrar) => {
   // register modes
@@ -62,11 +62,11 @@ export default async (registrar: PreloadRegistrar) => {
   // register badges
   await registrar.registerBadges(eventsBadge)
 
-  // mount tutorials
-  tutorialVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })
-  tutorialVFS.cp(
+  // mount notebookss
+  notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })
+  notebookVFS.cp(
     undefined,
-    ['plugin://plugin-kubectl/tutorials/create-jobs.json', 'plugin://plugin-kubectl/tutorials/list-resources.json'],
+    ['plugin://plugin-kubectl/notebooks/create-jobs.json', 'plugin://plugin-kubectl/notebooks/list-resources.json'],
     '/kui/kubernetes/'
   )
 

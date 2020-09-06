@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl']
@@ -32,6 +32,7 @@ commands.forEach(command => {
   describe(`${command} get pod multi-tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     /** create pod in the given namespace */
     const createPod = (ns: string) => {
@@ -87,7 +88,9 @@ commands.forEach(command => {
 
     createPod(ns1)
     createPod(ns2)
+
     it('should refresh', () => Common.refresh(this))
+    Util.closeAllExceptFirstTab.bind(this)()
 
     getPod(ns1)
     newTab(2) // <-- expect the new tab to be the second tab

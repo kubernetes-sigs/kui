@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Keys } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Keys, Util } from '@kui-shell/test'
 
 import { tabButtonSelector } from '../../lib/cmds/tab-management'
 
 describe('core new tab switch tabs', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
@@ -49,6 +50,7 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
 describe('core new tab with custom title', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const newTabWithTitle = (title: string, N: number, expectedTitle = title) => {
     it(`new tab via command with custom title: ${title}`, () =>
@@ -78,6 +80,7 @@ describe('core new tab with custom title', function(this: Common.ISuite) {
 describe('core new tab with status stripe decoration', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const validateDecorations = async () => {
     // blue status stripe
@@ -123,6 +126,7 @@ describe('core new tab with status stripe decoration', function(this: Common.ISu
 Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
@@ -168,6 +172,7 @@ Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function
 Common.pDescribe('core new tab from pty active tab via click', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('should open sidecar with about', () =>
     CLI.command('about', this.app)
@@ -207,6 +212,7 @@ Common.pDescribe('core new tab from pty active tab via click', function(this: Co
 describe('core new tab from quiescent tab via command', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const CWD1 = process.cwd()
   const CWD2 = '/tmp'
@@ -300,6 +306,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 describe('core new tab from quiescent tab via button click', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('new tab via button click', () =>
     this.app.client
@@ -331,6 +338,7 @@ describe('core new tab from quiescent tab via button click', function(this: Comm
 describe('core new tab from active tab via button click', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('start a sleep, then new tab via button click', () =>
     CLI.command('sleep 10000', this.app)
@@ -349,6 +357,7 @@ describe('core new tab from active tab via button click', function(this: Common.
 describe('core new tab from pty active tab via button click', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('start vi, then new tab via button click', () =>
     CLI.command('vi', this.app)
@@ -368,6 +377,7 @@ describe('core new tab from pty active tab via button click', function(this: Com
 describe('core new tab from active tab that is emitting output via button click', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('start an echo loop, then new tab via button click', () =>
     CLI.command('while true; do echo hi; sleep 1; done', this.app)
@@ -385,7 +395,7 @@ describe('core new tab from active tab that is emitting output via button click'
       .catch(Common.oops(this, true)))
 
   it('should close by clicking on the tab closer button', async () => {
-    await this.app.client.click('.kui--tab--active .kui--tab-close')
+    await this.app.client.click(Selectors.CURRENT_TAB_CLOSE)
     await this.app.client
       .waitForExist(Selectors.TAB_N(2), 5000, true)
       .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
@@ -399,7 +409,7 @@ describe('core new tab from active tab that is emitting output via button click'
       const echoRes = await CLI.command('echo hi', this.app)
       await ReplExpect.okWithPtyOutput('hi')(echoRes)
 
-      await this.app.client.click('.kui--tab:nth-child(1) .kui--tab-close')
+      await this.app.client.click(Selectors.TOP_TAB_CLOSE_N(1))
       await this.app.client
         .waitForExist(Selectors.TAB_N(2), 5000, true)
         .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))

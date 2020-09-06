@@ -49,7 +49,7 @@ const uid = -1
 const gid = -1
 const username = ''
 
-class TutorialVFS implements VFS {
+class NotebookVFS implements VFS {
   public readonly mountPath = '/kui'
   public readonly isLocal = false
   public readonly isVirtual = true
@@ -129,16 +129,16 @@ class TutorialVFS implements VFS {
   public cp(_, srcFilepaths: string[], dstFilepath: string): Promise<string> {
     return Promise.all(
       srcFilepaths.map(srcFilepath => {
-        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/tutorials\/(.*)\.json$/)
-        const match2 = srcFilepath.match(/^plugin:\/\/client\/tutorials\/(.*)\.json$/)
+        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.json$/)
+        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.json$/)
         const match = match1 || match2
         if (match) {
           try {
             // require versus import to work with babelized headless
             const file = match1 ? match1[2] : match2[1]
             const data = match1
-              ? require('@kui-shell/plugin-' + match1[1] + '/tutorials/' + file + '.json')
-              : require('@kui-shell/client/tutorials/' + file + '.json')
+              ? require('@kui-shell/plugin-' + match1[1] + '/notebooks/' + file + '.json')
+              : require('@kui-shell/client/notebooks/' + file + '.json')
 
             const dir = dirname(dstFilepath)
             if (!this.trie.get(dir)) {
@@ -150,10 +150,10 @@ class TutorialVFS implements VFS {
 
             return
           } catch (err) {
-            throw new Error(`Unable to copy given source into the tutorials VFS: ${srcFilepath}. ${err.message}`)
+            throw new Error(`Unable to copy given source into the notebooks VFS: ${srcFilepath}. ${err.message}`)
           }
         } else {
-          throw new Error(`Unable to copy given source into the tutorials VFS: ${srcFilepath}`)
+          throw new Error(`Unable to copy given source into the notebooks VFS: ${srcFilepath}`)
         }
       })
     ).then(() => 'ok')
@@ -205,7 +205,7 @@ class TutorialVFS implements VFS {
   }
 }
 
-const vfs = new TutorialVFS()
+const vfs = new NotebookVFS()
 export default vfs
 
 export function preload() {

@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import { KResponse, Registrar } from '@kui-shell/core'
 
 export default function(registrar: Registrar) {
-  registrar.listen('/replay-electron', async args => {
-    const filepath = args.argvNoOptions[1]
-    const { ipcRenderer } = await import('electron')
-    ipcRenderer.send(
-      'synchronous-message',
-      JSON.stringify({ operation: 'new-window', argv: ['replay', filepath, '--status-stripe', 'blue'] })
-    )
-    return true
-  })
+  registrar.listen<KResponse, { title: string }>(
+    '/replay-electron',
+    async args => {
+      const filepath = args.argvNoOptions[1]
+      const { ipcRenderer } = await import('electron')
+      ipcRenderer.send(
+        'synchronous-message',
+        JSON.stringify({
+          operation: 'new-window',
+          argv: ['replay', filepath, '--status-stripe', 'blue'],
+          title: args.parsedOptions.title
+        })
+      )
+      return true
+    },
+    { usage: { optional: [{ name: '--title', alias: '-t', docs: 'Set tab title' }] } }
+  )
 }

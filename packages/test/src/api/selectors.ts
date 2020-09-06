@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
+export const TOP_TAB = '.kui--tab'
+export const TOP_TAB_N = (N: number) => `${TOP_TAB}:nth-child(${N})`
+export const TOP_TAB_CLOSE_N = (N: number) => `${TOP_TAB}:nth-child(${N}) .kui--tab-close`
 export const CURRENT_TAB = '.kui--tab-content.visible'
-export const CURRENT_TAB_TITLE = '.kui--tab.kui--tab--active .kui--tab--label'
+export const CURRENT_TAB_TITLE = `${TOP_TAB}.kui--tab--active .kui--tab--label`
+export const CURRENT_TAB_CLOSE = `${TOP_TAB}.kui--tab--active .kui--tab-close`
+export const TAB_TITLE_N = (N: number) => `${TOP_TAB_N(N)} .kui--tab--label`
 export const TAB_N = (N: number) => `.kui--tab-content:nth-child(${N})`
 export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 
