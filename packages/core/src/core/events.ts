@@ -60,9 +60,17 @@ class EventBusBase {
 }
 
 interface NewTabRequestEvent {
+  /** Optionally force use of this tab UUID */
   uuid?: string
+
+  /** Optionally specify color and message to display in the StatusStripe */
   statusStripeDecoration?: StatusStripeChangeEvent
+
+  /** Optional tab title */
   title?: string
+
+  /** Optionally specify to create the new tab without switching to it */
+  background?: boolean
 }
 
 class WriteEventBus extends EventBusBase {

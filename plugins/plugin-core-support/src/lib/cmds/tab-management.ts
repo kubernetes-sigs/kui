@@ -67,6 +67,7 @@ export default function plugin(commandTree: Registrar) {
       cmdline?: string
       'status-stripe-type'?: StatusStripeChangeEvent['type']
       'status-stripe-message'?: string
+      bg?: boolean
       title?: string
     }
   >(
@@ -85,6 +86,7 @@ export default function plugin(commandTree: Registrar) {
           eventBus.emit('/tab/new/request', {
             uuid,
             title: args.parsedOptions.title,
+            background: args.parsedOptions.bg,
             statusStripeDecoration
           })
 
@@ -94,7 +96,11 @@ export default function plugin(commandTree: Registrar) {
           })
         })
       } else {
-        eventBus.emit('/tab/new/request', { statusStripeDecoration, title: args.parsedOptions.title })
+        eventBus.emit('/tab/new/request', {
+          statusStripeDecoration,
+          title: args.parsedOptions.title,
+          background: args.parsedOptions.bg
+        })
         return true
       }
     },
@@ -102,10 +108,14 @@ export default function plugin(commandTree: Registrar) {
       usage: {
         optional: [
           { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
+          { name: '--bg', alias: '-b', boolean: true, docs: 'Create, but do not switch to this tab' },
           { name: '--status-stripe-type', docs: 'Desired status stripe coloration', allowed: ['default', 'blue'] },
           { name: '--status-stripe-message', docs: 'Desired status stripe message' },
           { name: '--title', alias: '-t', docs: 'Title to display in the UI' }
         ]
+      },
+      flags: {
+        boolean: ['bg', 'b']
       }
     }
   )

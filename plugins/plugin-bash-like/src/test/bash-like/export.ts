@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 /*
  * Report on export testcases
@@ -33,6 +33,7 @@ const value3 = 'mmmmmm'
 describe('export command', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   Common.pit(`should fail with export without args`, () =>
     CLI.command(`export`, this.app)

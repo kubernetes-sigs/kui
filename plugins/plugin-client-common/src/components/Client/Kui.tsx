@@ -24,6 +24,7 @@ import {
   REPL,
   Theme,
   pexecInCurrentTab,
+  encodeComponent,
   inBrowser,
   eventChannelUnsafe,
   findThemeByName,
@@ -59,14 +60,14 @@ export type Props = Partial<KuiConfiguration> & {
   /** Elements to place between TabContainer and StatusStripe */
   toplevel?: React.ReactNode | React.ReactNode[]
 
-  /** operate in popup mode? */
+  /** Operate in popup mode? */
   isPopup?: boolean
 
-  /** if in popup mode, execute the given command line */
+  /** If in popup mode, execute the given command line */
   commandLine?: string[]
 
   /** initial tab title */
-  tabTitle?: string
+  initialTabTitle?: string
 }
 
 type State = KuiConfiguration & {
@@ -235,7 +236,11 @@ export class Kui extends React.PureComponent<Props, State> {
   private onTabReady() {
     if (this.props.commandLine && this.firstTab) {
       this.firstTab = false
-      pexecInCurrentTab(this.props.commandLine.join(' '))
+
+      // do not echo the command?
+      const quiet = !this.props.isPopup
+
+      pexecInCurrentTab(this.props.commandLine.map(_ => encodeComponent(_)).join(' '), undefined, quiet)
     }
   }
 
@@ -262,7 +267,7 @@ export class Kui extends React.PureComponent<Props, State> {
             <TabContainer
               noActiveInput={!!this.props.bottomInput}
               bottom={bottom}
-              title={this.props.tabTitle}
+              title={this.props.initialTabTitle}
               onTabReady={this.props.commandLine && this._onTabReady}
             >
               <ComboSidecar />

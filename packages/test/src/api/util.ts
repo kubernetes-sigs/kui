@@ -285,3 +285,23 @@ export function expectSuggestionsFor(
     })
     .catch(Common.oops(this))
 }
+
+/** @return the current number of tabs */
+export async function tabCount(app: Application): Promise<number> {
+  const topTabs = await app.client.elements(Selectors.TOP_TAB)
+  return topTabs.value.length
+}
+
+/** Close all except the first tab */
+export function closeAllExceptFirstTab(this: Common.ISuite) {
+  it('should close all but first tab', async () => {
+    let nInitialTabs = await tabCount(this.app)
+    while (nInitialTabs > 1) {
+      const N = nInitialTabs--
+      await this.app.client.click(Selectors.TOP_TAB_CLOSE_N(N))
+      await this.app.client
+        .waitForExist(Selectors.TAB_N(N), 5000, true)
+        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(N - 1)))
+    }
+  })
+}

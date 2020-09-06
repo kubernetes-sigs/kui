@@ -32,7 +32,7 @@ export default function renderMain(props: KuiProps) {
       lightweightTables
       {...props}
       commandLine={props.commandLine || ['replay', '/kui/welcome.json', '--status-stripe', 'blue']}
-      tabTitle="Welcome to Kui"
+      initialTabTitle="Welcome to Kui"
       loadingDone={() => undefined}
     />
   )
