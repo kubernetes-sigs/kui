@@ -82,7 +82,7 @@ export class HistoryModel {
     }
 
     if (this._lines.length > MAX_HISTORY) {
-      debug('cropping history', lines.length)
+      debug('cropping history', this._lines.length)
       this._lines = this._lines.slice(-MAX_HISTORY)
       this.save()
     }
