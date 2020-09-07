@@ -2,6 +2,11 @@
   padding-top: 0;
 }
 
+.kui--data-table-toolbar {
+  .kui--toolbar-button-with-icon {
+    padding: 3px;
+  }
+}
 .kui--toolbar-button-with-icon {
   &[data-enabled='true'] {
     svg {
