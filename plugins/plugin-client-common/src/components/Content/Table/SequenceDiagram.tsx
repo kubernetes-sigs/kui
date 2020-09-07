@@ -211,16 +211,18 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
         <td />
         <td className="kui--gap-cell">
           <span className="flex-layout">
-            {new Date(startMillis).toLocaleString()}
+            {startMillis && !isNaN(startMillis) ? new Date(startMillis).toLocaleString() : ''}
             {endMillis && (
-              <span className="flex-fill flex-align-end">
-                {`covering ${prettyPrintDuration(endMillis - startMillis)}`}
+              <span className="flex-fill flex-align-end left-pad">
+                {`${prettyPrintDuration(endMillis - startMillis)}`}
+                {overheads.coldStartFraction > 0 || overheads.gapFraction > 0 ? ' (' : ''}
                 {overheads.coldStartFraction > 0
-                  ? ` with ${Math.round(100 * overheads.coldStartFraction).toFixed(0)}% cold start overhead`
+                  ? `${Math.round(100 * overheads.coldStartFraction).toFixed(0)}% cold start overhead`
                   : ''}
                 {overheads.gapFraction > 0
                   ? `, ${Math.round(100 * overheads.gapFraction).toFixed(0)}% scheduling gaps`
                   : ''}
+                {overheads.coldStartFraction > 0 || overheads.gapFraction > 0 ? ')' : ''}
               </span>
             )}
           </span>
