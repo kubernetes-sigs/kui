@@ -157,17 +157,73 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     )
   }
 
-  private nCols() {
+  private nSpanCols() {
     return this.props.response.statusColumnIdx >= 0 ? 4 : 3
   }
 
+  private overheads(interval: DenseInterval): { coldStartFraction: number; gapFraction: number } {
+    const idx1 = this.props.response.startColumnIdx
+    const idx2 = this.props.response.completeColumnIdx
+    const idx3 = this.props.response.coldStartColumnIdx
+
+    const { coldStarts, gaps, denominator } = interval.rows.reduce(
+      (sums, row) => {
+        const startMillisAttr = row.attributes[idx1]
+        const endMillisAttr = row.attributes[idx2]
+        const coldAttr = idx3 ? row.attributes[idx3] : undefined
+        let thisStartMillis: number
+        const { previousEndMillis } = sums
+
+        if (endMillisAttr) {
+          thisStartMillis = new Date(startMillisAttr.value).getTime()
+          const thisEndMillis = new Date(endMillisAttr.value).getTime()
+
+          sums.denominator += thisEndMillis - thisStartMillis
+          sums.previousEndMillis = thisEndMillis
+        }
+
+        if (coldAttr) {
+          sums.coldStarts += parseInt(coldAttr.value, 10)
+        }
+
+        if (previousEndMillis > 0) {
+          const gap = thisStartMillis - previousEndMillis
+          if (gap > 0) {
+            sums.gaps += gap
+          }
+        }
+
+        return sums
+      },
+      { coldStarts: 0, gaps: 0, denominator: 0, previousEndMillis: 0 }
+    )
+
+    return { coldStartFraction: coldStarts / denominator, gapFraction: gaps / denominator }
+  }
+
   private gapRow(startMillis: number, intervalIdx: number) {
-    const endMillis = this.state.intervals[intervalIdx].endMillis
+    const interval = this.state.intervals[intervalIdx]
+    const endMillis = interval.endMillis
+    const overheads = this.overheads(interval)
+
     const gap = [
       <tr key={`gaprowB-${intervalIdx}`} className="kui--interval-start">
-        <td className="kui--gap-cell sub-text" colSpan={this.nCols()}>
-          {new Date(startMillis).toLocaleString()}
-          {endMillis ? ` (${prettyPrintDuration(endMillis - startMillis)} interval)` : ''}
+        <td />
+        <td className="kui--gap-cell">
+          <span className="flex-layout">
+            {new Date(startMillis).toLocaleString()}
+            {endMillis && (
+              <span className="flex-fill flex-align-end">
+                {`covering ${prettyPrintDuration(endMillis - startMillis)}`}
+                {overheads.coldStartFraction > 0
+                  ? ` with ${Math.round(100 * overheads.coldStartFraction).toFixed(0)}% cold start overhead`
+                  : ''}
+                {overheads.gapFraction > 0
+                  ? `, ${Math.round(100 * overheads.gapFraction).toFixed(0)}% scheduling gaps`
+                  : ''}
+              </span>
+            )}
+          </span>
         </td>
       </tr>
     ]
@@ -180,7 +236,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
       ? []
       : [
           <tr key={`gaprowA-${intervalIdx}`} className="kui--interval-blank">
-            <td colSpan={this.nCols()} />
+            <td colSpan={this.nSpanCols()} />
           </tr>
         ]
   }
@@ -230,10 +286,15 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const interGroupGapRow = rowIdx === 0 ? this.gapRow(startMillis, intervalIdx) : []
 
             // drilldown to underlying resource, e.g. Pod for Kubernetes Jobs
-            const onClick = onClickForCell(row, this.props.tab, this.props.repl)
+            const onClick = onClickForCell(row, this.props.tab, this.props.repl, row.attributes[0])
 
             return interGroupGapRow.concat([
-              <tr key={`${intervalIdx}-${rowIdx}`}>
+              <tr
+                key={`${intervalIdx}-${rowIdx}`}
+                className={
+                  rowIdx === interval.rows.length - 1 ? 'kui--sequence-diagram-last-row-in-interval' : undefined
+                }
+              >
                 <td>
                   <span
                     className={'kui--table-cell-is-name cell-inner ' + (row.onclick ? 'clickable' : '')}
