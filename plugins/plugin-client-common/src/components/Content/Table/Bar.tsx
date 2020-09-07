@@ -21,6 +21,7 @@ interface Props {
   left: string
   width: string
   className?: string
+  wrapperClassName?: string
   title?: string
 
   widthOverlay?: string
@@ -32,7 +33,7 @@ interface Props {
 export default class Bar extends React.PureComponent<Props> {
   public render() {
     return (
-      <div className="kui--bar-wrapper">
+      <div className={'kui--bar-wrapper ' + (this.props.wrapperClassName || '')}>
         <div
           className={
             'kui--bar ' + (this.props.className || 'kui--bar-default-color') + (this.props.onClick ? ' clickable' : '')

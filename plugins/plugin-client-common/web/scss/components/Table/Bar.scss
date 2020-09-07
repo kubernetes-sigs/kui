@@ -17,12 +17,29 @@
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
 
+$bgcolor: var(--color-table-border1);
+$border-radius: 2px 4px;
+
 .kui--bar-wrapper {
   display: flex;
-  height: 0.75rem;
+  height: 1rem;
   min-width: 25rem;
   position: relative;
-  outline: 1px dotted var(--color-table-border3);
+  background-color: $bgcolor;
+  border: 2px solid $bgcolor;
+  border-left: none;
+  border-right: none;
+}
+
+.kui--sequence-diagram {
+  .kui--interval-start + tr .kui--bar-wrapper {
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+  }
+  tr.kui--sequence-diagram-last-row-in-interval .kui--bar-wrapper {
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+  }
 }
 
 @include sidecar-visible {
