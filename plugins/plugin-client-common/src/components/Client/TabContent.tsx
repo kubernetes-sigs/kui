@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import SplitPane from 'react-split-pane'
 import * as React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession } from '@kui-shell/core'
 
@@ -65,9 +64,6 @@ type State = Partial<WithTab> & {
   sidecarWidth: Width
   priorSidecarWidth: Width /* prior to closing */
   sidecarHasContent: boolean
-
-  splitPaneImpl?: SplitPane
-  splitPaneImplHacked?: boolean
 
   activeView: CurrentlyShowing
 }
@@ -180,20 +176,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
       return state
     }
   }
-
-  /** Hmm, SplitPane doesn't yet allow for styling of the Resizer */
-  /* private static hackResizer(state: State) {
-    const resizer = state.splitPaneImpl['splitPane'].querySelector('.Resizer')
-    const a = document.createElement('span')
-    const b = document.createElement('span')
-    const c = document.createElement('span')
-    resizer.appendChild(a)
-    resizer.appendChild(b)
-    resizer.appendChild(c)
-    a.classList.add('resizer-thumb-fill')
-    c.classList.add('resizer-thumb-fill')
-    b.classList.add('resizer-thumb')
-  } */
 
   public componentWillUnmount() {
     eventBus.emit('/tab/close', this.state.tab)
@@ -420,23 +402,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
    */
   private leftRightSplit() {
     return this.terminal()
-
-    /* return (
-      <SplitPane
-        ref={c => {
-          this.setState({ splitPaneImpl: c })
-        }}
-        split="vertical"
-        resizerStyle={this.state.sidecarWidth === Width.Maximized && { display: 'none' }}
-        minSize={0}
-        className={this.state.sidecarWidth === Width.Closed ? 'kui--sidecar-closed' : undefined}
-        size={this.state.sidecarWidth}
-        primary="second"
-      >
-        {this.terminal()}
-        {this.children()}
-      </SplitPane>
-    ) */
   }
 
   /**
