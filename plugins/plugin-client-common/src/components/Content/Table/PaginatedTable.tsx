@@ -136,12 +136,15 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       // assemble the data model
       const { headers, rows, footer } = kui2carbon(this.props.response)
 
+      const asGrid = this.props.asGrid && findGridableColumn(this.props.response) >= 0
+      const asSequence = !asGrid && this.hasSequenceButton() && this.props.response.body.length > 1
+
       this.state = {
         headers,
         rows,
         footer,
-        asGrid: this.props.asGrid && findGridableColumn(this.props.response) >= 0,
-        asSequence: false,
+        asGrid,
+        asSequence,
         asTimeline: false,
         page: 1,
         pageSize: this.defaultPageSize
@@ -204,10 +207,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return this.state.footer ? this.state.footer.slice(nRows) : undefined
   }
 
+  private hasSequenceButton() {
+    return isTableWithTimestamp(this.props.response)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private bottomToolbar(lightweightTables = false) {
     const gridableColumn = findGridableColumn(this.props.response)
-    const hasSequenceButton = isTableWithTimestamp(this.props.response)
+    const hasSequenceButton = this.hasSequenceButton()
     const hasTimelineButton = hasSequenceButton // same
 
     return (

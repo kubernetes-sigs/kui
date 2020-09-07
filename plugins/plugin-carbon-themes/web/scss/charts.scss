@@ -7,7 +7,9 @@
   --color-latency-3: #f4b6b9; /* r30 */
   --color-latency-4: #c83532; /* r60 */
   --color-latency-5: #6b1918; /* r80 */
+}
 
+@mixin charts-purple-teal-diverging {
   --color-latency-5: #491d8b; /* p80 */
   --color-latency-4: #8a3ffc; /* p60 */
   --color-latency-3: #d4bbff; /* p30 */
