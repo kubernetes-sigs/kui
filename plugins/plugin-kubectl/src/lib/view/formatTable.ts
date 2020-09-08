@@ -318,6 +318,7 @@ export const formatTable = async <O extends KubeOptions>(
         rowKey,
         fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
+        onclickIdempotent: true,
         onclickSilence: true,
         css: firstColumnCSS + (rows[0].key === nameColumn ? ' kui--table-cell-is-name' : ''),
         rowCSS,
