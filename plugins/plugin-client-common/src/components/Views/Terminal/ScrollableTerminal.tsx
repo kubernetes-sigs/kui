@@ -383,6 +383,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .concat([Processing(curState.blocks[rerunIdx], event, event.evaluatorOptions.isExperimental, true)])
               .concat(curState.blocks.slice(rerunIdx + 1)) // everything after
           }
+        } else if (this.hasActiveBlock(curState)) {
+          // Transform the active block to Processing
+          const activeBlockIdx = this.findActiveBlock(curState)
+
+          return {
+            blocks: curState.blocks
+              .slice(0, activeBlockIdx)
+              .concat([Processing(curState.blocks[activeBlockIdx], event, event.evaluatorOptions.isExperimental)])
+              .concat(curState.blocks.slice(activeBlockIdx + 1))
+          }
         } else {
           // Transform the last block to Processing
           return {
@@ -428,7 +438,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .slice(0, inProcessIdx) // everything before
               .concat([Finished(inProcess, event, prefersTerminalPresentation, outputOnly)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
-              .concat(!inProcess.isRerun ? [Active()] : []) // plus a new block!
+              .concat(!inProcess.isRerun && !this.hasActiveBlock(curState) ? [Active()] : []) // plus a new block!
+
             return {
               blocks
             }
@@ -440,13 +451,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           console.error('invalid state: got a command completion event for a block that is not processing', event)
         }
       } else if (event.cancelled) {
-        // we get here if the user just types ctrl+c without having executed any command. add a new block!
-        const inProcessIdx = curState.blocks.length - 1
+        // we get here if the user just types ctrl+c without having executed any command. add a new block if needed!
+        const inProcessIdx = this.hasActiveBlock(curState) ? this.findActiveBlock(curState) : curState.blocks.length - 1
         const inProcess = curState.blocks[inProcessIdx]
         const blocks = curState.blocks
           .slice(0, inProcessIdx)
           .concat([Cancelled(inProcess)]) // mark as cancelled
-          .concat([Active()]) // plus a new block!
+          .concat(curState.blocks.slice(inProcessIdx + 1))
+          .concat(inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block if needed
         return {
           blocks
         }
@@ -655,6 +667,18 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
+  /** insert an active block before the given idx */
+  private willInsertBlock(uuid: string, idx: number) {
+    this.splice(uuid, curState => {
+      return {
+        blocks: curState.blocks
+          .slice(0, idx)
+          .concat([Active()])
+          .concat(curState.blocks.slice(idx))
+      }
+    })
+  }
+
   /** remove the block at the given index */
   private willRemoveBlock(uuid: string, idx: number) {
     this.splice(uuid, curState => {
@@ -664,9 +688,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         blocks: curState.blocks
           .slice(0, idx)
           .concat(curState.blocks.slice(idx + 1))
-          .concat(curState.blocks.find(_ => isActive(_)) ? [] : [Active()]) // plus a new block, if needed
+          .concat(this.hasActiveBlock(curState) ? [] : [Active()]) // plus a new block, if needed
       }
     })
+  }
+
+  /** whether the given scrollback has Active Block */
+  private hasActiveBlock(scrollback: ScrollbackState) {
+    return scrollback.blocks.findIndex(b => isActive(b)) > -1
+  }
+
+  /** return the index of the Active Block from a scrollback */
+  private findActiveBlock(scrollback: ScrollbackState) {
+    return scrollback.blocks.findIndex(b => isActive(b))
   }
 
   private tabRefFor(scrollback: ScrollbackState, ref: HTMLElement) {
@@ -829,17 +863,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     tab={tab}
                     noActiveInput={this.props.noActiveInput}
                     onOutputRender={this.onOutputRender.bind(this, scrollback)}
+                    willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     willLoseFocus={() => this.doFocus(scrollback)}
                     isExperimental={hasCommand(_) && _.isExperimental}
-                    isFocused={sbidx === this.state.focusedIdx && isActive(_)}
+                    isFocused={
+                      // grab focus if this is the first active block in the scrollback
+                      sbidx === this.state.focusedIdx && idx === this.findActiveBlock(scrollback)
+                    }
                     prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                     isPartOfMiniSplit={isMiniSplit}
                     isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
                     isWidthConstrained={isWidthConstrained}
                     navigateTo={this.navigateTo.bind(this, scrollback)}
                     ref={c => {
-                      if (isActive(_)) {
+                      if (idx === this.findActiveBlock(scrollback)) {
                         // grab a ref to the active block, to help us maintain focus
                         scrollback._activeBlock = c
                       }
