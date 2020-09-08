@@ -17,7 +17,11 @@
 import { PreloadRegistrar } from '@kui-shell/core'
 import { exprcreateMode, decisionMode } from './models/renderCreateExpr'
 import { metricListMode, metricYamlMode } from './models/metrics'
+import { notebookVFS } from '@kui-shell/plugin-core-support'
 
 export default async (registrar: PreloadRegistrar) => {
   await registrar.registerModes(exprcreateMode, decisionMode, metricListMode, metricYamlMode)
 }
+
+notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/iter8'] })
+notebookVFS.cp(undefined, ['plugin://plugin-iter8/notebooks/welcome.json'], '/kui/iter8/')
