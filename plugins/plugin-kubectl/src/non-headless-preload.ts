@@ -62,7 +62,7 @@ export default async (registrar: PreloadRegistrar) => {
   // register badges
   await registrar.registerBadges(eventsBadge)
 
-  // mount notebookss
+  // mount notebooks
   notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })
   notebookVFS.cp(
     undefined,
