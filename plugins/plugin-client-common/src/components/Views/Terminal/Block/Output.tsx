@@ -20,6 +20,7 @@ import {
   i18n,
   isCodedError,
   isCommentaryResponse,
+  isTabLayoutModificationResponse,
   isHTML,
   isReactResponse,
   isMarkdownResponse,
@@ -208,6 +209,7 @@ export default class Output extends React.PureComponent<Props, State> {
       const { response } = block
       return (
         isCommentaryResponse(response) ||
+        isTabLayoutModificationResponse(response) ||
         isReactResponse(response) ||
         isHTML(response) ||
         isMarkdownResponse(response) ||

@@ -25,7 +25,8 @@ import {
   CodedError,
   CommandStartEvent,
   CommandCompleteEvent,
-  ElsewhereCommentaryResponse,
+  TabLayoutModificationResponse,
+  NewSplitRequest,
   KResponse,
   ParsedOptions,
   Registrar,
@@ -355,20 +356,39 @@ export default function(registrar: Registrar) {
           // splitAlignment[startEvent.tab] = splits[splits.length - 1]
           // }
 
-          // NOTE: work around the replayability issue of split command not returning a replayable model: https://github.com/IBM/kui/issues/5399
-          if (startEvent.route === '/split') {
-            const ourUUID = (await REPL.qexec<ElsewhereCommentaryResponse>(startEvent.command)).props.tabUUID
-            const theirUUID = (completeEvent.response as ElsewhereCommentaryResponse).props.tabUUID
-            splitAlignment[theirUUID] = ourUUID
-          } else if (!splitAlignment[startEvent.tab]) {
+          if (!splitAlignment[startEvent.tab]) {
             const ourUUID = tab.uuid
             const theirUUID = startEvent.tab
             splitAlignment[theirUUID] = ourUUID
           }
 
+          // in order to maintain tab-index-invariance, we need to
+          // remember the mapping from the new split's ID at the time
+          // of replay (`tabUUIDOfNewSplitBefore`); then, after
+          // re-issuing the complete event, just below, we will tie
+          // this together with the split ID in this current world
+          const tabUUIDOfNewSplitBefore =
+            startEvent.route === '/split'
+              ? (completeEvent.response as TabLayoutModificationResponse<NewSplitRequest>).spec.ok.props.tabUUID
+              : undefined
+
           const uuid = splitAlignment[startEvent.tab]
-          reEmitStartInTab(tab, uuid, startEvent)
-          reEmitCompleteInTab(tab, uuid, completeEvent)
+          try {
+            reEmitStartInTab(tab, uuid, startEvent)
+            reEmitCompleteInTab(tab, uuid, completeEvent)
+          } catch (err) {
+            console.error(err)
+          }
+
+          // here is where we update the tabUUID mapping for that new
+          // split; after re-issuing the complete event, we should
+          // have the split's tabUUID in this new world
+          if (tabUUIDOfNewSplitBefore !== undefined) {
+            const theirUUID = tabUUIDOfNewSplitBefore
+            const ourUUID = (completeEvent.response as TabLayoutModificationResponse<NewSplitRequest>).spec.ok.props
+              .tabUUID
+            splitAlignment[theirUUID] = ourUUID
+          }
         })
 
         setTimeout(() => tab.scrollToTop())

@@ -165,6 +165,14 @@ export {
   isCommentaryResponse,
   isElsewhereCommentaryResponse
 } from './models/CommentaryResponse'
+
+export {
+  default as TabLayoutModificationResponse,
+  isTabLayoutModificationResponse,
+  NewSplitRequest,
+  isNewSplitRequest
+} from './models/TabLayoutModificationResponse'
+
 export {
   ModeOrButton as Mode,
   Button,

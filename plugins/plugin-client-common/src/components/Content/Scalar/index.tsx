@@ -26,6 +26,7 @@ import {
   isReactResponse,
   isRadioTable,
   isTable,
+  isTabLayoutModificationResponse,
   isMixedResponse,
   isUsageError
 } from '@kui-shell/core'
@@ -94,6 +95,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
         )
       } else if (isCommentaryResponse(response)) {
         return <Commentary {...response.props} />
+      } else if (isTabLayoutModificationResponse(response)) {
+        return <Commentary {...response.spec.ok.props} />
       } else if (isRadioTable(response)) {
         return (
           <KuiContext.Consumer>
