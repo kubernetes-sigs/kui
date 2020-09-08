@@ -25,6 +25,7 @@ import { CommentaryResponse } from './CommentaryResponse'
 import RadioTable from './RadioTable'
 import Presentation from '../webapp/views/presentation'
 import { ReactNode, isValidElement } from 'react'
+import TabLayoutModificationResponse from './TabLayoutModificationResponse'
 
 export interface MessageBearingEntity {
   message: string
@@ -188,6 +189,7 @@ export type ScalarResponse<RowType extends Row = Row> =
   | (Table<RowType> & Partial<WithSourceReferences>)
   | MixedResponse
   | CommentaryResponse
+  | TabLayoutModificationResponse
 
 export function isScalarResponse(response: Entity): response is ScalarResponse {
   return !isMultiModalResponse(response) && !isNavResponse(response)

@@ -29,6 +29,10 @@ import {
   History,
   CommandStartEvent,
   CommandCompleteEvent,
+  TabLayoutModificationResponse,
+  isTabLayoutModificationResponse,
+  NewSplitRequest,
+  isNewSplitRequest,
   isWatchable,
   SnapshotRequestEvent
 } from '@kui-shell/core'
@@ -123,42 +127,9 @@ type ScrollbackState = ScrollbackOptions & {
   showThisIdxInMiniSplit: number
 }
 
-function isScrollback(tab: KuiTab): boolean {
-  return /_/.test(tab.uuid)
-}
-
 interface State {
   focusedIdx: number
   splits: ScrollbackState[]
-}
-
-function doSplitViewViaId(uuid: string, opts?: ScrollbackOptions) {
-  const res = new Promise((resolve, reject) => {
-    const requestChannel = `/kui-shell/TabContent/v1/tab/${uuid}`
-    setTimeout(() => eventChannelUnsafe.emit(requestChannel, resolve, reject, opts))
-  }).catch(err => {
-    console.error('doSplitViewViaId', err)
-    throw err
-  })
-  return res
-}
-
-/** Split the given tab uuid */
-export function doSplitView(tab: KuiTab, opts?: ScrollbackOptions) {
-  const uuid = isScrollback(tab) ? tab.uuid : tab.querySelector('.kui--scrollback').getAttribute('data-scrollback-id')
-  return doSplitViewViaId(uuid, opts)
-}
-
-type SplitHandler = (resolve: (response: true) => void, reject: (err: Error) => void, opts?: ScrollbackOptions) => void
-
-function onSplit(uuid: string, handler: SplitHandler) {
-  const requestChannel = `/kui-shell/TabContent/v1/tab/${uuid}`
-  eventChannelUnsafe.on(requestChannel, handler)
-}
-
-function offSplit(uuid: string, handler: () => void) {
-  const requestChannel = `/kui-shell/TabContent/v1/tab/${uuid}`
-  eventChannelUnsafe.off(requestChannel, handler)
 }
 
 /** Is the given `elm` on visible in the current viewport? */
@@ -407,6 +378,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private onExecEnd(uuid = this.currentUUID, event: CommandCompleteEvent<ScalarResponse>) {
     if (!uuid) return
 
+    if (isTabLayoutModificationResponse(event.response)) {
+      const updatedResponse = this.onTabLayoutModificationRequest(event.response)
+      if (updatedResponse) {
+        event.response = updatedResponse
+      }
+    }
+
     this.splice(uuid, curState => {
       const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === event.execUUID)
 
@@ -519,38 +497,44 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       eventChannelUnsafe.off(`/terminal/clear/${state.uuid}`, clear)
     })
 
-    if ((this.props.config.splitTerminals || this.props.config.enableWatcherAutoPin) && !isPopup()) {
-      const split = this.onSplit.bind(this)
-      onSplit(state.uuid, split)
-      state.cleaners.push(() => offSplit(state.uuid, split))
-    }
-
     return state
   }
 
+  /** A controller has requested a tab layout modification */
+  private onTabLayoutModificationRequest(request: TabLayoutModificationResponse) {
+    if (isNewSplitRequest(request)) {
+      return this.onSplit(request)
+    }
+  }
+
   /** Split the view */
-  private onSplit(resolve: (response: string) => void, reject: (err: Error) => void, opts?: ScrollbackOptions) {
+  private onSplit(request: TabLayoutModificationResponse<NewSplitRequest>) {
     const nTerminals = this.state.splits.length
 
     if (nTerminals === MAX_TERMINALS) {
-      reject(new Error(strings('No more splits allowed')))
+      return new Error(strings('No more splits allowed'))
     } else {
-      eventBus.emitTabLayoutChange(this.props.tab.uuid)
+      const newScrollback = this.scrollback(undefined, undefined, request.spec.options)
+      request.spec.ok.props.tabUUID = newScrollback.uuid
 
-      const newScrollback = this.scrollback(undefined, undefined, opts)
-      this.setState(({ splits, focusedIdx }) => {
-        const newFocus = focusedIdx + 1
+      this.setState(({ splits }) => {
+        // this says: 1) place the split at the end; and 2) focus the
+        // new split
+        const newFocusedIdx = splits.length
+        const insertIdx = newFocusedIdx
+
         const newSplits = splits
-          .slice(0, newFocus)
+          .slice(0, insertIdx)
           .concat(newScrollback)
-          .concat(splits.slice(newFocus))
+          .concat(splits.slice(insertIdx))
+
+        eventBus.emitTabLayoutChange(this.props.tab.uuid)
 
         return {
-          focusedIdx: newFocus,
+          focusedIdx: newFocusedIdx,
           splits: newSplits
         }
       })
-      resolve(newScrollback.facade.uuid)
     }
   }
 

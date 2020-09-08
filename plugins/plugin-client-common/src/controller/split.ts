@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, ParsedOptions, getCurrentTab, i18n } from '@kui-shell/core'
+import { Arguments, ParsedOptions, TabLayoutModificationResponse, NewSplitRequest, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-client-common')
 
@@ -27,24 +27,29 @@ interface Options extends ParsedOptions {
  * This plugin introduces the /split command
  *
  */
-export default async function split(args?: Arguments<Options>) {
+export default function split(args?: Arguments<Options>): string | TabLayoutModificationResponse<NewSplitRequest> {
   if (args && args.parsedOptions.debug) {
     // for debugging, this returns the tab uuid of the current split
     return args.tab.uuid
   }
 
-  const { doSplitView } = await import('../components/Views/Terminal/ScrollableTerminal')
-
-  const opts = args.parsedOptions.inverse ? { inverseColors: true } : undefined
-  const tabUUID = await doSplitView(args ? args.tab : getCurrentTab(), opts)
+  const options = args.parsedOptions.inverse ? { inverseColors: true } : undefined
 
   return {
     apiVersion: 'kui-shell/v1',
-    kind: 'CommentaryResponse',
-    props: {
-      elsewhere: true,
-      tabUUID,
-      children: strings(args.parsedOptions.inverse ? 'Created a split with inverted colors' : 'Created a split')
+    kind: 'TabLayoutModificationResponse',
+    spec: {
+      modification: 'NewSplit',
+      options,
+      ok: {
+        apiVersion: 'kui-shell/v1',
+        kind: 'CommentaryResponse',
+        props: {
+          elsewhere: true,
+          tabUUID: '0',
+          children: strings(args.parsedOptions.inverse ? 'Created a split with inverted colors' : 'Created a split')
+        }
+      }
     }
   }
 }
