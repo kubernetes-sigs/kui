@@ -30,6 +30,9 @@ import ISubwindowPrefs from '../models/SubwindowPrefs'
  */
 let nWindows = 0
 
+/** cleaners to be invoked when the last window is closed */
+let cleaners: (() => void)[] = []
+
 interface EventEmitter {
   on(event: string, listener: Function): void
   once(event: string, listener: Function): void
@@ -330,10 +333,13 @@ export function createWindow(
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
-      nWindows--
+      if (--nWindows === 0) {
+        cleaners.forEach(cleaner => cleaner())
+        cleaners = []
+      }
     })
 
-    if (!secondary) {
+    if (!secondary && cleaners.length === 0) {
       //
       // set up ipc from renderer
       //
@@ -349,7 +355,8 @@ export function createWindow(
       // plugin has to pollute main.js
       //
       debug('ipc registration')
-      ipcMain.on('capture-page-to-clipboard', async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
+
+      const onCaptureToClipboard = async (event: IpcMainEvent, contentsId: string, rect: Rectangle) => {
         try {
           const { clipboard, nativeImage, webContents } = await import('electron')
           const image = await webContents.fromId(parseInt(contentsId, 10)).capturePage(rect)
@@ -365,10 +372,10 @@ export function createWindow(
           console.log(err)
           event.sender.send('capture-page-to-clipboard-done')
         }
-      })
+      }
       // end of screenshot logic
 
-      ipcMain.on('synchronous-message', (event, arg: string) => {
+      const onSynchronousMessage = (event: IpcMainEvent, arg: string) => {
         const message = JSON.parse(arg)
         switch (message.operation) {
           case 'quit':
@@ -394,8 +401,9 @@ export function createWindow(
             break
         }
         event.returnValue = 'ok'
-      })
-      ipcMain.on('/exec/invoke', async (event, arg: string) => {
+      }
+
+      const onExecInvoke = async (event: IpcMainEvent, arg: string) => {
         const message = JSON.parse(arg)
         const channel = `/exec/response/${message.hash}`
         debug('invoke', message)
@@ -424,7 +432,15 @@ export function createWindow(
             })
           )
         }
-      })
+      }
+
+      ipcMain.on('/exec/invoke', onExecInvoke)
+      ipcMain.on('synchronous-message', onSynchronousMessage)
+      ipcMain.on('capture-page-to-clipboard', onCaptureToClipboard)
+
+      cleaners.push(() => ipcMain.off('/exec/invoke', onExecInvoke))
+      cleaners.push(() => ipcMain.off('synchronous-message', onSynchronousMessage))
+      cleaners.push(() => ipcMain.off('capture-page-to-clipboard', onCaptureToClipboard))
     }
 
     debug('createWindow done')
