@@ -23,6 +23,7 @@
   "concurrencyColdStartInDurationSplit": "{0}-way concurrency in cold starts with execution time {1}",
   "Copy": "Copy",
   "Rerun": "Rerun",
+  "Insert Command": "Insert Command",
   "Split the Terminal": "Split the Terminal",
   "Output has been pinned to a watch pane": "Output has been **pinned** to a watch pane",
   "No more splits allowed": "No more splits allowed",
