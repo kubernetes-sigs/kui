@@ -91,6 +91,10 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
             openNotebook('Listing Resources', '/kui/kubernetes/list-resources.json'),
             openNotebook('Working with Jobs', '/kui/kubernetes/create-jobs.json')
           ]
+        },
+        {
+          label: 'Learning iter8',
+          submenu: [openNotebook('Welcome to iter8', '/kui/iter8/welcome.json')]
         }
       ]
     }
