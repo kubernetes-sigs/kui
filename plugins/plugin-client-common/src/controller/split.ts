@@ -47,6 +47,7 @@ export default function split(args?: Arguments<Options>): string | TabLayoutModi
         props: {
           elsewhere: true,
           tabUUID: '0',
+          tab: undefined,
           children: strings(args.parsedOptions.inverse ? 'Created a split with inverted colors' : 'Created a split')
         }
       }

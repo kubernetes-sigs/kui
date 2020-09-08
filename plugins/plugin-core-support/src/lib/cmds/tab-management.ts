@@ -17,6 +17,7 @@
 import {
   eventBus,
   eventChannelUnsafe,
+  getPrimaryTabId,
   pexecInCurrentTab,
   KResponse,
   Registrar,
@@ -37,8 +38,9 @@ const usage = {
  * Close the current tab
  *
  */
-function closeTab(tab: Tab) {
-  eventBus.emitWithTabId('/tab/close/request', tab.uuid, tab)
+function closeTab(tab: Tab, closeAllSplits: boolean) {
+  const uuid = closeAllSplits ? getPrimaryTabId(tab) : tab.uuid
+  eventBus.emitWithTabId('/tab/close/request', uuid, tab)
   return true
 }
 
@@ -120,5 +122,11 @@ export default function plugin(commandTree: Registrar) {
     }
   )
 
-  commandTree.listen('/tab/close', ({ tab }) => closeTab(tab))
+  commandTree.listen<KResponse, { A: boolean }>(
+    '/tab/close',
+    ({ tab, parsedOptions }) => {
+      return closeTab(tab, parsedOptions.A)
+    },
+    { flags: { boolean: ['A'] } }
+  )
 }

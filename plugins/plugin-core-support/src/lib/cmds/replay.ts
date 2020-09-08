@@ -276,7 +276,9 @@ function backup(REPL: Arguments['REPL'], filepath: string): Promise<string | voi
 /** Regenerate snapshot */
 async function freshen(REPL: Arguments['REPL'], filepath: string) {
   const bak = await backup(REPL, filepath)
-  await REPL.qexec(`tab new --cmdline "kui-freshen ${filepath} --in-new-tab" --title "Freshening ${basename(filepath)}`)
+  await REPL.qexec(
+    `tab new --cmdline "kui-freshen ${filepath} --in-new-tab" --title "Freshening ${basename(filepath)}"`
+  )
   return `Notebook has been freshened${bak ? `. Backup placed in ${bak}.` : ''}`
 }
 
@@ -500,10 +502,33 @@ export default function(registrar: Registrar) {
       const seenExecUUIDs: Record<string, boolean> = {}
 
       // reexecute the commands
-      await promiseEach(model.spec.windows[0].tabs[0].blocks, ({ startEvent }) => {
-        if (!seenExecUUIDs[startEvent.execUUID]) {
-          seenExecUUIDs[startEvent.execUUID] = true
-          return args.REPL.pexec(startEvent.command)
+      const splitAlignment: Record<string, Tab> = {}
+      await promiseEach(model.spec.windows[0].tabs[0].blocks, async ({ startEvent, completeEvent }) => {
+        try {
+          if (!seenExecUUIDs[startEvent.execUUID]) {
+            seenExecUUIDs[startEvent.execUUID] = true
+
+            if (!splitAlignment[startEvent.tab]) {
+              const theirUUID = startEvent.tab
+              splitAlignment[theirUUID] = args.tab
+            }
+
+            const tabUUIDOfNewSplitBefore =
+              startEvent.route === '/split'
+                ? (completeEvent.response as TabLayoutModificationResponse<NewSplitRequest>).spec.ok.props.tabUUID
+                : undefined
+
+            const tab = splitAlignment[startEvent.tab]
+            const response = await args.REPL.pexec(startEvent.command, { tab })
+
+            if (tabUUIDOfNewSplitBefore !== undefined) {
+              const theirUUID = tabUUIDOfNewSplitBefore
+              const ourTab = (response as TabLayoutModificationResponse<NewSplitRequest>).spec.ok.props.tab
+              splitAlignment[theirUUID] = ourTab()
+            }
+          }
+        } catch (err) {
+          console.error(`Error freshening: ${err.message}`, startEvent, err)
         }
       })
 
@@ -514,7 +539,8 @@ export default function(registrar: Registrar) {
 
       // close our temporary tab
       if (args.parsedOptions['in-new-tab']) {
-        await args.REPL.pexec('tab close')
+        // the -A asks to close all splits in the tab
+        await args.REPL.pexec('tab close -A')
       }
 
       return true

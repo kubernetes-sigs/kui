@@ -23,7 +23,7 @@ import { join } from 'path'
 import { tmpdir } from 'os'
 import { mkdir, rmdir } from 'fs-extra'
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import { close, expectSplits, focusAndValidate, splitViaButton, splitViaCommand } from './split-helpers'
 
 /** Report Version */
@@ -71,6 +71,7 @@ function changeDir(this: Common.ISuite, dir: string, splitIndex: number) {
 describe(`split terminals ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const showVersion = version.bind(this)
   const splitTheTerminalViaButton = splitViaButton.bind(this)
@@ -82,6 +83,19 @@ describe(`split terminals ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
   const cwdIs = inDir.bind(this)
 
   // here come the tests
+
+  it('should create a new tab via command', () =>
+    CLI.command('tab new', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => CLI.waitForSession(this)) // should have an active repl
+      .catch(Common.oops(this, true)))
+  splitTheTerminalViaCommand(2)
+  count(2)
+  it('should close that new tab entirely, i.e. all splits plus the tab should be closed', () =>
+    CLI.command('tab close -A', this.app)
+      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this, true)))
 
   const { fullpath: dir1, clean: clean1 } = dir('aaa')
   const { fullpath: dir2, clean: clean2 } = dir('bbb')
