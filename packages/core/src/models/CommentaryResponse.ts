@@ -16,11 +16,13 @@
 
 import { Entity } from './entity'
 import REPL from './repl'
+import Tab from '../webapp/tab'
 
 /** Commentary describing actions in a different tab/split */
 type Elsewhere = {
   elsewhere: true
   tabUUID: string
+  tab?: () => Tab
 }
 
 type DefaultProps = Partial<Elsewhere> & {
