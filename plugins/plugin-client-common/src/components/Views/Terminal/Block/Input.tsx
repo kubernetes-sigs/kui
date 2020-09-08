@@ -93,6 +93,9 @@ export interface InputOptions {
   /** Remove the enclosing block */
   willRemove?: () => void
 
+  /** insert an active block before this block */
+  willInsertBlock?: () => void
+
   /** Capture a screenshot of the enclosing block */
   willScreenshot?: () => void
 
@@ -549,6 +552,17 @@ export default class Input extends InputProvider {
         ]
   }
 
+  private insertAction(): DropDownAction[] {
+    return !this.props.willInsertBlock
+      ? []
+      : [
+          {
+            label: strings('Insert Command'),
+            handler: () => this.props.willInsertBlock()
+          }
+        ]
+  }
+
   private screenshotAction(): DropDownAction[] {
     return !this.props.willScreenshot || inBrowser()
       ? []
@@ -566,7 +580,8 @@ export default class Input extends InputProvider {
       const actions = this.screenshotAction().concat(
         this.copyAction(command),
         this.rerunAction(command),
-        this.removeAction()
+        this.removeAction(),
+        this.insertAction()
       )
       return (
         <DropDown
