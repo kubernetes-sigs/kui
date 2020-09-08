@@ -515,6 +515,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       return new Error(strings('No more splits allowed'))
     } else {
       const newScrollback = this.scrollback(undefined, undefined, request.spec.options)
+      request.spec.ok.props.tab = () => newScrollback.facade
       request.spec.ok.props.tabUUID = newScrollback.uuid
 
       this.setState(({ splits }) => {
