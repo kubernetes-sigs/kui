@@ -69,7 +69,9 @@ export class Row {
 
   rowCSS?: string | string[]
 
-  onclickSilence?: boolean
+  onclickSilence?: boolean // opt in/out recording click events when snapshot
+
+  onclickIdempotent?: boolean
 
   onclickExec?: 'pexec' | 'qexec'
 

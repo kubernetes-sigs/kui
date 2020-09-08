@@ -163,7 +163,9 @@ class FlightRecorder {
           ? {
               completeEvent: _.completeEvent,
               onClicks: _.completeEvent.response.body
-                .map((_, rowIdx) => (typeof _.onclick === 'string' ? { rowIdx, onClick: _.onclick } : undefined))
+                .map((_, rowIdx) =>
+                  _.onclickIdempotent && typeof _.onclick === 'string' ? { rowIdx, onClick: _.onclick } : undefined
+                )
                 .filter(_ => _)
             }
           : undefined
