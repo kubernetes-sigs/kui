@@ -136,10 +136,10 @@ export const EXPERIMENTAL_PROMPT_BLOCK_TAG = `${PROMPT_BLOCK_LAST} .kui--repl-bl
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
 export const OVERFLOW_MENU = '.kui--repl-block-right-element.kui--toolbar-button-with-icon'
 export const PROMPT_BLOCK_MENU = (N: number) => `${PROMPT_BLOCK_N(N)} ${OVERFLOW_MENU}`
-export const BLOCK_REMOVE_BUTTON = `${OVERFLOW_MENU} button[data-mode="Remove"]` // in carbon, this is a global
-export const BLOCK_INSERT_BUTTON = `${OVERFLOW_MENU} button[data-mode="Insert Command"]` // in carbon, this is a global
-export const COMMAND_COPY_BUTTON = `${OVERFLOW_MENU} button[data-mode="Copy"]` // in carbon, this is a global
-export const COMMAND_RERUN_BUTTON = `${OVERFLOW_MENU} button[data-mode="Rerun"]` // in carbon, this is a global
+export const BLOCK_REMOVE_BUTTON = `.kui--block-action [icon="WindowClose"]`
+export const COMMAND_COPY_BUTTON = `.kui--block-action [icon="Copy"]`
+export const COMMAND_COPY_DONE_BUTTON = `.kui--block-action [icon="Checkmark"]`
+export const COMMAND_RERUN_BUTTON = `.kui--block-action [icon="Retry"]`
 export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`

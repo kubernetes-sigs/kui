@@ -37,6 +37,9 @@ export type BlockViewTraits = {
   prefersTerminalPresentation?: boolean
   isPartOfMiniSplit?: boolean
   isWidthConstrained?: boolean
+
+  /** Handler for: User clicked to focus on this block */
+  willFocusBlock?: (evt: React.SyntheticEvent) => void
 }
 
 type Props = InputOptions & {
@@ -102,10 +105,13 @@ export default class Block extends React.PureComponent<Props, State> {
           tab={this.props.tab}
           idx={this.props.idx}
           model={this.props.model}
+          isFocused={this.props.isFocused}
+          willRemove={this.props.willRemove}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
           prefersTerminalPresentation={this.props.prefersTerminalPresentation}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}
           isWidthConstrained={this.props.isWidthConstrained}
+          willFocusBlock={this.props.willFocusBlock}
         />
       )
     }
@@ -146,6 +152,7 @@ export default class Block extends React.PureComponent<Props, State> {
           isExperimental={this.props.isExperimental}
           {...this.props}
           willScreenshot={this.state._block && this.props.willRemove ? () => this.willScreenshot() : undefined}
+          willFocusBlock={this.props.willFocusBlock}
           _block={this.state._block}
           ref={c => (this._input = c)}
         >
