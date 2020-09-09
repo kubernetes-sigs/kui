@@ -89,20 +89,22 @@ $action-padding: 3px;
     .kui--block-action {
       display: flex;
       padding: $action-padding;
+      color: var(--color-text-01);
 
       /* This is a bit of a hack for TwoFaceIcon, to work around the Checkmark being narrower than other icons in Carbon */
       svg {
+        fill: currentColor;
         min-width: 1rem;
       }
 
       .green-text {
-        fill: var(--color-ok);
+        color: var(--color-ok);
       }
       .red-text {
-        fill: var(--color-error);
+        color: var(--color-error);
       }
       .yellow-text {
-        fill: var(--color-warning);
+        color: var(--color-warning);
       }
     }
 
