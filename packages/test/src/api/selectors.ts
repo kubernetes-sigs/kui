@@ -137,6 +137,10 @@ export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
 export const OVERFLOW_MENU = '.kui--repl-block-right-element.kui--toolbar-button-with-icon'
 export const PROMPT_BLOCK_MENU = (N: number) => `${PROMPT_BLOCK_N(N)} ${OVERFLOW_MENU}`
 export const BLOCK_REMOVE_BUTTON = `.kui--block-action [icon="WindowClose"]`
+export const BLOCK_UP_BUTTON = `.kui--block-action [icon="MoveUp"]`
+export const BLOCK_UP_BUTTON_N = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="MoveUp"]`
+export const BLOCK_DOWN_BUTTON = `.kui--block-action [icon="MoveDown"]`
+export const BLOCK_DOWN_BUTTON_N = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="MoveDown"]`
 export const COMMAND_COPY_BUTTON = `.kui--block-action [icon="Copy"]`
 export const COMMAND_COPY_DONE_BUTTON = `.kui--block-action [icon="Checkmark"]`
 export const COMMAND_RERUN_BUTTON = `.kui--block-action [icon="Retry"]`

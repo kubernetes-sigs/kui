@@ -32,7 +32,7 @@ import {
   Streamable
 } from '@kui-shell/core'
 
-import { BlockViewTraits } from './'
+import { BlockViewTraits, BlockOperationTraits } from './'
 
 import {
   BlockModel,
@@ -68,12 +68,10 @@ type Props = {
   /** Block ordinal to be displayed to user */
   displayedIdx?: number
 
-  /** Remove the enclosing block */
-  willRemove?: () => void
-
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
-} & BlockViewTraits
+} & BlockViewTraits &
+  BlockOperationTraits
 
 interface State {
   alreadyListen: boolean

@@ -37,7 +37,7 @@ import {
   hasUUID,
   hasValue
 } from './BlockModel'
-import { BlockViewTraits } from './'
+import { BlockViewTraits, BlockOperationTraits } from './'
 
 import Tag from '../../../spi/Tag'
 import ExpandableSection from '../../../spi/ExpandableSection'
@@ -46,7 +46,7 @@ const SimpleEditor = React.lazy(() => import('../../../Content/Editor/SimpleEdit
 
 const strings = i18n('plugin-client-common')
 
-export interface InputOptions {
+export interface InputOptions extends BlockOperationTraits {
   /** Optional: placeholder value for prompt */
   promptPlaceholder?: string // was: from '@kui-shell/client/config.d/style.json'
 
@@ -79,9 +79,6 @@ export interface InputOptions {
 
   /** Optional: onFocus handler */
   onInputFocus?: (event: React.FocusEvent<HTMLInputElement>) => void
-
-  /** Remove the enclosing block */
-  willRemove?: () => void
 
   /** insert an active block before this block */
   willInsertBlock?: () => void

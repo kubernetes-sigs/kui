@@ -248,6 +248,42 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return []
   }
 
+  /** is there any block before the given block index */
+  private hasBlockBefore(idx: number): boolean {
+    return idx > 0
+  }
+
+  /** is there any block (except the active input block) after the given block index */
+  private hasBlockAfter(blocks: BlockModel[], idx: number): boolean {
+    return idx < blocks.length - 2
+  }
+
+  /** move the given block upward */
+  private willMoveUpward(sbuuid: string, idx: number) {
+    this.splice(sbuuid, curState => {
+      return {
+        blocks: curState.blocks
+          .slice(0, idx - 1)
+          .concat(curState.blocks[idx])
+          .concat(curState.blocks[idx - 1])
+          .concat(curState.blocks.slice(idx + 1))
+      }
+    })
+  }
+
+  /** move the given block downward */
+  private willMoveDownward(sbuuid: string, idx: number) {
+    this.splice(sbuuid, curState => {
+      return {
+        blocks: curState.blocks
+          .slice(0, idx)
+          .concat(curState.blocks[idx + 1])
+          .concat(curState.blocks[idx])
+          .concat(curState.blocks.slice(idx + 2))
+      }
+    })
+  }
+
   private scrollback(
     capturedValue?: string,
     sbuuid = this.allocateUUIDForScrollback(),
@@ -890,6 +926,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     onOutputRender={this.onOutputRender.bind(this, scrollback)}
                     willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
+                    hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}
+                    hasBlockBefore={this.hasBlockBefore(idx)}
+                    willMoveUpward={this.willMoveUpward.bind(this, scrollback.uuid, idx)}
+                    willMoveDownward={this.willMoveDownward.bind(this, scrollback.uuid, idx)}
                     willLoseFocus={() => this.doFocus(scrollback)}
                     willFocusBlock={evt => this.doFocusBlock(evt, scrollback.uuid, idx)}
                     isExperimental={hasCommand(_) && _.isExperimental}
