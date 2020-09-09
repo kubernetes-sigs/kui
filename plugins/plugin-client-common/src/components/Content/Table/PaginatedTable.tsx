@@ -167,7 +167,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
     if (!this.state.asGrid) {
       const nRows = this.props.response.body.length
-      if (!lightweightTables && (nRows > 1 || isWatchable(this.props.response))) {
+      if (!lightweightTables && breadcrumbs.length > 0 && (nRows > 10 || isWatchable(this.props.response))) {
         breadcrumbs.push({
           label: nRows === 1 ? strings('nRows1') : strings('nRows', nRows),
           className: 'kui--secondary-breadcrumb kui--nrows-breadcrumb'
