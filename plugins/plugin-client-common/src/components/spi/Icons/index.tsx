@@ -36,6 +36,8 @@ export type SupportedIcon =
   | 'Info'
   | 'List'
   | 'Location'
+  | 'MoveUp'
+  | 'MoveDown'
   | 'Network'
   | 'NextPage'
   | 'Notification'
