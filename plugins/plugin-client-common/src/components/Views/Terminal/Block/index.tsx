@@ -42,6 +42,23 @@ export type BlockViewTraits = {
   willFocusBlock?: (evt: React.SyntheticEvent) => void
 }
 
+export interface BlockOperationTraits {
+  /** Remove the enclosing block */
+  willRemove?: () => void
+
+  /** is there any block before the give block? */
+  hasBlockBefore?: boolean
+
+  /** is there any block after the give block? */
+  hasBlockAfter?: boolean
+
+  /** move a given block upward */
+  willMoveUpward?: () => void
+
+  /** move a given block downward */
+  willMoveDownward?: () => void
+}
+
 type Props = InputOptions & {
   /** block ordinal index */
   idx: number
@@ -107,6 +124,10 @@ export default class Block extends React.PureComponent<Props, State> {
           model={this.props.model}
           isFocused={this.props.isFocused}
           willRemove={this.props.willRemove}
+          hasBlockAfter={this.props.hasBlockAfter}
+          hasBlockBefore={this.props.hasBlockBefore}
+          willMoveUpward={this.props.willMoveUpward}
+          willMoveDownward={this.props.willMoveDownward}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
           prefersTerminalPresentation={this.props.prefersTerminalPresentation}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}
