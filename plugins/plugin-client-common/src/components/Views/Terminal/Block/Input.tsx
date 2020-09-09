@@ -17,17 +17,9 @@
 import * as React from 'react'
 import { basename } from 'path'
 import { dots as spinnerFrames } from 'cli-spinners'
-import {
-  Tab as KuiTab,
-  inBrowser,
-  doCancel,
-  i18n,
-  isTable,
-  hasSourceReferences,
-  eventBus,
-  getPrimaryTabId
-} from '@kui-shell/core'
+import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences, eventBus, getPrimaryTabId } from '@kui-shell/core'
 
+import Actions from './Actions'
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
@@ -49,12 +41,10 @@ import { BlockViewTraits } from './'
 
 import Tag from '../../../spi/Tag'
 import ExpandableSection from '../../../spi/ExpandableSection'
-import DropDown, { DropDownAction } from '../../../spi/DropDown'
 
 const SimpleEditor = React.lazy(() => import('../../../Content/Editor/SimpleEditor'))
 
 const strings = i18n('plugin-client-common')
-const strings2 = i18n('plugin-client-common', 'screenshot')
 
 export interface InputOptions {
   /** Optional: placeholder value for prompt */
@@ -172,7 +162,12 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
       !this.props.noPromptContext && (
         <KuiContext.Consumer>
           {config =>
-            !config.noPromptContext && this.props.model && <span className="repl-context">{this.contextContent()}</span>
+            !config.noPromptContext &&
+            this.props.model && (
+              <span className="repl-context" onClick={this.props.willFocusBlock}>
+                {this.contextContent()}
+              </span>
+            )
           }
         </KuiContext.Consumer>
       )
@@ -203,7 +198,9 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
           config.prompt ? (
             <div className="repl-prompt">{this.promptRight()}</div>
           ) : (
-            <div className="repl-context">{this.contextContent()}</div>
+            <div className="repl-context" onClick={this.props.willFocusBlock}>
+              {this.contextContent()}
+            </div>
           )
         }
       </KuiContext.Consumer>
@@ -230,7 +227,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     if (model && isWithCompleteEvent(model) && isTable(model.response) && hasSourceReferences(model.response)) {
       const sourceRef = model.response.kuiSourceRef
       return (
-        <div className="repl-input-sourceref">
+        <div className="repl-input-sourceref" onClick={this.props.willFocusBlock}>
           <div className="repl-context"></div>
           <div className="flex-layout flex-fill">
             {sourceRef.templates.map((_, idx) => {
@@ -419,7 +416,10 @@ export default class Input extends InputProvider {
             tabIndex={1}
             placeholder={this.props.promptPlaceholder}
             onBlur={this.props.onInputBlur}
-            onFocus={this.props.onInputFocus}
+            onFocus={evt => {
+              this.props.onInputFocus && this.props.onInputFocus(evt)
+              this.props.willFocusBlock(evt)
+            }}
             onMouseDown={this.props.onInputMouseDown}
             onMouseMove={this.props.onInputMouseMove}
             onChange={this.props.onInputChange}
@@ -464,7 +464,7 @@ export default class Input extends InputProvider {
       } else {
         // for "done" blocks, render the value as a plain div
         return (
-          <div className="repl-input-element-wrapper flex-layout flex-fill">
+          <div className="repl-input-element-wrapper flex-layout flex-fill" onClick={this.props.willFocusBlock}>
             <span className="repl-input-element flex-fill">{value}</span>
             {this.inputStatus(value)}
           </div>
@@ -490,7 +490,11 @@ export default class Input extends InputProvider {
 
   /** render the time the block started processing */
   private timestamp() {
-    if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
+    if (
+      !this.props.isFocused &&
+      !isEmpty(this.props.model) &&
+      (isProcessing(this.props.model) || isFinished(this.props.model))
+    ) {
       return (
         this.props.model.startTime && (
           <span className="kui--repl-block-timestamp kui--repl-block-right-element">
@@ -514,101 +518,18 @@ export default class Input extends InputProvider {
   }
 
   /** error icon for error blocks */
-  private errorIcon() {
-    /* if (isOops(this.props.model)) {
+  /* private errorIcon() {
+    if (isOops(this.props.model)) {
       return <Icons className="kui--repl-block-error-icon" icon="Error" data-mode="error" />
-    } */
-  }
-
-  private rerunAction(command: string): DropDownAction[] {
-    return [
-      {
-        label: strings('Rerun'),
-        handler: () =>
-          hasUUID(this.props.model)
-            ? this.props.tab.REPL.pexec(command, { execUUID: this.props.model.execUUID })
-            : this.props.tab.REPL.pexec(command)
-      }
-    ]
-  }
-
-  private copyAction(command: string): DropDownAction[] {
-    return [
-      {
-        label: strings('Copy'),
-        handler: () => navigator.clipboard.writeText(command)
-      }
-    ]
-  }
-
-  private removeAction(): DropDownAction[] {
-    return !this.props.willRemove
-      ? []
-      : [
-          {
-            label: strings('Remove'),
-            handler: () => this.props.willRemove()
-          }
-        ]
-  }
-
-  private insertAction(): DropDownAction[] {
-    return !this.props.willInsertBlock
-      ? []
-      : [
-          {
-            label: strings('Insert Command'),
-            handler: () => this.props.willInsertBlock()
-          }
-        ]
-  }
-
-  private screenshotAction(): DropDownAction[] {
-    return !this.props.willScreenshot || inBrowser()
-      ? []
-      : [
-          {
-            label: strings2('Screenshot'),
-            handler: () => this.props.willScreenshot()
-          }
-        ]
-  }
+    }
+  } */
 
   /** DropDown menu for completed blocks */
   private dropdown(command: string) {
-    if (!isActive(this.props.model)) {
-      const actions = this.screenshotAction().concat(
-        this.copyAction(command),
-        this.rerunAction(command),
-        this.removeAction(),
-        this.insertAction()
-      )
-      return (
-        <DropDown
-          actions={actions}
-          className="kui--repl-block-right-element kui--toolbar-button-with-icon"
-          onClose={this.props.willLoseFocus}
-        />
-      )
+    if (this.props.isFocused && isFinished(this.props.model) && this.props.tab && this.props.model) {
+      return <Actions command={command} {...this.props} />
     }
   }
-
-  /** Close button. Only for pinned blocks for now. */
-  /* private close() {
-    return (
-      this.props.willRemove &&
-      this.props.isPinned && (
-        <a
-          href="#"
-          onClick={this.props.willRemove}
-          className="kui--repl-block-right-element kui--toolbar-button-with-icon kui--pinned-close-button"
-          title={strings('Close watcher')}
-        >
-          <Icons icon="WindowClose" />
-        </a>
-      )
-    )
-  } */
 
   /**
    * Status elements associated with the block as a whole; even though
@@ -617,22 +538,17 @@ export default class Input extends InputProvider {
    *
    */
   protected status() {
-    return (
-      <span className="repl-prompt-right-elements">
-        {this.errorIcon()}
-        {/* this.close() */}
-      </span>
-    )
+    return <span className="repl-prompt-right-elements">{/* this.errorIcon() */}</span>
   }
 
   /** Status elements placed in with <input> part of the block */
   protected inputStatus(input: string) {
     return (
-      <React.Fragment>
+      <span className="repl-prompt-right-elements">
         {this.experimentalTag()}
         {this.timestamp()}
         {this.dropdown(input)}
-      </React.Fragment>
+      </span>
     )
   }
 }

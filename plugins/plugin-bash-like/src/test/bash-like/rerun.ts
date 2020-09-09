@@ -36,7 +36,7 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       await SidecarExpect.fullyClosed(this.app)
 
       // rerun about
-      await this.app.client.click(Selectors.PROMPT_BLOCK_MENU(res.count))
+      await this.app.client.click(Selectors.PROMPT_N(res.count))
       await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON)
       await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON)
 
@@ -57,7 +57,7 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       await CLI.command('cd /tmp', this.app).then(ReplExpect.okWithAny)
       const cdDirectory = await this.app.client.getText(Selectors.OUTPUT_LAST)
 
-      await this.app.client.click(Selectors.PROMPT_BLOCK_MENU(pwdRes.count))
+      await this.app.client.click(Selectors.PROMPT_N(pwdRes.count))
       await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON)
       await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON)
 

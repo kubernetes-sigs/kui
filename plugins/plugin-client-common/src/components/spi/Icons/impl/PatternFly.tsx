@@ -21,6 +21,7 @@ import {
   CameraRetroIcon as ScreenshotInProgress,
   CheckCircleIcon as Checkmark,
   ChartBarIcon as ChartBar,
+  CopyIcon as Copy,
   PlusIcon as Add,
   OutlinedWindowMaximizeIcon /* TerminalIcon */ as TerminalOnly,
   ColumnsIcon as TerminalPlusSidecar,
@@ -83,6 +84,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Checkmark {...props} />
     case 'CodeBranch':
       return <CodeBranch style={StatusStripe} {...props} />
+    case 'Copy':
+      return <Copy {...props} />
     case 'Edit':
       return <Edit {...props} />
     case 'Error':

@@ -45,11 +45,13 @@ import {
   isCancelled,
   isEmpty,
   isPresentedElsewhere,
+  isOutputOnly,
   isOops
 } from './BlockModel'
 
-import Scalar from '../../../Content/Scalar/'
 import Else from './Else'
+import Actions from './Actions'
+import Scalar from '../../../Content/Scalar/'
 
 const strings = i18n('plugin-client-common')
 
@@ -65,6 +67,9 @@ type Props = {
 
   /** Block ordinal to be displayed to user */
   displayedIdx?: number
+
+  /** Remove the enclosing block */
+  willRemove?: () => void
 
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
@@ -243,7 +248,18 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private ctx(insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1) {
-    return <span className="repl-context">Out[{insideBrackets}]</span>
+    return (
+      <span className="repl-context" onClick={this.props.willFocusBlock}>
+        Out[{insideBrackets}]
+      </span>
+    )
+  }
+
+  /** For output-only blocks, render the Block Actions */
+  private actions() {
+    if (this.props.isFocused && isOutputOnly(this.props.model)) {
+      return <Actions {...this.props} />
+    }
   }
 
   public render() {
@@ -263,6 +279,8 @@ export default class Output extends React.PureComponent<Props, State> {
           {this.cursor()}
           {this.ok(hasContent)}
         </div>
+
+        <span className="repl-prompt-right-elements">{this.actions()}</span>
       </div>
     )
   }
