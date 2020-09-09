@@ -25,6 +25,7 @@
   "dependencies": {
     "colors": "1.4.0",
     "debug": "4.1.1",
+    "micromatch": "4.0.2",
     "tmp": "0.2.1"
   },
   "publishConfig": {

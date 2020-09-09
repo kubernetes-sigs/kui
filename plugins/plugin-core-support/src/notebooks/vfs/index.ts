@@ -15,6 +15,7 @@
  */
 
 import TrieSearch from 'trie-search'
+import * as micromatch from 'micromatch'
 import { basename, dirname, join } from 'path'
 import { Arguments, CodedError, flatten } from '@kui-shell/core'
 import { FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
@@ -72,18 +73,12 @@ class NotebookVFS implements VFS {
     }
   }
 
-  private filePattern(filepath: string): RegExp {
-    // /kui/kubernetes/j* -> /\/kui\/kubernetes/j*\.json$/
-    return new RegExp(`^${this.glob2RegExp(filepath)}` + (/\.json$/.test(filepath) ? '' : '.json$'))
-  }
-
   private find(filepath: string): Entry[] {
     const dirPattern = this.dirPattern(filepath)
-    const filePattern = this.filePattern(filepath)
 
     return this.trie
-      .get(filepath.replace(/\*$/, ''))
-      .filter(_ => filePattern.test(_.mountPath) || dirPattern.test(_.mountPath))
+      .get(filepath.replace(/\*.*$/, ''))
+      .filter(_ => micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath))
   }
 
   private enumerate({ entries }: { entries: Entry[] }) {
