@@ -20,6 +20,9 @@
 /** Inset of the <input> element w.r.t. the bordered/backgrounded region */
 $inset: 0.375rem;
 
+/** Padding for action buttons */
+$action-padding: 3px;
+
 .repl-input,
 .repl-input-sourceref,
 .repl-output {
@@ -28,7 +31,7 @@ $inset: 0.375rem;
 
 /** Coloring the context border by status of the block */
 @include Scrollback {
-  .repl-block:not([data-is-output-only]) {
+  .repl-block {
     position: relative;
 
     &:before {
@@ -36,16 +39,27 @@ $inset: 0.375rem;
       border-left: none;
       border-right: none;
       border-radius: 1px;
-      opacity: 0.375;
+      opacity: 0.5;
       content: '';
       left: 0;
       position: absolute;
       top: 0.1875rem;
       bottom: 0.1875rem;
-      width: 4px;
+      width: 5px;
+      border-top-right-radius: 1px;
+      border-bottom-right-radius: 1px;
+    }
+    &[data-is-output-only]:not([data-is-focused]):before {
+      background-color: transparent;
+    }
+    &:not([data-is-output-only]) .repl-output {
+      margin-top: $inset;
     }
     &[data-is-focused]:before {
       opacity: 1;
+    }
+    &[data-is-focused]:before,
+    &:hover:before {
       background-color: var(--color-brand-01);
     }
     &.error:before {
@@ -72,9 +86,33 @@ $inset: 0.375rem;
       }
     }
 
-    .repl-output {
-      margin-top: $inset;
+    .kui--block-action {
+      display: flex;
+      padding: $action-padding;
+
+      /* This is a bit of a hack for TwoFaceIcon, to work around the Checkmark being narrower than other icons in Carbon */
+      svg {
+        min-width: 1rem;
+      }
+
+      .green-text {
+        fill: var(--color-ok);
+      }
+      .red-text {
+        fill: var(--color-error);
+      }
+      .yellow-text {
+        fill: var(--color-warning);
+      }
     }
+
+    .repl-input .kui--block-action:hover {
+      background-color: var(--color-base04);
+    }
+    .repl-output .kui--block-action:hover {
+      background-color: var(--color-table-border3);
+    }
+
     .repl-input,
     .repl-input-sourceref,
     .repl-output {
@@ -94,6 +132,12 @@ $inset: 0.375rem;
       position: relative;
       opacity: 0.75;
     }
+    &:not([data-is-focused]) {
+      .repl-context:hover,
+      .repl-input-element:hover {
+        cursor: pointer;
+      }
+    }
 
     .repl-input .repl-context:before {
       left: -1rem !important;
@@ -101,15 +145,17 @@ $inset: 0.375rem;
 
     &:not(.repl-active) {
       .repl-input {
-        .repl-context,
-        .repl-prompt-right-elements {
+        .repl-context {
           padding-top: $inset;
         }
       }
       .repl-input-element-wrapper {
-        padding: $inset 0 $inset 0.5rem;
         border: 1px solid transparent;
         align-items: stretch;
+        padding-left: 0.5rem;
+        .repl-input-element {
+          padding: $inset 0;
+        }
       }
     }
     &:not(.repl-active) {
@@ -160,7 +206,7 @@ $inset: 0.375rem;
 /* timestamp */
 .repl-block {
   .kui--repl-block-timestamp {
-    margin-right: 0.5em;
+    margin: 0 0.5rem;
     display: flex;
     align-items: center;
   }

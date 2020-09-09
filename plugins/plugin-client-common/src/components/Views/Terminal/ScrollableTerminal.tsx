@@ -117,6 +117,9 @@ type ScrollbackState = ScrollbackOptions & {
   /** grab a ref to the active block, to help us maintain focus */
   _activeBlock?: Block
 
+  /** Has the user clicked to focus on a block? */
+  focusedBlockIdx?: number
+
   /** cleanup routines for this split */
   cleaners: Cleaner[]
 
@@ -419,6 +422,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .concat(!inProcess.isRerun && !this.hasActiveBlock(curState) ? [Active()] : []) // plus a new block!
 
             return {
+              focusedBlockIdx: blocks.length - 1,
               blocks
             }
           } catch (err) {
@@ -438,6 +442,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           .concat(curState.blocks.slice(inProcessIdx + 1))
           .concat(inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block if needed
         return {
+          focusedBlockIdx: blocks.length - 1,
           blocks
         }
       } else {
@@ -467,7 +472,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.setFocusOnScrollback(scrollback)
   }
 
-  private setFocusOnScrollback(scrollback: ScrollbackState) {
+  /**
+   * User clicked to focus a block.
+   *
+   * @param uuid scrollback UUID
+   * @param focusedBlockIdx index into the ScrollbackState of that scrollback
+   *
+   */
+  private doFocusBlock(evt: React.SyntheticEvent, sbuuid: string, focusedBlockIdx: number) {
+    evt.stopPropagation()
+    this.setFocusOnScrollback(this.state.splits[this.findSplit(this.state, sbuuid)], focusedBlockIdx)
+  }
+
+  private setFocusOnScrollback(scrollback: ScrollbackState, focusedBlockIdx?: number) {
     this.setState(curState => {
       const focusedIdx = this.findSplit(curState, scrollback.uuid)
       if (curState.focusedIdx !== focusedIdx) {
@@ -478,7 +495,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         scrollback.facade.state.restore()
         eventBus.emitSplitSwitch(scrollback.facade)
       }
-      return { focusedIdx }
+
+      return Object.assign(
+        this.spliceMutate(curState, scrollback.uuid, ({ blocks }) => ({
+          blocks,
+          focusedBlockIdx: focusedBlockIdx !== undefined ? focusedBlockIdx : blocks.length - 1
+        })),
+        { focusedIdx }
+      )
     })
   }
 
@@ -639,17 +663,24 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    *
    */
   private splice(sbuuid: string, mutator: (state: ScrollbackState) => Pick<ScrollbackState, 'blocks'>) {
-    this.setState(curState => {
-      const focusedIdx = this.findAvailableSplit(curState, sbuuid)
-      const splits = curState.splits
-        .slice(0, focusedIdx)
-        .concat([Object.assign({}, curState.splits[focusedIdx], mutator(curState.splits[focusedIdx]))])
-        .concat(curState.splits.slice(focusedIdx + 1))
+    this.setState(curState => this.spliceMutate(curState, sbuuid, mutator))
+  }
 
-      return {
-        splits
-      }
-    })
+  /** Helper for splice; i.e. splice() does the setState, while this method does them mutate */
+  private spliceMutate(
+    curState: State,
+    sbuuid: string,
+    mutator: (state: ScrollbackState) => Pick<ScrollbackState, 'blocks'>
+  ): Pick<State, 'splits'> {
+    const focusedIdx = this.findAvailableSplit(curState, sbuuid)
+    const splits = curState.splits
+      .slice(0, focusedIdx)
+      .concat([Object.assign({}, curState.splits[focusedIdx], mutator(curState.splits[focusedIdx]))])
+      .concat(curState.splits.slice(focusedIdx + 1))
+
+    return {
+      splits
+    }
   }
 
   /** insert an active block before the given idx */
@@ -851,10 +882,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     willLoseFocus={() => this.doFocus(scrollback)}
+                    willFocusBlock={evt => this.doFocusBlock(evt, scrollback.uuid, idx)}
                     isExperimental={hasCommand(_) && _.isExperimental}
                     isFocused={
-                      // grab focus if this is the first active block in the scrollback
-                      sbidx === this.state.focusedIdx && idx === this.findActiveBlock(scrollback)
+                      sbidx === this.state.focusedIdx &&
+                      (idx === scrollback.focusedBlockIdx ||
+                        (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
                     }
                     prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                     isPartOfMiniSplit={isMiniSplit}
