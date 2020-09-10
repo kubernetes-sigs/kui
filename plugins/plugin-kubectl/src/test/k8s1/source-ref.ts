@@ -34,15 +34,22 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
       console.error('1', Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
       // toggler should not be expanded (the false argument)
-      await this.app.client.waitForExist(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
+      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
 
       // click to toggle open
       console.error('2')
-      await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count))
+      await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
 
       // toggler should now be expanded (the true argument)
       console.error('3')
-      await this.app.client.waitForExist(Selectors.SOURCE_REF_TOGGLE_N(res.count, true))
+      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, true))
+
+      // click to toggle closed
+      console.error('4')
+      await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, true))
+
+      // toggler should not be expanded (the false argument)
+      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
 
       await this.app.client.waitUntil(
         () =>
@@ -52,7 +59,7 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
         CLI.waitTimeout
       )
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 

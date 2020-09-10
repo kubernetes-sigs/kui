@@ -28,7 +28,7 @@ function doEchoThenRemove(this: Common.ISuite, idx: number) {
       await this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON)
       await this.app.client.waitForExist(Selectors.OUTPUT_N(N), 5000, true)
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 }

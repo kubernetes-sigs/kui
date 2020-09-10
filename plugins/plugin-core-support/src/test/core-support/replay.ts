@@ -58,7 +58,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       // verify the about replay
       await SidecarExpect.open(this.app)
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 
@@ -155,7 +155,7 @@ describe(`split, snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, asy
         return base64InSplit1 === base64Output && base64InSplit2 === base64Output
       }, CLI.waitTimeout)
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 })

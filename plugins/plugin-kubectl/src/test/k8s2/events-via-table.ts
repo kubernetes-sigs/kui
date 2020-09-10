@@ -60,13 +60,13 @@ commands.forEach(command => {
           .then(ReplExpect.justOK)
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(podName))
-          .catch(Common.oops(this, true))
 
         await sleep(sleepTime)
 
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('events'))
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('events'))
 
+        /* 
         await Promise.resolve({ app: this.app, count: res.count + 1 }).then(ReplExpect.okWithAny)
 
         const table = `${Selectors.OUTPUT_N(res.count + 1)} .bx--data-table`
@@ -77,18 +77,24 @@ commands.forEach(command => {
           headerWithSidecarOpen.map(async _header => {
             await this.app.client.waitForVisible(`${table} thead th[data-key="${_header}"]`)
           })
-        )
+        ) */
       } catch (err) {
-        await Common.oops(this, true)
+        await Common.oops(this, true)(err)
       }
     })
 
+    it('should refresh', () => Common.refresh(this))
+
     it('should click on Show Involved Object', async () => {
       try {
-        const res = await CLI.command('k get events -o wide', this.app)
+        const res = await CLI.command(`k get events -o wide -n ${ns}`, this.app)
 
         const table = `${Selectors.OUTPUT_N(res.count)} .bx--data-table`
-        await this.app.client.click(`${table} tr:first-child .clickable`)
+        const clickOn = `${table} tr:first-child .clickable`
+        await this.app.client.waitForVisible(clickOn)
+        await this.app.client.click(clickOn)
+
+        await SidecarExpect.open(this.app).then(SidecarExpect.showing(podName))
 
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
         await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
@@ -96,7 +102,7 @@ commands.forEach(command => {
           .then(SidecarExpect.showing(podName))
           .then(SidecarExpect.kind('Pod'))
       } catch (err) {
-        await Common.oops(this, true)
+        await Common.oops(this, true)(err)
       }
     })
 

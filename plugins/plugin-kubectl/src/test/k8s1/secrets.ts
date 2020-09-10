@@ -38,7 +38,7 @@ describe('kubectl secrets', function(this: Common.ISuite) {
       // wait for the badge to become green
       await waitForGreen(this.app, selector)
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 
@@ -51,7 +51,7 @@ describe('kubectl secrets', function(this: Common.ISuite) {
       // wait for the badge to become green
       await waitForRed(this.app, selector)
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 

@@ -80,21 +80,21 @@ export function expectSplits(this: Common.ISuite, nSplits: number) {
 export function focusAndValidate(this: Common.ISuite, fromSplitIndex: number, toSplitIndex: number) {
   it(`should click to focus from split ${fromSplitIndex} to split ${toSplitIndex}`, async () => {
     try {
-      const res1 = await CLI.commandInSplit('split --debug', this.app, fromSplitIndex)
+      const res1 = await CLI.commandInSplit('split-debug', this.app, fromSplitIndex)
       const N1 = res1.count
-      const id1 = await this.app.client.getText(Selectors.OUTPUT_N(N1))
+      const id1 = await this.app.client.getText(Selectors.OUTPUT_N(N1, fromSplitIndex))
 
       await clickToFocus.bind(this)(toSplitIndex)
 
       // last true: noFocus, since we want to do this ourselves
-      const res2 = await CLI.commandInSplit('split --debug', this.app, toSplitIndex)
+      const res2 = await CLI.commandInSplit('split-debug', this.app, toSplitIndex)
       const N2 = res2.count
-      const id2 = await this.app.client.getText(Selectors.OUTPUT_N(N2))
+      const id2 = await this.app.client.getText(Selectors.OUTPUT_N(N2, toSplitIndex))
       console.error('5')
 
       notStrictEqual(id1, id2, 'the split identifiers should differ')
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 }
