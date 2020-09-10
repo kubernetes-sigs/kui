@@ -83,6 +83,7 @@ const reloadAndThen = (theme: Theme) => (ctx: Common.ISuite) => {
  * Click on the theme button and expect the theme list
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISuite, nClicks = 1) => {
   it(`should click on help button, then theme link, then present theme list, then click on ${clickOn.name}`, async () => {
     try {
@@ -130,18 +131,18 @@ const restartAndThenDefault = restartAndThen(Default)
 const reloadAndThenLight = reloadAndThen(Light)
 const reloadAndThenDark = reloadAndThen(Dark)
 const reloadAndThenDefault = reloadAndThen(Default)
-const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
-const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
+// const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
+// const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
 
 describe('theme switching', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   resetTheme(this)
-  clickOnThemeButtonThenClickOnLight(this)
-  clickOnThemeButtonThenClickOnDark(this)
-  clickOnThemeButtonThenClickOnLight(this, 3) // click on Light 3 times in a row
-  clickOnThemeButtonThenClickOnDark(this, 4) // click on Dark 4 times in a row
+  // clickOnThemeButtonThenClickOnLight(this)
+  // clickOnThemeButtonThenClickOnDark(this)
+  // clickOnThemeButtonThenClickOnLight(this, 3) // click on Light 3 times in a row
+  // clickOnThemeButtonThenClickOnDark(this, 4) // click on Dark 4 times in a row
 
   it('should list built-in Light theme', () =>
     CLI.command('theme list', this.app)

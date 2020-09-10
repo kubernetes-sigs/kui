@@ -273,3 +273,6 @@ export {
 } from './repl/tab-completion'
 
 export { default as teeToFile } from './util/tee'
+
+// Client API
+export { isOfflineClient } from './api/client'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-@import '../Table/badges';
-@import '../Table/common';
-@import '../common/_narrow-window';
+import Debug from 'debug'
+const debug = Debug('core/api/client')
 
-[kui-theme-style] .kui--radio-table-wrapper {
-  [data-tag='badge-circle'] {
-    display: inline-block;
-    vertical-align: middle;
-  }
-}
-
-@include narrow-window {
-  .kui--radio-table {
-    width: 100%;
+/** Is the current client running in offline/disconnected mode? */
+export function isOfflineClient(): boolean {
+  try {
+    const { offline } = require('@kui-shell/client/config.d/client.json')
+    return offline
+  } catch (err) {
+    debug('Client did not define an offline status, assuming not offline')
+    return false
   }
 }

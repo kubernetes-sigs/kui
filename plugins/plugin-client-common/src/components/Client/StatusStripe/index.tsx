@@ -61,7 +61,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
    *
    */
   private async doAbout() {
-    pexecInCurrentTab('about')
+    pexecInCurrentTab('tab new --cmdline about --title "About Kui"')
   }
 
   /**
@@ -115,13 +115,32 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
           <a
             href="#"
             className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
+            id="kui--settings-button"
+            aria-label="Settings"
+            tabIndex={0}
+            title={strings('Click to view configuration options')}
+            onClick={() =>
+              pexecInCurrentTab(
+                `tab new --cmdline "replay /kui/settings.json" --title "${strings(
+                  'Kui Settings'
+                )}" --status-stripe-type blue --status-stripe-message "${strings('Kui Settings')}"`
+              )
+            }
+          >
+            <Icons icon="Settings" />
+          </a>
+        </div>
+        <div className="kui--status-stripe-button">
+          <a
+            href="#"
+            className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
             id="help-button"
             aria-label="Help"
             tabIndex={0}
-            title={strings('Click to view configuration options')}
+            title={strings('Click for help')}
             onClick={() => this.doAbout()}
           >
-            <Icons icon="Settings" />
+            <Icons icon="Help" />
           </a>
         </div>
       </div>

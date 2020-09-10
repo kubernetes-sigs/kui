@@ -159,6 +159,6 @@ describe('tab navigation', function(this: Common.ISuite) {
   testAboutMode('about', false, true)
   //  testAboutMode('tutorial')
   testAboutMode('version', true) // hit enter on the Version tab
-  testAboutMode('theme', false, true)
+  // testAboutMode('theme', false, true) <-- themes are no longer in the about model
   // testPromptIsSelected() // because we just hit enter
 })
