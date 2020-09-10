@@ -27,7 +27,7 @@ import {
 
 /** Actuate a project switch by using `oc project set` */
 function doSwitchViaOc(ns: string, args: Arguments<KubeOptions>) {
-  return args.REPL.pexec(`oc project ${args.REPL.encodeComponent(ns)}`)
+  return `oc project ${args.REPL.encodeComponent(ns)}`
 }
 
 // we use the fetcher from 'kubectl get', and the viewTransformer from 'kubectl get namespaces'

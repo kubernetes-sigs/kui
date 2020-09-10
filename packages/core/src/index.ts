@@ -238,6 +238,7 @@ export {
   isRadioTable,
   RadioTableRow,
   RadioTableCell,
+  Selectable,
   radioTableHintsAsCss,
   radioTableCellToString,
   radioTableAddHint,

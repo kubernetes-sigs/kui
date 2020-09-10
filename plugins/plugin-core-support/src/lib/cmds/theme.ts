@@ -101,9 +101,7 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
           { value: plugin, hints: [CellShould.HideWithSidecar, CellShould.BeGrayish] }
         ],
 
-        onSelect: async () => {
-          await REPL.qexec(`theme set ${REPL.encodeComponent(theme.name)}`)
-        }
+        onSelect: `theme set ${REPL.encodeComponent(theme.name)}`
       }))
     )
   )

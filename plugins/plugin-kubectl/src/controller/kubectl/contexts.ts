@@ -117,14 +117,13 @@ const asRadioTable = (args: Arguments, { header, body }: Table): RadioTable => {
     header: rtRowsFor(header, wide),
     body: body
       .map(row => rtRowsFor(row, wide))
-      .map(rtRow =>
-        Object.assign(rtRow, {
-          onSelect: async () => {
-            const context = radioTableCellToString(rtRow.cells[0], true) // true: use title if we have it
-            await args.REPL.qexec(`kubectl config use-context ${context}`)
-          }
+      .map(rtRow => {
+        const context = radioTableCellToString(rtRow.cells[0], true) // true: use title if we have it
+
+        return Object.assign(rtRow, {
+          onSelect: `kubectl config use-context ${context}`
         })
-      )
+      })
   }
 }
 

@@ -282,7 +282,7 @@ export const doExecWithStatus = <O extends KubeOptions>(
 export async function doExecWithRadioTable<Resource extends KubeResource>(
   resources: Resource[],
   defaultSelectedIdx: number,
-  onSelect: (name: string, resource: Resource) => void | Promise<void>,
+  onSelect: (name: string, resource: Resource) => string,
   { title = resources.length === 0 ? undefined : resources[0].kind, nameColumnTitle = 'NAME' } = {}
 ): Promise<RadioTable | void> {
   if (resources.length > 0) {
@@ -300,7 +300,7 @@ export async function doExecWithRadioTable<Resource extends KubeResource>(
         return {
           nameIdx: 0,
           cells: [name],
-          onSelect: () => onSelect(name, resource)
+          onSelect: onSelect(name, resource)
         }
       })
     }
