@@ -34,7 +34,13 @@ export interface RadioTableRow {
 }
 
 export interface Selectable {
-  onSelect: () => void | Promise<void>
+  /**
+   * Handler for change of selection. This will be interpreted as a
+   * Kui command line to be executed when the user clicks on the
+   * corresponding row in the UI.
+   *
+   */
+  onSelect: string
 }
 
 export function radioTableHintsAsCss(cell: RadioTableCell) {

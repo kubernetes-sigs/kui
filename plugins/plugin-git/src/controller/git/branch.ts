@@ -81,9 +81,7 @@ async function doListBranches(args: Arguments<GitBranchOptions>): Promise<RadioT
       return {
         nameIdx: 0,
         cells: [branchName],
-        onSelect: async () => {
-          args.REPL.pexec(`git checkout ${branchName}`)
-        }
+        onSelect: `git checkout ${branchName}`
       }
     })
 

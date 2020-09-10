@@ -104,7 +104,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
       } else if (isRadioTable(response)) {
         return (
           <KuiContext.Consumer>
-            {config => <RadioTableSpi table={response} title={!config.disableTableTitle} />}
+            {config => <RadioTableSpi table={response} title={!config.disableTableTitle} repl={tab.REPL} />}
           </KuiContext.Consumer>
         )
       } else if (isTable(response)) {

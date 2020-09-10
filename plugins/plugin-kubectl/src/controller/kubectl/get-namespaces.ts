@@ -134,11 +134,11 @@ export function t2rt({ name, attributes }: Row): RadioTableRow {
 }
 
 /** Function type that will actuate a namespace switch */
-type SwitchFn = (ns: string, args: Arguments<KubeOptions>) => void
+type SwitchFn = (ns: string, args: Arguments<KubeOptions>) => string
 
 /** SwitchFn impl that uses `kubectl config set-context` */
-const doSwitchViaKubectl: SwitchFn = (ns: string, args: Arguments<KubeOptions>) => {
-  return args.REPL.qexec(`kubectl config set-context --current --namespace=${ns}`)
+const doSwitchViaKubectl: SwitchFn = (ns: string) => {
+  return `kubectl config set-context --current --namespace=${ns}`
 }
 
 /** Format as RadioTable */
@@ -161,14 +161,12 @@ async function asRadioTable(
     defaultSelectedIdx,
 
     header: t2rt(header),
-    body: body.map(t2rt).map(rtRow =>
-      Object.assign(rtRow, {
-        onSelect: () => {
-          const ns = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
-          doSwitch(ns, args)
-        }
+    body: body.map(t2rt).map(rtRow => {
+      const ns = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
+      return Object.assign(rtRow, {
+        onSelect: doSwitch(ns, args)
       })
-    )
+    })
   }
 
   return radio

@@ -19,6 +19,7 @@ import { v4 as uuid } from 'uuid'
 import {
   Breadcrumb,
   RadioTableRow,
+  Selectable,
   radioTableHintsAsCss,
   radioTableCellToString,
   cellShouldHaveBadge,
@@ -63,15 +64,17 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     }
   }
 
-  private async onChange(selectedIdx: number, onSelect: () => void) {
+  private async onChange(selectedIdx: number, onSelect: Selectable['onSelect']) {
     // wow, carbon components isn't so great; we have to manage unchecking ourselves??
     const currentSelection = document.getElementById(this.id(this.props.selectedIdx)) as HTMLInputElement
     if (currentSelection) {
       currentSelection.checked = false
     }
 
-    if (onSelect) {
-      await onSelect()
+    try {
+      await this.props.repl.qexec(onSelect)
+    } catch (err) {
+      console.error('Error changing selection in RadioTable', err)
     }
 
     this.props.onChange(selectedIdx + this.props.offset)
@@ -101,7 +104,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
   }
 
-  private row(row: RadioTableRow, ridx: number, head = false, onSelect?: () => void) {
+  private row(row: RadioTableRow, ridx: number, head = false, onSelect?: Selectable['onSelect']) {
     const isSelected = !head && ridx === this.props.selectedIdx - this.props.offset
     const name = this.id(ridx)
 

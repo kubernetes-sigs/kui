@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { RadioTable } from '@kui-shell/core'
+import { RadioTable, REPL } from '@kui-shell/core'
 
 interface Props {
+  /** The model to be rendered */
   table: RadioTable
+
   /**
    * paginate: true -> always paginate
    * paginate: false -> never paginate
@@ -27,6 +29,9 @@ interface Props {
 
   /** display table title? */
   title: boolean
+
+  /** REPL Controller */
+  repl: REPL
 }
 
 export default Props
