@@ -53,7 +53,7 @@ commands.forEach(command => {
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing(name))
       } catch (err) {
-        await Common.oops(this, true)
+        await Common.oops(this, true)(err)
       }
     })
 
@@ -64,7 +64,7 @@ commands.forEach(command => {
         await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('events'))
         await SidecarExpect.toolbarText({ type: 'info', text: 'Events are live streaming', exact: false })
       } catch (err) {
-        await Common.oops(this, true)
+        await Common.oops(this, true)(err)
       }
     })
 

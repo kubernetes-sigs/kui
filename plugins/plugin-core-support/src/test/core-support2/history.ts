@@ -40,7 +40,7 @@ describe('command history plain', function(this: Common.ISuite) {
         return promptValue === listCommand
       })
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 
@@ -52,7 +52,7 @@ describe('command history plain', function(this: Common.ISuite) {
         return promptValue.length === 0
       })
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 

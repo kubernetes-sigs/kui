@@ -82,7 +82,7 @@ describe(`kubectl label handling ${process.env.MOCHA_RUN_TARGET || ''}`, functio
 
           await SidecarExpect.yaml({ metadata: { labels: { [key]: value } } })
         } catch (err) {
-          await Common.oops(this, true)
+          await Common.oops(this, true)(err)
         }
       })
     }

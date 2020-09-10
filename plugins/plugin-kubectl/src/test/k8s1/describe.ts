@@ -146,7 +146,7 @@ commands.forEach(command => {
         await this.app.client.click('#confirm-dialog .bx--btn--danger')
         await this.app.client.waitForExist('#confirm-dialog', 20000, true) // go away!
       } catch (err) {
-        await Common.oops(this, true)
+        await Common.oops(this, true)(err)
       }
     })
 
@@ -176,7 +176,7 @@ commands.forEach(command => {
 
         await waitForRed(this.app, newResourceSelector)
       } catch (err) {
-        await Common.oops(this, true)
+        await Common.oops(this, true)(err)
       }
     })
 
