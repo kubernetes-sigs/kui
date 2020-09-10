@@ -29,13 +29,17 @@ export interface TopTabButton<P extends { key: string } = { key: string }> {
 export default class TabModel {
   public constructor(
     private readonly _uuid = uuid(),
-    desiredStatusStripeDecoration?: StatusStripeChangeEvent,
+    private readonly desiredStatusStripeDecoration?: StatusStripeChangeEvent,
+    background?: boolean,
     private readonly _title?: string,
     private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
     private readonly _buttons: TopTabButton[] = []
   ) {
     this._state.capture()
-    this._state.updateStatusStripe()
+
+    if (!background) {
+      this._state.updateStatusStripe()
+    }
   }
 
   public get uuid() {
@@ -55,6 +59,6 @@ export default class TabModel {
   }
 
   public update(buttons: TopTabButton[]) {
-    return new TabModel(this.uuid, undefined, this.title, this.state, buttons)
+    return new TabModel(this.uuid, undefined, undefined, this.title, this.state, buttons)
   }
 }

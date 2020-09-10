@@ -175,7 +175,9 @@ class NotebookVFS implements VFS {
         throw error
       }
     } else if (entries.length > 1) {
-      throw new Error('Multiple matches for fstat')
+      const msg = 'Multiple matches for fstat'
+      console.error(msg, entries)
+      throw new Error(msg)
     } else {
       const entry = entries[0]
       return {
