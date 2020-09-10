@@ -170,12 +170,21 @@ $action-padding: 3px;
       opacity: 0;
     }
 
-    &[data-is-output-only] .repl-result .kui--card {
-      padding: 0;
-      background: none;
-      box-shadow: none;
-      .kui--card-body {
+    &[data-is-output-only] {
+      .repl-result .kui--card {
         padding: 0;
+        background: none;
+        box-shadow: none;
+        .kui--card-body {
+          padding: 0;
+        }
+      }
+
+      /* repl right-hand decorations */
+      .repl-output .repl-prompt-right-elements {
+        position: absolute;
+        right: 0.25rem;
+        top: -0.25rem;
       }
     }
 
