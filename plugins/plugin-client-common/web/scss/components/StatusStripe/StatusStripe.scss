@@ -126,9 +126,9 @@ $bg-type-red: var(--color-red);
       border-left: 1px solid var(--color-table-border3);
       padding-left: 1rem;
     }
-    .kui--status-stripe-element:last-child {
-      border-right: 1px solid var(--color-table-border3);
-    }
+  }
+  .kui--status-stripe-button {
+    border-left: 1px solid var(--color-table-border3);
   }
   .kui--status-stripe-meter {
     font-size: $font-size;
@@ -176,10 +176,6 @@ $bg-type-red: var(--color-red);
     & svg {
       stroke: currentColor;
     }
-  }
-
-  .kui--status-stripe-button {
-    font-size: $font-size;
   }
 
   .kui--status-stripe-button .kui--status-stripe-element {

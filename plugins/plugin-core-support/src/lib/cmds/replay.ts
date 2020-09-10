@@ -35,7 +35,9 @@ import {
   SnapshottedEvent,
   StatusStripeChangeEvent,
   Tab,
+  isRadioTable, // see below; we special case these until we can find a better solution
   getPrimaryTabId,
+  isOfflineClient,
   promiseEach
 } from '@kui-shell/core'
 
@@ -127,15 +129,26 @@ function formatMessage(snapshot: SerializedSnapshot) {
   return `**Now Playing**: ${snapshot.spec.title || 'a snapshot'}`
 }
 
+/** Update the given tab to reflect a new uuid */
+function withNewTabUUID(tab: Tab, uuid: string) {
+  return { tab: Object.assign({}, tab, { uuid }) }
+}
+
 /** Re-emit prior start event in new tab */
 function reEmitStartInTab(tab: Tab, uuid: string, startEvent: SnapshotBlock['startEvent']) {
-  eventBus.emitCommandStart(Object.assign({}, startEvent, { tab: Object.assign({}, tab, { uuid }) }))
+  const evt = Object.assign({}, startEvent, withNewTabUUID(tab, uuid))
+  eventBus.emitCommandStart(evt)
 }
 
 /** Re-emit prior complete event in new tab */
 function reEmitCompleteInTab(tab: Tab, uuid: string, completeEvent: SnapshotBlock['completeEvent']) {
-  const evt = Object.assign({}, completeEvent, { tab: Object.assign({}, tab, { uuid }) })
+  const evt = Object.assign({}, completeEvent, withNewTabUUID(tab, uuid))
   eventBus.emitCommandComplete(evt)
+}
+
+/** Re-execute command line in new tab */
+function reExecuteInTab(tab: Tab, uuid: string, cmdline: string) {
+  return tab.REPL.pexec(cmdline, withNewTabUUID(tab, uuid))
 }
 
 /**
@@ -353,6 +366,9 @@ export default function(registrar: Registrar) {
           })
         }
 
+        // is the client running in offline/disconnected mode?
+        const offline = isOfflineClient()
+
         await promiseEach(model.spec.windows[0].tabs[0].blocks, async ({ startEvent, completeEvent }) => {
           // if (!splitAlignment[startEvent.tab]) {
           // splitAlignment[startEvent.tab] = splits[splits.length - 1]
@@ -376,8 +392,25 @@ export default function(registrar: Registrar) {
 
           const uuid = splitAlignment[startEvent.tab]
           try {
-            reEmitStartInTab(tab, uuid, startEvent)
-            reEmitCompleteInTab(tab, uuid, completeEvent)
+            //
+            // Notes: we need to find a more general way to
+            // distinguish between the events we want to reExecute
+            // versus those we want to reEmit (i.e. just show the
+            // input and output of the execution at the time the
+            // notebook was saved).
+            //
+            // For now, we hard-code this to always reExecute
+            // RadioTable responses, under the premise that these
+            // responses are almost certainly going to be site- and
+            // user-specific. This is not to say we shouldn't figure
+            // out a better solution!
+            //
+            if (!offline && isRadioTable(completeEvent.response)) {
+              await reExecuteInTab(tab, uuid, startEvent.command)
+            } else {
+              reEmitStartInTab(tab, uuid, startEvent)
+              reEmitCompleteInTab(tab, uuid, completeEvent)
+            }
           } catch (err) {
             console.error(err)
           }

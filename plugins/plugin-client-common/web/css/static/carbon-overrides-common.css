@@ -49,6 +49,7 @@ body[kui-theme-style] .bx--link {
   pointer-events: unset;
   touch-action: unset;
   color: var(--color-text-01);
+  white-space: normal;
 
   &[href] {
     color: var(--color-brand-01);

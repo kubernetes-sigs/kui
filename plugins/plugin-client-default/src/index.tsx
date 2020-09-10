@@ -16,7 +16,7 @@
 
 import * as React from 'react'
 
-import { inBrowser } from '@kui-shell/core'
+import { i18n, inBrowser } from '@kui-shell/core'
 import { Kui, KuiProps, ContextWidgets, MeterWidgets, CurrentWorkingDirectory } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
@@ -27,6 +27,8 @@ import { Screenshot, Search, UpdateChecker } from '@kui-shell/plugin-electron-co
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
+const strings = i18n('plugin-client-default')
+
 /**
  * Format our body, with extra status stripe widgets
  *   - <CurrentGitBranch />
@@ -34,6 +36,8 @@ import { productName } from '@kui-shell/client/config.d/name.json'
  *
  */
 export default function renderMain(props: KuiProps) {
+  const title = strings('Welcome to Kui')
+
   return (
     <Kui
       productName={productName}
@@ -49,7 +53,11 @@ export default function renderMain(props: KuiProps) {
           'replay /kui/welcome.json',
           '--bg',
           '--title',
-          'Welcome to Kui'
+          title,
+          '--status-stripe-type',
+          'blue',
+          '--status-stripe-message',
+          title
         ]
       }
     >

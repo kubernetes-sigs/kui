@@ -31,7 +31,6 @@ import {
 import usage from './usage'
 
 const clientStrings = i18n('client', 'about')
-const strings = i18n('plugin-core-support')
 
 /** I would love to place this in a separate file. see https://github.com/microsoft/TypeScript/issues/25636 */
 function defaultConfig() {
@@ -94,18 +93,11 @@ const getAbout = (): Promise<NavResponse> => {
       checkApiVersionAndKind(_apiVersion, _kind)
     }
 
-    // inject Configure Menu
-    const fullMenus = _.menus.slice(0)
-    const configureMenu = {
-      label: strings('Configure'),
-      items: [{ mode: 'theme', contentFrom: 'themes' }]
-    }
-
     const response: NavResponse = {
       apiVersion: _apiVersion || 'kui-shell/v1',
       kind: _kind || 'NavResponse',
       breadcrumbs: [{ label: await getName() }],
-      menus: fullMenus.concat([configureMenu]),
+      menus: _.menus.slice(0),
       links: _['links'] || []
     }
     return response

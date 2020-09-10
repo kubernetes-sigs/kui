@@ -29,7 +29,8 @@ import {
   EditIcon as Edit,
   ExpandIcon as WindowMaximize,
   CompressIcon as WindowMinimize,
-  QuestionCircleIcon /* ToolsIcon */ as Settings,
+  QuestionCircleIcon /* ToolsIcon */ as Help,
+  SlidersHIcon as Settings,
   TrashAltIcon as Trash,
   LevelUpAltIcon as Up,
   ArrowUpIcon as MoveUp,
@@ -96,6 +97,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Forward style={Sidecar} {...props} />
     case 'Grid':
       return <Grid {...props} />
+    case 'Help':
+      return <Help {...props} />
     case 'Info':
       return <Info {...props} />
     case 'List':
