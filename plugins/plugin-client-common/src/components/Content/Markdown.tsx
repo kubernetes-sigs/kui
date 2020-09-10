@@ -82,8 +82,9 @@ export default class Markdown extends React.PureComponent<Props> {
             const target = !isLocal ? '_blank' : undefined
             const href = isLocal ? '#' : props.href
             const onClick = !isLocal
-              ? undefined
-              : async () => {
+              ? (evt: React.MouseEvent) => evt.stopPropagation()
+              : async (evt: React.MouseEvent) => {
+                  evt.stopPropagation()
                   let file = props.href
                   if (props.href.startsWith('#kuiexec?command=')) {
                     const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
