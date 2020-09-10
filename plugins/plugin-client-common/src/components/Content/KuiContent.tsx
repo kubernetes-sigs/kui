@@ -118,7 +118,7 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
         // so we have to re-assign mode.content to work around this typescript compile error
         return (
           <KuiContext.Consumer>
-            {config => <RadioTableSpi table={radioTable} title={!config.disableTableTitle} />}
+            {config => <RadioTableSpi table={radioTable} title={!config.disableTableTitle} repl={tab.REPL} />}
           </KuiContext.Consumer>
         )
       } else if (isTable(mode.content)) {
