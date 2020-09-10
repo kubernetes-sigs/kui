@@ -42,7 +42,7 @@ describe(`Background tab open onload ${process.env.MOCHA_RUN_TARGET || ''}`, fun
         return /^Tab/.test(actualTitle1) && actualTitle2 === 'Welcome to Kui'
       }, CLI.waitTimeout)
     } catch (err) {
-      await Common.oops(this, true)
+      await Common.oops(this, true)(err)
     }
   })
 

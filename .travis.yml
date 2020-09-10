@@ -38,6 +38,9 @@ after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov
 
 # default install script
 install:
+  # see https://github.com/IBM/kui/issues/5608
+  - ./tools/travis/check-error-handlers.sh
+
   - if [ -n "$NEEDS_K8S" ]; then ./tools/travis/microk8s.sh & k8s=$!; fi
   - if [ -n "$NEEDS_MINIO" ]; then ./tools/travis/minio.sh & minio=$!; fi
   - npm ci

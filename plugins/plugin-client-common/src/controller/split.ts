@@ -19,20 +19,19 @@ import { Arguments, ParsedOptions, TabLayoutModificationResponse, NewSplitReques
 const strings = i18n('plugin-client-common')
 
 interface Options extends ParsedOptions {
-  debug: boolean
   inverse: boolean
+}
+
+/** For debugging, this returns the tab uuid of the current split */
+export function debug(args: Arguments) {
+  return args.tab.uuid
 }
 
 /**
  * This plugin introduces the /split command
  *
  */
-export default function split(args?: Arguments<Options>): string | TabLayoutModificationResponse<NewSplitRequest> {
-  if (args && args.parsedOptions.debug) {
-    // for debugging, this returns the tab uuid of the current split
-    return args.tab.uuid
-  }
-
+export default function split(args?: Arguments<Options>): TabLayoutModificationResponse<NewSplitRequest> {
   const options = args.parsedOptions.inverse ? { inverseColors: true } : undefined
 
   return {

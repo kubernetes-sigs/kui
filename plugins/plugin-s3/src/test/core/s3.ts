@@ -17,8 +17,12 @@
 import { v4 } from 'uuid'
 import { join } from 'path'
 import { tmpdir } from 'os'
-import { existsSync, unlinkSync } from 'fs'
+import { unlinkSync } from 'fs'
+import { strictEqual } from 'assert'
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
+
+// some typing issues
+const globby = require('globby')
 
 const README = 'README.md'
 const README2 = 'README2.md'
@@ -71,16 +75,18 @@ if (process.env.NEEDS_MINIO) {
       it(`should copy a file FROM-> the bucket ${bucketName}`, async () => {
         try {
           const specifiedDest = destFilename ? join(destDir, destFilename) : destDir
-          const expectedDest = destFilename ? specifiedDest : join(destDir, srcFilename)
 
           await CLI.command(`cp /s3/${bucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
             ReplExpect.okWithString(`Fetched`)
           )
 
-          await existsSync(expectedDest)
-          await unlinkSync(expectedDest)
+          const expectedDest = destFilename ? specifiedDest : join(destDir, srcFilename)
+          const expected = await globby(expectedDest)
+          strictEqual(expected.length, 1)
+
+          await Promise.all(expected.map(_ => unlinkSync(_)))
         } catch (err) {
-          await Common.oops(this, true)
+          await Common.oops(this, true)(err)
         }
       })
     }
@@ -93,7 +99,7 @@ if (process.env.NEEDS_MINIO) {
             ReplExpect.okWithString(`Copied`)
           )
         } catch (err) {
-          await Common.oops(this, true)
+          await Common.oops(this, true)(err)
         }
       })
     }
