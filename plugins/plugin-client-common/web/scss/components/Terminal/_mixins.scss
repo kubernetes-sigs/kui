@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-$input-bg: rgba(100, 100, 100, 0.1);
+$input-bg: var(--color-table-border3);
 $input-border: rgba(100, 100, 100, 0.05);
 
 @mixin Scrollback {

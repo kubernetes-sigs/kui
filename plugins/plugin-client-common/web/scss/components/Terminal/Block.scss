@@ -23,14 +23,35 @@ $inset: 0.375rem;
 /** Padding for action buttons */
 $action-padding: 3px;
 
+/** Hover hysteresis for showing action buttons */
+$action-hover-delay: 140ms;
+
 .repl-input,
 .repl-input-sourceref,
 .repl-output {
   padding-right: calc(1rem - 6px);
 }
 
+@mixin show-block-action-buttons {
+  .kui--block-actions-buttons {
+    width: auto;
+    margin-left: 0.5rem;
+    opacity: 1;
+    right: 0;
+  }
+}
+
 /** Coloring the context border by status of the block */
 @include Scrollback {
+  .repl-input:hover {
+    @include show-block-action-buttons;
+
+    .kui--repl-block-timestamp {
+      opacity: 0; /* rather than display: none to avoid reflow on hover */
+      transition-delay: $action-hover-delay;
+    }
+  }
+
   .repl-block {
     position: relative;
 
@@ -86,8 +107,32 @@ $action-padding: 3px;
       }
     }
 
-    .kui--block-action {
+    .kui--block-actions-buttons {
+      align-items: center;
       display: flex;
+      width: 0;
+      opacity: 0;
+      background-color: $input-bg; /* to occlude repl-input-element */
+
+      position: absolute;
+      top: 0; /* this with bottom:0 gives 1) vertical center; 2) occluding of repl-input-element content */
+      bottom: 0;
+      right: -100rem; /* we will change this on hover */
+
+      padding-left: 1rem; /* to occlude out more of repl-input-element */
+      transition-property: right;
+      transition-delay: $action-hover-delay;
+      transition-duration: 140ms;
+    }
+
+    &[data-is-focused] {
+      @include show-block-action-buttons;
+    }
+
+    .kui--block-action {
+      align-items: center;
+      display: flex;
+      margin-right: $action-padding;
       padding: $action-padding;
       color: var(--color-text-01);
 
@@ -109,6 +154,8 @@ $action-padding: 3px;
     }
 
     .kui-block-actions-others {
+      padding-right: $action-padding;
+      margin-right: $action-padding;
       display: flex;
       border-right: 1px solid var(--color-table-border2);
     }
@@ -160,8 +207,10 @@ $action-padding: 3px;
         border: 1px solid transparent;
         align-items: stretch;
         padding-left: 0.5rem;
+        position: relative; /* for repl-block-actions' position: absolute */
         .repl-input-element {
           padding: $inset 0;
+          padding-right: $inset; /* to pad against timestamp and action buttons */
         }
       }
     }
@@ -225,6 +274,8 @@ $action-padding: 3px;
     margin: 0 0.5rem;
     display: flex;
     align-items: center;
+    transition-delay: $action-hover-delay;
+    transition-property: opacity;
   }
 }
 @include sidecar-visible {
