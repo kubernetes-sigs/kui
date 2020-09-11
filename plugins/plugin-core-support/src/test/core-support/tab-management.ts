@@ -52,11 +52,12 @@ describe('core new tab with custom title', function(this: Common.ISuite) {
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
 
-  const newTabWithTitle = (title: string, N: number, expectedTitle = title) => {
+  /** Create a new tab; again=true means that we expect to visit a tab already created */
+  const newTabWithTitle = (title: string, N: number, again = false, expectedTitle = title) => {
     it(`new tab via command with custom title: ${title}`, () =>
       CLI.command(`tab new --title ${/s/.test(title) ? `"${title}"` : title}`, this.app)
         .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(N)))
-        .then(() => CLI.waitForSession(this)) // should have an active repl
+        .then(() => (again ? Promise.resolve() : CLI.waitForSession(this))) // should have an active repl
         .then(() =>
           this.app.client.waitUntil(async () => {
             const actualTitle = await this.app.client.getText(Selectors.CURRENT_TAB_TITLE)
@@ -69,12 +70,23 @@ describe('core new tab with custom title', function(this: Common.ISuite) {
   // single word title
   newTabWithTitle('smurf', 2)
 
+  // repeat the first, and expect to be in the second tab (i.e. we should re-use the first 'smurf')
+  newTabWithTitle('smurf', 2, true)
+
+  it(`switch back to first tab via command`, () =>
+    CLI.command('tab switch 1', this.app)
+      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .catch(Common.oops(this, true)))
+
+  // do that again, after switching back to the first tab; we should be back in the second tab again
+  newTabWithTitle('smurf', 2, true)
+
   // title with whitespace
   newTabWithTitle('space cadet', 3)
 
   // title with markdown, plus test semicolon parsing
-  newTabWithTitle('splash &mdash; bros', 4, 'splash — bros')
-  //                                                ^ unicode!
+  newTabWithTitle('splash &mdash; bros', 4, false, 'splash — bros')
+  //                                                       ^ unicode!
 })
 
 describe('core new tab with status stripe decoration', function(this: Common.ISuite) {

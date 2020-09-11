@@ -109,8 +109,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
     const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
 
-      if (this.props.onTabReady) {
-        this.props.onTabReady(this.state.tab)
+      try {
+        if (this.props.onTabReady) {
+          this.props.onTabReady(this.state.tab)
+        }
+      } catch (err) {
+        console.error('Error in onTabReady', err)
       }
     }
     eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, onTabNew)
