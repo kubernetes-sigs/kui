@@ -35,7 +35,6 @@ import {
   SnapshottedEvent,
   StatusStripeChangeEvent,
   Tab,
-  isRadioTable, // see below; we special case these until we can find a better solution
   getPrimaryTabId,
   isOfflineClient,
   promiseEach
@@ -56,6 +55,7 @@ export interface SerializedSnapshot {
   kind: 'Snapshot'
   spec: Snapshot & {
     clicks: ClickSnapshot
+    preferReExecute?: boolean
     title?: string
     description?: string
   }
@@ -95,6 +95,7 @@ const snapshotUsage = {
     optional: [
       { name: '--shallow', alias: '-s', boolean: true, docs: 'Do not record click events' },
       { name: '--description', alias: '-d', docs: 'Description for this snapshot' },
+      { name: '--exec', alias: '-x', docs: 'Prefer to re-execute commands when replay' },
       { name: '--title', alias: '-t', docs: 'Title for this snapshot' }
     ]
   },
@@ -122,6 +123,8 @@ interface SnapshotOptions extends ParsedOptions {
   description?: string
   t?: string
   title?: string
+  exec?: boolean
+  x?: boolean
 }
 
 /** Format a Markdown string that describes the given snapshot */
@@ -405,7 +408,7 @@ export default function(registrar: Registrar) {
             // user-specific. This is not to say we shouldn't figure
             // out a better solution!
             //
-            if (!offline && isRadioTable(completeEvent.response)) {
+            if (!offline && model.spec.preferReExecute) {
               await reExecuteInTab(tab, uuid, startEvent.command)
             } else {
               reEmitStartInTab(tab, uuid, startEvent)
@@ -476,6 +479,7 @@ export default function(registrar: Registrar) {
                   spec: {
                     title: parsedOptions.t || parsedOptions.title,
                     description: parsedOptions.d || parsedOptions.description,
+                    preferReExecute: parsedOptions.exec || parsedOptions.x,
                     clicks,
                     windows: [
                       {
