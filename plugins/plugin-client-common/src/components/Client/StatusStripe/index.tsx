@@ -22,6 +22,7 @@ import { eventBus, pexecInCurrentTab, i18n, StatusStripeChangeEvent } from '@kui
 
 import Icons from '../../spi/Icons'
 import Markdown from '../../Content/Markdown'
+import NotebookButton from './NotebookButton'
 import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 
 const strings = i18n('plugin-client-common')
@@ -93,12 +94,49 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
    * https://github.com/IBM/kui/issues/5490
    *
    */
-  private widgets() {
+  private clientProvidedWidgets() {
     if (this.state.type !== 'default' || React.Children.count(this.props.children) === 0) {
-      return this.filler()
+      return (
+        <React.Fragment>
+          {this.filler()}
+          {React.Children.toArray(this.props.children).filter(
+            _ => React.isValidElement(_) && _.type === NotebookButton
+          )}
+        </React.Fragment>
+      )
     } else {
       return this.props.children
     }
+  }
+
+  private builtInNotebookButtons() {
+    return (
+      <NotebookButton
+        id="kui--settings-button"
+        title={strings('Click to view configuration options')}
+        tabTitle={strings('Kui Settings')}
+        notebook="/kui/settings.json"
+        icon="Settings"
+      />
+    )
+  }
+
+  private helpButton() {
+    return (
+      <div className="kui--status-stripe-button">
+        <a
+          href="#"
+          className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
+          id="help-button"
+          aria-label="Help"
+          tabIndex={0}
+          title={strings('Click for help')}
+          onClick={() => this.doAbout()}
+        >
+          <Icons icon="Help" />
+        </a>
+      </div>
+    )
   }
 
   private className() {
@@ -109,40 +147,9 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
     return (
       <div className={this.className()} id="kui--status-stripe" data-type={this.state.type}>
         {this.message()}
-        {this.widgets()}
-
-        <div className="kui--status-stripe-button">
-          <a
-            href="#"
-            className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
-            id="kui--settings-button"
-            aria-label="Settings"
-            tabIndex={0}
-            title={strings('Click to view configuration options')}
-            onClick={() =>
-              pexecInCurrentTab(
-                `tab new --cmdline "replay /kui/settings.json" --title "${strings(
-                  'Kui Settings'
-                )}" --status-stripe-type blue --status-stripe-message "${strings('Kui Settings')}"`
-              )
-            }
-          >
-            <Icons icon="Settings" />
-          </a>
-        </div>
-        <div className="kui--status-stripe-button">
-          <a
-            href="#"
-            className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
-            id="help-button"
-            aria-label="Help"
-            tabIndex={0}
-            title={strings('Click for help')}
-            onClick={() => this.doAbout()}
-          >
-            <Icons icon="Help" />
-          </a>
-        </div>
+        {this.clientProvidedWidgets()}
+        {this.builtInNotebookButtons()}
+        {this.helpButton()}
       </div>
     )
   }

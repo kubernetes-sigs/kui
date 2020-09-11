@@ -53,6 +53,7 @@ import {
   RebootingIcon as Retry,
   SlidersHIcon as Sequence,
   BellIcon as Notification,
+  TachometerAltIcon as Dashboard,
   PlayCircleIcon as Play
 } from '@patternfly/react-icons'
 
@@ -89,6 +90,8 @@ export default function PatternFly4Icons(props: Props) {
       return <CodeBranch style={StatusStripe} {...props} />
     case 'Copy':
       return <Copy {...props} />
+    case 'Dashboard':
+      return <Dashboard {...props} />
     case 'Edit':
       return <Edit {...props} />
     case 'Error':

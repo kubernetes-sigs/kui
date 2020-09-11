@@ -66,7 +66,12 @@ export default async (registrar: PreloadRegistrar) => {
   notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })
   notebookVFS.cp(
     undefined,
-    ['plugin://plugin-kubectl/notebooks/create-jobs.json', 'plugin://plugin-kubectl/notebooks/list-resources.json'],
+    [
+      'plugin://plugin-kubectl/notebooks/settings.json',
+      'plugin://plugin-kubectl/notebooks/dashboard.json',
+      'plugin://plugin-kubectl/notebooks/create-jobs.json',
+      'plugin://plugin-kubectl/notebooks/list-resources.json'
+    ],
     '/kui/kubernetes/'
   )
 

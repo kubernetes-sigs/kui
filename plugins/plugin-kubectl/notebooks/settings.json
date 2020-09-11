@@ -1,0 +1,1779 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Snapshot",
+  "spec": {
+    "title": "Kubernetes &mdash; `Settings`",
+    "clicks": {
+      "startEvents": {},
+      "completeEvents": {}
+    },
+    "windows": [
+      {
+        "uuid": "0",
+        "tabs": [
+          {
+            "uuid": "0",
+            "blocks": [
+              {
+                "startTime": 1599845537013,
+                "startEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/split",
+                  "command": "split",
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "flags": {
+                      "boolean": ["inverse"]
+                    },
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "937bce22-436b-4f1f-9275-867848428ef0"
+                },
+                "completeEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "split",
+                  "argvNoOptions": ["split"],
+                  "parsedOptions": {
+                    "_": ["split"]
+                  },
+                  "execUUID": "937bce22-436b-4f1f-9275-867848428ef0",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "937bce22-436b-4f1f-9275-867848428ef0",
+                    "history": 250,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "TabLayoutModificationResponse",
+                    "spec": {
+                      "modification": "NewSplit",
+                      "ok": {
+                        "apiVersion": "kui-shell/v1",
+                        "kind": "CommentaryResponse",
+                        "props": {
+                          "elsewhere": true,
+                          "tabUUID": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                          "children": "Created a split"
+                        }
+                      }
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 250
+                }
+              },
+              {
+                "startTime": 1599845545155,
+                "startEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/split",
+                  "command": "split",
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "flags": {
+                      "boolean": ["inverse"]
+                    },
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "8a33710c-58dc-4fb5-b780-6a4849f6b801"
+                },
+                "completeEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "split",
+                  "argvNoOptions": ["split"],
+                  "parsedOptions": {
+                    "_": ["split"]
+                  },
+                  "execUUID": "8a33710c-58dc-4fb5-b780-6a4849f6b801",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "8a33710c-58dc-4fb5-b780-6a4849f6b801",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "TabLayoutModificationResponse",
+                    "spec": {
+                      "modification": "NewSplit",
+                      "ok": {
+                        "apiVersion": "kui-shell/v1",
+                        "kind": "CommentaryResponse",
+                        "props": {
+                          "elsewhere": true,
+                          "tabUUID": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                          "children": "Created a split"
+                        }
+                      }
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              },
+              {
+                "startTime": 1599845557043,
+                "startEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/split",
+                  "command": "split --inverse",
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "flags": {
+                      "boolean": ["inverse"]
+                    },
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "8086ef77-f0eb-4978-a3f3-3842b2b664d9"
+                },
+                "completeEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "split --inverse",
+                  "argvNoOptions": ["split"],
+                  "parsedOptions": {
+                    "_": ["split"],
+                    "inverse": true
+                  },
+                  "execUUID": "8086ef77-f0eb-4978-a3f3-3842b2b664d9",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "8086ef77-f0eb-4978-a3f3-3842b2b664d9",
+                    "history": 252,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "TabLayoutModificationResponse",
+                    "spec": {
+                      "modification": "NewSplit",
+                      "options": {
+                        "inverseColors": true
+                      },
+                      "ok": {
+                        "apiVersion": "kui-shell/v1",
+                        "kind": "CommentaryResponse",
+                        "props": {
+                          "elsewhere": true,
+                          "tabUUID": "5_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+                          "children": "Created a split with inverted colors"
+                        }
+                      }
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 252
+                }
+              },
+              {
+                "startTime": 1599845584279,
+                "startEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#  # Kubernetes Settings\\nFrom here, you may observe and change your Kubernetes namespace and context.",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        {
+                          "name": "--title",
+                          "alias": "-t",
+                          "docs": "Title for the commentary"
+                        },
+                        {
+                          "name": "--file",
+                          "alias": "-f",
+                          "docs": "File that contains the texts"
+                        }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "dfaadfa2-b51f-4c8f-8636-a15810689570"
+                },
+                "completeEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "# # Kubernetes Settings\\nFrom here, you may observe and change your Kubernetes namespace and context.",
+                  "argvNoOptions": [
+                    "#",
+                    "  # Kubernetes Settings\\nFrom here, you may observe and change your Kubernetes namespace and context."
+                  ],
+                  "parsedOptions": {
+                    "_": [
+                      "#",
+                      "  # Kubernetes Settings\\nFrom here, you may observe and change your Kubernetes namespace and context."
+                    ]
+                  },
+                  "execUUID": "dfaadfa2-b51f-4c8f-8636-a15810689570",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "dfaadfa2-b51f-4c8f-8636-a15810689570",
+                    "history": 253,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "# Kubernetes Settings\nFrom here, you may observe and change your Kubernetes namespace and context."
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 253
+                }
+              },
+              {
+                "startTime": 1599845587895,
+                "startEvent": {
+                  "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "route": "/kubeui/k/get/ns",
+                  "command": "k get ns",
+                  "evaluatorOptions": {
+                    "flags": {
+                      "configuration": {
+                        "short-option-groups": false,
+                        "duplicate-arguments-array": false
+                      },
+                      "narg": {
+                        "w": 0,
+                        "watch": 0,
+                        "watch-only": 0
+                      },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "d96ea021-6643-4cdc-8762-7a9d7eb16dcd"
+                },
+                "completeEvent": {
+                  "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "execType": 0,
+                  "command": "k get ns",
+                  "argvNoOptions": ["k", "get", "ns"],
+                  "parsedOptions": {
+                    "_": ["k", "get", "ns"]
+                  },
+                  "execUUID": "d96ea021-6643-4cdc-8762-7a9d7eb16dcd",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                    "execUUID": "d96ea021-6643-4cdc-8762-7a9d7eb16dcd",
+                    "history": 250,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "RadioTable",
+                    "title": "Namespaces",
+                    "defaultSelectedIdx": 50,
+                    "header": {
+                      "nameIdx": 0,
+                      "cells": [
+                        "Name",
+                        {
+                          "value": "Status",
+                          "hints": ["hide-with-sidecar"]
+                        },
+                        {
+                          "value": "Age",
+                          "hints": ["hide-with-sidecar"]
+                        }
+                      ]
+                    },
+                    "body": [
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "09b1e789-5c0d-4d0f-9f10-ea6f3c4b93e4-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=09b1e789-5c0d-4d0f-9f10-ea6f3c4b93e4-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "0b136115-d682-42b0-a8fe-d10887d102c9-kui-cccc",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=0b136115-d682-42b0-a8fe-d10887d102c9-kui-cccc"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "153f6983-f603-4b11-a9f2-a56b39fe87cc-kui-aaaa",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=153f6983-f603-4b11-a9f2-a56b39fe87cc-kui-aaaa"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "153f6983-f603-4b11-a9f2-a56b39fe87cc-kui-bbbb",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=153f6983-f603-4b11-a9f2-a56b39fe87cc-kui-bbbb"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "1cc03a96-1bc2-4d30-97d5-66c18f551f47-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=1cc03a96-1bc2-4d30-97d5-66c18f551f47-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "1f5c3f61-ae73-4654-be6a-17a3965b418d-kui-aaaa",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=1f5c3f61-ae73-4654-be6a-17a3965b418d-kui-aaaa"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "1f5c3f61-ae73-4654-be6a-17a3965b418d-kui-bbbb",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=1f5c3f61-ae73-4654-be6a-17a3965b418d-kui-bbbb"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "20d4b5dc-e220-4ce2-9874-a83068dc9229-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "23d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=20d4b5dc-e220-4ce2-9874-a83068dc9229-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "2384c42d-cbd3-4e43-bb08-778c566d67f7-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=2384c42d-cbd3-4e43-bb08-778c566d67f7-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "24af5bfe-f6d3-4dba-9188-c8d7be1169f2-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=24af5bfe-f6d3-4dba-9188-c8d7be1169f2-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "292df834-dc26-4429-b852-982eab24e6c6-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=292df834-dc26-4429-b852-982eab24e6c6-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "30b66d0c-e4af-4651-8706-eb8912704e82-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "42d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=30b66d0c-e4af-4651-8706-eb8912704e82-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "32c99367-01ab-43a4-aa57-764ffaad768e-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "23d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=32c99367-01ab-43a4-aa57-764ffaad768e-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "3dd6fe0f-3f05-4919-afce-6156e72dedb3-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "24d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=3dd6fe0f-3f05-4919-afce-6156e72dedb3-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "4199d584-3621-4039-9fa1-7a2b02638aee-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "42d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=4199d584-3621-4039-9fa1-7a2b02638aee-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "436f7d95-2ec4-4e6b-a816-a5f3adfd06d3-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "24d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=436f7d95-2ec4-4e6b-a816-a5f3adfd06d3-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "4db2f38a-ed66-4d2b-af4e-3f437e47bb36-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=4db2f38a-ed66-4d2b-af4e-3f437e47bb36-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "5871ef15-9d2c-42d2-82db-344f5533b60a-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=5871ef15-9d2c-42d2-82db-344f5533b60a-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "5bccd177-e0be-4511-81f8-2fcfd3d896af-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "23d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=5bccd177-e0be-4511-81f8-2fcfd3d896af-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "653c16a8-761e-4d4c-918d-78a5c3aa37e3-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=653c16a8-761e-4d4c-918d-78a5c3aa37e3-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "69f07aad-2570-454e-af19-63563dfafa8b-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "22d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=69f07aad-2570-454e-af19-63563dfafa8b-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "6b102dd9-247c-48ba-b9e4-8a16aa1c08f0-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=6b102dd9-247c-48ba-b9e4-8a16aa1c08f0-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "7735282c-eadb-4bf5-83cc-8dfc68ee740b-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=7735282c-eadb-4bf5-83cc-8dfc68ee740b-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "79c1570c-325b-4ea5-97af-67d050471b1c-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=79c1570c-325b-4ea5-97af-67d050471b1c-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "7b72fdf7-28a9-4484-83ef-0d92cc948c33-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "8d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=7b72fdf7-28a9-4484-83ef-0d92cc948c33-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "8970a00a-47be-4855-9097-a8b2dfd2db5a-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "16d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=8970a00a-47be-4855-9097-a8b2dfd2db5a-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "899792e2-5ae3-4e6b-8180-d2d975e99428-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "23d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=899792e2-5ae3-4e6b-8180-d2d975e99428-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "8ac7820a-1bcc-40b4-8f06-4d16aee1a714-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "4d22h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=8ac7820a-1bcc-40b4-8f06-4d16aee1a714-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "8b29341c-1c5a-47a1-a75d-e0507292238a-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "24d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=8b29341c-1c5a-47a1-a75d-e0507292238a-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "96880667-44ae-4e9f-86f2-68bf2fa0cba3-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "23d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=96880667-44ae-4e9f-86f2-68bf2fa0cba3-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "9bf3d5f5-0e00-4497-864a-1ed447e9ef83-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "170m",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=9bf3d5f5-0e00-4497-864a-1ed447e9ef83-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "9cc95ce9-b86c-435b-bf7b-fa4c41c0b97b-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=9cc95ce9-b86c-435b-bf7b-fa4c41c0b97b-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "acff6bec-0dc6-408b-9872-025a752aaa2b-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "23d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=acff6bec-0dc6-408b-9872-025a752aaa2b-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "ae947a67-fdf4-41c4-98aa-6681a4d2c207-kui-cccc",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=ae947a67-fdf4-41c4-98aa-6681a4d2c207-kui-cccc"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "b2906106-80f8-45fc-ae2f-e47bcc1d0799-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "24d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=b2906106-80f8-45fc-ae2f-e47bcc1d0799-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "b3a86eba-d82f-448d-9039-b1c1e9bafce7-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "42d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=b3a86eba-d82f-448d-9039-b1c1e9bafce7-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "b50585a3-2dd5-4b22-8513-eafcf982650b-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "42d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=b50585a3-2dd5-4b22-8513-eafcf982650b-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "b57798cf-c6d9-41c0-9abc-faada0f7718c-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "4d22h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=b57798cf-c6d9-41c0-9abc-faada0f7718c-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "b585b77e-d8f4-408e-b031-60633e991a96-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=b585b77e-d8f4-408e-b031-60633e991a96-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "b612d032-8c81-46a2-9f46-dcd21418b341-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "4d1h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=b612d032-8c81-46a2-9f46-dcd21418b341-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "badb56c4-9b9a-46ed-bfe0-baa1c8b58e6e-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=badb56c4-9b9a-46ed-bfe0-baa1c8b58e6e-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "c33beae1-25d5-4eac-80af-66352dfb0e97-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "8d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=c33beae1-25d5-4eac-80af-66352dfb0e97-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "c4299899-0877-4726-b3b5-4af3ded6b9ac-kui-cccc",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=c4299899-0877-4726-b3b5-4af3ded6b9ac-kui-cccc"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "c86bfe38-8938-42c8-82bc-4afe4738cce1-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "42d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=c86bfe38-8938-42c8-82bc-4afe4738cce1-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "ce0538f9-4acd-49d7-bd12-d629a56e4416-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=ce0538f9-4acd-49d7-bd12-d629a56e4416-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "d3382290-0c0f-42d0-be79-b0e9ab041042-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "38d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=d3382290-0c0f-42d0-be79-b0e9ab041042-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "d4a0ed6b-2734-4422-9b3b-364f833bdb76-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "4d22h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=d4a0ed6b-2734-4422-9b3b-364f833bdb76-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "d6f68b3f-54f4-4820-b15a-f32e186b181a-kui-aaaa",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=d6f68b3f-54f4-4820-b15a-f32e186b181a-kui-aaaa"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "d6f68b3f-54f4-4820-b15a-f32e186b181a-kui-bbbb",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "20d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=d6f68b3f-54f4-4820-b15a-f32e186b181a-kui-bbbb"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "dce34466-1db6-48cc-b0ff-57c502d92fa4-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "8d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=dce34466-1db6-48cc-b0ff-57c502d92fa4-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "default",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "548d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=default"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "dfe5725b-e15e-4a76-acb1-5aaeabb986f6-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "42d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=dfe5725b-e15e-4a76-acb1-5aaeabb986f6-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "ea143cd8-28b9-471b-aa34-db1e743187fb-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "41d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=ea143cd8-28b9-471b-aa34-db1e743187fb-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "f4c2d9f7-d008-4a3a-8d07-7f9484b505b7-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "7h1m",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=f4c2d9f7-d008-4a3a-8d07-7f9484b505b7-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "f79ad08b-5741-42d9-ac84-364ccb52df4e-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "17d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=f79ad08b-5741-42d9-ac84-364ccb52df4e-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "ffe8338c-5271-402b-992c-7e376bbd0097-kui",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "4d22h",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=ffe8338c-5271-402b-992c-7e376bbd0097-kui"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "ibm-cert-store",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "548d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=ibm-cert-store"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "ibm-operators",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "26d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=ibm-operators"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "ibm-system",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "548d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=ibm-system"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "istio-system",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "548d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=istio-system"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "kube-node-lease",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "405d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=kube-node-lease"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "kube-public",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "548d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=kube-public"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "kube-system",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "548d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=kube-system"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "m2",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "111d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=m2"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "mmm",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "88d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=mmm"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "momo",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "121d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=momo"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "momo2",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "158d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=momo2"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "momo3",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "158d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=momo3"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "momo4",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "124d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=momo4"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "momo5",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "124d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=momo5"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "momo6",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "124d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=momo6"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "tekton-pipelines",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "475d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=tekton-pipelines"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "yoyo",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "50d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=yoyo"
+                      },
+                      {
+                        "nameIdx": 0,
+                        "cells": [
+                          "zomo",
+                          {
+                            "value": "Active",
+                            "hints": ["green-background", "hide-with-sidecar"]
+                          },
+                          {
+                            "value": "164d",
+                            "hints": ["hide-with-sidecar"]
+                          }
+                        ],
+                        "onSelect": "kubectl config set-context --current --namespace=zomo"
+                      }
+                    ]
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 250
+                }
+              },
+              {
+                "startTime": 1599845592316,
+                "startEvent": {
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "route": "/kubeui/contexts",
+                  "command": "contexts",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "contexts",
+                      "strict": "contexts",
+                      "docs": "List your available kubernetes contexts",
+                      "optional": [
+                        {
+                          "name": "-o",
+                          "docs": "Output format",
+                          "allowed": ["wide"]
+                        }
+                      ],
+                      "example": "kubectl contexts"
+                    },
+                    "flags": {
+                      "configuration": {
+                        "short-option-groups": false,
+                        "duplicate-arguments-array": false
+                      },
+                      "narg": {
+                        "w": 0,
+                        "watch": 0,
+                        "watch-only": 0
+                      },
+                      "boolean": [
+                        "w",
+                        "watch",
+                        "watch-only",
+                        "A",
+                        "all-namespaces",
+                        "ignore-not-found",
+                        "no-headers",
+                        "i",
+                        "it",
+                        "ti",
+                        "stdin",
+                        "t",
+                        "tty",
+                        "R",
+                        "recursive",
+                        "server-print",
+                        "show-kind",
+                        "show-labels"
+                      ]
+                    },
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execType": 0,
+                  "execUUID": "9acce167-b787-44c3-9a0b-34630249df57"
+                },
+                "completeEvent": {
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "execType": 0,
+                  "command": "contexts",
+                  "argvNoOptions": ["contexts"],
+                  "parsedOptions": {
+                    "_": ["contexts"]
+                  },
+                  "execUUID": "9acce167-b787-44c3-9a0b-34630249df57",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "plugin": "plugin-kubectl"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                    "execUUID": "9acce167-b787-44c3-9a0b-34630249df57",
+                    "history": 250,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "RadioTable",
+                    "title": "Kubernetes Contexts",
+                    "defaultSelectedIdx": 2,
+                    "header": {
+                      "nameIdx": 1,
+                      "cells": [
+                        {
+                          "value": "Name",
+                          "hints": [],
+                          "title": "Name"
+                        },
+                        {
+                          "value": "Cluster",
+                          "hints": ["hide-with-sidecar"],
+                          "title": "Cluster"
+                        },
+                        {
+                          "value": "Authinfo",
+                          "hints": ["hide-with-sidecar"],
+                          "title": "Authinfo"
+                        },
+                        {
+                          "value": "Namespace",
+                          "hints": ["hide-with-sidecar"],
+                          "title": "Namespace"
+                        }
+                      ]
+                    },
+                    "body": [
+                      {
+                        "nameIdx": 1,
+                        "cells": [
+                          {
+                            "value": "arn:aws:eks:us-east-1:581274594392:cluster/composer-demo",
+                            "hints": [],
+                            "title": "arn:aws:eks:us-east-1:581274594392:cluster/composer-demo"
+                          },
+                          {
+                            "value": "arn:aws:eks:us-east-1:581274594392:cluster/composer-demo",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "arn:aws:eks:us-east-1:581274594392:cluster/composer-demo"
+                          },
+                          {
+                            "value": "arn:aws:eks:us-east-1:581274594392:cluster/composer-demo",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "arn:aws:eks:us-east-1:581274594392:cluster/composer-demo"
+                          },
+                          {
+                            "value": "default",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "default"
+                          }
+                        ],
+                        "onSelect": "kubectl config use-context arn:aws:eks:us-east-1:581274594392:cluster/composer-demo"
+                      },
+                      {
+                        "nameIdx": 1,
+                        "cells": [
+                          {
+                            "value": "cloudshell_ci",
+                            "hints": [],
+                            "title": "cloudshell_ci"
+                          },
+                          {
+                            "value": "cloudshell_ci",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "cloudshell_ci"
+                          },
+                          {
+                            "value": "nickm@us.ibm.com",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "nickm@us.ibm.com"
+                          },
+                          {
+                            "value": "default",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "default"
+                          }
+                        ],
+                        "onSelect": "kubectl config use-context cloudshell_ci"
+                      },
+                      {
+                        "nameIdx": 1,
+                        "cells": [
+                          {
+                            "value": "dev2",
+                            "hints": [],
+                            "title": "dev2/f3ec154925a041f39389f895a203c513"
+                          },
+                          {
+                            "value": "dev2",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "dev2/f3ec154925a041f39389f895a203c513"
+                          },
+                          {
+                            "value": "nickm@us.ibm.com",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "nickm@us.ibm.com/bf0e28268cb86fb07f830a6af223278d"
+                          },
+                          {
+                            "value": "default",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "default"
+                          }
+                        ],
+                        "onSelect": "kubectl config use-context dev2/f3ec154925a041f39389f895a203c513"
+                      },
+                      {
+                        "nameIdx": 1,
+                        "cells": [
+                          {
+                            "value": "fabio1",
+                            "hints": [],
+                            "title": "fabio1/brm004cd0r8hjqf1ufsg"
+                          },
+                          {
+                            "value": "fabio1",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "fabio1/brm004cd0r8hjqf1ufsg"
+                          },
+                          {
+                            "value": "fabolive@us.ibm.com",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "fabolive@us.ibm.com/dec72a2b1560720351f34942eca1c884"
+                          },
+                          {
+                            "value": "default",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "default"
+                          }
+                        ],
+                        "onSelect": "kubectl config use-context fabio1/brm004cd0r8hjqf1ufsg"
+                      },
+                      {
+                        "nameIdx": 1,
+                        "cells": [
+                          {
+                            "value": "icp-context",
+                            "hints": [],
+                            "title": "icp-context"
+                          },
+                          {
+                            "value": "icp1",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "icp1"
+                          },
+                          {
+                            "value": "icp-user",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "icp-user"
+                          },
+                          {
+                            "value": "default",
+                            "hints": ["hide-with-sidecar"],
+                            "title": "default"
+                          }
+                        ],
+                        "onSelect": "kubectl config use-context icp-context"
+                      }
+                    ]
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 250
+                }
+              },
+              {
+                "startTime": 1599845628525,
+                "startEvent": {
+                  "tab": "5_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+                  "route": "/#",
+                  "command": "#  A plain terminal for you to issue other commands of your choosing",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        {
+                          "name": "--title",
+                          "alias": "-t",
+                          "docs": "Title for the commentary"
+                        },
+                        {
+                          "name": "--file",
+                          "alias": "-f",
+                          "docs": "File that contains the texts"
+                        }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "59e6a422-a11c-494f-af9c-a7860b752358"
+                },
+                "completeEvent": {
+                  "tab": "5_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+                  "execType": 0,
+                  "command": "# A plain terminal for you to issue other commands of your choosing",
+                  "argvNoOptions": ["#", "  A plain terminal for you to issue other commands of your choosing"],
+                  "parsedOptions": {
+                    "_": ["#", "  A plain terminal for you to issue other commands of your choosing"]
+                  },
+                  "execUUID": "59e6a422-a11c-494f-af9c-a7860b752358",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+                    "execUUID": "59e6a422-a11c-494f-af9c-a7860b752358",
+                    "history": 251,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "A plain terminal for you to issue other commands of your choosing"
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 251
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

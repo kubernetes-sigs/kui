@@ -2,7 +2,7 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Snapshot",
   "spec": {
-    "title": "Kui Settings",
+    "title": "Kui &mdash; Settings",
     "clicks": {
       "startEvents": {},
       "completeEvents": {}
@@ -15,9 +15,9 @@
             "uuid": "0",
             "blocks": [
               {
-                "startTime": 1599752321923,
+                "startTime": 1599846012756,
                 "startEvent": {
-                  "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/split",
                   "command": "split",
                   "evaluatorOptions": {
@@ -32,7 +32,7 @@
                   "echo": true
                 },
                 "completeEvent": {
-                  "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 1,
                   "command": "split",
                   "argvNoOptions": ["split"],
@@ -49,7 +49,6 @@
                   "execOptions": {
                     "echo": true,
                     "type": 1,
-                    "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
                     "execUUID": "a4e52722-8367-4f06-b2de-914a94d34b97",
                     "history": 215,
                     "env": {}
@@ -64,7 +63,7 @@
                         "kind": "CommentaryResponse",
                         "props": {
                           "elsewhere": true,
-                          "tabUUID": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                          "tabUUID": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                           "children": "Created a split"
                         }
                       }
@@ -75,9 +74,9 @@
                 }
               },
               {
-                "startTime": 1599752321966,
+                "startTime": 1599846012786,
                 "startEvent": {
-                  "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/split",
                   "command": "split --inverse",
                   "evaluatorOptions": {
@@ -92,7 +91,7 @@
                   "echo": true
                 },
                 "completeEvent": {
-                  "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 1,
                   "command": "split --inverse",
                   "argvNoOptions": ["split"],
@@ -110,7 +109,6 @@
                   "execOptions": {
                     "echo": true,
                     "type": 1,
-                    "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
                     "execUUID": "e06b4411-a261-461e-9331-765141933606",
                     "history": 216,
                     "env": {}
@@ -128,7 +126,7 @@
                         "kind": "CommentaryResponse",
                         "props": {
                           "elsewhere": true,
-                          "tabUUID": "3_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                          "tabUUID": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                           "children": "Created a split with inverted colors"
                         }
                       }
@@ -139,81 +137,9 @@
                 }
               },
               {
-                "startTime": 1599752322013,
+                "startTime": 1599846012852,
                 "startEvent": {
-                  "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/#",
-                  "command": "#             # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right.",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 1,
-                  "execUUID": "f8340aa4-5353-43ec-8944-f1df4ac4ac3b",
-                  "echo": true
-                },
-                "completeEvent": {
-                  "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 1,
-                  "command": "#            # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right.",
-                  "argvNoOptions": [
-                    "#",
-                    "             # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right."
-                  ],
-                  "parsedOptions": {
-                    "_": [
-                      "#",
-                      "             # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right."
-                    ]
-                  },
-                  "execUUID": "f8340aa4-5353-43ec-8944-f1df4ac4ac3b",
-                  "cancelled": false,
-                  "echo": true,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "echo": true,
-                    "type": 1,
-                    "tab": "3_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "f8340aa4-5353-43ec-8944-f1df4ac4ac3b",
-                    "history": 217,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "# Kui Settings\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right."
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 217
-                }
-              },
-              {
-                "startTime": 1599752322041,
-                "startEvent": {
-                  "tab": "3_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                   "route": "/themes",
                   "command": "themes",
                   "evaluatorOptions": {
@@ -225,18 +151,18 @@
                     "plugin": "plugin-core-support"
                   },
                   "execType": 1,
-                  "execUUID": "1c63fc5a-1419-4d5a-9172-ab47a4b47cb5",
+                  "execUUID": "e67dbf67-989a-42f3-af77-8b1f8d190df0",
                   "echo": true
                 },
                 "completeEvent": {
-                  "tab": "3_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                   "execType": 1,
                   "command": "themes",
                   "argvNoOptions": ["themes"],
                   "parsedOptions": {
                     "_": ["themes"]
                   },
-                  "execUUID": "1c63fc5a-1419-4d5a-9172-ab47a4b47cb5",
+                  "execUUID": "e67dbf67-989a-42f3-af77-8b1f8d190df0",
                   "cancelled": false,
                   "echo": true,
                   "evaluatorOptions": {
@@ -245,9 +171,9 @@
                   "execOptions": {
                     "echo": true,
                     "type": 1,
-                    "tab": "3_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                    "execUUID": "1c63fc5a-1419-4d5a-9172-ab47a4b47cb5",
-                    "history": 13,
+                    "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                    "execUUID": "e67dbf67-989a-42f3-af77-8b1f8d190df0",
+                    "history": 250,
                     "env": {}
                   },
                   "response": {
@@ -497,13 +423,13 @@
                     "defaultSelectedIdx": 0
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 13
+                  "historyIdx": 250
                 }
               },
               {
-                "startTime": 1599752322187,
+                "startTime": 1599846012929,
                 "startEvent": {
-                  "tab": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/#",
                   "command": "#     If you would like to deveop your own themes, check out the source for some of our themes:\\n\\n- Carbon Themes: https://github.com/IBM/kui/tree/master/plugins/plugin-carbon-themes\\n- PatternFly themes: https://github.com/IBM/kui/tree/master/plugins/plugin-patternfly4-themes\\n- Community themes: https://github.com/IBM/kui/tree/master/plugins/plugin-core-themes",
                   "evaluatorOptions": {
@@ -533,7 +459,7 @@
                   "echo": true
                 },
                 "completeEvent": {
-                  "tab": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 1,
                   "command": "#    If you would like to deveop your own themes, check out the source for some of our themes:\\n\\n- Carbon Themes: https://github.com/IBM/kui/tree/master/plugins/plugin-carbon-themes\\n- PatternFly themes: https://github.com/IBM/kui/tree/master/plugins/plugin-patternfly4-themes\\n- Community themes: https://github.com/IBM/kui/tree/master/plugins/plugin-core-themes",
                   "argvNoOptions": [
@@ -556,7 +482,6 @@
                   "execOptions": {
                     "echo": true,
                     "type": 1,
-                    "tab": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                     "execUUID": "a1977d06-fa2c-4d08-b03c-a1c79cdc6627",
                     "history": 8,
                     "env": {}
@@ -570,6 +495,76 @@
                   },
                   "responseType": "ScalarResponse",
                   "historyIdx": 8
+                }
+              },
+              {
+                "startTime": 1599846719903,
+                "startEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "route": "/#",
+                  "command": "#               # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right.\\n\\nYou may also be interested in configuring your [Kubernetes Settings](#kuiexec?command=tab%20new%20--cmdline%20%22replay%20%2Fkui%2Fkubernetes%2Fsettings.json%22%20--title%20%22Kubernetes%20%26mdash%3B%20Settings%22%20--status-stripe-type%20blue%20--status-stripe-message%20%22Kubernetes%20Settings%22)",
+                  "evaluatorOptions": {
+                    "usage": {
+                      "command": "commentary",
+                      "strict": "commentary",
+                      "example": "commentary -f [<markdown file path>]",
+                      "docs": "Commentary",
+                      "optional": [
+                        {
+                          "name": "--title",
+                          "alias": "-t",
+                          "docs": "Title for the commentary"
+                        },
+                        {
+                          "name": "--file",
+                          "alias": "-f",
+                          "docs": "File that contains the texts"
+                        }
+                      ]
+                    },
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execType": 0,
+                  "execUUID": "0db603be-d3bf-4593-aa4d-032d6e1cc53d"
+                },
+                "completeEvent": {
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 0,
+                  "command": "#              # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right.\\n\\nYou may also be interested in configuring your [Kubernetes Settings](#kuiexec?command=tab%20new%20--cmdline%20%22replay%20%2Fkui%2Fkubernetes%2Fsettings.json%22%20--title%20%22Kubernetes%20%26mdash%3B%20Settings%22%20--status-stripe-type%20blue%20--status-stripe-message%20%22Kubernetes%20Settings%22)",
+                  "argvNoOptions": [
+                    "#",
+                    "               # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right.\\n\\nYou may also be interested in configuring your [Kubernetes Settings](#kuiexec?command=tab%20new%20--cmdline%20%22replay%20%2Fkui%2Fkubernetes%2Fsettings.json%22%20--title%20%22Kubernetes%20%26mdash%3B%20Settings%22%20--status-stripe-type%20blue%20--status-stripe-message%20%22Kubernetes%20Settings%22)"
+                  ],
+                  "parsedOptions": {
+                    "_": [
+                      "#",
+                      "               # Kui Settings\\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right.\\n\\nYou may also be interested in configuring your [Kubernetes Settings](#kuiexec?command=tab%20new%20--cmdline%20%22replay%20%2Fkui%2Fkubernetes%2Fsettings.json%22%20--title%20%22Kubernetes%20%26mdash%3B%20Settings%22%20--status-stripe-type%20blue%20--status-stripe-message%20%22Kubernetes%20Settings%22)"
+                    ]
+                  },
+                  "execUUID": "0db603be-d3bf-4593-aa4d-032d6e1cc53d",
+                  "cancelled": false,
+                  "evaluatorOptions": {
+                    "outputOnly": true,
+                    "plugin": "plugin-client-common"
+                  },
+                  "execOptions": {
+                    "type": 0,
+                    "language": "en-US",
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "0db603be-d3bf-4593-aa4d-032d6e1cc53d",
+                    "history": 252,
+                    "env": {}
+                  },
+                  "response": {
+                    "apiVersion": "kui-shell/v1",
+                    "kind": "CommentaryResponse",
+                    "props": {
+                      "children": "# Kui Settings\nFrom this notebook, you may configure Kui. Try out some of the Kui themes on the right.\n\nYou may also be interested in configuring your [Kubernetes Settings](#kuiexec?command=tab%20new%20--cmdline%20%22replay%20%2Fkui%2Fkubernetes%2Fsettings.json%22%20--title%20%22Kubernetes%20%26mdash%3B%20Settings%22%20--status-stripe-type%20blue%20--status-stripe-message%20%22Kubernetes%20Settings%22)"
+                    }
+                  },
+                  "responseType": "ScalarResponse",
+                  "historyIdx": 252
                 }
               }
             ]

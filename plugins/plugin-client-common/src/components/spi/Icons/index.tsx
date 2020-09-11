@@ -29,6 +29,7 @@ export type SupportedIcon =
   | 'Checkmark'
   | 'CodeBranch'
   | 'Copy'
+  | 'Dashboard'
   | 'Edit'
   | 'Error'
   | 'Forward'

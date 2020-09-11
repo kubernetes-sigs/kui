@@ -96,11 +96,11 @@ export default class Scalar extends React.PureComponent<Props, State> {
       } else if (isCommentaryResponse(response)) {
         return (
           <span onClick={this.props.willFocusBlock}>
-            <Commentary {...response.props} />
+            <Commentary {...response.props} repl={tab.REPL} />
           </span>
         )
       } else if (isTabLayoutModificationResponse(response)) {
-        return <Commentary {...response.spec.ok.props} />
+        return <Commentary {...response.spec.ok.props} repl={tab.REPL} />
       } else if (isRadioTable(response)) {
         return (
           <KuiContext.Consumer>

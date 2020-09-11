@@ -15,17 +15,21 @@
  */
 
 import * as React from 'react'
-import { CommentaryResponse } from '@kui-shell/core'
+import { CommentaryResponse, REPL } from '@kui-shell/core'
 
 import Card from '../spi/Card'
 import Markdown from './Markdown'
 
-export default class Commentary extends React.PureComponent<CommentaryResponse['props']> {
+type Props = CommentaryResponse['props'] & {
+  repl: REPL
+}
+
+export default class Commentary extends React.PureComponent<Props> {
   public render() {
     if (this.props.elsewhere) {
       return (
         <span className="kui--repl-result-else">
-          <Markdown source={this.props.children} />
+          <Markdown source={this.props.children} repl={this.props.repl} />
         </span>
       )
     } else {

@@ -3,6 +3,10 @@
   "kind": "Snapshot",
   "spec": {
     "title": "Welcome to Kui",
+    "clicks": {
+      "startEvents": {},
+      "completeEvents": {}
+    },
     "windows": [
       {
         "uuid": "0",
@@ -11,42 +15,43 @@
             "uuid": "0",
             "blocks": [
               {
-                "startTime": 1599673259804,
+                "startTime": 1599846829232,
                 "startEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/split",
-                  "startTime": 1599579392573,
                   "command": "split",
                   "evaluatorOptions": {
                     "outputOnly": true,
                     "flags": {
-                      "boolean": ["debug", "inverse"]
+                      "boolean": ["inverse"]
                     },
                     "plugin": "plugin-client-common"
                   },
-                  "execType": 0,
-                  "execUUID": "88affb15-b90f-419a-a910-4f314b14b1e4"
+                  "execType": 1,
+                  "execUUID": "7242f329-20be-450a-9f6e-c13149a08469",
+                  "echo": true
                 },
                 "completeEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "completeTime": 1599579392611,
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 1,
                   "command": "split",
                   "argvNoOptions": ["split"],
                   "parsedOptions": {
                     "_": ["split"]
                   },
-                  "execUUID": "88affb15-b90f-419a-a910-4f314b14b1e4",
+                  "execUUID": "7242f329-20be-450a-9f6e-c13149a08469",
                   "cancelled": false,
+                  "echo": true,
                   "evaluatorOptions": {
                     "outputOnly": true,
                     "plugin": "plugin-client-common"
                   },
                   "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "88affb15-b90f-419a-a910-4f314b14b1e4",
-                    "history": 250,
+                    "echo": true,
+                    "type": 1,
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "7242f329-20be-450a-9f6e-c13149a08469",
+                    "history": 251,
                     "env": {}
                   },
                   "response": {
@@ -59,54 +64,55 @@
                         "kind": "CommentaryResponse",
                         "props": {
                           "elsewhere": true,
-                          "tabUUID": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                          "tabUUID": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                           "children": "Created a split"
                         }
                       }
                     }
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 250
+                  "historyIdx": 251
                 }
               },
               {
-                "startTime": 1599673259831,
+                "startTime": 1599846829263,
                 "startEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/split",
-                  "startTime": 1599579398762,
                   "command": "split --inverse",
                   "evaluatorOptions": {
                     "outputOnly": true,
                     "flags": {
-                      "boolean": ["debug", "inverse"]
+                      "boolean": ["inverse"]
                     },
                     "plugin": "plugin-client-common"
                   },
-                  "execType": 0,
-                  "execUUID": "39696ae8-4fb6-4eb4-931f-97b1d1eb8ac4"
+                  "execType": 1,
+                  "execUUID": "6d8fc5dc-a180-4d8a-8b3c-3495d568a73c",
+                  "echo": true
                 },
                 "completeEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "completeTime": 1599579398777,
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                  "execType": 1,
                   "command": "split --inverse",
                   "argvNoOptions": ["split"],
                   "parsedOptions": {
                     "_": ["split"],
                     "inverse": true
                   },
-                  "execUUID": "39696ae8-4fb6-4eb4-931f-97b1d1eb8ac4",
+                  "execUUID": "6d8fc5dc-a180-4d8a-8b3c-3495d568a73c",
                   "cancelled": false,
+                  "echo": true,
                   "evaluatorOptions": {
                     "outputOnly": true,
                     "plugin": "plugin-client-common"
                   },
                   "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "39696ae8-4fb6-4eb4-931f-97b1d1eb8ac4",
-                    "history": 251,
+                    "echo": true,
+                    "type": 1,
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "6d8fc5dc-a180-4d8a-8b3c-3495d568a73c",
+                    "history": 252,
                     "env": {}
                   },
                   "response": {
@@ -122,23 +128,22 @@
                         "kind": "CommentaryResponse",
                         "props": {
                           "elsewhere": true,
-                          "tabUUID": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                          "tabUUID": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                           "children": "Created a split with inverted colors"
                         }
                       }
                     }
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 251
+                  "historyIdx": 252
                 }
               },
               {
-                "startTime": 1599673259860,
+                "startTime": 1599846829307,
                 "startEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
-                  "startTime": 1599579412335,
-                  "command": "#                                # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
+                  "command": "#                                    # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -162,25 +167,24 @@
                     "plugin": "plugin-client-common"
                   },
                   "execType": 1,
-                  "execUUID": "9d2b87ec-16af-4fe9-aeab-49e6f1f2c1e2",
+                  "execUUID": "dd963c37-cffe-48ad-90a6-16f4e9a61ded",
                   "echo": true
                 },
                 "completeEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 1,
-                  "completeTime": 1599579412351,
-                  "command": "#                               # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
+                  "command": "#                                   # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
                   "argvNoOptions": [
                     "#",
-                    "                                # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                    "                                    # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "                                # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                      "                                    # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                     ]
                   },
-                  "execUUID": "9d2b87ec-16af-4fe9-aeab-49e6f1f2c1e2",
+                  "execUUID": "dd963c37-cffe-48ad-90a6-16f4e9a61ded",
                   "cancelled": false,
                   "echo": true,
                   "evaluatorOptions": {
@@ -190,8 +194,9 @@
                   "execOptions": {
                     "echo": true,
                     "type": 1,
-                    "execUUID": "9d2b87ec-16af-4fe9-aeab-49e6f1f2c1e2",
-                    "history": 252,
+                    "tab": "5_c57e811f-2da8-557e-a402-9f0950407675",
+                    "execUUID": "dd963c37-cffe-48ad-90a6-16f4e9a61ded",
+                    "history": 253,
                     "env": {}
                   },
                   "response": {
@@ -202,16 +207,15 @@
                     }
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 252
+                  "historyIdx": 253
                 }
               },
               {
-                "startTime": 1599673259878,
+                "startTime": 1599846829377,
                 "startEvent": {
-                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/#",
-                  "startTime": 1599579430932,
-                  "command": "#       If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui",
+                  "command": "#           If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -234,35 +238,37 @@
                     "outputOnly": true,
                     "plugin": "plugin-client-common"
                   },
-                  "execType": 0,
-                  "execUUID": "1a0ecd6d-e61d-40f0-a966-44fe043068e2"
+                  "execType": 1,
+                  "execUUID": "178168cd-50b0-4072-8a60-655c63ecbd3a",
+                  "echo": true
                 },
                 "completeEvent": {
-                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
-                  "execType": 0,
-                  "completeTime": 1599579430951,
-                  "command": "#      If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui",
+                  "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "execType": 1,
+                  "command": "#          If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui",
                   "argvNoOptions": [
                     "#",
-                    "       If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui"
+                    "           If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui"
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "       If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui"
+                      "           If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui"
                     ]
                   },
-                  "execUUID": "1a0ecd6d-e61d-40f0-a966-44fe043068e2",
+                  "execUUID": "178168cd-50b0-4072-8a60-655c63ecbd3a",
                   "cancelled": false,
+                  "echo": true,
                   "evaluatorOptions": {
                     "outputOnly": true,
                     "plugin": "plugin-client-common"
                   },
                   "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "1a0ecd6d-e61d-40f0-a966-44fe043068e2",
-                    "history": 90,
+                    "echo": true,
+                    "type": 1,
+                    "tab": "5_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                    "execUUID": "178168cd-50b0-4072-8a60-655c63ecbd3a",
+                    "history": 250,
                     "env": {}
                   },
                   "response": {
@@ -273,16 +279,15 @@
                     }
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 90
+                  "historyIdx": 250
                 }
               },
               {
-                "startTime": 1599673259896,
+                "startTime": 1599846829406,
                 "startEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                   "route": "/#",
-                  "startTime": 1599579459491,
-                  "command": "#  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
+                  "command": "#      To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -305,34 +310,36 @@
                     "outputOnly": true,
                     "plugin": "plugin-client-common"
                   },
-                  "execType": 0,
-                  "execUUID": "df451c89-a2cd-44a6-828d-e4e590f7a5d5"
+                  "execType": 1,
+                  "execUUID": "c147668d-5170-4c9b-928e-b45743df766d",
+                  "echo": true
                 },
                 "completeEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                  "execType": 0,
-                  "completeTime": 1599579459509,
-                  "command": "# To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "execType": 1,
+                  "command": "#     To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
                   "argvNoOptions": [
                     "#",
-                    "  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
+                    "      To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
+                      "      To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
                     ]
                   },
-                  "execUUID": "df451c89-a2cd-44a6-828d-e4e590f7a5d5",
+                  "execUUID": "c147668d-5170-4c9b-928e-b45743df766d",
                   "cancelled": false,
+                  "echo": true,
                   "evaluatorOptions": {
                     "outputOnly": true,
                     "plugin": "plugin-client-common"
                   },
                   "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "df451c89-a2cd-44a6-828d-e4e590f7a5d5",
+                    "echo": true,
+                    "type": 1,
+                    "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                    "execUUID": "c147668d-5170-4c9b-928e-b45743df766d",
                     "history": 250,
                     "env": {}
                   },
@@ -348,9 +355,9 @@
                 }
               },
               {
-                "startTime": 1599673284918,
+                "startTime": 1599846829452,
                 "startEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                   "route": "/ls",
                   "command": "ls -l /kui/**/*.json",
                   "evaluatorOptions": {
@@ -428,28 +435,30 @@
                     },
                     "plugin": "plugin-bash-like/fs"
                   },
-                  "execType": 0,
-                  "execUUID": "af602715-21a4-4faf-bdfb-c3bc479aa1a4"
+                  "execType": 1,
+                  "execUUID": "0d0d3873-6c31-4343-82d4-6a49b6f7f5b9",
+                  "echo": true
                 },
                 "completeEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                  "execType": 0,
+                  "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "execType": 1,
                   "command": "ls -l /kui/**/*.json",
                   "argvNoOptions": ["ls", "/kui/**/*.json"],
                   "parsedOptions": {
                     "_": ["ls", "/kui/**/*.json"],
                     "l": true
                   },
-                  "execUUID": "af602715-21a4-4faf-bdfb-c3bc479aa1a4",
+                  "execUUID": "0d0d3873-6c31-4343-82d4-6a49b6f7f5b9",
                   "cancelled": false,
+                  "echo": true,
                   "evaluatorOptions": {
                     "plugin": "plugin-bash-like/fs"
                   },
                   "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                    "execUUID": "af602715-21a4-4faf-bdfb-c3bc479aa1a4",
+                    "echo": true,
+                    "type": 1,
+                    "tab": "5_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                    "execUUID": "0d0d3873-6c31-4343-82d4-6a49b6f7f5b9",
                     "history": 251,
                     "env": {}
                   },
@@ -460,6 +469,14 @@
                     },
                     "body": [
                       {
+                        "name": "Kubernetes &mdash; `Dashboard`",
+                        "css": "",
+                        "onclickExec": "pexec",
+                        "onclick": "open /kui/kubernetes/dashboard.json",
+                        "attributes": [],
+                        "key": "Name"
+                      },
+                      {
                         "name": "Kubernetes &mdash; `Listing Resources`",
                         "css": "",
                         "onclickExec": "pexec",
@@ -468,10 +485,26 @@
                         "key": "Name"
                       },
                       {
+                        "name": "Kubernetes &mdash; `Settings`",
+                        "css": "",
+                        "onclickExec": "pexec",
+                        "onclick": "open /kui/kubernetes/settings.json",
+                        "attributes": [],
+                        "key": "Name"
+                      },
+                      {
                         "name": "Kubernetes &mdash; `Working with Jobs`",
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/kubernetes/create-jobs.json",
+                        "attributes": [],
+                        "key": "Name"
+                      },
+                      {
+                        "name": "Kui &mdash; Settings",
+                        "css": "",
+                        "onclickExec": "pexec",
+                        "onclick": "open /kui/settings.json",
                         "attributes": [],
                         "key": "Name"
                       },

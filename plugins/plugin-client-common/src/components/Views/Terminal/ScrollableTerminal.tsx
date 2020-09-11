@@ -314,6 +314,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const onSnapshot = (evt: SnapshotRequestEvent) => {
       const scrollbackIdx = this.findSplit(this.state, sbuuid)
       if (scrollbackIdx < 0) {
+        console.error('Could not find split', sbuuid, this.state)
         throw new Error('Invalid state')
       } else {
         const { blocks } = this.state.splits[scrollbackIdx]

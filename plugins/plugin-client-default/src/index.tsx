@@ -17,7 +17,14 @@
 import * as React from 'react'
 
 import { i18n, inBrowser } from '@kui-shell/core'
-import { Kui, KuiProps, ContextWidgets, MeterWidgets, CurrentWorkingDirectory } from '@kui-shell/plugin-client-common'
+import {
+  Kui,
+  KuiProps,
+  ContextWidgets,
+  MeterWidgets,
+  CurrentWorkingDirectory,
+  NotebookButton
+} from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
@@ -74,6 +81,14 @@ export default function renderMain(props: KuiProps) {
         {!inBrowser() && <UpdateChecker />}
         <Screenshot />
       </MeterWidgets>
+
+      <NotebookButton
+        id="kui--kubernetes-dashboard-button"
+        title={strings('View the Kubernetes dashboard')}
+        tabTitle={strings('Kubernetes &mdash; Dashboard')}
+        notebook="/kui/kubernetes/dashboard.json"
+        icon="Dashboard"
+      />
     </Kui>
   )
 }
