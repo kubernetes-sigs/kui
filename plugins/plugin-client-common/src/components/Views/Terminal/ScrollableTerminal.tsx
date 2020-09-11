@@ -32,6 +32,7 @@ import {
   TabLayoutModificationResponse,
   isTabLayoutModificationResponse,
   NewSplitRequest,
+  isOfflineClient,
   isNewSplitRequest,
   isWatchable,
   SnapshotRequestEvent
@@ -928,7 +929,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     model={_}
                     uuid={scrollback.uuid}
                     tab={tab}
-                    noActiveInput={this.props.noActiveInput}
+                    noActiveInput={this.props.noActiveInput || isOfflineClient()}
                     onOutputRender={this.onOutputRender.bind(this, scrollback)}
                     willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
