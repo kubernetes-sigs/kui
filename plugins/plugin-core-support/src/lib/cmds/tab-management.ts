@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  eventBus,
-  eventChannelUnsafe,
-  getPrimaryTabId,
-  i18n,
-  pexecInCurrentTab,
-  KResponse,
-  Registrar,
-  StatusStripeChangeEvent,
-  Tab
-} from '@kui-shell/core'
+import { eventBus, getPrimaryTabId, i18n, KResponse, Registrar, StatusStripeChangeEvent, Tab } from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
@@ -96,21 +86,15 @@ export default function plugin(commandTree: Registrar) {
       }
 
       if (args.parsedOptions.cmdline) {
-        const { allocateTabUUID } = await import('@kui-shell/plugin-client-common')
-
         return new Promise(resolve => {
-          const uuid = allocateTabUUID()
           eventBus.emit('/tab/new/request', {
-            uuid,
             title: args.parsedOptions.title,
             background: args.parsedOptions.bg,
+            cmdline: args.parsedOptions.cmdline,
             statusStripeDecoration
           })
 
-          eventChannelUnsafe.once(`/tab/new/${uuid}`, (tab: Tab) => {
-            pexecInCurrentTab(args.parsedOptions.cmdline, tab)
-            resolve(ok)
-          })
+          resolve(ok)
         })
       } else {
         eventBus.emit('/tab/new/request', {

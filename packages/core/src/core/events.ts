@@ -60,9 +60,6 @@ class EventBusBase {
 }
 
 interface NewTabRequestEvent {
-  /** Optionally force use of this tab UUID */
-  uuid?: string
-
   /** Optionally specify color and message to display in the StatusStripe */
   statusStripeDecoration?: StatusStripeChangeEvent
 
@@ -71,6 +68,9 @@ interface NewTabRequestEvent {
 
   /** Optionally specify to create the new tab without switching to it */
   background?: boolean
+
+  /** Optionally execute a command in the new tab */
+  cmdline?: string
 }
 
 class WriteEventBus extends EventBusBase {

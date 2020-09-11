@@ -33,7 +33,8 @@ export default class TabModel {
     background?: boolean,
     private readonly _title?: string,
     private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
-    private readonly _buttons: TopTabButton[] = []
+    private readonly _buttons: TopTabButton[] = [],
+    private readonly _initialCommandLine?: string
   ) {
     this._state.capture()
 
@@ -58,7 +59,11 @@ export default class TabModel {
     return this._title
   }
 
+  public get initialCommandLine() {
+    return this._initialCommandLine
+  }
+
   public update(buttons: TopTabButton[]) {
-    return new TabModel(this.uuid, undefined, undefined, this.title, this.state, buttons)
+    return new TabModel(this.uuid, undefined, undefined, this.title, this.state, buttons, undefined)
   }
 }

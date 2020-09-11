@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { StatusStripeChangeEvent, Tab, eventBus } from '@kui-shell/core'
+import { StatusStripeChangeEvent, Tab, eventBus, pexecInCurrentTab } from '@kui-shell/core'
 
 import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
@@ -60,8 +60,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       activeIdx: 0
     }
 
-    eventBus.on('/tab/new/request', ({ uuid, statusStripeDecoration, title, background } = {}) => {
-      this.onNewTab(uuid, statusStripeDecoration, background, title)
+    eventBus.on('/tab/new/request', ({ statusStripeDecoration, title, background, cmdline } = {}) => {
+      this.onNewTab(statusStripeDecoration, background, title, cmdline)
     })
 
     eventBus.on('/tab/switch/request', (idx: number) => {
@@ -153,19 +153,22 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   private newTabModel(
-    useThisUUID?: string,
     statusStripeDecoration?: StatusStripeChangeEvent,
     background?: boolean,
-    title?: string
+    title?: string,
+    cmdline?: string
   ) {
     // !this.state means: if this is the very first tab we've ever
     // !created, *and* we were given an initial title (via
     // !this.props.title), then use that
     const model = new TabModel(
-      useThisUUID,
+      undefined,
       statusStripeDecoration,
       background,
-      title || (!this.state && this.props.title ? this.props.title : undefined)
+      title || (!this.state && this.props.title ? this.props.title : undefined),
+      undefined,
+      undefined,
+      cmdline
     )
     this.listenForTabClose(model)
     return model
@@ -176,19 +179,26 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    *
    */
   private onNewTab(
-    useThisUUID?: string,
     statusStripeDecoration?: StatusStripeChangeEvent,
     background = false,
-    title?: string
+    title?: string,
+    cmdline?: string
   ) {
-    if (title && this.state.tabs.find(_ => _.title === title)) {
-      console.error('NOPE')
-      return
+    // if we already have a tab with this title, and this isn't a
+    // background tab, then switch to it
+    if (title) {
+      const existingIdx = this.state.tabs.findIndex(_ => _.title === title)
+      if (existingIdx >= 0) {
+        if (!background) {
+          this.onSwitchTab(existingIdx)
+        }
+        return
+      }
     }
 
     this.captureState()
 
-    const model = this.newTabModel(useThisUUID, statusStripeDecoration, background, title)
+    const model = this.newTabModel(statusStripeDecoration, background, title, cmdline)
 
     this.setState(curState => ({
       tabs: curState.tabs.concat(model),
@@ -232,11 +242,27 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   private onTabReady(tab: Tab) {
-    if (this.props.onTabReady) {
-      this.props.onTabReady(tab)
+    // "initial tab" handling
+    if (!this.state.isFirstTabReady) {
+      if (this.props.onTabReady) {
+        this.props.onTabReady(tab)
+      }
+      this.setState({ isFirstTabReady: true })
     }
-    this.setState({ isFirstTabReady: true })
+
+    // then, for all tabs: we were asked to execute a command line in
+    // the new tab?
+    const tabModel = this.state.tabs.find(_ => _.uuid === tab.uuid)
+    if (tabModel && tabModel.initialCommandLine) {
+      try {
+        pexecInCurrentTab(tabModel.initialCommandLine, tab)
+      } catch (err) {
+        console.error('Error executing initial command line in new tab', err)
+      }
+    }
   }
+
+  private readonly _onTabReady = this.onTabReady.bind(this)
 
   public render() {
     return (
@@ -252,15 +278,13 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         <div className="tab-container">
           {this.state.tabs.map((_, idx) => (
             <TabContent
+              {...this.props}
               key={_.uuid}
               uuid={_.uuid}
               active={idx === this.state.activeIdx}
               willUpdateTopTabButtons={this.willUpdateTopTabButtons.bind(this, _.uuid)}
-              onTabReady={
-                idx === 0 && this.props.onTabReady && !this.state.isFirstTabReady && this.onTabReady.bind(this)
-              }
+              onTabReady={this._onTabReady}
               state={_.state}
-              {...this.props}
             >
               {this.children(_.uuid)}
             </TabContent>
