@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import { createNS, waitForGreen, waitForRed, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -253,8 +251,8 @@ wdescribe(`kubectl watch error handler via watch pane ${process.env.MOCHA_RUN_TA
 
       // remove the original block
       this.app.client.click(Selectors.PROMPT_BLOCK_MENU(N))
-      await this.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON)
-      this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON)
+      await this.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON(N))
+      this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON(N))
 
       // unpin the last watcher
       await this.app.client.click(Selectors.SPLIT_N_MENU(2))

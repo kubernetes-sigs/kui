@@ -37,8 +37,8 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
       // rerun about
       await this.app.client.click(Selectors.PROMPT_N(res.count))
-      await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON)
-      await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON)
+      await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON(res.count))
+      await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON(res.count))
 
       // sidecar should open
       await this.app.client.waitForVisible(Selectors.SIDECAR)
@@ -58,8 +58,8 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       const cdDirectory = await this.app.client.getText(Selectors.OUTPUT_LAST)
 
       await this.app.client.click(Selectors.PROMPT_N(pwdRes.count))
-      await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON)
-      await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON)
+      await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON(pwdRes.count))
+      await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON(pwdRes.count))
 
       let idx = 0
       await this.app.client.waitUntil(async () => {

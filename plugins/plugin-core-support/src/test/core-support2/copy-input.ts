@@ -29,10 +29,10 @@ describe(`copy command input ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
       const N = res.count
       await this.app.client.click(Selectors.PROMPT_N(N))
-      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_BUTTON)
-      await this.app.client.click(Selectors.COMMAND_COPY_BUTTON)
-      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_DONE_BUTTON)
-      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_BUTTON)
+      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_BUTTON(N))
+      await this.app.client.click(Selectors.COMMAND_COPY_BUTTON(N))
+      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_DONE_BUTTON(N))
+      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_DONE_BUTTON(N))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
