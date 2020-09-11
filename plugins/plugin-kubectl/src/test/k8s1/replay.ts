@@ -95,3 +95,38 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
 
   deleteNS(this, ns, 'kubectl')
 })
+
+describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}`, async function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const ns: string = createNS()
+  const inNamespace = `-n ${ns}`
+
+  allocateNS(this, ns, 'kubectl')
+
+  it('should replay a kubectl get pods table with re-execution ', async () => {
+    try {
+      const res = await CLI.command(`kubectl get pods ${inNamespace}`, this.app)
+      await ReplExpect.error(127)(res)
+
+      const selector = await CLI.command(
+        `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+        this.app
+      ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+
+      await waitForGreen(this.app, selector)
+
+      await CLI.command('snapshot /tmp/test.kui --exec', this.app).then(ReplExpect.justOK)
+      await Common.refresh(this)
+
+      await CLI.command('replay /tmp/test.kui', this.app)
+
+      await this.app.client.waitForVisible(Selectors.LIST_RESULT_BY_N_FOR_NAME(res.count, 'nginx'))
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  deleteNS(this, ns, 'kubectl')
+})
