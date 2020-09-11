@@ -3,6 +3,7 @@
   "kind": "Snapshot",
   "spec": {
     "title": "Kui Settings",
+    "preferReExecute": true,
     "clicks": {
       "startEvents": {},
       "completeEvents": {}
