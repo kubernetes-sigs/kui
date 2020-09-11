@@ -107,7 +107,7 @@ export default class Actions extends React.PureComponent<Props> {
 
   public render() {
     return (
-      <React.Fragment>
+      <div className="kui--block-actions-buttons">
         <div className="kui-block-actions-others">
           {this.copyAction()}
           {this.rerunAction()}
@@ -116,7 +116,7 @@ export default class Actions extends React.PureComponent<Props> {
         {this.upwardAction()}
         {this.downwardAction()}
         {this.removeAction()}
-      </React.Fragment>
+      </div>
     )
   }
 }
