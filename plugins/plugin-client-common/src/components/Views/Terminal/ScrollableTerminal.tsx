@@ -261,7 +261,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** move the given block upward */
   private willMoveUpward(sbuuid: string, idx: number) {
     this.splice(sbuuid, curState => {
+      // Notes: we want to keep the block we are moving focused, so we
+      // also update the focusedBlockIdx
       return {
+        focusedBlockIdx: idx - 1,
         blocks: curState.blocks
           .slice(0, idx - 1)
           .concat(curState.blocks[idx])
@@ -274,7 +277,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** move the given block downward */
   private willMoveDownward(sbuuid: string, idx: number) {
     this.splice(sbuuid, curState => {
+      // Notes: we want to keep the block we are moving focused, so we
+      // also update the focusedBlockIdx
       return {
+        focusedBlockIdx: idx + 1,
         blocks: curState.blocks
           .slice(0, idx)
           .concat(curState.blocks[idx + 1])
