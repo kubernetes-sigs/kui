@@ -522,8 +522,8 @@ export default class Input extends InputProvider {
   } */
 
   /** DropDown menu for completed blocks */
-  private dropdown(command: string) {
-    if (this.props.isFocused && isFinished(this.props.model) && this.props.tab && this.props.model) {
+  private actions(command: string) {
+    if (isFinished(this.props.model) && this.props.tab && this.props.model) {
       return <Actions command={command} {...this.props} />
     }
   }
@@ -544,7 +544,7 @@ export default class Input extends InputProvider {
       <span className="repl-prompt-right-elements">
         {this.experimentalTag()}
         {this.timestamp()}
-        {this.dropdown(input)}
+        {this.actions(input)}
       </span>
     )
   }

@@ -59,8 +59,8 @@
   .repl-prompt-right-elements {
     display: flex;
     align-items: center;
-    flex: 0;
     white-space: nowrap;
+    overflow: hidden;
   }
   .kui--repl-prompt-buttons {
     margin-right: 1rem;

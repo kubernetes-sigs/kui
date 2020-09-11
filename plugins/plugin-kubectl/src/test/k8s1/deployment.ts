@@ -52,6 +52,8 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
         await waitForGreen(this.app, selector)
 
+        await this.app.client.waitForVisible(`${selector} [data-value="myapp"].clickable`)
+        await this.app.client.moveToObject(`${selector} [data-value="myapp"].clickable`)
         await this.app.client.click(`${selector} [data-value="myapp"].clickable`)
 
         await SidecarExpect.open(this.app)

@@ -29,8 +29,23 @@ $action-padding: 3px;
   padding-right: calc(1rem - 6px);
 }
 
+@mixin show-block-action-buttons {
+  .kui--block-actions-buttons {
+    width: auto;
+    margin-left: 0.5rem;
+  }
+}
+
 /** Coloring the context border by status of the block */
 @include Scrollback {
+  .repl-input:hover {
+    @include show-block-action-buttons;
+
+    .kui--repl-block-timestamp {
+      display: none;
+    }
+  }
+
   .repl-block {
     position: relative;
 
@@ -86,8 +101,20 @@ $action-padding: 3px;
       }
     }
 
-    .kui--block-action {
+    .kui--block-actions-buttons {
+      align-items: center;
       display: flex;
+      width: 0;
+    }
+
+    &[data-is-focused] {
+      @include show-block-action-buttons;
+    }
+
+    .kui--block-action {
+      align-items: center;
+      display: flex;
+      margin-right: $action-padding;
       padding: $action-padding;
       color: var(--color-text-01);
 
@@ -109,6 +136,8 @@ $action-padding: 3px;
     }
 
     .kui-block-actions-others {
+      padding-right: $action-padding;
+      margin-right: $action-padding;
       display: flex;
       border-right: 1px solid var(--color-table-border2);
     }
