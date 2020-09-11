@@ -18,6 +18,7 @@ import {
   eventBus,
   eventChannelUnsafe,
   getPrimaryTabId,
+  i18n,
   pexecInCurrentTab,
   KResponse,
   Registrar,
@@ -28,6 +29,7 @@ import {
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
 
+const strings = i18n('plugin-core-support')
 const usage = {
   strict: 'switch',
   command: 'switch',
@@ -80,6 +82,19 @@ export default function plugin(commandTree: Registrar) {
         (args.execOptions.data ? args.execOptions.data['status-stripe-message'] : undefined)
       const statusStripeDecoration = { type: args.parsedOptions['status-stripe-type'], message }
 
+      const ok = {
+        apiVersion: 'kui-shell/v1',
+        kind: 'CommentaryResponse',
+        props: {
+          elsewhere: true,
+          tabUUID: '0',
+          tab: undefined,
+          children: args.parsedOptions.title
+            ? strings('Created a new tab named X', args.parsedOptions.title)
+            : strings('Created a new tab')
+        }
+      }
+
       if (args.parsedOptions.cmdline) {
         const { allocateTabUUID } = await import('@kui-shell/plugin-client-common')
 
@@ -94,7 +109,7 @@ export default function plugin(commandTree: Registrar) {
 
           eventChannelUnsafe.once(`/tab/new/${uuid}`, (tab: Tab) => {
             pexecInCurrentTab(args.parsedOptions.cmdline, tab)
-            resolve(true)
+            resolve(ok)
           })
         })
       } else {
@@ -103,10 +118,11 @@ export default function plugin(commandTree: Registrar) {
           title: args.parsedOptions.title,
           background: args.parsedOptions.bg
         })
-        return true
+        return ok
       }
     },
     {
+      outputOnly: true,
       usage: {
         optional: [
           { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
