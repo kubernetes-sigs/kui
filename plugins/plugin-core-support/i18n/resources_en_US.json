@@ -7,6 +7,8 @@
   "helpUsageHeader": "A summary of the top-level command structure",
   "Tab": "Tab",
   "New Tab": "New Tab",
+  "Created a new tab": "Created a new tab",
+  "Created a new tab named X": "Created a new tab **{0}**",
   "Theme": "Theme",
   "Provider": "Provider",
   "Style": "Style",
