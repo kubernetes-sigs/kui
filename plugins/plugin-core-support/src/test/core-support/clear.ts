@@ -18,9 +18,18 @@ import * as assert from 'assert'
 
 import { Common, CLI, Keys, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 
+export function doClear(this: Common.ISuite, residualBlockCount = 1) {
+  return CLI.command('clear', this.app)
+    .then(() => ReplExpect.consoleToBeClear(this.app, residualBlockCount))
+    .then(() => SidecarExpect.closed)
+    .catch(Common.oops(this, true))
+}
+
 describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+
+  const clear = doClear.bind(this)
 
   interface PromptOptions {
     enteredString?: string
@@ -71,11 +80,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   // get something on the screen
   it(`should sleep`, () => CLI.command('sleep 1', this.app).catch(Common.oops(this, true)))
 
-  it('should clear the console', () =>
-    CLI.command('clear', this.app)
-      .then(() => ReplExpect.consoleToBeClear(this.app))
-      .then(() => SidecarExpect.closed)
-      .catch(Common.oops(this, true)))
+  it('should clear the console', () => clear())
 
   // get something on the screen
   it(`should sleep again`, () => CLI.command('sleep 1', this.app).catch(Common.oops(this, true)))
