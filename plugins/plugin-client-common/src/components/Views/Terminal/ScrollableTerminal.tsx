@@ -291,11 +291,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
-  private scrollback(
-    capturedValue?: string,
-    sbuuid = this.allocateUUIDForScrollback(),
-    opts: ScrollbackOptions = {}
-  ): ScrollbackState {
+  private scrollback(sbuuid = this.allocateUUIDForScrollback(), opts: ScrollbackOptions = {}): ScrollbackState {
     const state: ScrollbackState = {
       uuid: sbuuid,
       cleaners: [],
@@ -303,7 +299,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       nAnnouncements: 0,
       inverseColors: opts.inverseColors,
       showThisIdxInMiniSplit: -2,
-      blocks: (capturedValue !== undefined ? [] : this.restoreBlocks(sbuuid)).concat([Active(capturedValue)])
+      blocks: this.restoreBlocks(sbuuid).concat([Active()])
     }
 
     // prefetch command history; this helps with master history
@@ -331,11 +327,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     eventBus.onSnapshotRequest(onSnapshot)
     state.cleaners.push(() => eventBus.offSnapshotRequest(onSnapshot))
 
-    eventBus.onceWithTabId('/tab/close/request', sbuuid, async () => {
+    const onTabCloseRequest = async () => {
       // async, to allow for e.g. command completion events to finish
       // propagating to the split before we remove it
       setTimeout(() => this.removeSplit(sbuuid))
-    })
+    }
+    eventBus.onceWithTabId('/tab/close/request', sbuuid, onTabCloseRequest)
+    state.cleaners.push(() => eventBus.offWithTabId('/tab/close/request', sbuuid, onTabCloseRequest))
 
     return this.initEvents(state)
   }
@@ -362,23 +360,28 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.props.closeSidecar()
     } */
 
-    this.splice(uuid, ({ _activeBlock, blocks, cleaners }) => {
-      cleaners.forEach(cleaner => cleaner())
-      blocks.forEach(this.removeWatchableBlock)
+    this.splice(uuid, scrollback => {
+      const residualBlocks = scrollback.blocks.filter((_, idx) => {
+        const isLastActiveBlock = isActive(_) && idx === scrollback.blocks.length - 1
+        const isPertainingToLiveSplit =
+          isOk(_) &&
+          isTabLayoutModificationResponse(_.response) &&
+          isNewSplitRequest(_.response) &&
+          this.findSplit(this.state, _.response.spec.ok.props.tabUUID) >= 0
 
-      /* History(uuid).hide(
-        blocks
-          .map(_ => {
-            if (isOk(_) || (isOops(_) && _.historyIdx !== -1)) {
-              return _.historyIdx
-            }
-          })
-          .filter(_ => _)
-      ) */
+        const keepIt = isLastActiveBlock || isPertainingToLiveSplit
 
-      // capture the value of the last input
-      const capturedValue = _activeBlock ? _activeBlock.inputValue() : ''
-      return this.scrollback(capturedValue, uuid)
+        if (!keepIt) {
+          this.removeWatchableBlock(_)
+        }
+
+        return keepIt
+      })
+
+      return Object.assign(scrollback, {
+        blocks: residualBlocks,
+        focusedBlockIdx: residualBlocks.length - 1
+      })
     })
   }
 
@@ -602,7 +605,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (nTerminals === MAX_TERMINALS) {
       return new Error(strings('No more splits allowed'))
     } else {
-      const newScrollback = this.scrollback(undefined, undefined, request.spec.options)
+      const newScrollback = this.scrollback(undefined, request.spec.options)
       request.spec.ok.props.tab = () => newScrollback.facade
       request.spec.ok.props.tabUUID = newScrollback.uuid
 

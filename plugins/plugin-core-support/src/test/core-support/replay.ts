@@ -18,6 +18,7 @@ import { existsSync, unlinkSync, statSync } from 'fs'
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect, testAbout } from '@kui-shell/test'
 
 import { splitViaCommand, focus } from '../core-support2/split-helpers'
+import { doClear } from './clear'
 
 const base64Input = 'hi'
 const base64Output = Buffer.from(base64Input).toString('base64')
@@ -106,12 +107,13 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   })
 })
 
-describe(`split, snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, async function(this: Common.ISuite) {
+describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   const splitTheTerminalViaCommand = splitViaCommand.bind(this)
   const clickToFocus = focus.bind(this)
+  const clear = doClear.bind(this)
 
   const doBase64 = (splitIdx: number) => {
     clickToFocus(splitIdx)
@@ -128,8 +130,15 @@ describe(`split, snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, asy
         .catch(Common.oops(this, true)))
   }
 
-  doBase64(1)
+  // Split the terminal, then validate that the snapshot will still
+  // replay with the split, despite the intervening clear. The 3
+  // argument to clear means we expect 3 residual blocks: 1 in the new
+  // split + 2 in the first split: one for the active block and one
+  // for the split command output
   splitTheTerminalViaCommand(2)
+  it('should clear the console', () => clear(3))
+
+  doBase64(1)
   clickToFocus(2)
   doBase64(2)
 
@@ -145,7 +154,7 @@ describe(`split, snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, asy
       let idx = 0
       await this.app.client.waitUntil(async () => {
         // commands in split1: [session connect in browser],base64, split, version
-        const base64InSplit1 = await this.app.client.getText(Selectors.OUTPUT_N(countInSplit1 - 2, 1))
+        const base64InSplit1 = await this.app.client.getText(Selectors.OUTPUT_N(countInSplit1 - 1, 1))
         // commands in split2: base64,version
         const base64InSplit2 = await this.app.client.getText(Selectors.OUTPUT_N(countInSplit2 - 1, 2))
 
