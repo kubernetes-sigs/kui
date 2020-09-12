@@ -171,9 +171,10 @@ export const blankWithOpts = (opts = {}) => async (res: AppAndCount) =>
 export const blank = (res: AppAndCount) => blankWithOpts()(res)
 
 /** The return type `any` comes from webdriverio waitUntil */
-export const consoleToBeClear = (app: Application) => {
+export const consoleToBeClear = (app: Application, residualBlockCount = 1) => {
   return app.client.waitUntil(async () => {
-    return app.client.elements(Selectors.PROMPT_BLOCK).then(elements => elements.value.length === 1)
+    const actualBlockCount = (await app.client.elements(Selectors.PROMPT_BLOCK)).value.length
+    return actualBlockCount === residualBlockCount
   }, waitTimeout)
 }
 
