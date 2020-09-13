@@ -361,22 +361,28 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     } */
 
     this.splice(uuid, scrollback => {
-      const residualBlocks = scrollback.blocks.filter((_, idx) => {
-        const isLastActiveBlock = isActive(_) && idx === scrollback.blocks.length - 1
-        const isPertainingToLiveSplit =
-          isOk(_) &&
-          isTabLayoutModificationResponse(_.response) &&
-          isNewSplitRequest(_.response) &&
-          this.findSplit(this.state, _.response.spec.ok.props.tabUUID) >= 0
+      const residualBlocks = scrollback.blocks
+        .filter(_ => {
+          // rule 1: when clearing, we want to keep the last active block
+          // const isLastActiveBlock = isActive(_) && idx === scrollback.blocks.length - 1
 
-        const keepIt = isLastActiveBlock || isPertainingToLiveSplit
+          // rule 2: when clearing, we want to keep any "created split"
+          // blocks for splits that are still around!
+          const isPertainingToLiveSplit =
+            isOk(_) &&
+            isTabLayoutModificationResponse(_.response) &&
+            isNewSplitRequest(_.response) &&
+            this.findSplit(this.state, _.response.spec.ok.props.tabUUID) >= 0
 
-        if (!keepIt) {
-          this.removeWatchableBlock(_)
-        }
+          const keepIt = /* isLastActiveBlock || */ isPertainingToLiveSplit
 
-        return keepIt
-      })
+          if (!keepIt) {
+            this.removeWatchableBlock(_)
+          }
+
+          return keepIt
+        })
+        .concat([Active(scrollback._activeBlock ? scrollback._activeBlock.inputValue() : '')])
 
       return Object.assign(scrollback, {
         blocks: residualBlocks,
@@ -697,9 +703,35 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           this.scrollbackCounter--
         }
 
+        // remove any watchers from the blocks of the split we are
+        // about to remove
         curState.splits[idx].blocks.forEach(this.removeWatchableBlock)
 
-        const splits = curState.splits.slice(0, idx).concat(curState.splits.slice(idx + 1))
+        // splice out this split from the list of all splits in this tab
+        const splits1 = curState.splits.slice(0, idx).concat(curState.splits.slice(idx + 1))
+
+        // update other splits to remove any "created split" messages
+        // that pertain to the split that we are about to remove
+        const splits = splits1.map(scrollback => {
+          // filter out the relevant "created split" blocks
+          const blocks = scrollback.blocks.filter(_ => {
+            const isPertainingToThisSplit =
+              isOk(_) &&
+              isTabLayoutModificationResponse(_.response) &&
+              isNewSplitRequest(_.response) &&
+              _.response.spec.ok.props.tabUUID === sbuuid
+
+            return !isPertainingToThisSplit
+          })
+
+          // did we filter any blocks out?
+          const removedSomething = blocks.length !== scrollback.blocks.length
+
+          return Object.assign({}, scrollback, {
+            blocks,
+            focusedBlockIdx: removedSomething ? blocks.length - 1 : scrollback.focusedBlockIdx
+          })
+        })
 
         if (splits.length === 0) {
           // the last split was removed; notify parent

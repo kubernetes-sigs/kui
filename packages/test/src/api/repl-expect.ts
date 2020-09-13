@@ -17,6 +17,7 @@
 import { Application } from 'spectron'
 import * as assert from 'assert'
 
+import { ISuite } from './common'
 import { getTextContent, waitTimeout } from './cli'
 import * as Selectors from './selectors'
 
@@ -171,9 +172,13 @@ export const blankWithOpts = (opts = {}) => async (res: AppAndCount) =>
 export const blank = (res: AppAndCount) => blankWithOpts()(res)
 
 /** The return type `any` comes from webdriverio waitUntil */
-export const consoleToBeClear = (app: Application, residualBlockCount = 1) => {
+export const consoleToBeClear = (app: Application, residualBlockCount = 1, splitIndex = 1) => {
+  let idx = 0
   return app.client.waitUntil(async () => {
-    const actualBlockCount = (await app.client.elements(Selectors.PROMPT_BLOCK)).value.length
+    const actualBlockCount = (await app.client.elements(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex))).value.length
+    if (++idx > 5) {
+      console.error(`still waiting for residualBlockCount=${residualBlockCount}; actualBlockCount=${actualBlockCount}`)
+    }
     return actualBlockCount === residualBlockCount
   }, waitTimeout)
 }
@@ -320,5 +325,31 @@ export function comment(expectedBody: string, expectedTitle?: string) {
     assert.strictEqual(actualBody, expectedBody)
 
     return res.app
+  }
+}
+
+/** Verify that the number of blocks equals the expected count */
+export function blockCount(this: ISuite) {
+  return {
+    inSplit: (splitIndex: number) => ({
+      is: (expectedBlockCount: number) => {
+        it(`should have expectedBlockCount=${expectedBlockCount} inSplit=${splitIndex}`, () => {
+          let idx = 0
+
+          return this.app.client.waitUntil(async () => {
+            const actualBlockCount = (await this.app.client.elements(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex)))
+              .value.length
+
+            if (++idx > 5) {
+              console.error(
+                `still waiting for expectedBlockCount=${expectedBlockCount}; actualBlockCount=${actualBlockCount}`
+              )
+            }
+
+            return actualBlockCount === expectedBlockCount
+          }, waitTimeout)
+        })
+      }
+    })
   }
 }

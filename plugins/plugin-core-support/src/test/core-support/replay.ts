@@ -131,12 +131,12 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
   }
 
   // Split the terminal, then validate that the snapshot will still
-  // replay with the split, despite the intervening clear. The 3
-  // argument to clear means we expect 3 residual blocks: 1 in the new
-  // split + 2 in the first split: one for the active block and one
-  // for the split command output
+  // replay with the split, despite the intervening clear. The 2
+  // argument to clear means we expect 2 residual blocks in the first
+  // split: one for the active block and one for the split command
+  // output
   splitTheTerminalViaCommand(2)
-  it('should clear the console', () => clear(3))
+  it('should clear the console', () => clear(2))
 
   doBase64(1)
   clickToFocus(2)

@@ -26,6 +26,8 @@ import { mkdir, rmdir } from 'fs-extra'
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import { close, expectSplits, focusAndValidate, splitViaButton, splitViaCommand } from './split-helpers'
 
+import { doClear } from '../core-support/clear'
+
 /** Report Version */
 function version(this: Common.ISuite, splitIndex: number) {
   it(`should report proper version with splitIndex=${splitIndex}`, () =>
@@ -67,6 +69,35 @@ function changeDir(this: Common.ISuite, dir: string, splitIndex: number) {
       .then(ReplExpect.okWithString(dir))
       .catch(Common.oops(this, true)))
 }
+
+// ensure that the "created split" block disappears when the new split is closed
+describe(`split terminals created split check ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  const clear = doClear.bind(this)
+  const count = expectSplits.bind(this)
+  const closeTheSplit = close.bind(this)
+  const verifyBlockCount = ReplExpect.blockCount
+    .bind(this)()
+    .inSplit(1)
+  const splitTheTerminalViaCommand = splitViaCommand.bind(this)
+
+  it('should clear the console', () => clear(1, 1))
+  verifyBlockCount.is(1)
+  splitTheTerminalViaCommand(2)
+  count(2)
+
+  it('should clear the console', () => clear(2, 1))
+  verifyBlockCount.is(2) // the "created split" message should persist, since the split is still alive
+
+  closeTheSplit(1, 2) // expect 1 residual split, and execute the `exit` command in split 2
+
+  verifyBlockCount.is(1) // the "created split" message should be gone!
+  it('should clear the console', () => clear())
+  verifyBlockCount.is(1) // the "created split" message should be gone!
+})
 
 describe(`split terminals ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
