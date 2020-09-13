@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-
 import { Common, CLI, Keys, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 
-export function doClear(this: Common.ISuite, residualBlockCount = 1) {
-  return CLI.command('clear', this.app)
-    .then(() => ReplExpect.consoleToBeClear(this.app, residualBlockCount))
+export function doClear(this: Common.ISuite, residualBlockCount = 1, splitIndex = 1) {
+  return CLI.commandInSplit('clear', this.app, splitIndex)
+    .then(() => ReplExpect.consoleToBeClear(this.app, residualBlockCount, splitIndex))
     .then(() => SidecarExpect.closed)
     .catch(Common.oops(this, true))
 }
@@ -86,15 +84,24 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   it(`should sleep again`, () => CLI.command('sleep 1', this.app).catch(Common.oops(this, true)))
 
   const JUNK = 'junk text that should stay'
-  it('should clear the console with ctrl+l', () =>
-    CLI.command(JUNK, this.app, true)
-      .then(async () => {
-        await this.app.client.keys([Keys.CONTROL, 'l', 'NULL']) // use control-l to clear
-        return ReplExpect.consoleToBeClear(this.app)
-      })
-      .then(() => this.app.client.getValue(Selectors.CURRENT_PROMPT))
-      .then(text => assert.strictEqual(text, JUNK))
-      .catch(Common.oops(this, true)))
+  it('should clear the console with ctrl+l', async () => {
+    try {
+      await CLI.command(JUNK, this.app, true)
+      await this.app.client.keys([Keys.CONTROL, 'l', 'NULL']) // use control-l to clear
+      await ReplExpect.consoleToBeClear(this.app)
+
+      let idx = 0
+      await this.app.client.waitUntil(async () => {
+        const actualPromptText = await this.app.client.getValue(Selectors.CURRENT_PROMPT)
+        if (++idx > 5) {
+          console.error(`still waiting for expectedPromptText=${JUNK}; actualPromptText=${actualPromptText}`)
+        }
+        return actualPromptText === JUNK
+      }, CLI.waitTimeout)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 
   // hit enter, and expect that JUNK to fail
   it(`should fail with command not found`, () => {

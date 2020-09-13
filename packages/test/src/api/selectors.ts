@@ -121,6 +121,7 @@ export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-ou
 export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (splitIndex: number) => `${SPLIT_N(splitIndex)} ${current(_PROMPT_BLOCK)}`
 export const CURRENT_PROMPT_FOR_SPLIT = (splitIndex: number) =>
   `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex)} ${_PROMPT}`
+export const PROMPT_BLOCK_FOR_SPLIT = (splitIndex: number) => `${SPLIT_N(splitIndex)} ${_PROMPT_BLOCK}`
 export const PROMPT_BLOCK_N_FOR_SPLIT = (N: number, splitIndex: number) =>
   `${SPLIT_N(splitIndex)} ${_PROMPT_BLOCK_N(N)}`
 export const PROMPT_N_FOR_SPLIT = (N: number, splitIndex: number) =>
