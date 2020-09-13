@@ -90,36 +90,44 @@ class WriteEventBus extends EventBusBase {
     setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`, evt))
   }
 
-  private emitCommandEvent(which: 'start' | 'complete', event: CommandStartEvent | CommandCompleteEvent) {
+  private emitCommandEvent(
+    which: 'start' | 'complete',
+    event: CommandStartEvent | CommandCompleteEvent,
+    isReplay: boolean
+  ) {
     this.eventBus.emit(`/command/${which}`, event)
 
     if (event.execType !== ExecType.Nested) {
-      this.eventBus.emit(`/command/${which}/fromuser`, event)
-      this.eventBus.emit(`/command/${which}/fromuser/${event.tab.uuid}`, event)
+      const from = isReplay ? 'replay' : 'fromuser'
+
+      this.eventBus.emit(`/command/${which}/${from}`, event)
+      this.eventBus.emit(`/command/${which}/${from}/${event.tab.uuid}`, event)
 
       const primary = getPrimaryTabId(event.tab)
       if (event.tab.uuid !== primary) {
-        this.eventBus.emit(`/command/${which}/fromuser/${primary}`, event)
+        this.eventBus.emit(`/command/${which}/${from}/${primary}`, event)
       }
 
-      this.eventBus.emit(`/command/${which}/fromuser/${primary}/type/${event.execType}`, event)
+      this.eventBus.emit(`/command/${which}/${from}/${primary}/type/${event.execType}`, event)
     }
   }
 
-  public emitCommandStart(event: CommandStartEvent): void {
-    this.emitCommandEvent('start', event)
+  public emitCommandStart(event: CommandStartEvent, isReplay = false): void {
+    this.emitCommandEvent('start', event, isReplay)
   }
 
-  public emitCommandComplete(event: CommandCompleteEvent): void {
-    this.emitCommandEvent('complete', event)
+  public emitCommandComplete(event: CommandCompleteEvent, isReplay = false): void {
+    this.emitCommandEvent('complete', event, isReplay)
 
     if (event.execType !== ExecType.Nested) {
-      this.eventBus.emit(`/command/complete/fromuser/${event.responseType}`, event)
-      this.eventBus.emit(`/command/complete/fromuser/${event.responseType}/${event.tab.uuid}`, event)
+      const from = isReplay ? 'replay' : 'fromuser'
+
+      this.eventBus.emit(`/command/complete/${from}/${event.responseType}`, event)
+      this.eventBus.emit(`/command/complete/${from}/${event.responseType}/${event.tab.uuid}`, event)
 
       const primary = getPrimaryTabId(event.tab)
       if (primary !== event.tab.uuid) {
-        this.eventBus.emit(`/command/complete/fromuser/${event.responseType}/${primary}`, event)
+        this.eventBus.emit(`/command/complete/${from}/${event.responseType}/${primary}`, event)
       }
     }
   }
@@ -212,17 +220,19 @@ class ReadEventBus extends WriteEventBus {
     this.eventBus.off(`/tab/layout/change/${tabUUID}`, listener)
   }
 
-  private onCommand(
+  private onCommand<Handler extends CommandStartHandler | CommandCompleteHandler>(
     which: 'start' | 'complete',
     splitId: string,
-    splitHandler: CommandStartHandler | CommandCompleteHandler,
+    splitHandler: Handler,
     tabId?: string,
     tabHandler = splitHandler
   ): void {
     this.eventBus.on(`/command/${which}/fromuser/${splitId}`, splitHandler)
+    this.eventBus.on(`/command/${which}/replay/${splitId}`, splitHandler)
 
     if (tabId) {
       this.eventBus.on(`/command/${which}/fromuser/${tabId}/type/${ExecType.ClickHandler}`, tabHandler)
+      this.eventBus.on(`/command/${which}/replay/${tabId}/type/${ExecType.ClickHandler}`, tabHandler)
     }
   }
 
@@ -248,11 +258,11 @@ class ReadEventBus extends WriteEventBus {
     this.eventBus.off('/command/start/fromuser', handler)
   }
 
-  public onAnyCommandComplete(handler: CommandStartHandler | (() => void)) {
+  public onAnyCommandComplete(handler: CommandCompleteHandler | (() => void)) {
     this.eventBus.on('/command/complete/fromuser', handler)
   }
 
-  public offAnyCommandComplete(handler: CommandStartHandler | (() => void)) {
+  public offAnyCommandComplete(handler: CommandCompleteHandler | (() => void)) {
     this.eventBus.off('/command/complete/fromuser', handler)
   }
 
@@ -278,8 +288,14 @@ class ReadEventBus extends WriteEventBus {
   ): void {
     this.eventBus.on(`/command/complete/fromuser/${responseType}/${splitId}`, splitHandler)
 
+    // if you don't want the sidecar to open on replay, comment this out:
+    this.eventBus.on(`/command/complete/replay/${responseType}/${splitId}`, splitHandler)
+
     if (tabId) {
       this.eventBus.on(`/command/complete/fromuser/${responseType}/${tabId}`, tabHandler)
+
+      // if you don't want the sidecar to open on replay, comment this out:
+      this.eventBus.on(`/command/complete/replay/${responseType}/${tabId}`, tabHandler)
     }
   }
 
