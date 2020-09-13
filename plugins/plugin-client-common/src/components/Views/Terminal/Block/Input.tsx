@@ -23,6 +23,7 @@ import Actions from './Actions'
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
+import isInViewport from '../visible'
 import KuiContext from '../../../Client/context'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
@@ -381,27 +382,37 @@ export default class Input extends InputProvider {
     if (c && !this.state.prompt) {
       c.value = hasValue(this.props.model) ? this.props.model.value : ''
       this.setState({ prompt: c })
-    } else if (c && this.props.isFocused) {
+    } else if (c && this.props.isFocused && isInViewport(c)) {
       c.focus()
     }
   }
 
   private readonly _onRef = this.onRef.bind(this)
 
+  /** This is the onFocus property of the active prompt */
+  private readonly _onFocus = (evt: React.FocusEvent<HTMLInputElement>) => {
+    this.props.onInputFocus && this.props.onInputFocus(evt)
+    this.props.willFocusBlock(evt)
+  }
+
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
     const active = isActive(this.props.model)
 
     if (active) {
-      if (this.props.isFocused && this.state.prompt) {
-        this.state.prompt.focus()
+      if (this.props.isFocused && this.state.prompt && document.activeElement !== this.state.prompt) {
+        setTimeout(() => {
+          if (isInViewport(this.state.prompt)) {
+            this.state.prompt.focus()
+          }
+        })
       }
 
       return (
         <React.Fragment>
           <input
             type="text"
-            autoFocus={this.props.isFocused}
+            autoFocus={this.props.isFocused && isInViewport(this.props._block)}
             autoCorrect="off"
             autoComplete="off"
             spellCheck="false"
@@ -413,10 +424,7 @@ export default class Input extends InputProvider {
             tabIndex={1}
             placeholder={this.props.promptPlaceholder}
             onBlur={this.props.onInputBlur}
-            onFocus={evt => {
-              this.props.onInputFocus && this.props.onInputFocus(evt)
-              this.props.willFocusBlock(evt)
-            }}
+            onFocus={this._onFocus}
             onMouseDown={this.props.onInputMouseDown}
             onMouseMove={this.props.onInputMouseMove}
             onChange={this.props.onInputChange}
