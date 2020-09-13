@@ -69,28 +69,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  /**
-   * Temporary hack to regrab focus to the repl. The hack part is the
-   * querySelector. This really needs to be done in TabContent, which
-   * owns the Tab impl.
-   *
-   */
-  private hackFocus() {
-    setTimeout(() => {
-      try {
-        const selector = `.kui--tab-content.visible .repl-active[data-is-focused] input`
-        const selector2 = `.kui--tab-content.visible .repl-active input`
-        const input =
-          (document.querySelector(selector) as HTMLElement) || (document.querySelector(selector2) as HTMLElement)
-        if (input) {
-          input.focus()
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    })
-  }
-
   /** save tab state such as CWD prior to a tab switch */
   private captureState() {
     try {
@@ -118,8 +96,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       this.setState({
         activeIdx: idx
       })
-
-      this.hackFocus()
     }
 
     setTimeout(() => eventBus.emit('/tab/switch/request/done', idx))
@@ -142,8 +118,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         tabs: residualTabs,
         activeIdx
       })
-
-      this.hackFocus()
     }
   }
 

@@ -53,6 +53,7 @@ import {
   isOk,
   isOutputOnly,
   isProcessing,
+  isPresentedElsewhere,
   hasStartEvent,
   hasCommand,
   snapshot,
@@ -60,6 +61,7 @@ import {
   BlockModel
 } from './Block/BlockModel'
 
+import isInViewport from './visible'
 import '../../../../web/scss/components/Terminal/_index.scss'
 
 const strings = i18n('plugin-client-common')
@@ -134,13 +136,6 @@ type ScrollbackState = ScrollbackOptions & {
 interface State {
   focusedIdx: number
   splits: ScrollbackState[]
-}
-
-/** Is the given `elm` on visible in the current viewport? */
-function isInViewport(elm: HTMLElement) {
-  const rect = elm.getBoundingClientRect()
-  const viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight)
-  return !(rect.bottom < 0 || rect.top - viewHeight >= 0)
 }
 
 /** get the selected texts in window */
@@ -392,8 +387,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Output.tsx finished rendering something */
-  private onOutputRender(scrollback: ScrollbackState) {
-    setTimeout(() => scrollback.facade.scrollToBottom())
+  private onOutputRender(scrollback: ScrollbackState, idx) {
+    const block = scrollback.blocks[idx]
+    if (isOk(block) && (isTabLayoutModificationResponse(block.response) || isPresentedElsewhere(block))) {
+      // no scroll to bottom for these responses
+    } else {
+      setTimeout(() => scrollback.facade.scrollToBottom())
+    }
   }
 
   /** the REPL started executing a command */
@@ -965,7 +965,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     uuid={scrollback.uuid}
                     tab={tab}
                     noActiveInput={this.props.noActiveInput || isOfflineClient()}
-                    onOutputRender={this.onOutputRender.bind(this, scrollback)}
+                    onOutputRender={this.onOutputRender.bind(this, scrollback, idx)}
                     willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}

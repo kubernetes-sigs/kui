@@ -66,6 +66,9 @@ type State = Partial<WithTab> & {
   sidecarHasContent: boolean
 
   activeView: CurrentlyShowing
+
+  /** grab a ref (below) so that we can maintain focus */
+  _terminal: ScrollableTerminal
 }
 
 /**
@@ -88,9 +91,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
   /** switching back or away from this tab */
   private activateHandlers: ((isActive: boolean) => void)[] = []
 
-  /** grab a ref (below) so that we can maintain focus */
-  private _terminal: ScrollableTerminal
-
   public constructor(props: Props) {
     super(props)
 
@@ -101,7 +101,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
       sidecarWidth: Width.Closed,
       priorSidecarWidth: Width.Closed,
       sidecarHasContent: false,
-      activeView: 'TerminalOnly'
+      activeView: 'TerminalOnly',
+      _terminal: undefined
     }
   }
 
@@ -177,6 +178,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
         console.error(err)
       }
     } else {
+      if (props.active && state._terminal) {
+        state._terminal.doFocus()
+      }
       return state
     }
   }
@@ -225,9 +229,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
                   // eslint-disable-next-line react/no-direct-mutation-state
                   this.state.tab.state.desiredStatusStripeDecoration = { type: 'default' }
                 }}
-                ref={c => {
+                ref={_terminal => {
                   // so that we can refocus/blur
-                  this._terminal = c
+                  this.setState({ _terminal })
                 }}
               >
                 {this.children()}
@@ -284,8 +288,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   private onWillLoseFocus() {
-    if (this._terminal) {
-      this._terminal.doFocus()
+    if (this.state._terminal) {
+      this.state._terminal.doFocus()
     }
   }
 
