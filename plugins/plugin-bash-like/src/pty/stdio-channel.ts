@@ -164,9 +164,27 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
     // await onConnection(await disableBashSessions())(this)
     await onConnection(onExit)(this)
 
+    // leftover helps us manage message chunking/fragmentation:
+    // https://github.com/IBM/kui/issues/5631
+    let leftover = ''
     process.stdin.on('data', (data: Buffer) => {
-      data
-        .toString()
+      const lastMarkerIdx = data.lastIndexOf(MARKER)
+
+      if (lastMarkerIdx < 0) {
+        // incomplete message
+        leftover += data
+        return
+      }
+
+      // otherwise, `data` contains at least one complete message, but
+      // with possibly a trailing incomplete leftover fragment
+      const thisData = leftover + data.slice(0, lastMarkerIdx).toString()
+      leftover = lastMarkerIdx < 0 ? '' : data.slice(lastMarkerIdx).toString()
+      // ^^^^^ leftover will now contain that trailing fragment
+
+      // split the complete messages up, and emit them to be handled
+      // by the listener in `server.ts`
+      thisData
         .split(MARKER)
         .filter(_ => _)
         .forEach(_ => {
