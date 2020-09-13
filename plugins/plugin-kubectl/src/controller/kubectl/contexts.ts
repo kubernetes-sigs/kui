@@ -155,7 +155,9 @@ export async function getCurrentContextName({ REPL }: { REPL: REPLType }) {
 /** Extract the namespace from the current context */
 export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }) {
   const ns = await REPL.qexec<string>(`kubectl config view --minify --output "jsonpath={..namespace}"`).catch(err => {
-    console.error('error determining default namespace', err)
+    if (err.code !== 404 && !/command not found/.test(err.message)) {
+      console.error('error determining default namespace', err)
+    }
     return 'default'
   })
 

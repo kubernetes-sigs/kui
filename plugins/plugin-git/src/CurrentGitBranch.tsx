@@ -43,6 +43,16 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
     }
   }
 
+  /** Avoid recomputation for a flurry of events */
+  private last: number
+  private debounce(): boolean {
+    const now = Date.now()
+    const last = this.last
+    this.last = now
+
+    return last && now - last < 250
+  }
+
   /**
    * Check the current branch, and the dirtiness thereof.
    *
@@ -50,6 +60,8 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
   private async reportCurrentBranch() {
     const tab = getCurrentTab()
     if (!tab || !tab.REPL) {
+      return
+    } else if (this.debounce()) {
       return
     }
 
@@ -71,7 +83,8 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
       })
     } catch (error) {
       const err = error as CodedError
-      if (err.code !== 128 && !/ambiguous argument 'HEAD'/.test(err.message)) {
+      this.last = undefined
+      if (err.code !== 128 && !/ambiguous argument 'HEAD'/.test(err.message) && !/not a git repo/.test(err.message)) {
         // 128: not a git repository; don't report those as errors
         console.error('unable to determine git branch', err.code, typeof err.code, err)
       }

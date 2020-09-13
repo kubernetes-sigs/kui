@@ -78,12 +78,24 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     return context
   }
 
+  /** Avoid recomputation for a flurry of events */
+  private last: number
+  private debounce(): boolean {
+    const now = Date.now()
+    const last = this.last
+    this.last = now
+
+    return last && now - last < 250
+  }
+
   private async reportCurrentContext(idx?: Tab | number) {
     const tab = getTab(idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
         eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentContext())
       }
+      return
+    } else if (this.debounce()) {
       return
     }
 
@@ -95,6 +107,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
       })
     } catch (err) {
       console.error(err)
+      this.last = undefined
       this.setState({
         text: '',
         viewLevel: 'hidden'

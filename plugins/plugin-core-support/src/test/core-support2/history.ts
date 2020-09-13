@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017,2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,15 +30,20 @@ describe('command history plain', function(this: Common.ISuite) {
   it('should list local files', () =>
     CLI.command(listCommand, this.app)
       .then(ReplExpect.okWith('README.md'))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it('should hit the up arrow and see previous command', async () => {
     try {
       await this.app.client.keys(Keys.ctrlP)
+
+      let idx = 0
       await this.app.client.waitUntil(async () => {
         const promptValue = await this.app.client.getValue(Selectors.PROMPT_FINAL)
+        if (++idx > 5) {
+          console.error(`still waiting for expectedPromptValue=${listCommand}; actualPromptValue=${promptValue}`)
+        }
         return promptValue === listCommand
-      })
+      }, CLI.waitTimeout)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -47,10 +52,15 @@ describe('command history plain', function(this: Common.ISuite) {
   it('should hit the down arrow and see previous command', async () => {
     try {
       await this.app.client.keys(Keys.ctrlN)
+
+      let idx = 0
       await this.app.client.waitUntil(async () => {
         const promptValue = await this.app.client.getValue(Selectors.PROMPT_FINAL)
+        if (++idx > 5) {
+          console.error(`still waiting for empty prompt; actualPromptValue=${promptValue}`)
+        }
         return promptValue.length === 0
-      })
+      }, CLI.waitTimeout)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -60,18 +70,18 @@ describe('command history plain', function(this: Common.ISuite) {
   it(`should list history with filter 1`, () =>
     CLI.command(`history 1 lls`, this.app)
       .then(ReplExpect.okWithOnly(listCommand))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it(`should list history 2 and show the list command`, () =>
     CLI.command(`history 2`, this.app)
       .then(ReplExpect.okWith(listCommand))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   // get something on the screen
   it(`should list local files again`, () =>
     CLI.command(listCommand, this.app)
       .then(ReplExpect.okWith('README.md'))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it('should re-execte from history via mouse click', async () => {
     try {
@@ -91,30 +101,30 @@ describe('command history plain', function(this: Common.ISuite) {
   it(`should list history with filter, expect nothing`, () =>
     CLI.command(`history gumbogumbo`, this.app)
       .then(ReplExpect.justOK) // some random string that won't be in the command history
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it(`should delete command history`, () =>
     CLI.command(`history -c`, this.app)
       .then(ReplExpect.justOK)
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it(`should list history with no args after delete and expect nothing`, () =>
     CLI.command(`history`, this.app)
       .then(ReplExpect.justOK)
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it(`should list history with idx arg after delete and expect only the previous`, () =>
     CLI.command(`history 10`, this.app)
       .then(ReplExpect.okWithOnly('history'))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it(`should delete command history again`, () =>
     CLI.command(`history -c`, this.app)
       .then(ReplExpect.justOK)
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 
   it(`should list history with idx and filter args after delete and expect nothing`, () =>
     CLI.command(`history 10 lls`, this.app)
       .then(ReplExpect.justOK) // some random string that won't be in the command history
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 })

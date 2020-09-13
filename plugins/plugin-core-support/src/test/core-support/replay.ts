@@ -51,7 +51,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       await this.app.client.waitUntil(async () => {
         const txt = await this.app.client.getText(Selectors.OUTPUT_N(count))
         if (++idx > 5) {
-          console.error(`still waiting for expected=${txt}; actual=${txt}`)
+          console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
         }
         return txt === base64Output
       }, CLI.waitTimeout)

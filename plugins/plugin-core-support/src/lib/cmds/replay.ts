@@ -140,13 +140,13 @@ function withNewTabUUID(tab: Tab, uuid: string) {
 /** Re-emit prior start event in new tab */
 function reEmitStartInTab(tab: Tab, uuid: string, startEvent: SnapshotBlock['startEvent']) {
   const evt = Object.assign({}, startEvent, withNewTabUUID(tab, uuid))
-  eventBus.emitCommandStart(evt)
+  eventBus.emitCommandStart(evt, true)
 }
 
 /** Re-emit prior complete event in new tab */
 function reEmitCompleteInTab(tab: Tab, uuid: string, completeEvent: SnapshotBlock['completeEvent']) {
   const evt = Object.assign({}, completeEvent, withNewTabUUID(tab, uuid))
-  eventBus.emitCommandComplete(evt)
+  eventBus.emitCommandComplete(evt, true)
 }
 
 /** Re-execute command line in new tab */
