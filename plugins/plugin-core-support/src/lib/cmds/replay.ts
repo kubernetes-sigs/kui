@@ -514,7 +514,7 @@ export default function(registrar: Registrar) {
                   }
                 }
 
-                const data = JSON.stringify(snapshot, replacer, 2)
+                const data = JSON.stringify(snapshot, replacer)
                 await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(filepath)}`, { data })
 
                 resolve(true)
