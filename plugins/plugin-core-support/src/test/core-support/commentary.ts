@@ -40,14 +40,14 @@ describe('commentary and replay', function(this: Common.ISuite) {
     it('should show comment with file', () =>
       CLI.command(`commentary --title "hello there" -f=${ROOT}/tests/data/comment.md`, this.app)
         .then(() => verifyComment())
-        .catch(Common.oops(this)))
+        .catch(Common.oops(this, true)))
   }
 
   addComment()
   it('should show version', () =>
     CLI.command('version', this.app)
       .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
   addComment()
 
   it('should snapshot', () =>
@@ -60,5 +60,5 @@ describe('commentary and replay', function(this: Common.ISuite) {
   it('should replay', () =>
     CLI.command('replay /tmp/test.kui', this.app)
       .then(() => verifyComment())
-      .catch(Common.oops(this)))
+      .catch(Common.oops(this, true)))
 })
