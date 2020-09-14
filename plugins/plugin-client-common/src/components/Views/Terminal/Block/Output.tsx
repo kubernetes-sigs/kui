@@ -39,6 +39,7 @@ import {
   ProcessingBlock,
   FinishedBlock,
   hasUUID,
+  hasCommand,
   isFinished,
   isProcessing,
   isOk,
@@ -257,7 +258,7 @@ export default class Output extends React.PureComponent<Props, State> {
   /** For output-only blocks, render the Block Actions */
   private actions() {
     if (this.props.isFocused && isOutputOnly(this.props.model)) {
-      return <Actions {...this.props} />
+      return <Actions {...this.props} command={hasCommand(this.props.model) && this.props.model.command} />
     }
   }
 
