@@ -121,7 +121,11 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
       this.hackFocus()
     }
+
+    setTimeout(() => eventBus.emit('/tab/switch/request/done', idx))
   }
+
+  private readonly _onSwitchTab = this.onSwitchTab.bind(this)
 
   /**
    * Close Tab event
@@ -142,6 +146,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       this.hackFocus()
     }
   }
+
+  private readonly _onCloseTab = this.onCloseTab.bind(this)
 
   private listenForTabClose(model: TabModel) {
     eventBus.onceWithTabId('/tab/close/request', model.uuid, async (uuid: string, tab: Tab) => {
@@ -208,6 +214,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     }))
   }
 
+  private readonly _onNewTab = () => this.onNewTab()
+
   private graft(node: React.ReactNode | {}, uuid: string, key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
@@ -266,32 +274,46 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
   private readonly _onTabReady = this.onTabReady.bind(this)
 
+  /** Render the row of Tabs along the top */
+  private topTabStripe() {
+    return (
+      <TopTabStripe
+        tabs={this.state.tabs}
+        onNewTab={this._onNewTab}
+        onCloseTab={this._onCloseTab}
+        onSwitchTab={this._onSwitchTab}
+        activeIdx={this.state.activeIdx}
+        topTabNames={this.props.topTabNames}
+      />
+    )
+  }
+
+  /** Render the content of the tabs */
+  private tabContent() {
+    return (
+      <div className="tab-container">
+        {this.state.tabs.map((_, idx) => (
+          <TabContent
+            {...this.props}
+            key={_.uuid}
+            uuid={_.uuid}
+            active={idx === this.state.activeIdx}
+            willUpdateTopTabButtons={this.willUpdateTopTabButtons.bind(this, _.uuid)}
+            onTabReady={this._onTabReady}
+            state={_.state}
+          >
+            {this.children(_.uuid)}
+          </TabContent>
+        ))}
+      </div>
+    )
+  }
+
   public render() {
     return (
       <div className="kui--full-height">
-        <TopTabStripe
-          {...this.props}
-          activeIdx={this.state.activeIdx}
-          tabs={this.state.tabs}
-          onNewTab={() => this.onNewTab()}
-          onCloseTab={(idx: number) => this.onCloseTab(idx)}
-          onSwitchTab={(idx: number) => eventBus.emit('/tab/switch/request', idx)}
-        />
-        <div className="tab-container">
-          {this.state.tabs.map((_, idx) => (
-            <TabContent
-              {...this.props}
-              key={_.uuid}
-              uuid={_.uuid}
-              active={idx === this.state.activeIdx}
-              willUpdateTopTabButtons={this.willUpdateTopTabButtons.bind(this, _.uuid)}
-              onTabReady={this._onTabReady}
-              state={_.state}
-            >
-              {this.children(_.uuid)}
-            </TabContent>
-          ))}
-        </div>
+        {this.topTabStripe()}
+        {this.tabContent()}
       </div>
     )
   }
