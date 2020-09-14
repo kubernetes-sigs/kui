@@ -130,7 +130,12 @@ export async function init(registrar: PreloadRegistrar) {
     eventBus.on('/tab/close', async (tab: Tab) => {
       try {
         debug('closing session for tab')
-        getChannelForTab(tab).close()
+        const channel = getChannelForTab(tab)
+        if (channel) {
+          // the user may have asked to close the tab before we have
+          // finished initializing the channel
+          channel.close()
+        }
       } catch (err) {
         console.error('error terminating session for closed tab', err)
       }

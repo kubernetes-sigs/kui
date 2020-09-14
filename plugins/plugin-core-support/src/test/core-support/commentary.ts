@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
 import { dirname } from 'path'
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
@@ -25,17 +24,20 @@ describe('commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  const verifyComment = async () => {
-    await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
-    const title: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`)
-    assert.strictEqual(title, 'hello there')
+  const verifyComment = () => {
+    return this.app.client.waitUntil(async () => {
+      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
 
-    const head1: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
-    assert.strictEqual(head1, 'The Kui Framework for Graphical Terminals')
+      const title = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`)
+      const head1 = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
+      const head2 = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
 
-    const head2: string = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
-    assert.strictEqual(head2, 'Installation')
+      return (
+        title === 'hello there' && head1 === 'The Kui Framework for Graphical Terminals' && head2 === 'Installation'
+      )
+    }, CLI.waitTimeout)
   }
+
   const addComment = () => {
     it('should show comment with file', () =>
       CLI.command(`commentary --title "hello there" -f=${ROOT}/tests/data/comment.md`, this.app)

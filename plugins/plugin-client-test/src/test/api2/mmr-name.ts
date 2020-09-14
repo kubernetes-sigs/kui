@@ -38,18 +38,18 @@ const testPrettyName = new TestMMR({
 })
 
 testMetadataName.name({
-//  nameHash: 'this is the namehash part',
-  heroName: true,
-//  onclick: {
-//    nameHash: { command: 'test string --grumble 1', expect: 'hello world 1' }
-//  }
+  //  nameHash: 'this is the namehash part',
+  heroName: true
+  //  onclick: {
+  //    nameHash: { command: 'test string --grumble 1', expect: 'hello world 1' }
+  //  }
 })
 
 testPrettyName.name({
   nameHash: 'this is the namehash part',
-//  prettyName: 'this is the prettyName part',
-  heroName: true,
-//  onclick: {
-//    nameHash: { command: 'test string --grumble 1', expect: 'hello world 1' }
-//  }
+  //  prettyName: 'this is the prettyName part',
+  heroName: true
+  //  onclick: {
+  //    nameHash: { command: 'test string --grumble 1', expect: 'hello world 1' }
+  //  }
 })

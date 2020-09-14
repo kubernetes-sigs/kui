@@ -31,7 +31,7 @@ describe('kubectl dash h', function(this: Common.ISuite) {
   help('k', ['kubectl'], kubectlModes)
 
   // help on kubectl
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('kubectl', ['kubectl'], kubectlModes, 'kubectl controls the Kubernetes cluster manager')
 
   // switch to about, should see correct navigation, breadcrumbs and content
@@ -65,46 +65,46 @@ describe('kubectl dash h', function(this: Common.ISuite) {
   })
 
   // help on kubectl
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('k help', ['kubectl'], kubectlModes, 'kubectl controls the Kubernetes cluster manager')
 
   // help on kubectl with intentionally bogus verb that we expect to be a breadcrumb
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('k help fjdisoa', ['kubectl', 'fjdisoa'], kubectlModes)
 
   // help on help
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('k help -h', ['kubectl', 'help'], commonModes)
 
   // help on get
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('k help get', ['kubectl', 'get'], kubectlGetModes)
 
   // help on help! (not help on get!)
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('k help get -h', ['kubectl', 'help'], commonModes)
 
   // help on get
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('k get -h', ['kubectl', 'get'], kubectlGetModes)
 
   // help on get
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('kubectl get -h', ['kubectl', 'get'], kubectlGetModes)
 
   // help on oc
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('oc', ['oc'], commonModes)
 
   // oc -h
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('oc -h', ['oc'], commonModes.concat(['Basic']))
 
   // help on odo
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('odo', ['odo'], commonModes)
 
   // odo -h
-  it('should refresh', () => Common.refresh(this))
+  // it('should refresh', () => Common.refresh(this))
   help('odo -h', ['odo'], commonModes.concat(['Flags', 'Basic']))
 })
