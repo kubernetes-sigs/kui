@@ -28,7 +28,7 @@ describe(`copy command input ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       await ReplExpect.okWithPtyOutput(echoText)(res)
 
       const N = res.count
-      await this.app.client.click(Selectors.PROMPT_N(N))
+      await this.app.client.moveToObject(Selectors.PROMPT_N(N))
       await this.app.client.waitForVisible(Selectors.COMMAND_COPY_BUTTON(N))
       await this.app.client.click(Selectors.COMMAND_COPY_BUTTON(N))
       await this.app.client.waitForVisible(Selectors.COMMAND_COPY_DONE_BUTTON(N))

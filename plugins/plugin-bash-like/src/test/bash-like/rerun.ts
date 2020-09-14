@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, Selectors, ReplExpect, SidecarExpect } from '@kui-shell/test'
+import { Common, CLI, Selectors, ReplExpect, SidecarExpect, Keys } from '@kui-shell/test'
 
 const runTheTests = process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true'
 const pit = runTheTests ? it : xit
@@ -36,7 +36,7 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       await SidecarExpect.fullyClosed(this.app)
 
       // rerun about
-      await this.app.client.click(Selectors.PROMPT_N(res.count))
+      await this.app.client.moveToObject(Selectors.PROMPT_N(res.count))
       await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON(res.count))
       await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON(res.count))
 
@@ -57,7 +57,7 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       await CLI.command('cd /tmp', this.app).then(ReplExpect.okWithAny)
       const cdDirectory = await this.app.client.getText(Selectors.OUTPUT_LAST)
 
-      await this.app.client.click(Selectors.PROMPT_N(pwdRes.count))
+      await this.app.client.moveToObject(Selectors.PROMPT_N(pwdRes.count))
       await this.app.client.waitForVisible(Selectors.COMMAND_RERUN_BUTTON(pwdRes.count))
       await this.app.client.click(Selectors.COMMAND_RERUN_BUTTON(pwdRes.count))
 
@@ -68,6 +68,75 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
           console.error(`still waiting for expected=${cdDirectory}; actual=${rerunDirectory}`)
         }
         return rerunDirectory !== initialDirectory && rerunDirectory === cdDirectory
+      }, CLI.waitTimeout)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+})
+
+describe(`rerun command by clicking the input ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it('should rerun about by clicking the input', async () => {
+    try {
+      // do about
+      const res = await CLI.command('about', this.app)
+      await this.app.client.waitForVisible(Selectors.SIDECAR)
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+
+      // close sidecar
+      await this.app.client.waitForVisible(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+      await this.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
+      await SidecarExpect.fullyClosed(this.app)
+
+      // rerun about
+      await this.app.client.click(Selectors.PROMPT_N(res.count))
+      await this.app.client.keys(Keys.ENTER)
+
+      // sidecar should open
+      await this.app.client.waitForVisible(Selectors.SIDECAR)
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  pit('should echo 1,11,111 by rerunning the command', async () => {
+    try {
+      const res = await CLI.command('echo 1', this.app)
+      await ReplExpect.okWithPtyOutput('1')(res)
+
+      await this.app.client.click(Selectors.PROMPT_N(res.count))
+      await this.app.client.keys('1')
+      await this.app.client.keys(Keys.ENTER)
+
+      let idx = 0
+      await this.app.client.waitUntil(async () => {
+        const expectedText = '11'
+        const actualText = await this.app.client.getText(Selectors.OUTPUT_N_PTY(res.count))
+        if (++idx > 5) {
+          console.error(`still waiting for expected=${expectedText}; actual=${actualText}`)
+        }
+        return actualText === expectedText
+      }, CLI.waitTimeout)
+
+      // test focus by adding another command without return
+      await CLI.command('echo', this.app, true)
+
+      await this.app.client.click(Selectors.PROMPT_N(res.count))
+      await this.app.client.keys('1')
+      await this.app.client.keys(Keys.ENTER)
+
+      let jdx = 0
+      await this.app.client.waitUntil(async () => {
+        const expectedText = '111'
+        const actualText = await this.app.client.getText(Selectors.OUTPUT_N_PTY(res.count))
+        if (++jdx > 5) {
+          console.error(`still waiting for expected=${expectedText}; actual=${actualText}`)
+        }
+        return actualText === expectedText
       }, CLI.waitTimeout)
     } catch (err) {
       await Common.oops(this, true)(err)
