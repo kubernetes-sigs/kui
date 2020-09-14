@@ -130,11 +130,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
           ))}
         </HeaderNavigation>
         <div className="kui--top-tab-buttons">
-          <NewTabButton
-            onNewTab={() => {
-              this.props.onNewTab()
-            }}
-          />
+          <NewTabButton onNewTab={this.props.onNewTab} />
           <SplitTerminalButton />
         </div>
       </React.Fragment>

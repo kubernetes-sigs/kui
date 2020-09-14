@@ -306,16 +306,6 @@ commands.forEach(command => {
       }
     })
 
-    it(`should delete the sample pod from URL via ${command}`, () => {
-      return CLI.command(
-        `${command} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      )
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
-        .then((selector: string) => waitForRed(this.app, selector))
-        .catch(Common.oops(this, true))
-    })
-
     deleteNS(this, ns)
   })
 })

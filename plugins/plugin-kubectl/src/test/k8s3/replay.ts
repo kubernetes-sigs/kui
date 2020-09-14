@@ -46,7 +46,8 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
     const verifyCreation = async (createRes: AppAndCount, createSelector: string) => {
       console.error('verifying creation')
       await waitForGreen(this.app, createSelector)
-      await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
+      // await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
+      
     }
 
     const verifyDeletion = async (deleteSelector: string) => {

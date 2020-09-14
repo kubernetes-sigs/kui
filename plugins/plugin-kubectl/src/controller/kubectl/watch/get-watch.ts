@@ -149,7 +149,7 @@ export class EventWatcher implements Abortable, Watcher {
         // filter and format the row as `[ago] involvedObject.name: message`
         const sortedRows = preprocessed.rows
           .filter(notEmpty)
-          .filter(row => !this.name || this.name.length === 0 || this.name.includes(row[1].value)) // filter the rows with `involvedObject.name` specified by `this.name`
+          .filter(row => row[1] && (!this.name || this.name.length === 0 || this.name.includes(row[1].value))) // filter the rows with `involvedObject.name` specified by `this.name`
           .sort((rowA, rowB) => {
             const lastSeenA = new Date(rowA[0].value).getTime()
             const lastSeenB = new Date(rowB[0].value).getTime()
@@ -339,6 +339,10 @@ class KubectlWatcher implements Abortable, Watcher {
 
   /** Get rows as specified by user's -o */
   private async getRowsForUser(rows: Pair[][]): Promise<void | Table> {
+    if (rows.length === 0) {
+      return
+    }
+
     const kind = rows[0][1].value
     const apiVersion = rows[0][2].value
 
