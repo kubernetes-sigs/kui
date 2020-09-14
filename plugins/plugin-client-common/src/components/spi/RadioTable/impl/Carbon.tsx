@@ -72,7 +72,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     }
 
     try {
-      await this.props.repl.qexec(onSelect)
+      await this.props.repl.pexec(onSelect)
     } catch (err) {
       console.error('Error changing selection in RadioTable', err)
     }
