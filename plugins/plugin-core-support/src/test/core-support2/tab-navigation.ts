@@ -77,7 +77,10 @@ describe('tab navigation', function(this: Common.ISuite) {
 
         if (hitEnter) {
           await this.app.client.keys(Keys.ENTER)
-          await this.app.client.waitForEnabled(selectedSelector)
+
+          if (selectedSelector) {
+            await this.app.client.waitForEnabled(selectedSelector, 5000)
+          }
         }
       } catch (err) {
         await Common.oops(this)(err)
@@ -148,14 +151,16 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector(TAB_BUTTON_N(1))
   testSelector(TAB_BUTTON_N(2))
   testSelector(tabButtonSelector)
-  testSelector('#help-button', true, Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'), true)
+  testSelector('#help-button', true, undefined, true)
+  it('should have a new About Kui top tab', () =>
+    this.app.client.waitForVisible(Selectors.TOP_TAB_WITH_TITLE('About Kui'), 5000))
   testPromptIsSelected()
 
   // now the sidecar is open, so cycle through the sidecar tabs
-  testSelector(TAB_BUTTON_N(1))
-  testSelector(TAB_BUTTON_N(2))
-  testSelector(tabButtonSelector)
-  testSelector('#help-button', false, undefined, true)
+  // testSelector(TAB_BUTTON_N(1))
+  // testSelector(TAB_BUTTON_N(2))
+  // testSelector(tabButtonSelector)
+  // testSelector('#help-button', false, undefined, true)
   testAboutMode('about', false, true)
   //  testAboutMode('tutorial')
   testAboutMode('version', true) // hit enter on the Version tab

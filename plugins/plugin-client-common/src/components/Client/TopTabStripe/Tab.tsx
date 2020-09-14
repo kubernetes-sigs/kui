@@ -152,6 +152,7 @@ export default class Tab extends React.PureComponent<Props, State> {
         data-tab-names={this.state.topTabNames}
         data-fresh={this.state.isFreshlyCreated}
         data-custom-label={this.props.title ? true : undefined}
+        data-custom-label-text={this.props.title || undefined}
         className={
           'kui--tab kui--tab-navigatable' +
           (this.props.active ? ' kui--tab--active' : '') +
