@@ -257,7 +257,7 @@ export default class Output extends React.PureComponent<Props, State> {
 
   /** For output-only blocks, render the Block Actions */
   private actions() {
-    if (this.props.isFocused && isOutputOnly(this.props.model)) {
+    if (isOutputOnly(this.props.model)) {
       return <Actions {...this.props} command={hasCommand(this.props.model) && this.props.model.command} />
     }
   }
@@ -280,7 +280,7 @@ export default class Output extends React.PureComponent<Props, State> {
           {this.ok(hasContent)}
         </div>
 
-        <span className="repl-prompt-right-elements">{this.actions()}</span>
+        {this.actions()}
       </div>
     )
   }
