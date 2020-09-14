@@ -110,17 +110,13 @@ describe(suiteName, function(this: Common.ISuite) {
         .then(ReplExpect.okWithCustom({ selector: radioButton }))
         .then(selector =>
           this.app.client.waitUntil(async () => {
-            console.error('1', selector)
             await this.app.client.click(selector)
-            console.error('2')
             const actualBranch = await this.app.client.getText(
               Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-git--current-git-branch')
             )
-            console.error('3', actualBranch)
             await this.app.client.waitForExist(selector.replace(radioButton, radioButtonSelected))
-            console.error('4')
             return actualBranch === branch
-          })
+          }, CLI.waitTimeout)
         )
         .catch(Common.oops(this, true))
     })
