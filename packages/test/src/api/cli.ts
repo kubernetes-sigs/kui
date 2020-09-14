@@ -54,13 +54,17 @@ export const command = async (
   cmd: string,
   app: Application,
   noNewline = false,
-  noCopyPaste = false,
+  noCopyPaste = process.env.TRAVIS_OS_NAME === 'osx',
   noFocus = false,
-  block = process.env.KUI_POPUP ? Selectors.STATUS_STRIPE_BLOCK : Selectors.CURRENT_PROMPT_BLOCK,
+  block = process.env.KUI_POPUP
+    ? Selectors.STATUS_STRIPE_BLOCK
+    : process.env.BOTTOM_INPUT_MODE
+    ? Selectors.CURRENT_PROMPT_BLOCK
+    : Selectors.CURRENT_PROMPT_BLOCK_FOR_SPLIT(1),
   currentPrompt = process.env.KUI_POPUP
     ? Selectors.STATUS_STRIPE_PROMPT
     : !process.env.BOTTOM_INPUT_MODE
-    ? Selectors.CURRENT_PROMPT
+    ? Selectors.CURRENT_PROMPT_FOR_SPLIT(1)
     : Selectors.BOTTOM_PROMPT
 ) => {
   return app.client

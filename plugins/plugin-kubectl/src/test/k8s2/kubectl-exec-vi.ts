@@ -50,7 +50,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
         .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
   } else {
     it(`should wait for the pod to come up`, () => {
@@ -58,7 +58,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         .then(async () => {
           await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(2, podName))
         })
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
   }
 
@@ -72,7 +72,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
     return CLI
       .command(`kubectl cp ${vimrc} -n ${ns} ${ns}/${podName}:/root/.vimrc`, this.app)
       .then(ReplExpect.ok)
-      .catch(Common.oops(this))
+      .catch(Common.oops(this, true))
   }) */
 
   const filename = '/tmp/foo.txt'

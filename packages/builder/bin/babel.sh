@@ -29,23 +29,29 @@
 PLUGINS=@babel/plugin-transform-modules-commonjs,dynamic-import-node-babel-7,babel-plugin-ignore-html-and-css-imports
 
 function babel {
-    OUT=dist
+    local OUT=dist
     if [ "$i" == "packages/builder" ]; then OUT=build; fi
 
-    echo "babeling $1 to $OUT"
-    npx --no-install babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored &
+    # echo "babeling $1 to $OUT"
+    echo "npx --no-install babel --plugins $PLUGINS $1/mdist --out-dir $1/$OUT --ignore '**/*.d.ts','**/*.js.map' --no-copy-ignored"
 }
 
+declare -a LIST=()
 for i in {packages,plugins}/*; do
     if [ -d $i/mdist ]; then
-        babel $i
+        cmd=$(babel $i)
+        LIST+=("$cmd")
     fi
 
     for j in $i/*; do
         if [ -d $j/mdist ]; then
-            babel $j
+            cmd=$(babel $j)
+            LIST+=("$cmd")
         fi
     done
 done
 
-wait
+# ugh, bash versus quotes; we just gave up and launched node here:
+# the L.slice is to strip of the trailing comma that the bash printf line emits
+export L=$(printf "\"%s\"," "${LIST[@]}")
+node -e 'require("concurrently")(JSON.parse("[" + process.env.L.slice(0, process.env.L.length - 1) + "]"), { maxProcesses: require("os").cpus().length }).then(() => console.log("ok"))'

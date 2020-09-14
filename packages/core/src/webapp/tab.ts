@@ -94,12 +94,21 @@ export const getTab = (idx: Tab | number): Tab => {
  *
  */
 export function pexecInCurrentTab(command: string, topLevelTab?: Tab, quiet = false) {
-  const { facade: tab } = ((topLevelTab || document).querySelector(
+  const scrollback = ((topLevelTab || document).querySelector(
     (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback:not([data-is-minisplit])'
   ) as any) as {
     facade: Tab
   }
-  return quiet ? tab.REPL.qexec(command, undefined, undefined, { tab }) : tab.REPL.pexec(command, { tab })
+  if (scrollback) {
+    const { facade: tab } = scrollback
+    return quiet ? tab.REPL.qexec(command, undefined, undefined, { tab }) : tab.REPL.pexec(command, { tab })
+  } else {
+    return Promise.reject(
+      new Error(
+        'Internal Error: unable to execute in current tab, as there is no initialized scrollback in the current tab. This is probably due a race condition elsewhere in the code: trying to do the exec in parallel with the tab initialization.'
+      )
+    )
+  }
 }
 
 export default Tab

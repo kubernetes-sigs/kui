@@ -129,7 +129,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         // then we are closing the last tab, so close the window
         tab.REPL.qexec('window close')
       } else {
-        this.onCloseTab(this.state.activeIdx)
+        this.onCloseTab(this.state.tabs.findIndex(_ => _.uuid === model.uuid))
       }
     })
   }
