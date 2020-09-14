@@ -276,14 +276,21 @@ $action-hover-delay: 140ms;
   }
 }
 
+@mixin timestamp-like {
+  margin: 0 0.5rem;
+  display: flex;
+  align-items: center;
+  transition-delay: $action-hover-delay;
+  transition-property: opacity;
+}
+
 /* timestamp */
 .repl-block {
   .kui--repl-block-timestamp {
-    margin: 0 0.5rem;
-    display: flex;
-    align-items: center;
-    transition-delay: $action-hover-delay;
-    transition-property: opacity;
+    @include timestamp-like();
+  }
+  .kui--repl-block-re-editing {
+    @include timestamp-like();
   }
 }
 @include sidecar-visible {

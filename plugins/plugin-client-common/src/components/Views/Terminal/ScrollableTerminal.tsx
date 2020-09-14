@@ -418,9 +418,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .concat([Processing(curState.blocks[rerunIdx], event, event.evaluatorOptions.isExperimental, true)])
               .concat(curState.blocks.slice(rerunIdx + 1)) // everything after
           }
-        } else if (this.hasActiveBlock(curState)) {
+        } else if (curState.focusedBlockIdx !== undefined && curState.focusedBlockIdx !== idx) {
           // Transform the active block to Processing
-          const activeBlockIdx = this.findActiveBlock(curState)
+          const activeBlockIdx = curState.focusedBlockIdx
 
           return {
             blocks: curState.blocks
@@ -480,7 +480,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .slice(0, inProcessIdx) // everything before
               .concat([Finished(inProcess, event, prefersTerminalPresentation, outputOnly)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
-              .concat(!inProcess.isRerun && !this.hasActiveBlock(curState) ? [Active()] : []) // plus a new block!
+              .concat(!inProcess.isRerun && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
             return {
               focusedBlockIdx: blocks.length - 1,

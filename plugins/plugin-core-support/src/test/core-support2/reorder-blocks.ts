@@ -37,11 +37,11 @@ describe(`reorder blocks ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       const N1 = res1.count
       const N2 = res2.count
       const N3 = res3.count
-      await this.app.client.click(Selectors.PROMPT_N(N3))
+      await this.app.client.moveToObject(Selectors.PROMPT_N(N3))
       await this.app.client.waitForVisible(Selectors.BLOCK_UP_BUTTON(N3))
       await this.app.client.click(Selectors.BLOCK_UP_BUTTON(N3))
 
-      await this.app.client.click(Selectors.PROMPT_N(N1))
+      await this.app.client.moveToObject(Selectors.PROMPT_N(N1))
       await this.app.client.waitForVisible(Selectors.BLOCK_DOWN_BUTTON(N1))
       await this.app.client.click(Selectors.BLOCK_DOWN_BUTTON(N1))
 

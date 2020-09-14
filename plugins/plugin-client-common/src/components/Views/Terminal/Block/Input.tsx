@@ -120,6 +120,9 @@ type InputProps = {
 export type Props = InputOptions & InputProps & BlockViewTraits
 
 export interface State {
+  /** did user click to re-edit the input? */
+  isReEdit?: boolean
+
   /** the execution ID for this prompt, if any */
   execUUID?: string
 
@@ -281,6 +284,7 @@ export default class Input extends InputProvider {
     super(props)
 
     this.state = {
+      isReEdit: false,
       execUUID: hasUUID(props.model) ? props.model.execUUID : undefined,
       prompt: undefined,
       spinner: undefined
@@ -379,8 +383,12 @@ export default class Input extends InputProvider {
   private readonly _onPaste = this.onPaste.bind(this)
 
   private onRef(c: HTMLInputElement) {
-    if (c && !this.state.prompt) {
-      c.value = hasValue(this.props.model) ? this.props.model.value : ''
+    if (c && (!this.state.prompt || this.state.isReEdit)) {
+      c.value = hasValue(this.props.model)
+        ? this.props.model.value
+        : hasCommand(this.props.model)
+        ? this.props.model.command
+        : ''
       this.setState({ prompt: c })
     } else if (c && this.props.isFocused && isInViewport(c)) {
       c.focus()
@@ -397,7 +405,7 @@ export default class Input extends InputProvider {
 
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
-    const active = isActive(this.props.model)
+    const active = isActive(this.props.model) || this.state.isReEdit
 
     if (active) {
       if (this.props.isFocused && this.state.prompt && document.activeElement !== this.state.prompt) {
@@ -409,7 +417,7 @@ export default class Input extends InputProvider {
       }
 
       return (
-        <React.Fragment>
+        <div className="repl-input-element-wrapper flex-layout flex-fill">
           <input
             type="text"
             autoFocus={this.props.isFocused && isInViewport(this.props._block)}
@@ -417,18 +425,31 @@ export default class Input extends InputProvider {
             autoComplete="off"
             spellCheck="false"
             autoCapitalize="off"
-            className={
-              'repl-input-element-wrapper repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')
-            }
+            className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
             aria-label="Command Input"
             tabIndex={1}
             placeholder={this.props.promptPlaceholder}
-            onBlur={this.props.onInputBlur}
+            onBlur={evt => {
+              this.props.onInputBlur && this.props.onInputBlur(evt)
+
+              const valueNotChanged =
+                hasCommand(this.props.model) && this.props.model.command === this.state.prompt.value
+              this.setState(curState => {
+                if (curState.isReEdit && valueNotChanged) {
+                  return {
+                    isReEdit: false
+                  }
+                }
+              })
+            }}
             onFocus={this._onFocus}
             onMouseDown={this.props.onInputMouseDown}
             onMouseMove={this.props.onInputMouseMove}
             onChange={this.props.onInputChange}
-            onClick={this.props.onInputClick}
+            onClick={evt => {
+              this.props.onInputClick && this.props.onInputClick(evt)
+              this.props.willFocusBlock(evt)
+            }}
             onKeyPress={this._onKeyPress}
             onKeyDown={this._onKeyDown}
             onKeyUp={this._onKeyUp}
@@ -436,7 +457,8 @@ export default class Input extends InputProvider {
             ref={this._onRef}
           />
           {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
-        </React.Fragment>
+          {<span className="repl-prompt-right-elements">{this.reEditing()}</span>}
+        </div>
       )
     } else {
       const value =
@@ -469,7 +491,19 @@ export default class Input extends InputProvider {
       } else {
         // for "done" blocks, render the value as a plain div
         return (
-          <div className="repl-input-element-wrapper flex-layout flex-fill" onClick={this.props.willFocusBlock}>
+          <div
+            className="repl-input-element-wrapper flex-layout flex-fill"
+            onClick={evt => {
+              this.props.willFocusBlock(evt)
+              this.setState(curState => {
+                if (!curState.isReEdit) {
+                  return {
+                    isReEdit: true
+                  }
+                }
+              })
+            }}
+          >
             <span className="repl-input-element flex-fill">{value}</span>
             {this.inputStatus(value)}
           </div>
@@ -507,6 +541,13 @@ export default class Input extends InputProvider {
           </span>
         )
       )
+    }
+  }
+
+  /** render an re-edit indicator when users clicked to re-edit an input */
+  private reEditing() {
+    if (this.state.isReEdit) {
+      return <span className="kui--repl-block-re-editing kui--repl-block-right-element">{strings('editing...')}</span>
     }
   }
 
