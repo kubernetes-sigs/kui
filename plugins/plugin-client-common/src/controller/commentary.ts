@@ -82,19 +82,26 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
 
   // the markdown data either comes from a file, or directly from the
   // command line
-  const data = filepath
-    ? await fetchMarkdownFile(filepath, args) // from file
-    : args.command // directly from command lien
-        .trim()
-        .slice(args.command.indexOf(' ') + 1)
-        .trim()
-        .replace(/\\n/g, '\n')
-        .replace(/(-t|--title)\s+\S+/, '')
+  const data =
+    (filepath
+      ? await fetchMarkdownFile(filepath, args) // from file
+      : args.command // directly from command line
+          .trim()
+          .slice(args.command.indexOf(' ') + 1)
+          .trim()
+          .replace(/\\n/g, '\n')
+          .replace(/(-t|--title)\s+\S+/, '')) || '#'
 
-  if (data) {
-    if (data === '#') {
-      // empty comment
-      return true
+  if (data !== undefined) {
+    if (data === '#' || args.command === 'commentary') {
+      return {
+        apiVersion: 'kui-shell/v1',
+        kind: 'CommentaryResponse',
+        props: {
+          title,
+          children: ''
+        }
+      }
     } else {
       return {
         apiVersion: 'kui-shell/v1',

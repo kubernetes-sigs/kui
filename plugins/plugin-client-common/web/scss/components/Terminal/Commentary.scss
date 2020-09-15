@@ -89,6 +89,15 @@
     font-size: 1rem;
     line-height: 1.5rem;
   }
+
+  /* while editing, use a different background color for the Markdown preview */
+  @include Card {
+    &[data-is-editing] {
+      .marked-content {
+        background-color: var(--color-base03);
+      }
+    }
+  }
 }
 
 @include narrow-window {
@@ -97,4 +106,13 @@
 
 @include sidecar-visible {
   @include FullWidth;
+}
+
+.kui--commentary {
+  font-family: var(--font-sans-serif);
+
+  .kui--commentary-button {
+    color: var(--color-sidecar-toolbar-foreground);
+    padding: 0 0.5rem;
+  }
 }

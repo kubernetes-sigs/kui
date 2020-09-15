@@ -29,6 +29,8 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
   content: string
   contentType: string
   className?: string
+  readonly?: boolean
+  onContentChange?: (content: string) => void
 }
 
 interface State {
@@ -79,6 +81,13 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
     this.state.cleaners.forEach(cleaner => cleaner())
   }
 
+  /** When content of the editor changes, call `onContentChange`  */
+  private static onChange(props: Props, editor: Monaco.ICodeEditor) {
+    return () => {
+      props.onContentChange(editor.getValue())
+    }
+  }
+
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
   private static initMonaco(props: Props, state: State): Partial<State> {
     const cleaners = []
@@ -87,7 +96,7 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
       // here we instantiate an editor widget
       const providedOptions = {
         value: props.content,
-        readOnly: true,
+        readOnly: props.readonly !== undefined ? props.readonly : true,
         fontSize: props.fontSize,
         language: props.contentType
       }
@@ -96,6 +105,12 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
 
       state.wrapper['getValueForTests'] = () => {
         return editor.getValue()
+      }
+
+      editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))
+
+      if (!props.readonly) {
+        setTimeout(() => editor.focus())
       }
 
       const onZoom = () => {

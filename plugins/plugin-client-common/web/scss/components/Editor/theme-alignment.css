@@ -93,6 +93,12 @@
   color: var(--color-map-key);
 }
 
+/* e.g. markdown code */
+[kui-theme-style] .monaco-editor .mtk23 {
+  transition: color 300ms ease-in-out;
+  color: var(--color-base0F);
+}
+
 [kui-theme-style] .monaco-editor .meta,
 [kui-theme-style] .monaco-editor .subst,
 [kui-theme-style] .monaco-editor .symbol,

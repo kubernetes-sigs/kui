@@ -260,3 +260,6 @@ export const SOURCE_REF_N = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--expandable-section`
 export const SOURCE_REF_TOGGLE_N = (N: number, expanded = false, splitIndex = 1) =>
   `${SOURCE_REF_N(N, splitIndex)} .pf-c-expandable-section__toggle[aria-expanded=${expanded.toString()}]`
+
+export const COMMENTARY_EDITOR_BUTTON_DONE = '.kui--commentary-editor-toolbar .kui--commentary-button [title="Done"]'
+export const COMMENTARY_EDITOR = '.kui--commentary .kui--source-ref-editor'
