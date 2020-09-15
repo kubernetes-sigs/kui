@@ -421,19 +421,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         } else if (curState.focusedBlockIdx !== undefined && curState.focusedBlockIdx !== idx) {
           // Transform the active block to Processing
           const activeBlockIdx = curState.focusedBlockIdx
+          const blocks = curState.blocks
+            .slice(0, activeBlockIdx)
+            .concat([Processing(curState.blocks[activeBlockIdx], event, event.evaluatorOptions.isExperimental)])
+            .concat(curState.blocks.slice(activeBlockIdx + 1))
 
           return {
-            blocks: curState.blocks
-              .slice(0, activeBlockIdx)
-              .concat([Processing(curState.blocks[activeBlockIdx], event, event.evaluatorOptions.isExperimental)])
-              .concat(curState.blocks.slice(activeBlockIdx + 1))
+            blocks
           }
         } else {
           // Transform the last block to Processing
+          const blocks = curState.blocks
+            .slice(0, idx)
+            .concat([Processing(curState.blocks[idx], event, event.evaluatorOptions.isExperimental)])
           return {
-            blocks: curState.blocks
-              .slice(0, idx)
-              .concat([Processing(curState.blocks[idx], event, event.evaluatorOptions.isExperimental)])
+            blocks
           }
         }
       })
@@ -499,7 +501,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const inProcess = curState.blocks[inProcessIdx]
         const blocks = curState.blocks
           .slice(0, inProcessIdx)
-          .concat([Cancelled(inProcess)]) // mark as cancelled
+          .concat([Cancelled(inProcess, event.command)]) // mark as cancelled
           .concat(curState.blocks.slice(inProcessIdx + 1))
           .concat(inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block if needed
         return {
@@ -958,7 +960,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 .filter(_ => !isHidden(_))
                 .map((_, idx) => (
                   <Block
-                    key={(hasUUID(_) ? _.execUUID : idx) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
+                    key={(hasUUID(_) ? _.execUUID : _.state) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
                     idx={idx}
                     displayedIdx={findDisplayedIdx(idx)}
                     model={_}

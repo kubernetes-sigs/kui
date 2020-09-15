@@ -41,6 +41,7 @@ import {
 import { BlockViewTraits, BlockOperationTraits } from './'
 
 import Tag from '../../../spi/Tag'
+import Icons from '../../../spi/Icons'
 import ExpandableSection from '../../../spi/ExpandableSection'
 
 const SimpleEditor = React.lazy(() => import('../../../Content/Editor/SimpleEditor'))
@@ -151,10 +152,26 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   protected status() {}
 
+  protected cancelReEdit() {
+    this.setState(() => {
+      return {
+        isReEdit: false
+      }
+    })
+  }
+
+  private readonly _cancelReEdit = this.cancelReEdit.bind(this)
+
   protected contextContent(
     insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1
   ): React.ReactNode {
-    return <React.Fragment>In[{insideBrackets}]</React.Fragment> // this.props.model.cwd
+    return this.state.isReEdit ? (
+      <a href="#" className="kui--block-action" title={strings('Cancel edit')} onClick={this._cancelReEdit}>
+        <Icons icon="Edit" className="clickable" />
+      </a>
+    ) : (
+      <React.Fragment>In[{insideBrackets}]</React.Fragment>
+    ) // this.props.model.cwd
   }
 
   /** the "xxx" part of "xxx >" of the prompt */
@@ -291,9 +308,18 @@ export default class Input extends InputProvider {
     }
   }
 
-  /** @return the value of the prompt */
+  /** @return the current value of the prompt */
   public value() {
     return this.state.prompt && this.state.prompt.value
+  }
+
+  /** @return the value to be added to the prompt */
+  protected valueToBeDisplayed() {
+    return hasValue(this.props.model)
+      ? this.props.model.value
+      : hasCommand(this.props.model)
+      ? this.props.model.command
+      : ''
   }
 
   /** Owner wants us to focus on the current prompt */
@@ -417,7 +443,10 @@ export default class Input extends InputProvider {
       }
 
       return (
-        <div className="repl-input-element-wrapper flex-layout flex-fill">
+        <div
+          className="repl-input-element-wrapper flex-layout flex-fill"
+          data-is-reedit={this.state.isReEdit || undefined}
+        >
           <input
             type="text"
             autoFocus={this.props.isFocused && isInViewport(this.props._block)}
@@ -433,11 +462,14 @@ export default class Input extends InputProvider {
               this.props.onInputBlur && this.props.onInputBlur(evt)
 
               const valueNotChanged =
-                hasCommand(this.props.model) && this.props.model.command === this.state.prompt.value
+                hasCommand(this.props.model) &&
+                this.state.prompt &&
+                this.props.model.command === this.state.prompt.value
               this.setState(curState => {
                 if (curState.isReEdit && valueNotChanged) {
                   return {
-                    isReEdit: false
+                    isReEdit: false,
+                    prompt: undefined
                   }
                 }
               })
@@ -457,17 +489,10 @@ export default class Input extends InputProvider {
             ref={this._onRef}
           />
           {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
-          {<span className="repl-prompt-right-elements">{this.reEditing()}</span>}
         </div>
       )
     } else {
-      const value =
-        this.value() ||
-        (hasValue(this.props.model)
-          ? this.props.model.value
-          : hasCommand(this.props.model)
-          ? this.props.model.command
-          : '')
+      const value = this.valueToBeDisplayed()
 
       if (isProcessing(this.props.model)) {
         // for processing blocks, we still need an input, albeit
@@ -480,7 +505,7 @@ export default class Input extends InputProvider {
               value={value}
               onKeyDown={evt => {
                 if (evt.key === 'c' && evt.ctrlKey) {
-                  doCancel(this.props.tab, this.props._block)
+                  doCancel(this.props.tab, this.props._block, value)
                 }
               }}
               ref={c => c && c.focus()}
@@ -505,6 +530,7 @@ export default class Input extends InputProvider {
             }}
           >
             <span className="repl-input-element flex-fill">{value}</span>
+            {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span> /* &nbsp; */}
             {this.inputStatus(value)}
           </div>
         )
@@ -544,13 +570,6 @@ export default class Input extends InputProvider {
     }
   }
 
-  /** render an re-edit indicator when users clicked to re-edit an input */
-  private reEditing() {
-    if (this.state.isReEdit) {
-      return <span className="kui--repl-block-re-editing kui--repl-block-right-element">{strings('editing...')}</span>
-    }
-  }
-
   /** spinner for processing blocks */
   private spinner() {
     return (
@@ -572,7 +591,7 @@ export default class Input extends InputProvider {
 
   /** DropDown menu for completed blocks */
   private actions(command: string) {
-    if (isFinished(this.props.model) && this.props.tab && this.props.model) {
+    if (isFinished(this.props.model) && !!this.props.tab && !!this.props.model) {
       return <Actions command={command} {...this.props} />
     }
   }

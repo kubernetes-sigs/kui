@@ -16,6 +16,7 @@
 
 $input-bg: var(--color-table-border3);
 $input-border: rgba(100, 100, 100, 0.05);
+$input-border-editing: var(--color-brand-03);
 
 @mixin Scrollback {
   .kui--scrollback {

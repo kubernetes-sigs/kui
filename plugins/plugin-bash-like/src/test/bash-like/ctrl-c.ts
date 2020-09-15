@@ -40,6 +40,8 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .catch(Common.oops(this, true))
 
   it('should hit ctrl+c', () => cancel(this.app))
+  it('should clear the terminal', () =>
+    CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app)))
   it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
 
   it('should cancel a non-pty command via ctrl+c', async () => {

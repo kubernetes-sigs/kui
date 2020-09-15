@@ -28,7 +28,7 @@ import { Block } from './models/block'
 import { ExecType } from '../models/command'
 import { CommandCompleteEvent } from '../repl/events'
 
-export default function doCancel(tab: Tab, block: Block) {
+export default function doCancel(tab: Tab, block: Block, valueTypedSoFar: string) {
   block.isCancelled = true
 
   const execUUID = block.getAttribute('data-uuid')
@@ -38,7 +38,7 @@ export default function doCancel(tab: Tab, block: Block) {
     cancelled: true,
     execUUID,
     historyIdx: -1,
-    command: undefined,
+    command: valueTypedSoFar,
     argvNoOptions: undefined,
     execOptions: undefined,
     parsedOptions: undefined,
