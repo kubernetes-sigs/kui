@@ -55,7 +55,7 @@ export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithResponse<ScalarResponse> &
   WithCWD &
   WithAnnouncement
-type EmptyBlock = WithState<BlockState.Empty> & WithCWD
+type EmptyBlock = WithState<BlockState.Empty> & WithCWD & Partial<WithCommand>
 type ErrorBlock = WithState<BlockState.Error> &
   WithCommand &
   WithResponse<Error> &
@@ -129,7 +129,7 @@ export function isFinished(block: BlockModel): block is FinishedBlock {
 }
 
 export function hasCommand(block: BlockModel & Partial<WithCommand>): block is BlockModel & Required<WithCommand> {
-  return !isActive(block) && !isEmpty(block)
+  return !isActive(block) && (!isEmpty(block) || block.command !== undefined)
 }
 
 export function isAnnouncement(block: BlockModel): block is AnnouncementBlock {
@@ -185,15 +185,16 @@ export function Processing(
 }
 
 /** Transform to Empty */
-export function Empty(block: BlockModel): EmptyBlock {
+export function Empty(block: BlockModel, typedSoFar?: string): EmptyBlock {
   return {
     cwd: block.cwd,
+    command: typedSoFar,
     state: BlockState.Empty
   }
 }
 
 /** Transform to Cancelled */
-export function Cancelled(block: BlockModel): CancelledBlock | EmptyBlock {
+export function Cancelled(block: BlockModel, typedSoFar?: string): CancelledBlock | EmptyBlock {
   if (isProcessing(block)) {
     return {
       cwd: block.cwd,
@@ -203,7 +204,7 @@ export function Cancelled(block: BlockModel): CancelledBlock | EmptyBlock {
       state: BlockState.Cancelled
     }
   } else {
-    return Empty(block)
+    return Empty(block, typedSoFar)
   }
 }
 

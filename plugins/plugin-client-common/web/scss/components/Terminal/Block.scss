@@ -216,7 +216,8 @@ $action-hover-delay: 140ms;
         align-items: stretch;
         padding-left: 0.5rem;
         position: relative; /* for repl-block-actions' position: absolute */
-        .repl-input-element {
+        .repl-input-element,
+        .kui--repl-input-element-nbsp {
           padding: $inset 0;
           padding-right: $inset; /* to pad against timestamp and action buttons */
         }
@@ -226,6 +227,10 @@ $action-hover-delay: 140ms;
       .repl-input-element-wrapper {
         background-color: $input-bg;
         border-color: $input-border;
+
+        &[data-is-reedit] {
+          border-color: $input-border-editing;
+        }
       }
     }
     .repl-output .repl-context {

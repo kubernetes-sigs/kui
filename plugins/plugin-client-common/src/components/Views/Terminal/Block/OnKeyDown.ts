@@ -112,7 +112,7 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     }
   } else if (char === KeyCodes.C && event.ctrlKey) {
     // Ctrl+C, cancel
-    doCancel(tab, block) // eslint-disable-line @typescript-eslint/no-use-before-define
+    doCancel(tab, block, prompt.value)
   } else if (char === KeyCodes.U && event.ctrlKey) {
     // clear line
     prompt.value = ''
