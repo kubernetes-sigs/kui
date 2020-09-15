@@ -158,6 +158,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     return (
       <Card
         isCompact
+        onClick={this.props.onCardClick}
         {...this.dataProps()}
         className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}
       >

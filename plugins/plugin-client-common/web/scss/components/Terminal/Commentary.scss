@@ -97,3 +97,20 @@
 @include sidecar-visible {
   @include FullWidth;
 }
+
+.kui--commentary {
+  font-family: var(--font-sans-serif);
+
+  .kui--commentary-editor-toolbar {
+    background-color: var(--color-sidecar-toolbar-background);
+  }
+
+  .kui--source-ref-editor {
+    margin-top: 0.5rem;
+  }
+
+  .kui--commentary-button {
+    color: var(--color-sidecar-toolbar-foreground);
+    padding: 0 0.5rem;
+  }
+}

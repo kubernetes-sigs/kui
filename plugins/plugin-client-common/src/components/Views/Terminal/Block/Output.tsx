@@ -191,6 +191,7 @@ export default class Output extends React.PureComponent<Props, State> {
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               isWidthConstrained={this.props.isWidthConstrained}
               willFocusBlock={this.props.willFocusBlock}
+              willRemove={this.props.willRemove}
               onRender={this.onRender.bind(this)}
             />
           )}

@@ -56,6 +56,9 @@ interface Props {
   /** [Optional] REPL controller, but required if you want your Card
    * to have functional kuiexec?command=... links via Markdown */
   repl?: REPL
+
+  /** [Optional] Card onClick handler */
+  onCardClick?: (evt: React.MouseEvent) => void
 }
 
 export default Props

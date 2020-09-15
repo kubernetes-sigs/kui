@@ -92,9 +92,15 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
         .replace(/(-t|--title)\s+\S+/, '')
 
   if (data) {
-    if (data === '#') {
-      // empty comment
-      return true
+    if (data === '#' || args.command === 'commentary') {
+      return {
+        apiVersion: 'kui-shell/v1',
+        kind: 'CommentaryResponse',
+        props: {
+          title,
+          children: ''
+        }
+      }
     } else {
       return {
         apiVersion: 'kui-shell/v1',
