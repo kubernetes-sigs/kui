@@ -148,6 +148,11 @@ export const _split = (
     }
   }
 
+  if (A.length === 0 && /#\s*/.test(cur)) {
+    // special case for str being "#" or "# "
+    cur = cur.trim()
+  }
+
   if (cur.length > 0) {
     A.push(resolveEnvVar(cur))
     endIndices.push(str.length)
