@@ -4,6 +4,10 @@
   "Cancel edit": "Currently in edit mode. Click to cancel.",
   "Remove": "Remove",
   "ok": "ok",
+
+  "Done": "Done",
+  "Editing Comment as Markdown": "Editing Comment as Markdown",
+
   "Status Grid": "Status Grid",
   "No resources": "No resources",
   "nRows": "{0} rows",

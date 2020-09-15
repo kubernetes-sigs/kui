@@ -124,24 +124,16 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     }
   }
 
-  private body() {
-    if (Array.isArray(this.props.children)) {
-      return this.props.children.map((child, idx) => (
-        <CardBody className="kui--card-body" key={idx}>
-          {child}
-        </CardBody>
-      ))
+  private child(node: React.ReactNode) {
+    if (typeof node === 'string') {
+      return <Markdown nested source={node} repl={this.props.repl} />
     } else {
-      return (
-        <CardBody className="kui--card-body">
-          {typeof this.props.children === 'string' ? (
-            <Markdown nested source={this.props.children} repl={this.props.repl} />
-          ) : (
-            this.props.children
-          )}
-        </CardBody>
-      )
+      return node
     }
+  }
+
+  private body() {
+    return <CardBody className="kui--card-body">{React.Children.map(this.props.children, _ => this.child(_))}</CardBody>
   }
 
   private dataProps() {
@@ -158,6 +150,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
     return (
       <Card
         isCompact
+        onClick={this.props.onCardClick}
         {...this.dataProps()}
         className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}
       >

@@ -16,7 +16,7 @@
 
 import { dirname } from 'path'
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
@@ -62,5 +62,90 @@ describe('commentary and replay', function(this: Common.ISuite) {
   it('should replay', () =>
     CLI.command('replay /tmp/test.kui', this.app)
       .then(() => verifyComment())
+      .catch(Common.oops(this, true)))
+})
+
+describe('edit commentary and replay', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const verifyComment = (expectedText: string) => {
+    let idx = 0
+    return this.app.client.waitUntil(async () => {
+      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+      const actualText = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+
+      if (++idx > 5) {
+        console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
+      }
+
+      return actualText === expectedText
+    }, CLI.waitTimeout)
+  }
+
+  const verifyTextInMonaco = (expectedText: string) => {
+    let idx = 0
+    return this.app.client.waitUntil(async () => {
+      const actualText = await Util.getValueFromMonaco(this.app, Selectors.OUTPUT_LAST)
+
+      if (++idx > 5) {
+        console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
+      }
+
+      return actualText === expectedText
+    }, CLI.waitTimeout)
+  }
+
+  /** set the monaco editor text */
+  const setValue = async (text: string): Promise<void> => {
+    const selector = `${Selectors.OUTPUT_LAST} .monaco-editor-wrapper .view-lines`
+    await this.app.client.click(selector).then(() => this.app.client.waitForEnabled(selector))
+
+    await this.app.client.keys(text)
+  }
+
+  /** Here comes the test */
+  it('should add comment', () =>
+    CLI.command(`# foo`, this.app)
+      .then(() => verifyComment('foo'))
+      .catch(Common.oops(this, true)))
+
+  it('should open editor by clicking', async () => {
+    try {
+      await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+      await verifyTextInMonaco('foo')
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it('should edit the comment', async () => {
+    try {
+      await setValue('1')
+      await verifyTextInMonaco('foo1')
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it('should close the editor', async () => {
+    try {
+      await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
+      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`, 500, true)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it('should snapshot', () =>
+    CLI.command('snapshot /tmp/test.kui', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  it('should refresh', () => Common.refresh(this))
+
+  it('should replay', () =>
+    CLI.command('replay /tmp/test.kui', this.app)
+      .then(() => verifyComment('foo1'))
       .catch(Common.oops(this, true)))
 })

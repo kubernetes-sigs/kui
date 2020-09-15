@@ -20,6 +20,7 @@ import {
   isMessageWithCode,
   Tab as KuiTab,
   ScalarResponse,
+  getPrimaryTabId,
   isCommentaryResponse,
   isHTML,
   isMarkdownResponse,
@@ -44,6 +45,7 @@ type Props = BlockViewTraits & {
   tab: KuiTab
   response: ScalarResponse | Error
   onRender: (hasContent: boolean) => void
+  willRemove?: () => void
 }
 
 interface State {
@@ -96,7 +98,14 @@ export default class Scalar extends React.PureComponent<Props, State> {
       } else if (isCommentaryResponse(response)) {
         return (
           <span onClick={this.props.willFocusBlock}>
-            <Commentary {...response.props} />
+            <Commentary
+              {...response.props}
+              tabUUID={getPrimaryTabId(tab)}
+              willRemove={this.props.willRemove}
+              willUpdateResponse={(text: string) => {
+                response.props.children = text
+              }}
+            />
           </span>
         )
       } else if (isTabLayoutModificationResponse(response)) {
