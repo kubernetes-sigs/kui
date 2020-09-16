@@ -18,9 +18,9 @@ import * as React from 'react'
 import { Tab, i18n, inBrowser } from '@kui-shell/core'
 
 import { InputOptions } from './Input'
-import BlockModel, { hasUUID } from './BlockModel'
 import { SupportedIcon } from '../../../spi/Icons'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
+import BlockModel, { hasUUID, isOutputOnly } from './BlockModel'
 
 const strings = i18n('plugin-client-common')
 const strings2 = i18n('plugin-client-common', 'screenshot')
@@ -54,7 +54,9 @@ export default class Actions extends React.PureComponent<Props> {
         : this.props.tab.REPL.pexec(this.props.command)
 
     return (
-      this.props.tab && this.props.command && <Action icon="Retry" onClick={handler} title="Re-execute this command" />
+      !isOutputOnly(this.props.model) &&
+      this.props.tab &&
+      this.props.command && <Action icon="Retry" onClick={handler} title="Re-execute this command" />
     )
   }
 
