@@ -107,7 +107,7 @@ export default class Actions extends React.PureComponent<Props> {
 
   public render() {
     return (
-      <div className="kui--block-actions-buttons">
+      <div className="kui--block-actions-buttons kui--inverted-color-context">
         <div className="kui-block-actions-others">
           {this.copyAction()}
           {this.rerunAction()}
