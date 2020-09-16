@@ -237,7 +237,7 @@ $action-hover-delay: 140ms;
     }
 
     &[data-is-output-only] {
-      .repl-result .kui--card {
+      .repl-result .kui--card:not([data-is-editing]) {
         padding: 0;
         background: none;
         box-shadow: none;

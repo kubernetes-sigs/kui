@@ -19,6 +19,7 @@ import { CommentaryResponse, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
 import Markdown from './Markdown'
+import Button from '../spi/Button'
 import SimpleEditor from './Editor/SimpleEditor'
 
 const strings = i18n('plugin-client-common')
@@ -26,6 +27,7 @@ const strings = i18n('plugin-client-common')
 interface State {
   isEdit: boolean
   textValue: string
+  lastAppliedTextValue: string
 }
 
 type Props = CommentaryResponse['props'] & {
@@ -40,35 +42,99 @@ export default class Commentary extends React.PureComponent<Props, State> {
     const textValue = this.initialTextValue()
     this.state = {
       isEdit: textValue.length === 0,
-      textValue
+      textValue,
+      lastAppliedTextValue: textValue
     }
   }
 
+  /** update state to cancel any edits and close the editor */
+  private onCancel(evt: React.MouseEvent) {
+    this.onRevert(evt, false)
+  }
+
+  private readonly _onCancel = this.onCancel.bind(this)
+
+  /** cancel button */
+  private cancel() {
+    return (
+      <Button
+        kind="secondary"
+        size="small"
+        className="kui--tab-navigatable kui--commentary-button kui--commentary-cancel-button"
+        onClick={this._onCancel}
+      >
+        {strings('Cancel')}
+      </Button>
+    )
+  }
+
+  /** Update state to cancel any updates, but leave editor open */
+  private onRevert(evt: React.MouseEvent, isEdit = true) {
+    // so that the event doesn't propagate to the onClick on the Card itself
+    evt.stopPropagation()
+
+    this.setState(curState => {
+      // switch back to the lastAppliedTextValue
+      const textValue = curState.lastAppliedTextValue
+
+      if (this.props.willUpdateResponse) {
+        this.props.willUpdateResponse(textValue)
+      }
+
+      return { isEdit, textValue }
+    })
+  }
+
+  private readonly _onRevert = this.onRevert.bind(this)
+
   /** revert button */
   private revert() {
-    this.setState({ textValue: this.initialTextValue() })
+    return (
+      <Button
+        kind="tertiary"
+        size="small"
+        className="kui--tab-navigatable kui--commentary-button kui--commentary-revert-button"
+        onClick={this._onRevert}
+      >
+        {strings('Revert')}
+      </Button>
+    )
   }
+
+  /** Update state to reflect lastAppliedTextValue, and close the editor */
+  private onDone(evt: React.MouseEvent) {
+    // so that the event doesn't propagate to the onClick on the Card itself
+    evt.stopPropagation()
+
+    if (this.state.textValue === '') {
+      this.props.willRemove()
+    } else {
+      this.setState(curState => ({ isEdit: false, lastAppliedTextValue: curState.textValue }))
+    }
+  }
+
+  private readonly _onDone = this.onDone.bind(this)
 
   /** done button removes the editor  */
   private done() {
-    const label = strings('Done')
     return (
-      <a
-        role="presentation"
-        href="#"
-        className={'kui--tab-navigatable kui--commentary-button'}
-        onClick={this._setNoEdit}
+      <Button
+        size="small"
+        className="kui--tab-navigatable kui--commentary-button kui--commentary-done-button"
+        onClick={this._onDone}
       >
-        <span role="tab" title={label}>
-          {label}
-        </span>
-      </a>
+        {strings('Done')}
+      </Button>
     )
   }
 
   /** toolbar hosts editor actions */
   private toolbar() {
-    return <div className="kui--commentary-editor-toolbar fill-container flush-right">{this.done()}</div>
+    return (
+      <div className="kui--commentary-editor-toolbar fill-container flush-right">
+        {this.done()}&nbsp;{this.cancel()}&nbsp;{this.revert()}
+      </div>
+    )
   }
 
   /** Enter isEdit mode */
@@ -77,20 +143,6 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   private readonly _setEdit = this.setEdit.bind(this)
-
-  /** Exit isEdit mode */
-  private setNoEdit(evt: React.MouseEvent) {
-    // so that the event doesn't propagate to the onClick on the Card itself
-    evt.stopPropagation()
-
-    if (this.state.textValue === '') {
-      this.props.willRemove()
-    } else {
-      this.setState({ isEdit: false })
-    }
-  }
-
-  private readonly _setNoEdit = this.setNoEdit.bind(this)
 
   private card() {
     return (
@@ -126,7 +178,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
     return (
       <SimpleEditor
         tabUUID={this.props.tabUUID}
-        content={this.initialTextValue()}
+        content={this.state.textValue}
         className="kui--source-ref-editor kui--inverted-color-context"
         readonly={false}
         fontSize={12}
