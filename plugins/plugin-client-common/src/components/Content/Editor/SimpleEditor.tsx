@@ -67,6 +67,11 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
       // then we are ready to render monaco into the wrapper
       return SimpleEditor.initMonaco(props, state)
     } else {
+      if (state.editor) {
+        if (state.editor.getValue() !== props.content) {
+          state.editor.setValue(props.content)
+        }
+      }
       return state
     }
   }

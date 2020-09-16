@@ -97,11 +97,64 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   }
 
   /** set the monaco editor text */
-  const setValue = async (text: string): Promise<void> => {
+  const type = async (text: string): Promise<void> => {
     const selector = `${Selectors.OUTPUT_LAST} .monaco-editor-wrapper .view-lines`
     await this.app.client.click(selector).then(() => this.app.client.waitForEnabled(selector))
 
     await this.app.client.keys(text)
+  }
+  const typeAndVerify = (text: string, expect: string) => {
+    it(`should type ${text} and expect ${expect} in the comment`, async () => {
+      try {
+        await type(text)
+        await verifyTextInMonaco(expect)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
+  const openEditor = (expect: string) => {
+    it('should open editor by clicking', async () => {
+      try {
+        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+        await verifyTextInMonaco(expect)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
+  const clickDone = (expect: string) => {
+    it('should close the editor by clicking the Done button', async () => {
+      try {
+        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
+        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`, 500, true)
+        await verifyComment(expect)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
+  const clickRevert = (expect: string) => {
+    it('should revert the editor by clicking the Revert button', async () => {
+      try {
+        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_REVERT}`)
+        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`) // still open!
+        await verifyTextInMonaco(expect)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
+  const clickCancel = (expect: string) => {
+    it('should close the editor by clicking the Cancel button', async () => {
+      try {
+        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_CANCEL}`)
+        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`, 500, true)
+        await verifyComment(expect)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
   }
 
   /** Here comes the test */
@@ -110,32 +163,18 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
       .then(() => verifyComment('foo'))
       .catch(Common.oops(this, true)))
 
-  it('should open editor by clicking', async () => {
-    try {
-      await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
-      await verifyTextInMonaco('foo')
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
+  openEditor('foo')
+  typeAndVerify('1', 'foo1')
+  clickDone('foo1')
 
-  it('should edit the comment', async () => {
-    try {
-      await setValue('1')
-      await verifyTextInMonaco('foo1')
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
+  openEditor('foo1')
+  typeAndVerify('2', 'foo12')
+  clickCancel('foo1')
 
-  it('should close the editor', async () => {
-    try {
-      await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
-      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`, 500, true)
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
+  openEditor('foo1')
+  typeAndVerify('3', 'foo13')
+  clickRevert('foo1')
+  clickCancel('foo1')
 
   it('should snapshot', () =>
     CLI.command('snapshot /tmp/test.kui', this.app)
