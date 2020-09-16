@@ -35,7 +35,6 @@ $action-hover-delay: 140ms;
 @mixin show-block-action-buttons {
   .kui--block-actions-buttons {
     width: auto;
-    margin-left: 0.5rem;
     opacity: 1;
     right: 0;
   }
@@ -76,7 +75,7 @@ $action-hover-delay: 140ms;
       background-color: transparent;
     }
     &:not([data-is-output-only]) .repl-output {
-      margin-top: $inset;
+      margin-top: 1rem;
     }
     &[data-is-focused]:before {
       opacity: 1;
@@ -98,7 +97,7 @@ $action-hover-delay: 140ms;
   }
 
   .repl-block {
-    padding: 0.5rem 0;
+    padding: 0.875rem 0;
     display: flex;
     flex-direction: column;
 
@@ -110,24 +109,26 @@ $action-hover-delay: 140ms;
     }
 
     /* special bg color for Actions inside of output-only versus input blocks, to occlude repl-input-element */
-    .repl-input .kui--block-actions-buttons {
-      background-color: $input-bg;
+    .kui--block-actions-buttons {
+      background-color: var(--color-base03);
     }
     .repl-output .kui--block-actions-buttons {
-      background-color: var(--color-repl-background);
+      top: -0.25rem;
+      bottom: calc(100% - 1.5rem);
     }
     .kui--block-actions-buttons {
       align-items: center;
       display: flex;
       width: 0;
       opacity: 0;
+      border-radius: 1px;
 
       position: absolute;
       top: 0; /* this with bottom:0 gives 1) vertical center; 2) occluding of repl-input-element content */
       bottom: 0;
       right: -100rem; /* we will change this on hover */
 
-      padding-left: 1rem; /* to occlude out more of repl-input-element */
+      padding-left: 0.5rem;
       transition-property: right;
       transition-delay: $action-hover-delay;
       transition-duration: 140ms;
@@ -165,14 +166,11 @@ $action-hover-delay: 140ms;
       padding-right: $action-padding;
       margin-right: $action-padding;
       display: flex;
-      border-right: 1px solid var(--color-table-border2);
+      border-right: 1px solid var(--color-table-border1);
     }
 
-    .repl-input .kui--block-action:hover {
-      background-color: var(--color-base04);
-    }
-    .repl-output .kui--block-action:hover {
-      background-color: var(--color-table-border3);
+    .kui--block-action:hover {
+      background-color: var(--color-table-border1);
     }
 
     .repl-input,
@@ -227,6 +225,7 @@ $action-hover-delay: 140ms;
       .repl-input-element-wrapper {
         background-color: $input-bg;
         border-color: $input-border;
+        border-radius: 1px;
 
         &[data-is-reedit] {
           border-color: $input-border-editing;
