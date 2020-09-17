@@ -117,6 +117,72 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   })
 })
 
+describe('core new tab onClose', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const closers = [
+    // Variant 1: execute `tab close` command
+    () =>
+      it('should close tab via "tab close" command', () =>
+        CLI.command('tab close', this.app)
+          .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
+          .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+          .then(() => CLI.waitForRepl(this.app)) // should have an active repl
+          .catch(Common.oops(this, true))),
+
+    // Variant 2: click on the tab closer button in the UI
+    () =>
+      it('should close by clicking on the tab closer button', async () => {
+        try {
+          await this.app.client.click(Selectors.CURRENT_TAB_CLOSE)
+          await this.app.client
+            .waitForExist(Selectors.TAB_N(2), 5000, true)
+            .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+          await CLI.waitForRepl(this.app) // should have an active repl
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+  ]
+
+  closers.forEach((closeNewTab, idx) => {
+    // the value doesn't matter, but we will validate that, whatever it
+    // is, the kuiconfig has this value set onClose
+    const key = 'foo-' + idx
+    const value = '999999-' + idx
+
+    Util.closeAllExceptFirstTab.bind(this)()
+    it(`should successfully open a new tab with onClose handler ${key}=${value}`, async () => {
+      try {
+        await CLI.command(`tab new --onClose "kuiconfig set ${key} ${value}"`, this.app)
+        await CLI.waitForRepl(this.app) // should have an active repl
+        await this.app.client.waitForExist(Selectors.TAB_N(2))
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+
+    closeNewTab()
+    it(`should show the effect of the onClose handler, now that the tab is closed: ${key}=${value}`, async () => {
+      try {
+        let idx = 0
+        await this.app.client.waitUntil(async () => {
+          const res = await CLI.command(`kuiconfig get ${key}`, this.app)
+
+          const actualValue = await this.app.client.getText(Selectors.OUTPUT_N(res.count))
+          if (++idx > 5) {
+            console.error(`still waiting for kuiconfig value actualValue=${actualValue} expectedValue=${value}`)
+          }
+          return actualValue === value
+        }, CLI.waitTimeout)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  })
+})
+
 describe('core new tab with custom title', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))

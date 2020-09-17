@@ -60,8 +60,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       activeIdx: 0
     }
 
-    eventBus.on('/tab/new/request', ({ statusStripeDecoration, title, background, cmdline } = {}) => {
-      this.onNewTab(statusStripeDecoration, background, title, cmdline)
+    eventBus.on('/tab/new/request', ({ statusStripeDecoration, title, background, cmdline, onClose } = {}) => {
+      this.onNewTab(statusStripeDecoration, background, title, cmdline, onClose)
     })
 
     eventBus.on('/tab/switch/request', (idx: number) => {
@@ -107,7 +107,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * Close Tab event
    *
    */
-  private onCloseTab(idx: number) {
+  private async onCloseTab(idx: number) {
     const residualTabs = this.state.tabs.slice(0, idx).concat(this.state.tabs.slice(idx + 1))
 
     if (residualTabs.length > 0) {
@@ -138,7 +138,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     statusStripeDecoration?: StatusStripeChangeEvent,
     background?: boolean,
     title?: string,
-    cmdline?: string
+    cmdline?: string,
+    onClose?: string
   ) {
     // !this.state means: if this is the very first tab we've ever
     // !created, *and* we were given an initial title (via
@@ -150,7 +151,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       title || (!this.state && this.props.title ? this.props.title : undefined),
       undefined,
       undefined,
-      cmdline
+      cmdline,
+      onClose
     )
     this.listenForTabClose(model)
     return model
@@ -164,7 +166,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     statusStripeDecoration?: StatusStripeChangeEvent,
     background = false,
     title?: string,
-    cmdline?: string
+    cmdline?: string,
+    onClose?: string
   ) {
     // if we already have a tab with this title, and this isn't a
     // background tab, then switch to it
@@ -180,7 +183,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
     this.captureState()
 
-    const model = this.newTabModel(statusStripeDecoration, background, title, cmdline)
+    const model = this.newTabModel(statusStripeDecoration, background, title, cmdline, onClose)
 
     this.setState(curState => ({
       tabs: curState.tabs.concat(model),
@@ -237,11 +240,25 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     // then, for all tabs: we were asked to execute a command line in
     // the new tab?
     const tabModel = this.state.tabs.find(_ => _.uuid === tab.uuid)
-    if (tabModel && tabModel.initialCommandLine) {
-      try {
-        pexecInCurrentTab(tabModel.initialCommandLine, tab)
-      } catch (err) {
-        console.error('Error executing initial command line in new tab', err)
+    if (tabModel) {
+      // execute a command onReady?
+      if (tabModel.initialCommandLine) {
+        try {
+          pexecInCurrentTab(tabModel.initialCommandLine, tab)
+        } catch (err) {
+          console.error('Error executing initial command line in new tab', err)
+        }
+      }
+
+      // execute a command onClose?
+      if (tabModel.onClose) {
+        eventBus.on('/tab/close', async tab => {
+          try {
+            await tab.REPL.qexec(tabModel.onClose)
+          } catch (err) {
+            console.error('Error executing tab onClose handler', err)
+          }
+        })
       }
     }
   }

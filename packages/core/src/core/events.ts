@@ -71,6 +71,9 @@ interface NewTabRequestEvent {
 
   /** Optionally execute a command in the new tab */
   cmdline?: string
+
+  /** Optionally execute a command when the tab is closed */
+  onClose?: string
 }
 
 class WriteEventBus extends EventBusBase {

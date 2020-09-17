@@ -71,6 +71,9 @@ export default function plugin(commandTree: Registrar) {
       /** Open tab only if the given Kui command returns false */
       ifnot?: string
 
+      /** When the tab is closed, invoke this Kui command */
+      onClose?: string
+
       /** Open tab in the background? I.e. without switching to it */
       bg?: boolean
 
@@ -80,6 +83,7 @@ export default function plugin(commandTree: Registrar) {
   >(
     '/tab/new',
     async args => {
+      // handle conditional tab creation
       if (args.parsedOptions.if) {
         // conditional opening request
         const condition = await args.REPL.qexec<boolean>(args.parsedOptions.if)
@@ -95,11 +99,14 @@ export default function plugin(commandTree: Registrar) {
         }
       }
 
+      // status stripe decorations
       const message =
         args.parsedOptions['status-stripe-message'] ||
         (args.execOptions.data ? args.execOptions.data['status-stripe-message'] : undefined)
       const statusStripeDecoration = { type: args.parsedOptions['status-stripe-type'], message }
 
+      // this is our response to the user if the tab was created
+      // successfully
       const ok = {
         apiVersion: 'kui-shell/v1',
         kind: 'CommentaryResponse',
@@ -114,21 +121,25 @@ export default function plugin(commandTree: Registrar) {
       }
 
       if (args.parsedOptions.cmdline) {
+        // caller wants to invoke a given command line in the new tab
         return new Promise(resolve => {
           eventBus.emit('/tab/new/request', {
+            statusStripeDecoration,
             title: args.parsedOptions.title,
             background: args.parsedOptions.bg,
             cmdline: args.parsedOptions.cmdline,
-            statusStripeDecoration
+            onClose: args.parsedOptions.onClose
           })
 
           resolve(ok)
         })
       } else {
+        // default case: tab opens without invoking a command line
         eventBus.emit('/tab/new/request', {
           statusStripeDecoration,
           title: args.parsedOptions.title,
-          background: args.parsedOptions.bg
+          background: args.parsedOptions.bg,
+          onClose: args.parsedOptions.onClose
         })
         return ok
       }
