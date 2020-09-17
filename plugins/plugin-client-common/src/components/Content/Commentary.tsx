@@ -31,6 +31,7 @@ interface State {
 }
 
 type Props = CommentaryResponse['props'] & {
+  isPartOfMiniSplit: boolean
   willUpdateResponse?: (text: string) => void
   willRemove?: () => void
 }
@@ -182,6 +183,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
         className="kui--source-ref-editor kui--inverted-color-context"
         readonly={false}
         fontSize={12}
+        simple
         onContentChange={this._onContentChange}
         contentType="markdown"
       />

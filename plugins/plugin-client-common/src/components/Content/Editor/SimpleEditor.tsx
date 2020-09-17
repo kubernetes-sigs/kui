@@ -28,6 +28,7 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
   tabUUID: string
   content: string
   contentType: string
+  simple?: boolean
   className?: string
   readonly?: boolean
   onContentChange?: (content: string) => void
@@ -103,7 +104,8 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
         value: props.content,
         readOnly: props.readonly !== undefined ? props.readonly : true,
         fontSize: props.fontSize,
-        language: props.contentType
+        language: props.contentType,
+        simple: props.simple
       }
       const options = Object.assign(defaultMonacoOptions(providedOptions), providedOptions)
       const editor = Monaco.create(state.wrapper, options)
