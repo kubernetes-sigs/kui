@@ -26,7 +26,7 @@ export default class CarbonCodeSnippet extends React.PureComponent<Props> {
   public render() {
     return (
       <CodeSnippet
-        type={/\n/.test(this.props.value) || this.props.value.length > 40 ? 'multi' : 'single'}
+        type={this.props.value && (/\n/.test(this.props.value) || this.props.value.length > 40) ? 'multi' : 'single'}
         onClick={this.props.onCopy}
       >
         {this.props.value}
