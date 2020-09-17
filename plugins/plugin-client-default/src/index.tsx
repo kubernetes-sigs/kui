@@ -30,6 +30,14 @@ import { productName } from '@kui-shell/client/config.d/name.json'
 const strings = i18n('plugin-client-default')
 
 /**
+ * We will set this bit when the user dismisses the Welcome to Kui
+ * tab, so as to avoid opening it again and bothering that user for
+ * every new Kui window.
+ *
+ */
+const welcomeBit = 'plugin-client-default.welcome-was-dismissed'
+
+/**
  * Format our body, with extra status stripe widgets
  *   - <CurrentGitBranch />
  *   - <ProxyOfflineIndicator />
@@ -57,7 +65,11 @@ export default function renderMain(props: KuiProps) {
           '--status-stripe-type',
           'blue',
           '--status-stripe-message',
-          title
+          title,
+          '--if',
+          `kuiconfig not set ${welcomeBit}`,
+          '--onClose',
+          `kuiconfig set ${welcomeBit}`
         ]
       }
     >
