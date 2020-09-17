@@ -74,7 +74,7 @@ export default class Markdown extends React.PureComponent<Props> {
         className={
           this.props.className ||
           'padding-content marked-content page-content' +
-            (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
+            (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : ' full-height')
         }
         renderers={{
           link: props => {

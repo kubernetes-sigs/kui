@@ -51,6 +51,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
   /** update state to cancel any edits and close the editor */
   private onCancel(evt: React.MouseEvent) {
     this.onRevert(evt, false)
+    this.removeOurselvesIfEmpty()
   }
 
   private readonly _onCancel = this.onCancel.bind(this)
@@ -102,14 +103,25 @@ export default class Commentary extends React.PureComponent<Props, State> {
     )
   }
 
+  /** If the user clicks Done or Cancel and there is no text, remove ourselves */
+  private removeOurselvesIfEmpty(): boolean {
+    if (this.state.textValue === '') {
+      if (this.props.willRemove) {
+        this.props.willRemove()
+      }
+
+      return true
+    } else {
+      return false
+    }
+  }
+
   /** Update state to reflect lastAppliedTextValue, and close the editor */
   private onDone(evt: React.MouseEvent) {
     // so that the event doesn't propagate to the onClick on the Card itself
     evt.stopPropagation()
 
-    if (this.state.textValue === '') {
-      this.props.willRemove()
-    } else {
+    if (!this.removeOurselvesIfEmpty()) {
       this.setState(curState => ({ isEdit: false, lastAppliedTextValue: curState.textValue }))
     }
   }
@@ -198,7 +210,11 @@ export default class Commentary extends React.PureComponent<Props, State> {
         </span>
       )
     } else {
-      return <div className="kui--commentary">{this.card()}</div>
+      return (
+        <div className="kui--commentary" data-is-editing={this.state.isEdit || undefined}>
+          {this.card()}
+        </div>
+      )
     }
   }
 }

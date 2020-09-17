@@ -24,13 +24,6 @@
   display: flex;
   flex-direction: column;
 
-  .repl-block {
-    & + .repl-block.repl-active,
-    & + .repl-block.processing {
-      margin-top: 0.5rem;
-    }
-  }
-
   .kui--repl-block-experimental-tag {
     margin: 0;
     .kui--tag {
@@ -60,7 +53,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-
+  .repl-block:not(.repl-active) .repl-input-element-wrapper {
+    background-color: $input-bg-minisplit;
+  }
   .repl-block.kui--maximize-candidate {
     &:not(.repl-active):not(.processing) {
       flex: 1;
@@ -71,7 +66,7 @@
     }
     .repl-output {
       flex: 1;
-      padding-right: 1rem;
+      padding-right: calc(1rem - 6px);
 
       .repl-result:not(:empty),
       [data-table-watching] {
@@ -85,7 +80,7 @@
 
       .kui--card {
         flex: 1;
-        margin: 0.5rem 1px 1px; /* 1px: leave room for card box-shadow */
+        margin: 1px 1px; /* 1px: leave room for card box-shadow */
       }
       .kui--data-table-wrapper {
         display: flex;
@@ -94,6 +89,10 @@
       }
       .kui--card-body {
         position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+
         .kui--data-table-as-grid {
           position: absolute;
           padding-right: 1rem;
