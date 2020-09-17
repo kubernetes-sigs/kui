@@ -26,10 +26,8 @@
 @import '../ExpandableSection/_mixins';
 
 @mixin Editor {
-  @include Scrollback {
-    .kui--source-ref-editor {
-      @content;
-    }
+  .kui--source-ref-editor {
+    @content;
   }
 }
 
@@ -58,6 +56,12 @@
 @include Editor {
   width: 40rem;
   height: 20rem;
+}
+@include MiniSplit {
+  @include FullWidthEditor;
+  @include Editor {
+    height: 15rem;
+  }
 }
 @include sidecar-visible {
   @include FullWidthEditor;

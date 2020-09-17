@@ -101,6 +101,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
             <Commentary
               {...response.props}
               tabUUID={getPrimaryTabId(tab)}
+              isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               willRemove={this.props.willRemove}
               willUpdateResponse={(text: string) => {
                 response.props.children = text
@@ -109,7 +110,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
           </span>
         )
       } else if (isTabLayoutModificationResponse(response)) {
-        return <Commentary {...response.spec.ok.props} />
+        return <Commentary {...response.spec.ok.props} isPartOfMiniSplit={this.props.isPartOfMiniSplit} />
       } else if (isRadioTable(response)) {
         return (
           <KuiContext.Consumer>

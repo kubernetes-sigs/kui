@@ -28,7 +28,6 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   minimap: {
     enabled: false
   },
-  cursorWidth: 3,
   codeLens: false,
   quickSuggestions: false,
   contextmenu: false,
@@ -39,10 +38,11 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   fontSize: options.fontSize || getKuiFontSize(),
 
   // specifics for readOnly mode
-  glyphMargin: !options.readOnly, // needed for error indicators
+  glyphMargin: !options.readOnly && !options.simple, // needed for error indicators
 
   // simplify the UI?
+  links: !options.simple,
   lineNumbers: options.simple ? 'off' : 'on',
-  renderIndentGuides: !options.simple,
-  renderLineHighlight: options.simple ? 'none' : 'all'
+  wordWrap: options.simple ? 'on' : undefined,
+  lineDecorationsWidth: options.simple ? 0 : undefined
 })
