@@ -17,8 +17,10 @@
 // require('electron-is-dev');
 
 import { productName } from '@kui-shell/client/config.d/name.json'
-import { Menu, MenuItemConstructorOptions } from 'electron'
+import { Menu, MenuItemConstructorOptions, webContents } from 'electron'
+
 import open from './open'
+import encodeComponent from '../repl/encode'
 
 const isDev = false
 
@@ -66,12 +68,18 @@ const isDarwin = process.platform === 'darwin'
 const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
 
 /** @return a menu item that opens the given notebook */
-function openNotebook(label: string, filepath: string) {
+function openNotebook(createWindow: (executeThisArgvPlease?: string[]) => void, label: string, filepath: string) {
   return {
     label,
     click: () => {
       try {
-        tellRendererToExecute(`replay ${filepath} --new-window`, 'pexec')
+        // if we have no open kui windows, open a new one; otherwise,
+        // use a tab in an existing window
+        if (webContents.getAllWebContents().length === 0) {
+          createWindow(['replay', '--new-tab', filepath])
+        } else {
+          tellRendererToExecute(`replay --new-tab ${encodeComponent(filepath)}`, 'pexec')
+        }
       } catch (err) {
         console.log(err)
       }
@@ -81,20 +89,21 @@ function openNotebook(label: string, filepath: string) {
 
 export const install = (createWindow: (executeThisArgvPlease?: string[]) => void) => {
   if (!isDev) {
+    const notebook = openNotebook.bind(undefined, createWindow)
     const notebookMenuItem: MenuItemConstructorOptions = {
       label: 'Notebooks',
       submenu: [
-        openNotebook('Welcome to Kui', '/kui/welcome.json'),
+        notebook('Welcome to Kui', '/kui/welcome.json'),
         {
           label: 'Learning Kubernetes',
           submenu: [
-            openNotebook('Listing Resources', '/kui/kubernetes/list-resources.json'),
-            openNotebook('Working with Jobs', '/kui/kubernetes/create-jobs.json')
+            notebook('Listing Resources', '/kui/kubernetes/list-resources.json'),
+            notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json')
           ]
         },
         {
           label: 'Learning iter8',
-          submenu: [openNotebook('Welcome to iter8', '/kui/iter8/welcome.json')]
+          submenu: [notebook('Welcome to iter8', '/kui/iter8/welcome.json')]
         }
       ]
     }
