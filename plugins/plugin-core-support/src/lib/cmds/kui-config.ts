@@ -18,23 +18,35 @@ import { Registrar } from '@kui-shell/core'
 
 const key = 'kui-shell/v1/kui-config'
 
+/** Fetch and deserialize the settings map */
 function load(): Record<string, string> {
   const raw = localStorage.getItem(key)
   return raw ? JSON.parse(raw) : {}
 }
 
+/** Persist the given settings map */
 function store(settings: Record<string, string>) {
   localStorage.setItem(key, JSON.stringify(settings))
 }
 
+/** Update the map to have the key->value mapping */
 function set(key: string, value: string) {
   store(Object.assign(load(), { [key]: value }))
 }
 
+/** Remove the given key */
+function unset(key: string) {
+  const map = load()
+  delete map[key]
+  store(map)
+}
+
 export default function(registrar: Registrar) {
   registrar.listen('/kuiconfig/set', args => {
+    // Note how `kuiconfig set foo` defaults to setting the key "foo"
+    // to value "true"
     const key = args.argvNoOptions[2]
-    const value = args.argvNoOptions[3]
+    const value = args.argvNoOptions[3] || 'true'
 
     set(key, value)
     return true
@@ -43,6 +55,12 @@ export default function(registrar: Registrar) {
   registrar.listen('/kuiconfig/get', args => {
     const key = args.argvNoOptions[2]
     return load()[key] || ''
+  })
+
+  registrar.listen('/kuiconfig/unset', args => {
+    const key = args.argvNoOptions[2]
+    unset(key)
+    return true
   })
 
   registrar.listen('/kuiconfig/is/set', args => {
