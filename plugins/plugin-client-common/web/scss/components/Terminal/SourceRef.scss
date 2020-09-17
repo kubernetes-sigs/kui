@@ -29,6 +29,9 @@
   .kui--source-ref-editor {
     @content;
   }
+  .monaco-editor {
+    @content;
+  }
 }
 
 @mixin FullWidthEditor {
@@ -54,7 +57,7 @@
 }
 
 @include Editor {
-  width: 40rem;
+  @include FullWidthEditor;
   height: 20rem;
 }
 @include MiniSplit {

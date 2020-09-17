@@ -15,6 +15,7 @@
  */
 
 $input-bg: var(--color-table-border3);
+$input-bg-minisplit: var(--color-base01);
 $input-border: rgba(100, 100, 100, 0.05);
 $input-border-editing: var(--color-brand-03);
 
@@ -59,5 +60,12 @@ $input-border-editing: var(--color-brand-03);
     &:not(.repl-active) {
       @content;
     }
+  }
+}
+
+/** Hide the In[1] bits */
+@mixin HideIn {
+  .repl-context {
+    display: none;
   }
 }
