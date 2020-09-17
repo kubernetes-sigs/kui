@@ -25,6 +25,7 @@ import prompt from './lib/cmds/prompt'
 import replay from './lib/cmds/replay'
 import sleep from './lib/cmds/sleep'
 import history from './lib/cmds/history/history'
+import kuiConfig from './lib/cmds/kui-config'
 import tabManagement from './lib/cmds/tab-management'
 
 // import updater from './lib/admin/updater'
@@ -44,6 +45,7 @@ export default async (commandTree: Registrar) => {
     replay(commandTree),
     sleep(commandTree),
     history(commandTree),
+    kuiConfig(commandTree),
     tabManagement(commandTree)
   ])
 

@@ -47,6 +47,76 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 })
 
+describe('core new tab conditional', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  it('should NOT open a new tab with if on false condition', async () => {
+    try {
+      await CLI.command('tab new --if "kuiconfig is set yoyoyo"', this.app)
+      await this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+  it('should YES open a new tab with ifnot on false condition', async () => {
+    try {
+      await CLI.command('tab new --ifnot "kuiconfig is set yoyoyo"', this.app)
+      await this.app.client.waitForExist(Selectors.TAB_N(2))
+      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  // start from scratch...
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  it('should set condition', () =>
+    CLI.command('kuiconfig set yoyoyo 333', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+  it('should validate set condition', () =>
+    CLI.command('kuiconfig get yoyoyo', this.app)
+      .then(ReplExpect.okWithString('333'))
+      .catch(Common.oops(this, true)))
+
+  it('should NOT open a new tab with ifnot on true condition', async () => {
+    try {
+      await CLI.command('tab new --ifnot "kuiconfig is set yoyoyo"', this.app)
+      await this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+  it('should NOT open a new tab with if on false condition using config not yet', async () => {
+    try {
+      await CLI.command('tab new --if "kuiconfig not set yoyoyo"', this.app)
+      await this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+  it('should YES open a new tab with if on true condition', async () => {
+    try {
+      await CLI.command('tab new --if "kuiconfig is set yoyoyo"', this.app)
+      await this.app.client.waitForExist(Selectors.TAB_N(2))
+      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
+      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+})
+
 describe('core new tab with custom title', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
