@@ -58,15 +58,43 @@ export default function plugin(commandTree: Registrar) {
   commandTree.listen<
     KResponse,
     {
+      /** Execute this command line upon open */
       cmdline?: string
+
+      /** Set the status stripe decorations */
       'status-stripe-type'?: StatusStripeChangeEvent['type']
       'status-stripe-message'?: string
+
+      /** Open tab only if the given Kui command returns true */
+      if?: string
+
+      /** Open tab only if the given Kui command returns false */
+      ifnot?: string
+
+      /** Open tab in the background? I.e. without switching to it */
       bg?: boolean
+
+      /** Set the tab title */
       title?: string
     }
   >(
     '/tab/new',
     async args => {
+      if (args.parsedOptions.if) {
+        // conditional opening request
+        const condition = await args.REPL.qexec<boolean>(args.parsedOptions.if)
+        if (!condition) {
+          return true
+        }
+      }
+      if (args.parsedOptions.ifnot) {
+        // conditional opening request
+        const condition = await args.REPL.qexec<boolean>(args.parsedOptions.ifnot)
+        if (condition) {
+          return true
+        }
+      }
+
       const message =
         args.parsedOptions['status-stripe-message'] ||
         (args.execOptions.data ? args.execOptions.data['status-stripe-message'] : undefined)
