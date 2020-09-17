@@ -97,7 +97,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         )
       } else if (isCommentaryResponse(response)) {
         return (
-          <span onClick={this.props.willFocusBlock}>
+          <span onClick={this.props.willFocusBlock} className="flex-fill flex-layout flex-align-stretch">
             <Commentary
               {...response.props}
               tabUUID={getPrimaryTabId(tab)}

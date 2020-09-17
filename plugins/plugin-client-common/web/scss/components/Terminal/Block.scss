@@ -74,8 +74,8 @@ $action-hover-delay: 140ms;
     &[data-is-output-only]:not([data-is-focused]):before {
       background-color: transparent;
     }
-    &:not([data-is-output-only]) .repl-output {
-      margin-top: 1rem;
+    &:not([data-is-output-only]) .repl-output.repl-result-has-content {
+      margin-top: 0.5rem;
     }
     &[data-is-focused]:before {
       opacity: 1;
@@ -274,10 +274,11 @@ $action-hover-delay: 140ms;
 
 @include sidecar-visible {
   @include Scrollback {
-    .repl-context {
-      display: none;
-    }
+    @include HideIn;
   }
+}
+@include MiniSplit {
+  @include HideIn;
 }
 
 @mixin timestamp-like {

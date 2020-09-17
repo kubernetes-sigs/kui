@@ -144,8 +144,12 @@ export default class Output extends React.PureComponent<Props, State> {
     this.setState({ assertHasContent })
   }
 
+  private hasStreamingOutput() {
+    return this.state.streamingOutput.length > 0
+  }
+
   private stream() {
-    if (this.state.streamingOutput.length > 0) {
+    if (this.hasStreamingOutput()) {
       return (
         <div className="repl-result-like result-vertical" data-stream>
           {this.state.streamingOutput.map((part, idx) => (
@@ -272,7 +276,7 @@ export default class Output extends React.PureComponent<Props, State> {
     return (
       <div className={'repl-output ' + (hasContent ? ' repl-result-has-content' : '')}>
         {!this.props.isPartOfMiniSplit &&
-          (isProcessing(this.props.model) || isFinished(this.props.model)) &&
+          ((isProcessing(this.props.model) && this.hasStreamingOutput()) || isFinished(this.props.model)) &&
           this.ctx()}
         <div className="result-vertical">
           {this.stream()}

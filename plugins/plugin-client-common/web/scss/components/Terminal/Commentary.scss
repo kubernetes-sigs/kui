@@ -18,6 +18,12 @@
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
 
+@mixin Commentary {
+  .kui--commentary {
+    @content;
+  }
+}
+
 @mixin Card {
   .kui--commentary-card {
     @content;
@@ -57,10 +63,16 @@
 }
 
 @mixin FullWidth {
+  @include Card {
+    flex: 1;
+  }
+  @include Commentary {
+    flex: 1;
+  }
+}
+@mixin FullWidthInScrollback {
   @include Scrollback {
-    @include Card {
-      flex: 1;
-    }
+    @include FullWidth;
   }
 }
 
@@ -101,13 +113,23 @@
 }
 
 @include narrow-window {
-  @include FullWidth;
+  @include FullWidthInScrollback;
 }
-
 @include sidecar-visible {
+  @include FullWidthInScrollback;
+}
+@include MiniSplit {
   @include FullWidth;
+  @include Commentary {
+    display: flex;
+  }
 }
 
-.kui--commentary {
+@include Commentary {
   font-family: var(--font-sans-serif);
+
+  &[data-is-editing] {
+    flex: 1;
+    max-width: 60rem;
+  }
 }
