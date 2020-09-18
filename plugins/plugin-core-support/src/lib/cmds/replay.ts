@@ -331,7 +331,7 @@ export default function(registrar: Registrar) {
           return REPL.qexec(`replay-electron ${filepath} ${titleOption}`)
         } else if (parsedOptions['new-tab']) {
           return REPL.qexec(
-            `tab new --cmdline "replay ${filepath}" --status-stripe-type ${parsedOptions['status-stripe'] ||
+            `tab new --cmdline "replay ${filepath}" --quiet --status-stripe-type ${parsedOptions['status-stripe'] ||
               'blue'} ${titleOption}`,
             undefined,
             undefined,

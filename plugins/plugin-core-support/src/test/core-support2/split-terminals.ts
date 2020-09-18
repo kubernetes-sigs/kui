@@ -24,7 +24,14 @@ import { tmpdir } from 'os'
 import { mkdir, rmdir } from 'fs-extra'
 
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
-import { close, expectSplits, focusAndValidate, splitViaButton, splitViaCommand } from './split-helpers'
+import {
+  close,
+  expectSplits,
+  focusAndValidate,
+  doSplitViaButton,
+  splitViaButton,
+  splitViaCommand
+} from './split-helpers'
 
 import { doClear } from '../core-support/clear'
 
@@ -243,4 +250,35 @@ describe(`split terminals general ${process.env.MOCHA_RUN_TARGET || ''}`, functi
     focusOnSplit(1, 2)
     focusOnSplit(2, 3)
   } */
+})
+
+describe('split an active split', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  const expectBlockCount = ReplExpect.blockCount.bind(this)
+
+  it('should sleep for a few seconds in Kui, then click the split button before the sleep is finished', async () => {
+    try {
+      await CLI.command('sleep 5', this.app)
+      await ReplExpect.splitCount(1)(this.app)
+
+      console.error('A')
+      await doSplitViaButton(this, 2)
+      await ReplExpect.splitCount(2)(this.app)
+
+      console.error('B')
+      await doSplitViaButton(this, 3)
+      await ReplExpect.splitCount(3)(this.app)
+
+      console.error('C')
+      await expectBlockCount()
+        .inSplit(1)
+        .is(3)
+      await ReplExpect.splitCount(3)(this.app)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 })

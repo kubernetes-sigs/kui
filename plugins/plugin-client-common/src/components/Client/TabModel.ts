@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { StatusStripeChangeEvent, TabState } from '@kui-shell/core'
+import { NewTabRequestEvent, StatusStripeChangeEvent, TabState } from '@kui-shell/core'
 
 /** cheapo uuid; we only need single-threaded uniqueness */
 let _uuidCounter = 1
@@ -35,7 +35,8 @@ export default class TabModel {
     private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
     private readonly _buttons: TopTabButton[] = [],
     private readonly _initialCommandLine?: string,
-    private readonly _onClose?: string
+    private readonly _onClose?: string,
+    private readonly _exec?: NewTabRequestEvent['exec']
   ) {
     this._state.capture()
 
@@ -66,6 +67,10 @@ export default class TabModel {
 
   public get onClose() {
     return this._onClose
+  }
+
+  public get exec() {
+    return this._exec
   }
 
   public update(buttons: TopTabButton[]) {

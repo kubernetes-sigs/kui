@@ -80,6 +80,7 @@ export {
   unwireToTabEvents,
   unwireToStandardEvents,
   eventBus,
+  NewTabRequestEvent,
   SnapshotRequestEvent,
   StatusStripeChangeEvent,
   TabLayoutChangeEvent

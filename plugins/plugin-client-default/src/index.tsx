@@ -59,7 +59,8 @@ export default function renderMain(props: KuiProps) {
           'new',
           '--cmdline',
           'replay /kui/welcome.json',
-          '--bg',
+          '-q', // qexec
+          '--bg', // open in background
           '--title',
           title,
           '--status-stripe-type',

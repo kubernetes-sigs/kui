@@ -49,7 +49,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       // verify the base64 command replay
       let idx = 0
       await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(Selectors.OUTPUT_N(count))
+        const txt = await this.app.client.getText(Selectors.OUTPUT_N(count + 1))
         if (++idx > 5) {
           console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
         }
