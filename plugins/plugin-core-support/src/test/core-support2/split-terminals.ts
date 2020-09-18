@@ -127,6 +127,38 @@ describe(`split terminals close all ${process.env.MOCHA_RUN_TARGET || ''}`, func
   showVersion(1)
 })
 
+describe(`split terminals output ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it('verify the version still shown in the first split', async () => {
+    try {
+      const res = await CLI.command('version', this.app)
+      await ReplExpect.okWithCustom({ expect: Common.expectedVersion })(res)
+      const N = res.count
+
+      await this.app.client.click(Selectors.NEW_SPLIT_BUTTON)
+      await ReplExpect.splitCount(2)(this.app)
+
+      await this.app.client.click(Selectors.NEW_SPLIT_BUTTON)
+      await ReplExpect.splitCount(3)(this.app)
+
+      let idx = 0
+      await this.app.client.waitUntil(async () => {
+        console.error('test', `${Selectors.OUTPUT_N(N, 1)} .repl-result`)
+        const actualVersion = await this.app.client.getText(Selectors.OUTPUT_N(N, 1))
+
+        if (++idx > 5) {
+          console.error(`still waiting for expected=${Common.expectedVersion}; actual=${actualVersion}`)
+        }
+        return actualVersion === Common.expectedVersion
+      }, CLI.waitTimeout)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+})
+
 describe(`split terminals general ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
