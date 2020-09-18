@@ -194,12 +194,27 @@ async function getResourcesReferencedByCommandLine(
 ): Promise<ResourceRef[]> {
   // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
   const [kind, nameGroupVersion, nameAlt] = argvRest
+  const namespace = await getNamespace(args)
 
   const isDelete = args.parsedOptions['final-state'] === FinalState.OfflineLike
+  if (isDelete) {
+    // kubectl delete (ns [m1 m2 m2 m3])
+    //                ^ argvRest       ^
+    //                    ^ slice(1)  ^
+    return argvRest
+      .slice(1)
+      .map(nameGroupVersion => nameGroupVersion.split(/\./))
+      .map(([name, group, version]) => ({
+        group,
+        version,
+        kind,
+        name,
+        namespace
+      }))
+  }
+
   const isCreateSecret = !isDelete && /secret(s)?/i.test(kind)
   const [name, group, version] = isCreateSecret ? [nameAlt] : nameGroupVersion.split(/\./)
-
-  const namespace = await getNamespace(args)
 
   return [{ group, version, kind, name, namespace }]
 }
