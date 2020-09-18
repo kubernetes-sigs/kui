@@ -17,20 +17,21 @@
 import { notStrictEqual } from 'assert'
 import { CLI, Common, ReplExpect, Selectors } from '@kui-shell/test'
 
+/** The actual split terminal via button impl; splitViaButton is the mocha test wrapper */
+export async function doSplitViaButton(ctx: Common.ISuite, splitCount: number) {
+  await ctx.app.client.click(Selectors.NEW_SPLIT_BUTTON)
+  await ReplExpect.splitCount(splitCount)(ctx.app)
+
+  await ctx.app.client.waitUntil(
+    () => ctx.app.client.hasFocus(Selectors.CURRENT_PROMPT_FOR_SPLIT(splitCount)),
+    CLI.waitTimeout
+  )
+}
+
 /** Split the terminal in the current tab by using the split button */
 export function splitViaButton(this: Common.ISuite, splitCount: number) {
   it(`should split the terminal via button in the current tab and expect splitCount=${splitCount}`, async () => {
-    try {
-      await this.app.client.click(Selectors.NEW_SPLIT_BUTTON)
-      await ReplExpect.splitCount(splitCount)(this.app)
-
-      await this.app.client.waitUntil(
-        () => this.app.client.hasFocus(Selectors.CURRENT_PROMPT_FOR_SPLIT(splitCount)),
-        CLI.waitTimeout
-      )
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
+    return doSplitViaButton(this, splitCount).catch(Common.oops(this, true))
   })
 }
 

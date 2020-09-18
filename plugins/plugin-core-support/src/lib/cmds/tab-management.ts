@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-import { eventBus, getPrimaryTabId, i18n, KResponse, Registrar, StatusStripeChangeEvent, Tab } from '@kui-shell/core'
+import {
+  eventBus,
+  getPrimaryTabId,
+  i18n,
+  KResponse,
+  Registrar,
+  NewTabRequestEvent,
+  StatusStripeChangeEvent,
+  Tab
+} from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
@@ -57,13 +66,14 @@ export default function plugin(commandTree: Registrar) {
    */
   commandTree.listen<
     KResponse,
-    {
-      /** Execute this command line upon open */
-      cmdline?: string
-
+    Pick<NewTabRequestEvent, 'cmdline' | 'title' | 'onClose'> & {
       /** Set the status stripe decorations */
       'status-stripe-type'?: StatusStripeChangeEvent['type']
       'status-stripe-message'?: string
+
+      /** Open with qexec? */
+      quiet?: boolean
+      q?: boolean
 
       /** Open tab only if the given Kui command returns true */
       if?: string
@@ -71,14 +81,8 @@ export default function plugin(commandTree: Registrar) {
       /** Open tab only if the given Kui command returns false */
       ifnot?: string
 
-      /** When the tab is closed, invoke this Kui command */
-      onClose?: string
-
       /** Open tab in the background? I.e. without switching to it */
       bg?: boolean
-
-      /** Set the tab title */
-      title?: string
     }
   >(
     '/tab/new',
@@ -128,6 +132,7 @@ export default function plugin(commandTree: Registrar) {
             title: args.parsedOptions.title,
             background: args.parsedOptions.bg,
             cmdline: args.parsedOptions.cmdline,
+            exec: args.parsedOptions.quiet ? 'qexec' : 'pexec',
             onClose: args.parsedOptions.onClose
           })
 
@@ -149,6 +154,7 @@ export default function plugin(commandTree: Registrar) {
       usage: {
         optional: [
           { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
+          { name: '--quiet', alias: '-q', boolean: true, docs: 'Execute the given command line quietly' },
           { name: '--bg', alias: '-b', boolean: true, docs: 'Create, but do not switch to this tab' },
           { name: '--status-stripe-type', docs: 'Desired status stripe coloration', allowed: ['default', 'blue'] },
           { name: '--status-stripe-message', docs: 'Desired status stripe message' },
@@ -156,7 +162,7 @@ export default function plugin(commandTree: Registrar) {
         ]
       },
       flags: {
-        boolean: ['bg', 'b']
+        boolean: ['bg', 'b', 'quiet', 'q']
       }
     }
   )

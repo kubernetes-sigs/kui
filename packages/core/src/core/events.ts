@@ -59,7 +59,7 @@ class EventBusBase {
   }
 }
 
-interface NewTabRequestEvent {
+export interface NewTabRequestEvent {
   /** Optionally specify color and message to display in the StatusStripe */
   statusStripeDecoration?: StatusStripeChangeEvent
 
@@ -71,6 +71,9 @@ interface NewTabRequestEvent {
 
   /** Optionally execute a command in the new tab */
   cmdline?: string
+
+  /** Execute the command line with qexec or pexec? Default: pexec. */
+  exec?: 'pexec' | 'qexec'
 
   /** Optionally execute a command when the tab is closed */
   onClose?: string

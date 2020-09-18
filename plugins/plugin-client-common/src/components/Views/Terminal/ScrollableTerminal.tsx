@@ -413,6 +413,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.splice(uuid, curState => {
         const idx = curState.blocks.length - 1
 
+        if (isProcessing(curState.blocks[idx])) {
+          // the last block is Processing; this can handle if the user
+          // causes a pexec to be sent to a split that is already
+          // processing
+          return {
+            blocks: curState.blocks.concat([Processing(Active(), event, event.evaluatorOptions.isExperimental)])
+          }
+        }
+
         const rerunIdx = curState.blocks.findIndex(_ => hasUUID(_) && _.execUUID === event.execUUID)
 
         if (rerunIdx >= 0) {
