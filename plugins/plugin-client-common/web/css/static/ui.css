@@ -45,80 +45,12 @@ body[kui-theme-style] a {
 }
 
 /* HEADER */
-body.still-loading .left-tab-stripe {
-  display: none;
-}
-body[kui-theme-style] .page > .header {
-  /* only allow mouse dragging on top-most header */
-  -webkit-app-region: drag;
-}
 .header {
   flex-basis: 0;
   display: flex;
   align-items: center;
   padding: 0 1.1875rem;
   font-weight: 300;
-}
-.header .deemphasize {
-  font-size: 55%;
-  letter-spacing: 1px;
-  display: none;
-}
-.header-left-bits,
-.header-right-bits {
-  display: flex;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.header-left-bits {
-  flex: 1;
-}
-.header .clickable,
-.header .clickable:hover {
-  text-decoration: none;
-  transition: none;
-}
-.header .clickable {
-  /* this just gives a little room for hovers, so that users don't have
-   to mouse precisely over the hover text */
-  padding: 0.75ex 0;
-}
-.application-icon {
-  /* hide the application by default; custom clients can override this */
-  display: none;
-}
-.header .application-name {
-  font-size: 1.125rem;
-  font-weight: 400;
-}
-.header .application-name .bx--logo__text--bold {
-  font-weight: 600;
-}
-.header .application-name .bx--global-header__title--current-page {
-  font-weight: 400;
-}
-header .header-nav-list {
-  display: flex;
-  align-items: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.header .header-nav-list li {
-  font-weight: 400;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  margin: 0 1em;
-  -webkit-app-region: no-drag;
-}
-.header-nav-list li input {
-  border: none;
-  font-family: inherit;
-  font-size: inherit;
-  text-transform: inherit;
-  font-weight: inherit;
-  padding: 0;
 }
 
 /* MAIN */
@@ -164,34 +96,6 @@ body.still-loading .repl {
 .scrollable[data-table-max-rows="10"],
 .scrollable-auto[data-table-max-rows="10"] {
   max-height: calc(10 * 3em + 2px);
-}
-.green-text,
-.dragover .ok-text-on-dragover {
-  opacity: 1 !important;
-}
-.fifty-fifty:nth-last-child(2) {
-  max-width: calc(50% - 3em);
-  margin-right: 3em;
-}
-.fifty-fifty:last-child {
-  max-width: 50%;
-}
-.repl.sidecar-visible .repl-block .fifty-fifty {
-  max-width: unset;
-  margin-right: unset;
-}
-.entity-rule-status {
-  width: 7em;
-}
-.sidecar-visible .repl-result.one-column .package-prefix {
-  max-width: 35%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.timestamp-same-day {
-  /* keep the width, but make it hidden */
-  opacity: 0;
 }
 
 /* custom content */
@@ -920,14 +824,6 @@ body[kui-theme-style] a {
   color: var(--color-support-04);
 }
 
-.green-text,
-.dragover .ok-text-on-dragover {
-  color: var(--color-ok);
-}
-.green-text svg path {
-  fill: var(--color-ok);
-}
-
 badge,
 [data-tag="badge"] {
   &.clickable:hover {
@@ -966,6 +862,12 @@ badge:not(.badge-as-fontawesome):not(.badge-as-image) {
   font-family: var(--font-sans-serif);
 }
 
+.green-text {
+  color: var(--color-ok);
+}
+.green-text svg path {
+  fill: var(--color-ok);
+}
 .red-text {
   color: var(--color-error);
 }
