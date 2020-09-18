@@ -16,8 +16,6 @@
 
 import Debug from 'debug'
 import store from './store'
-import KResponse from './command'
-import { ResponseType } from '../repl/events'
 
 /** Legacy localStorage key for long-time Kui users */
 const legacyKey = 'openwhisk.history'
@@ -36,14 +34,6 @@ type FilterFunction = (line: HistoryLine) => boolean
 export interface HistoryLine {
   /** The raw command line */
   raw: string
-
-  /** The output of that command line's execution */
-  response?: KResponse
-  responseType?: ResponseType
-  execUUID?: string
-
-  /** Index into model */
-  historyIdx: number
 }
 
 /** A tuple of History entries, one per Tab (as specified by its given uuid) */
@@ -154,9 +144,9 @@ export class HistoryModel {
 
   /** add a line of repl history */
   public add(line: Pick<HistoryLine, 'raw'>): number {
-    if (this._lines.length === 0 || JSON.stringify(this._lines[this._lines.length - 1]) !== JSON.stringify(line)) {
+    if (this._lines.length === 0 || this._lines[this._lines.length - 1].raw !== line.raw) {
       // don't add sequential duplicates
-      this._lines.push(Object.assign(line, { historyIdx: this._lines.length - 1 }))
+      this._lines.push(line)
       this.save()
       // console.log('history::add', cursor)
     }
