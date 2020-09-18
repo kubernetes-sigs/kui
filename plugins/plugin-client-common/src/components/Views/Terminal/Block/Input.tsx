@@ -331,7 +331,9 @@ export default class Input extends InputProvider {
   }
 
   protected contextContent() {
-    return super.contextContent(isProcessing(this.props.model) ? this.spinner() : undefined)
+    return super.contextContent(
+      this.showSpinnerInContext() && isProcessing(this.props.model) ? this.spinner() : undefined
+    )
   }
 
   private static newSpinner(spinnerDom: HTMLSpanElement) {
@@ -607,12 +609,18 @@ export default class Input extends InputProvider {
     return <span className="repl-prompt-right-elements">{/* this.errorIcon() */}</span>
   }
 
+  /** Should we show the spinner in the In[...] context area, or in the [<input/> ...] area? */
+  private showSpinnerInContext() {
+    return !this.props.isPartOfMiniSplit && !this.props.isWidthConstrained
+  }
+
   /** Status elements placed in with <input> part of the block */
   protected inputStatus(input: string) {
     return (
       <React.Fragment>
         <span className="repl-prompt-right-elements">
           {this.experimentalTag()}
+          {!this.showSpinnerInContext() && this.spinner()}
           {this.timestamp()}
         </span>
         {this.actions(input)}
