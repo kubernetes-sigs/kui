@@ -103,7 +103,7 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
       const providedOptions = {
         value: props.content,
         readOnly: props.readonly !== undefined ? props.readonly : true,
-        fontSize: props.fontSize,
+        fontSize: props.fontSize || getKuiFontSize(),
         language: props.contentType,
         simple: props.simple
       }

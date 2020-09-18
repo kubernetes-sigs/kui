@@ -116,7 +116,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   const openEditor = (expect: string) => {
     it('should open editor by clicking', async () => {
       try {
-        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+        await this.app.client.doubleClick(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
         await verifyTextInMonaco(expect)
       } catch (err) {
         await Common.oops(this, true)(err)
