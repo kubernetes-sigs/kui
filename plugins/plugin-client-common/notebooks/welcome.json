@@ -138,7 +138,7 @@
                   "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
                   "startTime": 1599579412335,
-                  "command": "#                                # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
+                  "command": "#                                # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
                   "evaluatorOptions": {
                     "usage": {
                       "command": "commentary",
@@ -169,15 +169,15 @@
                   "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 1,
                   "completeTime": 1599579412351,
-                  "command": "#                               # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
+                  "command": "#                               # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
                   "argvNoOptions": [
                     "#",
-                    "                                # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                    "                                # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                   ],
                   "parsedOptions": {
                     "_": [
                       "#",
-                      "                                # Notebooks with Kui!\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                      "                                # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                     ]
                   },
                   "execUUID": "9d2b87ec-16af-4fe9-aeab-49e6f1f2c1e2",
@@ -198,7 +198,7 @@
                     "apiVersion": "kui-shell/v1",
                     "kind": "CommentaryResponse",
                     "props": {
-                      "children": "# Notebooks with Kui!\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                      "children": "# Notebooks with Kui!\n\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
                     }
                   },
                   "responseType": "ScalarResponse",

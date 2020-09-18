@@ -159,17 +159,17 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   private card() {
     return (
-      <Card
-        {...this.props}
-        className="kui--commentary-card"
-        data-is-editing={this.state.isEdit || undefined}
-        onCardClick={this._setEdit}
-        header={this.state.isEdit && strings('Editing Comment as Markdown')}
-        footer={this.state.isEdit && this.toolbar()}
-      >
-        {this.state.textValue}
-        {this.state.isEdit && this.editor()}
-      </Card>
+      <span className="kui--commentary-card" onDoubleClick={this._setEdit}>
+        <Card
+          {...this.props}
+          data-is-editing={this.state.isEdit || undefined}
+          header={this.state.isEdit && strings('Editing Comment as Markdown')}
+          footer={this.state.isEdit && this.toolbar()}
+        >
+          {this.state.textValue}
+          {this.state.isEdit && this.editor()}
+        </Card>
+      </span>
     )
   }
 
@@ -194,7 +194,6 @@ export default class Commentary extends React.PureComponent<Props, State> {
         content={this.state.textValue}
         className="kui--source-ref-editor kui--inverted-color-context"
         readonly={false}
-        fontSize={12}
         simple
         onContentChange={this._onContentChange}
         contentType="markdown"
