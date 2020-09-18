@@ -18,27 +18,35 @@ import { strictEqual } from 'assert'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-const ns1: string = createNS()
-const ns2: string = createNS()
+const ns1 = createNS()
+const ns2 = createNS()
+const ns3 = createNS()
+const ns4 = createNS()
 const synonyms = ['kubectl']
 
-describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   synonyms.forEach(kubectl => {
-    /** delete the given namespace */
-    const deleteIt = (name: string, errOk = false) => {
-      it(`should delete the namespace ${name} via ${kubectl}`, () => {
-        return CLI.command(`${kubectl} delete namespace ${name}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
-          .then(selector => waitForRed(this.app, selector))
-          .then(() => waitTillNone('namespace', undefined, name))
-          .catch(err => {
-            if (!errOk) {
-              return Common.oops(this, true)(err)
-            }
-          })
+    /** delete the given namespaces */
+    const deleteIt = (names: string[], errOk = false) => {
+      it(`should delete the namespaces ${names} via ${kubectl}`, async () => {
+        try {
+          const res = await CLI.command(`${kubectl} delete namespace ${names.join(' ')}`, this.app)
+
+          await Promise.all(
+            names.map(name => {
+              return ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(res)
+                .then(selector => waitForRed(this.app, selector))
+                .then(() => waitTillNone('namespace', undefined, name))
+            })
+          )
+        } catch (err) {
+          if (!errOk) {
+            return Common.oops(this, true)(err)
+          }
+        }
       })
     }
 
@@ -205,7 +213,9 @@ describe(`kubectl namespace ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     describeIt(ns2)
     createPod(ns1)
     createPod(ns2)
-    deleteIt(ns1)
+    createIt(ns3)
+    createIt(ns4)
+    deleteIt([ns1, ns3, ns4])
     deleteViaButton(ns2)
   })
 })
