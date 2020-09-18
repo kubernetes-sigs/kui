@@ -112,6 +112,7 @@
   }
 }
 
+@include FullWidth;
 @include narrow-window {
   @include FullWidthInScrollback;
 }
@@ -135,4 +136,7 @@
 }
 @include Card {
   display: flex;
+  .kui--card {
+    flex: 1;
+  }
 }
