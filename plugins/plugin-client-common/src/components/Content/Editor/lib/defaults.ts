@@ -33,7 +33,7 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   contextmenu: false,
   scrollBeyondLastLine: false,
   scrollBeyondLastColumn: 2,
-  // cursorStyle: 'block',
+  cursorStyle: 'block',
   fontFamily: 'var(--font-monospace)',
   fontSize: options.fontSize || getKuiFontSize(),
 
@@ -42,6 +42,7 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
 
   // simplify the UI?
   links: !options.simple,
+  folding: !options.simple,
   lineNumbers: options.simple ? 'off' : 'on',
   wordWrap: options.simple ? 'on' : undefined,
   lineDecorationsWidth: options.simple ? 0 : undefined

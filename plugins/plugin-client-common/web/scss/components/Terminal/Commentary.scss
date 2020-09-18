@@ -126,10 +126,13 @@
 }
 
 @include Commentary {
-  font-family: var(--font-sans-serif);
+  display: flex;
 
   &[data-is-editing] {
     flex: 1;
     max-width: 60rem;
   }
+}
+@include Card {
+  display: flex;
 }
