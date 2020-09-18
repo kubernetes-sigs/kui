@@ -270,6 +270,16 @@ $action-hover-delay: 140ms;
     color: var(--color-text-02);
     font-size: 0.625rem;
   }
+
+  .kui--repl-block-spinner {
+    font-size: 1.25rem;
+    margin: 0 0.5rem;
+    color: var(--active-tab-color);
+  }
+  .repl-context .kui--repl-block-spinner {
+    font-size: initial;
+    margin: 0;
+  }
 }
 
 @include sidecar-visible {
