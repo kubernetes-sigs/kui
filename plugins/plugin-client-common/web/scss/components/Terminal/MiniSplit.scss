@@ -48,11 +48,6 @@
   .repl-input {
     flex-wrap: nowrap;
   }
-  .repl-input-element {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
   .repl-block:not(.repl-active) .repl-input-element-wrapper {
     background-color: $input-bg-minisplit;
   }
