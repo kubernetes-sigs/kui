@@ -25,6 +25,12 @@ import {
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 import { AppAndCount } from '@kui-shell/test/mdist/api/repl-expect'
 
+async function removeBlock(this: Common.ISuite, N: number) {
+  await this.app.client.moveToObject(Selectors.PROMPT_N(N))
+  await this.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON(N))
+  await this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON(N))
+}
+
 describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -47,7 +53,6 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       console.error('verifying creation')
       await waitForGreen(this.app, createSelector)
       // await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
-      
     }
 
     const verifyDeletion = async (deleteSelector: string) => {
@@ -84,7 +89,9 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       console.error('replaying')
       await Common.refresh(this)
 
-      await CLI.command('replay /tmp/test.kui', this.app)
+      const { count: N } = await CLI.command('replay /tmp/test.kui', this.app)
+
+      await removeBlock.bind(this)(N)
 
       await verifyCreation(createRes, createSelector)
       await verifySidecar()
@@ -121,7 +128,8 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
       await CLI.command('snapshot /tmp/test.kui --exec', this.app).then(ReplExpect.justOK)
       await Common.refresh(this)
 
-      await CLI.command('replay /tmp/test.kui', this.app)
+      const { count: N } = await CLI.command('replay /tmp/test.kui', this.app)
+      await removeBlock.bind(this)(N)
 
       await this.app.client.waitForVisible(Selectors.LIST_RESULT_BY_N_FOR_NAME(res.count, 'nginx'))
     } catch (err) {

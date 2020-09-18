@@ -15,7 +15,7 @@
  */
 
 import * as React from 'react'
-import { StatusStripeChangeEvent, Tab, eventBus, pexecInCurrentTab } from '@kui-shell/core'
+import { NewTabRequestEvent, Tab, eventBus, pexecInCurrentTab } from '@kui-shell/core'
 
 import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
@@ -60,8 +60,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       activeIdx: 0
     }
 
-    eventBus.on('/tab/new/request', ({ statusStripeDecoration, title, background, cmdline, onClose } = {}) => {
-      this.onNewTab(statusStripeDecoration, background, title, cmdline, onClose)
+    eventBus.on('/tab/new/request', (evt?: NewTabRequestEvent) => {
+      this.onNewTab(evt)
     })
 
     eventBus.on('/tab/switch/request', (idx: number) => {
@@ -134,25 +134,20 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  private newTabModel(
-    statusStripeDecoration?: StatusStripeChangeEvent,
-    background?: boolean,
-    title?: string,
-    cmdline?: string,
-    onClose?: string
-  ) {
+  private newTabModel(evt: NewTabRequestEvent = {}) {
     // !this.state means: if this is the very first tab we've ever
     // !created, *and* we were given an initial title (via
     // !this.props.title), then use that
     const model = new TabModel(
       undefined,
-      statusStripeDecoration,
-      background,
-      title || (!this.state && this.props.title ? this.props.title : undefined),
+      evt.statusStripeDecoration,
+      evt.background,
+      evt.title || (!this.state && this.props.title ? this.props.title : undefined),
       undefined,
       undefined,
-      cmdline,
-      onClose
+      evt.cmdline,
+      evt.onClose,
+      evt.exec
     )
     this.listenForTabClose(model)
     return model
@@ -162,19 +157,13 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * New Tab event
    *
    */
-  private onNewTab(
-    statusStripeDecoration?: StatusStripeChangeEvent,
-    background = false,
-    title?: string,
-    cmdline?: string,
-    onClose?: string
-  ) {
+  private onNewTab(evt: NewTabRequestEvent = {}) {
     // if we already have a tab with this title, and this isn't a
     // background tab, then switch to it
-    if (title) {
-      const existingIdx = this.state.tabs.findIndex(_ => _.title === title)
+    if (evt.title) {
+      const existingIdx = this.state.tabs.findIndex(_ => _.title === evt.title)
       if (existingIdx >= 0) {
-        if (!background) {
+        if (!evt.background) {
           this.onSwitchTab(existingIdx)
         }
         return
@@ -183,11 +172,11 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
     this.captureState()
 
-    const model = this.newTabModel(statusStripeDecoration, background, title, cmdline, onClose)
+    const model = this.newTabModel(evt)
 
     this.setState(curState => ({
       tabs: curState.tabs.concat(model),
-      activeIdx: !background ? curState.tabs.length : curState.activeIdx
+      activeIdx: !evt.background ? curState.tabs.length : curState.activeIdx
     }))
   }
 
@@ -244,7 +233,8 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       // execute a command onReady?
       if (tabModel.initialCommandLine) {
         try {
-          pexecInCurrentTab(tabModel.initialCommandLine, tab)
+          const quiet = tabModel.exec && tabModel.exec === 'qexec'
+          pexecInCurrentTab(tabModel.initialCommandLine, tab, quiet)
         } catch (err) {
           console.error('Error executing initial command line in new tab', err)
         }
