@@ -386,10 +386,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
+  /** is the block presented as a breadcrumb? */
+  private isBreadcrumb(block: BlockModel) {
+    return isOk(block) && (isTabLayoutModificationResponse(block.response) || isPresentedElsewhere(block))
+  }
+
   /** Output.tsx finished rendering something */
   private onOutputRender(scrollback: ScrollbackState, idx) {
     const block = scrollback.blocks[idx]
-    if (isOk(block) && (isTabLayoutModificationResponse(block.response) || isPresentedElsewhere(block))) {
+    if (this.isBreadcrumb(block)) {
       // no scroll to bottom for these responses
     } else {
       setTimeout(() => scrollback.facade.scrollToBottom())
@@ -922,14 +927,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const tab = this.tabFor(scrollback)
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
             const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
-            const nBlocks = scrollback.blocks.length
+
+            const blocks = scrollback.blocks.filter(_ => !isHidden(_) && !(isMiniSplit && this.isBreadcrumb(_)))
+            const nBlocks = blocks.length
             const showThisIdxInMiniSplit =
               scrollback.showThisIdxInMiniSplit < 0
                 ? nBlocks + scrollback.showThisIdxInMiniSplit
                 : scrollback.showThisIdxInMiniSplit
 
             // nOutputOnlyBlocks records the indices of commentary blocks
-            const nOutputOnlyBlocks = scrollback.blocks
+            const nOutputOnlyBlocks = blocks
               .map((_, idx) => {
                 if (isOutputOnly(_)) {
                   return idx
@@ -956,45 +963,44 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 ref: ref => this.tabRefFor(scrollback, ref),
                 onClick: this.onClick.bind(this, scrollback)
               },
-              scrollback.blocks
-                .filter(_ => !isHidden(_))
-                .map((_, idx) => (
-                  <Block
-                    key={(hasUUID(_) ? _.execUUID : _.state) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
-                    idx={idx}
-                    displayedIdx={findDisplayedIdx(idx)}
-                    model={_}
-                    uuid={scrollback.uuid}
-                    tab={tab}
-                    noActiveInput={this.props.noActiveInput || isOfflineClient()}
-                    onOutputRender={this.onOutputRender.bind(this, scrollback, idx)}
-                    willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
-                    willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
-                    hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}
-                    hasBlockBefore={this.hasBlockBefore(idx)}
-                    willMoveUpward={this.willMoveUpward.bind(this, scrollback.uuid, idx)}
-                    willMoveDownward={this.willMoveDownward.bind(this, scrollback.uuid, idx)}
-                    willLoseFocus={() => this.doFocus(scrollback)}
-                    willFocusBlock={evt => this.doFocusBlock(evt, scrollback.uuid, idx)}
-                    isExperimental={hasCommand(_) && _.isExperimental}
-                    isFocused={
-                      sbidx === this.state.focusedIdx &&
-                      (idx === scrollback.focusedBlockIdx ||
-                        (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
+
+              blocks.map((_, idx) => (
+                <Block
+                  key={(hasUUID(_) ? _.execUUID : _.state) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
+                  idx={idx}
+                  displayedIdx={findDisplayedIdx(idx)}
+                  model={_}
+                  uuid={scrollback.uuid}
+                  tab={tab}
+                  noActiveInput={this.props.noActiveInput || isOfflineClient()}
+                  onOutputRender={this.onOutputRender.bind(this, scrollback, idx)}
+                  willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
+                  willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
+                  hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}
+                  hasBlockBefore={this.hasBlockBefore(idx)}
+                  willMoveUpward={this.willMoveUpward.bind(this, scrollback.uuid, idx)}
+                  willMoveDownward={this.willMoveDownward.bind(this, scrollback.uuid, idx)}
+                  willLoseFocus={() => this.doFocus(scrollback)}
+                  willFocusBlock={evt => this.doFocusBlock(evt, scrollback.uuid, idx)}
+                  isExperimental={hasCommand(_) && _.isExperimental}
+                  isFocused={
+                    sbidx === this.state.focusedIdx &&
+                    (idx === scrollback.focusedBlockIdx ||
+                      (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
+                  }
+                  prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
+                  isPartOfMiniSplit={isMiniSplit}
+                  isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
+                  isWidthConstrained={isWidthConstrained}
+                  navigateTo={this.navigateTo.bind(this, scrollback)}
+                  ref={c => {
+                    if (idx === this.findActiveBlock(scrollback)) {
+                      // grab a ref to the active block, to help us maintain focus
+                      scrollback._activeBlock = c
                     }
-                    prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
-                    isPartOfMiniSplit={isMiniSplit}
-                    isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
-                    isWidthConstrained={isWidthConstrained}
-                    navigateTo={this.navigateTo.bind(this, scrollback)}
-                    ref={c => {
-                      if (idx === this.findActiveBlock(scrollback)) {
-                        // grab a ref to the active block, to help us maintain focus
-                        scrollback._activeBlock = c
-                      }
-                    }}
-                  />
-                ))
+                  }}
+                />
+              ))
             )
           })}
 
