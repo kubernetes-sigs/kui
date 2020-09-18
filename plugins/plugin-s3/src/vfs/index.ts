@@ -15,6 +15,7 @@
  */
 
 import { basename, join } from 'path'
+import * as micromatch from 'micromatch'
 import { Client, ClientOptions, CopyConditions } from 'minio'
 import { Arguments, CodedError, REPL, flatten, inBrowser, i18n } from '@kui-shell/core'
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
@@ -40,8 +41,10 @@ class S3VFSResponder extends S3VFS implements VFS {
     this.client = new Client(options)
   }
 
-  public async ls(_, filepaths: string[]) {
-    return flatten(await Promise.all(filepaths.map(filepath => this.dirstat(filepath.replace(this.s3Prefix, '')))))
+  public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
+    return flatten(
+      await Promise.all(filepaths.map(filepath => this.dirstat(filepath.replace(this.s3Prefix, ''), parsedOptions.d)))
+    )
   }
 
   /** Degenerate case for `ls /s3`: list all buckets */
@@ -71,75 +74,98 @@ class S3VFSResponder extends S3VFS implements VFS {
     }))
   }
 
-  /** This is incomplete */
-  private globToRegExp(prefix: string, suffixGlob: string): RegExp {
-    return new RegExp('^' + prefix + suffixGlob.replace(/\*/g, '.*') + '$')
+  private async listBucketsMatching(pattern: string): Promise<DirEntry[]> {
+    const allBuckets = await this.listBuckets()
+    return allBuckets.filter(_ => micromatch.isMatch(_.name, pattern))
   }
 
   /** Enumerate matching objects */
-  private listObjects(filepath: string): Promise<DirEntry[]> {
-    const [, bucketName, prefix, wildcardSuffix] = filepath.match(/([^/]+)\/?([^*]*)(.*)/)
+  private async listObjects(filepath: string, dashD): Promise<DirEntry[]> {
+    const [, bucketName, bucketNameSlash, prefix, wildcardSuffix] = filepath.match(/([^/*]+)(\/?)([^*]*)(.*)/)
 
     const pattern =
       prefix.length === 0 && (wildcardSuffix.length === 0 || wildcardSuffix === '*')
-        ? /.*/ // e.g. ls /s3/myBucket
-        : this.globToRegExp(prefix, wildcardSuffix) // e.g. ls /s3/myBucket/he*lo
+        ? '*' // e.g. ls /s3/myBucket
+        : wildcardSuffix // e.g. ls /s3/myBucket/he*lo
 
-    return this.listObjectsMatching(bucketName, prefix, pattern)
+    if (!bucketNameSlash && dashD) {
+      // ls -d /s3/myBuck*
+      return this.listBucketsMatching(filepath)
+    } else if (!bucketNameSlash) {
+      // ls /s3/myBuck*
+      const buckets = await this.listBucketsMatching(filepath)
+      return flatten(
+        await Promise.all(buckets.map(bucketEntry => this.listObjectsMatching(bucketEntry.name, prefix, pattern, true)))
+      )
+    } else {
+      // ls /s3/myBucket/myObj*
+      return this.listObjectsMatching(bucketName, prefix, pattern)
+    }
   }
 
   /** Enumerate objects with a suffix wildcard, e.g. C* */
-  private async listObjectsMatching(bucketName: string, prefix: string, pattern: RegExp): Promise<DirEntry[]> {
-    const objectStream = await this.client.listObjects(bucketName, prefix)
+  private async listObjectsMatching(
+    bucketName: string,
+    prefix: string,
+    pattern: string,
+    displayFullPath = false
+  ): Promise<DirEntry[]> {
+    try {
+      const objectStream = await this.client.listObjects(bucketName, prefix)
 
-    return new Promise((resolve, reject) => {
-      const objects: DirEntry[] = []
+      return new Promise((resolve, reject) => {
+        const objects: DirEntry[] = []
 
-      objectStream.on('end', () => resolve(objects))
-      objectStream.on('close', () => resolve(objects))
+        objectStream.on('end', () => resolve(objects))
+        objectStream.on('close', () => resolve(objects))
 
-      objectStream.on('error', err => {
-        console.error('Error in S3Vfs.listObjects', err)
-        const error: CodedError = new Error(err.message || 'Error listing s3 objects')
-        error.code = err['httpstatuscode'] || err['code'] // missing types in @types/minio
-        reject(error)
+        objectStream.on('error', err => {
+          console.error('Error in S3Vfs.listObjects', err)
+          const error: CodedError = new Error(err.message || 'Error listing s3 objects')
+          error.code = err['httpstatuscode'] || err['code'] // missing types in @types/minio
+          reject(error)
+        })
+
+        objectStream.on('data', ({ name, size, lastModified }) => {
+          if (!pattern || micromatch.isMatch(name, pattern)) {
+            const path = join(this.mountPath, bucketName, name)
+
+            objects.push({
+              name,
+              path,
+              stats: {
+                size,
+                mtimeMs: lastModified.getTime(),
+                mode: 0,
+                uid,
+                gid
+              },
+              nameForDisplay: displayFullPath ? path : name,
+              dirent: {
+                isFile: true,
+                isDirectory: false,
+                isSymbolicLink: false,
+                isSpecial: false,
+                isExecutable: false,
+                permissions: '',
+                username
+              }
+            })
+          }
+        })
       })
-
-      objectStream.on('data', ({ name, size, lastModified }) => {
-        if (pattern.test(name)) {
-          objects.push({
-            name,
-            path: join(this.mountPath, bucketName, name),
-            stats: {
-              size,
-              mtimeMs: lastModified.getTime(),
-              mode: 0,
-              uid,
-              gid
-            },
-            nameForDisplay: name,
-            dirent: {
-              isFile: true,
-              isDirectory: false,
-              isSymbolicLink: false,
-              isSpecial: false,
-              isExecutable: false,
-              permissions: '',
-              username
-            }
-          })
-        }
-      })
-    })
+    } catch (err) {
+      throw new Error(err.message)
+    }
   }
 
   /** Enumerate the objects specified by the given filepath */
-  private async dirstat(filepath: string): Promise<DirEntry[]> {
+  private async dirstat(filepath: string, dashD: boolean): Promise<DirEntry[]> {
     try {
       if (filepath.length === 0) {
         return this.listBuckets()
       } else {
-        return this.listObjects(filepath)
+        return this.listObjects(filepath, dashD)
       }
     } catch (err) {
       console.error('Error in S3VFS.ls', err)
