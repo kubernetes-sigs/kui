@@ -28,7 +28,7 @@ const ces = ['code-engine', 'ce']
 
 export default function bind(
   this: Registrar,
-  provider: { Get?: FlexHandler; List?: FlexHandler; Run?: Handler },
+  provider: { Get?: FlexHandler; List?: FlexHandler; Create?: Handler },
   ...cmds: string[]
 ) {
   ces.forEach(ce => {
@@ -46,8 +46,8 @@ export default function bind(
       cmds.forEach(cmd => this.listen(`/ibmcloud/${ce}/${cmd}/list`, doListWith.bind(provider.List), defaultOption))
     }
 
-    if (provider.Run) {
-      cmds.forEach(cmd => this.listen(`/ibmcloud/${ce}/${cmd}/run`, provider.Run, defaultOption))
+    if (provider.Create) {
+      cmds.forEach(cmd => this.listen(`/ibmcloud/${ce}/${cmd}/create`, provider.Create, defaultOption))
     }
   })
 }

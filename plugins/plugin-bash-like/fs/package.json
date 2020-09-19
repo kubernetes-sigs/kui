@@ -1,7 +1,7 @@
 {
   "name": "@kui-shell/plugin-bash-like-fs",
   "version": "6.0.12",
-  "description": "Kui plugin that offers local filesystem shell integrations",
+  "description": "Kui plugin that offers local filesystem integrations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
   "homepage": "https://github.com/IBM/kui#readme",

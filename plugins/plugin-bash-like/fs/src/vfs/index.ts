@@ -15,13 +15,18 @@
  */
 
 import { isAbsolute, join } from 'path'
-import { Arguments, REPL, eventBus, getCurrentTab, inBrowser } from '@kui-shell/core'
+import { Arguments, ParsedOptions, REPL, eventBus, getCurrentTab, inBrowser } from '@kui-shell/core'
 
 import { FStat } from '../lib/fstat'
 import { KuiGlobOptions, GlobStats } from '../lib/glob'
 
 type DirEntry = GlobStats
 export { DirEntry }
+
+interface ParallelismOptions extends ParsedOptions {
+  /** Parallelism */
+  P: number
+}
 
 /**
  * A Virtual File System implements `ls`, `cp`, etc. Filesystem
@@ -77,6 +82,12 @@ export interface VFS {
 
   /** remove a directory/bucket */
   rmdir(opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>, filepath: string): Promise<void>
+
+  /** grep for file content */
+  grep(opts: Arguments<ParallelismOptions>, pattern: string, filepaths: string[]): Promise<true | number | string[]>
+
+  /** unzip a set of files */
+  gunzip(opts: Arguments<ParallelismOptions>, filepaths: string[]): Promise<void>
 }
 
 /**
@@ -145,7 +156,7 @@ export async function mount(vfs: VFS | VFSProducingFunction) {
 
 /** @return the absolute path to `filepath` */
 function absolute(filepath: string): string {
-  return isAbsolute(filepath) ? filepath : join(process.env.PWD, filepath)
+  return isAbsolute(filepath) ? filepath : join(process.env.PWD || '/', filepath)
 }
 
 /** Lookup compiatible mount */

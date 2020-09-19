@@ -17,11 +17,14 @@
 import { basename, join } from 'path'
 import * as micromatch from 'micromatch'
 import { Client, CopyConditions } from 'minio'
-import { Arguments, CodedError, REPL, flatten, inBrowser, i18n } from '@kui-shell/core'
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
+import { Arguments, CodedError, REPL, encodeComponent, flatten, inBrowser, i18n } from '@kui-shell/core'
 
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider } from '../providers'
+
+import JobProvider from '../jobs'
+import CodeEngine from '../jobs/providers/CodeEngine'
 
 const strings = i18n('plugin-s3')
 
@@ -456,6 +459,67 @@ class S3VFSResponder extends S3VFS implements VFS {
       throw new Error(err.message)
     }
   }
+
+  private async getLogsForTask(jobProvider: JobProvider, jobname: string, taskIdx: number): Promise<string[]> {
+    const logs = await jobProvider.logs(jobname, taskIdx)
+    const logLines = logs.split(/\n/).filter(_ => /^GREP /.test(_))
+
+    return logLines.map(_ => _.replace(/^GREP /, ''))
+  }
+
+  private async getLogs(jobProvider: JobProvider, jobname: string, nTasks: number): Promise<string[]> {
+    return flatten(
+      await Promise.all(
+        Array(nTasks)
+          .fill(0)
+          .map((_, idx) => this.getLogsForTask(jobProvider, jobname, idx + 1))
+      )
+    )
+  }
+
+  public async grep(
+    opts: Parameters<VFS['grep']>[0],
+    pattern: string,
+    filepaths: string[]
+  ): Promise<number | string[]> {
+    const nTasks = opts.parsedOptions.P || 20
+    const jobProvider = new CodeEngine(opts.REPL, this.options)
+
+    const perFileResults = await Promise.all(
+      filepaths.map(async filepath => {
+        const { bucketName, fileName } = this.split(filepath)
+        const jobname = await jobProvider.run('starpit/vfs', nTasks, {
+          OPERATION: 'grep',
+          SRC_BUCKET: bucketName,
+          SRC_OBJECT: fileName,
+          NSHARDS: nTasks,
+          PATTERN: pattern
+        })
+
+        await jobProvider.wait(jobname, nTasks)
+        return this.getLogs(jobProvider, jobname, nTasks)
+      })
+    )
+
+    if (opts.parsedOptions.c) {
+      return perFileResults.map(_ => _.length).reduce((sum, count) => sum + count, 0)
+    } else if (opts.parsedOptions.l) {
+      return perFileResults.reduce((matchingFiles, matches, idx) => {
+        if (matches.length > 0) {
+          matchingFiles.push(filepaths[idx])
+        }
+        return matchingFiles
+      }, [])
+    } else {
+      return flatten(perFileResults)
+    }
+  }
+
+  /** unzip a set of files */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    throw new Error('Unsupported operation')
+  }
 }
 
 class S3VFSForwarder extends S3VFS implements VFS {
@@ -516,6 +580,18 @@ class S3VFSForwarder extends S3VFS implements VFS {
     filepath: string
   ): Promise<void> {
     await opts.REPL.qexec(`vfs-s3 mkdir ${opts.REPL.encodeComponent(filepath)}`)
+  }
+
+  public async grep(opts: Arguments, pattern: string, filepaths: string[]): Promise<string[]> {
+    return opts.REPL.qexec(
+      `vfs-s3 grep ${opts.REPL.encodeComponent(pattern)} ${filepaths.map(_ => opts.REPL.encodeComponent(_)).join(' ')}`
+    )
+  }
+
+  /** unzip a set of files */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    await parameters[0].REPL.qexec(`vfs-s3 gunzip ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`)
   }
 }
 

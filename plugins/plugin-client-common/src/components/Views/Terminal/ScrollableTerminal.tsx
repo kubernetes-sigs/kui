@@ -210,6 +210,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             tab: this.props.tab,
             historyIdx: -1,
             command: 'welcome',
+            completeTime: Date.now(),
             argvNoOptions: ['welcome'],
             parsedOptions: {},
             execOptions: {},

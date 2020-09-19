@@ -16,6 +16,7 @@
 
 import * as React from 'react'
 import { basename } from 'path'
+import * as prettyPrintDuration from 'pretty-ms'
 import { dots as spinnerFrames } from 'cli-spinners'
 import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences, eventBus, getPrimaryTabId } from '@kui-shell/core'
 
@@ -571,15 +572,25 @@ export default class Input extends InputProvider {
   /** render the time the block started processing */
   private timestamp() {
     if (
-      !isReplay(this.props.model) &&
       !this.props.isFocused &&
       !isEmpty(this.props.model) &&
       (isProcessing(this.props.model) || isFinished(this.props.model))
     ) {
+      const replayed = isReplay(this.props.model)
+      const openParen = replayed ? '' : '('
+      const closeParen = replayed ? '' : ')'
+
       return (
         this.props.model.startTime && (
           <span className="kui--repl-block-timestamp kui--repl-block-right-element">
-            {this.props.model.startTime.toLocaleTimeString()}
+            {!replayed && new Date(this.props.model.startTime).toLocaleTimeString()}
+            {isWithCompleteEvent(this.props.model) && (
+              <span className="small-left-pad kui--color-by-status">
+                {openParen}
+                {prettyPrintDuration(this.props.model.completeEvent.completeTime - this.props.model.startTime)}
+                {closeParen}
+              </span>
+            )}
           </span>
         )
       )

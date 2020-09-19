@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+import client from './client'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+export default function listBuckets() {
+  console.log('list buckets', process.env)
+  return client.listBuckets()
+}

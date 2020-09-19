@@ -52,12 +52,6 @@ li.repl-block {
   .repl-output:hover {
     @include show-block-action-buttons;
   }
-  .repl-input:hover {
-    .kui--repl-block-timestamp {
-      opacity: 0; /* rather than display: none to avoid reflow on hover */
-      transition-delay: $action-hover-delay;
-    }
-  }
 
   .repl-block {
     position: relative;
@@ -304,8 +298,7 @@ li.repl-block {
     }
   }
   .kui--repl-block-right-element {
-    color: var(--color-text-02);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
   }
 
   .kui--repl-block-spinner {

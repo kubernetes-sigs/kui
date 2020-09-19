@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2017-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+import ptyServer from './server'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+import { Registrar } from '@kui-shell/core'
+
+/**
+ * This is the module
+ *
+ */
+export default (registrar: Registrar) => {
+  return Promise.all([ptyServer(registrar)])
+}

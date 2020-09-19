@@ -20,6 +20,7 @@ import { CommandOptions, ExecType, KResponse, ParsedOptions } from '../models/co
 
 export interface CommandStartEvent {
   tab: Tab
+  startTime: number
   route: string
   command: string
   execUUID: string
@@ -33,6 +34,7 @@ export type ResponseType = 'MultiModalResponse' | 'NavResponse' | 'ScalarRespons
 export interface CommandCompleteEvent<R extends KResponse = KResponse, T extends ResponseType = ResponseType> {
   tab: Tab
 
+  completeTime: number
   command: string
   argvNoOptions: string[]
   parsedOptions: ParsedOptions

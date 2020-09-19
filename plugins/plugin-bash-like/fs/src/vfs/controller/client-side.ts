@@ -17,7 +17,7 @@
 import { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import { fstatImpl, lsImpl } from './server-side'
-import { cp, rm, mkdir, rmdir } from '../delegates'
+import { cp, grep, gunzip, rm, mkdir, rmdir } from '../delegates'
 
 /**
  * Generic registration for commands with boolean flags.
@@ -30,11 +30,12 @@ function withBooleanFlags<Handler extends CommandHandler<KResponse, ParsedOption
   this: Registrar,
   command: string,
   handler: Handler,
-  booleans: string | string[]
+  booleans: string | string[],
+  booleans2?: string[]
 ) {
   this.listen(`/${command}`, handler, {
     flags: {
-      boolean: typeof booleans === 'string' ? booleans.split('') : booleans
+      boolean: (typeof booleans === 'string' ? booleans.split('') : booleans).concat(booleans2 || [])
     }
   })
 }
@@ -77,8 +78,27 @@ export default function(registrar: Registrar) {
   )
 
   on('mkdir', args => mkdir(args, args.argvNoOptions[1]).then(() => true), 'pv')
-
   on('rmdir', args => rmdir(args, args.argvNoOptions[1]).then(() => true), 'p')
+  on('gunzip', args => gunzip(args, args.argvNoOptions.slice(1)).then(() => true), '123456789cdfhkLlNnqrStVv', [
+    'fast',
+    'best',
+    'stdout',
+    'to-stdout',
+    'decompress',
+    'uncompress',
+    'force',
+    'help',
+    'keep',
+    'license',
+    'list',
+    'name',
+    'quiet',
+    'recursive',
+    'suffix',
+    'test',
+    'version',
+    'verbose'
+  ])
 
   on(
     'cp',
@@ -89,5 +109,13 @@ export default function(registrar: Registrar) {
       return cp(args, srcs, dst)
     },
     'acfHiLnPpRvX'
+  )
+
+  on(
+    'grep',
+    args => {
+      return grep(args, args.argvNoOptions[1], args.argvNoOptions.slice(2))
+    },
+    'alcEFHIJLnOqrsUVvwxyZz'
   )
 }

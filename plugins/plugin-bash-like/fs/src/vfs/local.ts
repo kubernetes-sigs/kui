@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments } from '@kui-shell/core'
+import { Arguments, encodeComponent } from '@kui-shell/core'
 
 import { VFS, mount } from '.'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
@@ -84,6 +84,49 @@ class LocalVFS implements VFS {
       undefined,
       undefined,
       Object.assign(opts.execOptions, { quiet: false })
+    )
+  }
+
+  /** grep for file content */
+  public async grep(opts: Parameters<VFS['grep']>[0]): ReturnType<VFS['grep']> {
+    return opts.REPL.qexec(
+      `sendtopty ${opts.command.replace(/^vfs/, '')}`,
+      undefined,
+      undefined,
+      Object.assign(opts.execOptions, { quiet: false })
+    )
+
+    /* const args = Object.assign({}, opts, {
+      command: opts.command.replace(/^vfs/, '') + ' --color=never',
+      argv: opts.argv.slice(1).concat(['--color=never']),
+      argvNoOptions: opts.argvNoOptions.slice(1)
+    })
+
+    const result = await doExecWithStdoutViaPty(args)
+    if (opts.parsedOptions.c) {
+      return parseInt(result, 10)
+    } else {
+      return result.split(/\n/).filter(_ => _)
+    } */
+  }
+
+  /** unzip a set of files */
+  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    const args = parameters[0]
+    const suffix = args.parsedOptions.S || args.parsedOptions.suffix
+    const filepaths = parameters[1]
+
+    await Promise.all(
+      filepaths.map(filepath =>
+        args.REPL.qexec(
+          `sendtopty gunzip ${args.argv.filter(_ => /^-/.test(_))} ${suffix ? `-S ${suffix}` : ''} ${encodeComponent(
+            filepath
+          )}`,
+          undefined,
+          undefined,
+          Object.assign(args.execOptions, { quiet: false })
+        )
+      )
     )
   }
 }

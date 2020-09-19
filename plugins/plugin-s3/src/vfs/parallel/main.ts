@@ -14,7 +14,27 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+import grep from './grep'
+import copyShard from './copy-shard'
+import listBuckets from './list-buckets'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+const ops = {
+  grep: grep,
+  copyShard: copyShard,
+  listBuckets: listBuckets
+}
+
+function nope() {
+  return 'no OPERATION env var specified'
+}
+
+async function dispatch() {
+  try {
+    const result = await (ops[process.env.OPERATION] || nope)()
+    console.log(result)
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+dispatch()
