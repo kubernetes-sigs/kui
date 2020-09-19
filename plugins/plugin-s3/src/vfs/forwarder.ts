@@ -15,6 +15,8 @@
  */
 
 import { Registrar } from '@kui-shell/core'
+import { VFS } from '@kui-shell/plugin-bash-like/fs'
+
 import { responder } from '.'
 
 export default function(registrar: Registrar) {
@@ -54,6 +56,32 @@ export default function(registrar: Registrar) {
     '/vfs-s3/mkdir',
     async args => {
       await responder.mkdir(args, args.argvNoOptions[2])
+      return true
+    },
+    { requiresLocal: true }
+  )
+  registrar.listen(
+    '/vfs-s3/grep',
+    async (args: Parameters<VFS['grep']>[0]) => {
+      await responder.grep(args, args.argvNoOptions[2], args.argvNoOptions.slice(3))
+      return true
+    },
+    { requiresLocal: true }
+  )
+
+  registrar.listen(
+    '/vfs-s3/gzip',
+    async (args: Parameters<VFS['gzip']>[0]) => {
+      await responder.gunzip(args, args.argvNoOptions.slice(1))
+      return true
+    },
+    { requiresLocal: true }
+  )
+
+  registrar.listen(
+    '/vfs-s3/gunzip',
+    async (args: Parameters<VFS['gunzip']>[0]) => {
+      await responder.gunzip(args, args.argvNoOptions.slice(1))
       return true
     },
     { requiresLocal: true }

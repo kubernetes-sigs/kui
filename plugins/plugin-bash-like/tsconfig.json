@@ -4,11 +4,7 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "mdist",
-    "rootDir": "src",
-    "baseUrl": ".",
-    "paths": {
-      "@kui-shell/plugin-bash-like/web/*": ["web/*"]
-    }
+    "rootDir": "src"
   },
   "references": [{ "path": "./fs" }]
 }

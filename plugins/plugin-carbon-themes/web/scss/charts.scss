@@ -1,27 +1,36 @@
 /* from https://www.carbondesignsystem.com/data-visualization/color-palettes */
 
 @mixin charts-red-blue-diverging {
-  --color-latency-0: #153969; /* b80 */
-  --color-latency-1: #3070bd; /* b60 */
-  --color-latency-2: #c3e5fc; /* b30 */
-  --color-latency-3: #f4b6b9; /* r30 */
-  --color-latency-4: #c83532; /* r60 */
-  --color-latency-5: #6b1918; /* r80 */
+  --color-latency-0: #1192e8; /* c50 */
+  --color-latency-1: #33b1ff; /* c40 */
+  --color-latency-2: #82cfff; /* c30 */
+  --color-latency-3: #ffb3b8; /* r30 */
+  --color-latency-4: #ff8389; /* r40 */
+  --color-latency-5: #fa4d56; /* r50 */
+}
+
+@mixin charts-purple-teal-diverging-dark {
+  --color-latency-5: #8a3ffc; /* p60 */
+  --color-latency-4: #be95ff; /* p40 */
+  --color-latency-3: #d4bbff; /* p30 */
+  --color-latency-2: #3ddbd9; /* t30 */
+  --color-latency-1: #08bdba; /* t40 */
+  --color-latency-0: #007d79; /* t60 */
 }
 
 @mixin charts-purple-teal-diverging {
-  --color-latency-5: #491d8b; /* p80 */
+  --color-latency-5: #6929c4; /* p70 */
   --color-latency-4: #8a3ffc; /* p60 */
-  --color-latency-3: #d4bbff; /* p30 */
-  --color-latency-2: #3ddbd9; /* t30 */
+  --color-latency-3: #be95ff; /* p40 */
+  --color-latency-2: #08bdba; /* t40 */
   --color-latency-1: #007d79; /* t60 */
-  --color-latency-0: #004144; /* t80 */
+  --color-latency-0: #005d5d; /* t70 */
 }
 
 @mixin charts-light {
-  @include charts-red-blue-diverging;
+  @include charts-purple-teal-diverging;
 }
 
 @mixin charts-dark {
-  @include charts-red-blue-diverging;
+  @include charts-purple-teal-diverging-dark;
 }

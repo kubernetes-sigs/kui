@@ -18,33 +18,47 @@ import React from 'react'
 import '../../../../web/scss/components/Table/Bar.scss'
 
 interface Props {
-  left: string
-  width: string
+  left: number
+  width: number
   className?: string
   wrapperClassName?: string
   title?: string
 
-  widthOverlay?: string
+  widthOverlay?: number
   titleOverlay?: string
 
   onClick?: (evt: React.MouseEvent) => void
 }
 
+/** @return frac formatted as "xx.y%" */
+function str(frac: number) {
+  return (frac * 100).toFixed(10).toString() + '%'
+}
+
 export default class Bar extends React.PureComponent<Props> {
   public render() {
+    const left = str(this.props.left)
+    const width = str(this.props.width || 1 - (this.props.left || 0))
+    const widthOverlay = this.props.widthOverlay ? str(this.props.widthOverlay) : undefined
+
     return (
       <div className={'kui--bar-wrapper ' + (this.props.wrapperClassName || '')}>
         <div
           className={
-            'kui--bar ' + (this.props.className || 'kui--bar-default-color') + (this.props.onClick ? ' clickable' : '')
+            'kui--bar ' +
+            (this.props.className || 'kui--bar-default-color') +
+            (this.props.onClick ? ' clickable' : '') +
+            (this.props.left === undefined || this.props.width === undefined
+              ? ' kui--sequence-diagram-in-progress'
+              : '')
           }
           title={this.props.title}
-          data-left={this.props.left}
-          data-width={this.props.width}
+          data-left={left}
+          data-width={width}
           onClick={this.props.onClick}
           style={{
-            left: this.props.left,
-            width: this.props.width
+            left: left,
+            width: width
           }}
         />
 
@@ -53,7 +67,7 @@ export default class Bar extends React.PureComponent<Props> {
           <div
             className="kui--bar kui--bar-overlay"
             title={this.props.titleOverlay}
-            style={{ left: this.props.left, width: this.props.widthOverlay }}
+            style={{ left: left, width: widthOverlay }}
           />
         )}
       </div>

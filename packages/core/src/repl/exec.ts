@@ -309,7 +309,7 @@ class InProcessExecutor implements Executor {
     commandUntrimmed: string,
     execOptions = emptyExecOptions()
   ): Promise<T | CodedError<number> | HTMLElement | MixedResponse | CommandEvaluationError> {
-    //
+    const startTime = Date.now()
     const tab = execOptions.tab || getCurrentTab()
 
     const execType = (execOptions && execOptions.type) || ExecType.TopLevel
@@ -343,6 +343,7 @@ class InProcessExecutor implements Executor {
       this.emitStartEvent({
         tab,
         route: evaluator.route,
+        startTime,
         command,
         evaluatorOptions,
         execType,
@@ -355,6 +356,7 @@ class InProcessExecutor implements Executor {
         this.emitCompletionEvent(true, {
           tab,
           execType,
+          completeTime: Date.now(),
           command: commandUntrimmed,
           argvNoOptions,
           parsedOptions,
@@ -378,6 +380,7 @@ class InProcessExecutor implements Executor {
           {
             tab,
             execType,
+            completeTime: Date.now(),
             command: commandUntrimmed,
             argvNoOptions,
             parsedOptions,
@@ -467,6 +470,7 @@ class InProcessExecutor implements Executor {
         {
           tab,
           execType,
+          completeTime: Date.now(),
           command: commandUntrimmed,
           argvNoOptions,
           parsedOptions,

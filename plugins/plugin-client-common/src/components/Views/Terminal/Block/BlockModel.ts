@@ -38,7 +38,7 @@ const enum BlockState {
 type WithCWD = { cwd: string }
 type WithUUID = { execUUID: string }
 type WithCommand = { command: string; isExperimental?: boolean } & WithCWD
-type WithStartTime = { startTime: Date }
+type WithStartTime = { startTime: number }
 type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
@@ -162,7 +162,7 @@ export function Announcement(response: ScalarResponse): AnnouncementBlock {
   return {
     response,
     isAnnouncement: true,
-    startTime: new Date(),
+    startTime: Date.now(),
     cwd: cwd(),
     state: BlockState.ValidResponse
   }
@@ -184,7 +184,7 @@ export function Processing(
     isReplay,
     isRerun,
     startEvent,
-    startTime: new Date(),
+    startTime: startEvent.startTime,
     state: BlockState.Processing
   }
 }

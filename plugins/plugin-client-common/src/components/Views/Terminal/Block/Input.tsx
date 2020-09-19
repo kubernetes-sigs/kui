@@ -16,6 +16,7 @@
 
 import React from 'react'
 import { basename } from 'path'
+import prettyPrintDuration from 'pretty-ms'
 import { dots as spinnerFrames } from 'cli-spinners'
 import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences, eventBus, getPrimaryTabId } from '@kui-shell/core'
 
@@ -141,6 +142,10 @@ export interface State {
   /** spinner? */
   spinner?: ReturnType<typeof setInterval>
   spinnerDom?: HTMLSpanElement
+
+  /** durationDom, used for counting up duration while Processing */
+  counter?: ReturnType<typeof setInterval>
+  durationDom?: HTMLSpanElement
 
   /** typeahead completion? */
   typeahead?: string
@@ -360,12 +365,31 @@ export default class Input extends InputProvider {
     return spinner
   }
 
+  private static newCountup(startTime: number, durationDom: HTMLSpanElement) {
+    return setInterval(() => {
+      durationDom.innerText = prettyPrintDuration((~~(Date.now() - startTime) / 1000) * 1000)
+    }, 1000)
+  }
+
+  private static updateCountup(props: Props, state: State) {
+    const counter = isProcessing(props.model)
+      ? state.counter || (state.durationDom && Input.newCountup(props.model.startTime, state.durationDom))
+      : undefined
+    if (!counter && state.counter) {
+      clearInterval(state.counter)
+    }
+
+    return counter
+  }
+
   public static getDerivedStateFromProps(props: Props, state: State) {
     const spinner = Input.updateSpinner(props, state)
+    const counter = Input.updateCountup(props, state)
 
     if (hasUUID(props.model)) {
       return {
         spinner,
+        counter,
         execUUID: props.model.execUUID
       }
     } else if (state.prompt && isActive(props.model) && state.execUUID !== undefined && !state.isearch) {
@@ -373,6 +397,7 @@ export default class Input extends InputProvider {
       // <input/> because react aggressively caches these
       return {
         spinner,
+        counter,
         prompt: undefined,
         execUUID: undefined
       }
@@ -558,7 +583,7 @@ export default class Input extends InputProvider {
     if (this.props.isExperimental) {
       return (
         <Tag
-          spanclassname="kui--repl-block-experimental-tag kui--repl-block-right-element kui--inverted-color-context left-pad"
+          spanclassname="kui--repl-block-experimental-tag kui--repl-block-right-element left-pad"
           title={strings('HoverExperimentalTag')}
           type="warning"
         >
@@ -570,16 +595,25 @@ export default class Input extends InputProvider {
 
   /** render the time the block started processing */
   private timestamp() {
-    if (
-      !isReplay(this.props.model) &&
-      !this.props.isFocused &&
-      !isEmpty(this.props.model) &&
-      (isProcessing(this.props.model) || isFinished(this.props.model))
-    ) {
+    if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
+      const replayed = isReplay(this.props.model)
+      const completed = this.props.model.startTime && isWithCompleteEvent(this.props.model)
+      const showingDate = !replayed && completed && !this.props.isWidthConstrained
+      const noParen = !showingDate
+      const openParen = noParen ? '' : '('
+      const closeParen = noParen ? '' : ')'
+
       return (
         this.props.model.startTime && (
           <span className="kui--repl-block-timestamp kui--repl-block-right-element">
-            {new Date(this.props.model.startTime).toLocaleTimeString()}
+            {showingDate && new Date(this.props.model.startTime).toLocaleTimeString()}
+            <span className="small-left-pad sub-text" ref={c => this.setState({ durationDom: c })}>
+              {openParen}
+              {isWithCompleteEvent(this.props.model) &&
+                this.props.model.completeEvent.completeTime &&
+                prettyPrintDuration(this.props.model.completeEvent.completeTime - this.props.model.startTime)}
+              {closeParen}
+            </span>
           </span>
         )
       )

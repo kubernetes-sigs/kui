@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+import { ParsedOptions } from '@kui-shell/core'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+/** Options for client/doExec */
+interface Options extends ParsedOptions {
+  o?: string
+  out?: string
+  output?: string
+}
+
+export default Options

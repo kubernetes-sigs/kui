@@ -16,15 +16,30 @@
 
 @import '_mixins';
 
+@mixin ExperimentalTag {
+  /** Notes: Tag Carbon impl is the former; PatternFly impl is the latter */
+  .kui--repl-block-experimental-tag .kui--tag,
+  .kui--repl-block-experimental-tag.kui--tag {
+    @content;
+  }
+}
+
 @include Scrollback {
-  .kui--repl-block-experimental-tag {
-    .kui--tag {
-      background-color: var(--color-base05);
-      font-family: var(--font-sans-serif);
-      color: var(--color-sidecar-background-01);
-      font-size: 0.5625rem;
-      height: 1.125rem;
-      margin: 0 0.5rem 0 0;
-    }
+  @include ExperimentalTag {
+    background-color: var(--color-base05);
+    font-family: var(--font-sans-serif);
+    color: var(--color-base00);
+    font-size: 0.625rem;
+    height: 1.125rem;
+    margin: 0 0.5rem 0 0;
+    transition-delay: $action-hover-delay;
+    display: flex;
+    align-items: center;
+  }
+}
+
+@include BlockHoverOrFocus {
+  @include ExperimentalTag {
+    @include DisappearOnHover;
   }
 }

@@ -17,16 +17,16 @@
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
 
-$bgcolor: var(--color-table-border1);
+$bgcolor: transparent;
 $border-radius: 2px 4px;
 
 .kui--bar-wrapper {
   display: flex;
-  height: 1rem;
+  height: 0.625rem;
   min-width: 25rem;
   position: relative;
   background-color: $bgcolor;
-  border: 2px solid $bgcolor;
+  border: 1px solid transparent;
   border-left: none;
   border-right: none;
 }
