@@ -66,9 +66,6 @@
   @include Card {
     flex: 1;
   }
-  @include Commentary {
-    flex: 1;
-  }
 }
 @mixin FullWidthInScrollback {
   @include Scrollback {
