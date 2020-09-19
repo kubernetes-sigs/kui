@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+type ParallelOperation = 'grep' | 'gunzip' | 'gzip' | 'copyShard'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+export default ParallelOperation

@@ -23,6 +23,8 @@ import Markdown from '../Markdown'
 import ErrorCell from './ErrorCell'
 import whenNothingIsSelected from '../../../util/selection'
 
+export type CellOnClickHandler = (evt: React.MouseEvent) => void
+
 /**
  * Generate an onclick handler for a cell
  *
@@ -33,7 +35,7 @@ export function onClickForCell(
   repl: REPL,
   cell?: KuiCell,
   selectRow: () => void = () => undefined
-) {
+): CellOnClickHandler {
   const handler = cell ? cell.onclick : row.onclick
   if (handler === false) {
     return () => handler

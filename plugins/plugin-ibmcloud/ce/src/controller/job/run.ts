@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import { Arguments, KResponse } from '@kui-shell/core'
+import { Arguments, ExecType } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 import { KubeOptions, getTransformer as viewTransformer } from '@kui-shell/plugin-kubectl'
 
 import ListJob from './list'
 import doList from '../generic/list'
 
-interface RunOptions extends KubeOptions {
-  bulk: number
-}
+type RunOptions = KubeOptions
 
 export const registration = {
   viewTransformer
@@ -36,12 +34,14 @@ function exec(args: Arguments<KubeOptions>) {
   return doExecWithStdoutViaPty(args)
 }
 
-async function runOne(args: Arguments<KubeOptions>) {
+async function runOne(args: Arguments<RunOptions>) {
   const response = await exec(args)
 
   const name = response.match(/Successfully created job '(.*)'/)
   if (!name || !name[1]) {
     return response
+  } else if (args.execOptions.type === ExecType.Nested) {
+    return name[1]
   } else {
     return listJob(args, { names: [name[1]], watch: true }).catch(err => {
       console.error('error in list-after-run', err)
@@ -50,26 +50,6 @@ async function runOne(args: Arguments<KubeOptions>) {
   }
 }
 
-function safely(response: Promise<KResponse>) {
-  return response
-    .then(() => true)
-    .catch(err => {
-      console.error('error in job', err)
-      return false
-    })
-}
-
 export default async function(args: Arguments<RunOptions>) {
-  if (args.parsedOptions.bulk) {
-    args.command = args.command.replace(`--bulk ${args.parsedOptions.bulk}`, '')
-    const successBits = await Promise.all(
-      Array(args.parsedOptions.bulk)
-        .fill(0)
-        .map(() => safely(exec(args)))
-    )
-    const nFail = successBits.reduce((nFail, bit) => (nFail += bit ? 0 : 1), 0)
-    return `Spawned ${args.parsedOptions.bulk} jobs with ${nFail} abnormal terminations`
-  } else {
-    return runOne(args)
-  }
+  return runOne(args)
 }

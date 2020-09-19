@@ -23,9 +23,6 @@ $inset: 0.375rem;
 /** Padding for action buttons */
 $action-padding: 3px;
 
-/** Hover hysteresis for showing action buttons */
-$action-hover-delay: 210ms;
-
 /** Color to indicate focused block */
 $focus-color: var(--color-brand-01);
 
@@ -46,18 +43,41 @@ li.repl-block {
   list-style: none;
 }
 
+@include BlockHoverOrFocus {
+  .kui--repl-block-timestamp {
+    @include DisappearOnHover;
+  }
+}
+
+.repl-block:not(.repl-active) {
+  .repl-input-element-wrapper {
+    border-color: $input-border;
+    border-radius: 1px;
+    &[data-is-reedit] {
+      border-color: $input-border-editing;
+    }
+  }
+}
+body[kui-theme-style='light'] {
+  .repl-block:not(.repl-active) {
+    .repl-input-element-wrapper {
+      background-color: $input-bg-light;
+    }
+  }
+}
+body[kui-theme-style='dark'] {
+  .repl-block:not(.repl-active) {
+    .repl-input-element-wrapper {
+      background-color: $input-bg-dark;
+    }
+  }
+}
+
 /** Coloring the context border by status of the block */
 @include Scrollback {
   .repl-input:hover,
   .repl-output:hover {
     @include show-block-action-buttons;
-  }
-  li:focus,
-  .repl-input:hover {
-    .kui--repl-block-timestamp {
-      opacity: 0; /* rather than display: none to avoid reflow on hover */
-      transition-delay: $action-hover-delay;
-    }
   }
 
   .repl-block {
@@ -259,17 +279,6 @@ li.repl-block {
         }
       }
     }
-    &:not(.repl-active) {
-      .repl-input-element-wrapper {
-        background-color: $input-bg;
-        border-color: $input-border;
-        border-radius: 1px;
-
-        &[data-is-reedit] {
-          border-color: $input-border-editing;
-        }
-      }
-    }
     .repl-output .repl-context {
       opacity: 0;
     }
@@ -305,14 +314,15 @@ li.repl-block {
     }
   }
   .kui--repl-block-right-element {
-    color: var(--color-text-02);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
   }
 
   .kui--repl-block-spinner {
     font-size: 1.25rem;
-    margin: 0 0.5rem;
     color: var(--active-tab-color);
+    &:not(:empty) {
+      margin: 0 0.5rem;
+    }
   }
   .repl-context .kui--repl-block-spinner {
     font-size: initial;
@@ -330,11 +340,10 @@ li.repl-block {
 }
 
 @mixin timestamp-like {
-  margin: 0 0.5rem;
+  margin-right: 0.5rem;
   display: flex;
   align-items: center;
   transition-delay: $action-hover-delay;
-  transition-property: opacity;
 }
 
 /* timestamp */

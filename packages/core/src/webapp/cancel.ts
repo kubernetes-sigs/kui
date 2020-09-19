@@ -35,6 +35,7 @@ export default function doCancel(tab: Tab, block: Block, valueTypedSoFar: string
   const endEvent: CommandCompleteEvent = {
     tab,
     execType: ExecType.TopLevel,
+    completeTime: Date.now(),
     cancelled: true,
     execUUID,
     historyIdx: -1,

@@ -883,13 +883,15 @@ badge:not(.badge-as-fontawesome):not(.badge-as-image) {
   font-family: var(--font-sans-serif);
 }
 
-.green-text {
+.green-text,
+.valid-response .kui--color-by-status {
   color: var(--color-ok);
 }
 .green-text svg path {
   fill: var(--color-ok);
 }
-.red-text {
+.red-text,
+.error .kui--color-by-status {
   color: var(--color-error);
 }
 .red-text svg path {
