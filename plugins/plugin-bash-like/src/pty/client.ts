@@ -33,11 +33,11 @@ import {
   inBrowser,
   ExecType,
   ExecOptions,
-  ParsedOptions,
   sameTab,
   disableInputQueueing
 } from '@kui-shell/core'
 
+import Options from './options'
 import ChannelId from './channel-id'
 import { getChannelForTab } from './session'
 import { cleanupTerminalAfterTermination } from './util'
@@ -806,12 +806,6 @@ const getOrCreateChannel = async (
     }
     return cachedws
   }
-}
-
-interface Options extends ParsedOptions {
-  o?: string
-  out?: string
-  output?: string
 }
 
 /**

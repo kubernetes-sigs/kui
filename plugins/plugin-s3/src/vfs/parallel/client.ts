@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+import { Client } from 'minio'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+export default new Client({
+  endPoint: process.env.S3_ENDPOINT,
+  accessKey: process.env.S3_ACCESS_KEY,
+  secretKey: process.env.S3_SECRET_KEY
+})

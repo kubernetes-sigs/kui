@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+import { inBrowser, CapabilityRegistration, PreloadRegistrar } from '@kui-shell/core'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+export const registerCapability: CapabilityRegistration = async (registrar: PreloadRegistrar) => {
+  if (inBrowser()) {
+    await import('./session').then(({ init }) => init(registrar))
+  } else {
+    try {
+      const prefetchShellState = (await import('./prefetch')).default
+      await prefetchShellState()
+      // debug('done with state prefetch')
+    } catch (err) {
+      console.error('error in state prefetch', err)
+    }
+  }
+}

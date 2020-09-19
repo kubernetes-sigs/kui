@@ -138,8 +138,13 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
       const { defaultPresentation } = this.props.response
       const asGrid =
-        (this.props.asGrid && findGridableColumn(this.props.response) >= 0) || defaultPresentation === 'grid'
-      const asSequence = !asGrid && this.hasSequenceButton() && this.props.response.body.length > 1
+        ((!defaultPresentation || defaultPresentation === 'grid') &&
+          this.props.asGrid &&
+          findGridableColumn(this.props.response) >= 0) ||
+        defaultPresentation === 'grid'
+      const asSequence =
+        (!asGrid && this.hasSequenceButton() && this.props.response.body.length > 1) ||
+        defaultPresentation === 'sequence-diagram'
 
       this.state = {
         headers,

@@ -20,17 +20,11 @@ import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
 
 import Bar from './Bar'
 import DefaultColoring from './Coloring'
-import renderCell, { onClickForCell } from './TableCell'
+import { /* renderCell, */ onClickForCell, CellOnClickHandler } from './TableCell'
 
 import '../../../../web/scss/components/Table/SequenceDiagram.scss'
 
 const strings = i18n('plugin-client-common')
-
-interface DenseInterval {
-  startMillis: number
-  endMillis: number
-  rows: Row[]
-}
 
 interface Props {
   response: Table
@@ -38,9 +32,31 @@ interface Props {
   repl: REPL
 }
 
+/**
+ * An "Interval" is a maximal contiguous sequence of Tasks that are
+ * both a) from the same Job; and b) not too far away in time from the
+ * start of the Interval
+ *
+ */
+interface DenseInterval {
+  startMillis: number
+  endMillis: number
+  jobName: string
+  rows: Row[]
+}
+
 interface State {
-  maxIntervalTimeSpan: number
+  /** The intervals! */
   intervals: DenseInterval[]
+
+  /** To help normalize the width of bars, we stash the max, across
+   * `this.intervals` of `endMills-startMillis` */
+  maxIntervalTimeSpan: number
+
+  /** To help render in-progress tasks, where we don't have a task
+   * completion time, we can at least use the maximum completion time
+   * across the tasks that *have* completed */
+  maxEndMillis: number
 }
 
 function prettyPrintDuration(duration: number): string {
@@ -58,7 +74,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
    * part of the same dense region of time.
    *
    */
-  private static readonly denseThreshold = 60 * 1000
+  private static readonly denseThreshold = 120 * 1000
 
   public constructor(props: Props) {
     super(props)
@@ -69,66 +85,91 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return SequenceDiagram.computeGapModel(props.response, SequenceDiagram.denseThreshold)
   }
 
-  private getFraction(numerator: number, interval?: DenseInterval) {
-    // return `${((numerator / (interval.endMillis - interval.startMillis)) * 100).toFixed(10).toString()}%`
-    const fraction = Math.min(
-      1,
-      numerator / (interval ? interval.endMillis - interval.startMillis : this.state.maxIntervalTimeSpan)
-    )
-    return `${(fraction * 100).toFixed(10).toString()}%`
+  /** @return numerator/interval formatted */
+  private getFraction(numerator: number, interval?: DenseInterval): number {
+    if (interval && (!interval.startMillis || !interval.endMillis)) {
+      return 0
+    } else {
+      const fraction = Math.min(
+        1,
+        numerator / (interval ? interval.endMillis - interval.startMillis : this.state.maxIntervalTimeSpan)
+      )
+      return isNaN(fraction) ? undefined : fraction
+    }
   }
 
-  private static computeGapModel(response: Table, denseThreshold: number) {
+  /**
+   * This computes the `State` for this component from the given
+   * `response` Table model.
+   *
+   */
+  private static computeGapModel(response: Table, denseThreshold: number): State {
+    // indices of start and complete attributes
     const idx1 = response.startColumnIdx
     const idx2 = response.completeColumnIdx
 
-    // need to slice so as not to permute the original table model
+    // 1) [SLICE]: need to slice so as not to permute the original table model
+    // 2) [SORT]: by startTime, then by delta from start of current gap
+    // 3) [INTERVALS]: populate a tuple of intervals, where each interval consists of tasks a) from the same job; and b) not too distant in time from the start of the current interval
     const intervals = response.body
-      .slice(0)
+      .slice(0) // [SLICE]
       .sort((a, b) => {
-        const aStartCell = a.attributes[idx1]
-        const bStartCell = b.attributes[idx1]
-        if (!aStartCell || !bStartCell || !aStartCell.value || !bStartCell.value) {
-          return 0
-        } else {
-          const startDelta = new Date(aStartCell.value).getTime() - new Date(bStartCell.value).getTime()
-          if (startDelta === 0) {
-            const aEndCell = a.attributes[idx2]
-            const bEndCell = b.attributes[idx2]
-            if (!aEndCell || !bEndCell || !aEndCell.value || !bEndCell.value) {
-              return 0
-            } else {
-              const endDelta = new Date(aEndCell.value).getTime() - new Date(bEndCell.value).getTime()
-              return endDelta
-            }
+        // [SORT]
+        const jobNameComparo = a.name.localeCompare(b.name)
+        if (jobNameComparo === 0) {
+          // same job name; then compare by startTime
+          const aStartCell = a.attributes[idx1]
+          const bStartCell = b.attributes[idx1]
+          if (!aStartCell || !bStartCell || !aStartCell.value || !bStartCell.value) {
+            return 0
           } else {
-            return startDelta
+            const startDelta = new Date(aStartCell.value).getTime() - new Date(bStartCell.value).getTime()
+            if (startDelta === 0) {
+              const aEndCell = a.attributes[idx2]
+              const bEndCell = b.attributes[idx2]
+              if (!aEndCell || !bEndCell || !aEndCell.value || !bEndCell.value) {
+                return 0
+              } else {
+                const endDelta = new Date(aEndCell.value).getTime() - new Date(bEndCell.value).getTime()
+                return endDelta
+              }
+            } else {
+              return startDelta
+            }
           }
+        } else {
+          // different job names
+          return jobNameComparo
         }
       })
       .reduce((intervals, row) => {
+        // [INTERVALS]
+        const jobName = row.name
         const startMillis = new Date(row.attributes[idx1].value).getTime()
         const endMillis =
           !row.attributes[idx2].value || row.attributes[idx2].value === '<none>'
             ? startMillis
             : new Date(row.attributes[idx2].value).getTime()
-        if (isNaN(endMillis)) {
-        }
+
+        // if (isNaN(endMillis)) {
+        // }
 
         if (intervals.length === 0) {
-          return [{ startMillis, endMillis, rows: [row] }]
+          // case 1: first interval
+          return [{ startMillis, endMillis, jobName, rows: [row] }]
         } else {
           const currentInterval = intervals[intervals.length - 1]
           const gap = endMillis - currentInterval.startMillis
 
-          if (gap < denseThreshold) {
-            // add to current interval
+          if (gap < denseThreshold && currentInterval.jobName === jobName) {
+            // case 2: the gap is small relative to the start of the
+            // current interval and for the same job as the current
+            // interval, in which case we add to current interval
             currentInterval.endMillis = endMillis
             currentInterval.rows.push(row)
           } else {
-            // the time span between the current interval and this row
-            // is too long: create new interval
-            intervals.push({ startMillis, endMillis, rows: [row] })
+            // case 3: gap too long, or new job -- create new interval
+            intervals.push({ startMillis, endMillis, jobName, rows: [row] })
           }
 
           return intervals
@@ -140,6 +181,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
         denseThreshold,
         intervals.reduce((max, interval) => Math.max(max, interval.endMillis - interval.startMillis), 0)
       ),
+      maxEndMillis: intervals.reduce((max, interval) => Math.max(max, interval.endMillis), 0),
       intervals
     }
   }
@@ -148,17 +190,17 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return (
       <thead>
         <tr>
-          <th className="kui--header-cell">Name</th>
+          {/*  <th className="kui--header-cell">Name</th> */}
           <th className="kui--header-cell">Interval</th>
           <th className="kui--header-cell hide-with-sidecar">Delta</th>
-          {this.props.response.statusColumnIdx >= 0 && <th className="kui--header-cell">Status</th>}
+          {/* this.props.response.statusColumnIdx >= 0 && <th className="kui--header-cell">Status</th> */}
         </tr>
       </thead>
     )
   }
 
   private nSpanCols() {
-    return this.props.response.statusColumnIdx >= 0 ? 4 : 3
+    return 1 // this.props.response.statusColumnIdx >= 0 ? 4 : 3
   }
 
   private overheads(interval: DenseInterval): { coldStartFraction: number; gapFraction: number } {
@@ -201,23 +243,24 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return { coldStartFraction: coldStarts / denominator, gapFraction: gaps / denominator }
   }
 
-  private gapRow(startMillis: number, intervalIdx: number) {
+  private gapRow(startMillis: number, intervalIdx: number, onClick: CellOnClickHandler) {
     const interval = this.state.intervals[intervalIdx]
     const endMillis = interval.endMillis
+    const hasStart = startMillis !== undefined && !isNaN(startMillis)
     const overheads = this.overheads(interval)
 
     const gap = [
       <tr key={`gaprowB-${intervalIdx}`} className="kui--interval-start">
-        <td />
-        <td className="kui--gap-cell">
+        {/* <td /> */}
+        <td className="kui--gap-cell" colSpan={2}>
           <span className="flex-layout">
-            {startMillis && !isNaN(startMillis) ? new Date(startMillis).toLocaleString() : ''}
-            {endMillis && (
+            {!hasStart ? '' : new Date(startMillis).toLocaleString()}
+            {hasStart && endMillis && (
               <span className="flex-fill flex-align-end left-pad">
-                {`${prettyPrintDuration(endMillis - startMillis)}`}
+                {endMillis - startMillis === 0 ? '' : `${prettyPrintDuration(endMillis - startMillis)}`}
                 {overheads.coldStartFraction > 0 || overheads.gapFraction > 0 ? ' (' : ''}
                 {overheads.coldStartFraction > 0
-                  ? `${Math.round(100 * overheads.coldStartFraction).toFixed(0)}% cold start overhead`
+                  ? `${Math.round(100 * overheads.coldStartFraction).toFixed(0)}% cold starts`
                   : ''}
                 {overheads.gapFraction > 0
                   ? `, ${Math.round(100 * overheads.gapFraction).toFixed(0)}% scheduling gaps`
@@ -226,6 +269,15 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
               </span>
             )}
           </span>
+        </td>
+      </tr>,
+      <tr key={`gaprowB-${intervalIdx}-jobName`} className="kui--interval-start-jobName">
+        <td
+          className={['kui--gap-cell', 'kui--table-cell-is-name', onClick ? 'clickable' : ''].join(' ')}
+          colSpan={2}
+          onClick={onClick}
+        >
+          {interval.jobName}
         </td>
       </tr>
     ]
@@ -254,7 +306,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
           interval.rows.map((row, rowIdx) => {
             const startDate = new Date(row.attributes[idx1].value)
             const startMillis = startDate.getTime()
-            const endMillis = !row.attributes[idx2].value ? startMillis : new Date(row.attributes[idx2].value).getTime()
+            const endMillis = !row.attributes[idx2].value
+              ? this.state.maxEndMillis || startMillis
+              : new Date(row.attributes[idx2].value).getTime()
 
             const durationCol =
               this.props.response.durationColumnIdx >= 0 && row.attributes[this.props.response.durationColumnIdx]
@@ -263,7 +317,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const duration = durationCol || (!endMillis ? 0 : endMillis - startMillis)
 
             const left = this.getFraction(startMillis - interval.startMillis, interval)
-            const width = this.getFraction(duration)
+            const width = !duration ? undefined : this.getFraction(duration)
             const coldStart =
               this.props.response.coldStartColumnIdx >= 0 && row.attributes[this.props.response.coldStartColumnIdx]
                 ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
@@ -277,18 +331,19 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
               intervalIdx === 0 && rowIdx === 0
                 ? 0
                 : rowIdx === 0
-                ? startMillis - this.state.intervals[intervalIdx - 1].endMillis
+                ? 0 // startMillis - this.state.intervals[intervalIdx - 1].endMillis
                 : startMillis - new Date(interval.rows[0].attributes[idx1].value).getTime()
 
             const gapText =
-              (intervalIdx === 0 && rowIdx === 0) || gap === 0
-                ? '' // very first row
+              (intervalIdx === 0 && rowIdx === 0) || gap === 0 || isNaN(gap)
+                ? '' // very first row or unfinished task (NaN gap)
                 : (gap >= 0 ? '+' : '') + prettyPrintDuration(gap)
-
-            const interGroupGapRow = rowIdx === 0 ? this.gapRow(startMillis, intervalIdx) : []
 
             // drilldown to underlying resource, e.g. Pod for Kubernetes Jobs
             const onClick = onClickForCell(row, this.props.tab, this.props.repl, row.attributes[0])
+
+            // rows that help to define the contents of the interval; e.g. jobName
+            const interGroupGapRow = rowIdx === 0 ? this.gapRow(startMillis, intervalIdx, onClick) : []
 
             return interGroupGapRow.concat([
               <tr
@@ -297,14 +352,14 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   rowIdx === interval.rows.length - 1 ? 'kui--sequence-diagram-last-row-in-interval' : undefined
                 }
               >
-                <td>
+                {/* <td>
                   <span
                     className={'kui--table-cell-is-name cell-inner ' + (row.onclick ? 'clickable' : '')}
                     onClick={onClick}
                   >
                     {row.name}
                   </span>
-                </td>
+                  </td> */}
                 <td className="kui--sequence-diagram-bar-cell">
                   <Bar
                     left={left}
@@ -317,7 +372,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   />
                 </td>
                 <td className="sub-text hide-with-sidecar">{gapText}</td>
-                {this.props.response.statusColumnIdx >= 0
+                {/* this.props.response.statusColumnIdx >= 0
                   ? renderCell(
                       this.props.response,
                       row,
@@ -335,7 +390,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                       },
                       this.props.response.statusColumnIdx + 1
                     )
-                  : undefined}
+                  : undefined */}
               </tr>
             ])
           })
@@ -352,7 +407,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return (
       <div className="kui--data-table-container bx--data-table-container">
         <table className="bx--data-table bx--data-table--compact kui--sequence-diagram">
-          {this.header()}
+          {/* this.header() */}
           <tbody>{this.rows()}</tbody>
         </table>
       </div>

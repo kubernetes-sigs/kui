@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments } from '@kui-shell/core'
+import { Arguments, encodeComponent } from '@kui-shell/core'
 
 import { VFS, mount } from '.'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
@@ -85,6 +85,47 @@ class LocalVFS implements VFS {
       undefined,
       Object.assign(opts.execOptions, { quiet: false })
     )
+  }
+
+  /** grep for file content */
+  public async grep(opts: Parameters<VFS['grep']>[0]): ReturnType<VFS['grep']> {
+    return opts.REPL.qexec(
+      `sendtopty ${opts.command.replace(/^vfs/, '')}`,
+      undefined,
+      undefined,
+      Object.assign(opts.execOptions, { quiet: false })
+    )
+  }
+
+  private async zip(
+    args: Parameters<VFS['gunzip']>[0],
+    filepaths: Parameters<VFS['gunzip']>[1],
+    cmd: 'gzip' | 'gunzip'
+  ): ReturnType<VFS['gunzip']> {
+    const suffix = args.parsedOptions.S || args.parsedOptions.suffix
+
+    await Promise.all(
+      filepaths.map(filepath =>
+        args.REPL.qexec(
+          `sendtopty ${cmd} ${args.argv.filter(_ => /^-/.test(_))} ${suffix ? `-S ${suffix}` : ''} ${encodeComponent(
+            filepath
+          )}`,
+          undefined,
+          undefined,
+          Object.assign(args.execOptions, { quiet: false })
+        )
+      )
+    )
+  }
+
+  /** zip a set of files */
+  public gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
+    return this.zip(parameters[0], parameters[1], 'gzip')
+  }
+
+  /** unzip a set of files */
+  public gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    return this.zip(parameters[0], parameters[1], 'gunzip')
   }
 }
 

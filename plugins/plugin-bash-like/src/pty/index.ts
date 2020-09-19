@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-export const Get = 'kubectl get jobrun'
+import { Tab, ExecOptions } from '@kui-shell/core'
 
-export { default as Create } from './run'
-export { default as List } from './list'
+import Options from './options'
+export { main } from './server'
+export { getSessionForTab } from './session'
+export { StdioChannelWebsocketSide } from './stdio-channel'
+
+export const doExec = (
+  tab: Tab,
+  cmdline: string,
+  argvNoOptions: string[],
+  parsedOptions: Options,
+  execOptions: ExecOptions
+) => import('./client').then(_ => _.doExec(tab, cmdline, argvNoOptions, parsedOptions, execOptions))

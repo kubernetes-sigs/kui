@@ -17,11 +17,15 @@
 import { basename, join } from 'path'
 import * as micromatch from 'micromatch'
 import { Client, CopyConditions } from 'minio'
-import { Arguments, CodedError, REPL, flatten, inBrowser, i18n } from '@kui-shell/core'
-import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
+import { Arguments, CodedError, REPL, encodeComponent, flatten, inBrowser, i18n } from '@kui-shell/core'
+import { DirEntry, FStat, GlobStats, ParallelismOptions, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider } from '../providers'
+
+import JobProvider, { JobEnv } from '../jobs'
+import ParallelOperation from './parallel/operations'
+import CodeEngine from '../jobs/providers/CodeEngine'
 
 const strings = i18n('plugin-s3')
 
@@ -133,7 +137,7 @@ class S3VFSResponder extends S3VFS implements VFS {
         })
 
         objectStream.on('data', ({ name, size, lastModified }) => {
-          if (!pattern || micromatch.isMatch(name, pattern)) {
+          if ((!pattern && name === prefix) || (pattern && micromatch.isMatch(name, pattern))) {
             const path = join(this.mountPath, bucketName, name)
 
             objects.push({
@@ -456,6 +460,139 @@ class S3VFSResponder extends S3VFS implements VFS {
       throw new Error(err.message)
     }
   }
+
+  private async getLogsForTask(jobProvider: JobProvider, jobname: string, taskIdx: number): Promise<string[]> {
+    const logs = await jobProvider.logs(jobname, taskIdx)
+    const logLines = logs.split(/\n/).filter(_ => /^GREP /.test(_))
+
+    return logLines.map(_ => _.replace(/^GREP /, ''))
+  }
+
+  private async getLogs(jobProvider: JobProvider, jobname: string, nTasks: number): Promise<string[]> {
+    return flatten(
+      await Promise.all(
+        Array(nTasks)
+          .fill(0)
+          .map((_, idx) => this.getLogsForTask(jobProvider, jobname, idx + 1))
+      )
+    )
+  }
+
+  /**
+   * Generic doPar of the given `operation` done in data-parallel
+   * fashion across the given `filepaths`. You may optionally overlay
+   * extra `env` variables onto the task executions.
+   *
+   */
+  private async doPar<NeedsLogs extends boolean = false>(
+    opts: Arguments<ParallelismOptions>,
+    operation: ParallelOperation,
+    filepaths: string[],
+    needsLogs: NeedsLogs,
+    env: JobEnv = {},
+    nTasks = opts.parsedOptions.P || 20,
+    nShards = nTasks
+  ) {
+    const jobProvider = this.runner(opts.REPL)
+
+    const perFileResults = await Promise.all(
+      filepaths.map(async filepath => {
+        const { bucketName, fileName } = this.split(filepath)
+        const jobname = await jobProvider.run(
+          'starpit/vfs',
+          {
+            nTasks,
+            nShards: nShards || nTasks,
+            OPERATION: operation,
+            SRC_BUCKET: bucketName,
+            SRC_OBJECT: fileName
+          },
+          env
+        )
+
+        await jobProvider.wait(jobname, nTasks)
+
+        if (needsLogs) {
+          return this.getLogs(jobProvider, jobname, nTasks)
+        }
+      })
+    )
+
+    return perFileResults
+  }
+
+  public async grep(
+    opts: Parameters<VFS['grep']>[0],
+    pattern: string,
+    filepaths: string[]
+  ): Promise<number | string[]> {
+    const perFileResults = await this.doPar(opts, 'grep', filepaths, true, {
+      PATTERN: pattern
+    })
+
+    if (opts.parsedOptions.c) {
+      // user asked for a count; so we need a reduction post-processing pass
+      return perFileResults.map(_ => _.length).reduce((sum, count) => sum + count, 0)
+    } else if (opts.parsedOptions.l) {
+      // user asked for a list of matching files; so again we need to post-process
+      return perFileResults.reduce((matchingFiles, matches, idx) => {
+        if (matches.length > 0) {
+          matchingFiles.push(filepaths[idx])
+        }
+        return matchingFiles
+      }, [])
+    } else {
+      // otherwise, return the list of matches
+      return flatten(perFileResults)
+    }
+  }
+
+  /** zip a set of files */
+  public async gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
+    const { REPL } = parameters[0]
+    const srcFilepaths = parameters[1]
+    const sources = (
+      await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+    ).content.map(_ => _.path)
+
+    const nTasks = sources.length
+    const jobProvider = this.runner(REPL)
+
+    const srcs = sources.map(_ => this.split(_))
+
+    const jobname = await jobProvider.run('starpit/vfs', {
+      nTasks,
+      nShards: 1,
+      OPERATION: 'gzip',
+      SRC_BUCKETS: srcs.map(_ => _.bucketName),
+      SRC_OBJECTS: srcs.map(_ => _.fileName)
+    })
+
+    return jobProvider.wait(jobname, nTasks)
+  }
+
+  /** unzip a set of files */
+  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    const filepaths = parameters[1]
+    const nTasks = filepaths.length
+    const jobProvider = this.runner(parameters[0].REPL)
+
+    const srcs = filepaths.map(_ => this.split(_))
+
+    const jobname = await jobProvider.run('starpit/vfs', {
+      nTasks,
+      nShards: 1,
+      OPERATION: 'gunzip',
+      SRC_BUCKETS: srcs.map(_ => _.bucketName),
+      SRC_OBJECTS: srcs.map(_ => _.fileName)
+    })
+
+    await jobProvider.wait(jobname, nTasks)
+  }
+
+  private runner(repl: REPL) {
+    return new CodeEngine(repl, this.options)
+  }
 }
 
 class S3VFSForwarder extends S3VFS implements VFS {
@@ -516,6 +653,22 @@ class S3VFSForwarder extends S3VFS implements VFS {
     filepath: string
   ): Promise<void> {
     await opts.REPL.qexec(`vfs-s3 mkdir ${opts.REPL.encodeComponent(filepath)}`)
+  }
+
+  public async grep(opts: Arguments, pattern: string, filepaths: string[]): Promise<string[]> {
+    return opts.REPL.qexec(
+      `vfs-s3 grep ${opts.REPL.encodeComponent(pattern)} ${filepaths.map(_ => opts.REPL.encodeComponent(_)).join(' ')}`
+    )
+  }
+
+  /** zip a set of files */
+  public async gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
+    await parameters[0].REPL.qexec(`vfs-s3 gzip ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`)
+  }
+
+  /** unzip a set of files */
+  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    await parameters[0].REPL.qexec(`vfs-s3 gunzip ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`)
   }
 }
 

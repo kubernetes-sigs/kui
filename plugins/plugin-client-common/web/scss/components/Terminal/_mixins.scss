@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-$input-bg: rgba(100, 100, 100, 0.0625);
+$input-bg-light: var(--color-base00);
+$input-bg-dark: var(--color-base02);
 $input-bg-minisplit: var(--color-base01);
 $input-border: rgba(100, 100, 100, 0.05);
 $input-border-editing: var(--color-brand-03);
+
+/** Hover hysteresis for showing action buttons */
+$action-hover-delay: 210ms;
 
 @mixin Scrollback {
   .kui--scrollback {
@@ -45,6 +49,20 @@ $input-border-editing: var(--color-brand-03);
   .repl-block {
     @content;
   }
+}
+
+@mixin BlockHoverOrFocus {
+  @include Scrollback {
+    li:focus,
+    .repl-input:hover {
+      @content;
+    }
+  }
+}
+
+@mixin DisappearOnHover {
+  opacity: 0; /* rather than display: none to avoid reflow on hover */
+  transition-delay: $action-hover-delay;
 }
 
 @mixin ActiveBlock {
