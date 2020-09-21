@@ -129,11 +129,6 @@
   color: var(--color-support-01);
 }
 
-body[kui-theme-style] .monaco-editor .selected-text {
-  transition: background 300ms ease-in-out;
-  background: var(--color-selection-background);
-}
-
 /* tooltip text is unreadble */
 .monaco-editor .monaco-editor-hover .hover-row p {
   background: var(--color-sidecar-toolbar-background);

@@ -32,6 +32,9 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
   className?: string
   readonly?: boolean
   onContentChange?: (content: string) => void
+
+  /** Use a light theme? Default: false */
+  light?: boolean
 }
 
 interface State {
@@ -107,7 +110,12 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
         language: props.contentType,
         simple: props.simple
       }
-      const options = Object.assign(defaultMonacoOptions(providedOptions), providedOptions)
+      const overrides: Monaco.IStandaloneEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
+      const options: Monaco.IStandaloneEditorConstructionOptions = Object.assign(
+        defaultMonacoOptions(providedOptions),
+        providedOptions,
+        overrides
+      )
       const editor = Monaco.create(state.wrapper, options)
 
       state.wrapper['getValueForTests'] = () => {
