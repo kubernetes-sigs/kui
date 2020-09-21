@@ -153,10 +153,26 @@ if (process.env.NEEDS_MINIO) {
       copyFromS3(bucketName, README2, tmpdir(), README3)
       rmdirExpectingError(bucketName)
       rm(bucketName, PJSON)
-      rm(bucketName, README)
-      rm(bucketName, README2)
+
+      // wildcard remove should have the net effect of the two commented-out rm's
+      rm(bucketName, README.charAt(0) + '*')
+      // rm(bucketName, README)
+      // rm(bucketName, README2)
+
       rmdir(bucketName)
       lsExpecting404(bucketName)
+    }
+
+    // wildcard rimraf
+    {
+      const bucketName1 = `kuitest-${v4()}`
+      const bucketName2 = `kuitest-${v4()}`
+
+      mkdir(bucketName1)
+      mkdir(bucketName2)
+      rimraf('kuitest*')
+      lsExpecting404(bucketName1)
+      lsExpecting404(bucketName2)
     }
 
     {

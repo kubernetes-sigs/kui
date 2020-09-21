@@ -59,7 +59,7 @@ export interface VFS {
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     filepath: string,
     recursive?: boolean
-  ): Promise<void>
+  ): Promise<string | boolean>
 
   /** Fetch contents */
   fstat(

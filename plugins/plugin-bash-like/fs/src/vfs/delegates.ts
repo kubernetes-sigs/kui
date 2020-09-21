@@ -53,7 +53,7 @@ export async function cp(
  */
 export async function rm(...parameters: Parameters<VFS['rm']>): ReturnType<VFS['rm']> {
   const mount = findMount(parameters[1])
-  await mount.rm(parameters[0], parameters[1], parameters[2])
+  return mount.rm(parameters[0], parameters[1], parameters[2])
 }
 
 /**
