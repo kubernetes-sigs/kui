@@ -265,7 +265,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
                     contentType={_.contentType}
                     className="kui--source-ref-editor kui--inverted-color-context"
                     fontSize={12}
-                    simple={this.props.isPartOfMiniSplit}
+                    simple={this.props.isPartOfMiniSplit || this.props.isWidthConstrained}
                   />
                 </ExpandableSection>
               )
