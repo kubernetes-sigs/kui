@@ -19,16 +19,20 @@ export function replay(filepath: string, createWindow: (executeThisArgvPlease?: 
   createWindow(['replay', filepath])
 }
 
+export const filters = [{ name: 'Kui snapshot', extensions: ['kui', 'json'] }]
+
 /**
  * Open a file and replay its session.
  *
  */
 export default async function open(createWindow: (executeThisArgvPlease?: string[]) => void) {
   const { app, dialog } = await import('electron')
+
   const resp = await dialog.showOpenDialog({
     title: 'Select a Kui snapshot',
-    filters: [{ name: 'Kui snapshot', extensions: ['kui'] }]
+    filters
   })
+
   if (!resp.canceled) {
     resp.filePaths.forEach(filepath => {
       app.addRecentDocument(filepath)
