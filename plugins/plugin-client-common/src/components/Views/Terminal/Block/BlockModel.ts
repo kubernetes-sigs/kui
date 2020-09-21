@@ -23,6 +23,7 @@ import {
   ExecType,
   isElsewhereCommentaryResponse,
   isWatchable,
+  isXtermErrorResponse,
   inBrowser
 } from '@kui-shell/core'
 
@@ -97,7 +98,7 @@ function cwd() {
 }
 
 export function isError(response: ScalarResponse): response is Error {
-  return response.constructor === Error || response.constructor === UsageError
+  return response.constructor === Error || response.constructor === UsageError || isXtermErrorResponse(response)
 }
 
 export function isProcessing(block: BlockModel): block is ProcessingBlock {

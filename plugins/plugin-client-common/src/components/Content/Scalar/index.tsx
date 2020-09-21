@@ -29,11 +29,13 @@ import {
   isTable,
   isTabLayoutModificationResponse,
   isMixedResponse,
+  isXtermResponse,
   isUsageError
 } from '@kui-shell/core'
 
 import Commentary from '../Commentary'
 import HTMLDom from './HTMLDom'
+import XtermDom from './XtermDom'
 import renderTable from '../Table'
 import Markdown from '../Markdown'
 import { KuiContext } from '../../../'
@@ -153,6 +155,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
         } else {
           return <HTMLDom content={response.raw} />
         }
+      } else if (isXtermResponse(response)) {
+        return <XtermDom response={response} />
       } else if (isError(response)) {
         return <React.Fragment>{response.message}</React.Fragment>
       } else if (isReactResponse(response)) {

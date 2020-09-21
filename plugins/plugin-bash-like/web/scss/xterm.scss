@@ -10,10 +10,8 @@
     width: 100% !important;
   }
   .xterm-terminated .xterm-rows > div {
-    width: auto !important;
-    min-height: 1.14375em !important; /* a bit different; we need to support resize post-termination */
-    height: auto !important; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
-    line-height: normal !important; /* ibid */
+    white-space: pre-wrap;
+    height: auto; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
   }
   /*.xterm-terminated.error .xterm-rows > div {
 disabled see https://github.com/IBM/kui/issues/3939

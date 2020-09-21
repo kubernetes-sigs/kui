@@ -28,6 +28,7 @@ import {
   FlowControllable,
   eventChannelUnsafe,
   eventBus,
+  XtermResponse,
   CodedError,
   inBrowser,
   ExecType,
@@ -367,7 +368,7 @@ async function initOnMessage(
   argvNoOptions: string[],
   execOptions: ExecOptions,
   cleanUpTerminal: () => void,
-  resolve: (val: boolean) => void,
+  resolve: (val: boolean | XtermResponse) => void,
   reject: (err: Error) => void,
   job: Abortable & FlowControllable
 ) {
@@ -573,7 +574,7 @@ async function initOnMessage(
       }
 
       /** emit our final response and return control to the repl */
-      const respondToRepl = async () => {
+      const respondToRepl = async (response?: XtermResponse) => {
         // vi, then :wq, then :q, you will get an exit code of
         // 1, but with no output (!bytesWereWritten); note how
         // we treat this as "ok", i.e. no error thrown
@@ -590,13 +591,17 @@ async function initOnMessage(
           // want to be in charge of the error message
           error['hide'] = true
 
-          reject(error)
+          if (response) {
+            resolve(Object.assign(response, { code: error['code'] }))
+          } else {
+            reject(error)
+          }
         } else {
           /* if (queuedInput && queuedInput.length > 0) {
             p_nope_asteQueuedInput(queuedInput)
           } */
 
-          resolve(true)
+          resolve(response || true)
         }
       }
       if (!terminal) {
@@ -621,12 +626,14 @@ async function initOnMessage(
         //     note: this is still an open issue for things like `git log` or `less` where
         //           the xterm stays alive in race with scrolling
         window.requestAnimationFrame(() => {
-          xtermContainer.removeChild(terminal.element)
-          xtermContainer.appendChild(copy(terminal))
+          xtermContainer.remove()
+          // respond to the REPL
+          respondToRepl({
+            apiVersion: 'kui-shell/v1',
+            kind: 'XtermResponse',
+            rows: copy(terminal)
+          })
         })
-
-        // respond to the REPL
-        respondToRepl()
       }
 
       if (pendingWrites > 0) {
