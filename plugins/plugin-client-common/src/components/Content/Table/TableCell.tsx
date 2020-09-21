@@ -37,19 +37,22 @@ export function onClickForCell(
   if (handler === false) {
     return () => handler
   } else if (typeof handler === 'function') {
-    return () => {
+    return (evt: React.MouseEvent) => {
+      evt.stopPropagation()
       selectRow()
       handler()
     }
   } else {
     const opts = { tab, echo: !row.onclickSilence }
     if (!row.onclickExec || row.onclickExec === 'pexec') {
-      return () => {
+      return (evt: React.MouseEvent) => {
+        evt.stopPropagation()
         selectRow()
         repl.pexec(handler, opts)
       }
     } else {
-      return () => {
+      return (evt: React.MouseEvent) => {
+        evt.stopPropagation()
         selectRow()
         repl.qexec(handler, undefined, undefined, { tab })
       }
