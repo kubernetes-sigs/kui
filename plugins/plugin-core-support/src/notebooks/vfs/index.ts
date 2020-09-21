@@ -155,7 +155,7 @@ class NotebookVFS implements VFS {
   }
 
   /** Remove filepath */
-  public rm(): Promise<void> {
+  public rm(): ReturnType<VFS['rm']> {
     throw new Error('Unsupported operation')
   }
 
