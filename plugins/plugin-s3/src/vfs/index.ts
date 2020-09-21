@@ -80,7 +80,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 
   /** Enumerate matching objects */
-  private async listObjects(filepath: string, dashD): Promise<DirEntry[]> {
+  private async listObjects(filepath: string, dashD = false): Promise<DirEntry[]> {
     const [, bucketName, bucketNameSlash, prefix, wildcardSuffix] = filepath.match(/([^/*]+)(\/?)([^*]*)(.*)/)
 
     const pattern =
@@ -343,23 +343,35 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 
   /** rm -rf */
-  private async rimraf(bucketName: string) {
-    await this.client.removeObjects(bucketName, await this.objectsIn(bucketName))
-    await this.client.removeBucket(bucketName)
+  private async rimraf(bucketName: string): Promise<string> {
+    const buckets = await this.listBucketsMatching(bucketName)
+    await Promise.all(
+      buckets.map(async ({ name: bucketName }) => {
+        await this.client.removeObjects(bucketName, await this.objectsIn(bucketName))
+        await this.client.removeBucket(bucketName)
+      })
+    )
+
+    return strings(buckets.length === 1 ? 'Removed bucket X and its contents' : 'Removed N buckets and their contents')
   }
 
   /** Remove filepath */
-  public async rm(_, filepath: string, recursive = false) {
+  public async rm(_, filepath: string, recursive = false): ReturnType<VFS['rm']> {
     try {
       const { bucketName, fileName } = this.split(filepath)
       if (!fileName) {
         if (!recursive) {
           throw new Error(`rm: ${bucketName} is a bucket`)
         } else {
-          this.rimraf(bucketName)
+          return this.rimraf(bucketName)
         }
       } else {
-        await this.client.removeObject(bucketName, fileName)
+        const objects = await this.listObjects(filepath.replace(this.s3Prefix, ''))
+        await this.client.removeObjects(
+          bucketName,
+          objects.map(_ => _.name)
+        )
+        return true
       }
     } catch (err) {
       throw new Error(err.message)
@@ -454,12 +466,12 @@ class S3VFSForwarder extends S3VFS implements VFS {
   }
 
   /** Remove filepath */
-  public async rm(
+  public rm(
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     filepath: string,
     recursive?: boolean
-  ): Promise<void> {
-    await opts.REPL.qexec(`vfs-s3 rm ${opts.REPL.encodeComponent(filepath)} ${!!recursive}`)
+  ): ReturnType<VFS['rm']> {
+    return opts.REPL.qexec(`vfs-s3 rm ${opts.REPL.encodeComponent(filepath)} ${!!recursive}`)
   }
 
   /** Fetch contents */

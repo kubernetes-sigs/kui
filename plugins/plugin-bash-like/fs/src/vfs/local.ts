@@ -44,13 +44,14 @@ class LocalVFS implements VFS {
   }
 
   /** Remove filepath */
-  public async rm(opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>) {
+  public async rm(opts: Parameters<VFS['rm']>[0]): ReturnType<VFS['rm']> {
     await opts.REPL.qexec(
       `sendtopty ${opts.command.replace(/^vfs/, '')}`,
       undefined,
       undefined,
       Object.assign(opts.execOptions, { quiet: false })
     )
+    return true
   }
 
   /** Fetch contents */
