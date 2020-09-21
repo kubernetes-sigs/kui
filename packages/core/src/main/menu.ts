@@ -20,37 +20,11 @@ import { productName } from '@kui-shell/client/config.d/name.json'
 import { Menu, MenuItemConstructorOptions, webContents } from 'electron'
 
 import open from './open'
+import saveAsNotebook from './save'
 import encodeComponent from '../repl/encode'
+import tellRendererToExecute from './tell'
 
 const isDev = false
-
-/**
- * Tell the renderer to execute a command
- *
- */
-const tellRendererToExecute = async (command: string, exec = 'qexec') => {
-  const { webContents } = await import('electron')
-  const focusedWindow = webContents.getFocusedWebContents() || webContents.getAllWebContents()[0] // see https://github.com/IBM/kui/issues/1717
-
-  const devTools = webContents
-    .getAllWebContents()
-    .map(_ => _.devToolsWebContents)
-    .filter(x => x)
-  const isFocusedWindowDevTools = devTools.find(_ => _.id === focusedWindow.id)
-
-  if (isFocusedWindowDevTools) {
-    // debug('closing dev tools')
-    const owningWindow = webContents.getAllWebContents().find(_ => {
-      return _.devToolsWebContents && _.devToolsWebContents.id === focusedWindow.id
-    })
-    if (owningWindow) {
-      owningWindow.closeDevTools()
-    }
-  } else {
-    // debug('closing kui window')
-    focusedWindow.send(`/repl/${exec}`, { command })
-  }
-}
 
 /**
  * tell the current window to open a new tab
@@ -110,6 +84,16 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
 
     const fileMenuItems: MenuItemConstructorOptions[] = [
       {
+        label: 'New Window',
+        click: () => createWindow(),
+        accelerator: 'CommandOrControl+N'
+      },
+      {
+        label: 'New Tab',
+        click: () => newTab(),
+        accelerator: 'CommandOrControl+T'
+      },
+      {
         label: 'Open',
         click: () => open(createWindow),
         accelerator: 'CommandOrControl+O'
@@ -126,14 +110,9 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
       },
       { type: 'separator' },
       {
-        label: 'New Window',
-        click: () => createWindow(),
-        accelerator: 'CommandOrControl+N'
-      },
-      {
-        label: 'New Tab',
-        click: () => newTab(),
-        accelerator: 'CommandOrControl+T'
+        label: 'Save as Notebook...',
+        click: saveAsNotebook,
+        accelerator: 'CommandOrControl+S'
       },
       { type: 'separator' },
       {
