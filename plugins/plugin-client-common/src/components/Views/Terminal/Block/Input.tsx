@@ -239,13 +239,14 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     }
   }
 
+  /** If contained in the model, present the sources associated with this Input operation */
   protected sourceRef() {
     const { model } = this.props
 
     if (model && isWithCompleteEvent(model) && isTable(model.response) && hasSourceReferences(model.response)) {
       const sourceRef = model.response.kuiSourceRef
       return (
-        <div className="repl-input-sourceref" onClick={this.props.willFocusBlock}>
+        <div className="repl-input-sourceref">
           <div className="repl-context"></div>
           <div className="flex-layout flex-fill">
             {sourceRef.templates.map((_, idx) => {
