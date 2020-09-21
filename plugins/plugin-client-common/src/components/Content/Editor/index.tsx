@@ -50,6 +50,9 @@ type Props = MonacoOptions &
     repl: REPL
     content: StringContent
     response: File | MultiModalResponse
+
+    /** Use a light theme? Default: false */
+    light?: boolean
   }
 
 interface State {
@@ -284,7 +287,12 @@ export default class Editor extends React.PureComponent<Props, State> {
               )
             : props.content.contentType || undefined
       }
-      const options = Object.assign(defaultMonacoOptions(providedOptions), providedOptions)
+      const overrides: Monaco.IStandaloneEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
+      const options: Monaco.IStandaloneEditorConstructionOptions = Object.assign(
+        defaultMonacoOptions(providedOptions),
+        providedOptions,
+        overrides
+      )
       const editor = Monaco.create(state.wrapper, options)
 
       const onZoom = () => {
