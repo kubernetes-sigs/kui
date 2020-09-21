@@ -14,39 +14,25 @@
  * limitations under the License.
  */
 
+import { XtermResponse, XtermResponseCell } from '@kui-shell/core'
+
 import { IBufferCell, IBufferLine, Terminal } from 'xterm'
 import applyStyle from './drrf'
 
 /**
- * If we have a single child with no styling, inline its text
- * directly into the row element.
- *
- * @return the input, for further chaining
- *
- */
-function inlineSingleChild(rowDom: HTMLElement): HTMLElement {
-  if (rowDom.children.length === 1) {
-    const singleton = rowDom.firstElementChild as HTMLElement
-    if (!singleton.className) {
-      // only for undecorated solitary children
-      singleton.remove()
-      rowDom.innerText += singleton.innerText
-    }
-  }
-
-  return rowDom
-}
-
-/**
- * @return a DOM cell matching the styling of the given xtermjs
+ * @return a XtermResponseCell matching the styling of the given xtermjs
  * IBufferCell.
  *
  */
-function createCell(cell: IBufferCell): HTMLSpanElement {
-  const span = document.createElement('span')
-  span.innerText = cell.getChars()
-  applyStyle(span, cell)
-  return span
+function createCell(cell: IBufferCell): XtermResponseCell {
+  const { classList, style, textContent } = applyStyle(cell)
+
+  return {
+    innerText: cell.getChars(),
+    classList,
+    style,
+    textContent
+  }
 }
 
 /** Do the two cells have the same styling? */
@@ -76,10 +62,10 @@ function sameStyle(cell1: IBufferCell, cell2: IBufferCell): boolean {
  * creates one span per character :(
  *
  */
-function squashRow(row: IBufferLine, previous: IBufferCell, current: IBufferCell, rowDom: HTMLElement) {
+function squashRow(row: IBufferLine, previous: IBufferCell, current: IBufferCell, cells: XtermResponseCell[]) {
   row.getCell(0, previous)
   let runningSquash = createCell(previous)
-  rowDom.appendChild(runningSquash)
+  cells.push(runningSquash)
 
   for (let idx = 1; idx < row.length; idx++) {
     row.getCell(idx - 1, previous)
@@ -91,11 +77,9 @@ function squashRow(row: IBufferLine, previous: IBufferCell, current: IBufferCell
     } else {
       // we need to start a new span, because the decoration changed
       runningSquash = createCell(current)
-      rowDom.appendChild(runningSquash)
+      cells.push(runningSquash)
     }
   }
-
-  inlineSingleChild(rowDom)
 }
 
 function lastFullLineIdx(terminal: Terminal, current: IBufferCell): number {
@@ -116,25 +100,24 @@ function lastFullLineIdx(terminal: Terminal, current: IBufferCell): number {
   return -1
 }
 
-export default function copy(terminal: Terminal): HTMLElement {
-  const rows = document.createElement('div')
-  rows.classList.add('xterm-rows')
+export default function copy(terminal: Terminal): XtermResponse['rows'] {
+  const rows: XtermResponse['rows'] = []
 
   // templates, to avoid creating lots of temporary objects
   const previous = terminal.buffer.active.getNullCell()
   const current = terminal.buffer.active.getNullCell()
 
   const nLines = lastFullLineIdx(terminal, current) + 1
-  let prevRow: HTMLElement
+  let prevRow: XtermResponseCell[]
   for (let idx = 0; idx < nLines; idx++) {
     const line = terminal.buffer.active.getLine(idx)
 
     if (line.isWrapped && prevRow !== undefined) {
       squashRow(line, previous, current, prevRow)
     } else {
-      prevRow = document.createElement('div')
+      prevRow = []
       squashRow(line, previous, current, prevRow)
-      rows.appendChild(prevRow)
+      rows.push(prevRow)
     }
   }
 

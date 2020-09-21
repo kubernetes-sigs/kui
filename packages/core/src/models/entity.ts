@@ -26,6 +26,7 @@ import RadioTable from './RadioTable'
 import Presentation from '../webapp/views/presentation'
 import { ReactNode, isValidElement } from 'react'
 import TabLayoutModificationResponse from './TabLayoutModificationResponse'
+import { isXtermResponse, XtermResponse } from './XtermResponse'
 
 export interface MessageBearingEntity {
   message: string
@@ -152,7 +153,7 @@ export function isMixedResponse(response: Entity): response is MixedResponse {
   return (
     Array.isArray(response) &&
     response.length > 0 &&
-    (typeof response[0] === 'string' || isTable(response[0]) || isHTML(response[0]))
+    (typeof response[0] === 'string' || isTable(response[0]) || isHTML(response[0]) || isXtermResponse(response[0]))
   )
 }
 
@@ -190,6 +191,7 @@ export type ScalarResponse<RowType extends Row = Row> =
   | MixedResponse
   | CommentaryResponse
   | TabLayoutModificationResponse
+  | XtermResponse
 
 export function isScalarResponse(response: Entity): response is ScalarResponse {
   return !isMultiModalResponse(response) && !isNavResponse(response)

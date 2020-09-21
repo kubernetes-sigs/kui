@@ -338,7 +338,7 @@ Common.pDescribe('core new tab from pty active tab via click', function(this: Co
     try {
       const res = await CLI.command('less ../../README.md', this.app)
 
-      const selector = `${Selectors.OUTPUT_N_PTY(res.count)} .xterm`
+      const selector = `${Selectors.OUTPUT_N_STREAMING(res.count)} .xterm`
       await this.app.client.waitForExist(selector)
     } catch (err) {
       return Common.oops(this, true)(err)

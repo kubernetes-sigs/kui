@@ -133,7 +133,7 @@ export const PROMPT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPL
 export const OUTPUT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result`
 export const OUTPUT_N_STREAMING = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} [data-stream]`
-export const OUTPUT_N_PTY = (N: number) => OUTPUT_N_STREAMING(N)
+export const OUTPUT_N_PTY = (N: number) => OUTPUT_N(N)
 export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
 export const EXPERIMENTAL_PROMPT_BLOCK_TAG = `${PROMPT_BLOCK_LAST} .kui--repl-block-experimental-tag`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
@@ -149,7 +149,7 @@ export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
 export const OUTPUT_LAST_STREAMING = `${PROMPT_BLOCK_LAST} [data-stream]`
-export const OUTPUT_LAST_PTY = OUTPUT_LAST_STREAMING
+export const OUTPUT_LAST_PTY = OUTPUT_LAST
 export const LIST_RESULTS_N = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result tbody tr`
 export const LIST_RESULTS_BY_NAME_N = (N: number, splitIndex = 1) =>

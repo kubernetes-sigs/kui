@@ -20,7 +20,7 @@ import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** helpful selectors */
 function xtermInput(N: number) {
-  return `${Selectors.OUTPUT_N_PTY(N)} .xterm-helper-textarea`
+  return `${Selectors.OUTPUT_N_STREAMING(N)} .xterm-helper-textarea`
 }
 
 describe('xterm focus', function(this: Common.ISuite) {

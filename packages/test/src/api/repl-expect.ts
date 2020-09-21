@@ -228,7 +228,7 @@ export const okWithString = (expect: string, exact = false, streaming = false) =
 }
 
 export const okWithStreamingOutput = (expect: string, exact = false) => okWithString(expect, exact, true)
-export const okWithPtyOutput = okWithStreamingOutput
+export const okWithPtyOutput = (expect: string, exact = false) => okWithString(expect, exact)
 
 export const okWithStringEventually = (expect: string, exact = false) => (res: AppAndCount) => {
   return res.app.client.waitUntil(() => {

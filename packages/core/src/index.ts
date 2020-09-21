@@ -193,6 +193,7 @@ export {
   isLinkWithCommand,
   Menu
 } from './models/NavResponse'
+export { XtermResponse, XtermResponseCell, isXtermResponse, isXtermErrorResponse } from './models/XtermResponse'
 export { isMultiModalResponse } from './models/mmr/is'
 export {
   Content,

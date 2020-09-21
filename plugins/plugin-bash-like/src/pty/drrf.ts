@@ -65,37 +65,37 @@ function padStart(text: string, padChar: string, length: number): string {
   return text
 }
 
-function _addStyle(element: HTMLElement, style: string): void {
-  element.setAttribute('style', `${element.getAttribute('style') || ''}${style};`)
-}
-
 /**
- * Apply the styling from `_workCell` to the given `charElement`.
+ * Stroing the styling from `_workCell`.
  *
  * Attribution: from DomRenderRofFactory.createRow xterm v4.4.0
  *
  */
-export default function applyStyle(charElement: HTMLElement, _workCell: IBufferCell) {
+export default function applyStyle(_workCell: IBufferCell) {
+  const classList = []
+  const style = {}
+  let textContent
+
   if (_workCell.isBold()) {
-    charElement.classList.add(BOLD_CLASS)
+    classList.push(BOLD_CLASS)
   }
 
   if (_workCell.isItalic()) {
-    charElement.classList.add(ITALIC_CLASS)
+    classList.push(ITALIC_CLASS)
   }
 
   if (_workCell.isDim()) {
-    charElement.classList.add(DIM_CLASS)
+    classList.push(DIM_CLASS)
   }
 
   if (_workCell.isUnderline()) {
-    charElement.classList.add(UNDERLINE_CLASS)
+    classList.push(UNDERLINE_CLASS)
   }
 
   if (_workCell.isInvisible()) {
-    charElement.textContent = WHITESPACE_CELL_CHAR
+    textContent = WHITESPACE_CELL_CHAR
   } else {
-    charElement.textContent = _workCell.getChars() || WHITESPACE_CELL_CHAR
+    textContent = _workCell.getChars() || WHITESPACE_CELL_CHAR
   }
 
   let fg = _workCell.getFgColor()
@@ -120,7 +120,7 @@ export default function applyStyle(charElement: HTMLElement, _workCell: IBufferC
       // fg += 8;
       // }
       // if (!this._applyMinimumContrast(charElement, this._colors.background, this._colors.ansi[fg])) {
-      charElement.classList.add(`xterm-fg-${fg}`)
+      classList.push(`xterm-fg-${fg}`)
       // }
       break
     case Attributes.CM_RGB:
@@ -130,14 +130,14 @@ export default function applyStyle(charElement: HTMLElement, _workCell: IBufferC
         (fg      ) & 0xFF
       ); */
       // if (!this._applyMinimumContrast(charElement, this._colors.background, color)) {
-      _addStyle(charElement, `color:#${padStart(fg.toString(16), '0', 6)}`)
+      style['color'] = `#${padStart(fg.toString(16), '0', 6)}`
       // }
       break
     case Attributes.CM_DEFAULT:
     default:
       // if (!this._applyMinimumContrast(charElement, this._colors.background, this._colors.foreground)) {
       if (isInverse) {
-        charElement.classList.add(`xterm-fg-${INVERTED_DEFAULT_COLOR}`)
+        classList.push(`xterm-fg-${INVERTED_DEFAULT_COLOR}`)
       }
     // }
   }
@@ -146,15 +146,21 @@ export default function applyStyle(charElement: HTMLElement, _workCell: IBufferC
   switch (bgColorMode) {
     case Attributes.CM_P16:
     case Attributes.CM_P256:
-      charElement.classList.add(`xterm-bg-${bg}`)
+      classList.push(`xterm-bg-${bg}`)
       break
     case Attributes.CM_RGB:
-      _addStyle(charElement, `background-color:#${padStart(bg.toString(16), '0', 6)}`)
+      style['background-color'] = `#${padStart(bg.toString(16), '0', 6)}`
       break
     case Attributes.CM_DEFAULT:
     default:
       if (isInverse) {
-        charElement.classList.add(`xterm-bg-${INVERTED_DEFAULT_COLOR}`)
+        classList.push(`xterm-bg-${INVERTED_DEFAULT_COLOR}`)
       }
+  }
+
+  return {
+    classList,
+    textContent,
+    style
   }
 }
