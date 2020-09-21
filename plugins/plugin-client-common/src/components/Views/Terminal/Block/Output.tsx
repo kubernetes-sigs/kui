@@ -53,6 +53,7 @@ import {
 import Else from './Else'
 import Actions from './Actions'
 import Scalar from '../../../Content/Scalar/'
+import KuiContext from '../../../Client/context'
 
 const strings = i18n('plugin-client-common')
 
@@ -254,9 +255,15 @@ export default class Output extends React.PureComponent<Props, State> {
 
   private ctx(insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1) {
     return (
-      <span className="repl-context" onClick={this.props.willFocusBlock}>
-        Out[{insideBrackets}]
-      </span>
+      <KuiContext.Consumer>
+        {config =>
+          !config.noPromptContext && (
+            <span className="repl-context" onClick={this.props.willFocusBlock}>
+              Out[{insideBrackets}]
+            </span>
+          )
+        }
+      </KuiContext.Consumer>
     )
   }
 

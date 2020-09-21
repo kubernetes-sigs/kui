@@ -27,7 +27,7 @@ interface Props {
   widthOverlay?: string
   titleOverlay?: string
 
-  onClick?: () => void
+  onClick?: (evt: React.MouseEvent) => void
 }
 
 export default class Bar extends React.PureComponent<Props> {

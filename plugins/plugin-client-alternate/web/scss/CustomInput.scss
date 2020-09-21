@@ -17,3 +17,8 @@
 .kui--tab-completions {
   bottom: 4.25rem;
 }
+
+body.kui--alternate .repl-prompt {
+  display: flex;
+  align-items: center;
+}
