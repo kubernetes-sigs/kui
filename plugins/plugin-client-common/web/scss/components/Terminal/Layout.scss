@@ -15,19 +15,19 @@
  */
 
 /** Grid assignments for terminals */
-div.kui--scrollback:nth-of-type(1) {
+.kui--scrollback:nth-of-type(1) {
   grid-area: T1;
 }
-div.kui--scrollback:nth-of-type(2) {
+.kui--scrollback:nth-of-type(2) {
   grid-area: T2;
 }
-div.kui--scrollback:nth-of-type(3) {
+.kui--scrollback:nth-of-type(3) {
   grid-area: T3;
 }
-div.kui--scrollback:nth-of-type(4) {
+.kui--scrollback:nth-of-type(4) {
   grid-area: T4;
 }
-div.kui--scrollback:nth-of-type(5) {
+.kui--scrollback:nth-of-type(5) {
   grid-area: T5;
 }
 
@@ -98,7 +98,7 @@ div.kui--scrollback:nth-of-type(5) {
 @mixin sidecar-maximized {
   grid-template: repeat(1, 1fr) / repeat(1, 1fr);
   grid-template-areas: 'S';
-  div.kui--scrollback {
+  .kui--scrollback {
     display: none;
   }
 }

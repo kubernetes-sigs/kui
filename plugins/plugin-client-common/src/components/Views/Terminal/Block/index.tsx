@@ -40,6 +40,9 @@ export type BlockViewTraits = {
 
   /** Handler for: User clicked to focus on this block */
   willFocusBlock?: (evt: React.SyntheticEvent) => void
+
+  /** Handler for <li> focus */
+  onFocus?: (evt: React.FocusEvent) => void
 }
 
 export interface BlockOperationTraits {
@@ -192,7 +195,7 @@ export default class Block extends React.PureComponent<Props, State> {
   public render() {
     return (
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
-        <div
+        <li
           className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
           data-is-output-only={isOutputOnly(this.props.model) || undefined}
           data-is-quietly-elsewhere={isQuietlyPresentedElsewhere(this.props.model) || undefined}
@@ -202,6 +205,9 @@ export default class Block extends React.PureComponent<Props, State> {
           data-is-focused={this.props.isFocused || undefined}
           data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
           ref={c => this.setState({ _block: c })}
+          tabIndex={isActive(this.props.model) ? -1 : 1}
+          onClick={this.props.willFocusBlock}
+          onFocus={this.props.onFocus}
         >
           {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
             this.output()
@@ -213,7 +219,7 @@ export default class Block extends React.PureComponent<Props, State> {
               {this.output()}
             </React.Fragment>
           )}
-        </div>
+        </li>
       )
     )
   }

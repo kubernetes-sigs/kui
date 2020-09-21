@@ -26,6 +26,9 @@ $action-padding: 3px;
 /** Hover hysteresis for showing action buttons */
 $action-hover-delay: 140ms;
 
+/** Color to indicate focused block */
+$focus-color: var(--color-brand-01);
+
 .repl-input,
 .repl-input-sourceref,
 .repl-output {
@@ -34,10 +37,13 @@ $action-hover-delay: 140ms;
 
 @mixin show-block-action-buttons {
   .kui--block-actions-buttons {
-    width: auto;
     opacity: 1;
-    right: 0;
   }
+}
+
+/** We are using <li> for the blocks, but don't want any standard browser styling */
+li.repl-block {
+  list-style: none;
 }
 
 /** Coloring the context border by status of the block */
@@ -71,40 +77,61 @@ $action-hover-delay: 140ms;
       border-top-right-radius: 1px;
       border-bottom-right-radius: 1px;
     }
-    &[data-is-output-only]:not([data-is-focused]):before {
-      background-color: transparent;
-    }
     &:not([data-is-output-only]) .repl-output.repl-result-has-content {
       margin-top: 0.5rem;
     }
-    .repl-output:not(.repl-result-has-content) {
+    /* .repl-output:not(.repl-result-has-content) {
       .repl-context {
         display: none;
       }
-    }
-    &[data-is-focused]:before {
-      opacity: 1;
-    }
-    &[data-is-focused]:before,
-    &:hover:before {
-      background-color: var(--color-brand-01);
-    }
+    } */
     &.error:before {
       opacity: 1;
       background-color: var(--color-error);
-    }
-    &[data-is-focused] .repl-context {
-      opacity: 1;
     }
     &:hover .repl-output .repl-context:after {
       border-color: var(--color-base03);
     }
   }
 
-  .repl-block {
-    padding: 0.875rem 0;
+  /** focus */
+  & > li:focus {
+    outline: none;
+  }
+  li:focus.repl-block,
+  li:hover.repl-block[data-is-focused],
+  .repl-block.repl-active[data-is-focused] {
+    @include show-block-action-buttons;
+
+    &:before {
+      opacity: 1;
+    }
+    &:before {
+      background-color: $focus-color;
+    }
+    .repl-input .repl-context {
+      opacity: 1;
+    }
+  }
+  li:hover.repl-block:before {
+    background-color: $focus-color;
+  }
+  li:not(:focus) {
+    &.repl-block {
+      &[data-is-output-only]:before {
+        background-color: transparent;
+      }
+      .repl-context:hover,
+      .repl-input-element:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  & > li.repl-block {
     display: flex;
     flex-direction: column;
+    padding: 0.875rem 0;
 
     &[data-is-quietly-elsewhere] {
       padding-top: 0;
@@ -124,23 +151,18 @@ $action-hover-delay: 140ms;
     .kui--block-actions-buttons {
       align-items: center;
       display: flex;
-      width: 0;
       opacity: 0;
       border-radius: 1px;
 
       position: absolute;
       top: 0; /* this with bottom:0 gives 1) vertical center; 2) occluding of repl-input-element content */
       bottom: 0;
-      right: -100rem; /* we will change this on hover */
+      right: 0;
 
       padding-left: 0.5rem;
       transition-property: right;
       transition-delay: $action-hover-delay;
       transition-duration: 140ms;
-    }
-
-    &[data-is-focused] {
-      @include show-block-action-buttons;
     }
 
     .kui--block-action {
@@ -196,12 +218,6 @@ $action-hover-delay: 140ms;
       margin-right: 0.5rem;
       position: relative;
       opacity: 0.75;
-    }
-    &:not([data-is-focused]) {
-      .repl-context:hover,
-      .repl-input-element:hover {
-        cursor: pointer;
-      }
     }
 
     .repl-input .repl-context:before {
