@@ -21,6 +21,7 @@ export interface Options {
   readOnly?: boolean
   simple?: boolean
   fontSize?: number
+  language?: string
 }
 
 export default (options: Options): editor.IEditorConstructionOptions => ({
@@ -42,7 +43,7 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
 
   // simplify the UI?
   links: !options.simple,
-  folding: !options.simple,
+  folding: !options.simple || !/markdown|text|shell/i.test(options.language),
   lineNumbers: options.simple ? 'off' : 'on',
   wordWrap: options.simple ? 'on' : undefined,
   lineDecorationsWidth: options.simple ? 0 : undefined
