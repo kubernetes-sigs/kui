@@ -77,6 +77,11 @@ $action-hover-delay: 140ms;
     &:not([data-is-output-only]) .repl-output.repl-result-has-content {
       margin-top: 0.5rem;
     }
+    .repl-output:not(.repl-result-has-content) {
+      .repl-context {
+        display: none;
+      }
+    }
     &[data-is-focused]:before {
       opacity: 1;
     }
