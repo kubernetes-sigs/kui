@@ -25,6 +25,7 @@ import {
   isReactResponse,
   isMarkdownResponse,
   isMixedResponse,
+  isXtermResponse,
   isTable,
   eventChannelUnsafe,
   Tab as KuiTab,
@@ -227,6 +228,7 @@ export default class Output extends React.PureComponent<Props, State> {
         (typeof response === 'string' && response.length > 0) ||
         isTable(response) ||
         isMixedResponse(response) ||
+        isXtermResponse(response) ||
         this.state.streamingOutput.length > 0
       )
     } else {
