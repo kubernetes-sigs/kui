@@ -259,7 +259,7 @@ export function snapshot(block: BlockModel): SnapshotBlock {
       {},
       block.completeEvent.execOptions,
       { block: undefined },
-      { tab: block.completeEvent.execOptions.tab.uuid }
+      { tab: block.completeEvent.execOptions.tab ? block.completeEvent.execOptions.tab.uuid : undefined}
     )
     const evaluatorOptions = Object.assign({}, block.completeEvent.evaluatorOptions, {
       usage: undefined,
