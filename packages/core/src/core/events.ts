@@ -231,31 +231,18 @@ class ReadEventBus extends WriteEventBus {
   private onCommand<Handler extends CommandStartHandler | CommandCompleteHandler>(
     which: 'start' | 'complete',
     splitId: string,
-    splitHandler: Handler,
-    tabId?: string,
-    tabHandler = splitHandler
+    splitHandler: Handler
   ): void {
     this.eventBus.on(`/command/${which}/fromuser/${splitId}`, splitHandler)
     this.eventBus.on(`/command/${which}/replay/${splitId}`, splitHandler)
-
-    if (tabId) {
-      this.eventBus.on(`/command/${which}/fromuser/${tabId}/type/${ExecType.ClickHandler}`, tabHandler)
-      this.eventBus.on(`/command/${which}/replay/${tabId}/type/${ExecType.ClickHandler}`, tabHandler)
-    }
   }
 
   private offCommand(
     which: 'start' | 'complete',
     splitId: string,
-    splitHandler: CommandStartHandler | CommandCompleteHandler,
-    tabId?: string,
-    tabHandler = splitHandler
+    splitHandler: CommandStartHandler | CommandCompleteHandler
   ): void {
     this.eventBus.off(`/command/${which}/fromuser/${splitId}`, splitHandler)
-
-    if (tabId) {
-      this.eventBus.off(`/command/${which}/fromuser/${tabId}/type/${ExecType.ClickHandler}`, tabHandler)
-    }
   }
 
   public onAnyCommandStart(handler: CommandStartHandler) {
@@ -274,13 +261,8 @@ class ReadEventBus extends WriteEventBus {
     this.eventBus.off('/command/complete/fromuser', handler)
   }
 
-  public onCommandStart(
-    splitId: string,
-    splitHandler: CommandStartHandler,
-    tabId?: string,
-    tabHandler = splitHandler
-  ): void {
-    this.onCommand('start', splitId, splitHandler, tabId, tabHandler)
+  public onCommandStart(splitId: string, splitHandler: CommandStartHandler): void {
+    this.onCommand('start', splitId, splitHandler)
   }
 
   public onceCommandStarts(tabId: string, handler: CommandStartHandler): void {
@@ -291,59 +273,38 @@ class ReadEventBus extends WriteEventBus {
     responseType: 'ScalarResponse' | 'MultiModalResponse' | 'NavResponse',
     splitId: string,
     splitHandler: CommandCompleteHandler,
-    tabId?: string,
-    tabHandler = splitHandler
+    onReplay = true
   ): void {
     this.eventBus.on(`/command/complete/fromuser/${responseType}/${splitId}`, splitHandler)
 
     // if you don't want the sidecar to open on replay, comment this out:
-    this.eventBus.on(`/command/complete/replay/${responseType}/${splitId}`, splitHandler)
-
-    if (tabId) {
-      this.eventBus.on(`/command/complete/fromuser/${responseType}/${tabId}`, tabHandler)
-
-      // if you don't want the sidecar to open on replay, comment this out:
-      this.eventBus.on(`/command/complete/replay/${responseType}/${tabId}`, tabHandler)
+    if (onReplay) {
+      this.eventBus.on(`/command/complete/replay/${responseType}/${splitId}`, splitHandler)
     }
   }
 
   private offResponseType(
     responseType: 'ScalarResponse' | 'MultiModalResponse' | 'NavResponse',
     splitId: string,
-    splitHandler: CommandCompleteHandler,
-    tabId?: string,
-    tabHandler = splitHandler
+    splitHandler: CommandCompleteHandler
   ): void {
     this.eventBus.off(`/command/complete/fromuser/${responseType}/${splitId}`, splitHandler)
-
-    if (tabId) {
-      this.eventBus.off(`/command/complete/fromuser/${responseType}/${tabId}`, tabHandler)
-    }
   }
 
-  public onScalarResponse(
-    splitId: string,
-    splitHandler: CommandCompleteHandler<ScalarResponse>,
-    tabId?: string,
-    tabHandler = splitHandler
-  ): void {
-    this.onResponseType('ScalarResponse', splitId, splitHandler, tabId, tabHandler)
+  public onScalarResponse(splitId: string, splitHandler: CommandCompleteHandler<ScalarResponse>): void {
+    this.onResponseType('ScalarResponse', splitId, splitHandler)
   }
 
-  public offScalarResponse(
-    splitId: string,
-    splitHandler: CommandCompleteHandler<ScalarResponse>,
-    tabId?: string,
-    tabHandler = splitHandler
-  ): void {
-    this.offResponseType('ScalarResponse', splitId, splitHandler, tabId, tabHandler)
+  public offScalarResponse(splitId: string, splitHandler: CommandCompleteHandler<ScalarResponse>): void {
+    this.offResponseType('ScalarResponse', splitId, splitHandler)
   }
 
   public onMultiModalResponse(
     tabId: string,
-    handler: CommandCompleteHandler<MultiModalResponse, 'MultiModalResponse'>
+    handler: CommandCompleteHandler<MultiModalResponse, 'MultiModalResponse'>,
+    onReplay?: boolean
   ): void {
-    this.onResponseType('MultiModalResponse', tabId, handler)
+    this.onResponseType('MultiModalResponse', tabId, handler, onReplay)
   }
 
   public offMultiModalResponse(
@@ -353,39 +314,28 @@ class ReadEventBus extends WriteEventBus {
     this.offResponseType('MultiModalResponse', tabId, handler)
   }
 
-  public onNavResponse(tabId: string, handler: CommandCompleteHandler<NavResponse, 'NavResponse'>): void {
-    this.onResponseType('NavResponse', tabId, handler)
+  public onNavResponse(
+    tabId: string,
+    handler: CommandCompleteHandler<NavResponse, 'NavResponse'>,
+    onReplay?: boolean
+  ): void {
+    this.onResponseType('NavResponse', tabId, handler, onReplay)
   }
 
   public offNavResponse(tabId: string, handler: CommandCompleteHandler<NavResponse, 'NavResponse'>): void {
     this.offResponseType('NavResponse', tabId, handler)
   }
 
-  public onCommandComplete(
-    splitId: string,
-    splitHandler: CommandCompleteHandler,
-    tabId?: string,
-    tabHandler = splitHandler
-  ): void {
-    this.onCommand('complete', splitId, splitHandler, tabId, tabHandler)
+  public onCommandComplete(splitId: string, splitHandler: CommandCompleteHandler): void {
+    this.onCommand('complete', splitId, splitHandler)
   }
 
-  public offCommandStart(
-    splitId: string,
-    splitHandler: CommandStartHandler,
-    tabId?: string,
-    tabHandler = splitHandler
-  ): void {
-    this.offCommand('start', splitId, splitHandler, tabId, tabHandler)
+  public offCommandStart(splitId: string, splitHandler: CommandStartHandler): void {
+    this.offCommand('start', splitId, splitHandler)
   }
 
-  public offCommandComplete(
-    splitId: string,
-    splitHandler: CommandCompleteHandler,
-    tabId?: string,
-    tabHandler = splitHandler
-  ): void {
-    this.offCommand('complete', splitId, splitHandler, tabId, tabHandler)
+  public offCommandComplete(splitId: string, splitHandler: CommandCompleteHandler): void {
+    this.offCommand('complete', splitId, splitHandler)
   }
 
   public onWithTabId(

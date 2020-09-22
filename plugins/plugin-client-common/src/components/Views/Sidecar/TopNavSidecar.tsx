@@ -137,7 +137,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     super(props)
 
     const onResponse = this.onResponse.bind(this)
-    eventBus.onMultiModalResponse(this.props.uuid, onResponse)
+    eventBus.onMultiModalResponse(this.props.uuid, onResponse, false)
     this.cleaners.push(() => eventBus.offMultiModalResponse(this.props.uuid, onResponse))
 
     this.state = {
