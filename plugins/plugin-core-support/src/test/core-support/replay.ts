@@ -57,7 +57,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       }, CLI.waitTimeout)
 
       // verify the about replay
-      await SidecarExpect.open(this.app)
+      await SidecarExpect.notOpen(this.app)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
