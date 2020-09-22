@@ -26,18 +26,22 @@ BUILDDIR="$CLIENT_HOME"/dist/webpack
 KUBE_VERSION=${KUBE_VERSION-v1.15.7}
 
 function kubeconfig {
-    if [ -d ~/.kube ]; then
-        rm -rf "$BUILDDIR"/.kube
-        cp -a ~/.kube "$BUILDDIR"
-    else
-        mkdir "$BUILDDIR"/.kube
-    fi
+    if [ -n "$INJECT_KUBECONFIG" ] && [ -n "$KUBECONFIG" ]; then
+        # ONLY DO THIS FOR DEVELOPMENT
+        echo "$(tput setaf 1)!!!!!!!!!!!! WARNING: injecting your KUBECONFIG into the container !!!!!!!!!!!!$(tput sgr0)"
+        echo "$(tput setaf 1)!!!!!!!!!!!! If this is not a development build, redo this command without setting INJECT_KUBECONFIG$(tput sgr0)"
 
-    if [ -d ~/.bluemix ]; then
-        rm -rf "$BUILDDIR"/.bluemix
-        cp -a ~/.bluemix "$BUILDDIR"
-    else
-        mkdir "$BUILDDIR"/.bluemix
+        if [ -d ~/.kube ]; then
+            rm -rf "$BUILDDIR"/.kube
+            cp -a ~/.kube "$BUILDDIR"
+        fi
+    fi
+}
+
+function webpack {
+    if [ ! -d "$BUILDDIR" ]; then
+        echo "Building webpack bundles"
+        npx kui-build-webpack
     fi
 }
 
@@ -103,6 +107,7 @@ function cleanKui {
 
 function kui {
     echo "kui"
+    webpack
     cleanKui
     removeLink
     copyKui
