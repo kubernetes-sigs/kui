@@ -464,9 +464,6 @@ export default function(registrar: Registrar) {
             nSplits++
 
             if (nSplits === nSnapshotable) {
-              // sort blocks by startTime
-              blocks.sort((a, b) => (a.startTime > b.startTime ? 1 : -1))
-
               // if needed, we could optimize this by recording per
               // blocksInSplit, as they arrive
               const clicks = parsedOptions.shallow ? undefined : await new FlightRecorder(tab, blocks).record()
