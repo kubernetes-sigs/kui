@@ -15,6 +15,8 @@
  */
 
 import { ClientOptions } from 'minio'
-export default ClientOptions
+
+type Provider = ClientOptions & { mountName: string }
+export default Provider
 
 export class UnsupportedS3ProviderError extends Error {}

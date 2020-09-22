@@ -32,6 +32,9 @@ const README_LOCAL_PATH = join(process.env.TEST_ROOT, `../../${README}`)
 const PJSON = 'package.json'
 const PJSON_LOCAL_PATH = join(process.env.TEST_ROOT, `../../${PJSON}`)
 
+// the provider name, e.g. ibm or minio
+const PROVIDER = process.env.MINIO_PROVIDER || 'minio'
+
 if (process.env.NEEDS_MINIO) {
   describe('s3 vfs', function(this: Common.ISuite) {
     before(Common.before(this))
@@ -39,7 +42,7 @@ if (process.env.NEEDS_MINIO) {
 
     const mkdir = (bucketName: string) => {
       it(`should create a bucket ${bucketName}`, () =>
-        CLI.command(`mkdir /s3/${bucketName}`, this.app)
+        CLI.command(`mkdir /s3/${PROVIDER}/${bucketName}`, this.app)
           .then(ReplExpect.justOK)
           .catch(Common.oops(this, true)))
     }
@@ -48,7 +51,7 @@ if (process.env.NEEDS_MINIO) {
         specifiedBucketName ? 'using specified bucket name' : ''
       }`, () =>
         CLI.command(
-          'ls -l /s3' +
+          `ls -l /s3/${PROVIDER}` +
             (specifiedBucketName ? `/${specifiedBucketName}` : '') +
             (specifiedObjectName ? `/${specifiedObjectName}` : ''),
           this.app
@@ -58,14 +61,14 @@ if (process.env.NEEDS_MINIO) {
     }
     const copyToS3 = (bucketName: string, specifiedDest?: string) => {
       it(`should copy a file ->TO the bucket ${bucketName}`, () =>
-        CLI.command(`cp ${README_LOCAL_PATH} /s3/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''), this.app)
+        CLI.command(`cp ${README_LOCAL_PATH} /s3/${PROVIDER}/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''), this.app)
           .then(ReplExpect.okWithString('Created object'))
           .catch(Common.oops(this, true)))
     }
     const multiCopyToS3 = (bucketName: string, specifiedDest?: string) => {
       it(`should copy a file1, file2 ->TO the bucket ${bucketName}`, () =>
         CLI.command(
-          `cp ${README_LOCAL_PATH} ${PJSON_LOCAL_PATH} /s3/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''),
+          `cp ${README_LOCAL_PATH} ${PJSON_LOCAL_PATH} /s3/${PROVIDER}/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''),
           this.app
         )
           .then(ReplExpect.okWithString('Created objects'))
@@ -76,7 +79,7 @@ if (process.env.NEEDS_MINIO) {
         try {
           const specifiedDest = destFilename ? join(destDir, destFilename) : destDir
 
-          await CLI.command(`cp /s3/${bucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
+          await CLI.command(`cp /s3/${PROVIDER}/${bucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
             ReplExpect.okWithString(`Fetched`)
           )
 
@@ -93,9 +96,9 @@ if (process.env.NEEDS_MINIO) {
     const copyWithinS3 = (srcBucketName: string, srcFilename: string, dstBucketName: string, destFilename?: string) => {
       it(`should copy a file within s3 from the bucket ${srcBucketName}`, async () => {
         try {
-          const specifiedDest = join('/s3', dstBucketName, destFilename || '')
+          const specifiedDest = join('/s3', PROVIDER, dstBucketName, destFilename || '')
 
-          await CLI.command(`cp /s3/${srcBucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
+          await CLI.command(`cp /s3/${PROVIDER}/${srcBucketName}/${srcFilename} ${specifiedDest}`, this.app).then(
             ReplExpect.okWithString(`Copied`)
           )
         } catch (err) {
@@ -105,31 +108,31 @@ if (process.env.NEEDS_MINIO) {
     }
     const rmdirExpectingError = (bucketName: string) => {
       it(`should remove the bucket ${bucketName}`, () =>
-        CLI.command(`rmdir /s3/${bucketName}`, this.app)
+        CLI.command(`rmdir /s3/${PROVIDER}/${bucketName}`, this.app)
           .then(ReplExpect.error(500))
           .catch(Common.oops(this, true)))
     }
     const rmdir = (bucketName: string) => {
       it(`should remove the bucket ${bucketName}`, () =>
-        CLI.command(`rmdir /s3/${bucketName}`, this.app)
+        CLI.command(`rmdir /s3/${PROVIDER}/${bucketName}`, this.app)
           .then(ReplExpect.justOK)
           .catch(Common.oops(this, true)))
     }
     const rm = (bucketName: string, file: string) => {
       it(`should remove the file ${file} in ${bucketName}`, () =>
-        CLI.command(`rm /s3/${bucketName}/${file}`, this.app)
+        CLI.command(`rm /s3/${PROVIDER}/${bucketName}/${file}`, this.app)
           .then(ReplExpect.justOK)
           .catch(Common.oops(this, true)))
     }
     const rimraf = (bucketName: string) => {
       it(`should recursively remove ${bucketName}`, () =>
-        CLI.command(`rm -r /s3/${bucketName}`, this.app)
+        CLI.command(`rm -r /s3/${PROVIDER}/${bucketName}`, this.app)
           .then(ReplExpect.justOK)
           .catch(Common.oops(this, true)))
     }
     const lsExpecting404 = (bucketName: string) => {
       it(`should list buckets and NOT show ${bucketName}`, () =>
-        CLI.command(`ls /s3/${bucketName}`, this.app)
+        CLI.command(`ls /s3/${PROVIDER}/${bucketName}`, this.app)
           .then(ReplExpect.error(404))
           .catch(Common.oops(this, true)))
     }
@@ -139,16 +142,16 @@ if (process.env.NEEDS_MINIO) {
       const bucketName = `kuitest-${v4()}`
 
       mkdir(bucketName)
-      ls(bucketName) // ls /s3, expect bucketName
+      ls(bucketName) // ls /s3/${PROVIDER}, expect bucketName
       multiCopyToS3(bucketName)
-      ls(PJSON, bucketName) // ls /s3/bucketName, expect package.json
-      ls(README, bucketName) // ls /s3/bucketName, expect README
-      ls(README, bucketName, '*') // ls /s3/bucketName/*, expect README
-      ls(README, bucketName, 'R*') // ls /s3/bucketName/R*, expect README
-      ls(README, bucketName, '*EADME.md') // ls /s3/bucketName/*EADME.md, expect README
-      ls(README, bucketName, '*EADME*') // ls /s3/bucketName/*EADME*, expect README
+      ls(PJSON, bucketName) // ls /s3/minio/bucketName, expect package.json
+      ls(README, bucketName) // ls /s3/minio/bucketName, expect README
+      ls(README, bucketName, '*') // ls /s3/minio/bucketName/*, expect README
+      ls(README, bucketName, 'R*') // ls /s3/minio/bucketName/R*, expect README
+      ls(README, bucketName, '*EADME.md') // ls /s3/minio/bucketName/*EADME.md, expect README
+      ls(README, bucketName, '*EADME*') // ls /s3/minio/bucketName/*EADME*, expect README
       copyToS3(bucketName, README2)
-      ls(README2, bucketName) // ls /s3/bucketName, expect README2
+      ls(README2, bucketName) // ls /s3/minio/bucketName, expect README2
       copyFromS3(bucketName, README2.replace(/.md$/, '*'), tmpdir()) // wildcard in source
       copyFromS3(bucketName, README2, tmpdir(), README3)
       rmdirExpectingError(bucketName)
