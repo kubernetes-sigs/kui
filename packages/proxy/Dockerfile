@@ -72,7 +72,6 @@ RUN cd /usr/share/nginx/html/kui/node_modules/node-pty-prebuilt-multiarch && npm
 
 # kubeconfig
 COPY .kube /root/.kube
-COPY .bluemix /root/.bluemix
 
 # krew
 RUN apk add --no-cache curl && \
