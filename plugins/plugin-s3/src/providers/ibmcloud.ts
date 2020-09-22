@@ -17,7 +17,7 @@
 import { REPL } from '@kui-shell/core'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
 
-import ClientOptions, { UnsupportedS3ProviderError } from './model'
+import Provider, { UnsupportedS3ProviderError } from './model'
 
 interface Config {
   AccessKeyID: string
@@ -29,7 +29,8 @@ function isGoodConfig(config: Record<string, any>): config is Config {
   return typeof conf.AccessKeyID === 'string' && typeof conf.SecretAccessKey === 'string'
 }
 
-class IBMCloudS3Provider implements ClientOptions {
+class IBMCloudS3Provider implements Provider {
+  public readonly mountName = 'ibm'
   public readonly endPoint: string
   public readonly accessKey: string
   public readonly secretKey: string

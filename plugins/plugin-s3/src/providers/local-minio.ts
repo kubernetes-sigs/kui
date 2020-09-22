@@ -16,9 +16,10 @@
 
 import { REPL } from '@kui-shell/core'
 
-import ClientOptions from './model'
+import Provider from './model'
 
-class LocalMinioS3Provider implements ClientOptions {
+class LocalMinioS3Provider implements Provider {
+  public readonly mountName = 'minio'
   public readonly endPoint = '127.0.0.1' // TODO? pull out of mc config?
   public readonly port = 9000
   public readonly useSSL = false

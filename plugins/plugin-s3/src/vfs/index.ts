@@ -16,28 +16,34 @@
 
 import { basename, join } from 'path'
 import * as micromatch from 'micromatch'
-import { Client, ClientOptions, CopyConditions } from 'minio'
+import { Client, CopyConditions } from 'minio'
 import { Arguments, CodedError, REPL, flatten, inBrowser, i18n } from '@kui-shell/core'
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 
-import findProvider from '../providers'
 import { username, uid, gid } from './username'
+import findAvailableProviders, { Provider } from '../providers'
 
 const strings = i18n('plugin-s3')
 
+const baseMountPath = '/s3'
+
 export abstract class S3VFS {
-  public readonly mountPath = '/s3'
+  public readonly mountPath: string
   public readonly isLocal = false
   public readonly isVirtual = false
+  protected readonly s3Prefix: RegExp
 
-  protected readonly s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
+  public constructor(mountName: string) {
+    this.mountPath = join(baseMountPath, mountName)
+    this.s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
+  }
 }
 
 class S3VFSResponder extends S3VFS implements VFS {
   private readonly client: Client
 
-  public constructor(private readonly options: ClientOptions) {
-    super()
+  public constructor(private readonly options: Provider) {
+    super(options.mountName)
     this.client = new Client(options)
   }
 
@@ -508,13 +514,14 @@ export let responder: VFS
 export default async () => {
   mount(async (repl: REPL) => {
     try {
-      const client = await findProvider(repl)
+      const providers = await findAvailableProviders(repl)
 
       if (inBrowser()) {
-        return new S3VFSForwarder()
+        return providers.map(provider => new S3VFSForwarder(provider.mountName))
       } else {
-        responder = new S3VFSResponder(client)
-        return responder
+        const responders = providers.map(provider => new S3VFSResponder(provider))
+        responder = responders[0] // FIXME
+        return responders
       }
     } catch (err) {
       console.error('Error initializing s3 vfs', err)
