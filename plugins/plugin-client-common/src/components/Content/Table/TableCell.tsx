@@ -42,7 +42,7 @@ export function onClickForCell(
       selectRow()
       handler()
     }
-  } else {
+  } else if (handler) {
     const opts = { tab, echo: !row.onclickSilence }
     if (!row.onclickExec || row.onclickExec === 'pexec') {
       return (evt: React.MouseEvent) => {
