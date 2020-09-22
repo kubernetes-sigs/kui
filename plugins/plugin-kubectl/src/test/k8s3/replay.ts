@@ -41,12 +41,16 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
   allocateNS(this, ns, 'kubectl')
 
   it(`should create, get and delete the sample pod from URL via kubectl, and replay`, async () => {
-    const verifySidecar = async () => {
+    const verifySidecar = async (sidecarNotOpen = false) => {
       console.error('verifying sidecar')
-      await SidecarExpect.open(this.app)
-        .then(SidecarExpect.mode(defaultModeForGet))
-        .then(SidecarExpect.showing('nginx'))
-        .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
+      if (sidecarNotOpen) {
+        await SidecarExpect.notOpen(this.app)
+      } else {
+        await SidecarExpect.open(this.app)
+          .then(SidecarExpect.mode(defaultModeForGet))
+          .then(SidecarExpect.showing('nginx'))
+          .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
+      }
     }
 
     const verifyCreation = async (createRes: AppAndCount, createSelector: string) => {
@@ -94,7 +98,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       await removeBlock.bind(this)(N)
 
       await verifyCreation(createRes, createSelector)
-      await verifySidecar()
+      await verifySidecar(true)
       await verifyDeletion(deleteSelector)
     } catch (err) {
       await Common.oops(this, true)(err)

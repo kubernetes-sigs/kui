@@ -27,6 +27,11 @@ export const open = async (app: Application) => {
   return app
 }
 
+export const notOpen = async (app: Application) => {
+  await app.client.waitForVisible(Selectors.SIDECAR, timeout, true)
+  return app
+}
+
 export const openWithFailure = async (app: Application) => {
   return app.client.waitForVisible(Selectors.SIDECAR_WITH_FAILURE, waitTimeout).then(() => app)
 }

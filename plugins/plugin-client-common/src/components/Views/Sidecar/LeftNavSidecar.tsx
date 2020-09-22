@@ -51,7 +51,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, HistoryEntr
     super(props)
 
     const onResponse = this.onResponse.bind(this)
-    eventBus.onNavResponse(this.props.uuid, onResponse)
+    eventBus.onNavResponse(this.props.uuid, onResponse, false)
     this.cleaners.push(() => eventBus.offNavResponse(this.props.uuid, onResponse))
 
     this.state = {

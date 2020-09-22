@@ -41,8 +41,8 @@ export default class ComboSidecar extends React.PureComponent<Props, State> {
     }
 
     const onResponse = this.onResponse.bind(this)
-    eventBus.onMultiModalResponse(props.uuid, onResponse)
-    eventBus.onNavResponse(props.uuid, onResponse)
+    eventBus.onMultiModalResponse(props.uuid, onResponse, false)
+    eventBus.onNavResponse(props.uuid, onResponse, false)
     // this.cleaners.push(() => eventChannelUnsafe.off(channel1, onResponse))
   }
 
