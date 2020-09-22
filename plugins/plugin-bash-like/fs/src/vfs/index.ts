@@ -107,7 +107,7 @@ function orient(A: VFS, B: VFS) {
   } else if (lastCommonIdx === a.length) {
     return -1
   } else {
-    return 1
+    return b.length - a.length
   }
 }
 
@@ -117,21 +117,28 @@ function _mount(vfs: VFS) {
   _currentMounts.sort(orient)
 }
 
+type VFSProducingFunction = (repl: REPL) => VFS | VFS[] | Promise<VFS | VFS[]>
+
+/** Invoke the given VFS-producing function, and mount all of the resulting VFS's */
+async function mountAll({ REPL }: Pick<Arguments, 'REPL'>, vfsFn: VFSProducingFunction) {
+  const mounts = await vfsFn(REPL)
+  const A = Array.isArray(mounts) ? mounts : [mounts]
+  await Promise.all(A.map(_mount))
+}
+
 /**
  * Mount a VFS
  *
  */
-export async function mount(vfs: VFS | ((repl: REPL) => VFS | Promise<VFS>)) {
+export async function mount(vfs: VFS | VFSProducingFunction) {
   if (typeof vfs !== 'function') {
     _mount(vfs)
   } else {
     const tab = getCurrentTab()
     if (!tab) {
-      eventBus.on('/tab/new', async tab => {
-        _mount(await vfs(tab.REPL))
-      })
+      eventBus.on('/tab/new', tab => mountAll(tab, vfs))
     } else {
-      _mount(await vfs(tab.REPL))
+      mountAll(tab, vfs)
     }
   }
 }

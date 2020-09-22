@@ -21,10 +21,12 @@ import Provider from './model'
 import ibmcloud from './ibmcloud'
 import localMinio from './local-minio'
 
+export { Provider }
+
 const debug = Debug('plugin/s3/providers')
 const providers = [ibmcloud, localMinio]
 
-export default async function findDefaultProvider(repl: REPL): Promise<Provider> {
+export default async function findAvailableProviders(repl: REPL): Promise<Provider[]> {
   const candidates = await Promise.all(
     providers.map(async Provider => {
       try {
@@ -35,5 +37,5 @@ export default async function findDefaultProvider(repl: REPL): Promise<Provider>
     })
   )
 
-  return candidates.filter(_ => _)[0]
+  return candidates.filter(_ => _)
 }
