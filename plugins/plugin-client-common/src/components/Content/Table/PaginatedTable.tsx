@@ -217,30 +217,34 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     const hasSequenceButton = this.hasSequenceButton()
     const hasTimelineButton = hasSequenceButton // same
 
+    const needsBottomToolbar =
+      this.isPaginated() ||
+      (gridableColumn >= 0 && (this.props.response.body.length > 1 || isWatchable(this.props.response))) ||
+      isTableWithTimestamp(this.props.response)
+
     return (
       <React.Fragment>
         {this.hasFooterLines() && <Toolbar stream={this.footerLines()} repl={this.props.repl} />}
-        {this.props.toolbars &&
-          (this.isPaginated() || gridableColumn >= 0 || isTableWithTimestamp(this.props.response)) && (
-            <Toolbar
-              className="kui--data-table-toolbar-bottom"
-              repl={this.props.repl}
-              asGrid={this.state.asGrid}
-              gridableColumn={gridableColumn}
-              setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
-              paginate={this.isPaginated()}
-              setPage={(page: number) => this.setState({ page })}
-              page={this.state.page}
-              totalItems={this.state.rows.length}
-              pageSize={this.state.pageSize}
-              hasSequenceButton={hasSequenceButton}
-              asSequence={this.state.asSequence}
-              setAsSequence={(asSequence: boolean) => this.setState({ asSequence })}
-              hasTimelineButton={hasTimelineButton}
-              asTimeline={this.state.asTimeline}
-              setAsTimeline={(asTimeline: boolean) => this.setState({ asTimeline })}
-            />
-          )}
+        {this.props.toolbars && needsBottomToolbar && (
+          <Toolbar
+            className="kui--data-table-toolbar-bottom"
+            repl={this.props.repl}
+            asGrid={this.state.asGrid}
+            gridableColumn={gridableColumn}
+            setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
+            paginate={this.isPaginated()}
+            setPage={(page: number) => this.setState({ page })}
+            page={this.state.page}
+            totalItems={this.state.rows.length}
+            pageSize={this.state.pageSize}
+            hasSequenceButton={hasSequenceButton}
+            asSequence={this.state.asSequence}
+            setAsSequence={(asSequence: boolean) => this.setState({ asSequence })}
+            hasTimelineButton={hasTimelineButton}
+            asTimeline={this.state.asTimeline}
+            setAsTimeline={(asTimeline: boolean) => this.setState({ asTimeline })}
+          />
+        )}
       </React.Fragment>
     )
   }

@@ -25,6 +25,8 @@ import {
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import * as assert from 'assert'
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
@@ -221,6 +223,13 @@ commands.forEach(command => {
         this.app
       )
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+        .then((selector: string) => waitForGreen(this.app, selector))
+        .catch(Common.oops(this, true))
+    })
+
+    it(`should create another sample pod from URL via ${command}`, () => {
+      return CLI.command(`${command} create -f ${ROOT}/data/k8s/headless/pod2.yaml ${inNamespace}`, this.app)
+        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx2') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
