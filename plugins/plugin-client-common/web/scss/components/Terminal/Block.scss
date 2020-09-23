@@ -61,6 +61,7 @@ li.repl-block {
 
   .repl-block {
     position: relative;
+    margin: 0.1875rem 0;
 
     &:before {
       background-color: var(--color-table-border2);
@@ -71,8 +72,8 @@ li.repl-block {
       content: '';
       left: 0;
       position: absolute;
-      top: 0.1875rem;
-      bottom: 0.1875rem;
+      top: 0;
+      bottom: 0;
       width: 4px;
       border-top-right-radius: 1px;
       border-bottom-right-radius: 1px;
@@ -148,7 +149,7 @@ li.repl-block {
     }
 
     &[data-is-quietly-elsewhere] {
-      padding-top: 0;
+      padding: 0.1875rem;
       repl-output {
         margin-top: 0;
       }
