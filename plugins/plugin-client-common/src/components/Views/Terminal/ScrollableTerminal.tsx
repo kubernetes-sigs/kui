@@ -42,6 +42,7 @@ import Block from './Block'
 import getSize from './getSize'
 import Width from '../Sidecar/width'
 import KuiConfiguration from '../../Client/KuiConfiguration'
+import { onCopy, onCut, onPaste } from './ClipboardTransfer'
 import {
   Active,
   Finished,
@@ -139,7 +140,7 @@ interface State {
 }
 
 /** get the selected texts in window */
-function getSelectionText() {
+export function getSelectionText() {
   let text = ''
   if (window.getSelection) {
     text = window.getSelection().toString()
@@ -167,13 +168,31 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private scrollbackCounter = 0
 
+  private cleaners: Cleaner[] = []
+
   public constructor(props: Props) {
     super(props)
 
+    this.initClipboardEvents()
     this.state = {
       focusedIdx: 0,
       splits: [this.scrollbackWithWelcome()]
     }
+  }
+
+  /** Listen for copy and paste (TODO: cut) events to facilitate moving blocks */
+  private initClipboardEvents() {
+    const paste = onPaste.bind(this)
+    document.addEventListener('paste', paste)
+    this.cleaners.push(() => document.removeEventListener('paste', paste))
+
+    const copy = onCopy.bind(this)
+    document.addEventListener('copy', copy)
+    this.cleaners.push(() => document.removeEventListener('copy', copy))
+
+    const cut = onCut.bind(this)
+    document.addEventListener('cut', cut)
+    this.cleaners.push(() => document.removeEventListener('cut', cut))
   }
 
   /** add welcome blocks at the top of scrollback */
@@ -407,7 +426,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL started executing a command */
-  private onExecStart(uuid = this.currentUUID, asReplay: boolean, event: CommandStartEvent) {
+  public onExecStart(uuid = this.currentUUID, asReplay: boolean, event: CommandStartEvent, insertIdx?: number) {
     if (event.echo !== false && isPopup() && this.isSidecarVisible()) {
       // see https://github.com/IBM/kui/issues/4183
       this.props.closeSidecar()
@@ -422,7 +441,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.splice(uuid, curState => {
         const idx = curState.blocks.length - 1
 
-        if (isProcessing(curState.blocks[idx])) {
+        if (typeof insertIdx === 'number') {
+          // we were asked to splice in the startEvent at a particular index
+          return {
+            focusedBlockIdx: insertIdx,
+            blocks: (insertIdx === 0 ? [] : curState.blocks.slice(0, insertIdx))
+              .concat([Processing(Active(), event, event.evaluatorOptions.isExperimental)])
+              .concat(curState.blocks.slice(insertIdx))
+          }
+        } else if (isProcessing(curState.blocks[idx])) {
           // the last block is Processing; this can handle if the user
           // causes a pexec to be sent to a split that is already
           // processing
@@ -472,7 +499,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL finished executing a command */
-  private onExecEnd(uuid = this.currentUUID, asReplay: boolean, event: CommandCompleteEvent<ScalarResponse>) {
+  public onExecEnd(uuid = this.currentUUID, asReplay: boolean, event: CommandCompleteEvent<ScalarResponse>) {
     if (!uuid) return
 
     if (isTabLayoutModificationResponse(event.response)) {
@@ -678,6 +705,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.state.splits.forEach(({ cleaners }) => {
       cleaners.forEach(cleaner => cleaner())
     })
+
+    this.cleaners.forEach(cleaner => cleaner())
   }
 
   public componentWillUnmount() {
@@ -699,7 +728,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    * current (given) state
    *
    */
-  private findSplit(curState: State, uuid: string): number {
+  public findSplit(curState: State, uuid: string): number {
     return curState.splits.findIndex(_ => _.uuid === uuid)
   }
 
@@ -821,7 +850,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** remove the block at the given index */
-  private willRemoveBlock(uuid: string, idx: number) {
+  public willRemoveBlock(uuid: string, idx: number) {
     this.splice(uuid, curState => {
       this.removeWatchableBlock(curState.blocks[idx])
 
