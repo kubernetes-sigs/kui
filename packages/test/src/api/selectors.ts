@@ -116,6 +116,7 @@ export const INVERTED_COLORS = '.kui--inverted-color-context'
  */
 export const NEW_SPLIT_BUTTON = '#kui--split-terminal-button'
 export const SPLITS = `${CURRENT_TAB} .kui--scrollback`
+export const SPLIT_ID = 'data-scrollback-id'
 export const SPLIT_N = (N: number, inverseColors = false) =>
   `${SPLITS}:nth-child(${N})` + (inverseColors ? INVERTED_COLORS : '')
 export const SPLIT_N_FOCUS = (N: number) => `${SPLITS}:nth-child(${N}) ${current(_PROMPT_BLOCK)} ${_PROMPT}`
