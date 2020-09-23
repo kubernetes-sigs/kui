@@ -265,7 +265,7 @@ export const okWith = (entityName: string) => async (res: AppAndCount) => expect
 export const justOK = async (res: AppAndCount) => expectOK(res, { expectJustOK: true }).then(() => res.app)
 
 /** Expect the given number of terminal splits in the current tab, and check whether the last split has inverse colors */
-export function splitCount(expectedSplitCount: number, inverseColors = false) {
+export function splitCount(expectedSplitCount: number, inverseColors = false, expectedSplitIndex?: number) {
   return async (app: Application) => {
     let idx = 0
     await app.client.waitUntil(async () => {
@@ -277,7 +277,7 @@ export function splitCount(expectedSplitCount: number, inverseColors = false) {
     }, waitTimeout)
 
     if (inverseColors) {
-      await app.client.waitForExist(Selectors.SPLIT_N(expectedSplitCount, inverseColors))
+      await app.client.waitForExist(Selectors.SPLIT_N(expectedSplitIndex || expectedSplitCount, inverseColors))
     }
   }
 }
@@ -293,12 +293,12 @@ export function tableWithNRows(N: number) {
 }
 
 /** Expect an ElsewhereCommentaryResponse */
-export function elsewhere(expectedBody: string) {
+export function elsewhere(expectedBody: string, N?: number) {
   return async (res: AppAndCount) => {
     let idx = 0
     await res.app.client.waitUntil(async () => {
       const actualBody = await res.app.client.getText(
-        `${Selectors.OUTPUT_N(res.count, res.splitIndex)} .kui--repl-result-else`
+        `${Selectors.OUTPUT_N(res.count, N === undefined ? res.splitIndex : N)} .kui--repl-result-else`
       )
       if (++idx > 5) {
         console.error(`still waiting for body; actual=${actualBody}; expected=${expectedBody}`)

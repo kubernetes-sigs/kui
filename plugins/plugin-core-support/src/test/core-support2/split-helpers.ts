@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { notStrictEqual } from 'assert'
+import { notStrictEqual, strictEqual, ok } from 'assert'
 import { CLI, Common, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** The actual split terminal via button impl; splitViaButton is the mocha test wrapper */
@@ -36,16 +36,58 @@ export function splitViaButton(this: Common.ISuite, splitCount: number) {
 }
 
 /** Split the terminal in the current tab by using the "split" command */
-export function splitViaCommand(this: Common.ISuite, splitCount: number, expectErr = false, inverseColors = false) {
-  it(`should split the terminal via command in the current tab and expect splitCount=${splitCount}`, () => {
-    return CLI.commandInSplit(`split ${inverseColors ? ' --inverse' : ''}`, this.app, splitCount - 1)
-      .then(
-        expectErr
-          ? ReplExpect.error(500)
-          : ReplExpect.elsewhere(inverseColors ? 'Created a split with inverted colors' : 'Created a split')
+export function splitViaCommand(
+  this: Common.ISuite,
+  splitCount: number,
+  expectErr = false,
+  inverseColors = false,
+  where?: { spliceIndex: number; messageShouldAppearHere: number }
+) {
+  it(`should split the terminal via command in the current tab and expect splitCount=${splitCount}`, async () => {
+    try {
+      // if we were asked to splice in at a specific position, we will
+      // need to remember the split ids before... and check this
+      // against the id array after (which we do, just below **)
+      const splitIdsBefore =
+        where === undefined ? undefined : await this.app.client.getAttribute(Selectors.SPLITS, Selectors.SPLIT_ID)
+      if (where) {
+        console.error('before', splitIdsBefore)
+      }
+
+      const messageShouldAppearHere = where === undefined ? undefined : where.messageShouldAppearHere
+
+      await CLI.commandInSplit(
+        `split ${inverseColors ? ' --inverse' : ''} ${where !== undefined ? ` --index ${where.spliceIndex}` : ''}`,
+        this.app,
+        splitCount - 1
       )
-      .then(ReplExpect.splitCount(splitCount, inverseColors))
-      .catch(Common.oops(this, true))
+        .then(
+          expectErr
+            ? ReplExpect.error(500)
+            : ReplExpect.elsewhere(
+                inverseColors ? 'Created a split with inverted colors' : 'Created a split',
+                messageShouldAppearHere
+              )
+        )
+        .then(ReplExpect.splitCount(splitCount, inverseColors, messageShouldAppearHere))
+
+      if (where !== undefined) {
+        // ** now we check that the new split was spliced in at the expected location
+        const splitIdsAfter = await this.app.client.getAttribute(Selectors.SPLITS, Selectors.SPLIT_ID)
+        const before = !splitIdsBefore ? [] : Array.isArray(splitIdsBefore) ? splitIdsBefore : [splitIdsBefore]
+        const after = !splitIdsAfter ? [] : Array.isArray(splitIdsAfter) ? splitIdsAfter : [splitIdsAfter]
+        console.error('after', splitIdsAfter)
+
+        strictEqual(after.length, before.length + 1, 'expect one more split')
+        ok(
+          before.every(id => after.indexOf(id) >= 0),
+          'all previous splits still exist'
+        )
+        strictEqual(before.indexOf(after[where.spliceIndex]), -1, 'new split id should not be found in before list')
+      }
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
   })
 }
 

@@ -641,8 +641,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.setState(({ splits }) => {
         // this says: 1) place the split at the end; and 2) focus the
         // new split
-        const newFocusedIdx = splits.length
-        const insertIdx = newFocusedIdx
+        const insertIdx =
+          request.spec.options && request.spec.options.index !== undefined ? request.spec.options.index : splits.length
+        const newFocusedIdx = insertIdx
 
         const newSplits = splits
           .slice(0, insertIdx)

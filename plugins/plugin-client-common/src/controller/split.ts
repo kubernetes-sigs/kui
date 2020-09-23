@@ -18,9 +18,8 @@ import { Arguments, ParsedOptions, TabLayoutModificationResponse, NewSplitReques
 
 const strings = i18n('plugin-client-common')
 
-interface Options extends ParsedOptions {
-  inverse: boolean
-}
+type Options = NewSplitRequest['options']
+type CommandLineOptions = ParsedOptions & Omit<Options, 'inverseColors'> & { inverse: boolean }
 
 /** For debugging, this returns the tab uuid of the current split */
 export function debug(args: Arguments) {
@@ -31,8 +30,11 @@ export function debug(args: Arguments) {
  * This plugin introduces the /split command
  *
  */
-export default function split(args?: Arguments<Options>): TabLayoutModificationResponse<NewSplitRequest> {
-  const options = args.parsedOptions.inverse ? { inverseColors: true } : undefined
+export default function split(args?: Arguments<CommandLineOptions>): TabLayoutModificationResponse<NewSplitRequest> {
+  const options: Options = {
+    index: args.parsedOptions.index,
+    inverseColors: args.parsedOptions.inverse
+  }
 
   return {
     apiVersion: 'kui-shell/v1',
