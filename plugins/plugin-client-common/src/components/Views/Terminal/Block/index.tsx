@@ -201,6 +201,7 @@ export default class Block extends React.PureComponent<Props, State> {
           data-is-quietly-elsewhere={isQuietlyPresentedElsewhere(this.props.model) || undefined}
           data-announcement={isAnnouncement(this.props.model) || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
+          data-scrollback-uuid={this.props.uuid}
           data-input-count={this.props.idx}
           data-is-focused={this.props.isFocused || undefined}
           data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}

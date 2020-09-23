@@ -104,9 +104,11 @@ export const PROCESSING_PROMPT_BLOCK = current(PROMPT_BLOCK)
 export const CURRENT_PROMPT_BLOCK = current(PROMPT_BLOCK)
 export const _PROMPT_BLOCK_N = (N: number) => `${_PROMPT_BLOCK}[data-input-count="${N}"]`
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`
+export const PROMPT_CONTEXT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-context`
 export const PROCESSING_N = (N: number) => `${PROMPT_BLOCK_N(N)}.processing`
 const _PROMPT = '.repl-input-element'
 export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} ${_PROMPT}`
+export const N_ATTR = 'data-input-count'
 
 export const INVERTED_COLORS = '.kui--inverted-color-context'
 
