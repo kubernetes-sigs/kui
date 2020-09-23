@@ -35,6 +35,7 @@ import {
   hasCommand,
   isEmpty,
   isWithCompleteEvent,
+  isReplay,
   hasUUID,
   hasValue
 } from './BlockModel'
@@ -560,6 +561,7 @@ export default class Input extends InputProvider {
   /** render the time the block started processing */
   private timestamp() {
     if (
+      !isReplay(this.props.model) &&
       !this.props.isFocused &&
       !isEmpty(this.props.model) &&
       (isProcessing(this.props.model) || isFinished(this.props.model))

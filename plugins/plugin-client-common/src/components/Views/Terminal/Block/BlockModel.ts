@@ -49,6 +49,7 @@ type WithPreferences = { prefersTerminalPresentation: boolean; outputOnly?: bool
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 type WithRerun = { isRerun: boolean }
+type WithReplay = { isReplay: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -63,6 +64,7 @@ type ErrorBlock = WithState<BlockState.Error> &
   WithUUID &
   WithHistoryIndex &
   WithCommandStart &
+  WithReplay &
   WithCommandComplete
 type OkBlock = WithState<BlockState.ValidResponse> &
   WithCommand &
@@ -71,12 +73,14 @@ type OkBlock = WithState<BlockState.ValidResponse> &
   WithHistoryIndex &
   WithCommandStart &
   WithCommandComplete &
+  WithReplay &
   WithPreferences
 export type ProcessingBlock = WithState<BlockState.Processing> &
   WithCommand &
   WithUUID &
   WithStartTime &
   WithRerun &
+  WithReplay &
   WithCommandStart
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
 export type CompleteBlock = OkBlock | ErrorBlock
@@ -171,13 +175,15 @@ export function Processing(
   block: BlockModel,
   startEvent: CommandStartEvent,
   isExperimental = false,
-  isRerun = false
+  isRerun = false,
+  isReplay = false
 ): ProcessingBlock {
   return {
     command: startEvent.command,
     isExperimental,
     cwd: block.cwd,
     execUUID: startEvent.execUUID,
+    isReplay,
     isRerun,
     startEvent,
     startTime: new Date(),
@@ -214,7 +220,8 @@ export function Finished(
   block: ProcessingBlock,
   event: CommandCompleteEvent,
   prefersTerminalPresentation = false,
-  outputOnly = false
+  outputOnly = false,
+  isReplay = false
 ): FinishedBlock {
   const response = event.responseType === 'ScalarResponse' ? (event.response as ScalarResponse) : true
   const { historyIdx } = event
@@ -231,6 +238,7 @@ export function Finished(
       startEvent,
       completeEvent: event,
       isExperimental: block.isExperimental,
+      isReplay,
       state: BlockState.Error,
       execUUID: block.execUUID,
       startTime: block.startTime
@@ -244,6 +252,7 @@ export function Finished(
       startEvent,
       completeEvent: event,
       isExperimental: block.isExperimental,
+      isReplay,
       execUUID: block.execUUID,
       startTime: block.startTime,
       prefersTerminalPresentation,
@@ -259,7 +268,7 @@ export function snapshot(block: BlockModel): SnapshotBlock {
       {},
       block.completeEvent.execOptions,
       { block: undefined },
-      { tab: block.completeEvent.execOptions.tab ? block.completeEvent.execOptions.tab.uuid : undefined}
+      { tab: block.completeEvent.execOptions.tab ? block.completeEvent.execOptions.tab.uuid : undefined }
     )
     const evaluatorOptions = Object.assign({}, block.completeEvent.evaluatorOptions, {
       usage: undefined,
@@ -331,6 +340,11 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
 /** @return whether the block has a completeEvent trait */
 export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
   return isOk(block) || isOops(block)
+}
+
+/** @return whether the block is from replay */
+export function isReplay(block: BlockModel) {
+  return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
 }
 
 /**

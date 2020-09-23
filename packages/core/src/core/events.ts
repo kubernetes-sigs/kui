@@ -231,10 +231,14 @@ class ReadEventBus extends WriteEventBus {
   private onCommand<Handler extends CommandStartHandler | CommandCompleteHandler>(
     which: 'start' | 'complete',
     splitId: string,
-    splitHandler: Handler
+    splitHandler: Handler,
+    onReplay = false
   ): void {
-    this.eventBus.on(`/command/${which}/fromuser/${splitId}`, splitHandler)
-    this.eventBus.on(`/command/${which}/replay/${splitId}`, splitHandler)
+    if (onReplay) {
+      this.eventBus.on(`/command/${which}/replay/${splitId}`, splitHandler)
+    } else {
+      this.eventBus.on(`/command/${which}/fromuser/${splitId}`, splitHandler)
+    }
   }
 
   private offCommand(
@@ -261,8 +265,8 @@ class ReadEventBus extends WriteEventBus {
     this.eventBus.off('/command/complete/fromuser', handler)
   }
 
-  public onCommandStart(splitId: string, splitHandler: CommandStartHandler): void {
-    this.onCommand('start', splitId, splitHandler)
+  public onCommandStart(splitId: string, splitHandler: CommandStartHandler, onReplay = false): void {
+    this.onCommand('start', splitId, splitHandler, onReplay)
   }
 
   public onceCommandStarts(tabId: string, handler: CommandStartHandler): void {
@@ -326,8 +330,8 @@ class ReadEventBus extends WriteEventBus {
     this.offResponseType('NavResponse', tabId, handler)
   }
 
-  public onCommandComplete(splitId: string, splitHandler: CommandCompleteHandler): void {
-    this.onCommand('complete', splitId, splitHandler)
+  public onCommandComplete(splitId: string, splitHandler: CommandCompleteHandler, onReplay = false): void {
+    this.onCommand('complete', splitId, splitHandler, onReplay)
   }
 
   public offCommandStart(splitId: string, splitHandler: CommandStartHandler): void {
