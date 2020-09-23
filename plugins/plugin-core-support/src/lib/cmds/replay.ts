@@ -139,15 +139,20 @@ function withNewTabUUID(tab: Tab, uuid: string) {
 }
 
 /** Re-emit prior start event in new tab */
-function reEmitStartInTab(tab: Tab, uuid: string, startEvent: SnapshotBlock['startEvent']) {
+function reEmitStartInTab(tab: Tab, uuid: string, startEvent: SnapshotBlock['startEvent'], emitAsReplay = true) {
   const evt = Object.assign({}, startEvent, withNewTabUUID(tab, uuid))
-  eventBus.emitCommandStart(evt, true)
+  eventBus.emitCommandStart(evt, emitAsReplay)
 }
 
 /** Re-emit prior complete event in new tab */
-function reEmitCompleteInTab(tab: Tab, uuid: string, completeEvent: SnapshotBlock['completeEvent']) {
+function reEmitCompleteInTab(
+  tab: Tab,
+  uuid: string,
+  completeEvent: SnapshotBlock['completeEvent'],
+  emitAsReplay = true
+) {
   const evt = Object.assign({}, completeEvent, withNewTabUUID(tab, uuid))
-  eventBus.emitCommandComplete(evt, true)
+  eventBus.emitCommandComplete(evt, emitAsReplay)
 }
 
 /** Re-execute command line in new tab */
@@ -168,7 +173,10 @@ function replayClickFor(execUUID: string, rowIdx: number) {
  * Record clicks
  *
  */
-type Click = { completeEvent: SnapshotBlock['completeEvent']; onClicks: { rowIdx: number; onClick: string }[] }
+type Click = {
+  completeEvent: SnapshotBlock['completeEvent']
+  onClicks: { rowIdx: number; onClick: string; echo: boolean }[]
+}
 class FlightRecorder {
   // eslint-disable-next-line no-useless-constructor
   public constructor(private readonly tab: Tab, private readonly blocks: SnapshotBlock[]) {}
@@ -181,8 +189,10 @@ class FlightRecorder {
           ? {
               completeEvent: _.completeEvent,
               onClicks: _.completeEvent.response.body
-                .map((_, rowIdx) =>
-                  _.onclickIdempotent && typeof _.onclick === 'string' ? { rowIdx, onClick: _.onclick } : undefined
+                .map((row, rowIdx) =>
+                  row.onclickIdempotent && typeof row.onclick === 'string'
+                    ? { rowIdx, onClick: row.onclick, echo: !row.onclickSilence }
+                    : undefined
                 )
                 .filter(_ => _)
             }
@@ -233,6 +243,7 @@ class FlightRecorder {
     if (isTable(click.completeEvent.response)) {
       const row = click.completeEvent.response.body[rowIdx]
       row.onclick = replayClickFor(click.completeEvent.execUUID, rowIdx)
+      row.onclickExec = 'qexec'
     }
 
     events[rowIdx] = xform(event)
@@ -262,7 +273,7 @@ class FlightRecorder {
             eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
 
             try {
-              await fakeTab.REPL.pexec(_.onClick, { tab: fakeTab })
+              await fakeTab.REPL.pexec(_.onClick, { tab: fakeTab, echo: _.echo })
             } finally {
               eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
               eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
@@ -360,8 +371,8 @@ export default function(registrar: Registrar) {
                   const channel = `/${replayClickFor(execUUID, rowIdx)}`
                   registrar.listen(channel, async () => {
                     const uuid = splitAlignment[startEvent.tab]
-                    reEmitStartInTab(tab, uuid, startEvent)
-                    reEmitCompleteInTab(tab, uuid, completeEvent)
+                    reEmitStartInTab(tab, uuid, startEvent, false)
+                    reEmitCompleteInTab(tab, uuid, completeEvent, false)
                     return true
                   })
                 }
