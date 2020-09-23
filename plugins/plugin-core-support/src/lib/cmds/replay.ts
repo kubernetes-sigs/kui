@@ -19,6 +19,7 @@ import { basename, dirname, extname, join } from 'path'
 
 import {
   eventBus,
+  expandHomeDir,
   isTable,
   inElectron,
   Arguments,
@@ -311,7 +312,7 @@ export default function(registrar: Registrar) {
   registrar.listen<KResponse, ReplayOptions>(
     '/replay',
     async ({ argvNoOptions, parsedOptions, REPL, tab }) => {
-      const filepath = argvNoOptions[1]
+      const filepath = expandHomeDir(argvNoOptions[1])
 
       if (parsedOptions.freshen) {
         return freshen(REPL, filepath)
@@ -469,7 +470,7 @@ export default function(registrar: Registrar) {
               const clicks = parsedOptions.shallow ? undefined : await new FlightRecorder(tab, blocks).record()
 
               try {
-                const filepath = argvNoOptions[argvNoOptions.indexOf('snapshot') + 1]
+                const filepath = expandHomeDir(argvNoOptions[argvNoOptions.indexOf('snapshot') + 1])
                 const snapshot: SerializedSnapshot = {
                   apiVersion: 'kui-shell/v1',
                   kind: 'Snapshot',
