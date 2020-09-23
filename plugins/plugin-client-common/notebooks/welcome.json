@@ -464,6 +464,7 @@
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/kubernetes/list-resources.json",
+                        "onclickSilence": true,
                         "attributes": [],
                         "key": "Name"
                       },
@@ -472,6 +473,7 @@
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/kubernetes/create-jobs.json",
+                        "onclickSilence": true,
                         "attributes": [],
                         "key": "Name"
                       },
@@ -480,6 +482,7 @@
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/iter8/welcome.json",
+                        "onclickSilence": true,
                         "attributes": [],
                         "key": "Name"
                       },
@@ -488,6 +491,7 @@
                         "css": "",
                         "onclickExec": "pexec",
                         "onclick": "open /kui/welcome.json",
+                        "onclickSilence": true,
                         "attributes": [],
                         "key": "Name"
                       }

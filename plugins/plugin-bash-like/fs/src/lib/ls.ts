@@ -192,6 +192,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
     css: cssOf(_),
     onclickExec: 'pexec' as const,
     onclick: `${_.dirent.isDirectory ? 'ls' : 'open'} ${args.REPL.encodeComponent(_.path)}`,
+    onclickSilence: !_.dirent.isDirectory,
     attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))
 
@@ -206,7 +207,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
         cell.classList.add(_.css)
       }
       cell.classList.add('clickable')
-      cell.onclick = () => args.REPL.pexec(_.onclick)
+      cell.onclick = () => args.REPL.pexec(_.onclick, { echo: !_.onclickSilence })
       frag.appendChild(cell)
 
       longest = _.name.length >= longest.length ? _.name : longest
