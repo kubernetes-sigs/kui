@@ -407,10 +407,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL started executing a command */
-  private onExecStart(uuid = this.currentUUID, event: CommandStartEvent) {
+  private onExecStart(uuid = this.currentUUID, asReplay: boolean, event: CommandStartEvent) {
     if (event.echo !== false && isPopup() && this.isSidecarVisible()) {
       // see https://github.com/IBM/kui/issues/4183
       this.props.closeSidecar()
+    }
+
+    const processing = (block: BlockModel, asRerun = false) => {
+      return [Processing(block, event, event.evaluatorOptions.isExperimental, asRerun, asReplay)]
     }
 
     // uuid might be undefined if the split is going away
@@ -423,7 +427,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           // causes a pexec to be sent to a split that is already
           // processing
           return {
-            blocks: curState.blocks.concat([Processing(Active(), event, event.evaluatorOptions.isExperimental)])
+            blocks: curState.blocks.concat(processing(Active()))
           }
         }
 
@@ -434,7 +438,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           return {
             blocks: curState.blocks
               .slice(0, rerunIdx) // everything before
-              .concat([Processing(curState.blocks[rerunIdx], event, event.evaluatorOptions.isExperimental, true)])
+              .concat(processing(curState.blocks[rerunIdx], true))
               .concat(curState.blocks.slice(rerunIdx + 1)) // everything after
           }
         } else if (curState.focusedBlockIdx !== undefined && curState.focusedBlockIdx !== idx) {
@@ -442,7 +446,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           const activeBlockIdx = curState.focusedBlockIdx
           const blocks = curState.blocks
             .slice(0, activeBlockIdx)
-            .concat([Processing(curState.blocks[activeBlockIdx], event, event.evaluatorOptions.isExperimental)])
+            .concat(processing(curState.blocks[activeBlockIdx]))
             .concat(curState.blocks.slice(activeBlockIdx + 1))
 
           return {
@@ -450,9 +454,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           }
         } else {
           // Transform the last block to Processing
-          const blocks = curState.blocks
-            .slice(0, idx)
-            .concat([Processing(curState.blocks[idx], event, event.evaluatorOptions.isExperimental)])
+          const blocks = curState.blocks.slice(0, idx).concat(processing(curState.blocks[idx]))
           return {
             blocks
           }
@@ -470,7 +472,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL finished executing a command */
-  private onExecEnd(uuid = this.currentUUID, event: CommandCompleteEvent<ScalarResponse>) {
+  private onExecEnd(uuid = this.currentUUID, asReplay: boolean, event: CommandCompleteEvent<ScalarResponse>) {
     if (!uuid) return
 
     if (isTabLayoutModificationResponse(event.response)) {
@@ -499,7 +501,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
-              .concat([Finished(inProcess, event, prefersTerminalPresentation, outputOnly)]) // mark as finished
+              .concat([Finished(inProcess, event, prefersTerminalPresentation, outputOnly, asReplay)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
               .concat(!inProcess.isRerun && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
@@ -596,12 +598,22 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    *
    */
   private hookIntoREPL(state: ScrollbackState) {
-    const onStartForSplit = this.onExecStart.bind(this, state.uuid)
-    const onCompleteForSplit = this.onExecEnd.bind(this, state.uuid)
-    eventBus.onCommandStart(state.uuid, onStartForSplit)
-    eventBus.onCommandComplete(state.uuid, onCompleteForSplit)
-    state.cleaners.push(() => eventBus.offCommandStart(state.uuid, onStartForSplit))
-    state.cleaners.push(() => eventBus.offCommandComplete(state.uuid, onCompleteForSplit))
+    const onStartForSplitFromUser = this.onExecStart.bind(this, state.uuid, false)
+    const onStartForSplitFromReplay = this.onExecStart.bind(this, state.uuid, true)
+
+    const onCompleteForSplitFromUser = this.onExecEnd.bind(this, state.uuid, false)
+    const onCompleteForSplitFromReplay = this.onExecEnd.bind(this, state.uuid, true)
+
+    eventBus.onCommandStart(state.uuid, onStartForSplitFromUser)
+    eventBus.onCommandStart(state.uuid, onStartForSplitFromReplay, true)
+
+    eventBus.onCommandComplete(state.uuid, onCompleteForSplitFromUser)
+    eventBus.onCommandComplete(state.uuid, onCompleteForSplitFromReplay, true)
+
+    state.cleaners.push(() => eventBus.offCommandStart(state.uuid, onStartForSplitFromUser))
+    state.cleaners.push(() => eventBus.offCommandStart(state.uuid, onStartForSplitFromReplay))
+    state.cleaners.push(() => eventBus.offCommandComplete(state.uuid, onCompleteForSplitFromUser))
+    state.cleaners.push(() => eventBus.offCommandComplete(state.uuid, onCompleteForSplitFromReplay))
   }
 
   /**
