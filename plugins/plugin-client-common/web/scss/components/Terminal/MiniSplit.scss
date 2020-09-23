@@ -52,9 +52,6 @@
     background-color: $input-bg-minisplit;
   }
   .repl-block.kui--maximize-candidate {
-    &:not([data-is-output-only]) + .repl-active {
-      display: none;
-    }
     &:not(.repl-active):not(.processing) {
       flex: 1;
 
