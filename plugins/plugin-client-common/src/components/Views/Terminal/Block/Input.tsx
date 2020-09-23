@@ -463,6 +463,8 @@ export default class Input extends InputProvider {
             aria-label="Command Input"
             tabIndex={1}
             placeholder={this.props.promptPlaceholder}
+            data-scrollback-uuid={this.props.uuid}
+            data-input-count={this.props.idx}
             onBlur={evt => {
               this.props.onInputBlur && this.props.onInputBlur(evt)
 

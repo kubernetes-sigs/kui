@@ -24,7 +24,7 @@ export const timeout = Math.max(5000, parseInt(process.env.TIMEOUT) || 60000)
 export const waitTimeout = timeout - 5000
 
 /** grab focus for the repl */
-const grabFocus = async (
+export const grabFocus = async (
   app: Application,
   currentPromptBlock = process.env.KUI_POPUP
     ? Selectors.STATUS_STRIPE_BLOCK
@@ -192,4 +192,10 @@ export const expectPriorInput = (selector: string, expectedText: string) => asyn
     return inputText === expectedText
   }, waitTimeout)
   return app
+}
+
+/** @return the "N" of the current block */
+export async function nOfCurrentBlock(app: Application, splitIndex = 1) {
+  const attr = await app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex), Selectors.N_ATTR)
+  return parseInt(attr, 10)
 }

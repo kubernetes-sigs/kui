@@ -15,6 +15,7 @@
  */
 
 import { Tab as KuiTab } from '@kui-shell/core'
+import { isClipboardTransferString } from '../ClipboardTransfer'
 
 export const doPaste = (text: string, tab: KuiTab, prompt: HTMLInputElement) => {
   // const prompt = event.currentTarget
@@ -77,6 +78,11 @@ export function onPasteAsync(event: ClipboardEvent, tab: KuiTab, prompt: HTMLInp
   if (text) {
     // we'll handle it from here!
     event.preventDefault()
+
+    if (isClipboardTransferString(text)) {
+      // it'll be handled in ScrollableTerminal
+      return
+    }
 
     return doPaste(text, tab, prompt)
   }
