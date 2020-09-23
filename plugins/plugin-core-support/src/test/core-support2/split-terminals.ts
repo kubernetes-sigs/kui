@@ -106,6 +106,33 @@ describe(`split terminals created split check ${process.env.MOCHA_RUN_TARGET || 
   verifyBlockCount.is(1) // the "created split" message should be gone!
 })
 
+describe(`split terminals spliceIndex variant 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  const splitTheTerminalViaCommand = splitViaCommand.bind(this)
+  const count = expectSplits.bind(this)
+
+  splitTheTerminalViaCommand(2)
+  count(2)
+
+  splitTheTerminalViaCommand(3, undefined, undefined, { spliceIndex: 1, messageShouldAppearHere: 3 })
+  count(3)
+})
+
+describe(`split terminals spliceIndex variant 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  const splitTheTerminalViaCommand = splitViaCommand.bind(this)
+  const count = expectSplits.bind(this)
+
+  splitTheTerminalViaCommand(2, undefined, undefined, { spliceIndex: 0, messageShouldAppearHere: 2 })
+  count(2)
+})
+
 describe(`split terminals close all ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))

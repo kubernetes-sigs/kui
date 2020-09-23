@@ -33,6 +33,10 @@ type TabLayoutModificationResponse<Request extends ModificationRequest = Modific
 export type NewSplitRequest = {
   modification: 'NewSplit'
   options?: {
+    /** Splice the split at this index; default (and if out of range) is at-end */
+    index?: number
+
+    /** Use an inverted color scheme for the new split? */
     inverseColors?: boolean
   }
 }
