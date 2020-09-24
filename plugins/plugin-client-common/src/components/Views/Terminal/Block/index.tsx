@@ -54,12 +54,6 @@ export interface BlockOperationTraits {
 
   /** is there any block after the give block? */
   hasBlockAfter?: boolean
-
-  /** move a given block upward */
-  willMoveUpward?: () => void
-
-  /** move a given block downward */
-  willMoveDownward?: () => void
 }
 
 type Props = InputOptions & {
@@ -130,8 +124,6 @@ export default class Block extends React.PureComponent<Props, State> {
           willRemove={this.props.willRemove}
           hasBlockAfter={this.props.hasBlockAfter}
           hasBlockBefore={this.props.hasBlockBefore}
-          willMoveUpward={this.props.willMoveUpward}
-          willMoveDownward={this.props.willMoveDownward}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
           prefersTerminalPresentation={this.props.prefersTerminalPresentation}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}

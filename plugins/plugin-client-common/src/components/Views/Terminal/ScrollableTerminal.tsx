@@ -278,38 +278,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return idx < blocks.length - 2
   }
 
-  /** move the given block upward */
-  private willMoveUpward(sbuuid: string, idx: number) {
-    this.splice(sbuuid, curState => {
-      // Notes: we want to keep the block we are moving focused, so we
-      // also update the focusedBlockIdx
-      return {
-        focusedBlockIdx: idx - 1,
-        blocks: curState.blocks
-          .slice(0, idx - 1)
-          .concat(curState.blocks[idx])
-          .concat(curState.blocks[idx - 1])
-          .concat(curState.blocks.slice(idx + 1))
-      }
-    })
-  }
-
-  /** move the given block downward */
-  private willMoveDownward(sbuuid: string, idx: number) {
-    this.splice(sbuuid, curState => {
-      // Notes: we want to keep the block we are moving focused, so we
-      // also update the focusedBlockIdx
-      return {
-        focusedBlockIdx: idx + 1,
-        blocks: curState.blocks
-          .slice(0, idx)
-          .concat(curState.blocks[idx + 1])
-          .concat(curState.blocks[idx])
-          .concat(curState.blocks.slice(idx + 2))
-      }
-    })
-  }
-
   private scrollback(sbuuid = this.allocateUUIDForScrollback(), opts: ScrollbackOptions = {}): ScrollbackState {
     const state: ScrollbackState = {
       uuid: sbuuid,
@@ -1064,8 +1032,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}
                     hasBlockBefore={this.hasBlockBefore(idx)}
-                    willMoveUpward={this.willMoveUpward.bind(this, scrollback.uuid, idx)}
-                    willMoveDownward={this.willMoveDownward.bind(this, scrollback.uuid, idx)}
                     willLoseFocus={() => this.doFocus(scrollback)}
                     willFocusBlock={willFocusBlock}
                     isExperimental={hasCommand(_) && _.isExperimental}
