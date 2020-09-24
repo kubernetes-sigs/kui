@@ -499,7 +499,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL finished executing a command */
-  public onExecEnd(uuid = this.currentUUID, asReplay: boolean, event: CommandCompleteEvent<ScalarResponse>) {
+  public onExecEnd(
+    uuid = this.currentUUID,
+    asReplay: boolean,
+    event: CommandCompleteEvent<ScalarResponse>,
+    insertIdx?: number
+  ) {
     if (!uuid) return
 
     if (isTabLayoutModificationResponse(event.response)) {
@@ -533,7 +538,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .concat(!inProcess.isRerun && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
             return {
-              focusedBlockIdx: blocks.length - 1,
+              focusedBlockIdx: insertIdx === undefined ? blocks.length - 1 : insertIdx,
               blocks
             }
           } catch (err) {

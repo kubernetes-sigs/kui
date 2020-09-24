@@ -126,10 +126,6 @@ export default class Output extends React.PureComponent<Props, State> {
         eventChannelUnsafe.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
       }
 
-      if (!isEmpty(props.model) && !isCancelled(props.model)) {
-        props.onRender()
-      }
-
       return {
         alreadyListen: false,
         isResultRendered: true
@@ -198,7 +194,6 @@ export default class Output extends React.PureComponent<Props, State> {
               isWidthConstrained={this.props.isWidthConstrained}
               willFocusBlock={this.props.willFocusBlock}
               willRemove={this.props.willRemove}
-              onRender={this.onRender.bind(this)}
             />
           )}
         </div>
