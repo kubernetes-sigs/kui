@@ -199,7 +199,7 @@ export default class Block extends React.PureComponent<Props, State> {
           data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
           ref={c => this.setState({ _block: c })}
           tabIndex={isActive(this.props.model) ? -1 : 1}
-          onClick={this.props.willFocusBlock}
+          onClick={undefined /* this.props.willFocusBlock see https://github.com/IBM/kui/issues/5783 */}
           onFocus={this.props.onFocus}
         >
           {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (

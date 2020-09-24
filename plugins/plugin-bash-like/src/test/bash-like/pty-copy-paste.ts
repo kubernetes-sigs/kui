@@ -34,6 +34,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
   it(`should echo ${emittedText}`, async () => {
     try {
       const res = await CLI.command(`echo ${emittedText}`, this.app)
+      await ReplExpect.okWithString(emittedText)(res)
 
       // wait for the output to appear
       await this.app.client.waitForExist(rows(res.count))
@@ -49,6 +50,7 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
 
       console.log('now should copy from xterm output and paste outside of xterm')
 
+      await new Promise(resolve => setTimeout(resolve, 5000))
       await this.app.client.doubleClick(firstRow(res.count))
       await this.app.client.execute(() => document.execCommand('copy'))
 

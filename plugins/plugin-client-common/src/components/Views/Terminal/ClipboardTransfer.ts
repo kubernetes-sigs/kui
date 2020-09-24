@@ -108,7 +108,8 @@ export function onPaste(this: ScrollableTerminal, evt: ClipboardEvent) {
         this.onExecEnd(uuid, false, complete, target.insertionIdx)
       }
     } catch (err) {
-      console.error(err)
+      // console.error(err)
+      
     }
   }
 }
