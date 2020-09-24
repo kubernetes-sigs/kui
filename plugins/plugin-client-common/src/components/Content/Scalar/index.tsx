@@ -46,7 +46,7 @@ import { isError } from '../../Views/Terminal/Block/BlockModel'
 type Props = BlockViewTraits & {
   tab: KuiTab
   response: ScalarResponse | Error
-  onRender: (hasContent: boolean) => void
+  onRender?: (hasContent: boolean) => void
   willRemove?: () => void
 }
 

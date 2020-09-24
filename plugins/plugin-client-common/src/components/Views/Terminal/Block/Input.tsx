@@ -421,6 +421,10 @@ export default class Input extends InputProvider {
         ? this.props.model.command
         : ''
       this.setState({ prompt: c })
+
+      if (this.props.isFocused && document.activeElement !== c) {
+        c.focus()
+      }
     } else if (c && this.props.isFocused && isInViewport(c)) {
       c.focus()
     }

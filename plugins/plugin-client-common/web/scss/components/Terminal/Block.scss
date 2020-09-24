@@ -106,7 +106,7 @@ li.repl-block {
   }
   li:focus.repl-block,
   li:hover.repl-block[data-is-focused],
-  .repl-block.repl-active[data-is-focused] {
+  .repl-block[data-is-focused] {
     @include show-block-action-buttons;
 
     &:before {
