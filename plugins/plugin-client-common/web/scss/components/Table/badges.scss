@@ -111,7 +111,7 @@ $grid-cell-size: 1.25rem;
   .kui--table-like {
     th[data-key='STATUS'],
     td.kui--status-cell {
-      padding-left: 0;
+      width: 2rem;
     }
     [data-tag='badge'] {
       justify-content: center;
