@@ -148,7 +148,13 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
               data-key={typeof cell !== 'string' ? cell.key : undefined}
               className={`kui--radio-table-cell ${radioTableHintsAsCss(cell) || ''}`}
             >
-              <span data-tag={badgeHint ? 'badge' : undefined}>
+              <span
+                data-tag={badgeHint ? 'badge' : undefined}
+                ref={
+                  isSelected &&
+                  (c => c && (c['scrollIntoViewIfNeeded'] ? c['scrollIntoViewIfNeeded']() : c.scrollIntoView(true)))
+                }
+              >
                 {badgeHint && <span data-tag="badge-circle" className={badgeHint.toString()} />}
 
                 <span className="kui--cell-inner-text">{radioTableCellToString(cell)}</span>
