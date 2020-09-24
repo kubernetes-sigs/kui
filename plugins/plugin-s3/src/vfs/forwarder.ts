@@ -26,7 +26,7 @@ export default function(registrar: Registrar) {
         args,
         args.argvNoOptions.slice(2, N - 3),
         args.argvNoOptions[N - 3],
-        args.argvNoOptions[N - 2] === 'true',
+        args.argvNoOptions[N - 2].split(/,/).map(_ => _ === 'true'),
         args.argvNoOptions[N - 1] === 'true'
       )
     },

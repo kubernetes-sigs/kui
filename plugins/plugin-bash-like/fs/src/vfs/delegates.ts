@@ -41,10 +41,54 @@ export async function cp(
   srcFilepaths: string[],
   dstFilepath: string
 ): ReturnType<VFS['cp']> {
-  const mount1 = findMount(srcFilepaths[0]) // FIXME
+  const mount1 = srcFilepaths.map(_ => findMount(_))
   const mount2 = findMount(dstFilepath)
-  const mountThatManagesTheCopy = mount1.isLocal ? mount2 : mount1
-  return mountThatManagesTheCopy.cp(opts, srcFilepaths, dstFilepath, mount1.isLocal, mount2.isLocal)
+
+  if (mount2.isLocal) {
+    // pull out the local-to-local copies
+    const localSrc = mount1.map((_, idx) => (_.isLocal ? srcFilepaths[idx] : undefined)).filter(_ => _)
+    const nonLocalSrc = mount1
+      .map((_, idx) => (!_.isLocal ? { filepath: srcFilepaths[idx], mount: _ } : undefined))
+      .filter(_ => _)
+
+    const tasks: Promise<string | true>[] =
+      localSrc.length === 0
+        ? []
+        : [
+            mount2.cp(
+              opts,
+              localSrc,
+              dstFilepath,
+              localSrc.map(() => true),
+              true
+            )
+          ]
+
+    if (nonLocalSrc.length > 0) {
+      const mountThatManagesTheCopy = nonLocalSrc[0].mount // TODO
+      const dstIsSelf = mount2 === mountThatManagesTheCopy
+      tasks.push(
+        mountThatManagesTheCopy.cp(
+          opts,
+          nonLocalSrc.map(_ => _.filepath),
+          dstFilepath,
+          nonLocalSrc.map(_ => _.mount === mountThatManagesTheCopy),
+          dstIsSelf
+        )
+      )
+    }
+    const responses = await Promise.all(tasks)
+    if (responses.length === 1 && responses[0] === true) {
+      return true
+    } else {
+      return responses.join(', ')
+    }
+  } else {
+    const mountThatManagesTheCopy = mount2
+    const srcIsSelf = mount1.map(mount => mount === mountThatManagesTheCopy)
+    const dstIsSelf = mount2 === mountThatManagesTheCopy
+    return mountThatManagesTheCopy.cp(opts, srcFilepaths, dstFilepath, srcIsSelf, dstIsSelf)
+  }
 }
 
 /**

@@ -50,9 +50,9 @@ export interface VFS {
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcFilepaths: string[],
     dstFilepath: string,
-    srcIsLocal: boolean,
-    dstIsLocal: boolean
-  ): Promise<string>
+    srcIsSelf: boolean[],
+    dstIsSelf: boolean
+  ): Promise<string | true>
 
   /** Remove filepath */
   rm(

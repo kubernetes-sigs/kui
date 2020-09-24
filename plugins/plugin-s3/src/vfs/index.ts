@@ -219,7 +219,7 @@ class S3VFSResponder extends S3VFS implements VFS {
       if (etags.length === 1) {
         return strings('Published object as', `${endPoint}/${bucketName}/${basename(srcs[0].path)}`)
       } else if (srcs.find(_ => /index.html$/.test(_.path))) {
-        return strings('Published object as', `${endPoint}/${bucketName}/${basename(srcs[0].path)}/index.html`)
+        return strings('Published object as', `${endPoint}/${bucketName}/index.html`)
       } else {
         return strings('Published N objects to', etags.length, `${endPoint}/${bucketName}`)
       }
@@ -304,24 +304,34 @@ class S3VFSResponder extends S3VFS implements VFS {
     )
 
     const N = etags.length
-    return `Copied to ${N === 1 ? 'object' : 'objects'} with ${N === 1 ? 'etag' : 'etags'} ${etags.join(', ')}`
+    return N === 0
+      ? 'Source files not found'
+      : `Copied to ${N === 1 ? 'object' : 'objects'} with ${N === 1 ? 'etag' : 'etags'} ${etags.join(', ')}`
   }
 
   /** Insert filepath into directory */
   public async cp(
-    args: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+    args: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcFilepaths: string[],
     dstFilepath: string,
-    srcIsLocal: boolean,
-    dstIsLocal: boolean
+    srcIsSelf: boolean[],
+    dstIsSelf: boolean
   ): Promise<string> {
     try {
-      if (srcIsLocal) {
-        return await this.fPutObject(args, srcFilepaths, dstFilepath)
-      } else if (dstIsLocal) {
-        return await this.fGetObject(args, srcFilepaths, dstFilepath)
+      const selfSrc = srcFilepaths.filter((_, idx) => srcIsSelf[idx])
+      const otherSrc = srcFilepaths.filter((_, idx) => !srcIsSelf[idx])
+
+      if (dstIsSelf) {
+        // copying into or between s3 buckets
+        const responses = await Promise.all(
+          (otherSrc.length === 0 ? [] : [this.fPutObject(args, otherSrc, dstFilepath)]).concat(
+            selfSrc.length === 0 ? [] : [this.fCopyObject(args, selfSrc, dstFilepath)]
+          )
+        )
+        return responses.join('; ')
       } else {
-        return await this.fCopyObject(args, srcFilepaths, dstFilepath)
+        // copying out of an s3 bucket
+        return this.fGetObject(args, srcFilepaths, dstFilepath)
       }
     } catch (err) {
       const error: CodedError = new Error(err.message)
@@ -461,13 +471,13 @@ class S3VFSForwarder extends S3VFS implements VFS {
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcFilepaths: string[],
     dstFilepath: string,
-    srcIsLocal: boolean,
-    dstIsLocal: boolean
+    srcIsSelf: boolean[],
+    dstIsSelf: boolean
   ): Promise<string> {
     return opts.REPL.qexec<string>(
       `vfs-s3 cp ${srcFilepaths.map(_ => opts.REPL.encodeComponent(_)).join(' ')} ${opts.REPL.encodeComponent(
         dstFilepath
-      )} ${srcIsLocal.toString()} ${dstIsLocal.toString()}`
+      )} ${srcIsSelf.join(',')} ${dstIsSelf.toString()}`
     )
   }
 
