@@ -88,23 +88,23 @@ export default class Actions extends React.PureComponent<Props> {
     )
   } */
 
-  private upwardAction() {
+  /* private upwardAction() {
     return (
       this.props.hasBlockBefore &&
       this.props.willMoveUpward && (
         <Action icon="MoveUp" onClick={() => this.props.willMoveUpward()} title="Move this block up" />
       )
     )
-  }
+  } */
 
-  private downwardAction() {
+  /* private downwardAction() {
     return (
       this.props.hasBlockAfter &&
       this.props.willMoveDownward && (
         <Action icon="MoveDown" onClick={() => this.props.willMoveDownward()} title="Move this block down" />
       )
     )
-  }
+  } */
 
   public render() {
     return (
@@ -113,8 +113,6 @@ export default class Actions extends React.PureComponent<Props> {
           {this.copyAction()}
           {this.rerunAction()}
         </div>
-        {this.upwardAction()}
-        {this.downwardAction()}
         {this.removeAction()}
       </div>
     )
