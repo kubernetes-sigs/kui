@@ -695,10 +695,28 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content code {
   font-family: var(--font-monospace);
 }
-.page-content p > code,
-.page-content li > code {
-  opacity: 0.875;
+@mixin CommentaryCode {
+  .page-content p > code,
+  .page-content li > code {
+    @content;
+  }
+}
+@include CommentaryCode {
   word-break: break-all;
+
+  /* mimic github styling here */
+  background-color: rgba(27, 31, 35, 0.05);
+  padding: 0.2rem 0.4rem;
+  font-size: 0.875rem;
+  border-radius: 6px;
+}
+[kui-theme-style="dark"] {
+  @include CommentaryCode {
+    background-color: rgba(227, 231, 235, 0.1);
+  }
+}
+.page-content pre > code {
+  color: inherit;
 }
 .kui--sidecar .page-content p > code,
 .clickable:not(:hover) .page-content p > code {
