@@ -696,8 +696,8 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-family: var(--font-monospace);
 }
 @mixin CommentaryCode {
-  .page-content p > code,
-  .page-content li > code {
+  .repl .page-content p > code,
+  .repl .page-content li > code {
     @content;
   }
 }
