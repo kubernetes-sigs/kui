@@ -27,6 +27,7 @@ import isInViewport from '../visible'
 import KuiContext from '../../../Client/context'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
+import whenNothingIsSelected from '../../../../util/selection'
 import {
   BlockModel,
   isActive,
@@ -438,6 +439,24 @@ export default class Input extends InputProvider {
     this.props.willFocusBlock(evt)
   }
 
+  /** This is the onClick property of the prompt for Active blocks */
+  private readonly _onClickActive = (evt: React.MouseEvent<HTMLInputElement>) => {
+    this.props.onInputClick && this.props.onInputClick(evt)
+    this.props.willFocusBlock(evt)
+  }
+
+  /** This is the onClick property of the prompt for Finished blocks */
+  private readonly _onClickFinished = whenNothingIsSelected((evt: React.MouseEvent<HTMLInputElement>) => {
+    this.props.willFocusBlock(evt)
+    this.setState(curState => {
+      if (!curState.isReEdit) {
+        return {
+          isReEdit: true
+        }
+      }
+    })
+  })
+
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
     const active = isActive(this.props.model) || this.state.isReEdit
@@ -489,10 +508,7 @@ export default class Input extends InputProvider {
             onMouseDown={this.props.onInputMouseDown}
             onMouseMove={this.props.onInputMouseMove}
             onChange={this.props.onInputChange}
-            onClick={evt => {
-              this.props.onInputClick && this.props.onInputClick(evt)
-              this.props.willFocusBlock(evt)
-            }}
+            onClick={this._onClickActive}
             onKeyPress={this._onKeyPress}
             onKeyDown={this._onKeyDown}
             onKeyUp={this._onKeyUp}
@@ -527,21 +543,9 @@ export default class Input extends InputProvider {
       } else {
         // for "done" blocks, render the value as a plain div
         return (
-          <div
-            className="repl-input-element-wrapper flex-layout flex-fill"
-            onClick={evt => {
-              this.props.willFocusBlock(evt)
-              this.setState(curState => {
-                if (!curState.isReEdit) {
-                  return {
-                    isReEdit: true
-                  }
-                }
-              })
-            }}
-          >
+          <div className="repl-input-element-wrapper flex-layout flex-fill" onClick={this._onClickFinished}>
             <span className="repl-input-element flex-fill">{value}</span>
-            {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span> /* &nbsp; */}
+            {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
             {this.inputStatus(value)}
           </div>
         )
