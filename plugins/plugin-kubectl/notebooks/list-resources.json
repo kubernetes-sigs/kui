@@ -5,40 +5,524 @@
     "title": "Kubernetes &mdash; `Listing Resources`",
     "clicks": {
       "startEvents": {
-        "95202444-fb60-4303-9ad4-29663a32c09d": [
+        "2cac6097-cf5b-4135-9118-c2e6f41199b3": [
           {
-            "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
-            "route": "/replay-click-95202444-fb60-4303-9ad4-29663a32c09d-0",
-            "command": "replay-click-95202444-fb60-4303-9ad4-29663a32c09d-0",
-            "evaluatorOptions": { "plugin": "plugin-core-support" },
+            "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+            "route": "/kubeui/kubectl/get/Deployment",
+            "command": "kubectl get Deployment nginx-deployment -o yaml -n kui-notebook-1",
+            "evaluatorOptions": {
+              "flags": {
+                "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                "boolean": [
+                  "w",
+                  "watch",
+                  "watch-only",
+                  "A",
+                  "all-namespaces",
+                  "ignore-not-found",
+                  "no-headers",
+                  "i",
+                  "it",
+                  "ti",
+                  "stdin",
+                  "t",
+                  "tty",
+                  "R",
+                  "recursive",
+                  "server-print",
+                  "show-kind",
+                  "show-labels"
+                ]
+              },
+              "plugin": "plugin-kubectl"
+            },
             "execType": 1,
-            "execUUID": "59ea150f-027f-44c0-9095-c3c5b52b56f3",
+            "execUUID": "570a28d6-f9fb-432f-aa40-4cebd54637b2",
+            "echo": false
+          }
+        ],
+        "a20d8456-a58e-418d-adbc-0d5e98dcaef7": [
+          {
+            "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+            "route": "/kubeui/kubectl/get/Deployment",
+            "command": "kubectl get Deployment nginx-deployment -o yaml -n kui-notebook-1",
+            "evaluatorOptions": {
+              "flags": {
+                "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                "boolean": [
+                  "w",
+                  "watch",
+                  "watch-only",
+                  "A",
+                  "all-namespaces",
+                  "ignore-not-found",
+                  "no-headers",
+                  "i",
+                  "it",
+                  "ti",
+                  "stdin",
+                  "t",
+                  "tty",
+                  "R",
+                  "recursive",
+                  "server-print",
+                  "show-kind",
+                  "show-labels"
+                ]
+              },
+              "plugin": "plugin-kubectl"
+            },
+            "execType": 1,
+            "execUUID": "570a28d6-f9fb-432f-aa40-4cebd54637b2",
+            "echo": false
+          }
+        ],
+        "f5204b3d-3d4c-4c65-bc41-006cd97d03ec": [
+          {
+            "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+            "route": "/kubeui/kubectl/get/Deployment",
+            "command": "kubectl get Deployment nginx-deployment -o yaml -n kui-notebook-1",
+            "evaluatorOptions": {
+              "flags": {
+                "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                "boolean": [
+                  "w",
+                  "watch",
+                  "watch-only",
+                  "A",
+                  "all-namespaces",
+                  "ignore-not-found",
+                  "no-headers",
+                  "i",
+                  "it",
+                  "ti",
+                  "stdin",
+                  "t",
+                  "tty",
+                  "R",
+                  "recursive",
+                  "server-print",
+                  "show-kind",
+                  "show-labels"
+                ]
+              },
+              "plugin": "plugin-kubectl"
+            },
+            "execType": 1,
+            "execUUID": "570a28d6-f9fb-432f-aa40-4cebd54637b2",
             "echo": false
           }
         ]
       },
       "completeEvents": {
-        "95202444-fb60-4303-9ad4-29663a32c09d": [
+        "2cac6097-cf5b-4135-9118-c2e6f41199b3": [
           {
-            "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+            "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
             "execType": 1,
-            "command": "replay-click-95202444-fb60-4303-9ad4-29663a32c09d-0",
-            "argvNoOptions": ["replay-click-95202444-fb60-4303-9ad4-29663a32c09d-0"],
-            "parsedOptions": { "_": ["replay-click-95202444-fb60-4303-9ad4-29663a32c09d-0"] },
-            "execUUID": "59ea150f-027f-44c0-9095-c3c5b52b56f3",
+            "command": "kubectl get ns -n default kui-notebook-1 -o yaml",
+            "argvNoOptions": ["kubectl", "get", "ns", "kui-notebook-1"],
+            "parsedOptions": { "_": ["kubectl", "get", "ns", "kui-notebook-1"], "n": "default", "o": "yaml" },
+            "execUUID": "403f6008-abf8-4544-a327-61df05fd316c",
             "cancelled": false,
             "echo": false,
-            "evaluatorOptions": { "plugin": "plugin-core-support" },
+            "evaluatorOptions": {
+              "flags": {
+                "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                "boolean": [
+                  "w",
+                  "watch",
+                  "watch-only",
+                  "A",
+                  "all-namespaces",
+                  "ignore-not-found",
+                  "no-headers",
+                  "i",
+                  "it",
+                  "ti",
+                  "stdin",
+                  "t",
+                  "tty",
+                  "R",
+                  "recursive",
+                  "server-print",
+                  "show-kind",
+                  "show-labels"
+                ]
+              },
+              "plugin": "plugin-kubectl"
+            },
             "execOptions": {
               "echo": false,
               "type": 1,
-              "execUUID": "59ea150f-027f-44c0-9095-c3c5b52b56f3",
+              "execUUID": "403f6008-abf8-4544-a327-61df05fd316c",
               "history": 250,
               "env": {}
             },
-            "response": true,
-            "responseType": "ScalarResponse",
+            "response": {
+              "apiVersion": "v1",
+              "kind": "Namespace",
+              "metadata": {
+                "creationTimestamp": "2020-09-25T17:29:24Z",
+                "name": "kui-notebook-1",
+                "resourceVersion": "81846538",
+                "selfLink": "/api/v1/namespaces/kui-notebook-1",
+                "uid": "93990185-0ba0-46cb-983b-a5cdf6de36cf"
+              },
+              "spec": { "finalizers": ["kubernetes"] },
+              "status": { "phase": "Active" },
+              "isKubeResource": true,
+              "originatingCommand": {
+                "REPL": {},
+                "argv": ["kubectl", "get", "ns", "-n", "default", "kui-notebook-1", "-o", "yaml"],
+                "command": "kubectl get ns -n default kui-notebook-1 -o yaml",
+                "execOptions": {
+                  "echo": false,
+                  "type": 1,
+                  "execUUID": "403f6008-abf8-4544-a327-61df05fd316c",
+                  "history": 250,
+                  "env": {}
+                },
+                "argvNoOptions": ["kubectl", "get", "ns", "kui-notebook-1"],
+                "parsedOptions": { "_": ["kubectl", "get", "ns", "kui-notebook-1"], "n": "default", "o": "yaml" }
+              },
+              "kuiRawData": "apiVersion: v1\nkind: Namespace\nmetadata:\n  creationTimestamp: \"2020-09-25T17:29:24Z\"\n  name: kui-notebook-1\n  resourceVersion: \"81846538\"\n  selfLink: /api/v1/namespaces/kui-notebook-1\n  uid: 93990185-0ba0-46cb-983b-a5cdf6de36cf\nspec:\n  finalizers:\n  - kubernetes\nstatus:\n  phase: Active\n",
+              "toolbarText": {
+                "type": "info",
+                "text": "Created on **9/25/2020, 1:29:24 PM**. Showing resource version **81846538**."
+              },
+              "onclick": {
+                "kind": "kubectl get Namespace -n undefined",
+                "name": "kubectl get Namespace -n undefined kui-notebook-1"
+              },
+              "modes": []
+            },
+            "responseType": "MultiModalResponse",
             "historyIdx": 250
+          }
+        ],
+        "a20d8456-a58e-418d-adbc-0d5e98dcaef7": [
+          {
+            "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+            "execType": 1,
+            "command": "kubectl get Deployment.v1.apps -n kui-notebook-1 nginx-deployment -o yaml",
+            "argvNoOptions": ["kubectl", "get", "Deployment.v1.apps", "nginx-deployment"],
+            "parsedOptions": {
+              "_": ["kubectl", "get", "Deployment.v1.apps", "nginx-deployment"],
+              "n": "kui-notebook-1",
+              "o": "yaml"
+            },
+            "execUUID": "c7b73272-6de6-4ef9-a73e-26f915aa9347",
+            "cancelled": false,
+            "echo": false,
+            "evaluatorOptions": {
+              "flags": {
+                "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                "boolean": [
+                  "w",
+                  "watch",
+                  "watch-only",
+                  "A",
+                  "all-namespaces",
+                  "ignore-not-found",
+                  "no-headers",
+                  "i",
+                  "it",
+                  "ti",
+                  "stdin",
+                  "t",
+                  "tty",
+                  "R",
+                  "recursive",
+                  "server-print",
+                  "show-kind",
+                  "show-labels"
+                ]
+              },
+              "plugin": "plugin-kubectl"
+            },
+            "execOptions": {
+              "echo": false,
+              "type": 1,
+              "execUUID": "c7b73272-6de6-4ef9-a73e-26f915aa9347",
+              "history": 251,
+              "env": {}
+            },
+            "response": {
+              "apiVersion": "apps/v1",
+              "kind": "Deployment",
+              "metadata": {
+                "annotations": {
+                  "deployment.kubernetes.io/revision": "1",
+                  "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"nginx-deployment\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"minReadySeconds\":5,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"nginx\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
+                },
+                "creationTimestamp": "2020-09-25T17:29:28Z",
+                "generation": 1,
+                "name": "nginx-deployment",
+                "namespace": "kui-notebook-1",
+                "resourceVersion": "81846594",
+                "selfLink": "/apis/apps/v1/namespaces/kui-notebook-1/deployments/nginx-deployment",
+                "uid": "c323f4b4-1297-42ca-8e58-8e5347bf98fa"
+              },
+              "spec": {
+                "minReadySeconds": 5,
+                "progressDeadlineSeconds": 600,
+                "replicas": 1,
+                "revisionHistoryLimit": 10,
+                "selector": { "matchLabels": { "app": "nginx" } },
+                "strategy": {
+                  "rollingUpdate": { "maxSurge": "25%", "maxUnavailable": "25%" },
+                  "type": "RollingUpdate"
+                },
+                "template": {
+                  "metadata": { "creationTimestamp": null, "labels": { "app": "nginx" } },
+                  "spec": {
+                    "containers": [
+                      {
+                        "image": "nginx:1.14.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "nginx",
+                        "ports": [{ "containerPort": 80, "protocol": "TCP" }],
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File"
+                      }
+                    ],
+                    "dnsPolicy": "ClusterFirst",
+                    "restartPolicy": "Always",
+                    "schedulerName": "default-scheduler",
+                    "securityContext": {},
+                    "terminationGracePeriodSeconds": 30
+                  }
+                }
+              },
+              "status": {
+                "availableReplicas": 1,
+                "conditions": [
+                  {
+                    "lastTransitionTime": "2020-09-25T17:29:35Z",
+                    "lastUpdateTime": "2020-09-25T17:29:35Z",
+                    "message": "Deployment has minimum availability.",
+                    "reason": "MinimumReplicasAvailable",
+                    "status": "True",
+                    "type": "Available"
+                  },
+                  {
+                    "lastTransitionTime": "2020-09-25T17:29:28Z",
+                    "lastUpdateTime": "2020-09-25T17:29:35Z",
+                    "message": "ReplicaSet \"nginx-deployment-574b87c764\" has successfully progressed.",
+                    "reason": "NewReplicaSetAvailable",
+                    "status": "True",
+                    "type": "Progressing"
+                  }
+                ],
+                "observedGeneration": 1,
+                "readyReplicas": 1,
+                "replicas": 1,
+                "updatedReplicas": 1
+              },
+              "isKubeResource": true,
+              "originatingCommand": {
+                "REPL": {},
+                "argv": [
+                  "kubectl",
+                  "get",
+                  "Deployment.v1.apps",
+                  "-n",
+                  "kui-notebook-1",
+                  "nginx-deployment",
+                  "-o",
+                  "yaml"
+                ],
+                "command": "kubectl get Deployment.v1.apps -n kui-notebook-1 nginx-deployment -o yaml",
+                "execOptions": {
+                  "echo": false,
+                  "type": 1,
+                  "execUUID": "c7b73272-6de6-4ef9-a73e-26f915aa9347",
+                  "history": 251,
+                  "env": {}
+                },
+                "argvNoOptions": ["kubectl", "get", "Deployment.v1.apps", "nginx-deployment"],
+                "parsedOptions": {
+                  "_": ["kubectl", "get", "Deployment.v1.apps", "nginx-deployment"],
+                  "n": "kui-notebook-1",
+                  "o": "yaml"
+                }
+              },
+              "kuiRawData": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  annotations:\n    deployment.kubernetes.io/revision: \"1\"\n    kubectl.kubernetes.io/last-applied-configuration: |\n      {\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"nginx-deployment\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"minReadySeconds\":5,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"nginx\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n  creationTimestamp: \"2020-09-25T17:29:28Z\"\n  generation: 1\n  name: nginx-deployment\n  namespace: kui-notebook-1\n  resourceVersion: \"81846594\"\n  selfLink: /apis/apps/v1/namespaces/kui-notebook-1/deployments/nginx-deployment\n  uid: c323f4b4-1297-42ca-8e58-8e5347bf98fa\nspec:\n  minReadySeconds: 5\n  progressDeadlineSeconds: 600\n  replicas: 1\n  revisionHistoryLimit: 10\n  selector:\n    matchLabels:\n      app: nginx\n  strategy:\n    rollingUpdate:\n      maxSurge: 25%\n      maxUnavailable: 25%\n    type: RollingUpdate\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        app: nginx\n    spec:\n      containers:\n      - image: nginx:1.14.2\n        imagePullPolicy: IfNotPresent\n        name: nginx\n        ports:\n        - containerPort: 80\n          protocol: TCP\n        resources: {}\n        terminationMessagePath: /dev/termination-log\n        terminationMessagePolicy: File\n      dnsPolicy: ClusterFirst\n      restartPolicy: Always\n      schedulerName: default-scheduler\n      securityContext: {}\n      terminationGracePeriodSeconds: 30\nstatus:\n  availableReplicas: 1\n  conditions:\n  - lastTransitionTime: \"2020-09-25T17:29:35Z\"\n    lastUpdateTime: \"2020-09-25T17:29:35Z\"\n    message: Deployment has minimum availability.\n    reason: MinimumReplicasAvailable\n    status: \"True\"\n    type: Available\n  - lastTransitionTime: \"2020-09-25T17:29:28Z\"\n    lastUpdateTime: \"2020-09-25T17:29:35Z\"\n    message: ReplicaSet \"nginx-deployment-574b87c764\" has successfully progressed.\n    reason: NewReplicaSetAvailable\n    status: \"True\"\n    type: Progressing\n  observedGeneration: 1\n  readyReplicas: 1\n  replicas: 1\n  updatedReplicas: 1\n",
+              "toolbarText": {
+                "type": "info",
+                "text": "Created on **9/25/2020, 1:29:28 PM**. Showing resource version **81846594**."
+              },
+              "onclick": {
+                "kind": "kubectl get Deployment.v1.apps -n kui-notebook-1",
+                "name": "kubectl get Deployment.v1.apps -n kui-notebook-1 nginx-deployment",
+                "namespace": "kubectl get ns kui-notebook-1 -o yaml"
+              },
+              "modes": []
+            },
+            "responseType": "MultiModalResponse",
+            "historyIdx": 251
+          }
+        ],
+        "f5204b3d-3d4c-4c65-bc41-006cd97d03ec": [
+          {
+            "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+            "execType": 1,
+            "command": "kubectl get Deployment nginx-deployment -o yaml -n kui-notebook-1 ",
+            "argvNoOptions": ["kubectl", "get", "Deployment", "nginx-deployment"],
+            "parsedOptions": {
+              "_": ["kubectl", "get", "Deployment", "nginx-deployment"],
+              "o": "yaml",
+              "n": "kui-notebook-1"
+            },
+            "execUUID": "570a28d6-f9fb-432f-aa40-4cebd54637b2",
+            "cancelled": false,
+            "echo": false,
+            "evaluatorOptions": {
+              "flags": {
+                "configuration": { "short-option-groups": false, "duplicate-arguments-array": false },
+                "narg": { "w": 0, "watch": 0, "watch-only": 0 },
+                "boolean": [
+                  "w",
+                  "watch",
+                  "watch-only",
+                  "A",
+                  "all-namespaces",
+                  "ignore-not-found",
+                  "no-headers",
+                  "i",
+                  "it",
+                  "ti",
+                  "stdin",
+                  "t",
+                  "tty",
+                  "R",
+                  "recursive",
+                  "server-print",
+                  "show-kind",
+                  "show-labels"
+                ]
+              },
+              "plugin": "plugin-kubectl"
+            },
+            "execOptions": {
+              "echo": false,
+              "type": 1,
+              "execUUID": "570a28d6-f9fb-432f-aa40-4cebd54637b2",
+              "history": 252,
+              "env": {}
+            },
+            "response": {
+              "apiVersion": "apps/v1",
+              "kind": "Deployment",
+              "metadata": {
+                "annotations": {
+                  "deployment.kubernetes.io/revision": "1",
+                  "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"nginx-deployment\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"minReadySeconds\":5,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"nginx\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
+                },
+                "creationTimestamp": "2020-09-25T17:29:28Z",
+                "generation": 1,
+                "name": "nginx-deployment",
+                "namespace": "kui-notebook-1",
+                "resourceVersion": "81846594",
+                "selfLink": "/apis/apps/v1/namespaces/kui-notebook-1/deployments/nginx-deployment",
+                "uid": "c323f4b4-1297-42ca-8e58-8e5347bf98fa"
+              },
+              "spec": {
+                "minReadySeconds": 5,
+                "progressDeadlineSeconds": 600,
+                "replicas": 1,
+                "revisionHistoryLimit": 10,
+                "selector": { "matchLabels": { "app": "nginx" } },
+                "strategy": {
+                  "rollingUpdate": { "maxSurge": "25%", "maxUnavailable": "25%" },
+                  "type": "RollingUpdate"
+                },
+                "template": {
+                  "metadata": { "creationTimestamp": null, "labels": { "app": "nginx" } },
+                  "spec": {
+                    "containers": [
+                      {
+                        "image": "nginx:1.14.2",
+                        "imagePullPolicy": "IfNotPresent",
+                        "name": "nginx",
+                        "ports": [{ "containerPort": 80, "protocol": "TCP" }],
+                        "resources": {},
+                        "terminationMessagePath": "/dev/termination-log",
+                        "terminationMessagePolicy": "File"
+                      }
+                    ],
+                    "dnsPolicy": "ClusterFirst",
+                    "restartPolicy": "Always",
+                    "schedulerName": "default-scheduler",
+                    "securityContext": {},
+                    "terminationGracePeriodSeconds": 30
+                  }
+                }
+              },
+              "status": {
+                "availableReplicas": 1,
+                "conditions": [
+                  {
+                    "lastTransitionTime": "2020-09-25T17:29:35Z",
+                    "lastUpdateTime": "2020-09-25T17:29:35Z",
+                    "message": "Deployment has minimum availability.",
+                    "reason": "MinimumReplicasAvailable",
+                    "status": "True",
+                    "type": "Available"
+                  },
+                  {
+                    "lastTransitionTime": "2020-09-25T17:29:28Z",
+                    "lastUpdateTime": "2020-09-25T17:29:35Z",
+                    "message": "ReplicaSet \"nginx-deployment-574b87c764\" has successfully progressed.",
+                    "reason": "NewReplicaSetAvailable",
+                    "status": "True",
+                    "type": "Progressing"
+                  }
+                ],
+                "observedGeneration": 1,
+                "readyReplicas": 1,
+                "replicas": 1,
+                "updatedReplicas": 1
+              },
+              "isKubeResource": true,
+              "originatingCommand": {
+                "REPL": {},
+                "argv": ["kubectl", "get", "Deployment", "nginx-deployment", "-o", "yaml", "-n", "kui-notebook-1"],
+                "command": "kubectl get Deployment nginx-deployment -o yaml -n kui-notebook-1",
+                "execOptions": {
+                  "echo": false,
+                  "type": 1,
+                  "execUUID": "570a28d6-f9fb-432f-aa40-4cebd54637b2",
+                  "history": 252,
+                  "env": {}
+                },
+                "argvNoOptions": ["kubectl", "get", "Deployment", "nginx-deployment"],
+                "parsedOptions": {
+                  "_": ["kubectl", "get", "Deployment", "nginx-deployment"],
+                  "o": "yaml",
+                  "n": "kui-notebook-1"
+                }
+              },
+              "kuiRawData": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  annotations:\n    deployment.kubernetes.io/revision: \"1\"\n    kubectl.kubernetes.io/last-applied-configuration: |\n      {\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"nginx-deployment\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"minReadySeconds\":5,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"nginx\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n  creationTimestamp: \"2020-09-25T17:29:28Z\"\n  generation: 1\n  name: nginx-deployment\n  namespace: kui-notebook-1\n  resourceVersion: \"81846594\"\n  selfLink: /apis/apps/v1/namespaces/kui-notebook-1/deployments/nginx-deployment\n  uid: c323f4b4-1297-42ca-8e58-8e5347bf98fa\nspec:\n  minReadySeconds: 5\n  progressDeadlineSeconds: 600\n  replicas: 1\n  revisionHistoryLimit: 10\n  selector:\n    matchLabels:\n      app: nginx\n  strategy:\n    rollingUpdate:\n      maxSurge: 25%\n      maxUnavailable: 25%\n    type: RollingUpdate\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        app: nginx\n    spec:\n      containers:\n      - image: nginx:1.14.2\n        imagePullPolicy: IfNotPresent\n        name: nginx\n        ports:\n        - containerPort: 80\n          protocol: TCP\n        resources: {}\n        terminationMessagePath: /dev/termination-log\n        terminationMessagePolicy: File\n      dnsPolicy: ClusterFirst\n      restartPolicy: Always\n      schedulerName: default-scheduler\n      securityContext: {}\n      terminationGracePeriodSeconds: 30\nstatus:\n  availableReplicas: 1\n  conditions:\n  - lastTransitionTime: \"2020-09-25T17:29:35Z\"\n    lastUpdateTime: \"2020-09-25T17:29:35Z\"\n    message: Deployment has minimum availability.\n    reason: MinimumReplicasAvailable\n    status: \"True\"\n    type: Available\n  - lastTransitionTime: \"2020-09-25T17:29:28Z\"\n    lastUpdateTime: \"2020-09-25T17:29:35Z\"\n    message: ReplicaSet \"nginx-deployment-574b87c764\" has successfully progressed.\n    reason: NewReplicaSetAvailable\n    status: \"True\"\n    type: Progressing\n  observedGeneration: 1\n  readyReplicas: 1\n  replicas: 1\n  updatedReplicas: 1\n",
+              "toolbarText": {
+                "type": "info",
+                "text": "Created on **9/25/2020, 1:29:28 PM**. Showing resource version **81846594**."
+              },
+              "onclick": {
+                "kind": "kubectl get Deployment.v1.apps -n kui-notebook-1",
+                "name": "kubectl get Deployment.v1.apps -n kui-notebook-1 nginx-deployment",
+                "namespace": "kubectl get ns kui-notebook-1 -o yaml"
+              },
+              "modes": []
+            },
+            "responseType": "MultiModalResponse",
+            "historyIdx": 252
           }
         ]
       }
@@ -51,9 +535,9 @@
             "uuid": "0",
             "blocks": [
               {
-                "startTime": 1600952429178,
+                "startTime": 1601054957190,
                 "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/#",
                   "command": "#    # Creating a Resource\\nCreate a Kubernetes Resource from configuration file.",
                   "evaluatorOptions": {
@@ -75,7 +559,7 @@
                   "echo": true
                 },
                 "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 1,
                   "command": "#   # Creating a Resource\\nCreate a Kubernetes Resource from configuration file.",
                   "argvNoOptions": [
@@ -108,9 +592,9 @@
                 }
               },
               {
-                "startTime": 1600952429209,
+                "startTime": 1601054957220,
                 "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/split",
                   "command": "split",
                   "evaluatorOptions": {
@@ -122,7 +606,7 @@
                   "execUUID": "0b7e3d54-10ca-46a2-993e-26750a72f0dd"
                 },
                 "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
                   "command": "split",
                   "argvNoOptions": ["split"],
@@ -147,7 +631,7 @@
                         "kind": "CommentaryResponse",
                         "props": {
                           "elsewhere": true,
-                          "tabUUID": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                          "tabUUID": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                           "children": "Created a split"
                         }
                       }
@@ -158,9 +642,9 @@
                 }
               },
               {
-                "startTime": 1600952429265,
+                "startTime": 1601054957264,
                 "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "route": "/split",
                   "command": "split --index 1",
                   "evaluatorOptions": {
@@ -172,7 +656,7 @@
                   "execUUID": "39e42599-4565-423a-aa28-129c795d87b8"
                 },
                 "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
+                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
                   "execType": 0,
                   "command": "split --index 1",
                   "argvNoOptions": ["split"],
@@ -198,7 +682,7 @@
                         "kind": "CommentaryResponse",
                         "props": {
                           "elsewhere": true,
-                          "tabUUID": "1_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                          "tabUUID": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                           "children": "Created a split"
                         }
                       }
@@ -209,9 +693,9 @@
                 }
               },
               {
-                "startTime": 1600952429340,
+                "startTime": 1601054957345,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/#",
                   "command": "# ",
                   "evaluatorOptions": {
@@ -232,7 +716,7 @@
                   "execUUID": "d77f4305-33be-4772-8049-e13e4472f892"
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
                   "command": "#",
                   "argvNoOptions": ["#"],
@@ -259,9 +743,9 @@
                 }
               },
               {
-                "startTime": 1600952429359,
+                "startTime": 1601054964546,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/kubeui/kubectl/create",
                   "command": "kubectl create ns kui-notebook-1",
                   "evaluatorOptions": {
@@ -293,22 +777,23 @@
                     "plugin": "plugin-kubectl"
                   },
                   "execType": 0,
-                  "execUUID": "e8b7ad94-aade-40c0-b7b2-45622e5a4e18"
+                  "execUUID": "2cac6097-cf5b-4135-9118-c2e6f41199b3"
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
                   "command": "kubectl create ns kui-notebook-1",
                   "argvNoOptions": ["kubectl", "create", "ns", "kui-notebook-1"],
                   "parsedOptions": { "_": ["kubectl", "create", "ns", "kui-notebook-1"] },
-                  "execUUID": "e8b7ad94-aade-40c0-b7b2-45622e5a4e18",
+                  "execUUID": "2cac6097-cf5b-4135-9118-c2e6f41199b3",
                   "cancelled": false,
                   "evaluatorOptions": { "alwaysViewIn": "Terminal", "plugin": "plugin-kubectl" },
                   "execOptions": {
                     "type": 0,
                     "language": "en-US",
-                    "execUUID": "e8b7ad94-aade-40c0-b7b2-45622e5a4e18",
-                    "history": 138,
+                    "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                    "execUUID": "2cac6097-cf5b-4135-9118-c2e6f41199b3",
+                    "history": 250,
                     "env": {}
                   },
                   "response": {
@@ -323,8 +808,9 @@
                     "body": [
                       {
                         "name": "kui-notebook-1",
-                        "onclick": "kubectl get ns -n default kui-notebook-1 -o yaml",
+                        "onclick": "replay-click-2cac6097-cf5b-4135-9118-c2e6f41199b3-0",
                         "onclickSilence": true,
+                        "onclickIdempotent": true,
                         "attributes": [
                           { "key": "KIND", "value": "ns", "outerCSS": "", "css": "" },
                           {
@@ -335,18 +821,19 @@
                             "css": "green-background"
                           }
                         ],
-                        "key": "NAME"
+                        "key": "NAME",
+                        "onclickExec": "qexec"
                       }
                     ]
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 138
+                  "historyIdx": 250
                 }
               },
               {
-                "startTime": 1600952429400,
+                "startTime": 1601054957411,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/#",
                   "command": "#  Now we can use `apply`:",
                   "evaluatorOptions": {
@@ -367,7 +854,7 @@
                   "execUUID": "a8634777-9f4f-4db4-b86a-b5e960eb584a"
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
                   "command": "# Now we can use `apply`:",
                   "argvNoOptions": ["#", "  Now we can use `apply`:"],
@@ -392,9 +879,9 @@
                 }
               },
               {
-                "startTime": 1600952429440,
+                "startTime": 1601054967333,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/kubeui/kubectl/apply",
                   "command": "kubectl apply -f https://k8s.io/examples/application/simple_deployment.yaml -n kui-notebook-1",
                   "evaluatorOptions": {
@@ -426,10 +913,10 @@
                     "plugin": "plugin-kubectl"
                   },
                   "execType": 0,
-                  "execUUID": "66d2d0ed-6caa-4550-beb4-ed89460c4f33"
+                  "execUUID": "a20d8456-a58e-418d-adbc-0d5e98dcaef7"
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
                   "command": "kubectl apply -f https://k8s.io/examples/application/simple_deployment.yaml -n kui-notebook-1",
                   "argvNoOptions": ["kubectl", "apply"],
@@ -438,14 +925,15 @@
                     "f": "https://k8s.io/examples/application/simple_deployment.yaml",
                     "n": "kui-notebook-1"
                   },
-                  "execUUID": "66d2d0ed-6caa-4550-beb4-ed89460c4f33",
+                  "execUUID": "a20d8456-a58e-418d-adbc-0d5e98dcaef7",
                   "cancelled": false,
                   "evaluatorOptions": { "alwaysViewIn": "Terminal", "plugin": "plugin-kubectl" },
                   "execOptions": {
                     "type": 0,
                     "language": "en-US",
-                    "execUUID": "66d2d0ed-6caa-4550-beb4-ed89460c4f33",
-                    "history": 140,
+                    "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                    "execUUID": "a20d8456-a58e-418d-adbc-0d5e98dcaef7",
+                    "history": 251,
                     "env": {}
                   },
                   "response": {
@@ -461,14 +949,16 @@
                     "body": [
                       {
                         "name": "nginx-deployment",
-                        "onclick": "kubectl get Deployment.v1.apps -n kui-notebook-1 nginx-deployment -o yaml",
+                        "onclick": "replay-click-a20d8456-a58e-418d-adbc-0d5e98dcaef7-0",
                         "onclickSilence": true,
+                        "onclickIdempotent": true,
                         "attributes": [
                           { "key": "NAMESPACE", "value": "kui-notebook-1" },
                           { "key": "KIND", "value": "Deployment.v1.apps", "outerCSS": "", "css": "" },
                           { "key": "STATUS", "tag": "badge", "value": "1/1", "outerCSS": "", "css": "green-background" }
                         ],
-                        "key": "NAME"
+                        "key": "NAME",
+                        "onclickExec": "qexec"
                       }
                     ],
                     "kuiSourceRef": {
@@ -484,13 +974,13 @@
                     }
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 140
+                  "historyIdx": 251
                 }
               },
               {
-                "startTime": 1600952429481,
+                "startTime": 1601054957475,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/#",
                   "command": "# ",
                   "evaluatorOptions": {
@@ -511,7 +1001,7 @@
                   "execUUID": "f44a546e-ccc5-4506-b127-6078e481b47d"
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
                   "command": "#",
                   "argvNoOptions": ["#"],
@@ -538,9 +1028,9 @@
                 }
               },
               {
-                "startTime": 1600952429523,
+                "startTime": 1601054973177,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/kubeui/kubectl/get/deployments",
                   "command": "kubectl get deployments -n kui-notebook-1",
                   "evaluatorOptions": {
@@ -571,22 +1061,23 @@
                     "plugin": "plugin-kubectl"
                   },
                   "execType": 0,
-                  "execUUID": "95202444-fb60-4303-9ad4-29663a32c09d"
+                  "execUUID": "f5204b3d-3d4c-4c65-bc41-006cd97d03ec"
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
                   "command": "kubectl get deployments -n kui-notebook-1",
                   "argvNoOptions": ["kubectl", "get", "deployments"],
                   "parsedOptions": { "_": ["kubectl", "get", "deployments"], "n": "kui-notebook-1" },
-                  "execUUID": "95202444-fb60-4303-9ad4-29663a32c09d",
+                  "execUUID": "f5204b3d-3d4c-4c65-bc41-006cd97d03ec",
                   "cancelled": false,
                   "evaluatorOptions": { "plugin": "plugin-kubectl" },
                   "execOptions": {
                     "type": 0,
                     "language": "en-US",
-                    "execUUID": "95202444-fb60-4303-9ad4-29663a32c09d",
-                    "history": 143,
+                    "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                    "execUUID": "f5204b3d-3d4c-4c65-bc41-006cd97d03ec",
+                    "history": 252,
                     "env": {}
                   },
                   "response": {
@@ -642,7 +1133,7 @@
                         "name": "nginx-deployment",
                         "rowKey": "nginx-deployment",
                         "fontawesome": false,
-                        "onclick": "replay-click-95202444-fb60-4303-9ad4-29663a32c09d-0",
+                        "onclick": "replay-click-f5204b3d-3d4c-4c65-bc41-006cd97d03ec-0",
                         "onclickIdempotent": true,
                         "onclickSilence": true,
                         "css": " kui--table-cell-is-name",
@@ -668,15 +1159,15 @@
                             "key": "AVAILABLE",
                             "onclick": false,
                             "outerCSS": "  hide-with-sidecar",
-                            "css": "  green-background",
-                            "value": "1"
+                            "css": "  red-background",
+                            "value": "0"
                           },
                           {
                             "key": "AGE",
                             "onclick": false,
                             "outerCSS": " hide-with-sidecar hide-with-sidecar",
                             "css": " slightly-deemphasize ",
-                            "value": "69s"
+                            "value": "5s"
                           }
                         ],
                         "onclickExec": "qexec"
@@ -688,13 +1179,13 @@
                     "statusColumnIdx": 0
                   },
                   "responseType": "ScalarResponse",
-                  "historyIdx": 143
+                  "historyIdx": 252
                 }
               },
               {
-                "startTime": 1600952429565,
+                "startTime": 1601054957547,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/#",
                   "command": "#   To drill down to the details of a resource, in Kui you may click on the Name cell of any table.",
                   "evaluatorOptions": {
@@ -715,7 +1206,7 @@
                   "execUUID": "515bea74-0aaa-44c2-aa5e-21c7c725fd78"
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 0,
                   "command": "#  To drill down to the details of a resource, in Kui you may click on the Name cell of any table.",
                   "argvNoOptions": [
@@ -750,9 +1241,9 @@
                 }
               },
               {
-                "startTime": 1600952429606,
+                "startTime": 1601054976667,
                 "startEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "route": "/kubeui/kubectl/get/Deployment",
                   "command": "kubectl get Deployment nginx-deployment -o yaml -n kui-notebook-1",
                   "evaluatorOptions": {
@@ -783,11 +1274,11 @@
                     "plugin": "plugin-kubectl"
                   },
                   "execType": 1,
-                  "execUUID": "fd8db3a5-4e0c-4220-b010-9122d8dbca58",
+                  "execUUID": "00db90ab-657f-4347-b65b-a0b74e14ebf9",
                   "echo": false
                 },
                 "completeEvent": {
-                  "tab": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
                   "execType": 1,
                   "command": "kubectl get Deployment nginx-deployment -o yaml -n kui-notebook-1 ",
                   "argvNoOptions": ["kubectl", "get", "Deployment", "nginx-deployment"],
@@ -796,15 +1287,16 @@
                     "o": "yaml",
                     "n": "kui-notebook-1"
                   },
-                  "execUUID": "fd8db3a5-4e0c-4220-b010-9122d8dbca58",
+                  "execUUID": "00db90ab-657f-4347-b65b-a0b74e14ebf9",
                   "cancelled": false,
                   "echo": false,
                   "evaluatorOptions": { "plugin": "plugin-kubectl" },
                   "execOptions": {
                     "echo": false,
                     "type": 1,
-                    "execUUID": "fd8db3a5-4e0c-4220-b010-9122d8dbca58",
-                    "history": 145,
+                    "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+                    "execUUID": "00db90ab-657f-4347-b65b-a0b74e14ebf9",
+                    "history": 253,
                     "env": {}
                   },
                   "response": {
@@ -815,13 +1307,13 @@
                         "deployment.kubernetes.io/revision": "1",
                         "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"nginx-deployment\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"minReadySeconds\":5,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"nginx\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n"
                       },
-                      "creationTimestamp": "2020-09-23T01:03:10Z",
+                      "creationTimestamp": "2020-09-25T17:29:28Z",
                       "generation": 1,
                       "name": "nginx-deployment",
                       "namespace": "kui-notebook-1",
-                      "resourceVersion": "81273903",
+                      "resourceVersion": "81846594",
                       "selfLink": "/apis/apps/v1/namespaces/kui-notebook-1/deployments/nginx-deployment",
-                      "uid": "b47c7d87-ed89-4b5d-b976-d6623ee3a5bf"
+                      "uid": "c323f4b4-1297-42ca-8e58-8e5347bf98fa"
                     },
                     "spec": {
                       "minReadySeconds": 5,
@@ -859,16 +1351,16 @@
                       "availableReplicas": 1,
                       "conditions": [
                         {
-                          "lastTransitionTime": "2020-09-23T01:03:17Z",
-                          "lastUpdateTime": "2020-09-23T01:03:17Z",
+                          "lastTransitionTime": "2020-09-25T17:29:35Z",
+                          "lastUpdateTime": "2020-09-25T17:29:35Z",
                           "message": "Deployment has minimum availability.",
                           "reason": "MinimumReplicasAvailable",
                           "status": "True",
                           "type": "Available"
                         },
                         {
-                          "lastTransitionTime": "2020-09-23T01:03:10Z",
-                          "lastUpdateTime": "2020-09-23T01:03:17Z",
+                          "lastTransitionTime": "2020-09-25T17:29:28Z",
+                          "lastUpdateTime": "2020-09-25T17:29:35Z",
                           "message": "ReplicaSet \"nginx-deployment-574b87c764\" has successfully progressed.",
                           "reason": "NewReplicaSetAvailable",
                           "status": "True",
@@ -897,8 +1389,8 @@
                       "execOptions": {
                         "echo": false,
                         "type": 1,
-                        "execUUID": "fd8db3a5-4e0c-4220-b010-9122d8dbca58",
-                        "history": 145,
+                        "execUUID": "00db90ab-657f-4347-b65b-a0b74e14ebf9",
+                        "history": 253,
                         "env": {}
                       },
                       "argvNoOptions": ["kubectl", "get", "Deployment", "nginx-deployment"],
@@ -908,10 +1400,10 @@
                         "n": "kui-notebook-1"
                       }
                     },
-                    "kuiRawData": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  annotations:\n    deployment.kubernetes.io/revision: \"1\"\n    kubectl.kubernetes.io/last-applied-configuration: |\n      {\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"nginx-deployment\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"minReadySeconds\":5,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"nginx\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n  creationTimestamp: \"2020-09-23T01:03:10Z\"\n  generation: 1\n  name: nginx-deployment\n  namespace: kui-notebook-1\n  resourceVersion: \"81273903\"\n  selfLink: /apis/apps/v1/namespaces/kui-notebook-1/deployments/nginx-deployment\n  uid: b47c7d87-ed89-4b5d-b976-d6623ee3a5bf\nspec:\n  minReadySeconds: 5\n  progressDeadlineSeconds: 600\n  replicas: 1\n  revisionHistoryLimit: 10\n  selector:\n    matchLabels:\n      app: nginx\n  strategy:\n    rollingUpdate:\n      maxSurge: 25%\n      maxUnavailable: 25%\n    type: RollingUpdate\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        app: nginx\n    spec:\n      containers:\n      - image: nginx:1.14.2\n        imagePullPolicy: IfNotPresent\n        name: nginx\n        ports:\n        - containerPort: 80\n          protocol: TCP\n        resources: {}\n        terminationMessagePath: /dev/termination-log\n        terminationMessagePolicy: File\n      dnsPolicy: ClusterFirst\n      restartPolicy: Always\n      schedulerName: default-scheduler\n      securityContext: {}\n      terminationGracePeriodSeconds: 30\nstatus:\n  availableReplicas: 1\n  conditions:\n  - lastTransitionTime: \"2020-09-23T01:03:17Z\"\n    lastUpdateTime: \"2020-09-23T01:03:17Z\"\n    message: Deployment has minimum availability.\n    reason: MinimumReplicasAvailable\n    status: \"True\"\n    type: Available\n  - lastTransitionTime: \"2020-09-23T01:03:10Z\"\n    lastUpdateTime: \"2020-09-23T01:03:17Z\"\n    message: ReplicaSet \"nginx-deployment-574b87c764\" has successfully progressed.\n    reason: NewReplicaSetAvailable\n    status: \"True\"\n    type: Progressing\n  observedGeneration: 1\n  readyReplicas: 1\n  replicas: 1\n  updatedReplicas: 1\n",
+                    "kuiRawData": "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  annotations:\n    deployment.kubernetes.io/revision: \"1\"\n    kubectl.kubernetes.io/last-applied-configuration: |\n      {\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"name\":\"nginx-deployment\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"minReadySeconds\":5,\"selector\":{\"matchLabels\":{\"app\":\"nginx\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"nginx\"}},\"spec\":{\"containers\":[{\"image\":\"nginx:1.14.2\",\"name\":\"nginx\",\"ports\":[{\"containerPort\":80}]}]}}}}\n  creationTimestamp: \"2020-09-25T17:29:28Z\"\n  generation: 1\n  name: nginx-deployment\n  namespace: kui-notebook-1\n  resourceVersion: \"81846594\"\n  selfLink: /apis/apps/v1/namespaces/kui-notebook-1/deployments/nginx-deployment\n  uid: c323f4b4-1297-42ca-8e58-8e5347bf98fa\nspec:\n  minReadySeconds: 5\n  progressDeadlineSeconds: 600\n  replicas: 1\n  revisionHistoryLimit: 10\n  selector:\n    matchLabels:\n      app: nginx\n  strategy:\n    rollingUpdate:\n      maxSurge: 25%\n      maxUnavailable: 25%\n    type: RollingUpdate\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        app: nginx\n    spec:\n      containers:\n      - image: nginx:1.14.2\n        imagePullPolicy: IfNotPresent\n        name: nginx\n        ports:\n        - containerPort: 80\n          protocol: TCP\n        resources: {}\n        terminationMessagePath: /dev/termination-log\n        terminationMessagePolicy: File\n      dnsPolicy: ClusterFirst\n      restartPolicy: Always\n      schedulerName: default-scheduler\n      securityContext: {}\n      terminationGracePeriodSeconds: 30\nstatus:\n  availableReplicas: 1\n  conditions:\n  - lastTransitionTime: \"2020-09-25T17:29:35Z\"\n    lastUpdateTime: \"2020-09-25T17:29:35Z\"\n    message: Deployment has minimum availability.\n    reason: MinimumReplicasAvailable\n    status: \"True\"\n    type: Available\n  - lastTransitionTime: \"2020-09-25T17:29:28Z\"\n    lastUpdateTime: \"2020-09-25T17:29:35Z\"\n    message: ReplicaSet \"nginx-deployment-574b87c764\" has successfully progressed.\n    reason: NewReplicaSetAvailable\n    status: \"True\"\n    type: Progressing\n  observedGeneration: 1\n  readyReplicas: 1\n  replicas: 1\n  updatedReplicas: 1\n",
                     "toolbarText": {
                       "type": "info",
-                      "text": "Created on **9/22/2020, 9:03:10 PM**. Showing resource version **81273903**."
+                      "text": "Created on **9/25/2020, 1:29:28 PM**. Showing resource version **81846594**."
                     },
                     "onclick": {
                       "kind": "kubectl get Deployment.v1.apps -n kui-notebook-1",
@@ -921,13 +1413,13 @@
                     "modes": []
                   },
                   "responseType": "MultiModalResponse",
-                  "historyIdx": 145
+                  "historyIdx": 253
                 }
               },
               {
-                "startTime": 1600952429648,
+                "startTime": 1601054957655,
                 "startEvent": {
-                  "tab": "1_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                   "route": "/#",
                   "command": "#  `kubectl diff` also gives you a preview of what changes apply will make.",
                   "evaluatorOptions": {
@@ -948,7 +1440,7 @@
                   "execUUID": "8c41ae09-7e34-4c33-8c20-8062cd9f8870"
                 },
                 "completeEvent": {
-                  "tab": "1_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
                   "execType": 0,
                   "command": "# `kubectl diff` also gives you a preview of what changes apply will make.",
                   "argvNoOptions": ["#", "  `kubectl diff` also gives you a preview of what changes apply will make."],
