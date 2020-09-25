@@ -133,39 +133,38 @@
 
   /* sidecar open, three terminals */
   &[data-split-count='3'] {
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(10, 1fr);
     grid-template-areas:
-      'T3 T3 T3 T3 S S S S S S'
-      'T3 T3 T3 T3 S S S S S S'
-      'T3 T3 T3 T3 S S S S S S'
-      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2'
-      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2';
+      'T1 S S'
+      'T1 S S'
+      'T1 S S'
+      'T1 S S'
+      'T1 S S'
+      'T2 S S'
+      'T2 T3 T3'
+      'T2 T3 T3'
+      'T2 T3 T3'
+      'T2 T3 T3';
   }
 
   /* sidecar open, four terminals */
   &[data-split-count='4'] {
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(6, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     grid-template-areas:
-      'T4 T4 T4 T4 S S S S S S'
-      'T4 T4 T4 T4 S S S S S S'
-      'T4 T4 T4 T4 S S S S S S'
-      'T3 T3 T3 T3 S S S S S S'
-      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2'
-      'T3 T3 T3 T3 T1 T1 T1 T2 T2 T2';
+      'T1 S S'
+      'T2 S S'
+      'T3 T4 T4';
   }
 
   /* sidecar open, five terminals */
   &[data-split-count='5'] {
-    grid-template-columns: repeat(10, 1fr);
-    grid-template-rows: repeat(6, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     grid-template-areas:
-      'T5 T5 T5 T5 S S S S S S'
-      'T5 T5 T5 T5 S S S S S S'
-      'T3 T3 T3 T3 S S S S S S'
-      'T3 T3 T3 T3 S S S S S S'
-      'T4 T4 T4 T4 T1 T1 T1 T2 T2 T2'
-      'T4 T4 T4 T4 T1 T1 T1 T2 T2 T2';
+      'T1 S S'
+      'T2 S S'
+      'T3 T4 T5';
   }
 }
