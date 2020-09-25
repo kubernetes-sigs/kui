@@ -429,6 +429,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const rerunIdx = curState.blocks.findIndex(_ => hasUUID(_) && _.execUUID === event.execUUID)
 
         if (rerunIdx >= 0) {
+          // The use case here is that the user clicked the Rerun
+          // button in the UI; the onclick logic seems to reuse the
+          // execUUID, hence the `findIndex` logic just above, which
+          // scans the blocks for an existing execUUID. So: we
           // Transform the rerun block to Processing
           return {
             blocks: curState.blocks
@@ -436,8 +440,18 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .concat(processing(curState.blocks[rerunIdx], true))
               .concat(curState.blocks.slice(rerunIdx + 1)) // everything after
           }
-        } else if (curState.focusedBlockIdx !== undefined && curState.focusedBlockIdx !== idx) {
-          // Transform the active block to Processing
+        } else if (
+          curState.focusedBlockIdx !== undefined &&
+          curState.focusedBlockIdx !== idx &&
+          isActive(curState.blocks[idx])
+        ) {
+          // The use case here is that the user clicked to edit, and
+          // then hit return; Note: for not great reasons, this
+          // "rerun" path is different than the path in the just-prior
+          // clause, which also handles reruns, but for the case where
+          // ht euser clicked the rerun button; i think because in the
+          // button click case, we reuse the execUUID, whereas in the
+          // hit-return rerun case we don't :( :( :(
           const activeBlockIdx = curState.focusedBlockIdx
           const blocks = curState.blocks
             .slice(0, activeBlockIdx)
