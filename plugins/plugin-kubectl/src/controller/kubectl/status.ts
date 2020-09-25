@@ -462,6 +462,7 @@ class StatusWatcher implements Abortable, Watcher {
         name,
         onclick: `${this.command} get ${fqnOfRef(ref)} -o yaml`,
         onclickSilence: true,
+        onclickIdempotent: true,
         attributes: this.nsAttr(namespace, anyNonDefaultNamespaces).concat([
           {
             key: 'KIND',
