@@ -21,6 +21,7 @@ import { Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@k
 
 import Markdown from '../Markdown'
 import ErrorCell from './ErrorCell'
+import whenNothingIsSelected from '../../../util/selection'
 
 /**
  * Generate an onclick handler for a cell
@@ -37,25 +38,25 @@ export function onClickForCell(
   if (handler === false) {
     return () => handler
   } else if (typeof handler === 'function') {
-    return (evt: React.MouseEvent) => {
+    return whenNothingIsSelected((evt: React.MouseEvent) => {
       evt.stopPropagation()
       selectRow()
       handler()
-    }
+    })
   } else if (handler) {
     const opts = { tab, echo: !row.onclickSilence }
     if (!row.onclickExec || row.onclickExec === 'pexec') {
-      return (evt: React.MouseEvent) => {
+      return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
         repl.pexec(handler, opts)
-      }
+      })
     } else {
-      return (evt: React.MouseEvent) => {
+      return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
         repl.qexec(handler, undefined, undefined, { tab })
-      }
+      })
     }
   }
 }
