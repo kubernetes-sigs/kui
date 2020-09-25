@@ -149,9 +149,9 @@ export function getSelectionText() {
 }
 
 /** Type guard that the given evt.relatedTarget is an HTML Element */
-function isElement(target: EventTarget): target is Element {
+/* function isElement(target: EventTarget): target is Element {
   return target && (target as Element).tagName !== undefined
-}
+} */
 
 export default class ScrollableTerminal extends React.PureComponent<Props, State> {
   /**
@@ -993,8 +993,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 'data-is-width-constrained': isWidthConstrained || undefined,
                 key: tab.uuid,
                 'data-scrollback-id': tab.uuid,
-                ref: ref => this.tabRefFor(scrollback, ref),
-                onClick: this.onClick.bind(this, scrollback)
+                ref: ref => this.tabRefFor(scrollback, ref)
+                // onClick: this.onClick.bind(this, scrollback)
               },
 
               blocks.map((_, idx) => {
@@ -1012,14 +1012,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                  * from the browser, e.g. when the user hits tab to
                  * navigate between the <li> of each block */
                 const userHitTabToChangeBlockFocus = (evt: React.FocusEvent) => {
-                  if (
+                  /* if (
                     isElement(evt.relatedTarget) &&
                     /li/i.test(evt.relatedTarget.tagName) &&
                     /li/i.test(evt.target.tagName) &&
                     scrollback.focusedBlockIdx !== idx
-                  ) {
-                    willFocusBlock(evt)
-                  }
+                  ) */
+                  willFocusBlock(evt)
                 }
 
                 return (

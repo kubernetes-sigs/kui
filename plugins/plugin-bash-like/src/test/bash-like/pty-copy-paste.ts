@@ -50,12 +50,12 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
 
       console.log('now should copy from xterm output and paste outside of xterm')
 
-      await new Promise(resolve => setTimeout(resolve, 5000))
       await this.app.client.doubleClick(firstRow(res.count))
+      await new Promise(resolve => setTimeout(resolve, 1000))
       await this.app.client.execute(() => document.execCommand('copy'))
 
       await this.app.client.waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
-      await this.app.client.click(Selectors.CURRENT_PROMPT_BLOCK)
+      await CLI.grabFocus(this.app)
       await this.app.client.execute(() => document.execCommand('paste'))
 
       idx = 0
