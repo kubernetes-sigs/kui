@@ -191,7 +191,9 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
     name: nameOf(_, args.parsedOptions.l),
     css: cssOf(_),
     onclickExec: 'pexec' as const,
-    onclick: `${_.dirent.isDirectory ? 'ls' : 'open'} ${args.REPL.encodeComponent(_.path)}`,
+    onclick: `${_.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : 'open'} ${args.REPL.encodeComponent(
+      _.path
+    )}`,
     onclickSilence: !_.dirent.isDirectory,
     attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))
