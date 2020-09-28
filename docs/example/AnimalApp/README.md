@@ -5,6 +5,18 @@ developing a hosted visual terminal.
 
 ## Usage
 
+**WARNING**: try to avoid executing these commands after having done
+an `npm ci` at the top-level of your Kui clone. Nothing will break,
+but webpack will bundle much more than it has, and may run out of
+memory. This directory is intended for you to copy out and start your
+own repository, external to Kui itself. Note how the package.json
+references versions of Kui packages that have been published to npm;
+i.e. this repository points to the latest stable version of Kui, and
+does not use any bits from the master branch, or whatever branch of
+Kui you may have cloned to acquire this source. At some point, we will
+extract this directory so that it sits in a separate repo. For now,
+please heed these warnings. Thanks!
+
 ```sh
 npm ci
 npm start

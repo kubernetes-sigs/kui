@@ -1,0 +1,11 @@
+{
+  "about": "About",
+  "about:content": "[![Kui: The CLI with a GUI twist](icons/svg/kui-wide.svg)](http://kui.tools)\n\n**Kui** is a platform for enhancing the terminal experience with visualizations. It provides users a modern alternative to ASCII terminals and web-based consoles. It provides tool developers an opportunity to unify these experiences.",
+  "theme": "Themes",
+  "Configure": "Configure",
+  "tutorial": "Getting Started",
+  "version": "Version",
+  "Home Page": "Home Page",
+  "Github": "Github",
+  "Bugs": "Bugs"
+}
