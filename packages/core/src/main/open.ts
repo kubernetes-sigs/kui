@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-/** Open a new window and replay the contents of the given `filepath` */
-export function replay(filepath: string, createWindow: (executeThisArgvPlease?: string[]) => void) {
-  createWindow(['replay', filepath])
-}
+import { replay } from './menu'
 
 export const filters = [{ name: 'Kui snapshot', extensions: ['kui', 'json'] }]
 

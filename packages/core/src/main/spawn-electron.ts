@@ -586,7 +586,7 @@ export async function initElectron(
 
   // See menu.ts; Open Recent leads here
   app.on('open-file', async (evt: Event, filepath: string) => {
-    const { replay } = await import('./open')
+    const { replay } = await import('./menu')
     replay(filepath, createWindowWithArgv)
   })
 

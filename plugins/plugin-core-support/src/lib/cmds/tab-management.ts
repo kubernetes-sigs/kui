@@ -15,6 +15,8 @@
  */
 
 import {
+  Arguments,
+  expandHomeDir,
   eventBus,
   getPrimaryTabId,
   i18n,
@@ -43,6 +45,13 @@ function closeTab(tab: Tab, closeAllSplits: boolean) {
   const uuid = closeAllSplits ? getPrimaryTabId(tab) : tab.uuid
   eventBus.emitWithTabId('/tab/close/request', uuid, tab)
   return true
+}
+
+/** Load snapshot model from disk */
+async function loadSnapshotBuffer(REPL: Arguments['REPL'], filepath: string): Promise<Buffer> {
+  return Buffer.from(
+    (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
+  )
 }
 
 /**
@@ -83,6 +92,10 @@ export default function plugin(commandTree: Registrar) {
 
       /** Open tab in the background? I.e. without switching to it */
       bg?: boolean
+
+      /** Optionally open a snapshot file in the new tab */
+      snapshot?: string
+      s?: string
     }
   >(
     '/tab/new',
@@ -124,7 +137,23 @@ export default function plugin(commandTree: Registrar) {
         }
       }
 
-      if (args.parsedOptions.cmdline) {
+      const file = args.parsedOptions.snapshot || args.parsedOptions.s
+      if (file) {
+        // caller wants to open a given snapshot by file in the new tab
+        const filepath = expandHomeDir(file)
+        const snapshot = await loadSnapshotBuffer(args.REPL, filepath)
+
+        return new Promise(resolve => {
+          eventBus.emit('/tab/new/request', {
+            statusStripeDecoration,
+            snapshot,
+            title: args.parsedOptions.title,
+            background: args.parsedOptions.bg,
+            onClose: args.parsedOptions.onClose
+          })
+          resolve(ok)
+        })
+      } else if (args.parsedOptions.cmdline) {
         // caller wants to invoke a given command line in the new tab
         return new Promise(resolve => {
           eventBus.emit('/tab/new/request', {
@@ -156,6 +185,7 @@ export default function plugin(commandTree: Registrar) {
           { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
           { name: '--quiet', alias: '-q', boolean: true, docs: 'Execute the given command line quietly' },
           { name: '--bg', alias: '-b', boolean: true, docs: 'Create, but do not switch to this tab' },
+          { name: '--snapshot', alias: '-s', docs: 'Snapshot file to display in the new tab' },
           { name: '--status-stripe-type', docs: 'Desired status stripe coloration', allowed: ['default', 'blue'] },
           { name: '--status-stripe-message', docs: 'Desired status stripe message' },
           { name: '--title', alias: '-t', docs: 'Title to display in the UI' }

@@ -1,624 +1,1333 @@
 {
   "apiVersion": "kui-shell/v1",
-  "kind": "Snapshot",
+  "kind": "Notebook",
+  "metadata": {},
   "spec": {
-    "windows": [
+    "splits": [
       {
-        "uuid": "0",
-        "tabs": [
+        "uuid": "1",
+        "blocks": [
           {
-            "uuid": "0",
-            "blocks": [
-              {
-                "startTime": 1598216885634,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/ls",
-                  "command": "ls -l",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "ls",
-                      "title": "local file list",
-                      "header": "Directory listing of your local filesystem",
-                      "noHelpAlias": true,
-                      "optional": [
-                        { "name": "path", "docs": "local file path", "file": true, "positional": true },
-                        { "name": "-A", "boolean": true, "docs": "List all entries except for . and .." },
-                        {
-                          "name": "-a",
-                          "boolean": true,
-                          "docs": "Include directory entries whose names begin with a dot (.)"
-                        },
-                        { "name": "-d", "boolean": true, "docs": "Directories are listed as plain files" },
-                        {
-                          "name": "-c",
-                          "boolean": true,
-                          "docs": "Use time when file status was last changed for sorting"
-                        },
-                        { "name": "-C", "boolean": true, "hidden": true },
-                        { "name": "-l", "boolean": true, "hidden": true },
-                        { "name": "-h", "boolean": true, "hidden": true },
-                        {
-                          "name": "-t",
-                          "boolean": true,
-                          "docs": "Sort by time modified (most recently modified first)"
-                        },
-                        { "name": "-r", "boolean": true, "docs": "Reverse the natural sort order" },
-                        { "name": "-s", "boolean": true, "hidden": true },
-                        { "name": "-S", "boolean": true, "docs": "Sort files by size" }
-                      ]
-                    },
-                    "flags": { "boolean": ["A", "a", "d", "c", "C", "l", "h", "t", "r", "s", "S"] },
-                    "plugin": "plugin-bash-like/fs"
+            "response": {
+              "header": {
+                "name": "Name",
+                "attributes": [
+                  {
+                    "value": "Permissions",
+                    "outerCSS": "hide-with-sidecar"
                   },
-                  "execType": 0,
-                  "execUUID": "b3712610-4ab2-4784-8845-f0876b9a1db3"
+                  {
+                    "value": "User",
+                    "outerCSS": "hide-with-sidecar"
+                  },
+                  {
+                    "value": "Group",
+                    "outerCSS": "hide-with-sidecar"
+                  },
+                  {
+                    "value": "Size",
+                    "outerCSS": "hide-with-sidecar text-right"
+                  },
+                  {
+                    "value": "Last Modified",
+                    "outerCSS": "hide-with-narrow-window",
+                    "css": "elide-with-narrow-window"
+                  }
+                ]
+              },
+              "body": [
+                {
+                  "name": "bin/",
+                  "css": "dir-listing-is-directory",
+                  "onclickExec": "pexec",
+                  "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/bin",
+                  "onclickSilence": false,
+                  "attributes": [
+                    {
+                      "value": "drwxr-xr-x",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "192B",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
                 },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "ls -l",
-                  "argvNoOptions": ["ls"],
-                  "parsedOptions": { "_": ["ls"], "l": true },
-                  "execUUID": "b3712610-4ab2-4784-8845-f0876b9a1db3",
-                  "cancelled": false,
-                  "evaluatorOptions": { "plugin": "plugin-bash-like/fs" },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "b3712610-4ab2-4784-8845-f0876b9a1db3",
-                    "history": 250,
-                    "env": {}
-                  },
-                  "response": {
-                    "header": {
-                      "name": "Name",
-                      "attributes": [
-                        { "value": "Permissions", "outerCSS": "hide-with-sidecar" },
-                        { "value": "User", "outerCSS": "hide-with-sidecar" },
-                        { "value": "Group", "outerCSS": "hide-with-sidecar" },
-                        { "value": "Size", "outerCSS": "hide-with-sidecar text-right" },
-                        {
-                          "value": "Last Modified",
-                          "outerCSS": "hide-with-narrow-window",
-                          "css": "elide-with-narrow-window"
-                        }
-                      ]
+                {
+                  "name": "CHANGELOG.md",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/CHANGELOG.md",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
                     },
-                    "body": [
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "1.6M",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "CONTRIBUTING.md",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/CONTRIBUTING.md",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "4.5K",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "design/",
+                  "css": "dir-listing-is-directory",
+                  "onclickExec": "pexec",
+                  "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/design",
+                  "onclickSilence": false,
+                  "attributes": [
+                    {
+                      "value": "drwxr-xr-x",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "128B",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "docs/",
+                  "css": "dir-listing-is-directory",
+                  "onclickExec": "pexec",
+                  "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/docs",
+                  "onclickSilence": false,
+                  "attributes": [
+                    {
+                      "value": "drwxr-xr-x",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "192B",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "lerna.json",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/lerna.json",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "146B",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "LICENSE",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/LICENSE",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "11.1K",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "node_modules/",
+                  "css": "dir-listing-is-directory",
+                  "onclickExec": "pexec",
+                  "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/node_modules",
+                  "onclickSilence": false,
+                  "attributes": [
+                    {
+                      "value": "drwxr-xr-x",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "33.9K",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:56",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "package-lock.json",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/package-lock.json",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "584.3K",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "package.json",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/package.json",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "7.8K",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "packages/",
+                  "css": "dir-listing-is-directory",
+                  "onclickExec": "pexec",
+                  "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/packages",
+                  "onclickSilence": false,
+                  "attributes": [
+                    {
+                      "value": "drwxr-xr-x",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "256B",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "plugins/",
+                  "css": "dir-listing-is-directory",
+                  "onclickExec": "pexec",
+                  "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/plugins",
+                  "onclickSilence": false,
+                  "attributes": [
+                    {
+                      "value": "drwxr-xr-x",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "704B",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "README.md",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/README.md",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "3.1K",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "tools/",
+                  "css": "dir-listing-is-directory",
+                  "onclickExec": "pexec",
+                  "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/tools",
+                  "onclickSilence": false,
+                  "attributes": [
+                    {
+                      "value": "drwxr-xr-x",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "192B",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                },
+                {
+                  "name": "tsconfig.json",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/tsconfig.json",
+                  "onclickSilence": true,
+                  "attributes": [
+                    {
+                      "value": "-rw-r--r--",
+                      "outerCSS": "hide-with-sidecar",
+                      "key": "Permissions-0"
+                    },
+                    {
+                      "value": "mengting.yan1ibm.com",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "User-1"
+                    },
+                    {
+                      "value": "20",
+                      "outerCSS": "hide-with-sidecar",
+                      "css": "slightly-deemphasize",
+                      "key": "Group-2"
+                    },
+                    {
+                      "value": "1.2K",
+                      "outerCSS": "hide-with-sidecar text-right",
+                      "key": "Size-3"
+                    },
+                    {
+                      "value": "Sep 29 18:50",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                      "key": "Last Modified-4"
+                    }
+                  ],
+                  "key": "Name"
+                }
+              ],
+              "markdown": true,
+              "noSort": true,
+              "noEntityColors": true
+            },
+            "historyIdx": 250,
+            "cwd": "~/Workspace7/kui",
+            "command": "ls -l",
+            "startEvent": {
+              "route": "/ls",
+              "command": "ls -l",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "ls",
+                  "title": "local file list",
+                  "header": "Directory listing of your local filesystem",
+                  "noHelpAlias": true,
+                  "optional": [
+                    {
+                      "name": "path",
+                      "docs": "local file path",
+                      "file": true,
+                      "positional": true
+                    },
+                    {
+                      "name": "-A",
+                      "boolean": true,
+                      "docs": "List all entries except for . and .."
+                    },
+                    {
+                      "name": "-a",
+                      "boolean": true,
+                      "docs": "Include directory entries whose names begin with a dot (.)"
+                    },
+                    {
+                      "name": "-d",
+                      "boolean": true,
+                      "docs": "Directories are listed as plain files"
+                    },
+                    {
+                      "name": "-c",
+                      "boolean": true,
+                      "docs": "Use time when file status was last changed for sorting"
+                    },
+                    {
+                      "name": "-C",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-l",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-h",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-t",
+                      "boolean": true,
+                      "docs": "Sort by time modified (most recently modified first)"
+                    },
+                    {
+                      "name": "-r",
+                      "boolean": true,
+                      "docs": "Reverse the natural sort order"
+                    },
+                    {
+                      "name": "-s",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-S",
+                      "boolean": true,
+                      "docs": "Sort files by size"
+                    }
+                  ]
+                },
+                "flags": {
+                  "boolean": ["A", "a", "d", "c", "C", "l", "h", "t", "r", "s", "S"]
+                },
+                "plugin": "plugin-bash-like/fs"
+              },
+              "execType": 0,
+              "execUUID": "3cf815e4-b155-452b-8cdd-c9e45c53a5da"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "ls -l",
+              "argvNoOptions": ["ls"],
+              "parsedOptions": {
+                "_": ["ls"],
+                "l": true
+              },
+              "execUUID": "3cf815e4-b155-452b-8cdd-c9e45c53a5da",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "plugin": "plugin-bash-like/fs"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "3cf815e4-b155-452b-8cdd-c9e45c53a5da",
+                "history": 250,
+                "env": {}
+              },
+              "response": {
+                "header": {
+                  "name": "Name",
+                  "attributes": [
+                    {
+                      "value": "Permissions",
+                      "outerCSS": "hide-with-sidecar"
+                    },
+                    {
+                      "value": "User",
+                      "outerCSS": "hide-with-sidecar"
+                    },
+                    {
+                      "value": "Group",
+                      "outerCSS": "hide-with-sidecar"
+                    },
+                    {
+                      "value": "Size",
+                      "outerCSS": "hide-with-sidecar text-right"
+                    },
+                    {
+                      "value": "Last Modified",
+                      "outerCSS": "hide-with-narrow-window",
+                      "css": "elide-with-narrow-window"
+                    }
+                  ]
+                },
+                "body": [
+                  {
+                    "name": "bin/",
+                    "css": "dir-listing-is-directory",
+                    "onclickExec": "pexec",
+                    "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/bin",
+                    "onclickSilence": false,
+                    "attributes": [
                       {
-                        "name": "bin/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/bin",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "224B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Apr 15 18:13",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
+                        "value": "drwxr-xr-x",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
                       },
                       {
-                        "name": "build/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/build",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "64B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Apr  6 16:50",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
                       },
                       {
-                        "name": "CHANGELOG.md",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/CHANGELOG.md",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "1.6M", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 20 18:29",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
                       },
                       {
-                        "name": "CONTRIBUTING.md",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/CONTRIBUTING.md",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "4.5K", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Feb 25 23:03",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
+                        "value": "192B",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
                       },
                       {
-                        "name": "design/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/design",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "128B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 19 15:23",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "dist/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/dist",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "160B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Jun 25 18:14",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "Dockerfile~",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/Dockerfile~",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "419B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Apr  6 16:32",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "docs/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/docs",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "256B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "May 14 11:33",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "lerna.json",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/lerna.json",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "146B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 20 18:29",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "LICENSE",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/LICENSE",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "11.1K", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Feb 25 23:03",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "node_modules/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/node_modules",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "33.8K", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 21 23:41",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "package-lock.json",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/package-lock.json",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "579.3K", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 21 23:23",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "package.json",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/package.json",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "7.7K", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 20  0:17",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "packages/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/packages",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "256B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Mar 21 22:06",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "plugins/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/plugins",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "704B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 19 21:51",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "README.md",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/README.md",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "3.1K", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Jun 21 17:31",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "tools/",
-                        "css": "dir-listing-is-directory",
-                        "onclickExec": "pexec",
-                        "onclick": "ls /Users/nickm/git/whisk/nickm/kui/tools",
-                        "attributes": [
-                          { "value": "drwxr-xr-x", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "224B", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Apr 20 15:54",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "tsconfig.json",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /Users/nickm/git/whisk/nickm/kui/tsconfig.json",
-                        "attributes": [
-                          { "value": "-rw-r--r--", "outerCSS": "hide-with-sidecar", "key": "Permissions-0" },
-                          {
-                            "value": "nickm",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "User-1"
-                          },
-                          {
-                            "value": "20",
-                            "outerCSS": "hide-with-sidecar",
-                            "css": "slightly-deemphasize",
-                            "key": "Group-2"
-                          },
-                          { "value": "1.1K", "outerCSS": "hide-with-sidecar text-right", "key": "Size-3" },
-                          {
-                            "value": "Aug 19 21:51",
-                            "outerCSS": "hide-with-narrow-window",
-                            "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                            "key": "Last Modified-4"
-                          }
-                        ],
-                        "key": "Name"
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
                       }
                     ],
-                    "noSort": true,
-                    "noEntityColors": true,
-                    "style": 0
+                    "key": "Name"
                   },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 250
-                }
-              }
-            ]
+                  {
+                    "name": "CHANGELOG.md",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/CHANGELOG.md",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "1.6M",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "CONTRIBUTING.md",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/CONTRIBUTING.md",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "4.5K",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "design/",
+                    "css": "dir-listing-is-directory",
+                    "onclickExec": "pexec",
+                    "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/design",
+                    "onclickSilence": false,
+                    "attributes": [
+                      {
+                        "value": "drwxr-xr-x",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "128B",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "docs/",
+                    "css": "dir-listing-is-directory",
+                    "onclickExec": "pexec",
+                    "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/docs",
+                    "onclickSilence": false,
+                    "attributes": [
+                      {
+                        "value": "drwxr-xr-x",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "192B",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "lerna.json",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/lerna.json",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "146B",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "LICENSE",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/LICENSE",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "11.1K",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "node_modules/",
+                    "css": "dir-listing-is-directory",
+                    "onclickExec": "pexec",
+                    "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/node_modules",
+                    "onclickSilence": false,
+                    "attributes": [
+                      {
+                        "value": "drwxr-xr-x",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "33.9K",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:56",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "package-lock.json",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/package-lock.json",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "584.3K",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "package.json",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/package.json",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "7.8K",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "packages/",
+                    "css": "dir-listing-is-directory",
+                    "onclickExec": "pexec",
+                    "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/packages",
+                    "onclickSilence": false,
+                    "attributes": [
+                      {
+                        "value": "drwxr-xr-x",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "256B",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "plugins/",
+                    "css": "dir-listing-is-directory",
+                    "onclickExec": "pexec",
+                    "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/plugins",
+                    "onclickSilence": false,
+                    "attributes": [
+                      {
+                        "value": "drwxr-xr-x",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "704B",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "README.md",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/README.md",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "3.1K",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "tools/",
+                    "css": "dir-listing-is-directory",
+                    "onclickExec": "pexec",
+                    "onclick": "ls -l /Users/mengting.yan1ibm.com/Workspace7/kui/tools",
+                    "onclickSilence": false,
+                    "attributes": [
+                      {
+                        "value": "drwxr-xr-x",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "192B",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "tsconfig.json",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /Users/mengting.yan1ibm.com/Workspace7/kui/tsconfig.json",
+                    "onclickSilence": true,
+                    "attributes": [
+                      {
+                        "value": "-rw-r--r--",
+                        "outerCSS": "hide-with-sidecar",
+                        "key": "Permissions-0"
+                      },
+                      {
+                        "value": "mengting.yan1ibm.com",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "User-1"
+                      },
+                      {
+                        "value": "20",
+                        "outerCSS": "hide-with-sidecar",
+                        "css": "slightly-deemphasize",
+                        "key": "Group-2"
+                      },
+                      {
+                        "value": "1.2K",
+                        "outerCSS": "hide-with-sidecar text-right",
+                        "key": "Size-3"
+                      },
+                      {
+                        "value": "Sep 29 18:50",
+                        "outerCSS": "hide-with-narrow-window",
+                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
+                        "key": "Last Modified-4"
+                      }
+                    ],
+                    "key": "Name"
+                  }
+                ],
+                "markdown": true,
+                "noSort": true,
+                "noEntityColors": true
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 250
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "3cf815e4-b155-452b-8cdd-c9e45c53a5da",
+            "startTime": "2020-09-30T18:57:27.998Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": false,
+            "state": "valid-response"
           }
         ]
       }

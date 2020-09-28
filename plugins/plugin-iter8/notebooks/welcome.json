@@ -1,751 +1,841 @@
 {
   "apiVersion": "kui-shell/v1",
-  "kind": "Snapshot",
+  "kind": "Notebook",
+  "metadata": {},
   "spec": {
-    "title": "Welcome to Iter8",
-    "windows": [
+    "splits": [
       {
-        "uuid": "0",
-        "tabs": [
+        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "blocks": [
           {
-            "uuid": "0",
-            "blocks": [
-              {
-                "startTime": 1599574252027,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/#",
-                  "command": "# # Use the iter8 Plugin on Kui",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "5acb90ef-a857-461b-ad05-df4202a952e8"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "## Use the iter8 Plugin on Kui",
-                  "argvNoOptions": ["#", " # Use the iter8 Plugin on Kui"],
-                  "parsedOptions": {
-                    "_": ["#", " # Use the iter8 Plugin on Kui"]
-                  },
-                  "execUUID": "5acb90ef-a857-461b-ad05-df4202a952e8",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "5acb90ef-a857-461b-ad05-df4202a952e8",
-                    "history": 250,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "# Use the iter8 Plugin on Kui"
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 250
-                }
-              },
-              {
-                "startTime": 1599574278756,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/#",
-                  "command": "# ### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner.",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "7d5454dd-9f9a-4330-80c0-4df1affce4af"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "#### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner.",
-                  "argvNoOptions": [
-                    "#",
-                    " ### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner."
-                  ],
-                  "parsedOptions": {
-                    "_": [
-                      "#",
-                      " ### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner."
-                    ]
-                  },
-                  "execUUID": "7d5454dd-9f9a-4330-80c0-4df1affce4af",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "7d5454dd-9f9a-4330-80c0-4df1affce4af",
-                    "history": 251,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner."
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 251
-                }
-              },
-              {
-                "startTime": 1599574347339,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/#",
-                  "command": "# ## Install iter8 using on your Kubernetes cluster",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "35b99fa5-9154-4eba-820c-8d9e9192bc19"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "### Install iter8 using on your Kubernetes cluster",
-                  "argvNoOptions": ["#", " ## Install iter8 using on your Kubernetes cluster"],
-                  "parsedOptions": {
-                    "_": ["#", " ## Install iter8 using on your Kubernetes cluster"]
-                  },
-                  "execUUID": "35b99fa5-9154-4eba-820c-8d9e9192bc19",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "35b99fa5-9154-4eba-820c-8d9e9192bc19",
-                    "history": 252,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "## Install iter8 using on your Kubernetes cluster"
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 252
-                }
-              },
-              {
-                "startTime": 1599574348174,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "*",
-                  "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
-                  "evaluatorOptions": {},
-                  "execType": 1,
-                  "execUUID": "8e8a47ba-a230-49c9-9e22-967a08281397",
-                  "echo": true
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 1,
-                  "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
-                  "argvNoOptions": ["curl"],
-                  "parsedOptions": {
-                    "_": ["curl"],
-                    "L": true,
-                    "s": "https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh"
-                  },
-                  "execUUID": "8e8a47ba-a230-49c9-9e22-967a08281397",
-                  "cancelled": false,
-                  "echo": true,
-                  "evaluatorOptions": {},
-                  "execOptions": {
-                    "echo": true,
-                    "type": 1,
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "8e8a47ba-a230-49c9-9e22-967a08281397",
-                    "history": 253,
-                    "env": {}
-                  },
-                  "response": true,
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 253
-                }
-              },
-              {
-                "startTime": 1599574363895,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/#",
-                  "command": "# ## Verify installation",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "b9c77682-8aa7-49e8-b1e4-fd4597a279d3"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "### Verify installation",
-                  "argvNoOptions": ["#", " ## Verify installation"],
-                  "parsedOptions": {
-                    "_": ["#", " ## Verify installation"]
-                  },
-                  "execUUID": "b9c77682-8aa7-49e8-b1e4-fd4597a279d3",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "b9c77682-8aa7-49e8-b1e4-fd4597a279d3",
-                    "history": 254,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "## Verify installation"
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 254
-                }
-              },
-              {
-                "startTime": 1599574369500,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/iter8/config/verify",
-                  "command": "iter8 config verify",
-                  "evaluatorOptions": {
-                    "isExperimental": true,
-                    "plugin": "plugin-iter8"
-                  },
-                  "execType": 0,
-                  "execUUID": "8814744a-c010-48a8-8cd7-9e25b4cc6993"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "iter8 config verify",
-                  "argvNoOptions": ["iter8", "config", "verify"],
-                  "parsedOptions": {
-                    "_": ["iter8", "config", "verify"]
-                  },
-                  "execUUID": "8814744a-c010-48a8-8cd7-9e25b4cc6993",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "isExperimental": true,
-                    "plugin": "plugin-iter8"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "8814744a-c010-48a8-8cd7-9e25b4cc6993",
-                    "history": 255,
-                    "env": {}
-                  },
-                  "response": "true",
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 255
-                }
-              },
-              {
-                "startTime": 1599574395901,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/kubeui/kubectl/get",
-                  "command": "kubectl get svc -n iter8",
-                  "evaluatorOptions": {
-                    "flags": {
-                      "configuration": {
-                        "short-option-groups": false,
-                        "duplicate-arguments-array": false
-                      },
-                      "narg": {
-                        "w": 0,
-                        "watch": 0,
-                        "watch-only": 0
-                      },
-                      "boolean": [
-                        "w",
-                        "watch",
-                        "watch-only",
-                        "A",
-                        "all-namespaces",
-                        "ignore-not-found",
-                        "no-headers",
-                        "i",
-                        "it",
-                        "ti",
-                        "stdin",
-                        "t",
-                        "tty",
-                        "R",
-                        "recursive",
-                        "server-print",
-                        "show-kind",
-                        "show-labels"
-                      ]
-                    },
-                    "plugin": "plugin-kubectl"
-                  },
-                  "execType": 0,
-                  "execUUID": "5e242ddd-adfa-46d5-a429-a52ac7341e85"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "kubectl get svc -n iter8",
-                  "argvNoOptions": ["kubectl", "get", "svc"],
-                  "parsedOptions": {
-                    "_": ["kubectl", "get", "svc"],
-                    "n": "iter8"
-                  },
-                  "execUUID": "5e242ddd-adfa-46d5-a429-a52ac7341e85",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "plugin": "plugin-kubectl"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "5e242ddd-adfa-46d5-a429-a52ac7341e85",
-                    "history": 256,
-                    "env": {}
-                  },
-                  "response": {
-                    "header": {
-                      "key": "NAME",
-                      "name": "Name",
-                      "rowKey": "NAME",
-                      "fontawesome": false,
-                      "onclick": false,
-                      "onclickSilence": true,
-                      "css": " kui--table-cell-is-name",
-                      "rowCSS": [],
-                      "outerCSS": "header-cell entity-name-group",
-                      "attributes": [
-                        {
-                          "key": "TYPE",
-                          "tag": false,
-                          "onclick": false,
-                          "outerCSS": "header-cell hide-with-sidecar",
-                          "css": "  ",
-                          "value": "Type"
-                        },
-                        {
-                          "key": "CLUSTER-IP",
-                          "tag": false,
-                          "onclick": false,
-                          "outerCSS": "header-cell ",
-                          "css": "  ",
-                          "value": "Cluster-ip"
-                        },
-                        {
-                          "key": "EXTERNAL-IP",
-                          "tag": false,
-                          "onclick": false,
-                          "outerCSS": "header-cell  hide-with-sidecar",
-                          "css": "  ",
-                          "value": "External-ip"
-                        },
-                        {
-                          "key": "PORT(S)",
-                          "tag": false,
-                          "onclick": false,
-                          "outerCSS": "header-cell entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
-                          "css": "  ",
-                          "value": "Port(s)"
-                        },
-                        {
-                          "key": "AGE",
-                          "tag": false,
-                          "onclick": false,
-                          "outerCSS": "header-cell hide-with-sidecar hide-with-sidecar",
-                          "css": "  ",
-                          "value": "Age"
-                        }
-                      ]
-                    },
-                    "body": [
-                      {
-                        "key": "NAME",
-                        "name": "iter8-analytics",
-                        "rowKey": "iter8-analytics",
-                        "fontawesome": false,
-                        "onclick": "kubectl get Service iter8-analytics -o yaml -n iter8 ",
-                        "onclickSilence": true,
-                        "css": " kui--table-cell-is-name",
-                        "rowCSS": [],
-                        "outerCSS": " entity-name-group",
-                        "attributes": [
-                          {
-                            "key": "TYPE",
-                            "onclick": false,
-                            "outerCSS": " hide-with-sidecar",
-                            "css": "  ",
-                            "value": "ClusterIP"
-                          },
-                          {
-                            "key": "CLUSTER-IP",
-                            "onclick": false,
-                            "outerCSS": " ",
-                            "css": "  ",
-                            "value": "172.21.243.237"
-                          },
-                          {
-                            "key": "EXTERNAL-IP",
-                            "onclick": false,
-                            "outerCSS": "  hide-with-sidecar",
-                            "css": "  yellow-background",
-                            "value": "<none>"
-                          },
-                          {
-                            "key": "PORT(S)",
-                            "onclick": false,
-                            "outerCSS": " entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
-                            "css": "  ",
-                            "value": "8080/TCP"
-                          },
-                          {
-                            "key": "AGE",
-                            "onclick": false,
-                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
-                            "css": " slightly-deemphasize ",
-                            "value": "19d"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "NAME",
-                        "name": "iter8-controller",
-                        "rowKey": "iter8-controller",
-                        "fontawesome": false,
-                        "onclick": "kubectl get Service iter8-controller -o yaml -n iter8 ",
-                        "onclickSilence": true,
-                        "css": " kui--table-cell-is-name",
-                        "rowCSS": [],
-                        "outerCSS": " entity-name-group",
-                        "attributes": [
-                          {
-                            "key": "TYPE",
-                            "onclick": false,
-                            "outerCSS": " hide-with-sidecar",
-                            "css": "  ",
-                            "value": "ClusterIP"
-                          },
-                          {
-                            "key": "CLUSTER-IP",
-                            "onclick": false,
-                            "outerCSS": " ",
-                            "css": "  ",
-                            "value": "172.21.245.193"
-                          },
-                          {
-                            "key": "EXTERNAL-IP",
-                            "onclick": false,
-                            "outerCSS": "  hide-with-sidecar",
-                            "css": "  yellow-background",
-                            "value": "<none>"
-                          },
-                          {
-                            "key": "PORT(S)",
-                            "onclick": false,
-                            "outerCSS": " entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
-                            "css": "  ",
-                            "value": "443/TCP"
-                          },
-                          {
-                            "key": "AGE",
-                            "onclick": false,
-                            "outerCSS": " hide-with-sidecar hide-with-sidecar",
-                            "css": " slightly-deemphasize ",
-                            "value": "19d"
-                          }
-                        ]
-                      }
-                    ],
-                    "noSort": true,
-                    "title": "Service",
-                    "breadcrumbs": [
-                      {
-                        "label": "iter8"
-                      }
-                    ],
-                    "statusColumnIdx": -1
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 256
-                }
-              },
-              {
-                "startTime": 1599574432231,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/#",
-                  "command": "# ## Learn more about iter8 and how to use it",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "6e111183-4310-44bd-a571-08346c243955"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "### Learn more about iter8 and how to use it",
-                  "argvNoOptions": ["#", " ## Learn more about iter8 and how to use it"],
-                  "parsedOptions": {
-                    "_": ["#", " ## Learn more about iter8 and how to use it"]
-                  },
-                  "execUUID": "6e111183-4310-44bd-a571-08346c243955",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "6e111183-4310-44bd-a571-08346c243955",
-                    "history": 257,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "## Learn more about iter8 and how to use it"
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 257
-                }
-              },
-              {
-                "startTime": 1599574435835,
-                "startEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/iter8/about",
-                  "command": "iter8 about",
-                  "evaluatorOptions": {
-                    "isExperimental": true,
-                    "plugin": "plugin-iter8"
-                  },
-                  "execType": 0,
-                  "execUUID": "7245ba00-b258-47db-bbed-e19fb21447cc"
-                },
-                "completeEvent": {
-                  "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "command": "iter8 about",
-                  "argvNoOptions": ["iter8", "about"],
-                  "parsedOptions": {
-                    "_": ["iter8", "about"]
-                  },
-                  "execUUID": "7245ba00-b258-47db-bbed-e19fb21447cc",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "isExperimental": true,
-                    "plugin": "plugin-iter8"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "1_c57e811f-2da8-557e-a402-9f0950407675",
-                    "execUUID": "7245ba00-b258-47db-bbed-e19fb21447cc",
-                    "history": 258,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "NavResponse",
-                    "breadcrumbs": [
-                      {
-                        "label": "iter8"
-                      },
-                      {
-                        "label": "about",
-                        "command": "iter8 about"
-                      }
-                    ],
-                    "menus": [
-                      {
-                        "label": "Iter8",
-                        "items": [
-                          {
-                            "mode": "About",
-                            "content": "#### Iter8\n\n[Iter8](https://github.com/iter8-tools/iter8) enables statistically robust continuous experimentation of microservices in your CI/CD pipelines\n\nIter8’s expressive model of cloud experimentation supports a variety of CI/CD scenarios. Using an iter8 experiment, you can:\n\n- Run a **_performance test_** with a single version of a microservice.\n\n- Perform a **_canary release_** with two versions, a baseline and a candidate. Iter8 will shift application traffic safely and gradually to the candidate, if it meets the criteria you specify in the experiment.\n\n- Perform an **_A/B test_** with two versions – a baseline and a candidate. Iter8 will identify and shift application traffic safely and gradually to the winner, where the winning version is defined by the criteria you specify in the experiment.\n\n- Perform an **_A/B/N_** test with multiple versions – a baseline and multiple candidates. Iter8 will identify and shift application traffic safely and gradually to the winner.\n\n[Learn more](https://iter8.tools/)\n",
-                            "contentType": "text/markdown"
-                          },
-                          {
-                            "mode": "Commands",
-                            "content": "\n#### Currently Available Commands:\n\nWe have implemented the following commands that can be used once the KUI terminal is up and running:\n#### 1. iter8 metrics\nThis command opens a KUI sidecar where the user can perform CRUD operations on the iter8 metric configmap. Specifically, users can add, edit, delete and restore metrics on the KUI sidecar that is opened.\n#### 2. iter8 create experiment\nThis command also opens a KUI sidecar and is used to create Human-In-The-Loop experiments with iter8. This command opens a sidecar with two tabs- one for creating the experiment and one for viewing the decision and metrics for the experiment from _iter8-analytics_. The sidecar options are interactive and can be experimented with by the user.\n#### 2. iter8 config verify\nThis command verifies if _iter8-analytics_ and _iter8-controller_ service is currently installed in the user's environment\n\nMore information on how to use these commands is available [here](http://iter8.tools/integrations/iter8-kui/)\n",
-                            "contentType": "text/markdown"
-                          }
-                        ]
-                      },
-                      {
-                        "label": "Components",
-                        "items": [
-                          {
-                            "mode": "Iter8 Controller",
-                            "content": "\n#### Iter8 Controller\n\nA Kubernetes controller that automates canary releases and A/B testing by adjusting the traffic across different versions of a microservice as recommended by _iter8-analytics_ until the canary replaces the baseline (previous) version.\n",
-                            "contentType": "text/markdown"
-                          },
-                          {
-                            "mode": "Iter8 Analytics",
-                            "content": "\n#### Iter8 Analytics\n\nA service that assesses the behavior of different microservice versions by analyzing metrics associated with each version using robust statistical techniques to determine which version is the winner with respect to the metrics of interest and which versions pass a set of success criteria.\n\nIt returns the result of the data analysis along with a recommendation for how the traffic should be split across all microservice versions. The iter8-analytics' REST API is used by _iter8-controller_.\n",
-                            "contentType": "text/markdown"
-                          }
-                        ]
-                      }
-                    ],
-                    "links": [
-                      {
-                        "label": "Github",
-                        "href": "https://github.com/iter8-tools/iter8"
-                      },
-                      {
-                        "label": "Join Slack",
-                        "href": "https://join.slack.com/t/iter8-tools/shared_invite/enQtODU0NTczMTQ5NDU4LTJmNGE1OTBhOWI4NzllZGE0ZjdhM2M3MzJlMjcxYjliMTJlM2YxMzQ4OWQ5NGViYTM2MTU4MWRkZTgxNzZiMzg"
-                      },
-                      {
-                        "label": "Learn More",
-                        "href": "https://iter8.tools/"
-                      }
-                    ]
-                  },
-                  "responseType": "NavResponse",
-                  "historyIdx": 258
-                }
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "# Use the iter8 Plugin on Kui\n\n### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner.\n\n## Install iter8 using on your Kubernetes cluster"
               }
-            ]
+            },
+            "historyIdx": 250,
+            "cwd": "~/Workspace7/kui",
+            "command": "# ",
+            "startEvent": {
+              "route": "/#",
+              "command": "# ",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "693795a3-d11d-4b81-99a0-ce90fffbfbe8"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "#",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "693795a3-d11d-4b81-99a0-ce90fffbfbe8",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "693795a3-d11d-4b81-99a0-ce90fffbfbe8",
+                "history": 250,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "# Use the iter8 Plugin on Kui\n\n### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner.\n\n## Install iter8 using on your Kubernetes cluster"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 250
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "693795a3-d11d-4b81-99a0-ce90fffbfbe8",
+            "startTime": "2020-09-30T21:18:42.064Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": true,
+            "historyIdx": 252,
+            "cwd": "~/Workspace7/kui",
+            "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
+            "startEvent": {
+              "route": "*",
+              "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
+              "evaluatorOptions": {},
+              "execType": 1,
+              "execUUID": "8020c215-49c0-49fc-9b60-23df7aa12297",
+              "echo": true
+            },
+            "completeEvent": {
+              "execType": 1,
+              "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
+              "argvNoOptions": ["curl"],
+              "parsedOptions": {
+                "_": ["curl"],
+                "L": true,
+                "s": "https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh"
+              },
+              "execUUID": "8020c215-49c0-49fc-9b60-23df7aa12297",
+              "cancelled": false,
+              "echo": true,
+              "evaluatorOptions": {},
+              "execOptions": {
+                "echo": true,
+                "type": 1,
+                "execUUID": "8020c215-49c0-49fc-9b60-23df7aa12297",
+                "history": 252,
+                "env": {}
+              },
+              "response": true,
+              "responseType": "ScalarResponse",
+              "historyIdx": 252
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "8020c215-49c0-49fc-9b60-23df7aa12297",
+            "startTime": "2020-09-30T21:19:02.733Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": false,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "# Verify installation"
+              }
+            },
+            "historyIdx": 253,
+            "cwd": "~/Workspace7/kui",
+            "command": "# ",
+            "startEvent": {
+              "route": "/#",
+              "command": "# ",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "b6211da0-59b2-40d4-9302-22c70ff284c7"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "#",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "b6211da0-59b2-40d4-9302-22c70ff284c7",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "b6211da0-59b2-40d4-9302-22c70ff284c7",
+                "history": 253,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "# Verify installation"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 253
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "b6211da0-59b2-40d4-9302-22c70ff284c7",
+            "startTime": "2020-09-30T21:19:13.285Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": "true",
+            "historyIdx": 254,
+            "cwd": "~/Workspace7/kui",
+            "command": "iter8 config verify",
+            "startEvent": {
+              "route": "/iter8/config/verify",
+              "command": "iter8 config verify",
+              "evaluatorOptions": {
+                "isExperimental": true,
+                "plugin": "plugin-iter8"
+              },
+              "execType": 0,
+              "execUUID": "cfc2cfa6-99e3-40cd-9001-6414bf8c89e3"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "iter8 config verify",
+              "argvNoOptions": ["iter8", "config", "verify"],
+              "parsedOptions": {
+                "_": ["iter8", "config", "verify"]
+              },
+              "execUUID": "cfc2cfa6-99e3-40cd-9001-6414bf8c89e3",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "isExperimental": true,
+                "plugin": "plugin-iter8"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "cfc2cfa6-99e3-40cd-9001-6414bf8c89e3",
+                "history": 254,
+                "env": {}
+              },
+              "response": "true",
+              "responseType": "ScalarResponse",
+              "historyIdx": 254
+            },
+            "isExperimental": true,
+            "isReplay": false,
+            "execUUID": "cfc2cfa6-99e3-40cd-9001-6414bf8c89e3",
+            "startTime": "2020-09-30T21:19:20.158Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": false,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "header": {
+                "key": "NAME",
+                "name": "Name",
+                "rowKey": "NAME",
+                "fontawesome": false,
+                "onclick": false,
+                "onclickSilence": true,
+                "css": " kui--table-cell-is-name",
+                "rowCSS": [],
+                "outerCSS": "header-cell entity-name-group",
+                "attributes": [
+                  {
+                    "key": "TYPE",
+                    "tag": false,
+                    "onclick": false,
+                    "outerCSS": "header-cell hide-with-sidecar",
+                    "css": "  ",
+                    "value": "Type"
+                  },
+                  {
+                    "key": "CLUSTER-IP",
+                    "tag": false,
+                    "onclick": false,
+                    "outerCSS": "header-cell ",
+                    "css": "  ",
+                    "value": "Cluster-ip"
+                  },
+                  {
+                    "key": "EXTERNAL-IP",
+                    "tag": false,
+                    "onclick": false,
+                    "outerCSS": "header-cell  hide-with-sidecar",
+                    "css": "  ",
+                    "value": "External-ip"
+                  },
+                  {
+                    "key": "PORT(S)",
+                    "tag": false,
+                    "onclick": false,
+                    "outerCSS": "header-cell entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
+                    "css": "  ",
+                    "value": "Port(s)"
+                  },
+                  {
+                    "key": "AGE",
+                    "tag": false,
+                    "onclick": false,
+                    "outerCSS": "header-cell hide-with-sidecar hide-with-sidecar",
+                    "css": "  ",
+                    "value": "Age"
+                  }
+                ]
+              },
+              "body": [
+                {
+                  "key": "NAME",
+                  "name": "iter8-analytics",
+                  "rowKey": "iter8-analytics",
+                  "fontawesome": false,
+                  "onclick": "kubectl get Service iter8-analytics -o yaml -n iter8 ",
+                  "onclickSilence": true,
+                  "css": " kui--table-cell-is-name",
+                  "rowCSS": [],
+                  "outerCSS": " entity-name-group",
+                  "attributes": [
+                    {
+                      "key": "TYPE",
+                      "onclick": false,
+                      "outerCSS": " hide-with-sidecar",
+                      "css": "  ",
+                      "value": "ClusterIP"
+                    },
+                    {
+                      "key": "CLUSTER-IP",
+                      "onclick": false,
+                      "outerCSS": " ",
+                      "css": "  ",
+                      "value": "172.21.243.237"
+                    },
+                    {
+                      "key": "EXTERNAL-IP",
+                      "onclick": false,
+                      "outerCSS": "  hide-with-sidecar",
+                      "css": "  yellow-background",
+                      "value": "<none>"
+                    },
+                    {
+                      "key": "PORT(S)",
+                      "onclick": false,
+                      "outerCSS": " entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
+                      "css": "  ",
+                      "value": "8080/TCP"
+                    },
+                    {
+                      "key": "AGE",
+                      "onclick": false,
+                      "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                      "css": " slightly-deemphasize ",
+                      "value": "19d"
+                    }
+                  ]
+                },
+                {
+                  "key": "NAME",
+                  "name": "iter8-controller",
+                  "rowKey": "iter8-controller",
+                  "fontawesome": false,
+                  "onclick": "kubectl get Service iter8-controller -o yaml -n iter8 ",
+                  "onclickSilence": true,
+                  "css": " kui--table-cell-is-name",
+                  "rowCSS": [],
+                  "outerCSS": " entity-name-group",
+                  "attributes": [
+                    {
+                      "key": "TYPE",
+                      "onclick": false,
+                      "outerCSS": " hide-with-sidecar",
+                      "css": "  ",
+                      "value": "ClusterIP"
+                    },
+                    {
+                      "key": "CLUSTER-IP",
+                      "onclick": false,
+                      "outerCSS": " ",
+                      "css": "  ",
+                      "value": "172.21.245.193"
+                    },
+                    {
+                      "key": "EXTERNAL-IP",
+                      "onclick": false,
+                      "outerCSS": "  hide-with-sidecar",
+                      "css": "  yellow-background",
+                      "value": "<none>"
+                    },
+                    {
+                      "key": "PORT(S)",
+                      "onclick": false,
+                      "outerCSS": " entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
+                      "css": "  ",
+                      "value": "443/TCP"
+                    },
+                    {
+                      "key": "AGE",
+                      "onclick": false,
+                      "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                      "css": " slightly-deemphasize ",
+                      "value": "19d"
+                    }
+                  ]
+                }
+              ],
+              "noSort": true,
+              "title": "Service",
+              "breadcrumbs": [
+                {
+                  "label": "iter8"
+                }
+              ],
+              "statusColumnIdx": -1
+            },
+            "historyIdx": 255,
+            "cwd": "~/Workspace7/kui",
+            "command": "kubectl get svc -n iter8",
+            "startEvent": {
+              "route": "/kubeui/kubectl/get",
+              "command": "kubectl get svc -n iter8",
+              "evaluatorOptions": {
+                "flags": {
+                  "configuration": {
+                    "short-option-groups": false,
+                    "duplicate-arguments-array": false
+                  },
+                  "narg": {
+                    "w": 0,
+                    "watch": 0,
+                    "watch-only": 0
+                  },
+                  "boolean": [
+                    "w",
+                    "watch",
+                    "watch-only",
+                    "A",
+                    "all-namespaces",
+                    "ignore-not-found",
+                    "no-headers",
+                    "i",
+                    "it",
+                    "ti",
+                    "stdin",
+                    "t",
+                    "tty",
+                    "R",
+                    "recursive",
+                    "server-print",
+                    "show-kind",
+                    "show-labels"
+                  ]
+                },
+                "plugin": "plugin-kubectl"
+              },
+              "execType": 0,
+              "execUUID": "cc2db8c7-deb7-4f9b-ae10-c184552efb33"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "kubectl get svc -n iter8",
+              "argvNoOptions": ["kubectl", "get", "svc"],
+              "parsedOptions": {
+                "_": ["kubectl", "get", "svc"],
+                "n": "iter8"
+              },
+              "execUUID": "cc2db8c7-deb7-4f9b-ae10-c184552efb33",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "plugin": "plugin-kubectl"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "cc2db8c7-deb7-4f9b-ae10-c184552efb33",
+                "history": 255,
+                "env": {}
+              },
+              "response": {
+                "header": {
+                  "key": "NAME",
+                  "name": "Name",
+                  "rowKey": "NAME",
+                  "fontawesome": false,
+                  "onclick": false,
+                  "onclickSilence": true,
+                  "css": " kui--table-cell-is-name",
+                  "rowCSS": [],
+                  "outerCSS": "header-cell entity-name-group",
+                  "attributes": [
+                    {
+                      "key": "TYPE",
+                      "tag": false,
+                      "onclick": false,
+                      "outerCSS": "header-cell hide-with-sidecar",
+                      "css": "  ",
+                      "value": "Type"
+                    },
+                    {
+                      "key": "CLUSTER-IP",
+                      "tag": false,
+                      "onclick": false,
+                      "outerCSS": "header-cell ",
+                      "css": "  ",
+                      "value": "Cluster-ip"
+                    },
+                    {
+                      "key": "EXTERNAL-IP",
+                      "tag": false,
+                      "onclick": false,
+                      "outerCSS": "header-cell  hide-with-sidecar",
+                      "css": "  ",
+                      "value": "External-ip"
+                    },
+                    {
+                      "key": "PORT(S)",
+                      "tag": false,
+                      "onclick": false,
+                      "outerCSS": "header-cell entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
+                      "css": "  ",
+                      "value": "Port(s)"
+                    },
+                    {
+                      "key": "AGE",
+                      "tag": false,
+                      "onclick": false,
+                      "outerCSS": "header-cell hide-with-sidecar hide-with-sidecar",
+                      "css": "  ",
+                      "value": "Age"
+                    }
+                  ]
+                },
+                "body": [
+                  {
+                    "key": "NAME",
+                    "name": "iter8-analytics",
+                    "rowKey": "iter8-analytics",
+                    "fontawesome": false,
+                    "onclick": "kubectl get Service iter8-analytics -o yaml -n iter8 ",
+                    "onclickSilence": true,
+                    "css": " kui--table-cell-is-name",
+                    "rowCSS": [],
+                    "outerCSS": " entity-name-group",
+                    "attributes": [
+                      {
+                        "key": "TYPE",
+                        "onclick": false,
+                        "outerCSS": " hide-with-sidecar",
+                        "css": "  ",
+                        "value": "ClusterIP"
+                      },
+                      {
+                        "key": "CLUSTER-IP",
+                        "onclick": false,
+                        "outerCSS": " ",
+                        "css": "  ",
+                        "value": "172.21.243.237"
+                      },
+                      {
+                        "key": "EXTERNAL-IP",
+                        "onclick": false,
+                        "outerCSS": "  hide-with-sidecar",
+                        "css": "  yellow-background",
+                        "value": "<none>"
+                      },
+                      {
+                        "key": "PORT(S)",
+                        "onclick": false,
+                        "outerCSS": " entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
+                        "css": "  ",
+                        "value": "8080/TCP"
+                      },
+                      {
+                        "key": "AGE",
+                        "onclick": false,
+                        "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                        "css": " slightly-deemphasize ",
+                        "value": "19d"
+                      }
+                    ]
+                  },
+                  {
+                    "key": "NAME",
+                    "name": "iter8-controller",
+                    "rowKey": "iter8-controller",
+                    "fontawesome": false,
+                    "onclick": "kubectl get Service iter8-controller -o yaml -n iter8 ",
+                    "onclickSilence": true,
+                    "css": " kui--table-cell-is-name",
+                    "rowCSS": [],
+                    "outerCSS": " entity-name-group",
+                    "attributes": [
+                      {
+                        "key": "TYPE",
+                        "onclick": false,
+                        "outerCSS": " hide-with-sidecar",
+                        "css": "  ",
+                        "value": "ClusterIP"
+                      },
+                      {
+                        "key": "CLUSTER-IP",
+                        "onclick": false,
+                        "outerCSS": " ",
+                        "css": "  ",
+                        "value": "172.21.245.193"
+                      },
+                      {
+                        "key": "EXTERNAL-IP",
+                        "onclick": false,
+                        "outerCSS": "  hide-with-sidecar",
+                        "css": "  yellow-background",
+                        "value": "<none>"
+                      },
+                      {
+                        "key": "PORT(S)",
+                        "onclick": false,
+                        "outerCSS": " entity-name-group entity-name-group-narrow hide-with-sidecar hide-with-sidecar",
+                        "css": "  ",
+                        "value": "443/TCP"
+                      },
+                      {
+                        "key": "AGE",
+                        "onclick": false,
+                        "outerCSS": " hide-with-sidecar hide-with-sidecar",
+                        "css": " slightly-deemphasize ",
+                        "value": "19d"
+                      }
+                    ]
+                  }
+                ],
+                "noSort": true,
+                "title": "Service",
+                "breadcrumbs": [
+                  {
+                    "label": "iter8"
+                  }
+                ],
+                "statusColumnIdx": -1
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 255
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "state": "valid-response",
+            "execUUID": "cc2db8c7-deb7-4f9b-ae10-c184552efb33",
+            "startTime": "2020-09-30T21:19:28.237Z"
+          },
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Learn more about iter8 and how to use it"
+              }
+            },
+            "historyIdx": 256,
+            "cwd": "~/Workspace7/kui",
+            "command": "# ",
+            "startEvent": {
+              "route": "/#",
+              "command": "# ",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "d25f423b-284d-47fc-9703-28af580a6330"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "#",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "d25f423b-284d-47fc-9703-28af580a6330",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "d25f423b-284d-47fc-9703-28af580a6330",
+                "history": 256,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Learn more about iter8 and how to use it"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 256
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "d25f423b-284d-47fc-9703-28af580a6330",
+            "startTime": "2020-09-30T21:19:32.805Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": true,
+            "historyIdx": 257,
+            "cwd": "~/Workspace7/kui",
+            "command": "iter8 about",
+            "startEvent": {
+              "route": "/iter8/about",
+              "command": "iter8 about",
+              "evaluatorOptions": {
+                "isExperimental": true,
+                "plugin": "plugin-iter8"
+              },
+              "execType": 0,
+              "execUUID": "b968321e-7106-4854-93e7-8b38e7c6522e"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "iter8 about",
+              "argvNoOptions": ["iter8", "about"],
+              "parsedOptions": {
+                "_": ["iter8", "about"]
+              },
+              "execUUID": "b968321e-7106-4854-93e7-8b38e7c6522e",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "isExperimental": true,
+                "plugin": "plugin-iter8"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "b968321e-7106-4854-93e7-8b38e7c6522e",
+                "history": 257,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "NavResponse",
+                "breadcrumbs": [
+                  {
+                    "label": "iter8"
+                  },
+                  {
+                    "label": "about",
+                    "command": "iter8 about"
+                  }
+                ],
+                "menus": [
+                  {
+                    "label": "Iter8",
+                    "items": [
+                      {
+                        "mode": "About",
+                        "content": "#### Iter8\n\n[Iter8](https://github.com/iter8-tools/iter8) enables statistically robust continuous experimentation of microservices in your CI/CD pipelines\n\nIter8’s expressive model of cloud experimentation supports a variety of CI/CD scenarios. Using an iter8 experiment, you can:\n\n- Run a **_performance test_** with a single version of a microservice.\n\n- Perform a **_canary release_** with two versions, a baseline and a candidate. Iter8 will shift application traffic safely and gradually to the candidate, if it meets the criteria you specify in the experiment.\n\n- Perform an **_A/B test_** with two versions – a baseline and a candidate. Iter8 will identify and shift application traffic safely and gradually to the winner, where the winning version is defined by the criteria you specify in the experiment.\n\n- Perform an **_A/B/N_** test with multiple versions – a baseline and multiple candidates. Iter8 will identify and shift application traffic safely and gradually to the winner.\n\n[Learn more](https://iter8.tools/)\n",
+                        "contentType": "text/markdown"
+                      },
+                      {
+                        "mode": "Commands",
+                        "content": "\n#### Currently Available Commands:\n\nWe have implemented the following commands that can be used once the KUI terminal is up and running:\n#### 1. iter8 metrics\nThis command opens a KUI sidecar where the user can perform CRUD operations on the iter8 metric configmap. Specifically, users can add, edit, delete and restore metrics on the KUI sidecar that is opened.\n#### 2. iter8 create experiment\nThis command also opens a KUI sidecar and is used to create Human-In-The-Loop experiments with iter8. This command opens a sidecar with two tabs- one for creating the experiment and one for viewing the decision and metrics for the experiment from _iter8-analytics_. The sidecar options are interactive and can be experimented with by the user.\n#### 2. iter8 config verify\nThis command verifies if _iter8-analytics_ and _iter8-controller_ service is currently installed in the user's environment\n\nMore information on how to use these commands is available [here](http://iter8.tools/integrations/iter8-kui/)\n",
+                        "contentType": "text/markdown"
+                      }
+                    ]
+                  },
+                  {
+                    "label": "Components",
+                    "items": [
+                      {
+                        "mode": "Iter8 Controller",
+                        "content": "\n#### Iter8 Controller\n\nA Kubernetes controller that automates canary releases and A/B testing by adjusting the traffic across different versions of a microservice as recommended by _iter8-analytics_ until the canary replaces the baseline (previous) version.\n",
+                        "contentType": "text/markdown"
+                      },
+                      {
+                        "mode": "Iter8 Analytics",
+                        "content": "\n#### Iter8 Analytics\n\nA service that assesses the behavior of different microservice versions by analyzing metrics associated with each version using robust statistical techniques to determine which version is the winner with respect to the metrics of interest and which versions pass a set of success criteria.\n\nIt returns the result of the data analysis along with a recommendation for how the traffic should be split across all microservice versions. The iter8-analytics' REST API is used by _iter8-controller_.\n",
+                        "contentType": "text/markdown"
+                      }
+                    ]
+                  }
+                ],
+                "links": [
+                  {
+                    "label": "Github",
+                    "href": "https://github.com/iter8-tools/iter8"
+                  },
+                  {
+                    "label": "Join Slack",
+                    "href": "https://join.slack.com/t/iter8-tools/shared_invite/enQtODU0NTczMTQ5NDU4LTJmNGE1OTBhOWI4NzllZGE0ZjdhM2M3MzJlMjcxYjliMTJlM2YxMzQ4OWQ5NGViYTM2MTU4MWRkZTgxNzZiMzg"
+                  },
+                  {
+                    "label": "Learn More",
+                    "href": "https://iter8.tools/"
+                  }
+                ]
+              },
+              "responseType": "NavResponse",
+              "historyIdx": 257
+            },
+            "isExperimental": true,
+            "isReplay": false,
+            "execUUID": "b968321e-7106-4854-93e7-8b38e7c6522e",
+            "startTime": "2020-09-30T21:19:47.045Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": false,
+            "state": "valid-response"
           }
         ]
       }
-    ]
+    ],
+    "clicks": {
+      "startEvents": {},
+      "completeEvents": {}
+    }
   }
 }

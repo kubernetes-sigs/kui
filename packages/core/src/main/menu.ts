@@ -41,23 +41,26 @@ const closeTab = () => tellRendererToExecute('tab close')
 const isDarwin = process.platform === 'darwin'
 const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
 
+/** Open a new window or tab and replay the contents of the given `filepath` */
+export function replay(filepath: string, createWindow: (executeThisArgvPlease?: string[]) => void) {
+  try {
+    // if we have no open kui windows, open a new one; otherwise,
+    // use a tab in an existing window
+    if (webContents.getAllWebContents().length === 0) {
+      createWindow(['replay', filepath])
+    } else {
+      tellRendererToExecute(`replay ${encodeComponent(filepath)}`, 'pexec')
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
 /** @return a menu item that opens the given notebook */
 function openNotebook(createWindow: (executeThisArgvPlease?: string[]) => void, label: string, filepath: string) {
   return {
     label,
-    click: () => {
-      try {
-        // if we have no open kui windows, open a new one; otherwise,
-        // use a tab in an existing window
-        if (webContents.getAllWebContents().length === 0) {
-          createWindow(['replay', '--new-tab', filepath])
-        } else {
-          tellRendererToExecute(`replay --new-tab ${encodeComponent(filepath)}`, 'pexec')
-        }
-      } catch (err) {
-        console.log(err)
-      }
-    }
+    click: () => replay(filepath, createWindow)
   }
 }
 

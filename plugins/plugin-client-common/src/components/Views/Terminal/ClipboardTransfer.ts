@@ -15,13 +15,15 @@
  */
 
 import { v4 } from 'uuid'
-import { eventBus, CommandStartEvent, CommandCompleteEvent, ScalarResponse, SnapshotBlock } from '@kui-shell/core'
+import { eventBus, CommandStartEvent, CommandCompleteEvent, ScalarResponse, flatten, getTabId } from '@kui-shell/core'
 import ScrollableTerminal, { getSelectionText } from './ScrollableTerminal'
+import { isNotebookImpl } from './Snapshot'
+import { CompleteBlock } from './Block/BlockModel'
 
 interface ClipboardTransfer {
   apiVersion: 'kui-shell/v1'
   kind: 'ClipboardTransfer'
-  blocks: SnapshotBlock[]
+  blocks: CompleteBlock[]
 }
 
 function isClipboardTransfer(transfer: Record<string, any>): transfer is ClipboardTransfer {
@@ -123,25 +125,40 @@ export function onPaste(this: ScrollableTerminal, evt: ClipboardEvent) {
 export function onCopy(this: ScrollableTerminal, evt: ClipboardEvent, onSuccess?: (target: Target) => void) {
   const target = confirmTarget(this)
   if (target) {
-    eventBus.emitSnapshotRequest({
-      filter: (evt: CommandStartEvent) => {
-        return evt.execUUID === target.execUUID
-      },
-      cb: async (blocks: SnapshotBlock[]) => {
-        if (blocks.length > 0) {
-          const transfer: ClipboardTransfer = {
-            apiVersion: 'kui-shell/v1',
-            kind: 'ClipboardTransfer',
-            blocks
-          }
-          navigator.clipboard.writeText(JSON.stringify(transfer))
+    eventBus.emitSnapshotRequest(
+      {
+        filter: (evt: CommandStartEvent) => {
+          return evt.execUUID === target.execUUID
+        },
+        cb: async (snapshotBuffer: Buffer) => {
+          const snapshot = JSON.parse(Buffer.from(snapshotBuffer).toString())
+          if (!isNotebookImpl(snapshot)) {
+            console.error('invalid snapshot', snapshot)
+            throw new Error('Invalid snapshot')
+          } else {
+            const blocks = flatten(
+              snapshot.spec.splits.map(split => {
+                return split.blocks
+              })
+            )
+            if (blocks.length > 0) {
+              const transfer: ClipboardTransfer = {
+                apiVersion: 'kui-shell/v1',
+                kind: 'ClipboardTransfer',
+                blocks
+              }
 
-          if (typeof onSuccess === 'function') {
-            onSuccess(target)
+              navigator.clipboard.writeText(JSON.stringify(transfer))
+
+              if (typeof onSuccess === 'function') {
+                onSuccess(target)
+              }
+            }
           }
         }
-      }
-    })
+      },
+      getTabId(this.props.tab)
+    )
   }
 }
 
