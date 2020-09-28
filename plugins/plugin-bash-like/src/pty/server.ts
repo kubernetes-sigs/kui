@@ -329,7 +329,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           // eslint-disable-next-line no-async-promise-executor
           shells[msg.uuid] = new Promise(async (resolve, reject) => {
             try {
-              const env = Object.assign({}, msg.env || process.env, { KUI: 'true' })
+              const env = Object.assign({}, process.env, msg.env, { KUI: 'true' })
               if (process.env.DEBUG && (!msg.env || !msg.env.DEBUG)) {
                 // don't pass DEBUG unless the user asked for it!
                 delete env.DEBUG

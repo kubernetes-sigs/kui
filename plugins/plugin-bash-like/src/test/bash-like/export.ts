@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,14 @@ describe('export command', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
+
+  Common.pit(`should cd and still have a value for HOME`, () =>
+    CLI.command('cd', this.app)
+      .then(ReplExpect.okWithAny)
+      .then(() => CLI.command('pwd', this.app).then(ReplExpect.okWithPtyOutput(process.env.HOME)))
+      .then(() => CLI.command('printenv HOME', this.app).then(ReplExpect.okWithPtyOutput(process.env.HOME)))
+      .catch(Common.oops(this))
+  )
 
   Common.pit(`should fail with export without args`, () =>
     CLI.command(`export`, this.app)
