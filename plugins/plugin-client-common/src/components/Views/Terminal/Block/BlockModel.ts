@@ -18,11 +18,9 @@ import {
   CommandStartEvent,
   CommandCompleteEvent,
   ScalarResponse,
-  SnapshotBlock,
   UsageError,
   ExecType,
   isElsewhereCommentaryResponse,
-  isWatchable,
   isXtermErrorResponse,
   inBrowser
 } from '@kui-shell/core'
@@ -258,44 +256,6 @@ export function Finished(
       prefersTerminalPresentation,
       outputOnly,
       state: BlockState.ValidResponse
-    }
-  }
-}
-
-export function snapshot(block: BlockModel): SnapshotBlock {
-  if (!isAnnouncement(block) && (isOops(block) || isOk(block))) {
-    const execOptions = Object.assign(
-      {},
-      block.completeEvent.execOptions,
-      { block: undefined },
-      { tab: block.completeEvent.execOptions.tab ? block.completeEvent.execOptions.tab.uuid : undefined }
-    )
-    const evaluatorOptions = Object.assign({}, block.completeEvent.evaluatorOptions, {
-      usage: undefined,
-      flags: undefined
-    })
-
-    /**
-     * We excluded watch for now since a `Watchable` instance is not serializable
-     * see issue: https://github.com/IBM/kui/issues/5399
-     * and issue: https://github.com/IBM/kui/issues/5452
-     *
-     */
-    const response =
-      block.completeEvent.response && isWatchable(block.completeEvent.response)
-        ? Object.assign({}, block.completeEvent.response, { watch: undefined })
-        : block.completeEvent.response
-
-    return {
-      startTime: new Date(block.startTime).getTime(),
-      startEvent: Object.assign({}, block.startEvent, { tab: block.startEvent.tab.uuid }),
-      completeEvent: Object.assign(
-        {},
-        block.completeEvent,
-        { execOptions, evaluatorOptions },
-        { tab: block.completeEvent.tab.uuid },
-        { response }
-      )
     }
   }
 }

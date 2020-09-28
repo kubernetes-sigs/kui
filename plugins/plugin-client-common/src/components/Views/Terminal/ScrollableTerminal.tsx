@@ -31,16 +31,19 @@ import {
   CommandCompleteEvent,
   TabLayoutModificationResponse,
   isTabLayoutModificationResponse,
+  getTabId,
   NewSplitRequest,
   isOfflineClient,
   isNewSplitRequest,
   isWatchable,
+  promiseEach,
   SnapshotRequestEvent
 } from '@kui-shell/core'
 
 import Block from './Block'
 import getSize from './getSize'
 import Width from '../Sidecar/width'
+import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 import { onCopy, onCut, onPaste } from './ClipboardTransfer'
 import {
@@ -57,9 +60,10 @@ import {
   isPresentedElsewhere,
   hasStartEvent,
   hasCommand,
-  snapshot,
   hasUUID,
-  BlockModel
+  BlockModel,
+  isWithCompleteEvent,
+  CompleteBlock
 } from './Block/BlockModel'
 
 import isInViewport from './visible'
@@ -93,6 +97,8 @@ type Props = TerminalOptions & {
 
   /** tab model */
   tab: KuiTab
+
+  snapshot?: Buffer
 
   /** handler for terminal clear */
   onClear?: () => void
@@ -176,7 +182,53 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.initClipboardEvents()
     this.state = {
       focusedIdx: 0,
-      splits: [this.scrollbackWithWelcome()]
+      splits: this.props.snapshot ? this.replaySnapshot() : [this.scrollbackWithWelcome()]
+    }
+
+    this.initSnapshotEvents()
+  }
+
+  /** replay the splits and blocks from snapshot */
+  private replaySnapshot() {
+    const model = JSON.parse(Buffer.from(this.props.snapshot).toString())
+
+    if (!isNotebookImpl(model)) {
+      console.error('invalid notebook', model)
+      throw new Error('Invalid notebook')
+    } else {
+      return model.spec.splits.map(split => {
+        const newScrollback = this.scrollback(undefined, { inverseColors: split.inverseColors })
+
+        if (model.spec.preferReExecute) {
+          promiseEach(split.blocks, async _ => {
+            if (hasStartEvent(_)) {
+              await newScrollback.facade.REPL.pexec(_.startEvent.command)
+            }
+          })
+        } else {
+          const restoreBlocks: CompleteBlock[] = split.blocks.map(block => {
+            // tab alignment
+            const startEvent = hasStartEvent(block)
+              ? Object.assign(block.startEvent, { tab: newScrollback.facade })
+              : undefined
+
+            const completeEvent = isWithCompleteEvent(block)
+              ? Object.assign(block.completeEvent, { tab: newScrollback.facade })
+              : undefined
+
+            return Object.assign({}, block, { startEvent, completeEvent })
+          })
+
+          const insertIdx = this.findActiveBlock(newScrollback)
+
+          newScrollback.blocks = newScrollback.blocks
+            .slice(0, insertIdx)
+            .concat(restoreBlocks)
+            .concat(newScrollback.blocks.slice(insertIdx))
+        }
+
+        return newScrollback
+      })
     }
   }
 
@@ -193,6 +245,56 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const cut = onCut.bind(this)
     document.addEventListener('cut', cut)
     this.cleaners.push(() => document.removeEventListener('cut', cut))
+  }
+
+  /** Listen for snapshot request events */
+  private initSnapshotEvents() {
+    const onSnapshot = async (evt: SnapshotRequestEvent) => {
+      const splits = this.state.splits.map(({ inverseColors, blocks, uuid }) => {
+        const { filter = () => true } = evt
+        const snapshotBlocks = blocks
+          .filter(_ => hasStartEvent(_) && filter(_.startEvent) && _.startEvent.route !== '/split')
+          .map(snapshot)
+          .filter(_ => _)
+
+        return {
+          uuid,
+          inverseColors,
+          blocks: snapshotBlocks
+        }
+      })
+
+      const opts = evt.opts || {}
+
+      const clicks = opts.shallow ? undefined : await new FlightRecorder(this.props.tab, splits).record()
+
+      const serializedSnapshot: NotebookImpl = {
+        apiVersion: 'kui-shell/v1',
+        kind: 'Notebook',
+        metadata: { name: opts.name, description: opts.description },
+        spec: {
+          splits,
+          clicks,
+          preferReExecute: opts.preferReExecute
+        }
+      }
+
+      const replacer = (key: string, value: any) => {
+        if (key === 'tab') {
+          return undefined
+        } else if (key === 'block') {
+          return undefined
+        } else {
+          return value
+        }
+      }
+
+      const data = JSON.stringify(serializedSnapshot, replacer, 2)
+      evt.cb(Buffer.from(data))
+    }
+
+    eventBus.onSnapshotRequest(onSnapshot, getTabId(this.props.tab))
+    this.cleaners.push(() => eventBus.offSnapshotRequest(onSnapshot, getTabId(this.props.tab)))
   }
 
   /** add welcome blocks at the top of scrollback */
@@ -294,25 +396,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     // associate a tab facade with the split
     this.tabFor(state)
-
-    const onSnapshot = (evt: SnapshotRequestEvent) => {
-      const scrollbackIdx = this.findSplit(this.state, sbuuid)
-      if (scrollbackIdx < 0) {
-        throw new Error('Invalid state')
-      } else {
-        const { blocks } = this.state.splits[scrollbackIdx]
-        const { filter = () => true } = evt
-        evt.cb(
-          blocks
-            .filter(_ => hasStartEvent(_) && filter(_.startEvent))
-            .map(snapshot)
-            .filter(_ => _)
-        )
-      }
-    }
-    eventBus.emitAddSnapshotable()
-    eventBus.onSnapshotRequest(onSnapshot)
-    state.cleaners.push(() => eventBus.offSnapshotRequest(onSnapshot))
 
     const onTabCloseRequest = async () => {
       // async, to allow for e.g. command completion events to finish
@@ -724,7 +807,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private removeSplit(sbuuid: string) {
     this.setState(curState => {
-      eventBus.emitRemoveSnapshotable()
       eventBus.emitTabLayoutChange(this.props.tab.uuid)
 
       const idx = this.findSplit(this.state, sbuuid)

@@ -17,10 +17,8 @@
 import TrieSearch from 'trie-search'
 import * as micromatch from 'micromatch'
 import { basename, dirname, join } from 'path'
-import { Arguments, CodedError, flatten } from '@kui-shell/core'
+import { Arguments, CodedError, flatten, Notebook } from '@kui-shell/core'
 import { FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-
-import { SerializedSnapshot } from '../../lib/cmds/replay'
 
 interface Tutorial {
   name: string
@@ -37,7 +35,7 @@ interface BaseEntry {
 type Directory = BaseEntry
 
 interface Leaf extends BaseEntry {
-  data: SerializedSnapshot
+  data: Notebook
 }
 
 type Entry = Leaf | Directory
@@ -84,7 +82,10 @@ class NotebookVFS implements VFS {
   private enumerate({ entries }: { entries: Entry[] }) {
     return entries.map((mount: Entry) => {
       const name = basename(mount.mountPath)
-      const nameForDisplay = isLeaf(mount) ? mount.data.spec.title || mount.data.spec.description || name : name
+      const nameForDisplay =
+        isLeaf(mount) && mount.data.metadata
+          ? mount.data.metadata.name || mount.data.metadata.description || name
+          : name
       const isDir = !isLeaf(mount)
 
       return {
@@ -181,7 +182,7 @@ class NotebookVFS implements VFS {
     } else {
       const entry = entries[0]
       return {
-        viewer: 'replay --new-tab',
+        viewer: 'replay',
         filepath: entry.mountPath,
         fullpath: entry.mountPath,
         isDirectory: !isLeaf(entry),

@@ -121,7 +121,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
             title={strings('Click to view configuration options')}
             onClick={() =>
               pexecInCurrentTab(
-                `tab new --cmdline "replay /kui/settings.json" --title "${strings(
+                `tab new -s "/kui/settings.json" --title "${strings(
                   'Kui Settings'
                 )}" --status-stripe-type blue --status-stripe-message "${strings('Kui Settings')}"`
               )

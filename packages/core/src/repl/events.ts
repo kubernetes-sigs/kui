@@ -61,32 +61,17 @@ export type SnapshottedEvent<E extends CommandStartEvent | CommandCompleteEvent>
   tab: E['tab']['uuid']
 }
 
-/**
- * SnapshotBlock: captures the start and complete of the command
- * execution.
- *
- */
-export type SnapshotBlock = {
-  startTime: number
-  startEvent: SnapshottedEvent<CommandStartEvent>
-  completeEvent: SnapshottedEvent<CommandCompleteEvent>
+export interface Notebook {
+  apiVersion: 'kui-shell/v1'
+  kind: 'Notebook'
+  metadata?: {
+    name?: string
+    description?: string
+  }
 }
 
-export type SnapshotTab = {
-  uuid: string
-  blocks: SnapshotBlock[]
-}
-
-export type SnapshotWindow = {
-  uuid: string
-  tabs: SnapshotTab[]
-}
-
-/**
- * Snapshot: captures the block-level snapshots across the entire
- * session.
- *
- */
-export type Snapshot = {
-  windows: SnapshotWindow[]
+/** @return wether or not the given `raw` json is an instance of Notebook */
+export function isNotebook(raw: Record<string, any>): raw is Notebook {
+  const model = raw as Notebook
+  return model.apiVersion === 'kui-shell/v1' && model.kind === 'Notebook'
 }

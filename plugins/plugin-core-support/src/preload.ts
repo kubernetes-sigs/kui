@@ -29,7 +29,6 @@ const registration: PreloadRegistration = () => {
 
   if (!isHeadless()) {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
-    asyncs.push(import('./lib/cmds/replay').then(_ => _.preload()))
   }
 
   asyncs.push(import('./notebooks/vfs').then(_ => _.preload()))

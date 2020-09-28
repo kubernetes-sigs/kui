@@ -57,8 +57,8 @@ export default function renderMain(props: KuiProps) {
         props.commandLine || [
           'tab',
           'new',
-          '--cmdline',
-          'replay /kui/welcome.json',
+          '-s',
+          '/kui/welcome.json',
           '-q', // qexec
           '--bg', // open in background
           '--title',
