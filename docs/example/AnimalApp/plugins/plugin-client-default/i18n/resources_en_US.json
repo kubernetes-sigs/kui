@@ -1,0 +1,9 @@
+{
+  "Successfully connected to your cluster": "Successfully connected to your cluster",
+  "Please wait while we connect to your cluster": "Please wait while we connect to your cluster",
+  "Lost connection to your cluster": "Lost connection to your cluster",
+  "Attempting to reconnect...": "Attempting to reconnect\u2026",
+  "Error connecting to your cluster": "Error connecting to your cluster",
+  "Welcome to Kui": "Welcome to Kui",
+  "loadingDone:content": "To learn more, try [getting started](#kuiexec?command=getting%20started)"
+}
