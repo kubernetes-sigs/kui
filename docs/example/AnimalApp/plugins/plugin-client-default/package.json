@@ -1,0 +1,26 @@
+{
+  "name": "@kui-shell/plugin-client",
+  "version": "8.12.0",
+  "description": "Kui plugin that offers client defintion",
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "license": "Apache-2.0",
+  "author": "Mengting Yan",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "keywords": [
+    "kui",
+    "plugin"
+  ],
+  "private": true,
+  "publishConfig": {
+    "access": "public"
+  }
+}
