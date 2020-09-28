@@ -579,7 +579,7 @@ export default class Input extends InputProvider {
       return (
         this.props.model.startTime && (
           <span className="kui--repl-block-timestamp kui--repl-block-right-element">
-            {this.props.model.startTime.toLocaleTimeString()}
+            {new Date(this.props.model.startTime).toLocaleTimeString()}
           </span>
         )
       )

@@ -1,513 +1,490 @@
 {
   "apiVersion": "kui-shell/v1",
-  "kind": "Snapshot",
+  "kind": "Notebook",
+  "metadata": {
+    "name": "Welcome to Kui"
+  },
   "spec": {
-    "title": "Welcome to Kui",
-    "windows": [
+    "splits": [
       {
-        "uuid": "0",
-        "tabs": [
+        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "blocks": [
           {
-            "uuid": "0",
-            "blocks": [
-              {
-                "startTime": 1599673259804,
-                "startEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/split",
-                  "startTime": 1599579392573,
-                  "command": "split",
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "flags": {
-                      "boolean": ["debug", "inverse"]
-                    },
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "88affb15-b90f-419a-a910-4f314b14b1e4"
-                },
-                "completeEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "completeTime": 1599579392611,
-                  "command": "split",
-                  "argvNoOptions": ["split"],
-                  "parsedOptions": {
-                    "_": ["split"]
-                  },
-                  "execUUID": "88affb15-b90f-419a-a910-4f314b14b1e4",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "88affb15-b90f-419a-a910-4f314b14b1e4",
-                    "history": 250,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "TabLayoutModificationResponse",
-                    "spec": {
-                      "modification": "NewSplit",
-                      "ok": {
-                        "apiVersion": "kui-shell/v1",
-                        "kind": "CommentaryResponse",
-                        "props": {
-                          "elsewhere": true,
-                          "tabUUID": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
-                          "children": "Created a split"
-                        }
-                      }
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 250
-                }
-              },
-              {
-                "startTime": 1599673259831,
-                "startEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/split",
-                  "startTime": 1599579398762,
-                  "command": "split --inverse",
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "flags": {
-                      "boolean": ["debug", "inverse"]
-                    },
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "39696ae8-4fb6-4eb4-931f-97b1d1eb8ac4"
-                },
-                "completeEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 0,
-                  "completeTime": 1599579398777,
-                  "command": "split --inverse",
-                  "argvNoOptions": ["split"],
-                  "parsedOptions": {
-                    "_": ["split"],
-                    "inverse": true
-                  },
-                  "execUUID": "39696ae8-4fb6-4eb4-931f-97b1d1eb8ac4",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "39696ae8-4fb6-4eb4-931f-97b1d1eb8ac4",
-                    "history": 251,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "TabLayoutModificationResponse",
-                    "spec": {
-                      "modification": "NewSplit",
-                      "options": {
-                        "inverseColors": true
-                      },
-                      "ok": {
-                        "apiVersion": "kui-shell/v1",
-                        "kind": "CommentaryResponse",
-                        "props": {
-                          "elsewhere": true,
-                          "tabUUID": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                          "children": "Created a split with inverted colors"
-                        }
-                      }
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 251
-                }
-              },
-              {
-                "startTime": 1599673259860,
-                "startEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "route": "/#",
-                  "startTime": 1599579412335,
-                  "command": "#                                # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 1,
-                  "execUUID": "9d2b87ec-16af-4fe9-aeab-49e6f1f2c1e2",
-                  "echo": true
-                },
-                "completeEvent": {
-                  "tab": "2_c57e811f-2da8-557e-a402-9f0950407675",
-                  "execType": 1,
-                  "completeTime": 1599579412351,
-                  "command": "#                               # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.",
-                  "argvNoOptions": [
-                    "#",
-                    "                                # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
-                  ],
-                  "parsedOptions": {
-                    "_": [
-                      "#",
-                      "                                # Notebooks with Kui!\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
-                    ]
-                  },
-                  "execUUID": "9d2b87ec-16af-4fe9-aeab-49e6f1f2c1e2",
-                  "cancelled": false,
-                  "echo": true,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "echo": true,
-                    "type": 1,
-                    "execUUID": "9d2b87ec-16af-4fe9-aeab-49e6f1f2c1e2",
-                    "history": 252,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "# Notebooks with Kui!\n\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 252
-                }
-              },
-              {
-                "startTime": 1599673259878,
-                "startEvent": {
-                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
-                  "route": "/#",
-                  "startTime": 1599579430932,
-                  "command": "#       If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "1a0ecd6d-e61d-40f0-a966-44fe043068e2"
-                },
-                "completeEvent": {
-                  "tab": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
-                  "execType": 0,
-                  "completeTime": 1599579430951,
-                  "command": "#      If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui",
-                  "argvNoOptions": [
-                    "#",
-                    "       If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui"
-                  ],
-                  "parsedOptions": {
-                    "_": [
-                      "#",
-                      "       If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\\n\\nhttps://github.com/IBM/kui"
-                    ]
-                  },
-                  "execUUID": "1a0ecd6d-e61d-40f0-a966-44fe043068e2",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "1a0ecd6d-e61d-40f0-a966-44fe043068e2",
-                    "history": 90,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\n\nhttps://github.com/IBM/kui"
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 90
-                }
-              },
-              {
-                "startTime": 1599673259896,
-                "startEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                  "route": "/#",
-                  "startTime": 1599579459491,
-                  "command": "#  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "commentary",
-                      "strict": "commentary",
-                      "example": "commentary -f [<markdown file path>]",
-                      "docs": "Commentary",
-                      "optional": [
-                        {
-                          "name": "--title",
-                          "alias": "-t",
-                          "docs": "Title for the commentary"
-                        },
-                        {
-                          "name": "--file",
-                          "alias": "-f",
-                          "docs": "File that contains the texts"
-                        }
-                      ]
-                    },
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execType": 0,
-                  "execUUID": "df451c89-a2cd-44a6-828d-e4e590f7a5d5"
-                },
-                "completeEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                  "execType": 0,
-                  "completeTime": 1599579459509,
-                  "command": "# To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
-                  "argvNoOptions": [
-                    "#",
-                    "  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
-                  ],
-                  "parsedOptions": {
-                    "_": [
-                      "#",
-                      "  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
-                    ]
-                  },
-                  "execUUID": "df451c89-a2cd-44a6-828d-e4e590f7a5d5",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "outputOnly": true,
-                    "plugin": "plugin-client-common"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "execUUID": "df451c89-a2cd-44a6-828d-e4e590f7a5d5",
-                    "history": 250,
-                    "env": {}
-                  },
-                  "response": {
-                    "apiVersion": "kui-shell/v1",
-                    "kind": "CommentaryResponse",
-                    "props": {
-                      "children": "To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
-                    }
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 250
-                }
-              },
-              {
-                "startTime": 1599673284918,
-                "startEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                  "route": "/ls",
-                  "command": "ls -l /kui/**/*.json",
-                  "evaluatorOptions": {
-                    "usage": {
-                      "command": "ls",
-                      "title": "local file list",
-                      "header": "Directory listing of your local filesystem",
-                      "noHelpAlias": true,
-                      "optional": [
-                        {
-                          "name": "path",
-                          "docs": "local file path",
-                          "file": true,
-                          "positional": true
-                        },
-                        {
-                          "name": "-A",
-                          "boolean": true,
-                          "docs": "List all entries except for . and .."
-                        },
-                        {
-                          "name": "-a",
-                          "boolean": true,
-                          "docs": "Include directory entries whose names begin with a dot (.)"
-                        },
-                        {
-                          "name": "-d",
-                          "boolean": true,
-                          "docs": "Directories are listed as plain files"
-                        },
-                        {
-                          "name": "-c",
-                          "boolean": true,
-                          "docs": "Use time when file status was last changed for sorting"
-                        },
-                        {
-                          "name": "-C",
-                          "boolean": true,
-                          "hidden": true
-                        },
-                        {
-                          "name": "-l",
-                          "boolean": true,
-                          "hidden": true
-                        },
-                        {
-                          "name": "-h",
-                          "boolean": true,
-                          "hidden": true
-                        },
-                        {
-                          "name": "-t",
-                          "boolean": true,
-                          "docs": "Sort by time modified (most recently modified first)"
-                        },
-                        {
-                          "name": "-r",
-                          "boolean": true,
-                          "docs": "Reverse the natural sort order"
-                        },
-                        {
-                          "name": "-s",
-                          "boolean": true,
-                          "hidden": true
-                        },
-                        {
-                          "name": "-S",
-                          "boolean": true,
-                          "docs": "Sort files by size"
-                        }
-                      ]
-                    },
-                    "flags": {
-                      "boolean": ["A", "a", "d", "c", "C", "l", "h", "t", "r", "s", "S"]
-                    },
-                    "plugin": "plugin-bash-like/fs"
-                  },
-                  "execType": 0,
-                  "execUUID": "af602715-21a4-4faf-bdfb-c3bc479aa1a4"
-                },
-                "completeEvent": {
-                  "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                  "execType": 0,
-                  "command": "ls -l /kui/**/*.json",
-                  "argvNoOptions": ["ls", "/kui/**/*.json"],
-                  "parsedOptions": {
-                    "_": ["ls", "/kui/**/*.json"],
-                    "l": true
-                  },
-                  "execUUID": "af602715-21a4-4faf-bdfb-c3bc479aa1a4",
-                  "cancelled": false,
-                  "evaluatorOptions": {
-                    "plugin": "plugin-bash-like/fs"
-                  },
-                  "execOptions": {
-                    "type": 0,
-                    "language": "en-US",
-                    "tab": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-                    "execUUID": "af602715-21a4-4faf-bdfb-c3bc479aa1a4",
-                    "history": 251,
-                    "env": {}
-                  },
-                  "response": {
-                    "header": {
-                      "name": "Name",
-                      "attributes": []
-                    },
-                    "body": [
-                      {
-                        "name": "Kubernetes &mdash; `Listing Resources`",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /kui/kubernetes/list-resources.json",
-                        "onclickSilence": true,
-                        "attributes": [],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "Kubernetes &mdash; `Working with Jobs`",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /kui/kubernetes/create-jobs.json",
-                        "onclickSilence": true,
-                        "attributes": [],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "Welcome to Iter8",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /kui/iter8/welcome.json",
-                        "onclickSilence": true,
-                        "attributes": [],
-                        "key": "Name"
-                      },
-                      {
-                        "name": "Welcome to Kui",
-                        "css": "",
-                        "onclickExec": "pexec",
-                        "onclick": "open /kui/welcome.json",
-                        "onclickSilence": true,
-                        "attributes": [],
-                        "key": "Name"
-                      }
-                    ],
-                    "markdown": true,
-                    "noSort": true,
-                    "noEntityColors": true
-                  },
-                  "responseType": "ScalarResponse",
-                  "historyIdx": 251
-                }
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "# Notebooks with Kui!\n\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
               }
-            ]
+            },
+            "historyIdx": 252,
+            "cwd": "~/Workspace7/kui",
+            "command": "# ",
+            "startEvent": {
+              "route": "/#",
+              "command": "# ",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "3285fd03-25c0-47aa-8d3a-494ed23bab43"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "#",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "3285fd03-25c0-47aa-8d3a-494ed23bab43",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "3285fd03-25c0-47aa-8d3a-494ed23bab43",
+                "history": 252,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "# Notebooks with Kui!\n\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 252
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "3285fd03-25c0-47aa-8d3a-494ed23bab43",
+            "startTime": "2020-09-29T21:41:46.197Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\n\nhttps://github.com/IBM/kui"
+              }
+            },
+            "historyIdx": 89,
+            "cwd": "~/Workspace7/kui",
+            "command": "# ",
+            "startEvent": {
+              "route": "/#",
+              "command": "# ",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "134ea483-00cd-4148-9b47-a4368ac97565"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "#",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "134ea483-00cd-4148-9b47-a4368ac97565",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "134ea483-00cd-4148-9b47-a4368ac97565",
+                "history": 89,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "If you would like to contribute to Kui, either by crafting new Notebooks or coding new core features, please join us!\n\nhttps://github.com/IBM/kui"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 89
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "134ea483-00cd-4148-9b47-a4368ac97565",
+            "startTime": "2020-09-29T21:41:57.989Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "1_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+        "inverseColors": true,
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
+              }
+            },
+            "historyIdx": 22,
+            "cwd": "~/Workspace7/kui",
+            "command": "# ",
+            "startEvent": {
+              "route": "/#",
+              "command": "# ",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "5d6dc961-a02b-434e-8cdd-2d00a06d57b7"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "#",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "5d6dc961-a02b-434e-8cdd-2d00a06d57b7",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "5d6dc961-a02b-434e-8cdd-2d00a06d57b7",
+                "history": 22,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 22
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "5d6dc961-a02b-434e-8cdd-2d00a06d57b7",
+            "startTime": "2020-09-29T21:42:06.652Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "header": {
+                "name": "Name",
+                "attributes": []
+              },
+              "body": [
+                {
+                  "name": "Kubernetes &mdash; `Listing Resources`",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /kui/kubernetes/list-resources.json",
+                  "onclickSilence": true,
+                  "attributes": [],
+                  "key": "Name"
+                },
+                {
+                  "name": "Kubernetes &mdash; `Working with Jobs`",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /kui/kubernetes/create-jobs.json",
+                  "onclickSilence": true,
+                  "attributes": [],
+                  "key": "Name"
+                },
+                {
+                  "name": "Kui Setting",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /kui/settings.json",
+                  "onclickSilence": true,
+                  "attributes": [],
+                  "key": "Name"
+                },
+                {
+                  "name": "Welcome to Iter8",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /kui/iter8/welcome.json",
+                  "onclickSilence": true,
+                  "attributes": [],
+                  "key": "Name"
+                },
+                {
+                  "name": "Welcome to Kui",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /kui/welcome.json",
+                  "onclickSilence": true,
+                  "attributes": [],
+                  "key": "Name"
+                }
+              ],
+              "markdown": true,
+              "noSort": true,
+              "noEntityColors": true
+            },
+            "historyIdx": 251,
+            "cwd": "~/Workspace7/kui",
+            "command": "ls -l /kui/**/*.json",
+            "startEvent": {
+              "route": "/ls",
+              "command": "ls -l /kui/**/*.json",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "ls",
+                  "title": "local file list",
+                  "header": "Directory listing of your local filesystem",
+                  "noHelpAlias": true,
+                  "optional": [
+                    {
+                      "name": "path",
+                      "docs": "local file path",
+                      "file": true,
+                      "positional": true
+                    },
+                    {
+                      "name": "-A",
+                      "boolean": true,
+                      "docs": "List all entries except for . and .."
+                    },
+                    {
+                      "name": "-a",
+                      "boolean": true,
+                      "docs": "Include directory entries whose names begin with a dot (.)"
+                    },
+                    {
+                      "name": "-d",
+                      "boolean": true,
+                      "docs": "Directories are listed as plain files"
+                    },
+                    {
+                      "name": "-c",
+                      "boolean": true,
+                      "docs": "Use time when file status was last changed for sorting"
+                    },
+                    {
+                      "name": "-C",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-l",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-h",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-t",
+                      "boolean": true,
+                      "docs": "Sort by time modified (most recently modified first)"
+                    },
+                    {
+                      "name": "-r",
+                      "boolean": true,
+                      "docs": "Reverse the natural sort order"
+                    },
+                    {
+                      "name": "-s",
+                      "boolean": true,
+                      "hidden": true
+                    },
+                    {
+                      "name": "-S",
+                      "boolean": true,
+                      "docs": "Sort files by size"
+                    }
+                  ]
+                },
+                "flags": {
+                  "boolean": ["A", "a", "d", "c", "C", "l", "h", "t", "r", "s", "S"]
+                },
+                "plugin": "plugin-bash-like/fs"
+              },
+              "execType": 0,
+              "execUUID": "04f11a6b-eaa6-4749-97bd-e39378bf5a30"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "command": "ls -l /kui/**/*.json",
+              "argvNoOptions": ["ls", "/kui/**/*.json"],
+              "parsedOptions": {
+                "_": ["ls", "/kui/**/*.json"],
+                "l": true
+              },
+              "execUUID": "04f11a6b-eaa6-4749-97bd-e39378bf5a30",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "plugin": "plugin-bash-like/fs"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "04f11a6b-eaa6-4749-97bd-e39378bf5a30",
+                "history": 251,
+                "env": {}
+              },
+              "response": {
+                "header": {
+                  "name": "Name",
+                  "attributes": []
+                },
+                "body": [
+                  {
+                    "name": "Kubernetes &mdash; `Listing Resources`",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /kui/kubernetes/list-resources.json",
+                    "onclickSilence": true,
+                    "attributes": [],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "Kubernetes &mdash; `Working with Jobs`",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /kui/kubernetes/create-jobs.json",
+                    "onclickSilence": true,
+                    "attributes": [],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "Kui Setting",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /kui/settings.json",
+                    "onclickSilence": true,
+                    "attributes": [],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "Welcome to Iter8",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /kui/iter8/welcome.json",
+                    "onclickSilence": true,
+                    "attributes": [],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "Welcome to Kui",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /kui/welcome.json",
+                    "onclickSilence": true,
+                    "attributes": [],
+                    "key": "Name"
+                  }
+                ],
+                "markdown": true,
+                "noSort": true,
+                "noEntityColors": true
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 251
+            },
+            "isExperimental": false,
+            "isReplay": false,
+            "execUUID": "04f11a6b-eaa6-4749-97bd-e39378bf5a30",
+            "startTime": "2020-09-30T18:47:11.872Z",
+            "prefersTerminalPresentation": false,
+            "outputOnly": false,
+            "state": "valid-response"
           }
         ]
       }
-    ]
+    ],
+    "clicks": {
+      "startEvents": {},
+      "completeEvents": {}
+    }
   }
 }

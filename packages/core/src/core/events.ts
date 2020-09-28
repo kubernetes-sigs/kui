@@ -23,13 +23,7 @@ import { ScalarResponse } from '../models/entity'
 import MultiModalResponse from '../models/mmr/types'
 import NavResponse from '../models/NavResponse'
 import Tab, { getPrimaryTabId } from '../webapp/tab'
-import {
-  CommandStartEvent,
-  CommandCompleteEvent,
-  CommandStartHandler,
-  CommandCompleteHandler,
-  SnapshotBlock
-} from '../repl/events'
+import { CommandStartEvent, CommandCompleteEvent, CommandStartHandler, CommandCompleteHandler } from '../repl/events'
 
 const eventChannelUnsafe = new EventEmitter()
 eventChannelUnsafe.setMaxListeners(100)
@@ -42,8 +36,14 @@ export type StatusStripeChangeEvent = {
 }
 
 export type SnapshotRequestEvent = {
-  cb: (snapshot: SnapshotBlock[]) => void
+  cb: (snapshot: Buffer) => void
   filter?: (evt: CommandStartEvent) => boolean
+  opts?: {
+    name?: string
+    description?: string
+    preferReExecute?: boolean
+    shallow?: boolean
+  }
 }
 
 export type TabLayoutChangeEvent = { isSidecarNowHidden: boolean }
@@ -71,6 +71,9 @@ export interface NewTabRequestEvent {
 
   /** Optionally execute a command in the new tab */
   cmdline?: string
+
+  /** Optionally open a snapshot file in the new tab */
+  snapshot?: Buffer
 
   /** Execute the command line with qexec or pexec? Default: pexec. */
   exec?: 'pexec' | 'qexec'
@@ -139,19 +142,9 @@ class WriteEventBus extends EventBusBase {
     }
   }
 
-  /** Indicate a new snapshotable element */
-  public emitAddSnapshotable(): void {
-    this.eventBus.emit('/snapshot/element/add')
-  }
-
-  /** Indicate a snapshotable element no longer exists */
-  public emitRemoveSnapshotable(): void {
-    this.eventBus.emit('/snapshot/element/remove')
-  }
-
   /** Request a Snapshot of the given Tab */
-  public emitSnapshotRequest(evt: SnapshotRequestEvent): void {
-    this.eventBus.emit('/snapshot/request', evt)
+  public emitSnapshotRequest(evt: SnapshotRequestEvent, tabId: string): void {
+    this.eventBus.emit(`/snapshot/request/${tabId}`, evt)
   }
 
   /** Request a status stripe change */
@@ -181,23 +174,18 @@ class ReadEventBus extends WriteEventBus {
     return this.eventBus.off(channel, listener)
   }
 
-  /** Listen for snapshotable elements coming and going */
-  public onAddSnapshotable(listener: () => void) {
-    this.eventBus.on('/snapshot/element/add', listener)
-  }
-
   public onRemoveSnapshotable(listener: () => void) {
     this.eventBus.on('/snapshot/element/remove', listener)
   }
 
   /** Snapshot the Block state of the given Tab */
-  public onSnapshotRequest(listener: (evt: SnapshotRequestEvent) => void) {
-    this.eventBus.on(`/snapshot/request`, listener)
+  public onSnapshotRequest(listener: (evt: SnapshotRequestEvent) => void, tabId: string) {
+    this.eventBus.on(`/snapshot/request/${tabId}`, listener)
   }
 
   /** Snapshot the Block state of the given Tab */
-  public offSnapshotRequest(listener: (evt: SnapshotRequestEvent) => void) {
-    this.eventBus.off('/snapshot', listener)
+  public offSnapshotRequest(listener: (evt: SnapshotRequestEvent) => void, tabId: string) {
+    this.eventBus.off(`/snapshot/${tabId}`, listener)
   }
 
   /** Request a status stripe change */

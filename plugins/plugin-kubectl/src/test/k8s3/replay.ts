@@ -23,13 +23,6 @@ import {
   allocateNS,
   deleteNS
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
-import { AppAndCount } from '@kui-shell/test/mdist/api/repl-expect'
-
-async function removeBlock(this: Common.ISuite, N: number) {
-  await this.app.client.moveToObject(Selectors.PROMPT_N(N))
-  await this.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON(N))
-  await this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON(N))
-}
 
 describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -53,7 +46,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       }
     }
 
-    const verifyCreation = async (createRes: AppAndCount, createSelector: string) => {
+    const verifyCreation = async (createSelector: string) => {
       console.error('verifying creation')
       await waitForGreen(this.app, createSelector)
       // await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
@@ -73,7 +66,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       )
 
       const createSelector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(createRes)
-      await verifyCreation(createRes, createSelector)
+      await verifyCreation(createSelector)
       await this.app.client.waitForExist(`${createSelector} .clickable`)
       await this.app.client.click(`${createSelector} .clickable`)
       await verifySidecar()
@@ -95,11 +88,9 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
 
       const { count: N } = await CLI.command('replay /tmp/test.kui', this.app)
 
-      await removeBlock.bind(this)(N)
-
-      await verifyCreation(createRes, createSelector)
+      await verifyCreation(`${Selectors.OUTPUT_N(N)} ${Selectors.BY_NAME('nginx')}`)
       await verifySidecar(true)
-      await verifyDeletion(deleteSelector)
+      await verifyDeletion(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -130,12 +121,10 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
       await waitForGreen(this.app, selector)
 
       await CLI.command('snapshot /tmp/test.kui --exec', this.app).then(ReplExpect.justOK)
-      await Common.refresh(this)
 
-      const { count: N } = await CLI.command('replay /tmp/test.kui', this.app)
-      await removeBlock.bind(this)(N)
+      await CLI.command('replay /tmp/test.kui', this.app)
 
-      await this.app.client.waitForVisible(Selectors.LIST_RESULT_BY_N_FOR_NAME(res.count, 'nginx'))
+      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
