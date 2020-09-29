@@ -17,7 +17,7 @@
 import { v4 } from 'uuid'
 import { REPL } from '@kui-shell/core'
 
-import JobProvider from '../'
+import JobProvider, { JobParameters, JobEnv } from '../'
 import { Provider as S3Provider } from '../../providers'
 
 type JobName = string
@@ -51,14 +51,23 @@ export default class CodeEngine implements JobProvider<JobName> {
     }
   }
 
-  /** Schedule a Job execution */
-  public async run(image: string, nTasks: number, env: Record<string, string | boolean | number> = {}) {
-    const jobName = `kui-job-${v4()}`
-    const envOpts = Object.keys(env)
+  /** -e key=value */
+  private dashE(env: JobEnv): string {
+    return Object.keys(env)
       .map(key => `-e ${key}=${env[key]}`)
       .join(' ')
-    const keyOpts = `-e S3_ACCESS_KEY=${this.s3.accessKey} -e S3_SECRET_KEY=${this.s3.secretKey}`
-    const cmdline = `ibmcloud ce job create --image ${image} --name ${jobName} --array-indices 1-${nTasks} ${envOpts} ${keyOpts}`
+  }
+
+  /** Schedule a Job execution */
+  public async run(image: string, params: JobParameters, env: JobEnv = {}) {
+    const { nTasks, nShards } = params
+    const jobName = `kui-job-${v4()}`
+
+    const parOpts = this.dashE(params)
+    const envOpts = this.dashE(env)
+    const keyOpts = this.dashE({ S3_ACCESS_KEY: this.s3.accessKey, S3_SECRET_KEY: this.s3.secretKey })
+
+    const cmdline = `ibmcloud ce job create --image ${image} --name ${jobName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
     await this.repl.qexec<string>(cmdline).catch(err => {
       console.error(err)
       throw new Error(err.message)

@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
+import ParallelOperation from '../vfs/parallel/operations'
+
 export interface Job {
   status: {
     succeeded: boolean
   }
+}
+
+export type JobEnv = Record<string, string[] | string | boolean | number>
+
+export type JobParameters = {
+  OPERATION: ParallelOperation
+  SRC_BUCKET?: string
+  SRC_OBJECT?: string
+  SRC_BUCKETS?: string[]
+  SRC_OBJECTS?: string[]
+  nTasks: number
+  nShards: number
 }
 
 interface JobProvider<JobName extends number | string = string> {
@@ -31,7 +45,7 @@ interface JobProvider<JobName extends number | string = string> {
   wait(jobName: JobName, nTasks: number): Promise<void>
 
   /** Schedule a Job execution */
-  run(image: string, nTasks: number, env?: Record<string, string | boolean | number>): JobName | Promise<JobName>
+  run(image: string, params: JobParameters, env?: JobEnv): JobName | Promise<JobName>
 }
 
 export default JobProvider

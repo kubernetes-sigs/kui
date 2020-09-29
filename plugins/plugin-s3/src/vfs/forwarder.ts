@@ -70,6 +70,15 @@ export default function(registrar: Registrar) {
   )
 
   registrar.listen(
+    '/vfs-s3/gzip',
+    async (args: Parameters<VFS['gzip']>[0]) => {
+      await responder.gunzip(args, args.argvNoOptions.slice(1))
+      return true
+    },
+    { requiresLocal: true }
+  )
+
+  registrar.listen(
     '/vfs-s3/gunzip',
     async (args: Parameters<VFS['gunzip']>[0]) => {
       await responder.gunzip(args, args.argvNoOptions.slice(1))

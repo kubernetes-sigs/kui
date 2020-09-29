@@ -17,7 +17,7 @@
 import client from './client'
 import { spawn } from 'child_process'
 
-export default async function copyWithSharding() {
+export default async function grep(): Promise<string> {
   console.log(process.env)
   const { SRC_BUCKET, SRC_OBJECT, JOB_INDEX, NSHARDS, PATTERN } = process.env
 
@@ -35,7 +35,7 @@ export default async function copyWithSharding() {
 
   return new Promise((resolve, reject) => {
     const grep = spawn('grep', [PATTERN], { stdio: ['pipe', 'pipe', 'inherit'] })
-    grep.on('close', resolve)
+    grep.on('close', () => resolve())
     grep.on('error', reject)
     grep.stdout.on('data', data => {
       data

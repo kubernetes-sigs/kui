@@ -23,7 +23,7 @@ import { KuiGlobOptions, GlobStats } from '../lib/glob'
 type DirEntry = GlobStats
 export { DirEntry }
 
-interface ParallelismOptions extends ParsedOptions {
+export interface ParallelismOptions extends ParsedOptions {
   /** Parallelism */
   P: number
 }
@@ -85,6 +85,9 @@ export interface VFS {
 
   /** grep for file content */
   grep(opts: Arguments<ParallelismOptions>, pattern: string, filepaths: string[]): Promise<true | number | string[]>
+
+  /** zip a set of files */
+  gzip(opts: Arguments<ParallelismOptions>, filepaths: string[]): Promise<void>
 
   /** unzip a set of files */
   gunzip(opts: Arguments<ParallelismOptions>, filepaths: string[]): Promise<void>

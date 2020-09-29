@@ -16,12 +16,18 @@
 
 import grep from './grep'
 import copyShard from './copy-shard'
-import listBuckets from './list-buckets'
+import gzip from './gzip'
+// import listBuckets from './list-buckets'
 
-const ops = {
-  grep: grep,
-  copyShard: copyShard,
-  listBuckets: listBuckets
+import ParallelOperation from './operations'
+
+type Handler = () => Promise<void | string>
+const ops: Record<ParallelOperation, Handler> = {
+  copyShard,
+  // listBuckets,
+  grep,
+  gzip: gzip.bind('gzip'),
+  gunzip: gzip.bind('gunzip')
 }
 
 function nope() {

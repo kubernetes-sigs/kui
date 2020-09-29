@@ -154,6 +154,20 @@ export async function grep(...parameters: Parameters<VFS['grep']>): ReturnType<V
 }
 
 /*
+ * gzip delegate
+ *
+ */
+export async function gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
+  const mounts = multiFindMount(parameters[1], true)
+  if (mounts.length === 0) {
+    const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
+    err.code = 404
+    throw err
+  }
+  await Promise.all(mounts.map(({ filepaths, mount }) => mount.gzip(parameters[0], filepaths)))
+}
+
+/*
  * gunzip delegate
  *
  */

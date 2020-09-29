@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export { FStat } from './lib/fstat'
-export { GlobStats } from './lib/glob'
-export { default as File, isFile } from './lib/File'
+type ParallelOperation = 'grep' | 'gunzip' | 'gzip' | 'copyShard'
 
-export { VFS, mount, DirEntry, ParallelismOptions } from './vfs'
+export default ParallelOperation

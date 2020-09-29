@@ -95,31 +95,19 @@ class LocalVFS implements VFS {
       undefined,
       Object.assign(opts.execOptions, { quiet: false })
     )
-
-    /* const args = Object.assign({}, opts, {
-      command: opts.command.replace(/^vfs/, '') + ' --color=never',
-      argv: opts.argv.slice(1).concat(['--color=never']),
-      argvNoOptions: opts.argvNoOptions.slice(1)
-    })
-
-    const result = await doExecWithStdoutViaPty(args)
-    if (opts.parsedOptions.c) {
-      return parseInt(result, 10)
-    } else {
-      return result.split(/\n/).filter(_ => _)
-    } */
   }
 
-  /** unzip a set of files */
-  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
-    const args = parameters[0]
+  private async zip(
+    args: Parameters<VFS['gunzip']>[0],
+    filepaths: Parameters<VFS['gunzip']>[1],
+    cmd: 'gzip' | 'gunzip'
+  ): ReturnType<VFS['gunzip']> {
     const suffix = args.parsedOptions.S || args.parsedOptions.suffix
-    const filepaths = parameters[1]
 
     await Promise.all(
       filepaths.map(filepath =>
         args.REPL.qexec(
-          `sendtopty gunzip ${args.argv.filter(_ => /^-/.test(_))} ${suffix ? `-S ${suffix}` : ''} ${encodeComponent(
+          `sendtopty ${cmd} ${args.argv.filter(_ => /^-/.test(_))} ${suffix ? `-S ${suffix}` : ''} ${encodeComponent(
             filepath
           )}`,
           undefined,
@@ -128,6 +116,16 @@ class LocalVFS implements VFS {
         )
       )
     )
+  }
+
+  /** zip a set of files */
+  public gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
+    return this.zip(parameters[0], parameters[1], 'gzip')
+  }
+
+  /** unzip a set of files */
+  public gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    return this.zip(parameters[0], parameters[1], 'gunzip')
   }
 }
 
