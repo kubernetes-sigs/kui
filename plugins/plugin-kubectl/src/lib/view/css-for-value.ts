@@ -58,6 +58,8 @@ export default {
   Succeeded: TrafficLight.Blue,
   Completed: TrafficLight.Gray, // successfully terminated; don't use a color
   Unknown: '',
+  Propagated: TrafficLight.Green,
+  Subscribed: TrafficLight.Green,
 
   // AWS events
   Ready: TrafficLight.Green,
