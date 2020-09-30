@@ -52,6 +52,7 @@ li.repl-block {
   .repl-output:hover {
     @include show-block-action-buttons;
   }
+  li:focus,
   .repl-input:hover {
     .kui--repl-block-timestamp {
       opacity: 0; /* rather than display: none to avoid reflow on hover */
