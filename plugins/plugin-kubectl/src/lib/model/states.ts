@@ -29,6 +29,8 @@ const States = {
   Completed: 'Completed',
   Succeeded: 'Succeeded',
   ProvisionedSuccessfully: 'ProvisionedSuccessfully',
+  Propagated: 'Propagated',
+  Subscribed: 'Subscribed',
 
   // online-like from knative
   Deployed: 'Deployed',
@@ -86,6 +88,8 @@ stateGroups[FinalState.OnlineLike] = groupOf([
   States.ChannelReady,
   States.Addressable,
   States.Completed,
+  States.Propagated,
+  States.Subscribed,
   States.Succeeded
 ])
 const isOnlineLike = (state: State): boolean => stateGroups[FinalState.OnlineLike][state]
