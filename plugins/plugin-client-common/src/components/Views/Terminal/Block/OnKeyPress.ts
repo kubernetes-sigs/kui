@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { hasUUID } from './BlockModel'
 import { InputProvider as Input } from './Input'
 
 export default async function onKeyPress(this: Input, event: KeyboardEvent) {
@@ -21,6 +22,14 @@ export default async function onKeyPress(this: Input, event: KeyboardEvent) {
   if (char === 'Enter') {
     // user typed Enter; we've finished Reading, now Evalute
     const { doEval } = await import('@kui-shell/core')
-    doEval(this.props.tab, this.props._block, this.state.prompt.value.trim())
+
+    // Do we already have an execUUID? if so, this means we are in the
+    // midst of a command re-execution. In order to have the command
+    // response flow back to the same block, we have to reuse the
+    // execUUID. See https://github.com/IBM/kui/issues/5814
+    const execUUID = hasUUID(this.props.model) ? this.props.model.execUUID : undefined
+
+    doEval(this.props.tab, this.props._block, this.state.prompt.value.trim(), execUUID)
+    //                                                                        ^^^^ reusing execUUID
   }
 }
