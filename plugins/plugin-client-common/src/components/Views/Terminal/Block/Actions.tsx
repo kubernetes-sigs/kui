@@ -47,16 +47,15 @@ function Action(props: { onClick: () => void; icon: SupportedIcon; title: string
 
 export default class Actions extends React.PureComponent<Props> {
   private rerunAction() {
-    const handler = () =>
-      hasUUID(this.props.model)
-        ? this.props.tab.REPL.pexec(this.props.command, { execUUID: this.props.model.execUUID })
-        : this.props.tab.REPL.pexec(this.props.command)
+    if (hasUUID(this.props.model) && !isOutputOnly(this.props.model) && this.props.tab && this.props.command) {
+      const handler = () => {
+        if (hasUUID(this.props.model)) {
+          this.props.tab.REPL.pexec(this.props.command, { execUUID: this.props.model.execUUID })
+        }
+      }
 
-    return (
-      !isOutputOnly(this.props.model) &&
-      this.props.tab &&
-      this.props.command && <Action icon="Retry" onClick={handler} title="Re-execute this command" />
-    )
+      return <Action icon="Retry" onClick={handler} title={strings('Re-execute this command')} />
+    }
   }
 
   private copyAction() {

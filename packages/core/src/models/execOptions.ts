@@ -133,7 +133,12 @@ export class DefaultExecOptionsForTab extends DefaultExecOptions {
   public readonly tab: Tab
   public readonly block: Block
 
-  public constructor(tab: Tab, block: Block) {
+  /**
+   * @param execUUID this parameter supports command re-execution; see
+   * https://github.com/IBM/kui/issues/5814
+   *
+   */
+  public constructor(tab: Tab, block: Block, public readonly execUUID?: string) {
     super()
     this.tab = tab
     this.block = block

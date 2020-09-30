@@ -534,12 +534,14 @@ export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions())
 /**
  * User hit enter in the REPL
  *
+ * @param execUUID for command re-execution
+ *
  */
-export const doEval = (tab: Tab, block: Block, command: string) => {
+export const doEval = (tab: Tab, block: Block, command: string, execUUID?: string) => {
   //  const command = prompt.value.trim()
 
   // otherwise, this is a plain old eval, resulting from the user hitting Enter
-  return exec(command, new DefaultExecOptionsForTab(tab, block))
+  return exec(command, new DefaultExecOptionsForTab(tab, block, execUUID))
 }
 
 /**

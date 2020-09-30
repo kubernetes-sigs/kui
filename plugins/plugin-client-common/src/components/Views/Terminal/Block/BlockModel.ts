@@ -143,7 +143,7 @@ export function isAnnouncement(block: BlockModel): block is AnnouncementBlock {
 }
 
 export function hasUUID(block: BlockModel & Partial<WithUUID>): block is BlockModel & Required<WithUUID> {
-  return !isActive(block) && !isEmpty(block) && !isAnnouncement(block)
+  return block && !isActive(block) && !isEmpty(block) && !isAnnouncement(block)
 }
 
 export function hasValue(block: BlockModel): block is BlockModel & Required<WithValue> {
