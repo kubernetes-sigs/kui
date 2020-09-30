@@ -24,7 +24,7 @@ $inset: 0.375rem;
 $action-padding: 3px;
 
 /** Hover hysteresis for showing action buttons */
-$action-hover-delay: 140ms;
+$action-hover-delay: 210ms;
 
 /** Color to indicate focused block */
 $focus-color: var(--color-brand-01);
@@ -175,7 +175,7 @@ li.repl-block {
       right: 0;
 
       padding-left: 0.5rem;
-      transition-property: right;
+      transition-property: opacity;
       transition-delay: $action-hover-delay;
       transition-duration: 140ms;
     }
