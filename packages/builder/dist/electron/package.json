@@ -9,13 +9,13 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "debug": "4.1.1",
-    "electron": "7.3.1",
-    "electron-packager": "14.2.1",
+    "debug": "4.2.0",
+    "electron": "7.3.3",
+    "electron-packager": "15.1.0",
     "glob": "7.1.6"
   },
   "optionalDependencies": {
-    "electron-installer-debian": "2.0.1",
+    "electron-installer-debian": "3.1.0",
     "electron-installer-dmg": "3.0.0"
   }
 }
