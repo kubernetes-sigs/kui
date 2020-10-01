@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.16](https://github.com/IBM/kui/compare/v8.10.15...v8.10.16) (2020-10-01)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** k8s table should display status Propagated and Subscribed as green ([ff861f6](https://github.com/IBM/kui/commit/ff861f6)), closes [#5818](https://github.com/IBM/kui/issues/5818)
+
 ## [8.10.15](https://github.com/IBM/kui/compare/v8.10.14...v8.10.15) (2020-07-22)
 
 ### Bug Fixes

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.16](https://github.com/IBM/kui/compare/v8.10.15...v8.10.16) (2020-10-01)
+
+**Note:** Version bump only for package @kui-shell/plugin-patternfly4-themes
+
 ## [8.10.15](https://github.com/IBM/kui/compare/v8.10.14...v8.10.15) (2020-07-22)
 
 **Note:** Version bump only for package @kui-shell/plugin-patternfly4-themes
