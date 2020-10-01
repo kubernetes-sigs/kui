@@ -129,11 +129,19 @@ export enum TableStyle {
   Heavy
 }
 
+type PresentationStyle = 'table' | 'grid' | 'sequence-diagram' | 'timeline'
+
 export class Table<RowType extends Row = Row> {
   body: RowType[]
 
   /** Markdown cells? */
   markdown?: boolean
+
+  /** Default presentation? */
+  defaultPresentation?: PresentationStyle
+
+  /** Allowed presentations? */
+  allowedPresentations?: PresentationStyle[]
 
   /** Column index to be interpreted as a status column */
   statusColumnIdx?: number

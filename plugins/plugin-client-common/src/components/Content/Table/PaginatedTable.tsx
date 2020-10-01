@@ -136,7 +136,9 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       // assemble the data model
       const { headers, rows, footer } = kui2carbon(this.props.response)
 
-      const asGrid = this.props.asGrid && findGridableColumn(this.props.response) >= 0
+      const { defaultPresentation } = this.props.response
+      const asGrid =
+        (this.props.asGrid && findGridableColumn(this.props.response) >= 0) || defaultPresentation === 'grid'
       const asSequence = !asGrid && this.hasSequenceButton() && this.props.response.body.length > 1
 
       this.state = {
@@ -353,7 +355,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
         (this.state.asSequence ? ' kui--data-table-as-sequence' : '') +
         (this.state.asTimeline ? ' kui--data-table-as-timeline' : '') +
-        (lightweightTables ? ' kui--data-table-wrapper-lightweight' : '')
+        (lightweightTables ? ' kui--data-table-wrapper-lightweight flex-fill' : '')
 
       return (
         <div className={className}>
