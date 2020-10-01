@@ -45,6 +45,7 @@ const States = {
   NotProvisioned: 'NotProvisioned',
   Unschedulable: 'Unschedulable',
   ErrImagePull: 'ErrImagePull',
+  PropagationFailed: 'PropagationFailed',
 
   // pending-like
   ImagePullBackOff: 'ImagePullBackOff',
@@ -102,6 +103,7 @@ stateGroups[FinalState.OfflineLike] = groupOf([
   States.Disparity,
   States.NotProvisioned,
   States.Unschedulable,
+  States.PropagationFailed,
   States.ErrImagePull
 ])
 const isOfflineLike = (state: State): boolean => !!stateGroups[FinalState.OfflineLike][state]
