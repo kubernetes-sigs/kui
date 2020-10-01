@@ -72,14 +72,53 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
   }
 
   public render() {
-    const { tab, repl, response, visibleRows } = this.props
+    const gridableColumn = findGridableColumn(this.props.response)
 
-    const colorByDuration = response.durationColumnIdx >= 0
-    const gridableColumn = findGridableColumn(response)
+    if (gridableColumn < 0) {
+      return this.renderWithNames()
+    } else {
+      return this.renderWithBadges(gridableColumn)
+    }
+  }
+
+  /** Render as a grid of names */
+  private renderWithNames() {
+    const longest = this.props.response.body.reduce((max, row) => (max.length < row.name.length ? row.name : max), '')
+
+    let ex = 0
+    let em = 2 // <-- for good measure
+    for (let idx = 0; idx < longest.length; idx++) {
+      const char = longest.charAt(idx)
+      if (char === 'm') em++
+      else ex++
+    }
+
+    return (
+      <div
+        className="grid-layout"
+        style={{ gridTemplateColumns: `repeat(auto-fill, minmax(calc(${ex}ex + ${em}em), auto))` }}
+      >
+        {this.props.response.body.map(_ => (
+          <div
+            key={_.name}
+            className={(_.css || '') + (_.onclick ? ' clickable' : '')}
+            onClick={() => this.props.repl.pexec(_.onclick, { echo: !_.onclickSilence })}
+          >
+            {_.name}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  /** Render as a grid of [] square/circle badges */
+  private renderWithBadges(gridableColumn: number) {
+    const { tab, repl, response, visibleRows } = this.props
 
     const nCells = visibleRows.length
     const nColumns = Math.ceil(Math.sqrt(nCells))
     const style = { gridTemplateColumns: `repeat(${nColumns}, 1.25rem)` }
+    const colorByDuration = response.durationColumnIdx >= 0
 
     return (
       <div className="bx--data-table kui--data-table-as-grid" style={style}>

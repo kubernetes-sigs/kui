@@ -15,7 +15,7 @@
  */
 
 import { UTC as speedDate } from 'speed-date'
-import { i18n, Arguments, ParsedOptions, MixedResponse, Registrar, Table } from '@kui-shell/core'
+import { i18n, Arguments, ParsedOptions, MixedResponse, Registrar, Table, TableStyle } from '@kui-shell/core'
 
 import { GlobStats } from './glob'
 import { localFilepath } from './usage-helpers'
@@ -177,7 +177,7 @@ function attrs(
  * Turn an array of glob results into a Kui Table
  *
  */
-function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement | Table {
+function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
   const rev = args.parsedOptions.r ? -1 : 1
   const sorter = args.parsedOptions.S ? bySize(rev) : args.parsedOptions.t ? byTime(rev) : byLex(rev)
 
@@ -198,59 +198,34 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
     attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))
 
-  if (!args.parsedOptions.l) {
-    const frag = document.createDocumentFragment()
-    let longest = ''
+  const wide = args.parsedOptions.l
+  const perms = wide && hasPermissions ? [{ value: 'Permissions', outerCSS: outerCSSSecondary }] : []
+  const uid = wide && hasUid ? [{ value: 'User', outerCSS: outerCSSSecondary }] : []
+  const gid = wide && hasGid ? [{ value: 'Group', outerCSS: outerCSSSecondary }] : []
+  const size = wide && hasSize ? [{ value: 'Size', outerCSS: `${outerCSSSecondary} text-right` }] : []
+  const lastMod = wide && hasMtime ? [{ value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }] : []
 
-    body.forEach(_ => {
-      const cell = document.createElement('div')
-      cell.innerText = _.name
-      if (_.css) {
-        cell.classList.add(_.css)
-      }
-      cell.classList.add('clickable')
-      cell.onclick = () => args.REPL.pexec(_.onclick, { echo: !_.onclickSilence })
-      frag.appendChild(cell)
+  const header = {
+    name: 'Name',
+    attributes: perms
+      .concat(uid)
+      .concat(gid)
+      .concat(size)
+      .concat(lastMod)
+  }
 
-      longest = _.name.length >= longest.length ? _.name : longest
-    })
+  const defaultPresentation = wide ? ('table' as const) : ('grid' as const)
+  const allowedPresentations = [defaultPresentation]
 
-    let ex = 0
-    let em = 2 // <-- for good measure
-    for (let idx = 0; idx < longest.length; idx++) {
-      const char = longest.charAt(idx)
-      if (char === 'm') em++
-      else ex++
-    }
-
-    const container = document.createElement('div')
-    container.classList.add('grid-layout')
-    container.style.gridTemplateColumns = `repeat(auto-fill, minmax(calc(${ex}ex + ${em}em), auto))`
-    container.appendChild(frag)
-    return container
-  } else {
-    const perms = hasPermissions ? [{ value: 'Permissions', outerCSS: outerCSSSecondary }] : []
-    const uid = hasUid ? [{ value: 'User', outerCSS: outerCSSSecondary }] : []
-    const gid = hasGid ? [{ value: 'Group', outerCSS: outerCSSSecondary }] : []
-    const size = hasSize ? [{ value: 'Size', outerCSS: `${outerCSSSecondary} text-right` }] : []
-    const lastMod = hasMtime ? [{ value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }] : []
-
-    const header = {
-      name: 'Name',
-      attributes: perms
-        .concat(uid)
-        .concat(gid)
-        .concat(size)
-        .concat(lastMod)
-    }
-
-    return {
-      header,
-      body,
-      markdown: true,
-      noSort: true,
-      noEntityColors: true
-    }
+  return {
+    header,
+    body,
+    markdown: true,
+    noSort: true,
+    defaultPresentation,
+    allowedPresentations,
+    noEntityColors: true,
+    style: wide ? undefined : TableStyle.Light
   }
 }
 
@@ -258,7 +233,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): HTMLElement 
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedResponse | HTMLElement | Table> => {
+const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedResponse | Table> => {
   if (/\|/.test(opts.command)) {
     // conservatively send possibly piped output to the PTY
     return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
