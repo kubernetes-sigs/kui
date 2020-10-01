@@ -17,7 +17,7 @@
 import * as React from 'react'
 import * as prettyPrintDuration from 'pretty-ms'
 import { TableCell, DataTableCell } from 'carbon-components-react'
-import { Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL } from '@kui-shell/core'
+import { Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL, eventBus } from '@kui-shell/core'
 
 import Markdown from '../Markdown'
 import ErrorCell from './ErrorCell'
@@ -42,6 +42,13 @@ export function onClickForCell(
       evt.stopPropagation()
       selectRow()
       handler()
+    })
+  } else if (handler && handler.startEvent && handler.completeEvent) {
+    return whenNothingIsSelected((evt: React.MouseEvent) => {
+      evt.stopPropagation()
+      selectRow()
+      eventBus.emitCommandStart(handler.startEvent)
+      eventBus.emitCommandComplete(handler.completeEvent)
     })
   } else if (handler) {
     const opts = { tab, echo: !row.onclickSilence }

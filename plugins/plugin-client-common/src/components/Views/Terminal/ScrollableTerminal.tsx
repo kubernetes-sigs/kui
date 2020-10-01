@@ -43,7 +43,7 @@ import {
 import Block from './Block'
 import getSize from './getSize'
 import Width from '../Sidecar/width'
-import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder } from './Snapshot'
+import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder, tabAlignment } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 import { onCopy, onCut, onPaste } from './ClipboardTransfer'
 import {
@@ -61,9 +61,7 @@ import {
   hasStartEvent,
   hasCommand,
   hasUUID,
-  BlockModel,
-  isWithCompleteEvent,
-  CompleteBlock
+  BlockModel
 } from './Block/BlockModel'
 
 import isInViewport from './visible'
@@ -206,19 +204,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             }
           })
         } else {
-          const restoreBlocks: CompleteBlock[] = split.blocks.map(block => {
-            // tab alignment
-            const startEvent = hasStartEvent(block)
-              ? Object.assign(block.startEvent, { tab: newScrollback.facade })
-              : undefined
-
-            const completeEvent = isWithCompleteEvent(block)
-              ? Object.assign(block.completeEvent, { tab: newScrollback.facade })
-              : undefined
-
-            return Object.assign({}, block, { startEvent, completeEvent })
-          })
-
+          const restoreBlocks = split.blocks.map(_ => tabAlignment(_, newScrollback.facade))
           const insertIdx = this.findActiveBlock(newScrollback)
 
           newScrollback.blocks = newScrollback.blocks
@@ -266,7 +252,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       const opts = evt.opts || {}
 
-      const clicks = opts.shallow ? undefined : await new FlightRecorder(this.props.tab, splits).record()
+      if (!opts.shallow) {
+        await new FlightRecorder(this.props.tab, splits).record()
+      }
 
       const serializedSnapshot: NotebookImpl = {
         apiVersion: 'kui-shell/v1',
@@ -274,7 +262,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         metadata: { name: opts.name, description: opts.description },
         spec: {
           splits,
-          clicks,
           preferReExecute: opts.preferReExecute
         }
       }
