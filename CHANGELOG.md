@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.17](https://github.com/IBM/kui/compare/v8.10.16...v8.10.17) (2020-10-01)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** Fail should be TrafficLight.Red and Succeeded should be TrafficLight.Green ([2bf5ecb](https://github.com/IBM/kui/commit/2bf5ecb)), closes [#5351](https://github.com/IBM/kui/issues/5351)
+- **plugins/plugin-kubectl:** kubectl table should show PropagationFailed status as offline ([c963cdd](https://github.com/IBM/kui/commit/c963cdd)), closes [#5821](https://github.com/IBM/kui/issues/5821)
+
 ## [8.10.16](https://github.com/IBM/kui/compare/v8.10.15...v8.10.16) (2020-10-01)
 
 ### Bug Fixes
