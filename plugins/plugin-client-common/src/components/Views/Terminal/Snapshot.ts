@@ -24,12 +24,11 @@ import {
   SnapshottedEvent,
   isWatchable,
   eventBus,
-  flatten,
   Tab,
   isTable
 } from '@kui-shell/core'
 
-import { CompleteBlock, isAnnouncement, isWithCompleteEvent, isOk, isOops } from './Block/BlockModel'
+import { CompleteBlock, isAnnouncement, isOk, isOops } from './Block/BlockModel'
 
 /**
  * Split: captures the split uuid and blocks in a split
@@ -103,99 +102,32 @@ export function snapshot(block: CompleteBlock): CompleteBlock {
   }
 }
 
-/**
- * Record clicks
- *
- */
-type Click = {
-  completeEvent: CompleteBlock['completeEvent']
-  onClicks: { rowIdx: number; onClick: string; echo: boolean }[]
+export function allocateTab(target: CommandStartEvent | CommandCompleteEvent, tab: Tab) {
+  Object.assign(target, { tab })
 }
 
-/**
- * The command name we use to replay the click in a given block
- * (`execUUID`) and table row (`rowIdx`).
- *
- */
-function replayClickFor(execUUID: string, rowIdx: number) {
-  return `replay-click-${execUUID}-${rowIdx}`
+/** assign tab to the block */
+export function tabAlignment(block: CompleteBlock, tab: Tab): CompleteBlock {
+  if (isTable(block.completeEvent.response)) {
+    block.completeEvent.response.body.forEach(row => {
+      if (row.onclick && row.onclick.startEvent && row.onclick.completeEvent) {
+        allocateTab(row.onclick.startEvent, tab)
+        allocateTab(row.onclick.completeEvent, tab)
+      }
+    })
+
+    block.response = block.completeEvent.response
+  }
+
+  allocateTab(block.completeEvent, tab)
+  allocateTab(block.startEvent, tab)
+
+  return block
 }
 
 export class FlightRecorder {
   // eslint-disable-next-line no-useless-constructor
   public constructor(private readonly tab: Tab, private readonly splits: Split[]) {}
-
-  /** Find onclick handlers that we should crawl */
-  private collectOnClicks(): Click[] {
-    return flatten(
-      this.splits.map(split => {
-        return split.blocks
-          .map(_ =>
-            isWithCompleteEvent(_) && _.completeEvent && isTable(_.completeEvent.response)
-              ? {
-                  completeEvent: _.completeEvent,
-                  onClicks: _.completeEvent.response.body
-                    .map((row, rowIdx) =>
-                      row.onclickIdempotent && typeof row.onclick === 'string'
-                        ? { rowIdx, onClick: row.onclick, echo: !row.onclickSilence }
-                        : undefined
-                    )
-                    .filter(_ => _)
-                }
-              : undefined
-          )
-          .filter(_ => _)
-      })
-    )
-  }
-
-  /**
-   * Transform a E=Command*Event into the matching
-   * SnapshottedEvent<E>, by splicing in the tab uuid in place of the
-   * tab object. This allows us to replay in a repeatible way, since
-   * tab uuids are a v5 sequence. See ScrollableTerminal for the
-   * origin of the v5 sequence.
-   *
-   * Note: That we have to place this an a separate function is due to
-   * typescript
-   * limitations. https://github.com/microsoft/TypeScript/issues/35858
-   *
-   */
-  private static xform<E extends CommandStartEvent | CommandCompleteEvent>(
-    this: Pick<Click, 'completeEvent'>,
-    evt: E
-  ): SnapshottedEvent<E> {
-    return Object.assign(Object.assign({}, evt, { tab: undefined }), { tab: this.completeEvent.tab })
-  }
-
-  /**
-   * Accept a Command*Event pass it through `xform` (just above) and
-   * store the resulting SnapshottedEvent in the given `this`
-   * record. We should have an array of these, one per click handler
-   * in a table; this is where the T[] comes from: that array is
-   * parallel to the rows of the table being crawled.
-   *
-   */
-  private static handler<E extends CommandStartEvent | CommandCompleteEvent, T extends SnapshottedEvent<E>>(
-    this: Record<string, T[]>,
-    click: Pick<Click, 'completeEvent'>,
-    rowIdx: number,
-    xform: (evt: E) => T,
-    event: E
-  ) {
-    const events = this[click.completeEvent.execUUID] || []
-    if (events.length === 0) {
-      this[click.completeEvent.execUUID] = events
-    }
-
-    if (isTable(click.completeEvent.response)) {
-      const row = click.completeEvent.response.body[rowIdx]
-      row.onclick = replayClickFor(click.completeEvent.execUUID, rowIdx)
-      row.onclickExec = 'qexec'
-    }
-
-    events[rowIdx] = xform(event)
-  }
 
   /**
    * Run through the rows of a Table response, issue the onclick
@@ -203,34 +135,42 @@ export class FlightRecorder {
    * row of the table; that's a ClickSnapshot.
    *
    */
-  public async record(): Promise<PreRecordedClicks> {
-    const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
-    const startEvents: Record<string, SnapshottedEvent<CommandStartEvent>[]> = {}
-    const completeEvents: Record<string, SnapshottedEvent<CommandCompleteEvent>[]> = {}
-
-    const onclicks = this.collectOnClicks()
-
+  public async record() {
     await Promise.all(
-      onclicks.map(async click => {
-        await Promise.all(
-          click.onClicks.map(async _ => {
-            const xform = FlightRecorder.xform.bind(click)
-            const onCommandStart = FlightRecorder.handler.bind(startEvents, click, _.rowIdx, xform)
-            const onCommandComplete = FlightRecorder.handler.bind(completeEvents, click, _.rowIdx, xform)
-            eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
-            eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
+      this.splits.map(split =>
+        Promise.all(
+          split.blocks.map(async _ => {
+            if (isTable(_.completeEvent.response)) {
+              await Promise.all(
+                _.completeEvent.response.body.map(async row => {
+                  if (row.onclickIdempotent && typeof row.onclick === 'string') {
+                    const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
+                    const command = row.onclick
+                    row.onclick = {}
 
-            try {
-              await fakeTab.REPL.pexec(_.onClick, { tab: fakeTab, echo: _.echo })
-            } finally {
-              eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
-              eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+                    const onCommandStart = (startEvent: CommandStartEvent) => {
+                      Object.assign(row.onclick, { startEvent })
+                    }
+                    const onCommandComplete = (completeEvent: CommandCompleteEvent) => {
+                      Object.assign(row.onclick, { completeEvent })
+                    }
+
+                    eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
+                    eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
+
+                    try {
+                      await fakeTab.REPL.pexec(command, { tab: fakeTab, echo: !row.onclickSilence })
+                    } finally {
+                      eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
+                      eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+                    }
+                  }
+                })
+              )
             }
           })
         )
-      })
+      )
     )
-
-    return { startEvents, completeEvents }
   }
 }

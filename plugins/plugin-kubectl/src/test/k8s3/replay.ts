@@ -132,3 +132,41 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
 
   deleteNS(this, ns, 'kubectl')
 })
+
+describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, async function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const ns: string = createNS()
+  const inNamespace = `-n ${ns}`
+
+  allocateNS(this, ns, 'kubectl')
+
+  it('should replay a kubectl get pods table with re-execution ', async () => {
+    try {
+      const selector = await CLI.command(
+        `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+        this.app
+      ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+
+      await waitForGreen(this.app, selector)
+
+      await CLI.command('snapshot /tmp/test.kui', this.app).then(ReplExpect.justOK)
+
+      await CLI.command('replay /tmp/test.kui', this.app)
+
+      await SidecarExpect.notOpen(this.app)
+
+      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
+      await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`)
+
+      await SidecarExpect.open(this.app)
+        .then(SidecarExpect.mode(defaultModeForGet))
+        .then(SidecarExpect.showing('nginx'))
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  deleteNS(this, ns, 'kubectl')
+})
