@@ -110,7 +110,9 @@ export function onPaste(this: ScrollableTerminal, evt: ClipboardEvent) {
         this.onExecEnd(uuid, false, complete, target.insertionIdx)
       }
     } catch (err) {
-      console.error(err)
+      // console.error(err)
+      // ok! this just means the user pasted something that isn't JSON
+      // see https://github.com/IBM/kui/issues/5836
     }
   }
 }
