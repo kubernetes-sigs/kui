@@ -154,7 +154,12 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
 
       return res
     }
-    return this.state.latestVersion && isSemverUpdateAvailable() && this.state.latestVersion !== this.state.dulyNoted
+    return (
+      this.state.currentVersion &&
+      this.state.latestVersion &&
+      isSemverUpdateAvailable() &&
+      this.state.latestVersion !== this.state.dulyNoted
+    )
   }
 
   /** Text for update available notification */
