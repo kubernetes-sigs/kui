@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { DropDown, Icons } from '@kui-shell/plugin-client-common'
 import {
   Abortable,

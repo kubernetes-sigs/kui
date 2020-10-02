@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as prettyPrintDuration from 'pretty-ms'
+import prettyPrintDuration from 'pretty-ms'
 import { REPL, Table } from '@kui-shell/core'
 
 import toMap from '../../table-to-map'

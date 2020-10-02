@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import { wireToStandardEvents, unwireToStandardEvents, getCurrentTab, i18n, CodedError } from '@kui-shell/core'

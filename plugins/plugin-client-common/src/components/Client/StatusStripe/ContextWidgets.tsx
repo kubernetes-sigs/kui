@@ -17,7 +17,7 @@
 // FIXME:
 /* eslint-disable react/prop-types */
 
-import * as React from 'react'
+import React from 'react'
 
 interface Props {
   className?: string

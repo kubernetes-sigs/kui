@@ -17,8 +17,8 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 import Debug from 'debug'
-import * as React from 'react'
-import * as minimist from 'yargs-parser'
+import React from 'react'
+import minimist from 'yargs-parser'
 import { Button } from 'carbon-components-react'
 import {
   typeahead,

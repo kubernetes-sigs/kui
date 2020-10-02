@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 
 /** for html-formatted text, wrap it in a container with padding and scrolling */
 export default function HTMLString({ content }: { content: string }) {

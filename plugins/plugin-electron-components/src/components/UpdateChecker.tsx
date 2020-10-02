@@ -21,8 +21,8 @@
  *
  */
 
-import * as React from 'react'
-import * as needle from 'needle'
+import React from 'react'
+import needle from 'needle'
 
 import { eventChannelUnsafe, getCurrentTab, i18n } from '@kui-shell/core'
 import { TagWidget } from '@kui-shell/plugin-client-common'

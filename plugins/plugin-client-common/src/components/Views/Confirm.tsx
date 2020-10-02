@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { i18n, eventChannelUnsafe, Tab as KuiTab } from '@kui-shell/core'
 import { Modal } from 'carbon-components-react'
 

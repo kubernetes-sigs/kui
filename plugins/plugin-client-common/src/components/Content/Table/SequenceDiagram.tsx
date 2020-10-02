@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import * as prettyMillis from 'pretty-ms'
+import React from 'react'
+import prettyMillis from 'pretty-ms'
 import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
 
 import Bar from './Bar'

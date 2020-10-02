@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import * as prettyPrintDuration from 'pretty-ms'
+import prettyPrintDuration from 'pretty-ms'
 
 import { KubeResource } from '@kui-shell/plugin-kubectl'
 import { Badge, Mode, Tab, empty, prettyPrintTime, i18n } from '@kui-shell/core'

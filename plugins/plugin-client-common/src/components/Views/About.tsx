@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { i18n } from '@kui-shell/core'
 import { SideNavMenu, SideNavMenuItem, SideNav, SideNavItems } from 'carbon-components-react'
 

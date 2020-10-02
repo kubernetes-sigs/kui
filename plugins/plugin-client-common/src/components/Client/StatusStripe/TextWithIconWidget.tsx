@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { pexecInCurrentTab } from '@kui-shell/core'
 
 /** variants of how the information should be presented */

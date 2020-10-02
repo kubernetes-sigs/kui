@@ -16,7 +16,7 @@
 
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import * as React from 'react'
+import React from 'react'
 import { eventBus, Tab, NavResponse, ParsedOptions } from '@kui-shell/core'
 
 import Width from './width'

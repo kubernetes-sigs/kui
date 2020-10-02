@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { MultiModalMode, Link, isLinkWithCommand, i18n } from '@kui-shell/core'
 import { Nav, NavExpandable, NavItem, NavList } from '@patternfly/react-core'
 

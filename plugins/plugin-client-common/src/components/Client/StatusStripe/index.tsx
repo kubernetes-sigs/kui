@@ -17,7 +17,7 @@
 // FIXME:
 /* eslint-disable react/prop-types */
 
-import * as React from 'react'
+import React from 'react'
 import { eventBus, pexecInCurrentTab, i18n, StatusStripeChangeEvent } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'

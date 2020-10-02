@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { KeyCodes, inElectron } from '@kui-shell/core'
 import { Header, HeaderName, HeaderMenuButton, HeaderNavigation } from 'carbon-components-react'
 

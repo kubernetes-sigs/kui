@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as prettyMilliseconds from 'pretty-ms'
+import prettyMilliseconds from 'pretty-ms'
 import { opts, commandPrefix } from '@kui-shell/plugin-ibmcloud/ks'
 import { Arguments, Registrar, MultiModalResponse, i18n } from '@kui-shell/core'
 

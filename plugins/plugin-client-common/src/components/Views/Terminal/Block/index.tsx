@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Tab as KuiTab, eventChannelUnsafe } from '@kui-shell/core'
 
 import Input, { InputOptions } from './Input'
