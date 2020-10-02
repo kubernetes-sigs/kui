@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Icons } from '@kui-shell/plugin-client-common'
 import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
 

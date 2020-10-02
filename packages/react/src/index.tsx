@@ -20,7 +20,7 @@ declare let _kuiNonce: string
 declare let __webpack_nonce__: string
 __webpack_nonce__ = _kuiNonce
 
-import * as React from 'react'
+import React from 'react'
 import { render as ReactDomRender } from 'react-dom'
 
 import Client from '@kui-shell/client'

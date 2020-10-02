@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { extname } from 'path'
 import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 

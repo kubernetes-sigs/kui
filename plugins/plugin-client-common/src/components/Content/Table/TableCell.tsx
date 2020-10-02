@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import * as prettyPrintDuration from 'pretty-ms'
+import React from 'react'
+import prettyPrintDuration from 'pretty-ms'
 import { TableCell, DataTableCell } from 'carbon-components-react'
 import { Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL, eventBus } from '@kui-shell/core'
 

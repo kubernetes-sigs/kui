@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 
 import Props from './model'
 import Carbon from './impl/Carbon'

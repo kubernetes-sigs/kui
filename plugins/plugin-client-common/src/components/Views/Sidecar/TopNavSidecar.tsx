@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import * as React from 'react'
+import React from 'react'
 import sameCommand from '../util/same'
 import { Tabs, Tab } from 'carbon-components-react'
 

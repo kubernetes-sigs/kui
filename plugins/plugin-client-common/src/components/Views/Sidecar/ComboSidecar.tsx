@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { eventBus, Tab, NavResponse, MultiModalResponse, CommandCompleteEvent } from '@kui-shell/core'
 
 import { SidecarOptions } from './BaseSidecar'

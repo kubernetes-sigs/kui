@@ -16,7 +16,7 @@
 
 import { Table, Tab, REPL } from '@kui-shell/core'
 
-import * as React from 'react'
+import React from 'react'
 import { DataTableCustomRenderProps, TableBody, TableRow } from 'carbon-components-react'
 
 import renderCell from './TableCell'

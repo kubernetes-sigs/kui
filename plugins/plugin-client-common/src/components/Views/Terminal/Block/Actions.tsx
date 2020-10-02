@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Tab, i18n } from '@kui-shell/core'
 
 import { InputOptions } from './Input'

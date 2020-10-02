@@ -16,7 +16,7 @@
 
 import { Tab, REPL, Table as KuiTable, TableStyle, i18n, isTableWithTimestamp, isWatchable } from '@kui-shell/core'
 
-import * as React from 'react'
+import React from 'react'
 import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-components-react'
 
 import sortRow from './sort'

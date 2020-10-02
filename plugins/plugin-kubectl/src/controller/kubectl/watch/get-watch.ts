@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import * as prettyPrintDuration from 'pretty-ms'
+import prettyPrintDuration from 'pretty-ms'
 
 import {
   Table,

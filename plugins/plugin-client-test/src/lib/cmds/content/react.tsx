@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { ToolbarText, Button, ToolbarProps } from '@kui-shell/core'
 
 interface Props {

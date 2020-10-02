@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '../../../'
 import { inBrowser, wireToStandardEvents, unwireToStandardEvents, i18n } from '@kui-shell/core'

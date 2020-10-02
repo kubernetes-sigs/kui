@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { ToolbarText, ToolbarAlert, Button } from '@kui-shell/core'
 
 import Alert from '../../spi/Alert'

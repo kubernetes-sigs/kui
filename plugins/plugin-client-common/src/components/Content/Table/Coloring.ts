@@ -15,7 +15,7 @@
  */
 
 import { Table } from '@kui-shell/core'
-import * as prettyPrintDuration from 'pretty-ms'
+import prettyPrintDuration from 'pretty-ms'
 
 export interface Coloring {
   nDurationBuckets(): number

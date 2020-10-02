@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { REPL, inBrowser, i18n } from '@kui-shell/core'
 
 import Width from './width'

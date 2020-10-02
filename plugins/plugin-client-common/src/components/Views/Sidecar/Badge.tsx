@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Tag } from 'carbon-components-react'
 import { Badge as KuiBadge, Tab, MultiModalResponse } from '@kui-shell/core'
 

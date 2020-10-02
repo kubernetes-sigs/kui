@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 
 import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
 import CounterWidget from './CounterWidget'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { MultiModalMode, Link, isLinkWithCommand, i18n } from '@kui-shell/core'
 import { SideNavLink, SideNavMenu, SideNavMenuItem, SideNav, SideNavItems } from 'carbon-components-react'
 

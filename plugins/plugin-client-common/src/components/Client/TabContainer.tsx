@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { NewTabRequestEvent, Tab, eventBus, pexecInCurrentTab } from '@kui-shell/core'
 
 import TabModel, { TopTabButton } from './TabModel'

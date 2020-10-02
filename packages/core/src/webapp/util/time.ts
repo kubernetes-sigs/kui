@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as prettyPrintDuration from 'pretty-ms'
+import prettyPrintDuration from 'pretty-ms'
 
 import { DefaultExecOptions, LanguageBearing } from '../../models/execOptions'
 
@@ -51,9 +51,9 @@ export const prettyPrintTime = (
       previousTimestamp && (!isDate(previousTimestamp) ? new Date(previousTimestamp) : previousTimestamp)
     const prevOnSameDay = !!(
       prev &&
-      (prev.getFullYear() === then.getFullYear() &&
-        prev.getMonth() === then.getMonth() &&
-        prev.getDate() === then.getDate())
+      prev.getFullYear() === then.getFullYear() &&
+      prev.getMonth() === then.getMonth() &&
+      prev.getDate() === then.getDate()
     )
     const sameDay = () => {
       const delta = then.getTime() - prev.getTime()

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Tab as KuiTab, eventBus } from '@kui-shell/core'
 
 import Block from '../Views/Terminal/Block'
