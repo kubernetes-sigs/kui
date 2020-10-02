@@ -1,6 +1,6 @@
 @import './common';
 
-body.kui--patternfly4[kui-theme='PatternFly4 Dark'] {
+body.kui--patternfly4[kui-theme='PatternFly4 Dark'][kui-theme-style] {
   --color-base00: var(--pf-global--palette--black-850);
   --color-base01: var(--pf-global--palette--black-700);
   --color-base02: var(--pf-global--palette--black-600);
