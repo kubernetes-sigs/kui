@@ -144,11 +144,17 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
 
   /** Given current state, is an update available? */
   private isUpdateAvailable() {
-    return (
-      this.state.latestVersion &&
-      this.state.currentVersion !== this.state.latestVersion &&
-      this.state.latestVersion !== this.state.dulyNoted
-    )
+    const isSemverUpdateAvailable = () => {
+      const latest = this.state.latestVersion.split('.').map(_ => parseInt(_))
+      const current = this.state.currentVersion.split('.').map(_ => parseInt(_))
+      const res =
+        latest[0] > current[0] ||
+        (latest[0] === current[0] && latest[1] > current[1]) ||
+        (latest[0] === current[0] && latest[1] === current[1] && latest[2] > current[2])
+
+      return res
+    }
+    return this.state.latestVersion && isSemverUpdateAvailable() && this.state.latestVersion !== this.state.dulyNoted
   }
 
   /** Text for update available notification */
