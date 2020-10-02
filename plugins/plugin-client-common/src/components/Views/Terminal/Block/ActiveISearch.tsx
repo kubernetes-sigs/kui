@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import * as React from 'react'
+import React from 'react'
 
 import { inBrowser, isCursorMovement, HistoryModel, History } from '@kui-shell/core'
 

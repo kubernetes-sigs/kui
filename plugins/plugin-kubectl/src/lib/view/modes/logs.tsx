@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import * as React from 'react'
+import React from 'react'
 import { i18n, Arguments, Button, Tab, ToolbarProps } from '@kui-shell/core'
 
 import { Icons } from '@kui-shell/plugin-client-common'

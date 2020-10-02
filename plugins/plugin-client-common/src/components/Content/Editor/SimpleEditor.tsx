@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { editor as Monaco } from 'monaco-editor'
 
 import { eventChannelUnsafe, eventBus } from '@kui-shell/core'

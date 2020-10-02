@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { i18n } from '@kui-shell/core'
 import { ToastNotification } from 'carbon-components-react'
 import { Props } from '..'

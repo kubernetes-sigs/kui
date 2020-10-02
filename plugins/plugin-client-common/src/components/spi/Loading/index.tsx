@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 
 import Carbon from './impl/Carbon'
 import PatternFly4 from './impl/PatternFly'

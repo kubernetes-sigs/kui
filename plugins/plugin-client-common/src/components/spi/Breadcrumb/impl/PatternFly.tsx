@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core'
 
 import Props from '../model'

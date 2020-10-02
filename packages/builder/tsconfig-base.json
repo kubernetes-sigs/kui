@@ -5,6 +5,7 @@
     "removeComments": false,
     "noImplicitThis": true,
     "alwaysStrict": true,
+    "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "node",
     "target": "ES2016",

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Flag16 as FlagIcon } from '@carbon/icons-react'
 
 import { wireToStandardEvents } from '@kui-shell/core'

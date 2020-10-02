@@ -17,7 +17,7 @@
 // FIXME:
 /* eslint-disable react/prop-types */
 
-import * as React from 'react'
+import React from 'react'
 import { eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
 
 import Width from '../Views/Sidecar/width'

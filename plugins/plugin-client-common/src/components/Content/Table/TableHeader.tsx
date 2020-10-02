@@ -16,7 +16,7 @@
 
 import { Row as KuiRow } from '@kui-shell/core'
 
-import * as React from 'react'
+import React from 'react'
 import { DataTableCustomRenderProps, TableHead, TableRow, TableHeader } from 'carbon-components-react'
 
 /**

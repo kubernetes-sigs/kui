@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as bytes from 'bytes-iec'
+import bytes from 'bytes-iec'
 
 /**
  * @return the ratio a/b, pretty-printed as a percentage string

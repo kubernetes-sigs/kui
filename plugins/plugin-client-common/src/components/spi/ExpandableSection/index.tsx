@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import Props from './model'
 
 const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))

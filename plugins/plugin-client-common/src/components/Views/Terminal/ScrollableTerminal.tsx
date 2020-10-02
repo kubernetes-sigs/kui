@@ -15,7 +15,7 @@
  */
 
 import { v5 } from 'uuid'
-import * as React from 'react'
+import React from 'react'
 
 import {
   i18n,

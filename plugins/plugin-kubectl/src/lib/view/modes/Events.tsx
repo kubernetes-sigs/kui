@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import * as prettyPrintDuration from 'pretty-ms'
+import React from 'react'
+import prettyPrintDuration from 'pretty-ms'
 
 import {
   i18n,

@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import Debug from 'debug'
-import * as React from 'react'
+import React from 'react'
 import {
   i18n,
   REPL,

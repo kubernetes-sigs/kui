@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Tab, REPL, Table, isWatchable } from '@kui-shell/core'
 import { KuiContext } from '../../../'
 

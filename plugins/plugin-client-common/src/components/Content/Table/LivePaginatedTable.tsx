@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 
 import PaginatedTable, { Props, State } from './PaginatedTable'

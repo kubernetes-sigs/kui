@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { v4 as uuid } from 'uuid'
 import { dirname, join, relative } from 'path'
-import * as ReactMarkdown from 'react-markdown'
+import ReactMarkdown from 'react-markdown'
 import { REPL, Tab as KuiTab } from '@kui-shell/core'
 import {
   Link,

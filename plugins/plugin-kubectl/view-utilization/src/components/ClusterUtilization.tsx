@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import * as React from 'react'
+import React from 'react'
 
 import { getCurrentTab, wireToStandardEvents } from '@kui-shell/core'
 import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'

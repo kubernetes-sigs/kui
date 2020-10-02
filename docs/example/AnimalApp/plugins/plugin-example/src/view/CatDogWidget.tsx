@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 
 import { TextWithIconWidget } from '@kui-shell/plugin-client-common'
 

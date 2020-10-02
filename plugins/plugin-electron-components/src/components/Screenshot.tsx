@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Event, NativeImage } from 'electron'
 import { Button } from 'carbon-components-react'
 import { Alert } from '@kui-shell/plugin-client-common'

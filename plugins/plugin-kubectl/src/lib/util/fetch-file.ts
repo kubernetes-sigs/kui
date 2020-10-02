@@ -15,14 +15,14 @@
  */
 
 import Debug from 'debug'
+import needle from 'needle'
 import { REPL, inBrowser, isHeadless, hasProxy, CodedError, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
 
-async function needle({ qexec }: REPL, method: 'get', url: string): Promise<{ statusCode: number; body: string }> {
+async function _needle({ qexec }: REPL, method: 'get', url: string): Promise<{ statusCode: number; body: string }> {
   if (isHeadless()) {
-    const needle = await import('needle')
     debug('fetch via needle', needle)
     return needle(method, url, { follow_max: 10 }).then(_ => ({ statusCode: _.statusCode, body: _.body }))
   } else if (inBrowser()) {
@@ -114,7 +114,7 @@ export function fetchFile(repl: REPL, url: string): Promise<(string | Buffer)[]>
     urls.map(async url => {
       if (url.match(/http(s)?:\/\//)) {
         debug('fetch remote', url)
-        const fetchOnce = () => needle(repl, 'get', url).then(_ => _.body)
+        const fetchOnce = () => _needle(repl, 'get', url).then(_ => _.body)
 
         const retry = (delay: number) => async (err: Error) => {
           if (/timeout/.test(err.message) || /hang up/.test(err.message) || /hangup/.test(err.message)) {

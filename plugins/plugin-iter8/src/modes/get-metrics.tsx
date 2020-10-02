@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
-import { safeLoad , safeDump } from 'js-yaml'
+import React from 'react'
+import { safeLoad, safeDump } from 'js-yaml'
 import { TrashCan20, Reset20, Add20, Edit20 } from '@carbon/icons-react'
 import { Button, DataTable, Form, FormGroup, Select, SelectItem, TextInput } from 'carbon-components-react'
 import 'carbon-components/scss/components/button/_button.scss'
@@ -39,8 +39,6 @@ import {
   MetricConfigMap
 } from '../components/metric-config-types'
 import { kubectlApplyRule } from '../components/traffic-split'
-
-
 
 const { Table, TableBody, TableCell, TableRow, TableContainer, TableExpandRow, TableExpandedRow } = DataTable
 

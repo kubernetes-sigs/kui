@@ -16,7 +16,7 @@
 
 import { XtermResponse, XtermResponseCell } from '@kui-shell/core'
 
-import * as React from 'react'
+import React from 'react'
 
 interface Props {
   response: XtermResponse

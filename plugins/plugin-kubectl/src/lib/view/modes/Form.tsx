@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import * as React from 'react'
+import React from 'react'
 import { Form, TextArea, TextInput } from 'carbon-components-react'
 
 import { FormMap } from './table-to-map'
