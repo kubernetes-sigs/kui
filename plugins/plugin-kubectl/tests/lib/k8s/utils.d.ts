@@ -110,4 +110,4 @@ declare function doHelp(this: Common.ISuite, cmd: string, breadcrumbs: string[],
 declare function getTerminalText(this: Common.ISuite): Promise<string>
 
 /** Wait for the given checker to be true, w.r.t. the log text in the view */
-declare function waitForTerminalText (checker: string | ((text: string) => boolean)): Promise<void>
+declare function waitForTerminalText (checker: string | RegExp | ((text: string) => boolean)): Promise<void>

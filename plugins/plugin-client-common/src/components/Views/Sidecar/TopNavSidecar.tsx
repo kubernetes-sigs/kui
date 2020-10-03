@@ -221,40 +221,37 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   // first div used to be sidecar-top-stripe
   private tabs() {
     return (
-      <div className="zoomable full-height">
-        <div className="full-height">
-          <Tabs
-            className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container"
-            triggerHref="#"
-            selected={this.current.currentTabIndex}
-            onSelectionChange={(idx: number) => {
-              // tell the views that we have changed focus
-              this.broadcastFocusChange(idx)
+      <div className="kui--sidecar-tabs-container zoomable full-height">
+        <Tabs
+          className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container"
+          selected={this.current.currentTabIndex}
+          onSelectionChange={(idx: number) => {
+            // tell the views that we have changed focus
+            this.broadcastFocusChange(idx)
 
-              this.setState(({ current, history }) => {
-                const newCurrent = Object.assign({}, current, { currentTabIndex: idx })
-                history.updateActive(newCurrent)
-                return {
-                  current: newCurrent
-                }
-              })
-            }}
-          >
-            {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
-              <Tab
-                href="#"
-                key={mode.mode}
-                id={mode.mode}
-                className="sidecar-bottom-stripe-button"
-                label={mode.label || mode.mode}
-                data-mode={mode.mode}
-                onMouseDown={event => event.preventDefault()}
-              >
-                {this.tabContent(idx)}
-              </Tab>
-            ))}
-          </Tabs>
-        </div>
+            this.setState(({ current, history }) => {
+              const newCurrent = Object.assign({}, current, { currentTabIndex: idx })
+              history.updateActive(newCurrent)
+              return {
+                current: newCurrent
+              }
+            })
+          }}
+        >
+          {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
+            <Tab
+              href="#"
+              key={mode.mode}
+              id={mode.mode}
+              className="sidecar-bottom-stripe-button"
+              label={mode.label || mode.mode}
+              data-mode={mode.mode}
+              onMouseDown={event => event.preventDefault()}
+            >
+              {this.tabContent(idx)}
+            </Tab>
+          ))}
+        </Tabs>
       </div>
     )
   }
