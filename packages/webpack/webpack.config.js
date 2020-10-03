@@ -380,6 +380,7 @@ module.exports = {
     },
     writeToDisk: !inBrowser,
     contentBase: buildDir,
+    disableHostCheck: true /* webpack 4.43 -> 4.44 seemed to require this, otherwise console errors WDS Disconnected, and no auto-reload on save+recompile */,
     port
   },
   optimization,
@@ -445,7 +446,6 @@ module.exports = {
       // typescript exclusion rules
       { test: /\/node_modules\/typescript\//, use: 'ignore-loader' },
       { test: /\/node_modules\/proxy-agent\//, use: 'ignore-loader' },
-      { test: /\/node_modules\/@babel\//, use: 'ignore-loader' },
       { test: /\/node_modules\/@types\//, use: 'ignore-loader' },
       // end of typescript rules
       { test: /\/terser\/tools/, use: 'ignore-loader' },

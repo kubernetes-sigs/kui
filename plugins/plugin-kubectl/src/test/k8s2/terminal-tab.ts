@@ -88,6 +88,8 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
         await sleep(5)
 
         this.app.client.keys(`echo ${ECHO_TEXT} > ${ECHO_FILE}${Keys.ENTER}`)
+        this.app.client.keys(`cat ${ECHO_FILE}${Keys.ENTER}`)
+        waitForTerminalText.bind(this)(new RegExp('^' + ECHO_TEXT + '$', 'm'))
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -185,7 +187,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       await this.app.client.keys(`while true; do echo hi; sleep 1; done${Keys.ENTER}`)
 
       console.error('4')
-      await waitForText('hi')
+      await waitForText(/^hi$/m)
 
       const textBeforeSwitch = await getText()
       const nLinesBefore = textBeforeSwitch.split(/\n/).length

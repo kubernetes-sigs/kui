@@ -112,6 +112,9 @@
   }
   .sidecar-toolbar-text svg path {
     fill: var(--color-sidecar-toolbar-foreground);
+    &[data-icon-path="inner-path"] {
+      fill: var(--color-text-01);
+    }
   }
   .sidecar-toolbar-text[data-type="warning"] svg path {
     fill: var(--color-base0A);
@@ -161,12 +164,15 @@
     display: flex;
     line-height: 1.5rem;
     padding: 0 0.5rem;
-    color: inherit;
 
-    &:hover {
-      cursor: pointer;
-      [role="tab"] {
-        color: var(--color-base03);
+    a {
+      color: inherit;
+      text-decoration: none;
+      &:hover {
+        cursor: pointer;
+        [role="tab"] {
+          color: var(--color-base03);
+        }
       }
     }
 

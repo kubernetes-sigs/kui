@@ -131,7 +131,7 @@ export const sequence = (A: Array<string>) => (app: Application) => {
 
 export const mode = (expectedMode: string) => async (app: Application) => {
   await app.client.waitUntil(async () => {
-    await app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON(expectedMode)}.bx--tabs__nav-item--selected`)
+    await app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED(expectedMode)}`)
     return true
   }, waitTimeout)
 

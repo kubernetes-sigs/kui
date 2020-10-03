@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { ok } from 'assert'
 import { Application } from 'spectron'
-
 import { promiseEach, BadgeSpec } from '@kui-shell/core'
 
 import * as Common from './common'
@@ -226,14 +226,24 @@ export class TestMMR {
             .catch(Common.oops(this, true)))
       }
 
+      const clickToActivateTab = async (mode: string) => {
+        const sel = Selectors.SIDECAR_MODE_BUTTON(mode)
+        await this.app.client.waitForExist(sel)
+
+        await this.app.client.execute(sel => {
+          document.querySelector(sel).focus()
+        }, sel)
+
+        ok(await this.app.client.isVisibleWithinViewport(sel))
+        await this.app.client.click(sel)
+        await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(mode))
+      }
+
       const cycleTheTabs = () =>
         expectModes.forEach(expectMode => {
           it(`should switch to the ${expectMode.mode} tab`, async () => {
             try {
-              if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))
-                await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(expectMode.mode))
-              }
+              await clickToActivateTab(expectMode.mode)
             } catch (err) {
               return Common.oops(this, true)(err)
             }
