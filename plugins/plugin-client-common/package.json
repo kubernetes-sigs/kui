@@ -26,8 +26,8 @@
     "carbon-components-react": "7.10.2",
     "carbon-icons": "7.0.7",
     "cli-spinners": "^2.4.0",
-    "monaco-editor": "0.20.0",
-    "monaco-editor-webpack-plugin": "1.9.0",
+    "monaco-editor": "0.21.2",
+    "monaco-editor-webpack-plugin": "2.0.0",
     "react-markdown": "4.3.1",
     "tmp": "0.2.1"
   },
