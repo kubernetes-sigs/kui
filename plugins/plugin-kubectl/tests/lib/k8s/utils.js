@@ -252,6 +252,10 @@ exports.waitForTerminalText = async function(checker) {
     if (++idx > 5) {
       console.error(`still waiting for terminal text actualText=${text}`)
     }
-    return typeof checker === 'string' ? text.indexOf(checker) >= 0 : checker(text)
+    return typeof checker === 'string'
+      ? text.indexOf(checker) >= 0
+      : typeof checker === 'function'
+      ? checker(text)
+      : checker.test(text)
   }, CLI.waitTimeout)
 }

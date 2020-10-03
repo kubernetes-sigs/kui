@@ -75,9 +75,10 @@ export const SIDECAR_CUSTOM_CONTENT = `${SIDECAR_TAB_CONTENT} .code-highlighting
 
 // top nav sidecar
 export const SIDECAR_MODE_BUTTONS = `${SIDECAR} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
-export const SIDECAR_MODE_BUTTON = (mode: string) => `${SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
+export const _SIDECAR_MODE_BUTTON = (mode: string) => `${SIDECAR_MODE_BUTTONS}[data-mode="${mode}"]` // specific mode button in the bottom stripe
+export const SIDECAR_MODE_BUTTON = (mode: string) => `${_SIDECAR_MODE_BUTTON(mode)} > a` // clickable part of mode button
 export const SIDECAR_MODE_BUTTON_SELECTED = (mode: string) =>
-  `${SIDECAR_MODE_BUTTON(mode)}.bx--tabs__nav-item--selected`
+  `${_SIDECAR_MODE_BUTTON(mode)}.bx--tabs--scrollable__nav-item--selected`
 
 // left nav sidecar
 export const SIDECAR_NAV_COMMAND_LINKS = (link: string) =>

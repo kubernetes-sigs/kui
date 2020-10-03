@@ -71,20 +71,19 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
     const { button } = this.props
 
     return (
-      <a
-        role="presentation"
-        href="#"
+      <span
         className={
           'kui--tab-navigatable kui--notab-when-sidecar-hidden sidecar-bottom-stripe-button-as-button sidecar-bottom-stripe-button' +
           (button.icon ? ' kui--toolbar-button-with-icon' : '')
         }
         data-mode={button.mode}
-        onClick={this.buttonOnclick.bind(this)}
       >
-        <span role="tab" title={button.label || button.mode}>
-          {button.icon ? button.icon : button.label || button.mode}
-        </span>
-      </a>
+        <a role="presentation" href="#" onClick={this.buttonOnclick.bind(this)}>
+          <span role="tab" title={button.label || button.mode}>
+            {button.icon ? button.icon : button.label || button.mode}
+          </span>
+        </a>
+      </span>
     )
   }
 }

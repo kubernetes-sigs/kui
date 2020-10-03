@@ -17,6 +17,8 @@
 @import 'SidecarCommon.css';
 @import '../../scss/components/Navigation/common';
 
+$focus-color: var(--color-brand-03);
+
 .kui--sidecar.visible.kui--nav-view {
   .kui--sidecar-content {
     width: 70%;
@@ -79,12 +81,26 @@
 }
 
 .kui--sidecar-header-and-body {
-  .bx--tabs {
+  .bx--tabs--scrollable {
     display: flex;
     background-color: var(--color-sidecar-header);
     border-bottom: 1px solid var(--color-sidecar-background-02);
+    .bx--tab-content {
+      padding: 0;
+    }
+    .bx--tab--overflow-nav-button:focus {
+      outline-color: $focus-color;
+    }
+    .bx--tab--overflow-nav-button svg {
+      fill: var(--color-text-01);
+    }
+    .bx--tabs__overflow-indicator--left,
+    .bx--tabs__overflow-indicator--right {
+      display: none;
+    }
   }
 
+  .kui--sidecar-tabs-container > .bx--tabs--scrollable,
   .bx--tab-content {
     /* TODO    @extend .full-height; */
     flex: 1;
@@ -138,7 +154,7 @@
       }
       .bx--snippet-container {
         &:focus {
-          outline-color: var(--color-brand-03);
+          outline-color: $focus-color;
         }
 
         code {
@@ -200,7 +216,7 @@
   }
 
   &:focus {
-    outline-color: var(--color-brand-03);
+    outline-color: $focus-color;
   }
 
   .bx--copy-btn__feedback {
