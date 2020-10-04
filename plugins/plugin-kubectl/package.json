@@ -29,7 +29,7 @@
   "dependencies": {
     "bytes-iec": "3.1.0",
     "command-exists": "1.2.9",
-    "debug": "4.1.1",
+    "debug": "4.2.0",
     "fs-extra": "9.0.1",
     "js-yaml": "3.14.0",
     "needle": "2.5.2",
