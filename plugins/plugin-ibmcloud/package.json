@@ -28,9 +28,9 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "debug": "4.1.1",
+    "debug": "4.2.0",
     "js-yaml": "3.14.0",
-    "pretty-ms": "7.0.0"
+    "pretty-ms": "7.0.1"
   },
   "krew": {
     "commandPrefix": "kubeui"
