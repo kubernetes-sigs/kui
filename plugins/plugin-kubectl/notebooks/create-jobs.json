@@ -7,14 +7,14 @@
   "spec": {
     "splits": [
       {
-        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Kubernetes Jobs\n\nYou can also use a Job to run multiple Pods in parallel. A Job creates one or more Pods and ensures that a specified number of them successfully terminate.\n\nIn this notebook, you will learn how to create a job to run multiple tasks in parallel and use Kui's sequence diagram to inspect jobs and pods. \n\n"
+                "children": "# Kubernetes Jobs\n\nKubernetes supports parallel batch job scheduling via the **Job** resource type. A Job creates one or more Pods and ensures that a specified number of them successfully terminate.\n\nIn this notebook, you will learn how to create a job to run multiple tasks in parallel and use Kui's **Sequence Diagram** to inspect jobs and pods. \n\nContinue reading \"Controlling Parallelism\" to learn more.\n\n"
               }
             },
             "historyIdx": 250,
@@ -89,14 +89,14 @@
         ]
       },
       {
-        "uuid": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Jobs Completions And Parallelism\n\nJobs use completion and parallelism parameters to control the patterns to arrange pods to work on different things. In the example on the right, we specified the `completion` parameter to `20` and `parallelism` paramter to `4`. The job will start spawning pods till `20` pods are spawned, and each `4` of them can be run in parallel."
+                "children": "# Controlling Parallelism\n\nKubernetes Jobs use two parameters, `completions` and `parallelism`, to control how a Job is subdivided into units of work. Each unit of work is executed by a **Pod**. In the example on the right, we specified values of `20` and `4`, respectively. These parameters tell Kubernetes to execute the Job across 20 Pods, but schedule at most 4 Pods to run concurrently.\n\nYou can see these values defined by expanding the `job.yaml` source. \n\nYou can also see the execution pattern visualized in the **Sequence Diagram** view. Note how there are steps of four Pods executed at a time, with a new Pod being scheduled only when one of the prior Pods has completed its work.\n\nThe gray hashed prefix of every bar represents the **cold start time** of the Pod. This is the time spent bringing up the Pod, and is in contrast to the work you actually want to accomplish. If the cold start penalty is high, you may want to consider coarsening your work: try to do more work per Pod."
               }
             },
             "historyIdx": 108,
@@ -171,7 +171,7 @@
         ]
       },
       {
-        "uuid": "1_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+        "uuid": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
         "blocks": [
           {
             "response": {
@@ -351,6 +351,7 @@
                   "onclick": {
                     "startEvent": {
                       "route": "/kubeui/kubectl/get/ns",
+                      "startTime": 1601938759739,
                       "command": "kubectl get ns -n default kui-notebook-2 -o yaml",
                       "evaluatorOptions": {
                         "flags": {
@@ -387,11 +388,12 @@
                         "plugin": "plugin-kubectl"
                       },
                       "execType": 1,
-                      "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                      "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                       "echo": false
                     },
                     "completeEvent": {
                       "execType": 1,
+                      "completeTime": 1601938760050,
                       "command": "kubectl get ns -n default kui-notebook-2 -o yaml",
                       "argvNoOptions": ["kubectl", "get", "ns", "kui-notebook-2"],
                       "parsedOptions": {
@@ -399,7 +401,7 @@
                         "n": "default",
                         "o": "yaml"
                       },
-                      "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                      "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                       "cancelled": false,
                       "echo": false,
                       "evaluatorOptions": {
@@ -439,7 +441,7 @@
                       "execOptions": {
                         "echo": false,
                         "type": 1,
-                        "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                        "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                         "history": 250,
                         "env": {}
                       },
@@ -447,11 +449,11 @@
                         "apiVersion": "v1",
                         "kind": "Namespace",
                         "metadata": {
-                          "creationTimestamp": "2020-10-05T19:46:31Z",
+                          "creationTimestamp": "2020-10-05T22:57:21Z",
                           "name": "kui-notebook-2",
-                          "resourceVersion": "1423982",
+                          "resourceVersion": "84031827",
                           "selfLink": "/api/v1/namespaces/kui-notebook-2",
-                          "uid": "a8038959-e03a-41d6-8652-164fc5d7f979"
+                          "uid": "c3544e08-2ddc-4978-80f9-7f5896e85864"
                         },
                         "spec": {
                           "finalizers": ["kubernetes"]
@@ -467,7 +469,7 @@
                           "execOptions": {
                             "echo": false,
                             "type": 1,
-                            "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                            "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                             "history": 250,
                             "env": {}
                           },
@@ -478,10 +480,10 @@
                             "o": "yaml"
                           }
                         },
-                        "kuiRawData": "apiVersion: v1\nkind: Namespace\nmetadata:\n  creationTimestamp: \"2020-10-05T19:46:31Z\"\n  name: kui-notebook-2\n  resourceVersion: \"1423982\"\n  selfLink: /api/v1/namespaces/kui-notebook-2\n  uid: a8038959-e03a-41d6-8652-164fc5d7f979\nspec:\n  finalizers:\n  - kubernetes\nstatus:\n  phase: Active\n",
+                        "kuiRawData": "apiVersion: v1\nkind: Namespace\nmetadata:\n  creationTimestamp: \"2020-10-05T22:57:21Z\"\n  name: kui-notebook-2\n  resourceVersion: \"84031827\"\n  selfLink: /api/v1/namespaces/kui-notebook-2\n  uid: c3544e08-2ddc-4978-80f9-7f5896e85864\nspec:\n  finalizers:\n  - kubernetes\nstatus:\n  phase: Active\n",
                         "toolbarText": {
                           "type": "info",
-                          "text": "Created on **10/5/2020, 3:46:31 PM**. Showing resource version **1423982**."
+                          "text": "Created on **10/5/2020, 6:57:21 PM**. Showing resource version **84031827**."
                         },
                         "onclick": {
                           "kind": "kubectl get Namespace -n undefined",
@@ -514,11 +516,12 @@
                 }
               ]
             },
-            "historyIdx": 251,
+            "historyIdx": 250,
             "cwd": "~/Workspace7/kui",
             "command": "kubectl create ns kui-notebook-2",
             "startEvent": {
               "route": "/kubeui/kubectl/create",
+              "startTime": 1601938635810,
               "command": "kubectl create ns kui-notebook-2",
               "evaluatorOptions": {
                 "flags": {
@@ -560,6 +563,7 @@
             },
             "completeEvent": {
               "execType": 0,
+              "completeTime": 1601938641188,
               "command": "kubectl create ns kui-notebook-2",
               "argvNoOptions": ["kubectl", "create", "ns", "kui-notebook-2"],
               "parsedOptions": {
@@ -575,7 +579,7 @@
                 "type": 0,
                 "language": "en-US",
                 "execUUID": "3d843937-8e8e-4e80-b47a-f5cd02bfe01c",
-                "history": 251,
+                "history": 250,
                 "env": {}
               },
               "response": {
@@ -601,6 +605,7 @@
                     "onclick": {
                       "startEvent": {
                         "route": "/kubeui/kubectl/get/ns",
+                        "startTime": 1601938759739,
                         "command": "kubectl get ns -n default kui-notebook-2 -o yaml",
                         "evaluatorOptions": {
                           "flags": {
@@ -637,11 +642,12 @@
                           "plugin": "plugin-kubectl"
                         },
                         "execType": 1,
-                        "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                        "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                         "echo": false
                       },
                       "completeEvent": {
                         "execType": 1,
+                        "completeTime": 1601938760050,
                         "command": "kubectl get ns -n default kui-notebook-2 -o yaml",
                         "argvNoOptions": ["kubectl", "get", "ns", "kui-notebook-2"],
                         "parsedOptions": {
@@ -649,7 +655,7 @@
                           "n": "default",
                           "o": "yaml"
                         },
-                        "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                        "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                         "cancelled": false,
                         "echo": false,
                         "evaluatorOptions": {
@@ -689,7 +695,7 @@
                         "execOptions": {
                           "echo": false,
                           "type": 1,
-                          "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                          "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                           "history": 250,
                           "env": {}
                         },
@@ -697,11 +703,11 @@
                           "apiVersion": "v1",
                           "kind": "Namespace",
                           "metadata": {
-                            "creationTimestamp": "2020-10-05T19:46:31Z",
+                            "creationTimestamp": "2020-10-05T22:57:21Z",
                             "name": "kui-notebook-2",
-                            "resourceVersion": "1423982",
+                            "resourceVersion": "84031827",
                             "selfLink": "/api/v1/namespaces/kui-notebook-2",
-                            "uid": "a8038959-e03a-41d6-8652-164fc5d7f979"
+                            "uid": "c3544e08-2ddc-4978-80f9-7f5896e85864"
                           },
                           "spec": {
                             "finalizers": ["kubernetes"]
@@ -717,7 +723,7 @@
                             "execOptions": {
                               "echo": false,
                               "type": 1,
-                              "execUUID": "d3db4cc2-3921-4a73-9ed9-de48fccc0093",
+                              "execUUID": "fac5a0a8-3c6b-4967-9db9-b315fc96e24b",
                               "history": 250,
                               "env": {}
                             },
@@ -728,10 +734,10 @@
                               "o": "yaml"
                             }
                           },
-                          "kuiRawData": "apiVersion: v1\nkind: Namespace\nmetadata:\n  creationTimestamp: \"2020-10-05T19:46:31Z\"\n  name: kui-notebook-2\n  resourceVersion: \"1423982\"\n  selfLink: /api/v1/namespaces/kui-notebook-2\n  uid: a8038959-e03a-41d6-8652-164fc5d7f979\nspec:\n  finalizers:\n  - kubernetes\nstatus:\n  phase: Active\n",
+                          "kuiRawData": "apiVersion: v1\nkind: Namespace\nmetadata:\n  creationTimestamp: \"2020-10-05T22:57:21Z\"\n  name: kui-notebook-2\n  resourceVersion: \"84031827\"\n  selfLink: /api/v1/namespaces/kui-notebook-2\n  uid: c3544e08-2ddc-4978-80f9-7f5896e85864\nspec:\n  finalizers:\n  - kubernetes\nstatus:\n  phase: Active\n",
                           "toolbarText": {
                             "type": "info",
-                            "text": "Created on **10/5/2020, 3:46:31 PM**. Showing resource version **1423982**."
+                            "text": "Created on **10/5/2020, 6:57:21 PM**. Showing resource version **84031827**."
                           },
                           "onclick": {
                             "kind": "kubectl get Namespace -n undefined",
@@ -765,12 +771,12 @@
                 ]
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 251
+              "historyIdx": 250
             },
             "isExperimental": false,
             "isReplay": false,
             "execUUID": "3d843937-8e8e-4e80-b47a-f5cd02bfe01c",
-            "startTime": "2020-10-05T19:46:30.892Z",
+            "startTime": 1601938635810,
             "prefersTerminalPresentation": true,
             "outputOnly": false,
             "state": "valid-response"
@@ -921,7 +927,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-c95fz",
+                  "rowKey": "pi-2pvcg",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -932,10 +938,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-c95fz -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-2pvcg -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-c95fz"
+                      "value": "pi-2pvcg"
                     },
                     {
                       "key": "STATUS",
@@ -950,29 +956,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:47:09Z"
+                      "value": "2020-10-05T22:57:26Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:48:17Z"
+                      "value": "2020-10-05T22:57:28Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:31Z"
+                      "value": "2020-10-05T22:57:41Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "142000"
+                      "value": "15000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "68000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -980,7 +986,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-jdl4d",
+                  "rowKey": "pi-6cpzs",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -991,10 +997,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-jdl4d -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-6cpzs -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-jdl4d"
+                      "value": "pi-6cpzs"
                     },
                     {
                       "key": "STATUS",
@@ -1009,29 +1015,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:47:09Z"
+                      "value": "2020-10-05T22:57:26Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:48:22Z"
+                      "value": "2020-10-05T22:57:29Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:38Z"
+                      "value": "2020-10-05T22:57:40Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "149000"
+                      "value": "14000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "73000",
+                      "value": "3000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1039,7 +1045,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-6s6gb",
+                  "rowKey": "pi-ll852",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1050,10 +1056,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-6s6gb -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-ll852 -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-6s6gb"
+                      "value": "pi-ll852"
                     },
                     {
                       "key": "STATUS",
@@ -1068,29 +1074,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:47:09Z"
+                      "value": "2020-10-05T22:57:26Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:48:18Z"
+                      "value": "2020-10-05T22:57:27Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:32Z"
+                      "value": "2020-10-05T22:57:39Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "143000"
+                      "value": "13000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "69000",
+                      "value": "1000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1098,7 +1104,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-z8q25",
+                  "rowKey": "pi-q98zx",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1109,10 +1115,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-z8q25 -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-q98zx -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-z8q25"
+                      "value": "pi-q98zx"
                     },
                     {
                       "key": "STATUS",
@@ -1127,29 +1133,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:47:09Z"
+                      "value": "2020-10-05T22:57:26Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:48:20Z"
+                      "value": "2020-10-05T22:57:28Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:37Z"
+                      "value": "2020-10-05T22:57:38Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "148000"
+                      "value": "12000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "71000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1157,7 +1163,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-ttrlb",
+                  "rowKey": "pi-lw7jz",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1168,10 +1174,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-ttrlb -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-lw7jz -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-ttrlb"
+                      "value": "pi-lw7jz"
                     },
                     {
                       "key": "STATUS",
@@ -1186,29 +1192,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:41Z"
+                      "value": "2020-10-05T22:57:38Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:51Z"
+                      "value": "2020-10-05T22:57:40Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:35Z"
+                      "value": "2020-10-05T22:57:48Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "114000"
+                      "value": "10000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "10000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1216,7 +1222,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-8z4sk",
+                  "rowKey": "pi-6b6bj",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1227,10 +1233,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-8z4sk -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-6b6bj -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-8z4sk"
+                      "value": "pi-6b6bj"
                     },
                     {
                       "key": "STATUS",
@@ -1245,29 +1251,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:41Z"
+                      "value": "2020-10-05T22:57:39Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:51Z"
+                      "value": "2020-10-05T22:57:41Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:33Z"
+                      "value": "2020-10-05T22:57:48Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "112000"
+                      "value": "9000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "10000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1275,7 +1281,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-t2gn8",
+                  "rowKey": "pi-qjnff",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1286,10 +1292,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-t2gn8 -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-qjnff -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-t2gn8"
+                      "value": "pi-qjnff"
                     },
                     {
                       "key": "STATUS",
@@ -1304,29 +1310,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:44Z"
+                      "value": "2020-10-05T22:57:41Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:56Z"
+                      "value": "2020-10-05T22:57:44Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:28Z"
+                      "value": "2020-10-05T22:57:52Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "104000"
+                      "value": "11000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "12000",
+                      "value": "3000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1334,7 +1340,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-fh4q7",
+                  "rowKey": "pi-cjxls",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1345,10 +1351,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-fh4q7 -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-cjxls -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-fh4q7"
+                      "value": "pi-cjxls"
                     },
                     {
                       "key": "STATUS",
@@ -1363,29 +1369,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:46Z"
+                      "value": "2020-10-05T22:57:41Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:49:57Z"
+                      "value": "2020-10-05T22:57:43Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:35Z"
+                      "value": "2020-10-05T22:57:50Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "109000"
+                      "value": "9000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "11000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1393,7 +1399,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-nxxpx",
+                  "rowKey": "pi-bxwfc",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1404,10 +1410,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-nxxpx -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-bxwfc -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-nxxpx"
+                      "value": "pi-bxwfc"
                     },
                     {
                       "key": "STATUS",
@@ -1422,29 +1428,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:36Z"
+                      "value": "2020-10-05T22:57:49Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:47Z"
+                      "value": "2020-10-05T22:57:50Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:52:45Z"
+                      "value": "2020-10-05T22:57:59Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "69000"
+                      "value": "10000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "11000",
+                      "value": "1000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1452,7 +1458,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-fs6k8",
+                  "rowKey": "pi-lmcsh",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1463,10 +1469,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-fs6k8 -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-lmcsh -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-fs6k8"
+                      "value": "pi-lmcsh"
                     },
                     {
                       "key": "STATUS",
@@ -1481,29 +1487,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:39Z"
+                      "value": "2020-10-05T22:57:49Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:52Z"
+                      "value": "2020-10-05T22:57:51Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:52:46Z"
+                      "value": "2020-10-05T22:57:58Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "67000"
+                      "value": "9000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "13000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1511,7 +1517,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-9m7kb",
+                  "rowKey": "pi-d5c2z",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1522,10 +1528,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-9m7kb -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-d5c2z -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-9m7kb"
+                      "value": "pi-d5c2z"
                     },
                     {
                       "key": "STATUS",
@@ -1540,29 +1546,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:45Z"
+                      "value": "2020-10-05T22:57:50Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:56Z"
+                      "value": "2020-10-05T22:57:52Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:53:04Z"
+                      "value": "2020-10-05T22:57:58Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "79000"
+                      "value": "8000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "11000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1570,7 +1576,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-fz9g4",
+                  "rowKey": "pi-z59t7",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1581,10 +1587,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-fz9g4 -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-z59t7 -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-fz9g4"
+                      "value": "pi-z59t7"
                     },
                     {
                       "key": "STATUS",
@@ -1599,29 +1605,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:45Z"
+                      "value": "2020-10-05T22:57:53Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:51:57Z"
+                      "value": "2020-10-05T22:57:54Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:52:57Z"
+                      "value": "2020-10-05T22:58:02Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "72000"
+                      "value": "9000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "12000",
+                      "value": "1000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1629,7 +1635,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-f577f",
+                  "rowKey": "pi-rz99m",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1640,10 +1646,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-f577f -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-rz99m -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-f577f"
+                      "value": "pi-rz99m"
                     },
                     {
                       "key": "STATUS",
@@ -1658,29 +1664,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:52:48Z"
+                      "value": "2020-10-05T22:57:58Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:52:57Z"
+                      "value": "2020-10-05T22:58:00Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:54:51Z"
+                      "value": "2020-10-05T22:58:09Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "123000"
+                      "value": "11000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "9000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1688,7 +1694,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-m7cjw",
+                  "rowKey": "pi-299dz",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1699,10 +1705,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-m7cjw -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-299dz -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-m7cjw"
+                      "value": "pi-299dz"
                     },
                     {
                       "key": "STATUS",
@@ -1717,29 +1723,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:52:51Z"
+                      "value": "2020-10-05T22:57:59Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:52:58Z"
+                      "value": "2020-10-05T22:58:01Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:54:51Z"
+                      "value": "2020-10-05T22:58:09Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "120000"
+                      "value": "10000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "7000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1747,7 +1753,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-lr2xg",
+                  "rowKey": "pi-x4mqh",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1758,10 +1764,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-lr2xg -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-x4mqh -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-lr2xg"
+                      "value": "pi-x4mqh"
                     },
                     {
                       "key": "STATUS",
@@ -1776,29 +1782,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:53:02Z"
+                      "value": "2020-10-05T22:57:59Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:53:10Z"
+                      "value": "2020-10-05T22:58:01Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:07Z"
+                      "value": "2020-10-05T22:58:11Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "125000"
+                      "value": "12000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "8000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1806,7 +1812,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-rj7jc",
+                  "rowKey": "pi-7ssll",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1817,10 +1823,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-rj7jc -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-7ssll -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-rj7jc"
+                      "value": "pi-7ssll"
                     },
                     {
                       "key": "STATUS",
@@ -1835,29 +1841,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:53:10Z"
+                      "value": "2020-10-05T22:58:02Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:53:18Z"
+                      "value": "2020-10-05T22:58:04Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:18Z"
+                      "value": "2020-10-05T22:58:10Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "128000"
+                      "value": "8000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "8000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1865,7 +1871,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-ltgb8",
+                  "rowKey": "pi-kcdkf",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1876,10 +1882,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-ltgb8 -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-kcdkf -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-ltgb8"
+                      "value": "pi-kcdkf"
                     },
                     {
                       "key": "STATUS",
@@ -1894,29 +1900,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:23Z"
+                      "value": "2020-10-05T22:58:10Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:40Z"
+                      "value": "2020-10-05T22:58:12Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:58:10Z"
+                      "value": "2020-10-05T22:58:20Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "167000"
+                      "value": "10000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "17000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1924,7 +1930,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-8582b",
+                  "rowKey": "pi-g8c4t",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1935,10 +1941,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-8582b -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-g8c4t -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-8582b"
+                      "value": "pi-g8c4t"
                     },
                     {
                       "key": "STATUS",
@@ -1953,29 +1959,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:32Z"
+                      "value": "2020-10-05T22:58:10Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:44Z"
+                      "value": "2020-10-05T22:58:13Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:58:14Z"
+                      "value": "2020-10-05T22:58:22Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "162000"
+                      "value": "12000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "12000",
+                      "value": "3000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -1983,7 +1989,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-gxjfk",
+                  "rowKey": "pi-vmgpx",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -1994,10 +2000,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-gxjfk -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-vmgpx -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-gxjfk"
+                      "value": "pi-vmgpx"
                     },
                     {
                       "key": "STATUS",
@@ -2012,29 +2018,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:26Z"
+                      "value": "2020-10-05T22:58:10Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:44Z"
+                      "value": "2020-10-05T22:58:12Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:58:16Z"
+                      "value": "2020-10-05T22:58:18Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "170000"
+                      "value": "8000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "18000",
+                      "value": "2000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -2042,7 +2048,7 @@
                 {
                   "key": "JOB",
                   "name": "pi",
-                  "rowKey": "pi-bwvgw",
+                  "rowKey": "pi-7rsjv",
                   "fontawesome": false,
                   "onclick": false,
                   "onclickIdempotent": true,
@@ -2053,10 +2059,10 @@
                   "attributes": [
                     {
                       "key": "NAME",
-                      "onclick": "kubectl get Pod pi-bwvgw -o yaml -n kui-notebook-2 ",
+                      "onclick": "kubectl get Pod pi-7rsjv -o yaml -n kui-notebook-2 ",
                       "outerCSS": " entity-name-group",
                       "css": " entity-name ",
-                      "value": "pi-bwvgw"
+                      "value": "pi-7rsjv"
                     },
                     {
                       "key": "STATUS",
@@ -2071,29 +2077,29 @@
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:45Z"
+                      "value": "2020-10-05T22:58:12Z"
                     },
                     {
                       "key": "START2",
                       "onclick": false,
                       "outerCSS": "hide",
                       "css": "  ",
-                      "value": "2020-10-05T19:55:58Z"
+                      "value": "2020-10-05T22:58:13Z"
                     },
                     {
                       "key": "END",
                       "onclick": false,
                       "outerCSS": "  hide-with-sidecar",
                       "css": "  ",
-                      "value": "2020-10-05T19:58:19Z"
+                      "value": "2020-10-05T22:58:22Z"
                     },
                     {
                       "key": "Duration",
-                      "value": "154000"
+                      "value": "10000"
                     },
                     {
                       "key": "Cold Start",
-                      "value": "13000",
+                      "value": "1000",
                       "outerCSS": "hide-with-sidecar"
                     }
                   ]
@@ -2123,11 +2129,12 @@
                 ]
               }
             },
-            "historyIdx": 253,
+            "historyIdx": 251,
             "cwd": "~/Workspace7/kui",
             "command": "k apply -f plugins/plugin-kubectl/tests/data/k8s/job.yaml -n kui-notebook-2",
             "startEvent": {
               "route": "/kubeui/k/apply",
+              "startTime": 1601938645213,
               "command": "k apply -f plugins/plugin-kubectl/tests/data/k8s/job.yaml -n kui-notebook-2",
               "evaluatorOptions": {
                 "flags": {
@@ -2169,6 +2176,7 @@
             },
             "completeEvent": {
               "execType": 0,
+              "completeTime": 1601938646790,
               "command": "k apply -f plugins/plugin-kubectl/tests/data/k8s/job.yaml -n kui-notebook-2",
               "argvNoOptions": ["k", "apply"],
               "parsedOptions": {
@@ -2186,7 +2194,7 @@
                 "type": 0,
                 "language": "en-US",
                 "execUUID": "7e05cac5-75ba-4ba8-a6e1-79722881e397",
-                "history": 253,
+                "history": 251,
                 "env": {}
               },
               "response": {
@@ -2257,7 +2265,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-c95fz",
+                    "rowKey": "pi-2pvcg",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2268,10 +2276,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-c95fz -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-2pvcg -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-c95fz"
+                        "value": "pi-2pvcg"
                       },
                       {
                         "key": "STATUS",
@@ -2286,29 +2294,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:47:09Z"
+                        "value": "2020-10-05T22:57:26Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:48:17Z"
+                        "value": "2020-10-05T22:57:28Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:31Z"
+                        "value": "2020-10-05T22:57:41Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "142000"
+                        "value": "15000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "68000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2316,7 +2324,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-jdl4d",
+                    "rowKey": "pi-6cpzs",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2327,10 +2335,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-jdl4d -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-6cpzs -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-jdl4d"
+                        "value": "pi-6cpzs"
                       },
                       {
                         "key": "STATUS",
@@ -2345,29 +2353,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:47:09Z"
+                        "value": "2020-10-05T22:57:26Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:48:22Z"
+                        "value": "2020-10-05T22:57:29Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:38Z"
+                        "value": "2020-10-05T22:57:40Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "149000"
+                        "value": "14000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "73000",
+                        "value": "3000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2375,7 +2383,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-6s6gb",
+                    "rowKey": "pi-ll852",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2386,10 +2394,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-6s6gb -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-ll852 -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-6s6gb"
+                        "value": "pi-ll852"
                       },
                       {
                         "key": "STATUS",
@@ -2404,29 +2412,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:47:09Z"
+                        "value": "2020-10-05T22:57:26Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:48:18Z"
+                        "value": "2020-10-05T22:57:27Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:32Z"
+                        "value": "2020-10-05T22:57:39Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "143000"
+                        "value": "13000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "69000",
+                        "value": "1000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2434,7 +2442,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-z8q25",
+                    "rowKey": "pi-q98zx",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2445,10 +2453,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-z8q25 -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-q98zx -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-z8q25"
+                        "value": "pi-q98zx"
                       },
                       {
                         "key": "STATUS",
@@ -2463,29 +2471,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:47:09Z"
+                        "value": "2020-10-05T22:57:26Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:48:20Z"
+                        "value": "2020-10-05T22:57:28Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:37Z"
+                        "value": "2020-10-05T22:57:38Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "148000"
+                        "value": "12000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "71000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2493,7 +2501,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-ttrlb",
+                    "rowKey": "pi-lw7jz",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2504,10 +2512,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-ttrlb -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-lw7jz -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-ttrlb"
+                        "value": "pi-lw7jz"
                       },
                       {
                         "key": "STATUS",
@@ -2522,29 +2530,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:41Z"
+                        "value": "2020-10-05T22:57:38Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:51Z"
+                        "value": "2020-10-05T22:57:40Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:35Z"
+                        "value": "2020-10-05T22:57:48Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "114000"
+                        "value": "10000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "10000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2552,7 +2560,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-8z4sk",
+                    "rowKey": "pi-6b6bj",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2563,10 +2571,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-8z4sk -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-6b6bj -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-8z4sk"
+                        "value": "pi-6b6bj"
                       },
                       {
                         "key": "STATUS",
@@ -2581,29 +2589,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:41Z"
+                        "value": "2020-10-05T22:57:39Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:51Z"
+                        "value": "2020-10-05T22:57:41Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:33Z"
+                        "value": "2020-10-05T22:57:48Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "112000"
+                        "value": "9000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "10000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2611,7 +2619,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-t2gn8",
+                    "rowKey": "pi-qjnff",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2622,10 +2630,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-t2gn8 -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-qjnff -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-t2gn8"
+                        "value": "pi-qjnff"
                       },
                       {
                         "key": "STATUS",
@@ -2640,29 +2648,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:44Z"
+                        "value": "2020-10-05T22:57:41Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:56Z"
+                        "value": "2020-10-05T22:57:44Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:28Z"
+                        "value": "2020-10-05T22:57:52Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "104000"
+                        "value": "11000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "12000",
+                        "value": "3000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2670,7 +2678,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-fh4q7",
+                    "rowKey": "pi-cjxls",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2681,10 +2689,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-fh4q7 -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-cjxls -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-fh4q7"
+                        "value": "pi-cjxls"
                       },
                       {
                         "key": "STATUS",
@@ -2699,29 +2707,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:46Z"
+                        "value": "2020-10-05T22:57:41Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:49:57Z"
+                        "value": "2020-10-05T22:57:43Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:35Z"
+                        "value": "2020-10-05T22:57:50Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "109000"
+                        "value": "9000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "11000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2729,7 +2737,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-nxxpx",
+                    "rowKey": "pi-bxwfc",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2740,10 +2748,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-nxxpx -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-bxwfc -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-nxxpx"
+                        "value": "pi-bxwfc"
                       },
                       {
                         "key": "STATUS",
@@ -2758,29 +2766,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:36Z"
+                        "value": "2020-10-05T22:57:49Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:47Z"
+                        "value": "2020-10-05T22:57:50Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:52:45Z"
+                        "value": "2020-10-05T22:57:59Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "69000"
+                        "value": "10000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "11000",
+                        "value": "1000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2788,7 +2796,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-fs6k8",
+                    "rowKey": "pi-lmcsh",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2799,10 +2807,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-fs6k8 -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-lmcsh -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-fs6k8"
+                        "value": "pi-lmcsh"
                       },
                       {
                         "key": "STATUS",
@@ -2817,29 +2825,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:39Z"
+                        "value": "2020-10-05T22:57:49Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:52Z"
+                        "value": "2020-10-05T22:57:51Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:52:46Z"
+                        "value": "2020-10-05T22:57:58Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "67000"
+                        "value": "9000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "13000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2847,7 +2855,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-9m7kb",
+                    "rowKey": "pi-d5c2z",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2858,10 +2866,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-9m7kb -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-d5c2z -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-9m7kb"
+                        "value": "pi-d5c2z"
                       },
                       {
                         "key": "STATUS",
@@ -2876,29 +2884,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:45Z"
+                        "value": "2020-10-05T22:57:50Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:56Z"
+                        "value": "2020-10-05T22:57:52Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:53:04Z"
+                        "value": "2020-10-05T22:57:58Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "79000"
+                        "value": "8000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "11000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2906,7 +2914,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-fz9g4",
+                    "rowKey": "pi-z59t7",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2917,10 +2925,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-fz9g4 -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-z59t7 -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-fz9g4"
+                        "value": "pi-z59t7"
                       },
                       {
                         "key": "STATUS",
@@ -2935,29 +2943,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:45Z"
+                        "value": "2020-10-05T22:57:53Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:51:57Z"
+                        "value": "2020-10-05T22:57:54Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:52:57Z"
+                        "value": "2020-10-05T22:58:02Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "72000"
+                        "value": "9000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "12000",
+                        "value": "1000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -2965,7 +2973,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-f577f",
+                    "rowKey": "pi-rz99m",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -2976,10 +2984,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-f577f -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-rz99m -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-f577f"
+                        "value": "pi-rz99m"
                       },
                       {
                         "key": "STATUS",
@@ -2994,29 +3002,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:52:48Z"
+                        "value": "2020-10-05T22:57:58Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:52:57Z"
+                        "value": "2020-10-05T22:58:00Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:54:51Z"
+                        "value": "2020-10-05T22:58:09Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "123000"
+                        "value": "11000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "9000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3024,7 +3032,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-m7cjw",
+                    "rowKey": "pi-299dz",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -3035,10 +3043,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-m7cjw -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-299dz -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-m7cjw"
+                        "value": "pi-299dz"
                       },
                       {
                         "key": "STATUS",
@@ -3053,29 +3061,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:52:51Z"
+                        "value": "2020-10-05T22:57:59Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:52:58Z"
+                        "value": "2020-10-05T22:58:01Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:54:51Z"
+                        "value": "2020-10-05T22:58:09Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "120000"
+                        "value": "10000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "7000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3083,7 +3091,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-lr2xg",
+                    "rowKey": "pi-x4mqh",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -3094,10 +3102,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-lr2xg -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-x4mqh -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-lr2xg"
+                        "value": "pi-x4mqh"
                       },
                       {
                         "key": "STATUS",
@@ -3112,29 +3120,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:53:02Z"
+                        "value": "2020-10-05T22:57:59Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:53:10Z"
+                        "value": "2020-10-05T22:58:01Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:07Z"
+                        "value": "2020-10-05T22:58:11Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "125000"
+                        "value": "12000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "8000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3142,7 +3150,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-rj7jc",
+                    "rowKey": "pi-7ssll",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -3153,10 +3161,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-rj7jc -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-7ssll -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-rj7jc"
+                        "value": "pi-7ssll"
                       },
                       {
                         "key": "STATUS",
@@ -3171,29 +3179,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:53:10Z"
+                        "value": "2020-10-05T22:58:02Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:53:18Z"
+                        "value": "2020-10-05T22:58:04Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:18Z"
+                        "value": "2020-10-05T22:58:10Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "128000"
+                        "value": "8000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "8000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3201,7 +3209,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-ltgb8",
+                    "rowKey": "pi-kcdkf",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -3212,10 +3220,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-ltgb8 -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-kcdkf -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-ltgb8"
+                        "value": "pi-kcdkf"
                       },
                       {
                         "key": "STATUS",
@@ -3230,29 +3238,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:23Z"
+                        "value": "2020-10-05T22:58:10Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:40Z"
+                        "value": "2020-10-05T22:58:12Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:58:10Z"
+                        "value": "2020-10-05T22:58:20Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "167000"
+                        "value": "10000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "17000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3260,7 +3268,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-8582b",
+                    "rowKey": "pi-g8c4t",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -3271,10 +3279,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-8582b -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-g8c4t -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-8582b"
+                        "value": "pi-g8c4t"
                       },
                       {
                         "key": "STATUS",
@@ -3289,29 +3297,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:32Z"
+                        "value": "2020-10-05T22:58:10Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:44Z"
+                        "value": "2020-10-05T22:58:13Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:58:14Z"
+                        "value": "2020-10-05T22:58:22Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "162000"
+                        "value": "12000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "12000",
+                        "value": "3000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3319,7 +3327,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-gxjfk",
+                    "rowKey": "pi-vmgpx",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -3330,10 +3338,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-gxjfk -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-vmgpx -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-gxjfk"
+                        "value": "pi-vmgpx"
                       },
                       {
                         "key": "STATUS",
@@ -3348,29 +3356,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:26Z"
+                        "value": "2020-10-05T22:58:10Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:44Z"
+                        "value": "2020-10-05T22:58:12Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:58:16Z"
+                        "value": "2020-10-05T22:58:18Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "170000"
+                        "value": "8000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "18000",
+                        "value": "2000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3378,7 +3386,7 @@
                   {
                     "key": "JOB",
                     "name": "pi",
-                    "rowKey": "pi-bwvgw",
+                    "rowKey": "pi-7rsjv",
                     "fontawesome": false,
                     "onclick": false,
                     "onclickIdempotent": true,
@@ -3389,10 +3397,10 @@
                     "attributes": [
                       {
                         "key": "NAME",
-                        "onclick": "kubectl get Pod pi-bwvgw -o yaml -n kui-notebook-2 ",
+                        "onclick": "kubectl get Pod pi-7rsjv -o yaml -n kui-notebook-2 ",
                         "outerCSS": " entity-name-group",
                         "css": " entity-name ",
-                        "value": "pi-bwvgw"
+                        "value": "pi-7rsjv"
                       },
                       {
                         "key": "STATUS",
@@ -3407,29 +3415,29 @@
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:45Z"
+                        "value": "2020-10-05T22:58:12Z"
                       },
                       {
                         "key": "START2",
                         "onclick": false,
                         "outerCSS": "hide",
                         "css": "  ",
-                        "value": "2020-10-05T19:55:58Z"
+                        "value": "2020-10-05T22:58:13Z"
                       },
                       {
                         "key": "END",
                         "onclick": false,
                         "outerCSS": "  hide-with-sidecar",
                         "css": "  ",
-                        "value": "2020-10-05T19:58:19Z"
+                        "value": "2020-10-05T22:58:22Z"
                       },
                       {
                         "key": "Duration",
-                        "value": "154000"
+                        "value": "10000"
                       },
                       {
                         "key": "Cold Start",
-                        "value": "13000",
+                        "value": "1000",
                         "outerCSS": "hide-with-sidecar"
                       }
                     ]
@@ -3460,12 +3468,12 @@
                 }
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 253
+              "historyIdx": 251
             },
             "isExperimental": false,
             "isReplay": false,
             "execUUID": "7e05cac5-75ba-4ba8-a6e1-79722881e397",
-            "startTime": "2020-10-05T19:54:51.181Z",
+            "startTime": 1601938645213,
             "prefersTerminalPresentation": true,
             "outputOnly": false,
             "state": "valid-response"
