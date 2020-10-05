@@ -82,16 +82,6 @@ li.repl-block {
     &:not([data-is-output-only]) .repl-output.repl-result-has-content {
       margin-top: 0.5rem;
     }
-    &:not([data-is-output-only]) {
-      &.valid-response,
-      &.error {
-        .repl-output:not(.repl-result-has-content) {
-          .repl-context {
-            display: none;
-          }
-        }
-      }
-    }
     &.error:before {
       opacity: 1;
       background-color: var(--color-error);
