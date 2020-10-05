@@ -33,6 +33,8 @@ interface State {
 }
 
 export default class ProxyOfflineIndicator extends React.PureComponent<Props, State> {
+  private cleaners: (() => void)[] = []
+
   public constructor(props: Props) {
     super(props)
 
@@ -41,9 +43,21 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
       proxyEnabled,
       offline: true
     }
+  }
 
-    eventChannelUnsafe.on('/proxy/online', () => this.setState({ offline: false }))
-    eventChannelUnsafe.on('/proxy/offline', () => this.setState({ offline: true }))
+  public componentDidMount() {
+    const onOnline = () => this.setState({ offline: false })
+    eventChannelUnsafe.on('/proxy/online', onOnline)
+    this.cleaners.push(() => eventChannelUnsafe.off('/proxy/online', onOnline))
+
+    const onOffline = () => this.setState({ offline: true })
+    eventChannelUnsafe.on('/proxy/offline', onOffline)
+    this.cleaners.push(() => eventChannelUnsafe.off('/proxy/offline', onOffline))
+  }
+
+  public componentWillUnmount() {
+    this.cleaners.forEach(cleaner => cleaner())
+    this.cleaners = []
   }
 
   /** If the proxy is enabled, and we are offline, then render a widget indicating such. */
