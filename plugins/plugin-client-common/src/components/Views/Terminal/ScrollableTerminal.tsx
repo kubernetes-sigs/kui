@@ -213,6 +213,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             .concat(newScrollback.blocks.slice(insertIdx))
         }
 
+        setTimeout(() => newScrollback.facade.scrollToTop())
         return newScrollback
       })
     }
