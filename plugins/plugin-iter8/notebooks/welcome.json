@@ -1,7 +1,9 @@
 {
   "apiVersion": "kui-shell/v1",
   "kind": "Notebook",
-  "metadata": {},
+  "metadata": {
+    "name": "Welcome to Iter8"
+  },
   "spec": {
     "splits": [
       {
