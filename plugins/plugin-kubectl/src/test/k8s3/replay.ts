@@ -86,9 +86,8 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       console.error('replaying')
       await Common.refresh(this)
 
-      const { count: N } = await CLI.command('replay /tmp/test.kui', this.app)
+      await CLI.command('replay /tmp/test.kui', this.app)
 
-      await verifyCreation(`${Selectors.OUTPUT_N(N)} ${Selectors.BY_NAME('nginx')}`)
       await verifySidecar(true)
       await verifyDeletion(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
     } catch (err) {
@@ -110,9 +109,6 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
 
   it('should replay a kubectl get pods table with re-execution ', async () => {
     try {
-      const res = await CLI.command(`kubectl get pods ${inNamespace}`, this.app)
-      await ReplExpect.error(127)(res)
-
       const selector = await CLI.command(
         `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
         this.app
@@ -124,7 +120,10 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
 
       await CLI.command('replay /tmp/test.kui', this.app)
 
-      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
+      await this.app.client.waitUntil(async () => {
+        const errorMessage = await this.app.client.getText(`${Selectors.OUTPUT_LAST}.oops[data-status-code="409"]`)
+        return errorMessage.includes('pods "nginx"')
+      }, CLI.waitTimeout)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
