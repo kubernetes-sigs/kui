@@ -21,7 +21,6 @@ import {
   CommandCompleteEvent,
   Notebook,
   isNotebook,
-  SnapshottedEvent,
   isWatchable,
   eventBus,
   Tab,
@@ -40,17 +39,10 @@ export type Split = {
   inverseColors?: boolean
 }
 
-/** Schema for a record of onclick (startEvent, completeEvent) pairs */
-export interface PreRecordedClicks {
-  startEvents: Record<string, SnapshottedEvent<CommandStartEvent>[]>
-  completeEvents: Record<string, SnapshottedEvent<CommandCompleteEvent>[]>
-}
-
 type NotebookSpec = {
   spec: {
     splits: Split[]
     preferReExecute?: boolean
-    clicks?: PreRecordedClicks
   }
 }
 
