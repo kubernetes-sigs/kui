@@ -38,9 +38,6 @@ export type BlockViewTraits = {
   isPartOfMiniSplit?: boolean
   isWidthConstrained?: boolean
 
-  /** Is this Block being displayed as part of a Notebook? */
-  isPartOfNotebook?: boolean
-
   /** Handler for: User clicked to focus on this block */
   willFocusBlock?: (evt: React.SyntheticEvent) => void
 

@@ -90,7 +90,12 @@ export function snapshot(block: CompleteBlock): CompleteBlock {
       { response: excludeWatchable(block.completeEvent.response) }
     )
 
-    return Object.assign(block, { response: excludeWatchable(block.response), startEvent, completeEvent })
+    return Object.assign(block, {
+      isReplay: true,
+      response: excludeWatchable(block.response),
+      startEvent,
+      completeEvent
+    })
   }
 }
 

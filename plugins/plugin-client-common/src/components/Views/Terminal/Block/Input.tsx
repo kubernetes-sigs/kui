@@ -264,7 +264,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
                   className="flex-fill"
                   showMore={strings('Show X', name)}
                   showLess={strings('Hide X', name)}
-                  expanded={this.props.isPartOfNotebook}
+                  expanded
                   onToggle={() => eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))}
                 >
                   <SimpleEditor

@@ -32,24 +32,26 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     try {
       const res = await CLI.command(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml ${inNamespace}`, this.app)
 
-      console.error('1', Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
+      let isExpanded = true
+
+      console.error('1', Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
       // toggler should not be expanded (the false argument)
-      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
+      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
 
-      // click to toggle open
-      console.error('2')
-      await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
-
+      // click to toggle open: no longer needed, now opened by default https://github.com/IBM/kui/pull/5869
+      // console.error('2')
+      // await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
       // toggler should now be expanded (the true argument)
-      console.error('3')
-      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, true))
+      // console.error('3')
+      // await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
 
       // click to toggle closed
       console.error('4')
-      await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, true))
+      await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
+      isExpanded = false
 
       // toggler should not be expanded (the false argument)
-      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
+      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
 
       await this.app.client.waitUntil(
         () =>

@@ -141,9 +141,6 @@ type ScrollbackState = ScrollbackOptions & {
 interface State {
   focusedIdx: number
   splits: ScrollbackState[]
-
-  /** Is this Tab showing a Notebook? */
-  isNotebook?: boolean
 }
 
 /** get the selected texts in window */
@@ -183,10 +180,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.initClipboardEvents()
     this.state = {
       focusedIdx: 0,
-      splits: this.props.snapshot ? this.replaySnapshot() : [this.scrollbackWithWelcome()],
-
-      // are we loading a notebook from a snapshot?
-      isNotebook: !!this.props.snapshot
+      splits: this.props.snapshot ? this.replaySnapshot() : [this.scrollbackWithWelcome()]
     }
 
     this.initSnapshotEvents()
@@ -1112,7 +1106,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     willFocusBlock={willFocusBlock}
                     isExperimental={hasCommand(_) && _.isExperimental}
                     isFocused={isFocused}
-                    isPartOfNotebook={this.state.isNotebook}
                     prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                     isPartOfMiniSplit={isMiniSplit}
                     isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}

@@ -7,7 +7,7 @@
   "spec": {
     "splits": [
       {
-        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
@@ -79,7 +79,7 @@
               "historyIdx": 250
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "693795a3-d11d-4b81-99a0-ce90fffbfbe8",
             "startTime": "2020-09-30T21:18:42.064Z",
             "prefersTerminalPresentation": false,
@@ -124,7 +124,7 @@
               "historyIdx": 252
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "8020c215-49c0-49fc-9b60-23df7aa12297",
             "startTime": "2020-09-30T21:19:02.733Z",
             "prefersTerminalPresentation": false,
@@ -201,7 +201,7 @@
               "historyIdx": 253
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "b6211da0-59b2-40d4-9302-22c70ff284c7",
             "startTime": "2020-09-30T21:19:13.285Z",
             "prefersTerminalPresentation": false,
@@ -248,7 +248,7 @@
               "historyIdx": 254
             },
             "isExperimental": true,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "cfc2cfa6-99e3-40cd-9001-6414bf8c89e3",
             "startTime": "2020-09-30T21:19:20.158Z",
             "prefersTerminalPresentation": false,
@@ -645,7 +645,7 @@
               "historyIdx": 255
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "state": "valid-response",
             "execUUID": "cc2db8c7-deb7-4f9b-ae10-c184552efb33",
             "startTime": "2020-09-30T21:19:28.237Z"
@@ -720,7 +720,7 @@
               "historyIdx": 256
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "d25f423b-284d-47fc-9703-28af580a6330",
             "startTime": "2020-09-30T21:19:32.805Z",
             "prefersTerminalPresentation": false,
@@ -825,7 +825,7 @@
               "historyIdx": 257
             },
             "isExperimental": true,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "b968321e-7106-4854-93e7-8b38e7c6522e",
             "startTime": "2020-09-30T21:19:47.045Z",
             "prefersTerminalPresentation": false,
@@ -834,10 +834,6 @@
           }
         ]
       }
-    ],
-    "clicks": {
-      "startEvents": {},
-      "completeEvents": {}
-    }
+    ]
   }
 }
