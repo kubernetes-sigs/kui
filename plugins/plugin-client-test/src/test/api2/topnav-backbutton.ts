@@ -185,7 +185,7 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
   nextToThird(false)
   nextToSecond()
 
-  it('should switch to LeftNav via about command', () => {
+  /* it('should switch to LeftNav via about command', () => {
     return CLI.command('about', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
@@ -193,7 +193,7 @@ describe('TopNavSidecar back button', function(this: Common.ISuite) {
       .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON, CLI.waitTimeout, true)) // back button NOT visible
       .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON, CLI.waitTimeout, true)) // forward button NOT visible
       .catch(Common.oops(this, true))
-  })
+  }) */
 
   openWithFirstCmd(false)
   backToSecond()

@@ -88,14 +88,14 @@ describe('tab navigation', function(this: Common.ISuite) {
     })
   }
 
-  const testAboutMode = (mode: string, hitEnter = false, tabUntil = false) => {
+  /* const testAboutMode = (mode: string, hitEnter = false, tabUntil = false) => {
     testSelector(
       `${Selectors.SIDECAR_MODE_BUTTON_V2(mode)}`,
       hitEnter,
       Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2(mode),
       tabUntil
     )
-  }
+  } */
 
   const testNoTabNavigation = () => {
     it('should still focus on repl input if we hit tab while the input has content', async () => {
@@ -153,17 +153,10 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector(tabButtonSelector)
   testSelector('#help-button', true, undefined, true)
   it('should have a new About Kui top tab', () =>
-    this.app.client.waitForVisible(Selectors.TOP_TAB_WITH_TITLE('About Kui'), 5000))
+    this.app.client.waitForVisible(Selectors.TOP_TAB_WITH_TITLE('Welcome to Kui'), 5000))
   testPromptIsSelected()
 
   // now the sidecar is open, so cycle through the sidecar tabs
-  // testSelector(TAB_BUTTON_N(1))
-  // testSelector(TAB_BUTTON_N(2))
-  // testSelector(tabButtonSelector)
-  // testSelector('#help-button', false, undefined, true)
-  testAboutMode('about', false, true)
-  //  testAboutMode('tutorial')
-  testAboutMode('version', true) // hit enter on the Version tab
-  // testAboutMode('theme', false, true) <-- themes are no longer in the about model
-  // testPromptIsSelected() // because we just hit enter
+  // testAboutMode('about', false, true)
+  // testAboutMode('version', true) // hit enter on the Version tab
 })

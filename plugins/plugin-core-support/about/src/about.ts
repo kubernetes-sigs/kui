@@ -223,7 +223,7 @@ export default (commandTree: Registrar) => {
    * Open a graphical window displaying more detail about the tool
    *
    */
-  commandTree.listen('/about', aboutWindow, {
+  commandTree.listen('/about', ({ REPL }) => REPL.qexec('replay /kui/welcome.json'), {
     hidden: true // don't list about in the help menu
   })
 
