@@ -118,13 +118,18 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
       )
       const editor = Monaco.create(state.wrapper, options)
 
+      if (props.simple) {
+        // size to fit
+        state.wrapper.style.height = Math.min(400, editor.getContentHeight()) + 'px'
+      }
+
       state.wrapper['getValueForTests'] = () => {
         return editor.getValue()
       }
 
       editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))
 
-      if (!props.readonly) {
+      if (!options.readOnly) {
         setTimeout(() => editor.focus())
       }
 
