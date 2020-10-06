@@ -209,3 +209,43 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
     }
   })
 })
+
+Common.proxyDescribe(`core snapshot and replay by query ${process.env.MOCHA_RUN_TARGET || ''}`, function(
+  this: Common.ISuite
+) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it(`should base64 ${base64Input}`, () =>
+    CLI.command(`base64 ${base64Input}`, this.app)
+      .then(ReplExpect.okWithString(base64Output))
+      .catch(Common.oops(this, true)))
+
+  it('should snapshot', () =>
+    CLI.command('snapshot /tmp/test.kui', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  it('should refresh', () => Common.refresh(this))
+
+  it('should replay by query', async () => {
+    try {
+      await this.app.client.url(`${process.env.WEBPACK_CLIENT_URL}?command=replay /tmp/test.kui`)
+
+      // verify the base64 command replay
+      let idx = 0
+      await this.app.client.waitUntil(async () => {
+        const txt = await this.app.client.getText(Selectors.OUTPUT_LAST)
+        if (++idx > 5) {
+          console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
+        }
+        return txt === base64Output
+      }, CLI.waitTimeout)
+
+      // back to the original url, without this line, the following tests will fail at `before` state
+      await this.app.client.url(process.env.WEBPACK_CLIENT_URL)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+})

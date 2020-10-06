@@ -66,12 +66,17 @@ export type Props = Partial<KuiConfiguration> & {
   /** If in popup mode, execute the given command line */
   commandLine?: string[]
 
+  /** do not echo the command? */
+  quietExecCommand?: boolean
+
   /** initial tab title */
   initialTabTitle?: string
 }
 
 type State = KuiConfiguration & {
   isBootstrapped: boolean
+  commandLine?: string[]
+  quietExecCommand?: boolean
 }
 
 /**
@@ -112,9 +117,29 @@ export class Kui extends React.PureComponent<Props, State> {
         })
     }
 
+    let commandLine = this.props.commandLine
+    let quietExecCommand = this.props.quietExecCommand !== undefined ? this.props.quietExecCommand : !this.props.isPopup
+
+    if (inBrowser()) {
+      const windowQuery = window.location.search
+      if (windowQuery) {
+        // parse and extract the question mark in window.location.search
+        // e.g. query = { command: 'replay /kui/welcome.json' }
+        const query = require('querystring').parse(windowQuery.substring(1))
+
+        // To avoid SQL injection attacks, users can only query with `replay` command
+        if (query.command && /^replay/.test(query.command)) {
+          commandLine = query.command.split(' ')
+          quietExecCommand = false
+        }
+      }
+    }
+
     try {
       this.state = Object.assign({}, this.defaultSessionBehavior(), this.defaultFeatureFlag(), props, {
-        isBootstrapped: !!props.noBootstrap
+        isBootstrapped: !!props.noBootstrap,
+        commandLine,
+        quietExecCommand
       })
       debug('initial state:inBrowser?', inBrowser())
       debug('initial state:given properties', props)
@@ -122,7 +147,9 @@ export class Kui extends React.PureComponent<Props, State> {
     } catch (err) {
       console.log('using default configuration')
       this.state = {
-        isBootstrapped: !!props.noBootstrap
+        isBootstrapped: !!props.noBootstrap,
+        commandLine,
+        quietExecCommand
       }
     }
   }
@@ -220,8 +247,8 @@ export class Kui extends React.PureComponent<Props, State> {
    *
    */
   private statusStripeProps(): StatusStripeProps {
-    if (this.props.commandLine) {
-      const statusStripeIdx = this.props.commandLine.findIndex(_ => _ === '--status-stripe')
+    if (this.state.commandLine) {
+      const statusStripeIdx = this.state.commandLine.findIndex(_ => _ === '--status-stripe')
       if (statusStripeIdx >= 0) {
         return { type: this.props.commandLine[statusStripeIdx + 1] as StatusStripeProps['type'] }
       }
@@ -234,13 +261,14 @@ export class Kui extends React.PureComponent<Props, State> {
 
   private firstTab = true
   private onTabReady() {
-    if (this.props.commandLine && this.firstTab) {
+    if (this.state.commandLine && this.firstTab) {
       this.firstTab = false
 
-      // do not echo the command?
-      const quiet = !this.props.isPopup
-
-      pexecInCurrentTab(this.props.commandLine.map(_ => encodeComponent(_)).join(' '), undefined, quiet)
+      pexecInCurrentTab(
+        this.state.commandLine.map(_ => encodeComponent(_)).join(' '),
+        undefined,
+        this.state.quietExecCommand
+      )
     }
   }
 
@@ -251,11 +279,11 @@ export class Kui extends React.PureComponent<Props, State> {
       return <Loading />
     }
 
-    if (this.props.isPopup && this.props.commandLine) {
+    if (this.props.isPopup && this.state.commandLine) {
       return (
         <KuiContext.Provider value={this.state}>
           <React.Suspense fallback={<div />}>
-            <Popup commandLine={this.props.commandLine}>{this.props.children}</Popup>
+            <Popup commandLine={this.state.commandLine}>{this.props.children}</Popup>
           </React.Suspense>
         </KuiContext.Provider>
       )
@@ -268,7 +296,7 @@ export class Kui extends React.PureComponent<Props, State> {
               noActiveInput={!!this.props.bottomInput}
               bottom={bottom}
               title={this.props.initialTabTitle}
-              onTabReady={this.props.commandLine && this._onTabReady}
+              onTabReady={this.state.commandLine && this._onTabReady}
             >
               <ComboSidecar />
             </TabContainer>
