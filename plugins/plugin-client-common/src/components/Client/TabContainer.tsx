@@ -278,6 +278,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
           <TabContent
             {...this.props}
             snapshot={_.snapshot}
+            tabTitle={_.title}
             key={_.uuid}
             uuid={_.uuid}
             active={idx === this.state.activeIdx}

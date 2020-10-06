@@ -51,6 +51,7 @@ type Props = TabContentOptions &
     active: boolean
     state: TabState
     snapshot?: Buffer
+    tabTitle?: string
     willUpdateTopTabButtons?: (buttons: TopTabButton[]) => void
   }
 

@@ -37,6 +37,7 @@ import {
   isNewSplitRequest,
   isWatchable,
   promiseEach,
+  Notebook,
   SnapshotRequestEvent
 } from '@kui-shell/core'
 
@@ -98,6 +99,8 @@ type Props = TerminalOptions & {
 
   snapshot?: Buffer
 
+  tabTitle?: string
+
   /** handler for terminal clear */
   onClear?: () => void
 
@@ -141,6 +144,7 @@ type ScrollbackState = ScrollbackOptions & {
 interface State {
   focusedIdx: number
   splits: ScrollbackState[]
+  notebookMetadata?: Notebook['metadata']
 }
 
 /** get the selected texts in window */
@@ -178,9 +182,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     super(props)
 
     this.initClipboardEvents()
+
+    const { name, description, splits } = this.props.snapshot
+      ? this.replaySnapshot()
+      : { name: this.props.tabTitle, description: '', splits: [this.scrollbackWithWelcome()] }
+
     this.state = {
       focusedIdx: 0,
-      splits: this.props.snapshot ? this.replaySnapshot() : [this.scrollbackWithWelcome()]
+      splits,
+      notebookMetadata: { name, description }
     }
 
     this.initSnapshotEvents()
@@ -194,7 +204,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       console.error('invalid notebook', model)
       throw new Error('Invalid notebook')
     } else {
-      return model.spec.splits.map(split => {
+      const splits = model.spec.splits.map(split => {
         const newScrollback = this.scrollback(undefined, { inverseColors: split.inverseColors })
 
         if (model.spec.preferReExecute) {
@@ -216,6 +226,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         setTimeout(() => newScrollback.facade.scrollToTop())
         return newScrollback
       })
+
+      return {
+        splits,
+        name: model.metadata.name,
+        description: model.metadata.description
+      }
     }
   }
 
@@ -260,7 +276,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       const serializedSnapshot: NotebookImpl = {
         apiVersion: 'kui-shell/v1',
         kind: 'Notebook',
-        metadata: { name: opts.name, description: opts.description },
+        metadata: {
+          name: opts.name || this.state.notebookMetadata.name,
+          description: opts.description || this.state.notebookMetadata.description
+        },
         spec: {
           splits,
           preferReExecute: opts.preferReExecute
