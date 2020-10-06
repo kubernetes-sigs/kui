@@ -831,6 +831,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         // about to remove
         curState.splits[idx].blocks.forEach(this.removeWatchableBlock)
 
+        // clean up per-split event handlers
+        curState.splits[idx].cleaners.forEach(cleaner => cleaner())
+
         // splice out this split from the list of all splits in this tab
         const splits1 = curState.splits.slice(0, idx).concat(curState.splits.slice(idx + 1))
 
