@@ -37,7 +37,6 @@ const domReady = (inSandbox: boolean, client?: Client) => async () => {
   const initializer = import('./init')
   const plugins = import('../../plugins/plugins')
   const events = import('../../core/events')
-  // const query = import('../query')
 
   try {
     const waitForThese: Promise<void>[] = []

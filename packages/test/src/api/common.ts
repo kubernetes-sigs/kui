@@ -499,6 +499,11 @@ export const remoteIt = (msg: string, func: Func) => {
   if (process.env.MOCHA_RUN_TARGET === 'webpack') return it(msg, func)
 }
 
+/** only execute the test suite in proxy+browser clients */
+export const proxyDescribe = (msg: string, suite: (this: Suite) => void) => {
+  if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true') return describe(msg, suite)
+}
+
 /** only execute the test suite in electron or proxy+browser clients */
 export const pDescribe = (msg: string, suite: (this: Suite) => void) => {
   if (process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true') return describe(msg, suite)
