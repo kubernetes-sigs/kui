@@ -65,7 +65,8 @@ commands.forEach(command => {
             const labelsLineIdx = actualText.split(/\n/).indexOf('  labels:')
 
             // +2 here because nth-child is indexed from 1, and we want the line after that
-            const lineSelector = `.view-lines > .view-line:nth-child(${labelsLineIdx + 2}) .mtk5:last-child`
+            const lineSelector = `${Selectors.SIDECAR} .view-lines > .view-line:nth-child(${labelsLineIdx +
+              2}) .mtk5:last-child`
             await this.app.client.click(lineSelector)
 
             await new Promise(resolve => setTimeout(resolve, 2000))
