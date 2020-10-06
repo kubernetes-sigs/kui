@@ -222,7 +222,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   private bottomToolbar(lightweightTables = false) {
     const gridableColumn = findGridableColumn(this.props.response)
     const hasSequenceButton = this.hasSequenceButton()
-    const hasTimelineButton = hasSequenceButton // same
+    const hasTimelineButton = false // disabled for now, see https://github.com/IBM/kui/issues/5864
 
     const needsBottomToolbar =
       this.isPaginated() ||
