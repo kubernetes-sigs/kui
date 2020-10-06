@@ -7,7 +7,7 @@
   "spec": {
     "splits": [
       {
-        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
@@ -79,7 +79,7 @@
               "historyIdx": 252
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "3285fd03-25c0-47aa-8d3a-494ed23bab43",
             "startTime": "2020-09-29T21:41:46.197Z",
             "prefersTerminalPresentation": false,
@@ -89,7 +89,7 @@
         ]
       },
       {
-        "uuid": "1_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
         "blocks": [
           {
             "response": {
@@ -161,7 +161,7 @@
               "historyIdx": 89
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "134ea483-00cd-4148-9b47-a4368ac97565",
             "startTime": "2020-09-29T21:41:57.989Z",
             "prefersTerminalPresentation": false,
@@ -171,7 +171,7 @@
         ]
       },
       {
-        "uuid": "1_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+        "uuid": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
         "inverseColors": true,
         "blocks": [
           {
@@ -244,7 +244,7 @@
               "historyIdx": 22
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "5d6dc961-a02b-434e-8cdd-2d00a06d57b7",
             "startTime": "2020-09-29T21:42:06.652Z",
             "prefersTerminalPresentation": false,
@@ -472,7 +472,7 @@
               "historyIdx": 251
             },
             "isExperimental": false,
-            "isReplay": false,
+            "isReplay": true,
             "execUUID": "04f11a6b-eaa6-4749-97bd-e39378bf5a30",
             "startTime": "2020-09-30T18:47:11.872Z",
             "prefersTerminalPresentation": false,
@@ -481,10 +481,6 @@
           }
         ]
       }
-    ],
-    "clicks": {
-      "startEvents": {},
-      "completeEvents": {}
-    }
+    ]
   }
 }
