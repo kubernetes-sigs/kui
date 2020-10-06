@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Keys, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Keys, Util } from '@kui-shell/test'
 
 import { tabButtonSelector } from '../../lib/cmds/tab-management'
 
@@ -321,12 +321,6 @@ Common.pDescribe('core new tab from pty active tab via click', function(this: Co
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
-
-  it('should open sidecar with about', () =>
-    CLI.command('about', this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .catch(Common.oops(this, true)))
 
   Common.proxyIt('should cd to the test dir', () =>
     CLI.command(`cd ${process.env.TEST_ROOT}`, this.app)

@@ -61,7 +61,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
    *
    */
   private async doAbout() {
-    pexecInCurrentTab('tab new --cmdline about --title "About Kui"')
+    pexecInCurrentTab('about')
   }
 
   /**

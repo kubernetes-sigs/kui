@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect, testAbout } from '@kui-shell/test'
-
-const Overview = 'Overview'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
-  testAbout(this)
+  it('should open the about window via command execution with comment', async () => {
+    try {
+      await CLI.command('about #About Kui', this.app)
+      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
+      await this.app.client.waitUntil(async () => {
+        const actualTitle = await this.app.client.getText(Selectors.TAB_TITLE_N(2))
+        return actualTitle === 'Welcome to Kui'
+      })
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 
-  it('should open the about window via command execution with comment', () =>
-    CLI.command('about #About Kui', this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(Overview))
-      .then(() => this.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
-      .catch(Common.oops(this, true)))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   it('should open the about via button click', async () => {
     try {
@@ -40,23 +44,13 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
       await this.app.client.click('#help-button')
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR)
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
+      await this.app.client.waitUntil(async () => {
+        const actualTitle = await this.app.client.getText(Selectors.TAB_TITLE_N(2))
+        return actualTitle === 'Welcome to Kui'
+      })
     } catch (err) {
       await Common.oops(this, true)(err)
     }
-  })
-
-  xit('should open the getting started via command execution', async () => {
-    await Common.refresh(this)
-
-    return (
-      CLI.command('getting started', this.app)
-        .then(ReplExpect.justOK)
-        .then(SidecarExpect.open)
-        .then(SidecarExpect.showing(Overview))
-        // .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('tutorial')))
-        .catch(Common.oops(this, true))
-    )
   })
 })
