@@ -46,5 +46,6 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   folding: !options.simple || !/markdown|text|shell/i.test(options.language),
   lineNumbers: options.simple ? 'off' : 'on',
   wordWrap: options.simple ? 'on' : undefined,
+  renderFinalNewline: !options.simple,
   lineDecorationsWidth: options.simple ? 0 : undefined
 })
