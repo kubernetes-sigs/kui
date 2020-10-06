@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as assert from 'assert'
 
-import { Common, testAbout, Selectors, ReplExpect, CLI } from '@kui-shell/test'
+import { Common } from '@kui-shell/test'
 import { doHelp } from '../../../tests/lib/k8s/utils'
 
 const commonModes = ['Introduction']
@@ -33,36 +32,6 @@ describe('kubectl dash h', function(this: Common.ISuite) {
   // help on kubectl
   // it('should refresh', () => Common.refresh(this))
   help('kubectl', ['kubectl'], kubectlModes, 'kubectl controls the Kubernetes cluster manager')
-
-  // switch to about, should see correct navigation, breadcrumbs and content
-  testAbout(this)
-
-  it(`should split the terminal via button in the current tab and expect splitCount=2`, async () => {
-    try {
-      await this.app.client.click(Selectors.NEW_SPLIT_BUTTON)
-      await ReplExpect.splitCount(2)(this.app)
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
-
-  testAbout(this)
-
-  it('should close the split via command in the current tab and expect splitCount=1', () =>
-    CLI.command('exit', this.app)
-      .then(() => ReplExpect.splitCount(1)(this.app))
-      .catch(Common.oops(this, true)))
-
-  it('should click kubectl help link in the about sidecar', async () => {
-    try {
-      await this.app.client.click(Selectors.SIDECAR_NAV_COMMAND_LINKS('Kubectl Help'))
-      await this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS)
-      const breadcrumbs = await this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS)
-      assert.ok(breadcrumbs, 'Kui')
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
 
   // help on kubectl
   // it('should refresh', () => Common.refresh(this))

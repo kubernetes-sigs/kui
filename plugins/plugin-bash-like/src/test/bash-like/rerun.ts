@@ -16,19 +16,25 @@
 
 import { Common, CLI, Selectors, ReplExpect, SidecarExpect, Keys } from '@kui-shell/test'
 
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
+
 const runTheTests = process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true'
 const pit = runTheTests ? it : xit
+
+// the sidecar mode presented by the open command
+const openMode = 'view'
 
 describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  it('should rerun about', async () => {
+  it('should rerun a command that opens the sidecar', async () => {
     try {
-      // do about
-      const res = await CLI.command('about', this.app)
+      // open the sidecar using `open`
+      const res = await CLI.command(`open ${join(ROOT, 'package.json')}`, this.app)
       await this.app.client.waitForVisible(Selectors.SIDECAR)
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(openMode))
 
       // close sidecar
       await this.app.client.waitForVisible(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
@@ -42,7 +48,7 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
       // sidecar should open
       await this.app.client.waitForVisible(Selectors.SIDECAR)
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(openMode))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -82,9 +88,10 @@ describe(`rerun command by clicking the input ${process.env.MOCHA_RUN_TARGET || 
   it('should rerun about by clicking the input', async () => {
     try {
       // do about
-      const res = await CLI.command('about', this.app)
+      // open the sidecar using `open`
+      const res = await CLI.command(`open ${join(ROOT, 'package.json')}`, this.app)
       await this.app.client.waitForVisible(Selectors.SIDECAR)
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(openMode))
 
       // close sidecar
       await this.app.client.waitForVisible(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
@@ -97,7 +104,7 @@ describe(`rerun command by clicking the input ${process.env.MOCHA_RUN_TARGET || 
 
       // sidecar should open
       await this.app.client.waitForVisible(Selectors.SIDECAR)
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(openMode))
     } catch (err) {
       await Common.oops(this, true)(err)
     }

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect, testAbout } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 
 import { splitViaCommand, focus } from '../core-support2/split-helpers'
 import { doClear } from './clear'
+
+import { dirname, join } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 
 const base64Input = 'hi'
 const base64Output = Buffer.from(base64Input).toString('base64')
@@ -30,7 +33,13 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     CLI.command(`base64 ${base64Input}`, this.app)
       .then(ReplExpect.okWithString(base64Output))
       .catch(Common.oops(this, true)))
-  testAbout(this)
+
+  // do something to open the sidecar, so we can verify it's not open on replay
+  it('should open sidecar', () =>
+    CLI.command(`open ${(join(ROOT), 'package.json')}`, this.app)
+      .then(ReplExpect.justOK)
+      .then(SidecarExpect.open)
+      .catch(Common.oops(this, true)))
 
   it('should snapshot', () =>
     CLI.command('snapshot /tmp/test.kui', this.app)
