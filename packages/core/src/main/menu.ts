@@ -71,6 +71,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
       label: 'Notebooks',
       submenu: [
         notebook('Welcome to Kui', '/kui/welcome.json'),
+        { type: 'separator' },
         {
           label: 'Learning Kubernetes',
           submenu: [
@@ -226,6 +227,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
     const separator: MenuItemConstructorOptions = { type: 'separator' }
     const submenu: MenuItemConstructorOptions[] = [
       about,
+      notebook('Configure Kui', '/kui/settings.json'),
       separator,
       { role: 'services', submenu: [] as MenuItemConstructorOptions[] },
       separator,
