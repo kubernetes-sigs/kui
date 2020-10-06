@@ -22,6 +22,74 @@ import { doClear } from './clear'
 const base64Input = 'hi'
 const base64Output = Buffer.from(base64Input).toString('base64')
 
+describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const testTabLabel1 = 'test1'
+  const testTabLabel2 = 'test2'
+
+  const doReplay = (testTabLabel: string) => {
+    it('should replay', async () => {
+      try {
+        await CLI.command('replay /tmp/test.kui', this.app)
+
+        await this.app.client.waitForExist(Selectors.TOP_TAB_WITH_TITLE(testTabLabel), CLI.waitTimeout)
+
+        let idx = 0
+        await this.app.client.waitUntil(async () => {
+          const txt = await this.app.client.getText(Selectors.OUTPUT_LAST)
+          if (++idx > 5) {
+            console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
+          }
+          return txt === base64Output
+        }, CLI.waitTimeout)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  it(`should open new tab with title ${testTabLabel1}`, () =>
+    CLI.command(`tab new --title ${testTabLabel1}`, this.app)
+      .then(() => CLI.waitForSession(this))
+      .catch(Common.oops(this)))
+
+  it(`should base64 ${base64Input}`, () =>
+    CLI.command(`base64 ${base64Input}`, this.app)
+      .then(ReplExpect.okWithString(base64Output))
+      .catch(Common.oops(this, true)))
+
+  it('should snapshot without specifying title', () =>
+    CLI.command('snapshot /tmp/test.kui', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  // clear the tabs so there isn't a tab naming `testTabLabel1`
+  it('should refresh', () => Common.refresh(this))
+  doReplay(testTabLabel1)
+
+  it(`should snapshot with title ${testTabLabel2}`, () =>
+    CLI.command(`snapshot /tmp/test.kui --title ${testTabLabel2}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  // clear the tabs so there isn't a tab naming `testTabLabel2`
+  it('should refresh', () => Common.refresh(this))
+  doReplay(testTabLabel2)
+
+  it('should snapshot again but without specifying title', () =>
+    CLI.command('snapshot /tmp/test.kui', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  // Currently, The replay command will display the notebook in a new tab.
+  // Without refreshing, the second tab can't be opened due to tab name duplication.
+  it('should refresh', () => Common.refresh(this))
+
+  doReplay(testTabLabel2)
+})
+
 describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
