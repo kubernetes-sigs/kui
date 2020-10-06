@@ -264,11 +264,14 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
                   className="flex-fill"
                   showMore={strings('Show X', name)}
                   showLess={strings('Hide X', name)}
+                  expanded={this.props.isPartOfNotebook}
                   onToggle={() => eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))}
                 >
                   <SimpleEditor
                     tabUUID={getPrimaryTabId(this.props.tab)}
-                    content={_.data}
+                    content={
+                      _.data.replace(/\n$/, '') /* monaco's renderFinalNewline option doesn't seem to do what we need */
+                    }
                     contentType={_.contentType}
                     className="kui--source-ref-editor kui--inverted-color-context"
                     fontSize={12}
@@ -599,7 +602,12 @@ export default class Input extends InputProvider {
       const replayed = isReplay(this.props.model)
       const completed = this.props.model.startTime && isWithCompleteEvent(this.props.model)
       const showingDate = !replayed && completed && !this.props.isWidthConstrained
-      const noParen = !showingDate
+      const duration =
+        !replayed &&
+        isWithCompleteEvent(this.props.model) &&
+        this.props.model.completeEvent.completeTime &&
+        prettyPrintDuration(this.props.model.completeEvent.completeTime - this.props.model.startTime)
+      const noParen = !showingDate || !duration
       const openParen = noParen ? '' : '('
       const closeParen = noParen ? '' : ')'
 
@@ -609,9 +617,7 @@ export default class Input extends InputProvider {
             {showingDate && new Date(this.props.model.startTime).toLocaleTimeString()}
             <span className="small-left-pad sub-text" ref={c => this.setState({ durationDom: c })}>
               {openParen}
-              {isWithCompleteEvent(this.props.model) &&
-                this.props.model.completeEvent.completeTime &&
-                prettyPrintDuration(this.props.model.completeEvent.completeTime - this.props.model.startTime)}
+              {duration}
               {closeParen}
             </span>
           </span>
