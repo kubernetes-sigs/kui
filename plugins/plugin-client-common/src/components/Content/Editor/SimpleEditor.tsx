@@ -118,8 +118,12 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
       )
       const editor = Monaco.create(state.wrapper, options)
 
-      if (props.simple) {
-        // size to fit
+      if (options.readOnly && props.simple) {
+        // if we know 1) the height of the content won't change, and
+        // 2) we are running in "simple" mode (this is mostly the case
+        // for inline editor components, as opposed to editor
+        // components that are intended to fill the full view), then:
+        // size the height to fit the content
         state.wrapper.style.height = Math.min(400, editor.getContentHeight()) + 'px'
       }
 
