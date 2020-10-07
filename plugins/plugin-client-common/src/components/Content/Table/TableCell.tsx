@@ -128,7 +128,9 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
               {/red-background/.test(css) ? <ErrorCell /> : undefined}
             </span>
           )}
-          <span className="kui--cell-inner-text">{table.markdown ? <Markdown source={innerText} /> : innerText}</span>
+          <span className="kui--cell-inner-text">
+            {table.markdown ? <Markdown nested source={innerText} /> : innerText}
+          </span>
         </span>
       </TableCell>
     )
