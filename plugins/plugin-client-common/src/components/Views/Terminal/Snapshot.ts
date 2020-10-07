@@ -80,13 +80,18 @@ export function snapshot(block: CompleteBlock): CompleteBlock {
       }
     }
 
-    const startEvent = Object.assign({}, block.startEvent, { tab: block.startEvent.tab.uuid })
+    const tab = block.startEvent.tab
+      ? block.startEvent.tab.uuid
+      : block.completeEvent.tab
+      ? block.completeEvent.tab.uuid
+      : undefined
+    const startEvent = Object.assign({}, block.startEvent, { tab })
 
     const completeEvent = Object.assign(
       {},
       block.completeEvent,
       { execOptions, evaluatorOptions },
-      { tab: block.completeEvent.tab.uuid },
+      { tab },
       { response: excludeWatchable(block.completeEvent.response) }
     )
 
