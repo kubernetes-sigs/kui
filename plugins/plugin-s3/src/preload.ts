@@ -23,5 +23,5 @@ export default () => {
 
   // mount notebooks
   notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/parallel-grep.json'], '/kui/s3/')
+  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/s3.json'], '/kui/s3/')
 }
