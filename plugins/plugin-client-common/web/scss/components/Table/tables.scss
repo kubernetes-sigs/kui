@@ -229,7 +229,6 @@ body[kui-theme-style] .kui--data-table-wrapper {
     min-width: $min-body-width;
     /* max-height: $max-body-height; see https://github.com/IBM/kui/issues/5221 */
     min-height: $min-body-height;
-    overflow: auto;
   }
 }
 
