@@ -188,7 +188,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       : { name: this.props.tabTitle, description: '', splits: [this.scrollbackWithWelcome()] }
 
     this.state = {
-      focusedIdx: 0,
+      focusedIdx: -1,
       splits,
       notebookMetadata: { name, description }
     }
@@ -621,24 +621,43 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Owner wants us to focus on the current prompt */
-  public doFocus(scrollback = this.current) {
-    const { _activeBlock } = scrollback
-
-    if (_activeBlock) {
-      if (_activeBlock.state._block && isInViewport(_activeBlock.state._block)) {
-        // re: isInViewport, see https://github.com/IBM/kui/issues/4739
-        _activeBlock.doFocus()
-      }
-    } else {
-      // a bit of a data abstraction violation; we should figure out how to solve this better
-      // see https://github.com/IBM/kui/issues/3945
-      const xterm = document.querySelector('textarea.xterm-helper-textarea') as HTMLTextAreaElement
-      if (xterm) {
-        xterm.focus()
-      }
+  private _focusDebouncer: NodeJS.Timeout
+  public doFocus(scrollback = this.current, idx = this.state.focusedIdx) {
+    if (this.state.focusedIdx >= 0 && idx === this.state.focusedIdx) {
+      return
     }
 
-    this.setFocusOnScrollback(scrollback)
+    if (this._focusDebouncer) {
+      clearTimeout(this._focusDebouncer)
+      this._focusDebouncer = undefined
+    }
+
+    const ourDebouncer = setTimeout(() => {
+      if (this._focusDebouncer !== ourDebouncer || (this.state.focusedIdx >= 0 && idx === this.state.focusedIdx)) {
+        return
+      } else {
+        this._focusDebouncer = undefined
+      }
+
+      const { _activeBlock } = scrollback
+
+      if (_activeBlock) {
+        if (_activeBlock.state._block && isInViewport(_activeBlock.state._block)) {
+          // re: isInViewport, see https://github.com/IBM/kui/issues/4739
+          _activeBlock.doFocus()
+        }
+      } else {
+        // a bit of a data abstraction violation; we should figure out how to solve this better
+        // see https://github.com/IBM/kui/issues/3945
+        const xterm = document.querySelector('textarea.xterm-helper-textarea') as HTMLTextAreaElement
+        if (xterm) {
+          xterm.focus()
+        }
+      }
+
+      this.setFocusOnScrollback(scrollback)
+    }, 10)
+    this._focusDebouncer = ourDebouncer
   }
 
   /**
@@ -866,7 +885,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           eventBus.emitWithTabId('/tab/close/request', parent.uuid, parent)
         }
 
-        return { splits }
+        return { splits, focusedIdx: idx === 0 ? 0 : idx - 1 }
       }
     })
   }
@@ -1124,7 +1143,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}
                     hasBlockBefore={this.hasBlockBefore(idx)}
-                    willLoseFocus={() => this.doFocus(scrollback)}
+                    willLoseFocus={() => this.doFocus(scrollback, idx)}
                     willFocusBlock={willFocusBlock}
                     isExperimental={hasCommand(_) && _.isExperimental}
                     isFocused={isFocused}

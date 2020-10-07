@@ -221,16 +221,17 @@ Common.proxyDescribe(`core snapshot and replay by query ${process.env.MOCHA_RUN_
       .then(ReplExpect.okWithString(base64Output))
       .catch(Common.oops(this, true)))
 
+  const title = 'replay-by-query'
+
   it('should snapshot', () =>
-    CLI.command('snapshot /tmp/test.kui', this.app)
+    CLI.command(`snapshot /tmp/test.kui --title ${title}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
-
-  it('should refresh', () => Common.refresh(this))
 
   it('should replay by query', async () => {
     try {
       await this.app.client.url(`${process.env.WEBPACK_CLIENT_URL}?command=replay /tmp/test.kui`)
+      await this.app.client.waitForExist(Selectors.TOP_TAB_WITH_TITLE(title), CLI.waitTimeout)
 
       // verify the base64 command replay
       let idx = 0
