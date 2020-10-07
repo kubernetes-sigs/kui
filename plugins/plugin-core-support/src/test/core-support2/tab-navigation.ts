@@ -154,9 +154,4 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector('#help-button', true, undefined, true)
   it('should have a new About Kui top tab', () =>
     this.app.client.waitForVisible(Selectors.TOP_TAB_WITH_TITLE('Welcome to Kui'), 5000))
-  testPromptIsSelected()
-
-  // now the sidecar is open, so cycle through the sidecar tabs
-  // testAboutMode('about', false, true)
-  // testAboutMode('version', true) // hit enter on the Version tab
 })
