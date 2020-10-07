@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { CodeSnippet } from 'carbon-components-react'
+@import '~carbon-components/scss/components/copy-button/_copy-button.scss';
+@import '~carbon-components/scss/components/code-snippet/_code-snippet.scss';
 
-import Props from '../model'
+body[kui-theme-style] .bx--snippet {
+  font-family: var(--font-monospace);
+}
 
-import '../../../../../web/scss/components/CodeSnippet/Carbon.scss'
-
-export default class CarbonCodeSnippet extends React.PureComponent<Props> {
-  public render() {
-    return (
-      <CodeSnippet
-        type={this.props.value && (/\n/.test(this.props.value) || this.props.value.length > 40) ? 'multi' : 'single'}
-        onClick={this.props.onCopy}
-      >
-        {this.props.value}
-      </CodeSnippet>
-    )
-  }
+body[kui-theme-style='dark'] .bx--snippet {
+  color: var(--color-base00);
 }

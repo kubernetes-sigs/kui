@@ -19,3 +19,7 @@
 [kui-theme-style] .pf-c-clipboard-copy__expandable-content {
   color: var(--pf-global--Color--100);
 }
+
+[kui-theme-style='dark'] .pf-c-clipboard-copy__expandable-content {
+  color: var(--pf-global--Color--300);
+}
