@@ -731,7 +731,8 @@ body.oops-total-catastrophe #restart-needed-warning {
 }
 $kui--page-content-h4-padding: 0.5rem;
 $kui--page-content-paragraph-padding: 0.375rem;
-.page-content p {
+.page-content p,
+.page-content .paragraph {
   padding: $kui--page-content-paragraph-padding 0;
 }
 .repl-output .page-content p:only-child {
