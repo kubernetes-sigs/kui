@@ -24,3 +24,7 @@ body[kui-theme-style] .bx--snippet {
 body[kui-theme-style='dark'] .bx--snippet {
   color: var(--color-base00);
 }
+
+body[kui-theme-style='light'] .kui--inverted-color-context .bx--snippet {
+  color: var(--color-base00);
+}

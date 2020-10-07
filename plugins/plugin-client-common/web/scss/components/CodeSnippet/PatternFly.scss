@@ -23,3 +23,7 @@
 [kui-theme-style='dark'] .pf-c-clipboard-copy__expandable-content {
   color: var(--pf-global--Color--300);
 }
+
+body[kui-theme-style='light'] .kui--inverted-color-context .pf-c-clipboard-copy__expandable-content {
+  color: var(--pf-global--Color--300);
+}
