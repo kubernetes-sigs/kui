@@ -102,6 +102,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
           <span onClick={this.props.willFocusBlock} className="flex-fill flex-layout flex-align-stretch">
             <Commentary
               {...response.props}
+              repl={tab.REPL}
               tabUUID={getPrimaryTabId(tab)}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               willRemove={this.props.willRemove}
