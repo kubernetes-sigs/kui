@@ -176,9 +176,6 @@ export function createWindow(
       const icon = join(root, 'build', filesystem.win32)
       opts.icon = icon
     }
-    if (process.platform === 'linux' || process.platform === 'win32') {
-      opts.autoHideMenuBar = true
-    }
 
     if (subwindowPlease) {
       // this tells electron to size content to the given width and height,
