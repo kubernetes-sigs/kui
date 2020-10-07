@@ -15,10 +15,10 @@
  */
 
 import TrieSearch from 'trie-search'
-import * as micromatch from 'micromatch'
-import { basename, dirname, join } from 'path'
-import { Arguments, CodedError, flatten, Notebook } from '@kui-shell/core'
+import micromatch from 'micromatch'
+import { basename, dirname, join } from './posix'
 import { FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
+import { Arguments, CodedError, flatten, Notebook } from '@kui-shell/core'
 
 interface Tutorial {
   name: string
@@ -146,6 +146,7 @@ class NotebookVFS implements VFS {
 
             return
           } catch (err) {
+            console.error(err)
             throw new Error(`Unable to copy given source into the notebooks VFS: ${srcFilepath}. ${err.message}`)
           }
         } else {
