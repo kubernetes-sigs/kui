@@ -14,7 +14,7 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Kui: A Framework for Graphical Terminals\n\nKui combines the power of familiar CLIs with visualizations in high-impact areas. Kui enables you to manipulate complex JSON and YAML data models, integrate disparate tooling, and provides quick access to aggregate views of operational data.\n\nKui uses [Electron](https://electronjs.org) to provide you with an augmented but CLI-focused development experience. You will have access to your filesystem and your favorite terminal and text editor. At the same time, one may offer a hosted Kui, allowing the same experience in both a local- and browser-based experience."
+                "children": "# Kui: A Framework for Graphical Terminals\n\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\n\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app."
               }
             },
             "historyIdx": 250,
@@ -98,7 +98,7 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "## Installation\n\nYou may choose to download a prebuilt image that bundles the core Kui features:\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\nTo run Kui as a [kubectl\nplugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)\n(for `kubectl` 1.12+), these prebuilt images contain a `kubectl-kui`\nscript. For Windows and\nLinux, add the unpacked directory to your PATH; for MacOS, the script\nis nested further down:\n\n```bash\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\nkubectl kui get pods\n```\n\nAfter the final command, you should see a popup window listing pods in\nyour current namespace.\n\n## Contributing\n\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md)."
+                "children": "## Installation\n\nYou may choose to download a prebuilt image that bundles the core Kui features:\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\n### As a `kubectl` plugin\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\n\n```bash\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\nkubectl kui get pods\n```\n\n## Contributing\n\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md)."
               }
             },
             "historyIdx": 250,
