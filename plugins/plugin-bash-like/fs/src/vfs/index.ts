@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import slash from 'slash'
 import { isAbsolute, join } from 'path'
 import { Arguments, ParsedOptions, REPL, Table, eventBus, getCurrentTab, inBrowser } from '@kui-shell/core'
 
@@ -157,29 +158,36 @@ export async function mount(vfs: VFS | VFSProducingFunction) {
   }
 }
 
+/** @return current working directory */
+function cwd() {
+  return inBrowser() ? process.env.PWD || '/' : process.cwd()
+}
+
 /** @return the absolute path to `filepath` */
 function absolute(filepath: string): string {
-  return isAbsolute(filepath) ? filepath : join(process.env.PWD || '/', filepath)
+  return isAbsolute(filepath) ? filepath : join(cwd(), filepath)
 }
 
 /** Lookup compiatible mount */
 export function findMount(filepath: string, checkClient = false): VFS {
   const isClient = inBrowser()
   filepath = absolute(filepath)
-  return _currentMounts.find(
-    mount => filepath.startsWith(mount.mountPath) && (!checkClient || !isClient || mount.isVirtual)
-  )
+  return (
+    _currentMounts.find(
+      mount => filepath.startsWith(mount.mountPath) && (!checkClient || !isClient || mount.isVirtual)
+    ) || _currentMounts.find(mount => mount.isLocal)
+  ) // local fallback; see https://github.com/IBM/kui/issues/5898
 }
 
 /** Lookup compatible mounts */
 export function multiFindMount(filepaths: string[], checkClient = false): { filepaths: string[]; mount: VFS }[] {
   if (filepaths.length === 0) {
-    return multiFindMount([process.env.PWD], checkClient)
+    return multiFindMount([cwd()], checkClient)
   }
 
   return filepaths
     .map(filepath => ({
-      filepaths: [filepath],
+      filepaths: [slash(filepath)],
       mount: findMount(filepath, checkClient)
     }))
     .filter(_ => _.mount !== undefined)
