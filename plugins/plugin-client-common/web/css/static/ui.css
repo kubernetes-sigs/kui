@@ -702,13 +702,19 @@ body.oops-total-catastrophe #restart-needed-warning {
     @content;
   }
 }
+@mixin CommentaryCodeStandalone {
+  .repl .page-content:not(.full-height) p > code,
+  .repl .page-content:not(.full-height) li > code {
+    @content;
+  }
+}
 @include CommentaryCode {
   word-break: break-all;
 
   /* mimic github styling here */
   background-color: rgba(27, 31, 35, 0.05);
   padding: 0.2rem 0.4rem;
-  font-size: 0.875rem;
+  font-size: 0.825rem;
   border-radius: 6px;
 }
 [kui-theme-style="dark"] {
