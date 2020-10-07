@@ -114,7 +114,11 @@ export default class Markdown extends React.PureComponent<Props> {
               return <Link {...props} href={href} target={target} onClick={onClick} />
             }
           },
-          code: props => <CodeSnippet value={props.value} onCopy={this.onCopy.bind(this, props.value)} />,
+          code: props => (
+            <p>
+              <CodeSnippet value={props.value} onCopy={this.onCopy.bind(this, props.value)} />
+            </p>
+          ),
           heading: props => {
             const valueChild =
               props.children && props.children.length === 1
