@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Tab, i18n } from '@kui-shell/core'
+import { Tab, i18n, isOfflineClient } from '@kui-shell/core'
 
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'
@@ -47,7 +47,13 @@ function Action(props: { onClick: () => void; icon: SupportedIcon; title: string
 
 export default class Actions extends React.PureComponent<Props> {
   private rerunAction() {
-    if (hasUUID(this.props.model) && !isOutputOnly(this.props.model) && this.props.tab && this.props.command) {
+    if (
+      !isOfflineClient() &&
+      hasUUID(this.props.model) &&
+      !isOutputOnly(this.props.model) &&
+      this.props.tab &&
+      this.props.command
+    ) {
       const handler = () => {
         if (hasUUID(this.props.model)) {
           this.props.tab.REPL.pexec(this.props.command, { execUUID: this.props.model.execUUID })
@@ -72,6 +78,7 @@ export default class Actions extends React.PureComponent<Props> {
 
   private removeAction() {
     return (
+      !isOfflineClient() &&
       this.props.willRemove && (
         <Action icon="WindowClose" onClick={() => this.props.willRemove()} title="Remove this block" />
       )
