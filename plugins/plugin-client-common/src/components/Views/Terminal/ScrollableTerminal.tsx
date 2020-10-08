@@ -55,6 +55,7 @@ import {
   Processing,
   isActive,
   isHidden,
+  isWithCompleteEvent,
   isOk,
   isOutputOnly,
   isProcessing,
@@ -1052,6 +1053,27 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
+  private willUpdateCommand(sbuuid: string, idx: number, block: BlockModel, command: string) {
+    if (hasCommand(block)) {
+      block.command = command
+    }
+
+    if (hasStartEvent(block)) {
+      block.startEvent.command = command
+    }
+    if (isWithCompleteEvent(block)) {
+      block.completeEvent.command = command
+    }
+
+    return this.splice(sbuuid, curState => {
+      curState.blocks[idx] = block
+
+      return {
+        blocks: curState.blocks
+      }
+    })
+  }
+
   public render() {
     const nTerminals = this.state.splits.length
 
@@ -1145,6 +1167,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     hasBlockBefore={this.hasBlockBefore(idx)}
                     willLoseFocus={() => this.doFocus(scrollback, idx)}
                     willFocusBlock={willFocusBlock}
+                    willUpdateCommand={this.willUpdateCommand.bind(this, scrollback.uuid, idx, _)}
                     isExperimental={hasCommand(_) && _.isExperimental}
                     isFocused={isFocused}
                     prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}

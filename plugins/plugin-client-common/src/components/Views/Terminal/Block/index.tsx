@@ -79,6 +79,7 @@ type Props = InputOptions & {
 
   noOutput?: boolean
   onOutputRender?: (idx: number) => void
+  willUpdateCommand?: (command: string) => void
 } & BlockViewTraits
 
 interface State {
@@ -125,6 +126,7 @@ export default class Block extends React.PureComponent<Props, State> {
           hasBlockAfter={this.props.hasBlockAfter}
           hasBlockBefore={this.props.hasBlockBefore}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
+          willUpdateCommand={this.props.willUpdateCommand}
           prefersTerminalPresentation={this.props.prefersTerminalPresentation}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}
           isWidthConstrained={this.props.isWidthConstrained}
