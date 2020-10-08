@@ -7,7 +7,7 @@
   "spec": {
     "splits": [
       {
-        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
@@ -19,10 +19,10 @@
             },
             "historyIdx": 251,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# # Declarative Management of Kubernetes Objects\\n\\nKubernetes objects can be created, updated, and deleted by storing multiple object configuration files in a directory and using kubectl apply to recursively create and update those objects as needed. This method retains writes made to live objects without merging the changes back into the object configuration files.",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# # Declarative Management of Kubernetes Objects\\n\\nKubernetes objects can be created, updated, and deleted by storing multiple object configuration files in a directory and using kubectl apply to recursively create and update those objects as needed. This method retains writes made to live objects without merging the changes back into the object configuration files.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -50,7 +50,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# # Declarative Management of Kubernetes Objects\\n\\nKubernetes objects can be created, updated, and deleted by storing multiple object configuration files in a directory and using kubectl apply to recursively create and update those objects as needed. This method retains writes made to live objects without merging the changes back into the object configuration files.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -89,7 +89,7 @@
         ]
       },
       {
-        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "uuid": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
         "blocks": [
           {
             "response": {
@@ -101,10 +101,10 @@
             },
             "historyIdx": 108,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# ## Exploring Further\\n\\n- `kubectl diff` gives you a preview of what changes apply will make.",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# ## Exploring Further\\n\\n- `kubectl diff` gives you a preview of what changes apply will make.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -132,7 +132,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# ## Exploring Further\\n\\n- `kubectl diff` gives you a preview of what changes apply will make.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -171,7 +171,7 @@
         ]
       },
       {
-        "uuid": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+        "uuid": "3_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
         "blocks": [
           {
             "response": {
@@ -183,10 +183,10 @@
             },
             "historyIdx": 250,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# ## How to create objects\\n\\nUse `kubectl apply` to create all objects, except those that already exist, defined by configuration files in a specified directory. It is good practice to experiment in a separate namespace. First, we create a scratch namespace, and then we use `kubectl apply` to create a resource in that namespace.",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# ## How to create objects\\n\\nUse `kubectl apply` to create all objects, except those that already exist, defined by configuration files in a specified directory. It is good practice to experiment in a separate namespace. First, we create a scratch namespace, and then we use `kubectl apply` to create a resource in that namespace.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -214,7 +214,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# ## How to create objects\\n\\nUse `kubectl apply` to create all objects, except those that already exist, defined by configuration files in a specified directory. It is good practice to experiment in a separate namespace. First, we create a scratch namespace, and then we use `kubectl apply` to create a resource in that namespace.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -1364,10 +1364,10 @@
             },
             "historyIdx": 253,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# ## Listing Resources\\n\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# ## Listing Resources\\n\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -1395,7 +1395,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# ## Listing Resources\\n\\nUse the following command to list your Kubernetes Deployment Resources.\\n\\n**Note**: Deployments are Resources which manage Pod replicas (Pods run Containers)",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -2174,10 +2174,10 @@
             },
             "historyIdx": 255,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# To drill down to the details of a resource, in Kui you may click on the Name cell of any table.",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# To drill down to the details of a resource, in Kui you may click on the Name cell of any table.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -2205,7 +2205,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# To drill down to the details of a resource, in Kui you may click on the Name cell of any table.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
