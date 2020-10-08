@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.0.0](https://github.com/kui-shell/plugin-kubeui/compare/v4.5.0...v9.0.0) (2020-10-08)
+
+### Bug Fixes
+
+- **plugins-plugin-ibmcloud:** ibmcloud ce job list -h does not present help ([799d71d](https://github.com/kui-shell/plugin-kubeui/commit/799d71d)), closes [#5386](https://github.com/kui-shell/plugin-kubeui/issues/5386)
+- **plugins/plugin-client-common:** for now, switch interval chart to duration chart ([ea21221](https://github.com/kui-shell/plugin-kubeui/commit/ea21221)), closes [#5340](https://github.com/kui-shell/plugin-kubeui/issues/5340)
+- **plugins/plugin-ibmcloud:** certain ibmcloud commands do not function with "ibmcloud" in defaultContext ([1d87981](https://github.com/kui-shell/plugin-kubeui/commit/1d87981)), closes [#4335](https://github.com/kui-shell/plugin-kubeui/issues/4335)
+- **plugins/plugin-ibmcloud:** ibmcloud ce job list does not support name filters ([5daa930](https://github.com/kui-shell/plugin-kubeui/commit/5daa930)), closes [#5450](https://github.com/kui-shell/plugin-kubeui/issues/5450)
+- **plugins/plugin-ibmcloud:** ibmcloud ce job run can emit unprocessed ansi control characters ([3539acf](https://github.com/kui-shell/plugin-kubeui/commit/3539acf)), closes [#5334](https://github.com/kui-shell/plugin-kubeui/issues/5334)
+- **plugins/plugin-ibmcloud:** improve error handling of ibmcloud list commands ([6cbdb88](https://github.com/kui-shell/plugin-kubeui/commit/6cbdb88)), closes [#5250](https://github.com/kui-shell/plugin-kubeui/issues/5250)
+- **plugins/plugin-ibmcloud:** k get jobrun is always directed to codeengine CRD ([7f3b6c8](https://github.com/kui-shell/plugin-kubeui/commit/7f3b6c8)), closes [#5377](https://github.com/kui-shell/plugin-kubeui/issues/5377)
+- ibmcloud plugin list does not list unofficial plugins ([303fa00](https://github.com/kui-shell/plugin-kubeui/commit/303fa00)), closes [#4339](https://github.com/kui-shell/plugin-kubeui/issues/4339)
+- make inBrowserOk the default ([2a3c811](https://github.com/kui-shell/plugin-kubeui/commit/2a3c811)), closes [#4275](https://github.com/kui-shell/plugin-kubeui/issues/4275)
+
+### Features
+
+- add support for Toolbar Buttons ([f55b8c6](https://github.com/kui-shell/plugin-kubeui/commit/f55b8c6)), closes [#4103](https://github.com/kui-shell/plugin-kubeui/issues/4103) [#4105](https://github.com/kui-shell/plugin-kubeui/issues/4105)
+- allow command registrations to express their experimental nature ([eb9f147](https://github.com/kui-shell/plugin-kubeui/commit/eb9f147)), closes [#5282](https://github.com/kui-shell/plugin-kubeui/issues/5282)
+- allow for limiting the number of kubectl table rows ([62588f2](https://github.com/kui-shell/plugin-kubeui/commit/62588f2)), closes [#5358](https://github.com/kui-shell/plugin-kubeui/issues/5358)
+- Feature: improve support for parallelization across VFS operations ([e05d7e0](https://github.com/kui-shell/plugin-kubeui/commit/e05d7e0)), closes [#5831](https://github.com/kui-shell/plugin-kubeui/issues/5831)
+- generalized kuberctl get with limit ([d40ee07](https://github.com/kui-shell/plugin-kubeui/commit/d40ee07)), closes [#5361](https://github.com/kui-shell/plugin-kubeui/issues/5361)
+- simplified co-hosting of client and proxy in a container ([00af4b4](https://github.com/kui-shell/plugin-kubeui/commit/00af4b4)), closes [#4213](https://github.com/kui-shell/plugin-kubeui/issues/4213)
+- Timeline view for kubernetes Jobs ([b623e4e](https://github.com/kui-shell/plugin-kubeui/commit/b623e4e)), closes [#5370](https://github.com/kui-shell/plugin-kubeui/issues/5370)
+- **plugins/plugin-client-common:** improved SequenceDiagram view ([1e2fb41](https://github.com/kui-shell/plugin-kubeui/commit/1e2fb41)), closes [#5342](https://github.com/kui-shell/plugin-kubeui/issues/5342)
+- s3 plugin, and vfs ([970ba6e](https://github.com/kui-shell/plugin-kubeui/commit/970ba6e)), closes [#5319](https://github.com/kui-shell/plugin-kubeui/issues/5319)
+- **plugins/plugin-ibmcloud:** initial CodeEngine support ([677faca](https://github.com/kui-shell/plugin-kubeui/commit/677faca)), closes [#5302](https://github.com/kui-shell/plugin-kubeui/issues/5302) [#5303](https://github.com/kui-shell/plugin-kubeui/issues/5303)
+- **plugins/plugin-kubectl:** add support for kustomize apply/delete/create ([b95cbdb](https://github.com/kui-shell/plugin-kubeui/commit/b95cbdb)), closes [#4203](https://github.com/kui-shell/plugin-kubeui/issues/4203)
+- **plugins/plugin-kubectl:** configmap summary should show data ([50c7e10](https://github.com/kui-shell/plugin-kubeui/commit/50c7e10)), closes [#4025](https://github.com/kui-shell/plugin-kubeui/issues/4025)
+
+### BREAKING CHANGES
+
+- removes support for inBrowserOk
+
 # [8.12.0](https://github.com/kui-shell/plugin-kubeui/compare/v4.5.0...v8.12.0) (2020-08-20)
 
 ### Bug Fixes
