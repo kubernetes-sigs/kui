@@ -31,8 +31,7 @@ export default function renderMain(props: KuiProps) {
       splitTerminals
       lightweightTables
       {...props}
-      commandLine={props.commandLine || ['replay', '/kui/welcome.json', '--status-stripe', 'blue']}
-      initialTabTitle="Welcome to Kui"
+      commandLine={props.commandLine || ['replay', '/kui/welcome.json']}
       loadingDone={() => undefined}
     />
   )
