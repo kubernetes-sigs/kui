@@ -19,10 +19,10 @@
             },
             "historyIdx": 250,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# # Kubernetes Jobs\\n\\nKubernetes supports parallel batch job scheduling via the **Job** resource type. A Job creates one or more Pods and ensures that a specified number of them successfully terminate.\\n\\nIn this notebook, you will learn how to create a job to run multiple tasks in parallel and use Kui's **Sequence Diagram** to inspect jobs and pods. \\n\\nContinue reading \\\"Controlling Parallelism\\\" to learn more.\\n\\n",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# # Kubernetes Jobs\\n\\nKubernetes supports parallel batch job scheduling via the **Job** resource type. A Job creates one or more Pods and ensures that a specified number of them successfully terminate.\\n\\nIn this notebook, you will learn how to create a job to run multiple tasks in parallel and use Kui's **Sequence Diagram** to inspect jobs and pods. \\n\\nContinue reading \\\"Controlling Parallelism\\\" to learn more.\\n\\n",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -50,7 +50,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# # Kubernetes Jobs\\n\\nKubernetes supports parallel batch job scheduling via the **Job** resource type. A Job creates one or more Pods and ensures that a specified number of them successfully terminate.\\n\\nIn this notebook, you will learn how to create a job to run multiple tasks in parallel and use Kui's **Sequence Diagram** to inspect jobs and pods. \\n\\nContinue reading \\\"Controlling Parallelism\\\" to learn more.\\n\\n",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -101,10 +101,10 @@
             },
             "historyIdx": 108,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# # Controlling Parallelism\\n\\nKubernetes Jobs use two parameters, `completions` and `parallelism`, to control how a Job is subdivided into units of work. Each unit of work is executed by a **Pod**. In the example on the right, we specified values of `20` and `4`, respectively. These parameters tell Kubernetes to execute the Job across 20 Pods, but schedule at most 4 Pods to run concurrently.\\n\\nYou can see these values defined by expanding the `job.yaml` source. \\n\\nYou can also see the execution pattern visualized in the **Sequence Diagram** view. Note how there are steps of four Pods executed at a time, with a new Pod being scheduled only when one of the prior Pods has completed its work.\\n\\nThe gray hashed prefix of every bar represents the **cold start time** of the Pod. This is the time spent bringing up the Pod, and is in contrast to the work you actually want to accomplish. If the cold start penalty is high, you may want to consider coarsening your work: try to do more work per Pod.",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# # Controlling Parallelism\\n\\nKubernetes Jobs use two parameters, `completions` and `parallelism`, to control how a Job is subdivided into units of work. Each unit of work is executed by a **Pod**. In the example on the right, we specified values of `20` and `4`, respectively. These parameters tell Kubernetes to execute the Job across 20 Pods, but schedule at most 4 Pods to run concurrently.\\n\\nYou can see these values defined by expanding the `job.yaml` source. \\n\\nYou can also see the execution pattern visualized in the **Sequence Diagram** view. Note how there are steps of four Pods executed at a time, with a new Pod being scheduled only when one of the prior Pods has completed its work.\\n\\nThe gray hashed prefix of every bar represents the **cold start time** of the Pod. This is the time spent bringing up the Pod, and is in contrast to the work you actually want to accomplish. If the cold start penalty is high, you may want to consider coarsening your work: try to do more work per Pod.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -132,7 +132,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# # Controlling Parallelism\\n\\nKubernetes Jobs use two parameters, `completions` and `parallelism`, to control how a Job is subdivided into units of work. Each unit of work is executed by a **Pod**. In the example on the right, we specified values of `20` and `4`, respectively. These parameters tell Kubernetes to execute the Job across 20 Pods, but schedule at most 4 Pods to run concurrently.\\n\\nYou can see these values defined by expanding the `job.yaml` source. \\n\\nYou can also see the execution pattern visualized in the **Sequence Diagram** view. Note how there are steps of four Pods executed at a time, with a new Pod being scheduled only when one of the prior Pods has completed its work.\\n\\nThe gray hashed prefix of every bar represents the **cold start time** of the Pod. This is the time spent bringing up the Pod, and is in contrast to the work you actually want to accomplish. If the cold start penalty is high, you may want to consider coarsening your work: try to do more work per Pod.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -183,10 +183,10 @@
             },
             "historyIdx": 108,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# # Creating a Job ",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# # Creating a Job ",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -214,7 +214,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# # Creating a Job ",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -260,10 +260,10 @@
             },
             "historyIdx": 108,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# First, let's create a namespace:",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# First, let's create a namespace:",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -291,7 +291,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# First, let's create a namespace:",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -791,10 +791,10 @@
             },
             "historyIdx": 252,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# Now we can use `apply`, the following command applies `job.yaml` to the cluster and immediately starts displaying the `pods` and their status:",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# Now we can use `apply`, the following command applies `job.yaml` to the cluster and immediately starts displaying the `pods` and their status:",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -822,7 +822,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# Now we can use `apply`, the following command applies `job.yaml` to the cluster and immediately starts displaying the `pods` and their status:",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -3488,10 +3488,10 @@
             },
             "historyIdx": 254,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# You can click the rows to inspect the `Pods`. \\n\\nYou can also switch to a list or grid view by clicking the toolbar buttons at the bottom of the table.",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# You can click the rows to inspect the `Pods`. \\n\\nYou can also switch to a list or grid view by clicking the toolbar buttons at the bottom of the table.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -3519,7 +3519,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# You can click the rows to inspect the `Pods`. \\n\\nYou can also switch to a list or grid view by clicking the toolbar buttons at the bottom of the table.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]

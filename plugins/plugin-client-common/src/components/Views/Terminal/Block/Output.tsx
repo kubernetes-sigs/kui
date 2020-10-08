@@ -73,6 +73,7 @@ type Props = {
 
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
+  willUpdateCommand?: (command: string) => void
 } & BlockViewTraits &
   BlockOperationTraits
 
@@ -158,6 +159,7 @@ export default class Output extends React.PureComponent<Props, State> {
               prefersTerminalPresentation={this.props.prefersTerminalPresentation}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               isWidthConstrained={this.props.isWidthConstrained}
+              willUpdateCommand={this.props.willUpdateCommand}
               onRender={this.onRender.bind(this)}
             />
           ))}
@@ -194,6 +196,7 @@ export default class Output extends React.PureComponent<Props, State> {
               isWidthConstrained={this.props.isWidthConstrained}
               willFocusBlock={this.props.willFocusBlock}
               willRemove={this.props.willRemove}
+              willUpdateCommand={this.props.willUpdateCommand}
             />
           )}
         </div>

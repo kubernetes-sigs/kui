@@ -90,6 +90,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           .slice(args.command.indexOf(' ') + 1)
           .trim()
           .replace(/\\n/g, '\n')
+          .replace(/\\t/g, '\t')
           .replace(/(-t|--title)\s+\S+/, '')) || '#'
 
   if (data !== undefined) {

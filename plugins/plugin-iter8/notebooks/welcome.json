@@ -7,7 +7,7 @@
   "spec": {
     "splits": [
       {
-        "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
@@ -19,10 +19,10 @@
             },
             "historyIdx": 250,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# # Use the iter8 Plugin on Kui\\n\\n### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner.\\n\\n## Install iter8 using on your Kubernetes cluster",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# # Use the iter8 Plugin on Kui\\n\\n### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner.\\n\\n## Install iter8 using on your Kubernetes cluster",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -50,7 +50,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# # Use the iter8 Plugin on Kui\\n\\n### Iter8 is an open source toolkit for continuous experimentation on Kubernetes. Iter8 enables you to deliver high-impact code changes within your microservices applications in an agile manner while eliminating the risk. Using iter8’s machine learning (ML)-driven experimentation capabilities, you can safely and rapidly orchestrate various types of live experiments, gain key insights into the behavior of your microservices, and rollout the best versions of your microservices in an automated, principled, and statistically robust manner.\\n\\n## Install iter8 using on your Kubernetes cluster",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -141,10 +141,10 @@
             },
             "historyIdx": 253,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# # Verify installation",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# # Verify installation",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -172,7 +172,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# # Verify installation",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -660,10 +660,10 @@
             },
             "historyIdx": 256,
             "cwd": "~/Workspace7/kui",
-            "command": "# ",
+            "command": "# ## Learn more about iter8 and how to use it",
             "startEvent": {
               "route": "/#",
-              "command": "# ",
+              "command": "# ## Learn more about iter8 and how to use it",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -691,7 +691,7 @@
             },
             "completeEvent": {
               "execType": 0,
-              "command": "#",
+              "command": "# ## Learn more about iter8 and how to use it",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]

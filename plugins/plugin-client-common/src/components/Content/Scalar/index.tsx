@@ -48,6 +48,7 @@ type Props = BlockViewTraits & {
   response: ScalarResponse | Error
   onRender?: (hasContent: boolean) => void
   willRemove?: () => void
+  willUpdateCommand?: (command: string) => void
 }
 
 interface State {
@@ -106,6 +107,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
               tabUUID={getPrimaryTabId(tab)}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               willRemove={this.props.willRemove}
+              willUpdateCommand={this.props.willUpdateCommand}
               willUpdateResponse={(text: string) => {
                 response.props.children = text
               }}
