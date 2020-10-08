@@ -197,7 +197,7 @@
                   "attributes": [
                     {
                       "key": "VERSION",
-                      "value": "8.12.0"
+                      "value": "9.0.0"
                     }
                   ],
                   "key": "COMPONENT"
@@ -319,7 +319,7 @@
                     "attributes": [
                       {
                         "key": "VERSION",
-                        "value": "8.12.0"
+                        "value": "9.0.0"
                       }
                     ],
                     "key": "COMPONENT"
@@ -578,7 +578,7 @@
                   "key": "Name"
                 },
                 {
-                  "name": "Kui Setting",
+                  "name": "Kui Settings",
                   "css": "",
                   "onclickExec": "pexec",
                   "onclick": "open /kui/settings.json",
@@ -738,7 +738,7 @@
                     "key": "Name"
                   },
                   {
-                    "name": "Kui Setting",
+                    "name": "Kui Settings",
                     "css": "",
                     "onclickExec": "pexec",
                     "onclick": "open /kui/settings.json",
