@@ -16,7 +16,7 @@
 
 import { dirname } from 'path'
 
-import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util, Keys } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
@@ -186,5 +186,24 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   it('should replay', () =>
     CLI.command('replay /tmp/test.kui', this.app)
       .then(() => verifyComment('foo1'))
+      .catch(Common.oops(this, true)))
+
+  // Here comes the tests for snapshot --exec
+  openEditor('foo1')
+  typeAndVerify(Keys.ENTER, 'foo1\n')
+  typeAndVerify(Keys.ENTER, 'foo1\n\n')
+  typeAndVerify('foo2', 'foo1\n\nfoo2')
+  clickDone('foo1\nfoo2')
+
+  it('should snapshot with --exec', () =>
+    CLI.command('snapshot /tmp/test.kui --exec', this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  it('should refresh', () => Common.refresh(this))
+
+  it('should replay', () =>
+    CLI.command('replay /tmp/test.kui', this.app)
+      .then(() => verifyComment('foo1\nfoo2'))
       .catch(Common.oops(this, true)))
 })

@@ -35,6 +35,7 @@ type Props = CommentaryResponse['props'] & {
   isPartOfMiniSplit: boolean
   willUpdateResponse?: (text: string) => void
   willRemove?: () => void
+  willUpdateCommand?: (command: string) => void
 }
 
 export default class Commentary extends React.PureComponent<Props, State> {
@@ -123,7 +124,10 @@ export default class Commentary extends React.PureComponent<Props, State> {
     evt.stopPropagation()
 
     if (!this.removeOurselvesIfEmpty()) {
-      this.setState(curState => ({ isEdit: false, lastAppliedTextValue: curState.textValue }))
+      this.setState(curState => {
+        this.props.willUpdateCommand(`# ${curState.textValue.replace(/\n/g, '\\n').replace(/\t/g, '\\t')}`)
+        return { isEdit: false, lastAppliedTextValue: curState.textValue }
+      })
     }
   }
 
