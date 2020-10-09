@@ -32,6 +32,7 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
   className?: string
   readonly?: boolean
   onContentChange?: (content: string) => void
+  scrollIntoView?: boolean
 
   /** Use a light theme? Default: false */
   light?: boolean
@@ -173,7 +174,18 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
       return <div className="oops"> {this.state.catastrophicError.toString()}</div>
     } else {
       const className = 'monaco-editor-wrapper' + (this.props.className ? ' ' + this.props.className : '')
-      return <div className={className} ref={wrapper => this.setState({ wrapper })}></div>
+      return (
+        <div
+          className={className}
+          ref={wrapper => {
+            if (this.props.scrollIntoView && wrapper) {
+              wrapper.scrollIntoView()
+            }
+
+            this.setState({ wrapper })
+          }}
+        ></div>
+      )
     }
   }
 }
