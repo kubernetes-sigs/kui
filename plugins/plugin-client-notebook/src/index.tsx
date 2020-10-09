@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
+import { ContextWidgets, Icons, Kui, KuiProps, MeterWidgets, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
 /**
  * Format our body, with extra status stripe widgets
@@ -25,14 +25,30 @@ import { Kui, KuiProps } from '@kui-shell/plugin-client-common'
  *
  */
 export default function renderMain(props: KuiProps) {
+  const kuiVersion = () => {
+    return <TextWithIconWidget text="Kui v9.0.0" viewLevel="normal" title="Kui version 9.0.0" />
+  }
+
+  const githubIcon = () => {
+    return (
+      <a href="https://github.com/IBM/kui" target="#" title="Kui Github" className="kui--status-stripe-element">
+        <Icons icon="Github" />
+      </a>
+    )
+  }
+
   return (
     <Kui
       productName="Kui Notebooks"
       splitTerminals
       lightweightTables
       {...props}
-      commandLine={props.commandLine || ['replay', '/kui/welcome.json']}
+      commandLine={props.commandLine || ['replay', '/kui/welcome.json', '--status-stripe', 'default']}
       loadingDone={() => undefined}
-    />
+    >
+      <ContextWidgets>{kuiVersion()}</ContextWidgets>
+
+      <MeterWidgets>{githubIcon()}</MeterWidgets>
+    </Kui>
   )
 }
