@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-import { notebookVFS } from '@kui-shell/plugin-core-support'
-
-import vfs from './vfs'
-
-export default () => {
-  vfs()
-
-  // mount notebooks
-  notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/welcome.json'], '/kui/s3/')
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/parallelization.json'], '/kui/s3/')
-}
+export { isGoodConfig } from './controller/local'
+export { default as Config } from './model/Config'
+export { default as updateChannel } from './channel'

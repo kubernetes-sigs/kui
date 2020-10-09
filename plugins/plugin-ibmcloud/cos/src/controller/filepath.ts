@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-import { notebookVFS } from '@kui-shell/plugin-core-support'
+import { join } from 'path'
+import { expandHomeDir } from '@kui-shell/core'
 
-import vfs from './vfs'
-
-export default () => {
-  vfs()
-
-  // mount notebooks
-  notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/welcome.json'], '/kui/s3/')
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/parallelization.json'], '/kui/s3/')
+export default function filepath() {
+  return join(expandHomeDir('~/.bluemix/plugins/cloud-object-storage/config.json'))
 }
