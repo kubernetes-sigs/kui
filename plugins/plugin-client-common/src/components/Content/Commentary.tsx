@@ -21,6 +21,7 @@ import Card from '../spi/Card'
 import Markdown from './Markdown'
 import Button from '../spi/Button'
 import SimpleEditor from './Editor/SimpleEditor'
+import { getSelectionText } from '../../util/selection'
 
 const strings = i18n('plugin-client-common')
 
@@ -157,7 +158,10 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   /** Enter isEdit mode */
   private setEdit() {
-    this.setState({ isEdit: true })
+    // when double clicking on commentary, we only enter edit mode if no text is selected
+    if (getSelectionText().trim().length === 0) {
+      this.setState({ isEdit: true })
+    }
   }
 
   private readonly _setEdit = this.setEdit.bind(this)
