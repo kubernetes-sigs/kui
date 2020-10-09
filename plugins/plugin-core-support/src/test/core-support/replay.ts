@@ -107,7 +107,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   // do something to open the sidecar, so we can verify it's not open on replay
   it('should open sidecar', () =>
     CLI.command(`open ${(join(ROOT), 'package.json')}`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .catch(Common.oops(this, true)))
 
@@ -124,12 +124,12 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
       await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'), CLI.waitTimeout)
 
-      const count = await CLI.command('version', this.app).then(_ => _.count)
+      const res = await CLI.command('version', this.app)
 
       // verify the base64 command replay
       let idx = 0
       await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(Selectors.OUTPUT_N(count - 2))
+        const txt = await this.app.client.getText(Selectors.OUTPUT_N(res.count - 2))
         if (++idx > 5) {
           console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
         }
@@ -137,7 +137,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       }, CLI.waitTimeout)
 
       // verify the about replay
-      await SidecarExpect.notOpen(this.app)
+      await SidecarExpect.notOpen(res)
     } catch (err) {
       await Common.oops(this, true)(err)
     }

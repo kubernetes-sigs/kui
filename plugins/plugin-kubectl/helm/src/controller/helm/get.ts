@@ -15,17 +15,19 @@
  */
 
 import { Arguments, KResponse, Registrar, MultiModalResponse, NavResponse } from '@kui-shell/core'
-import { isUsage, doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
+import { doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 
+import isUsage from './usage'
 import doExecWithStdout from './exec'
 import apiVersion from './apiVersion'
 import commandPrefix from '../command-prefix'
 import { HelmRelease } from '../../models/release'
 
+// TODO: this needs to be updated to parse out helm v3 responses
 async function doGet(
   args: Arguments<KubeOptions>
 ): Promise<string | MultiModalResponse<HelmRelease> | NavResponse | KResponse> {
-  if (isUsage(args)) {
+  if (isUsage(args, 'get')) {
     return doHelp('helm', args)
   }
 

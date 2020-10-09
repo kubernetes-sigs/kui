@@ -37,22 +37,26 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
       .catch(Common.oops(this))
   })
 
-  it(`should get sample pod via ${kubectl}`, () => {
-    return CLI.command(`${kubectl} get pod nginx -o yaml ${inNamespace}`, this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
-      .catch(Common.oops(this))
-  })
-
-  it(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
+  it(`should get sample pod via ${kubectl} then click delete button`, async () => {
     try {
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('delete'))
+      const res = await CLI.command(`${kubectl} get pod nginx -o yaml ${inNamespace}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete'))
       await this.app.client.waitForExist('#confirm-dialog')
       await this.app.client.click('#confirm-dialog .bx--btn--danger')
       const selector = `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`
 
       return waitForRed(this.app, selector)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it(`should delete the sample pod by clicking on the sidecar delete button`, async () => {
+    try {
     } catch (err) {
       return Common.oops(this)(err)
     }

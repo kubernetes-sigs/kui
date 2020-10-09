@@ -17,6 +17,7 @@
 import {
   CommandStartEvent,
   CommandCompleteEvent,
+  KResponse,
   ScalarResponse,
   UsageError,
   ExecType,
@@ -40,7 +41,7 @@ type WithUUID = { execUUID: string }
 type WithCommand = { command: string; isExperimental?: boolean } & WithCWD
 type WithStartTime = { startTime: number }
 type WithState<S extends BlockState> = { state: S }
-type WithResponse<R extends ScalarResponse> = { response: R } & WithStartTime
+type WithResponse<R extends KResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
 type WithAnnouncement = { isAnnouncement: boolean }
 type WithPreferences = { prefersTerminalPresentation: boolean; outputOnly?: boolean }
@@ -66,7 +67,7 @@ type ErrorBlock = WithState<BlockState.Error> &
   WithCommandComplete
 type OkBlock = WithState<BlockState.ValidResponse> &
   WithCommand &
-  WithResponse<ScalarResponse> &
+  WithResponse<KResponse> &
   WithUUID &
   WithHistoryIndex &
   WithCommandStart &
@@ -99,7 +100,7 @@ function cwd() {
   return dir ? dir.replace(process.env.HOME, '~') : undefined
 }
 
-export function isError(response: ScalarResponse): response is Error {
+export function isError(response: KResponse): response is Error {
   return response.constructor === Error || response.constructor === UsageError || isXtermErrorResponse(response)
 }
 
@@ -221,7 +222,7 @@ export function Finished(
   outputOnly = false,
   isReplay = false
 ): FinishedBlock {
-  const response = event.responseType === 'ScalarResponse' ? (event.response as ScalarResponse) : true
+  const response = event.response // event.responseType === 'ScalarResponse' ? (event.response as ScalarResponse) : true
   const { historyIdx } = event
   const { startEvent } = block
 
@@ -283,13 +284,14 @@ export function isOutputOnly(block: BlockModel) {
  * it's not presented in `ScrollableTerminal`
  *
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function isPresentedElsewhere(block: BlockModel) {
-  return (
+  return false /* (
     isOk(block) &&
     block.completeEvent &&
     (block.completeEvent.responseType !== 'ScalarResponse' ||
       isElsewhereCommentaryResponse(block.completeEvent.response))
-  )
+  ) */
 }
 
 /** @return whether the block as a startEvent trait */

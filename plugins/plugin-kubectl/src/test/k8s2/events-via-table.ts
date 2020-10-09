@@ -57,14 +57,14 @@ commands.forEach(command => {
         const res = await CLI.command(`${command} get pod ${podName} -n ${ns} -o yaml`, this.app)
 
         await Promise.resolve(res)
-          .then(ReplExpect.justOK)
+          .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(podName))
 
         await sleep(sleepTime)
 
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('events'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('events'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
 
         /* 
         await Promise.resolve({ app: this.app, count: res.count + 1 }).then(ReplExpect.okWithAny)
@@ -94,11 +94,13 @@ commands.forEach(command => {
         await this.app.client.waitForVisible(clickOn)
         await this.app.client.click(clickOn)
 
-        await SidecarExpect.open(this.app).then(SidecarExpect.showing(podName))
+        const resAfter = ReplExpect.blockAfter(res)
+        await SidecarExpect.open(resAfter).then(SidecarExpect.showing(podName))
 
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('involvedObject'))
-        await SidecarExpect.open(this.app)
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'involvedObject'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'involvedObject'))
+
+        await SidecarExpect.openInBlockAfter(resAfter)
           .then(SidecarExpect.showing(podName))
           .then(SidecarExpect.kind('Pod'))
       } catch (err) {

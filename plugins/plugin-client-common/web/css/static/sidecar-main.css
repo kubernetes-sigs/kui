@@ -383,12 +383,12 @@
   .sidecar-non-window-buttons,
   .sidecar-window-buttons {
     display: flex;
-    margin-right: 2px;
   }
   .sidecar-bottom-stripe-button {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-right: 3px;
 
     a {
       padding: 3px;

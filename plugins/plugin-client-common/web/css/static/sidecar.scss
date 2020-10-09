@@ -15,9 +15,17 @@
  */
 
 @import 'SidecarCommon.css';
+@import '../../scss/components/Sidecar/_mixins';
+@import '../../scss/components/Terminal/_mixins';
 @import '../../scss/components/Navigation/common';
 
 $focus-color: var(--color-brand-03);
+
+@include WidthConstrained {
+  @include Sidecar {
+    flex: 1;
+  }
+}
 
 .kui--sidecar.visible.kui--nav-view {
   .kui--sidecar-content {
@@ -84,7 +92,6 @@ $focus-color: var(--color-brand-03);
   .bx--tabs--scrollable {
     display: flex;
     background-color: var(--color-sidecar-header);
-    border-bottom: 1px solid var(--color-sidecar-background-02);
     .bx--tab-content {
       padding: 0;
     }

@@ -75,7 +75,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         {
           label: 'Learning Kubernetes',
           submenu: [
-            notebook('Listing Resources', '/kui/kubernetes/list-resources.json'),
+            notebook('CRUD Operations', '/kui/kubernetes/crud-operations.json'),
             notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json')
           ]
         },

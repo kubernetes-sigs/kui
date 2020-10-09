@@ -250,27 +250,9 @@ export class TestTable {
       })
     }
 
-    const clickCellSilently = (row: Row, command: string, prompt: string) => {
-      it(`should click to silently execute from test table: ${command}`, async () => {
-        try {
-          const cell = `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
-          await ctx.app.client.waitForExist(cell)
-          await new Promise(resolve => setTimeout(resolve, 300))
-          await ctx.app.client.click(cell)
-          await CLI.expectInput(prompt, '')(ctx.app)
-        } catch (err) {
-          await Common.oops(ctx, true)(err)
-        }
-      })
-    }
-
     // For each row, check the first cell
     expectTable.body.forEach(row => {
-      if (!row.onclickSilence) {
-        clickCell(row, row.onclick, Selectors.PROMPT_LAST)
-      } else {
-        clickCellSilently(row, row.onclick, Selectors.PROMPT_FINAL)
-      }
+      clickCell(row, row.onclick, Selectors.PROMPT_LAST)
     })
   }
 }

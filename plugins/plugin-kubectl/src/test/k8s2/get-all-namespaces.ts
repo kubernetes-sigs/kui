@@ -62,7 +62,8 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
       allNamespaces.forEach(allNamespace => {
         it(`should list pods ${allNamespace} expecting ns ${ns} via ${kubectl} then click`, async () => {
           try {
-            const { app, count } = await CLI.command(`${kubectl} get pods ${allNamespace}`, this.app)
+            const res = await CLI.command(`${kubectl} get pods ${allNamespace}`, this.app)
+            const { app, count } = res
 
             await this.app.client.waitForExist(Selectors.TABLE_TITLE(count))
 
@@ -82,7 +83,7 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
 
             // now click on that cell
             await this.app.client.click(`${selector} .clickable`)
-            await SidecarExpect.open(this.app)
+            await SidecarExpect.open(ReplExpect.blockAfter(res))
               .then(SidecarExpect.mode(defaultModeForGet))
               .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
           } catch (err) {

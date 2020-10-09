@@ -29,7 +29,7 @@ $focus-color: var(--color-brand-01);
 .repl-input,
 .repl-input-sourceref,
 .repl-output {
-  padding-right: calc(1rem - 6px);
+  padding-right: $input-padding-right;
 }
 
 @mixin show-block-action-buttons {
@@ -39,7 +39,7 @@ $focus-color: var(--color-brand-01);
 }
 
 /** We are using <li> for the blocks, but don't want any standard browser styling */
-li.repl-block {
+@include Block {
   list-style: none;
 }
 
@@ -73,6 +73,10 @@ body[kui-theme-style='dark'] {
   }
 }
 
+@include MaximizedBlock {
+  height: 100%;
+}
+
 /** Coloring the context border by status of the block */
 @include Scrollback {
   .repl-input:hover,
@@ -80,7 +84,7 @@ body[kui-theme-style='dark'] {
     @include show-block-action-buttons;
   }
 
-  .repl-block {
+  @include Block {
     position: relative;
     margin: 0.1875rem 0;
 
@@ -235,7 +239,7 @@ body[kui-theme-style='dark'] {
     .repl-input,
     .repl-input-sourceref,
     .repl-output {
-      padding-left: 1rem;
+      padding-left: $input-padding-left;
     }
     .repl-input .kui--toolbar-button-with-icon {
       /* have buttons fit inside the input region */
@@ -246,9 +250,9 @@ body[kui-theme-style='dark'] {
       display: flex;
       justify-content: flex-end;
       flex-basis: 3rem;
-      min-width: 3rem;
+      min-width: $repl-context-min-width;
       text-align: end;
-      margin-right: 0.5rem;
+      margin-right: $repl-context-margin-right;
       position: relative;
       opacity: 0.75;
     }
@@ -332,6 +336,9 @@ body[kui-theme-style='dark'] {
   }
 }
 @include MiniSplit {
+  @include HideIn;
+}
+@include SideBySide {
   @include HideIn;
 }
 

@@ -43,7 +43,6 @@ async function doList(args: Arguments<KubeOptions>): Promise<Table> {
     return {
       name,
       onclick: `ibmcloud plugin repo get ${args.REPL.encodeComponent(name)}`,
-      onclickSilence: true,
       attributes: [
         {
           key: strings('INSTALLED'),

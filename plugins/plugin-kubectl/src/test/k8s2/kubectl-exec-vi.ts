@@ -80,12 +80,12 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
   it(`should use kubectl exec vi through pty`, async () => {
     try {
-      await CLI.command(`kubectl exec -it ${podName} -n ${ns} -- vim -i NONE ${filename}`, this.app).then(
-        ReplExpect.justOK
+      const res = await CLI.command(`kubectl exec -it ${podName} -n ${ns} -- vim -i NONE ${filename}`, this.app).then(
+        ReplExpect.ok
       )
 
-      const rows = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-rows`
-      const focusArea = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-helper-textarea`
+      const rows = `${Selectors.SIDECAR_TAB_CONTENT(res.count)} .xterm-rows`
+      const focusArea = `${Selectors.SIDECAR_TAB_CONTENT(res.count)} .xterm-helper-textarea`
       const lastRowSelector = `${rows} > div:last-child`
 
       const lastRow = async (): Promise<string> => {
@@ -132,7 +132,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         await typeSlowly(this.app, `:wq${Keys.ENTER}`)
 
         try {
-          await SidecarExpect.toolbarText({ type: 'error', text: 'closed', exact: false })(this.app)
+          await SidecarExpect.toolbarText({ type: 'error', text: 'closed', exact: false })(res)
           return true
         } catch (err) {
           console.error(`hmm, the view has not yet indicated the pty has closed at iter ${iter++}`)

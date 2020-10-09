@@ -27,6 +27,13 @@ const ns2: string = createNS()
 
 const kubectl = 'kubectl'
 
+function resFor(app: ReplExpect.AppAndCount['app']): ReplExpect.AppAndCount {
+  return {
+    app,
+    count: 0
+  }
+}
+
 /** wait for a deletion to complete */
 const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) {
   it(`should wait for deletion of resource named ${name}`, async () => {
@@ -40,7 +47,7 @@ const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) 
 
 /** verify that the monaco editor component contains the given substring */
 const verifyTextExists = async function(this: Common.ISuite, expectedSubstring: string) {
-  await SidecarExpect.textPlainContentFromMonaco(expectedSubstring, false)(this.app)
+  await SidecarExpect.textPlainContentFromMonaco(expectedSubstring, false)(resFor(this.app))
 }
 
 /** wait for the creation to finish, then navigate a bit */
@@ -55,10 +62,11 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
   const { name, kind, ns } = spec
 
   it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {
+    const res = resFor(this.app)
     const textExists = verifyTextExists.bind(this)
 
     const waitForDescribeContent = async () => {
-      await SidecarExpect.yaml({ Name: name, Status: spec.status })(this.app)
+      await SidecarExpect.yaml({ Name: name, Status: spec.status })(res)
     }
 
     const waitForRawContent = async () => {
@@ -74,19 +82,19 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
       // raw and summary modes, each time ensuring that the editor
       // shows the expected content await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
       await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
-      await SidecarExpect.open(this.app).then(SidecarExpect.mode(defaultModeForGet))
+      await SidecarExpect.open(res).then(SidecarExpect.mode(defaultModeForGet))
       await waitForDescribeContent()
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
       await waitForRawContent()
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('summary'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary'))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary'))
       await waitForDescribeContent()
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
     } catch (err) {
       return Common.oops(this, true)(err)
     }

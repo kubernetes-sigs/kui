@@ -52,6 +52,10 @@ export function isEditable(resource: KubeResource) {
   )
 }
 
+function saveError(err: Error) {
+  return err as SaveError
+}
+
 /**
  * Reformat the apply error.
  *
@@ -66,7 +70,8 @@ function reportErrorToUser(tmp: string, data: string, err: Error) {
   const msg = err.message.match(/ValidationError\(.*\): ([^]+) in/)
   if (msg && msg.length === 2) {
     const unknownField = err.message.match(/unknown field "(.*)"/)
-    const error: SaveError = new Error(msg[1])
+    const error = saveError(new Error(msg[1]))
+
     if (unknownField) {
       const regexp = new RegExp(`${unknownField[1]}:`)
       const lineNumber = data.split(/\n/).findIndex(line => regexp.test(line))
@@ -81,7 +86,8 @@ function reportErrorToUser(tmp: string, data: string, err: Error) {
     const msg = err.message.match(/error parsing.*(line .*)/)
     if (msg && msg.length === 2) {
       const hasLineNumber = err.message.match(/line (\d+):/)
-      const error: SaveError = new Error(msg[1])
+      const error = saveError(new Error(msg[1]))
+
       if (hasLineNumber) {
         // not sure why, but this line number is off by + 1
         error.revealLine = parseInt(hasLineNumber[1]) - 1
@@ -93,15 +99,15 @@ function reportErrorToUser(tmp: string, data: string, err: Error) {
         const errorForFile = `for: "${tmp}":`
         const forFile = err.message.indexOf(errorForFile)
         const messageForFile = err.message.substring(forFile).replace(errorForFile, '')
-        throw new Error(messageForFile)
+        throw saveError(new Error(messageForFile))
       }
       // hmm, some other random error
       const msg = err.message.replace(tmp, '')
       const newLines = msg.split('\n')
       if (newLines[0].charAt(newLines[0].length - 2) === ':') {
-        throw new Error(newLines.slice(0, 2).join('\n'))
+        throw saveError(new Error(newLines.slice(0, 2).join('\n')))
       } else {
-        throw new Error(newLines[0])
+        throw saveError(new Error(newLines[0]))
       }
     }
   }
@@ -122,30 +128,24 @@ export function editSpec(
       onSave: async (data: string) => {
         const tmp = (await args.REPL.rexec(`fwriteTemp`, { data })).content
 
-        try {
-          const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', applySubCommand, '-n', namespace, '-f', tmp].filter(
-            x => x
-          )
-          const applyArgs = Object.assign({}, args, {
-            command: argv.join(' '),
-            argv,
-            argvNoOptions: [cmd, 'apply', applySubCommand].filter(x => x),
-            parsedOptions: { n: namespace, f: tmp }
-          })
+        const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', applySubCommand, '-n', namespace, '-f', tmp].filter(
+          x => x
+        )
+        const applyArgs = Object.assign({}, args, {
+          command: argv.join(' '),
+          argv,
+          argvNoOptions: [cmd, 'apply', applySubCommand].filter(x => x),
+          parsedOptions: { n: namespace, f: tmp }
+        })
 
-          // execute the apply command, making sure to report any
-          // validation or parse errors to the user
-          await doExecWithStdout(applyArgs, undefined, cmd).catch(reportErrorToUser.bind(undefined, tmp, data))
-
-          // to show the updated resource after apply,
-          // we re-execute the original edit command after applying the changes.
-          // `partOfApply` here is used to signify this execution is part of a chain of controller
-          await args.REPL.pexec(args.command, { echo: false, data: { partOfApply: true } })
-        } finally {
-          args.REPL.rexec(`rmTemp ${tmp}`)
-        }
+        // execute the apply command, making sure to report any
+        // validation or parse errors to the user
+        await doExecWithStdout(applyArgs, undefined, cmd).catch(reportErrorToUser.bind(undefined, tmp, data))
 
         return {
+          // to show the updated resource after apply,
+          // we re-execute the original edit command after applying the changes.
+          command: args.command,
           // disable editor's auto toolbar update,
           // since this command will handle the toolbarText by itself
           noToolbarUpdate: true
@@ -255,7 +255,7 @@ export async function editable(
   const baseView = await getView(args, response)
 
   const view = Object.assign(baseView, {
-    modes: [editMode(spec, response, yamlMode, yamlModeLabel, yamlModeOrder - 1)], // overwrite the pre-registered yaml tab
+    modes: [editMode(spec, response, yamlMode, yamlModeLabel, yamlModeOrder, 100)], // overwrite the pre-registered yaml tab
     toolbarText: formatToolbarText(args, response)
   })
 

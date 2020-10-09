@@ -40,16 +40,17 @@ commands.forEach(command => {
     const inNamespace = `-n ${ns}`
     allocateNS(this, ns)
 
+    let res: ReplExpect.AppAndCount
     it('should create sample pod from URL', async () => {
       try {
-        const selector: string = await CLI.command(`${command} create -f ${file} ${inNamespace}`, this.app).then(
-          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })
-        )
+        const tableRes = await CLI.command(`${command} create -f ${file} ${inNamespace}`, this.app)
+        const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(tableRes)
 
         await waitForGreen(this.app, selector)
         await this.app.client.waitForExist(`${selector} .clickable`)
         await this.app.client.click(`${selector} .clickable`)
-        await SidecarExpect.open(this.app)
+        res = ReplExpect.blockAfter(tableRes)
+        await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing(name))
       } catch (err) {
@@ -59,17 +60,17 @@ commands.forEach(command => {
 
     it('should switch to Events tab', async () => {
       try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('events'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('events'))
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('events'))
-        await SidecarExpect.toolbarText({ type: 'info', text: 'Events are live streaming', exact: false })
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'events'))
+        await SidecarExpect.toolbarText({ type: 'info', text: 'Events are live streaming', exact: false })(res)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
 
     const currentEventCount = async (): Promise<number> => {
-      const events = await this.app.client.elements(`${Selectors.SIDECAR} .kui--kubectl-event-record`)
+      const events = await this.app.client.elements(`${Selectors.SIDECAR(res.count)} .kui--kubectl-event-record`)
       return !events || !events.value ? 0 : events.value.length
     }
 

@@ -71,6 +71,7 @@ export {
   isHelpRequest,
   getContainer,
   getNamespace,
+  getNamespaceForArgv,
   watchRequestFrom,
   withKubeconfigFrom,
   isTableRequest,

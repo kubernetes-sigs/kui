@@ -34,15 +34,16 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   synonyms.forEach(kubectl => {
     const ns: string = createNS()
     const inNamespace = `-n ${ns}`
+
     /** return the editor text */
-    const getText = () => {
-      return Util.getValueFromMonaco(this.app)
+    const getText = (res: ReplExpect.AppAndCount) => {
+      return Util.getValueFromMonaco(res)
     }
 
     /** wait until the sidecar displays a superset of the given content */
-    const expectContent = (content: object) => {
+    const expectContent = (res: ReplExpect.AppAndCount, content: object) => {
       return this.app.client.waitUntil(async () => {
-        const ok: boolean = await getText().then(Util.expectYAMLSubset(content, false))
+        const ok: boolean = await getText(res).then(Util.expectYAMLSubset(content, false))
 
         return ok
       })
@@ -56,26 +57,25 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     const listAndClick = (name: string, content?: Record<string, any>) => {
       it(`should list configmaps via ${kubectl} then click on ${name}`, async () => {
         try {
-          const selector = await CLI.command(`${kubectl} get cm ${inNamespace}`, this.app).then(
-            ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })
-          )
+          const tableRes = await CLI.command(`${kubectl} get cm ${inNamespace}`, this.app)
+          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(tableRes)
 
           // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
           // await waitForGreen(this.app, selector)
 
           // now click on the table row
           await this.app.client.click(`${selector} .clickable`)
-          await SidecarExpect.open(this.app)
+          const res = ReplExpect.blockAfter(tableRes)
+          await SidecarExpect.open(res)
             .then(SidecarExpect.mode(defaultModeForGet))
             .then(SidecarExpect.showing(name))
-
           if (content) {
             if (content.data) {
-              await SidecarExpect.yaml(content.data)(this.app)
+              await SidecarExpect.yaml(content.data)(res)
             }
 
-            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
-            await expectContent(content)
+            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+            await expectContent(res, content)
           }
         } catch (err) {
           return Common.oops(this)(err)

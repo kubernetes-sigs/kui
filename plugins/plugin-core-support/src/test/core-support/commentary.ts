@@ -90,7 +90,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   const verifyTextInMonaco = (expectedText: string) => {
     let idx = 0
     return this.app.client.waitUntil(async () => {
-      const actualText = await Util.getValueFromMonaco(this.app, Selectors.OUTPUT_LAST)
+      const actualText = await Util.getValueFromMonaco({ app: this.app, count: -1 }, Selectors.OUTPUT_LAST)
 
       if (++idx > 5) {
         console.error(`still waiting for actual=${actualText} expected=${expectedText}`)

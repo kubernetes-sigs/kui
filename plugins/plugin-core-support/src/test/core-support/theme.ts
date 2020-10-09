@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 const defaultTheme = 'Carbon Gray10'
 
@@ -84,7 +84,7 @@ const reloadAndThen = (theme: Theme) => (ctx: Common.ISuite) => {
  *
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISuite, nClicks = 1) => {
+/* const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISuite, nClicks = 1) => {
   it(`should click on help button, then theme link, then present theme list, then click on ${clickOn.name}`, async () => {
     try {
       await ctx.app.client.waitForVisible('#help-button')
@@ -117,7 +117,7 @@ const clickOnThemeButtonThenClickOnTheme = (clickOn: Theme) => (ctx: Common.ISui
   })
 
   restartAndThen(clickOn)(ctx)
-}
+} */
 
 /** some helpers */
 const Default = { name: defaultTheme }

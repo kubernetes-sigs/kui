@@ -58,22 +58,19 @@ describe('Comments and blank line handling', function(this: Common.ISuite) {
   it('should handle a commented-out command', () =>
     CLI.command(`#${comment}`, this.app)
       .then(ReplExpect.comment(comment))
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.notOpen)
       .catch(Common.oops(this, true)))
 
   it('should handle a commented-out command with intermingled whitespace', () =>
     CLI.command(`#     ${comment}`, this.app)
       .then(ReplExpect.comment(comment))
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.notOpen)
       .catch(Common.oops(this, true)))
 
   it('should handle a commented-out command with suffix comment', () =>
     CLI.command(`#open ../../README.md ### ### # #    hello  `, this.app)
-      .then(ReplExpect.blank)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.notOpen)
       .catch(Common.oops(this, true)))
 
   const comment2In = 'openfoobar ../../README.md ### ### # #    hello   '
@@ -81,8 +78,7 @@ describe('Comments and blank line handling', function(this: Common.ISuite) {
   it('should handle a commented-out parse-error', () =>
     CLI.command(`#${comment2In}`, this.app)
       .then(ReplExpect.comment(comment2Out))
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.notOpen)
       .catch(Common.oops(this, true)))
 
   const comment3In = 'open ../../README.md =))))- -(((( x=>x ### ### # #    hello   '
@@ -90,7 +86,6 @@ describe('Comments and blank line handling', function(this: Common.ISuite) {
   it('should handle a commented-out parse-error 2', () =>
     CLI.command(`#${comment3In}`, this.app)
       .then(ReplExpect.comment(comment3Out))
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE')) // we should still showing LICENSE file in sidecar
+      .then(SidecarExpect.notOpen)
       .catch(Common.oops(this, true)))
 })

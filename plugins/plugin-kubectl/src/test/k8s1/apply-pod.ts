@@ -40,15 +40,16 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   // synonyms/aliases we have for "kubectl"
   synonyms.forEach(kubectl => {
     dashFs.forEach(dashF => {
+      let res: ReplExpect.AppAndCount
+
       it(`should create sample pod from URL via "${kubectl} apply ${dashF}" for test: ${this.title}`, async () => {
         try {
           console.log(`kubectl apply pod 1 ${this.title}`)
-          const selector = await CLI.command(
+          res = await CLI.command(
             `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
             this.app
           )
-            .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
-            .catch(Common.oops(this))
+          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
 
           // wait for the badge to become green
           console.log(`kubectl apply pod 2 ${this.title}`)
@@ -57,7 +58,8 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           // now click on the table row
           console.log(`kubectl apply pod 3 ${this.title}`)
           await this.app.client.click(`${selector} .clickable`)
-          await SidecarExpect.open(this.app)
+          res = ReplExpect.blockAfter(res)
+          await SidecarExpect.open(res)
             .then(SidecarExpect.mode(defaultModeForGet))
             .then(SidecarExpect.showing('nginx'))
             .then(SidecarExpect.yaml({ Status: 'Running' }))
@@ -70,14 +72,14 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         try {
           // make sure we have a last applied tab
           console.log(`kubectl apply pod 4 ${this.title}`)
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('last applied'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('last applied'))
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('last applied'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'last applied'))
 
           let idx = 0
           console.log(`kubectl apply pod 5 ${this.title}`)
           await this.app.client.waitUntil(async () => {
-            const text = await Util.getValueFromMonaco(this.app)
+            const text = await Util.getValueFromMonaco(res)
             if (++idx > 5) {
               console.error(`still waiting for yaml in ${this.title}`, text)
             }

@@ -1,0 +1,77 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '_mixins';
+@import '../Editor/_mixins';
+@import '../Terminal/_mixins';
+
+/* room for the resize handle */
+$resize-spacer: 0.5rem;
+
+@include NestedTopNav {
+  padding-bottom: $resize-spacer;
+}
+
+@include NestedSidecar {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 20rem;
+
+  resize: both;
+  overflow: auto;
+
+  position: relative;
+  &:after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+  &:hover:after {
+    cursor: nw-resize;
+  }
+}
+
+@include PlainTerminal {
+  @include NestedSidecar {
+    @include NotMaximized {
+      min-height: 20rem;
+    }
+  }
+}
+
+@include NestedSidecar {
+  @include Maximized {
+    flex: 1;
+    position: absolute;
+    left: calc(#{$input-padding-left} + #{$repl-context-min-width} + #{$repl-context-margin-right});
+    right: $input-padding-right;
+    top: 3rem;
+    bottom: 0;
+
+    /* !important needed to override drag-resize which sets element styles */
+    height: calc(100% - 3rem - #{$resize-spacer}) !important;
+    width: auto !important;
+
+    @include EditorContainer {
+      flex-basis: unset !important;
+      height: auto !important;
+      width: auto !important;
+    }
+  }
+}

@@ -63,12 +63,11 @@ describe(`kubectl top pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
     xit(`should click on top row and show pod in sidecar using ${top1}`, async () => {
       try {
-        const selector: string = await CLI.command(top1, this.app).then(
-          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })
-        )
+        const res = await CLI.command(top1, this.app)
+        const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
 
         await this.app.client.click(`${selector} .clickable`)
-        await SidecarExpect.open(this.app)
+        await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('nginx'))
       } catch (err) {

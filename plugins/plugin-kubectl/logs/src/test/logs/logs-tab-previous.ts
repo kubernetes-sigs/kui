@@ -42,7 +42,7 @@ commands.forEach(command => {
 
     const createPodWithoutWaiting = create.bind(this, ns, command)
     const waitForPod = wait.bind(this, ns, command, podName)
-    const kubectlLogs = logs.bind(this, ns, podName, containerName, 'warning', false)
+    const kubectlLogs = logs.bind(this, ns, command, podName, containerName, 'warning', false)
     const kubectlLogsPrevious = logs.bind(this, ns, command, podName, containerName, 'warning', true)
     const clickPreviousToggle = clickPrevious.bind(this)
 

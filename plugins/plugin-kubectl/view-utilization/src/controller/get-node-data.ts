@@ -226,7 +226,6 @@ export async function topNode(
 
   nodeTable.body.forEach(row => {
     row.onclick = `kubectl top pod --node ${args.REPL.encodeComponent(row.name)}`
-    row.onclickSilence = false
 
     const cpuAttr = row.attributes.find(_ => _.key === 'CPU(cores)')
     if (cpuAttr) {

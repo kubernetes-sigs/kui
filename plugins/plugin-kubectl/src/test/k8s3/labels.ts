@@ -71,16 +71,16 @@ describe(`kubectl label handling ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     const expectLabelInSidecar = (key: string, value: string) => {
       it(`should show label ${key}=${value} in the sidecar`, async () => {
         try {
-          await CLI.command(`${kubectl} get pod nginx -o yaml ${inNamespace}`, this.app)
-            .then(ReplExpect.justOK)
+          const res = await CLI.command(`${kubectl} get pod nginx -o yaml ${inNamespace}`, this.app)
+            .then(ReplExpect.ok)
             .then(SidecarExpect.open)
             .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
 
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('raw'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'raw'))
 
-          await SidecarExpect.yaml({ metadata: { labels: { [key]: value } } })
+          await SidecarExpect.yaml({ metadata: { labels: { [key]: value } } })(res)
         } catch (err) {
           await Common.oops(this, true)(err)
         }

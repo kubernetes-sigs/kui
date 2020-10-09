@@ -36,17 +36,18 @@ commands.forEach(command => {
     after(Common.after(this))
 
     const ns: string = createNS()
+    let res: ReplExpect.AppAndCount
 
     /**
      * Interact with the Raw tab
      *
      */
-    const testRawTab = async (ctx: Common.ISuite) => {
-      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
-      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+    const testRawTab = async (ctx: Common.ISuite, res: ReplExpect.AppAndCount) => {
+      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
 
       return ctx.app.client.waitUntil(async () => {
-        const ok: boolean = await Util.getValueFromMonaco(ctx.app).then(
+        const ok: boolean = await Util.getValueFromMonaco(res).then(
           Util.expectYAMLSubset(
             {
               apiVersion: 'v1',
@@ -68,10 +69,10 @@ commands.forEach(command => {
      * Interact with the Summary tab
      *
      */
-    const testSummaryTab = async (ctx: Common.ISuite) => {
-      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
-      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON(defaultModeForGet))
-      await SidecarExpect.yaml({ Name: 'nginx' })(ctx.app)
+    const testSummaryTab = async (ctx: Common.ISuite, res: ReplExpect.AppAndCount) => {
+      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, defaultModeForGet))
+      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, defaultModeForGet))
+      await SidecarExpect.yaml({ Name: 'nginx' })(res)
     }
 
     allocateNS(this, ns, command)
@@ -113,33 +114,37 @@ commands.forEach(command => {
 
     it(`should describe that pod via ${command}`, () => {
       return CLI.command(`${command} describe pod nginx -n ${ns}`, this.app)
-        .then(ReplExpect.justOK)
+        .then(ReplExpect.ok)
         .then(SidecarExpect.open)
         .then(SidecarExpect.mode(defaultModeForGet))
         .then(SidecarExpect.showingTopNav('nginx'))
         .catch(Common.oops(this, true))
     })
 
-    it(`should summarize that pod via ${command}`, () => {
+    it(`should summarize that pod via ${command}`, async () => {
       return CLI.command(`${command} get pod nginx -n ${ns} -o yaml`, this.app)
-        .then(ReplExpect.justOK)
+        .then(ReplExpect.ok)
         .then(SidecarExpect.open)
+        .then(appAndCount => {
+          res = appAndCount
+          return appAndCount
+        })
         .then(SidecarExpect.mode(defaultModeForGet))
         .then(SidecarExpect.showingTopNav('nginx'))
         .catch(Common.oops(this, true))
     })
 
     // flip around the tabs a bit
-    it(`should flip to raw tab`, () => testRawTab(this).catch(Common.oops(this, true)))
-    it(`should flip to summary tab`, () => testSummaryTab(this).catch(Common.oops(this, true)))
-    it(`should flip to raw tab`, () => testRawTab(this).catch(Common.oops(this, true)))
-    it(`should flip to summary tab`, () => testSummaryTab(this).catch(Common.oops(this, true)))
+    it(`should flip to raw tab`, () => testRawTab(this, res).catch(Common.oops(this, true)))
+    it(`should flip to summary tab`, () => testSummaryTab(this, res).catch(Common.oops(this, true)))
+    it(`should flip to raw tab`, () => testRawTab(this, res).catch(Common.oops(this, true)))
+    it(`should flip to summary tab`, () => testSummaryTab(this, res).catch(Common.oops(this, true)))
 
     // click delete button
     it('should initiate deletion of the pod via sidecar deletion button', async () => {
       try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('delete'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('delete'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete'))
 
         // wait for delete confirmation popup
         await this.app.client.waitForExist('#confirm-dialog .bx--btn--danger')

@@ -35,7 +35,6 @@ const expectRow = [
   {
     name: firstCol[3],
     onclick: `test mmr mode`,
-    onclickSilence: true,
     attributes: [{ value: 'foo' }, { value: '5' }]
   }
 ]
@@ -165,12 +164,10 @@ const sequenceTableBody = [
   },
   {
     name: 'test 4',
-    onclickSilence: true,
     attributes: [{ value: 'Running' }, { value: 'Mon Aug 10 2020 15:10:08' }, { value: 'Mon Aug 10 2020 15:13:38' }]
   },
   {
     name: 'test 5',
-    onclick: `test string`,
     attributes: [{ value: 'Error' }, { value: 'Mon Aug 10 2020 15:10:28' }, { value: 'Mon Aug 10 2020 15:14:26' }]
   }
 ]

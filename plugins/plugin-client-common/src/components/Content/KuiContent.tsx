@@ -21,7 +21,6 @@ import {
   Arguments,
   ParsedOptions,
   Tab as KuiTab,
-  getPrimaryTabId,
   Content,
   isHTML,
   isRadioTable,
@@ -97,10 +96,11 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
           <Editor
             content={mode}
             readOnly={false}
+            sizeToFit
             willUpdateToolbar={willUpdateToolbar}
             response={response}
             repl={tab.REPL}
-            tabUUID={getPrimaryTabId(tab)}
+            tabUUID={tab.uuid}
           />
         )
       }

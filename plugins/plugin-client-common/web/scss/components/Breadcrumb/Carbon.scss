@@ -47,6 +47,7 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
       }
 
       .bx--link {
+        white-space: nowrap;
         font-size: inherit;
         font-size: unset;
         font-weight: normal;

@@ -28,7 +28,6 @@ export default async function findServiceInstances(args: Arguments) {
     body: (await findInstances(args)).map(_ => ({
       name: _.name,
       onclick: `ibmcloud resource service-instance ${_.name}`,
-      onclickSilence: true,
       attributes: [
         { key: 'Location', value: _.region_id },
         { key: 'State', value: _.state }
