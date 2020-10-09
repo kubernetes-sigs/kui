@@ -202,6 +202,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
         simple
         onContentChange={this._onContentChange}
         contentType="markdown"
+        scrollIntoView={this.props.isPartOfMiniSplit}
       />
     )
   }
