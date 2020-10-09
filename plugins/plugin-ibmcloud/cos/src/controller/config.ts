@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { notebookVFS } from '@kui-shell/plugin-core-support'
+import filepath from './filepath'
+import { Arguments } from '@kui-shell/core'
 
-import vfs from './vfs'
-
-export default () => {
-  vfs()
-
-  // mount notebooks
-  notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/welcome.json'], '/kui/s3/')
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/parallelization.json'], '/kui/s3/')
+export default async function readConfig({ REPL }: Pick<Arguments, 'REPL'>) {
+  return JSON.parse(
+    (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath())} --with-data`)).content.data ||
+      '{}'
+  )
 }

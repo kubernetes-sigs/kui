@@ -17,16 +17,17 @@
 import { Registrar } from '@kui-shell/core'
 import { VFS } from '@kui-shell/plugin-bash-like/fs'
 
-import { responder } from '.'
+import { responderFor } from '.'
 
 export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/cp',
     args => {
       const N = args.argvNoOptions.length
-      return responder.cp(
+
+      return responderFor(args).cp(
         args,
-        args.argvNoOptions.slice(2, N - 3),
+        args.argvNoOptions.slice(3, N - 3),
         args.argvNoOptions[N - 3],
         args.argvNoOptions[N - 2].split(/,/).map(_ => _ === 'true'),
         args.argvNoOptions[N - 1] === 'true'
@@ -39,7 +40,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/rm',
     async args => {
-      await responder.rm(args, args.argvNoOptions[2], args.argvNoOptions[3] === 'true')
+      await responderFor(args).rm(args, args.argvNoOptions[3], args.argvNoOptions[4] === 'true')
       return true
     },
     { requiresLocal: true }
@@ -47,7 +48,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/rmdir',
     async args => {
-      await responder.rmdir(args, args.argvNoOptions[2])
+      await responderFor(args).rmdir(args, args.argvNoOptions[3])
       return true
     },
     { requiresLocal: true }
@@ -55,7 +56,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/mkdir',
     async args => {
-      await responder.mkdir(args, args.argvNoOptions[2])
+      await responderFor(args).mkdir(args, args.argvNoOptions[3])
       return true
     },
     { requiresLocal: true }
@@ -63,7 +64,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/grep',
     async (args: Parameters<VFS['grep']>[0]) => {
-      await responder.grep(args, args.argvNoOptions[2], args.argvNoOptions.slice(3))
+      await responderFor(args).grep(args, args.argvNoOptions[3], args.argvNoOptions.slice(4))
       return true
     },
     { requiresLocal: true }
@@ -72,7 +73,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/gzip',
     async (args: Parameters<VFS['gzip']>[0]) => {
-      await responder.gunzip(args, args.argvNoOptions.slice(1))
+      await responderFor(args).gzip(args, args.argvNoOptions.slice(2))
       return true
     },
     { requiresLocal: true }
@@ -81,7 +82,7 @@ export default function(registrar: Registrar) {
   registrar.listen(
     '/vfs-s3/gunzip',
     async (args: Parameters<VFS['gunzip']>[0]) => {
-      await responder.gunzip(args, args.argvNoOptions.slice(1))
+      await responderFor(args).gunzip(args, args.argvNoOptions.slice(2))
       return true
     },
     { requiresLocal: true }

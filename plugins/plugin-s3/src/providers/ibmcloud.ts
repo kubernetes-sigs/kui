@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import { REPL } from '@kui-shell/core'
-import { FStat } from '@kui-shell/plugin-bash-like/fs'
+import { REPL, eventChannelUnsafe } from '@kui-shell/core'
+import { isGoodConfig, Config, updateChannel } from '@kui-shell/plugin-ibmcloud/cos'
 
 import Provider, { UnsupportedS3ProviderError } from './model'
-
-interface Config {
-  AccessKeyID: string
-  SecretAccessKey: string
-}
-
-function isGoodConfig(config: Record<string, any>): config is Config {
-  const conf = config as Config
-  return typeof conf.AccessKeyID === 'string' && typeof conf.SecretAccessKey === 'string'
-}
 
 class IBMCloudS3Provider implements Provider {
   public readonly mountName = 'ibm'
@@ -36,20 +26,26 @@ class IBMCloudS3Provider implements Provider {
   public readonly secretKey: string
 
   public constructor(config: Config) {
-    this.endPoint = 's3.us-south.cloud-object-storage.appdomain.cloud' // FIXME
+    this.endPoint = config.endpointForKui
     this.accessKey = config.AccessKeyID
     this.secretKey = config.SecretAccessKey
   }
 }
 
-export default async function init(repl: REPL) {
+/** Listening for reconfigs? */
+const listeningAlready = false
+
+export default async function init(repl: REPL, reinit: () => void) {
   try {
-    const config = JSON.parse(
-      (await repl.rexec<FStat>(`vfs fstat ~/.bluemix/plugins/cloud-object-storage/config.json --with-data`)).content
-        .data
-    )
+    if (!listeningAlready) {
+      eventChannelUnsafe.on(updateChannel, reinit)
+    }
+
+    const config = (await repl.rexec<void | Config>('ibmcloud cos validate')).content
     if (isGoodConfig(config)) {
       return new IBMCloudS3Provider(config)
+    } else {
+      throw new UnsupportedS3ProviderError('Could not find credentials')
     }
   } catch (err) {
     throw new UnsupportedS3ProviderError(err.message)

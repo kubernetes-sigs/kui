@@ -100,6 +100,10 @@ class WriteEventBus extends EventBusBase {
     setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`, evt))
   }
 
+  public emitEnvUpdate(key: string, value: string) {
+    this.eventBus.emit(`/env/update/${key}`, value)
+  }
+
   private emitCommandEvent(
     which: 'start' | 'complete',
     event: CommandStartEvent | CommandCompleteEvent,
@@ -214,6 +218,14 @@ class ReadEventBus extends WriteEventBus {
 
   public offTabLayoutChange(tabUUID: string, listener: TabLayoutChangeHandler): void {
     this.eventBus.off(`/tab/layout/change/${tabUUID}`, listener)
+  }
+
+  public onEnvUpdate(key: string, listener: (value: string) => void): void {
+    this.eventBus.on(`/env/update/${key}`, listener)
+  }
+
+  public offEnvUpdate(key: string, listener: (value: string) => void): void {
+    this.eventBus.off(`/env/update/${key}`, listener)
   }
 
   private onCommand<Handler extends CommandStartHandler | CommandCompleteHandler>(

@@ -53,13 +53,13 @@
       "path": "plugins/plugin-client-notebook"
     },
     {
+      "path": "plugins/plugin-ibmcloud"
+    },
+    {
       "path": "plugins/plugin-s3"
     },
     {
       "path": "packages/react"
-    },
-    {
-      "path": "plugins/plugin-ibmcloud"
     },
     {
       "path": "plugins/plugin-iter8"

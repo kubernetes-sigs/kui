@@ -188,6 +188,10 @@ class ProxyEvaluator implements ReplEval {
                         debug('rendering fakedom content', response.response.content)
                         response.response.content = renderDom(response.response.content)
                         resolve(response.response as T)
+                      } else if (response.response.message && response.response.stack) {
+                        const err = new Error(response.response.message)
+                        err.stack = response.response.stack
+                        reject(err)
                       } else {
                         debug('response', response)
                         resolve(response.response as T)

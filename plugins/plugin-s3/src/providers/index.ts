@@ -26,11 +26,11 @@ export { Provider }
 const debug = Debug('plugin/s3/providers')
 const providers = [ibmcloud, localMinio]
 
-export default async function findAvailableProviders(repl: REPL): Promise<Provider[]> {
+export default async function findAvailableProviders(repl: REPL, reinit: () => void): Promise<Provider[]> {
   const candidates = await Promise.all(
     providers.map(async Provider => {
       try {
-        return await Provider(repl)
+        return await Provider(repl, reinit)
       } catch (err) {
         debug('error initializing provider', err)
       }

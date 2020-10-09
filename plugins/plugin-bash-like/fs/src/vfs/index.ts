@@ -128,8 +128,13 @@ function orient(A: VFS, B: VFS) {
 
 /** Low-level mount */
 function _mount(vfs: VFS) {
-  _currentMounts.push(vfs)
-  _currentMounts.sort(orient)
+  const existingIdx = _currentMounts.findIndex(mount => mount.mountPath === vfs.mountPath)
+  if (existingIdx >= 0) {
+    _currentMounts.splice(existingIdx, 1, vfs)
+  } else {
+    _currentMounts.push(vfs)
+    _currentMounts.sort(orient)
+  }
 }
 
 type VFSProducingFunction = (repl: REPL) => VFS | VFS[] | Promise<VFS | VFS[]>
@@ -151,7 +156,13 @@ export async function mount(vfs: VFS | VFSProducingFunction) {
   } else {
     const tab = getCurrentTab()
     if (!tab) {
-      eventBus.on('/tab/new', tab => mountAll(tab, vfs))
+      let debounce = false
+      eventBus.on('/tab/new', tab => {
+        if (!debounce) {
+          debounce = true
+          mountAll(tab, vfs)
+        }
+      })
     } else {
       mountAll(tab, vfs)
     }
