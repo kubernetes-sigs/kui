@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, SymbolTable } from '@kui-shell/core'
+import { Arguments, Registrar, SymbolTable, eventBus } from '@kui-shell/core'
 
 /**
  * export command
@@ -25,10 +25,13 @@ const exportCommand = ({ tab, parsedOptions }: Arguments) => {
 
   const toBeParsed = parsedOptions._[1]
   const arr = toBeParsed.split('=')
+  const key = arr[0]
+  const value = arr[1]
 
-  curDic[arr[0]] = arr[1]
+  curDic[key] = value
 
   SymbolTable.write(tab, curDic)
+  eventBus.emitEnvUpdate(key, value)
 
   return true
 }
