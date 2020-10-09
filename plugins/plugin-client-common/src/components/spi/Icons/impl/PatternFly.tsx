@@ -46,6 +46,7 @@ import {
   BombIcon as Oops,
   ListIcon as List,
   ThIcon as Grid,
+  GithubIcon as Github,
   CaretLeftIcon as PreviousPage,
   CaretRightIcon as NextPage,
   NetworkWiredIcon as Network,
@@ -97,6 +98,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Forward style={Sidecar} {...props} />
     case 'Grid':
       return <Grid {...props} />
+    case 'Github':
+      return <Github {...props} />
     case 'Help':
       return <Help {...props} />
     case 'Info':
