@@ -82,6 +82,10 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         {
           label: 'Learning iter8',
           submenu: [notebook('Welcome to iter8', '/kui/iter8/welcome.json')]
+        },
+        {
+          label: 'Interacting with S3',
+          submenu: [notebook('Getting Started', '/kui/s3/welcome.json')]
         }
       ]
     }

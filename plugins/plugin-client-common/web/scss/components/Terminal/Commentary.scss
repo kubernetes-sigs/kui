@@ -62,6 +62,22 @@
   }
 }
 
+@mixin blockquote {
+  @include Card {
+    blockquote {
+      @content;
+    }
+  }
+}
+
+@mixin blockquote {
+  @include Card {
+    blockquote {
+      @content;
+    }
+  }
+}
+
 @mixin FullWidth {
   @include Card {
     flex: 1;
@@ -85,6 +101,29 @@
     &:first-child {
       padding-top: 0;
     }
+  }
+
+  @include blockquote {
+    background: none;
+    font-size: inherit;
+    border-left: 0.25rem solid var(--color-brand-03);
+    padding: 0.1875rem 1rem;
+    margin: 0.375rem 0;
+    color: var(--color-text-02);
+
+    &:empty {
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  @include blockquote {
+    background: none;
+    font-size: inherit;
+    border-left: 0.25rem solid var(--color-brand-03);
+    padding: 0.1875rem 1rem;
+    margin: 0.375rem 0;
+    color: var(--color-text-02);
   }
 
   @include h2 {

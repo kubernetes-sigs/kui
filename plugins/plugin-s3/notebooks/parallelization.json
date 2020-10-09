@@ -2,7 +2,7 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Notebook",
   "metadata": {
-    "name": "Using S3",
+    "name": "Parallelization with S3",
     "description": ""
   },
   "spec": {
