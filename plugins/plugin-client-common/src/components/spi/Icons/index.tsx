@@ -33,6 +33,7 @@ export type SupportedIcon =
   | 'Error'
   | 'Forward'
   | 'Grid'
+  | 'Github'
   | 'Help'
   | 'Info'
   | 'List'
