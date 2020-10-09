@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2019 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-import { notebookVFS } from '@kui-shell/plugin-core-support'
+import Common from './Common'
 
-import vfs from './vfs'
-
-export default () => {
-  vfs()
-
-  // mount notebooks
-  notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/welcome.json'], '/kui/s3/')
-  notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/parallelization.json'], '/kui/s3/')
+type ServiceInstance = Common & {
+  region_id: string
+  resource_plan_id: string
+  create_time: number
+  created_by: string
+  type: string
+  resource_id: string
+  dashboard_url: string
+  allow_cleanup: boolean
+  locked: boolean
+  last_operation: string | null
+  account_url: string
+  resource_plan_url: string
+  resource_bindings_url: string
+  resource_aliases_url: string
+  siblings_url: string
+  target_crn: string
 }
+
+export default ServiceInstance
