@@ -18,13 +18,15 @@ import React from 'react'
 import {
   isMessageWithUsageModel,
   isMessageWithCode,
-  Tab as KuiTab,
-  ScalarResponse,
+  CommandCompleteEvent,
+  KResponse,
   getPrimaryTabId,
   i18n,
   isCommentaryResponse,
   isHTML,
   isMarkdownResponse,
+  isMultiModalResponse,
+  isNavResponse,
   isReactResponse,
   isRadioTable,
   isRandomErrorResponse1,
@@ -43,18 +45,24 @@ import renderTable from '../Table'
 import Markdown from '../Markdown'
 import { KuiContext } from '../../../'
 import RadioTableSpi from '../../spi/RadioTable'
+import { Maximizable } from '../../Views/Sidecar/width'
+import LocationProps from '../../Views/Sidecar/Location'
 import { BlockViewTraits } from '../../Views/Terminal/Block'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
 
 const strings = i18n('plugin-client-common', 'errors')
+const TopNavSidecar = React.lazy(() => import('../../Views/Sidecar/TopNavSidecarV2'))
+const LeftNavSidecar = React.lazy(() => import('../../Views/Sidecar/LeftNavSidecarV2'))
 
-type Props = BlockViewTraits & {
-  tab: KuiTab
-  response: ScalarResponse | Error
-  onRender?: (hasContent: boolean) => void
-  willRemove?: () => void
-  willUpdateCommand?: (command: string) => void
-}
+type Props = Maximizable &
+  BlockViewTraits &
+  LocationProps & {
+    response: KResponse | Error
+    completeEvent?: CommandCompleteEvent
+    onRender?: (hasContent: boolean) => void
+    willRemove?: () => void
+    willUpdateCommand?: (command: string) => void
+  }
 
 interface State {
   catastrophicError: Error
@@ -161,11 +169,11 @@ export default class Scalar extends React.PureComponent<Props, State> {
         // <PaginatedTable {...props} />
       } else if (isMixedResponse(response)) {
         return (
-          <div className="result-vertical flex-layout" style={{ flex: 1, alignItems: 'unset' }}>
+          <React.Fragment>
             {response.map((part, idx) => (
               <Scalar {...this.props} key={idx} response={part} />
             ))}
-          </div>
+          </React.Fragment>
         )
       } else if (isReactResponse(response)) {
         return response.react
@@ -181,6 +189,38 @@ export default class Scalar extends React.PureComponent<Props, State> {
       } else if (isRandomErrorResponse2(response)) {
         // maybe this is an error response from some random API?
         return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError2', response.errno)} />
+      } else if (isMultiModalResponse(response)) {
+        return (
+          <React.Suspense fallback={<div />}>
+            <TopNavSidecar
+              uuid={tab.uuid}
+              tab={tab}
+              execUUID={this.props.execUUID}
+              active
+              response={response}
+              onRender={this.props.onRender}
+              willChangeSize={this.props.willChangeSize}
+              argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
+              parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
+            />
+          </React.Suspense>
+        )
+      } else if (isNavResponse(response)) {
+        return (
+          <React.Suspense fallback={<div />}>
+            <LeftNavSidecar
+              uuid={tab.uuid}
+              tab={tab}
+              execUUID={this.props.execUUID}
+              active
+              response={response}
+              onRender={this.props.onRender}
+              willChangeSize={this.props.willChangeSize}
+              argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
+              parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
+            />
+          </React.Suspense>
+        )
       }
     } catch (err) {
       console.error('catastrophic error rendering Scalar', err)

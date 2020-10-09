@@ -41,7 +41,6 @@ async function doLs(args: Arguments<WorkerOptions>): Promise<string | Table> {
     const body = response.map(_ => ({
       name: _.id,
       onclick: `ibmcloud ks worker get ${args.REPL.encodeComponent(_.id)} --cluster ${args.parsedOptions.cluster}`,
-      onclickSilence: true,
       attributes: [
         { key: 'State', value: capitalize(_.state.toString()), tag: 'badge', css: stateToCSS[_.state] },
         { key: 'Status', value: capitalize(_.status.toString()) },

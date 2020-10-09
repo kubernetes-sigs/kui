@@ -146,7 +146,8 @@
     line-height: 1.5rem;
 
     /* see https://github.com/IBM/kui/issues/5981 */
-    word-break: break-all;
+    word-break: break-word;
+    word-wrap: break-word;
   }
 
   /* while editing, use a different background color for the Markdown preview */

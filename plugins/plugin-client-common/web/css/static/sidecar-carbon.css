@@ -65,6 +65,7 @@
   }
   .bx--tabs--scrollable__nav-item {
     background: transparent;
+    border-bottom: 1px solid var(--color-sidecar-header);
   }
 
   .bx--tabs--scrollable__nav-item--selected:not(.bx--tabs--scrollable__nav-item--disabled) {
@@ -82,7 +83,7 @@
 
 body[kui-theme-style] a.bx--tabs--scrollable__nav-link {
   color: var(--color-text-01);
-  border-bottom: 2px solid var(--color-text-02);
+  border-bottom: 2px solid var(--color-base04);
   opacity: 0.875;
 }
 

@@ -15,26 +15,29 @@
  */
 
 import { Arguments, Registrar } from '@kui-shell/core'
-import { isUsage, doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
+import { doHelp, getNamespaceForArgv, KubeOptions } from '@kui-shell/plugin-kubectl'
 
+import isUsage from './usage'
 import doExecWithStdout from './exec'
 import commandPrefix from '../command-prefix'
 
 const name = /^NAME:\s+([\w-]+)/
 
 async function doInstall(args: Arguments<KubeOptions>) {
-  if (isUsage(args)) {
+  if (isUsage(args, 'install')) {
     return doHelp('helm', args)
   }
 
   const response = await doExecWithStdout(args)
 
   const releaseName = response.match(name)[1]
-  return args.REPL.qexec(`helm get ${args.REPL.encodeComponent(releaseName)}`).catch(err => {
-    // oops, we tried to be clever and failed; return the original response
-    console.error('error in helm get for helm install', err)
-    return response
-  })
+  return args.REPL.qexec(`helm status ${args.REPL.encodeComponent(releaseName)} ${getNamespaceForArgv(args)}`).catch(
+    err => {
+      // oops, we tried to be clever and failed; return the original response
+      console.error('error in helm get for helm install', err)
+      return response
+    }
+  )
 }
 
 export default (registrar: Registrar) => {

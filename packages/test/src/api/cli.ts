@@ -19,6 +19,7 @@ import { Application } from 'spectron'
 import * as Common from './common'
 import * as Selectors from './selectors'
 import { keys } from './keys'
+import { AppAndCount } from './repl-expect'
 
 export const timeout = Math.max(5000, parseInt(process.env.TIMEOUT) || 60000)
 export const waitTimeout = timeout - 5000
@@ -198,4 +199,16 @@ export const expectPriorInput = (selector: string, expectedText: string) => asyn
 export async function nOfCurrentBlock(app: Application, splitIndex = 1) {
   const attr = await app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex), Selectors.N_ATTR)
   return parseInt(attr, 10)
+}
+
+/** Index of last executed block */
+export async function lastBlock(res: AppAndCount): Promise<AppAndCount> {
+  return {
+    app: res.app,
+    splitIndex: res.splitIndex,
+    count: parseInt(
+      await res.app.client.getAttribute(Selectors.PROMPT_BLOCK_LAST_FOR_SPLIT(res.splitIndex), Selectors.N_ATTR),
+      10
+    )
+  }
 }

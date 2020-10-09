@@ -23,4 +23,10 @@ const enum Width {
   Closed = '0%'
 }
 
+/** Trait for components */
+export interface Maximizable {
+  /** Content wants to maximize/restore */
+  willChangeSize(width: Width)
+}
+
 export default Width

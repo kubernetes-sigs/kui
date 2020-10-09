@@ -438,7 +438,6 @@
                   "css": "",
                   "onclickExec": "pexec",
                   "onclick": "open /s3/minio/kuitestbucket/kuitest.txt",
-                  "onclickSilence": true,
                   "attributes": [
                     {
                       "value": "s3user",

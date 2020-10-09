@@ -25,3 +25,43 @@
     display: none;
   }
 }
+
+@mixin Sidecar {
+  .kui--sidecar {
+    @content;
+  }
+}
+
+@mixin NestedSidecar {
+  .kui--sidecar-nested {
+    @content;
+  }
+}
+
+@mixin NestedTopNav {
+  @include NestedSidecar {
+    &[data-view='topnav'] {
+      @content;
+    }
+  }
+}
+
+@mixin NestedLeftNav {
+  @include NestedSidecar {
+    &[data-view='leftnav'] {
+      @content;
+    }
+  }
+}
+
+@mixin NotMaximized {
+  &:not(.maximized) {
+    @content;
+  }
+}
+
+@mixin Maximized {
+  &.maximized {
+    @content;
+  }
+}

@@ -49,21 +49,21 @@ xdescribe(`kubectl apply deployment against redirecting URL ${process.env.MOCHA_
 
     it(`should apply with a redirecting URL via ${kubectl}`, async () => {
       try {
-        const selector = await CLI.command(
+        const res = await CLI.command(
           `${kubectl} apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`,
           this.app
-        ).then(
-          ReplExpect.okWithCustom({
-            selector: Selectors.BY_NAME('nginx-deployment')
-          })
         )
+
+        const selector = await ReplExpect.okWithCustom({
+          selector: Selectors.BY_NAME('nginx-deployment')
+        })(res)
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
 
         // now click on the table row
         await this.app.client.click(`${selector} .clickable`)
-        await SidecarExpect.open(this.app)
+        await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('nginx-deployment'))
       } catch (err) {

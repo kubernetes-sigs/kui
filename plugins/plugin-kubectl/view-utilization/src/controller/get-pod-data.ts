@@ -274,7 +274,6 @@ export async function topPod(
     // don't need to filter by node: ${args.parsedOptions.node ? `--node ${args.REPL.encodeComponent(args.parsedOptions.node)}` : ''}
     if (row.onclick) {
       row.onclick = `kubectl top container ${args.REPL.encodeComponent(row.name)} -n ${ns} ${getLabelForArgv(args)}`
-      row.onclickSilence = false
     }
   })
 

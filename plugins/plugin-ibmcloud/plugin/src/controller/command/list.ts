@@ -45,7 +45,6 @@ async function doList(args: Arguments<KubeOptions>): Promise<Table> {
       onclick: `ibmcloud plugin command get ${which} ${_.Name}${
         _.Namespace ? ' --namespace ' + args.REPL.encodeComponent(_.Namespace) : ''
       }`,
-      onclickSilence: true,
       attributes: [
         // { key: 'ALIASES', value: _.Aliases ? _.Aliases.join(',') : '', outerCSS: 'hide-with-sidecar', css: 'sub-text pre-wrap' },
         {

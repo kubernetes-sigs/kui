@@ -25,6 +25,8 @@ import {
   isReactResponse,
   isMarkdownResponse,
   isMixedResponse,
+  isMultiModalResponse,
+  isNavResponse,
   isXtermResponse,
   isTable,
   eventChannelUnsafe,
@@ -48,13 +50,15 @@ import {
   isEmpty,
   isPresentedElsewhere,
   isOutputOnly,
-  isOops
+  isOops,
+  isWithCompleteEvent
 } from './BlockModel'
 
 import Else from './Else'
 import Actions from './Actions'
 import Scalar from '../../../Content/Scalar/'
 import KuiContext from '../../../Client/context'
+import { Maximizable } from '../../Sidecar/width'
 
 const strings = i18n('plugin-client-common')
 
@@ -74,7 +78,8 @@ type Props = {
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
   willUpdateCommand?: (command: string) => void
-} & BlockViewTraits &
+} & Maximizable &
+  BlockViewTraits &
   BlockOperationTraits
 
 interface State {
@@ -155,10 +160,12 @@ export default class Output extends React.PureComponent<Props, State> {
             <Scalar
               key={idx}
               tab={this.props.tab}
+              execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
               response={part}
               prefersTerminalPresentation={this.props.prefersTerminalPresentation}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               isWidthConstrained={this.props.isWidthConstrained}
+              willChangeSize={this.props.willChangeSize}
               willUpdateCommand={this.props.willUpdateCommand}
               onRender={this.onRender.bind(this)}
             />
@@ -184,16 +191,26 @@ export default class Output extends React.PureComponent<Props, State> {
         : undefined
 
       return (
-        <div className={'repl-result' + (isOops(this.props.model) ? ' oops' : '')} data-status-code={statusCode}>
+        <div
+          className={
+            'repl-result' +
+            (isOops(this.props.model) ? ' oops' : '') +
+            (isWithCompleteEvent(this.props.model) && isMixedResponse(this.props.model.response) ? ' flex-column' : '')
+          }
+          data-status-code={statusCode}
+        >
           {isCancelled(this.props.model) ? (
             <React.Fragment />
           ) : (
             <Scalar
               tab={this.props.tab}
+              execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
               response={this.props.model.response}
+              completeEvent={this.props.model.completeEvent}
               prefersTerminalPresentation={this.props.prefersTerminalPresentation}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               isWidthConstrained={this.props.isWidthConstrained}
+              willChangeSize={this.props.willChangeSize}
               willFocusBlock={this.props.willFocusBlock}
               willRemove={this.props.willRemove}
               willUpdateCommand={this.props.willUpdateCommand}
@@ -221,6 +238,8 @@ export default class Output extends React.PureComponent<Props, State> {
       const { response } = block
       return (
         isOops(block) ||
+        isMultiModalResponse(response) ||
+        isNavResponse(response) ||
         isCommentaryResponse(response) ||
         isTabLayoutModificationResponse(response) ||
         isReactResponse(response) ||

@@ -261,10 +261,9 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
               return (
                 <ExpandableSection
                   key={idx}
-                  className="flex-fill"
+                  className={this.props.isWidthConstrained && 'flex-fill'}
                   showMore={strings('Show X', name)}
                   showLess={strings('Hide X', name)}
-                  expanded
                   onToggle={() => eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))}
                 >
                   <SimpleEditor
@@ -275,7 +274,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
                     contentType={_.contentType}
                     className="kui--source-ref-editor kui--inverted-color-context"
                     fontSize={12}
-                    simple={this.props.isPartOfMiniSplit || this.props.isWidthConstrained}
+                    simple
                   />
                 </ExpandableSection>
               )

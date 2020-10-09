@@ -44,21 +44,18 @@ describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TAR
 
     it(`should create a HorizontalPodAutoscaler hpa via ${kubectl}`, async () => {
       try {
-        const selector: string = await CLI.command(
-          `${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`,
-          this.app
-        ).then(
-          ReplExpect.okWithCustom({
-            selector: Selectors.BY_NAME('travelapp-hpa')
-          })
-        )
+        const res = await CLI.command(`${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
+
+        const selector = await ReplExpect.okWithCustom({
+          selector: Selectors.BY_NAME('travelapp-hpa')
+        })(res)
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
 
         // now click on the table row
         await this.app.client.click(`${selector} .clickable`)
-        await SidecarExpect.open(this.app)
+        await SidecarExpect.openInBlockAfter(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('travelapp-hpa'))
       } catch (err) {

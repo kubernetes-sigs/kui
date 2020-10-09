@@ -194,7 +194,6 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
     onclick: `${_.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : 'open'} ${args.REPL.encodeComponent(
       _.path
     )}`,
-    onclickSilence: !_.dirent.isDirectory,
     attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))
 

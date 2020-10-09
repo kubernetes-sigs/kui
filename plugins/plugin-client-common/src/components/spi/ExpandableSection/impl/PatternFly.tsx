@@ -51,6 +51,7 @@ export default class PatternFlyExpandableSection extends React.PureComponent<Pro
   }
 
   public render() {
+    const { isExpanded } = this.state
     const className = 'kui--expandable-section' + (this.props.className ? ' ' + this.props.className : '')
 
     return (
@@ -58,9 +59,9 @@ export default class PatternFlyExpandableSection extends React.PureComponent<Pro
         className={className}
         toggleText={this.toggleText()}
         onToggle={this.onToggle}
-        isExpanded={this.state.isExpanded}
+        isExpanded={isExpanded}
       >
-        {this.props.children}
+        {isExpanded && this.props.children}
       </ExpandableSection>
     )
   }

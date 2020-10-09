@@ -117,6 +117,9 @@ body.still-loading .repl {
   font-size: 1.5rem;
   font-family: var(--font-sans-serif);
 }
+.flex-column {
+  flex-direction: column;
+}
 .flex-fill {
   flex: 1;
   min-width: 0; /* so that reducing the width of the window causes a reflow; sigh */
@@ -693,6 +696,9 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-weight: 400;
   line-height: 1.25rem;
 }
+.page-content li > p {
+  padding: 0;
+}
 .page-content code {
   font-family: var(--font-monospace);
 }
@@ -734,9 +740,7 @@ $kui--page-content-paragraph-padding: 0.375rem;
 .page-content p,
 .page-content .paragraph {
   padding: $kui--page-content-paragraph-padding 0;
-}
-.repl-output .page-content p:only-child {
-  padding: 0;
+  white-space: normal;
 }
 .page-content h1 {
   &,

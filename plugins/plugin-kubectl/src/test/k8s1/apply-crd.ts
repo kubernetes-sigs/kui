@@ -44,12 +44,13 @@ commands.forEach(command => {
 
     allocateNS(this, ns, command)
 
+    let res: ReplExpect.AppAndCount
     it(`should create custom resource definition from file via "${command} apply -f"`, async () => {
       try {
         console.error(`${command} apply crd 1`)
-        const selector = await CLI.command(`${command} apply -f ${ROOT}/data/k8s/crd.yaml ${inNamespace}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(crdName) }))
-          .catch(Common.oops(this))
+        res = await CLI.command(`${command} apply -f ${ROOT}/data/k8s/crd.yaml ${inNamespace}`, this.app)
+
+        const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(crdName) })(res)
 
         // wait for the badge to become green
         console.error(`${command} apply crd 2`)
@@ -58,7 +59,8 @@ commands.forEach(command => {
         // now click on the table row
         console.error(`${command} apply crd 3`)
         await this.app.client.click(`${selector} .clickable`)
-        await SidecarExpect.open(this.app)
+        res = ReplExpect.blockAfter(res)
+        await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing(crdName))
           .then(SidecarExpect.yaml({ Kind: 'CronTab' }))
@@ -71,14 +73,14 @@ commands.forEach(command => {
       try {
         // make sure we have a last applied tab
         console.error(`${command} apply crd 4`)
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('last applied'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('last applied'))
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('last applied'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'last applied'))
 
         let idx = 0
         console.error(`${command} apply crd 5`)
         await this.app.client.waitUntil(async () => {
-          const text = await Util.getValueFromMonaco(this.app)
+          const text = await Util.getValueFromMonaco(res)
           if (++idx > 5) {
             console.error(`still waiting for yaml in ${this.title}`, text)
           }
@@ -109,13 +111,13 @@ commands.forEach(command => {
         const res = await CLI.command(`${command} get ${kind} -n ${ns} ${crdName} -o yaml`, this.app)
         console.error(`${command} apply crd 7`)
         await Promise.resolve(res)
-          .then(ReplExpect.justOK)
+          .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(crdName))
           .catch(Common.oops(this, true))
 
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('show-crd-resources'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('show-crd-resources'))
+        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'show-crd-resources'))
+        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'show-crd-resources'))
 
         await Promise.resolve({ app: this.app, count: res.count + 1 }).then(
           ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(crdName) })

@@ -30,6 +30,9 @@ export interface Props {
   namespace?: string
   breadcrumbs?: BreadcrumbView[]
 
+  /** Is this sidecar not closeable? */
+  notCloseable?: boolean
+
   repl: REPL
   fixedWidth: boolean
   width: Width
@@ -70,6 +73,8 @@ export default class Window extends React.PureComponent<Props> {
     }
   }
 
+  private readonly _toggleMaximization = this.toggleMaximization.bind(this)
+
   private toggleClose() {
     this.props.onClose()
   }
@@ -103,6 +108,28 @@ export default class Window extends React.PureComponent<Props> {
     }
   }
 
+  private readonly _preventDefault = (evt: React.MouseEvent) => evt.preventDefault()
+
+  private screenshotButton() {
+    return (
+      <div className="sidecar-bottom-stripe-button">
+        <span className="kui--sidecar-screenshot-button">
+          <div aria-label="Screenshot">
+            <a
+              href="#"
+              className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
+              tabIndex={-1}
+              onMouseDown={this._preventDefault}
+              onClick={this.props.willScreenshot}
+            >
+              <Icons icon="Screenshot" />
+            </a>
+          </div>
+        </span>
+      </div>
+    )
+  }
+
   private maximizeButton() {
     if (this.props.width !== Width.Closed && !this.props.fixedWidth) {
       const max = this.props.width === Width.Maximized
@@ -118,8 +145,8 @@ export default class Window extends React.PureComponent<Props> {
                 href="#"
                 className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
                 tabIndex={-1}
-                onMouseDown={evt => evt.preventDefault()}
-                onClick={() => this.toggleMaximization()}
+                onMouseDown={this._preventDefault}
+                onClick={this._toggleMaximization}
               >
                 {icon}
               </a>
@@ -225,9 +252,9 @@ export default class Window extends React.PureComponent<Props> {
 
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">
-            {this.overflowButton()}
+            {this.screenshotButton()}
             {this.maximizeButton()}
-            {this.quitButton()}
+            {!this.props.notCloseable && this.quitButton()}
           </div>
         </div>
       </div>

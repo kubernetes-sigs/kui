@@ -16,6 +16,12 @@
 
 @import '~@kui-shell/plugin-bash-like/web/scss/xterm';
 
-.kui--terminal[data-needs-hysteresis='true'][data-got-some-data='false'] .xterm {
-  opacity: 0;
+.kui--terminal {
+  background-color: var(--color-base01);
+
+  &[data-needs-hysteresis='true'][data-got-some-data='false'] {
+    .xterm {
+      opacity: 0;
+    }
+  }
 }

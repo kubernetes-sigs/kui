@@ -42,7 +42,8 @@ export default class PatternflyNavigation extends React.PureComponent<Navigation
             key={idx} // if you make this mode.mode, then data-mode doesn't work
             data-mode={mode.mode} // needed for tests
             isActive={this.props.current.current.menuIdx === menuIdx && this.props.current.current.tabIdx === idx}
-            onClick={() => {
+            onClick={evt => {
+              evt.stopPropagation()
               this.props.changeCurrent(menuIdx, idx)
             }}
             onMouseDown={event => event.preventDefault()}

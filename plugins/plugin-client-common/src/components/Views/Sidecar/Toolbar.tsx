@@ -15,14 +15,14 @@
  */
 
 import React from 'react'
-import { Tab as KuiTab, ToolbarText, Button, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
+import { ToolbarText, Button, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
+import LocationProps from './Location'
 import ToolbarButton from './ToolbarButton'
 import Markdown from '../../Content/Markdown'
 
-export type Props = {
-  tab: KuiTab
+export type Props = LocationProps & {
   buttons: Button[]
   response: MultiModalResponse
   toolbarText?: ToolbarText
@@ -69,6 +69,7 @@ export default class Toolbar extends React.PureComponent<Props> {
         .map((button, idx) => (
           <ToolbarButton
             tab={this.props.tab}
+            execUUID={this.props.execUUID}
             button={button}
             response={this.props.response}
             args={this.props.args}

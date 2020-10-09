@@ -40,7 +40,6 @@ async function doLs(args: Arguments<KubeOptions>): Promise<string | Table> {
     const body = response.map(_ => ({
       name: _.name,
       onclick: `ibmcloud ks cluster get ${args.REPL.encodeComponent(_.name)}`,
-      onclickSilence: true,
       attributes: [
         { key: 'State', value: capitalize(_.state), tag: 'badge', css: stateToCSS[_.state] },
         { key: 'Version', value: _.masterKubeVersion, outerCSS: 'hide-with-sidecar' },

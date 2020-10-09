@@ -60,7 +60,6 @@ async function doLs(args: Arguments<ListOptions>): Promise<Table> {
   const body = rowData.map(_ => ({
     name: _.name,
     onclick: `ibmcloud plugin get ${args.REPL.encodeComponent(_.name)}`,
-    onclickSilence: true,
     attributes: [
       { key: strings('Aliases'), value: _.Aliases ? _.Aliases.join(',') : '', outerCSS: 'hide-with-sidecar' },
       {

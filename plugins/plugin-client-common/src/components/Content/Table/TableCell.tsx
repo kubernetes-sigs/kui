@@ -36,7 +36,7 @@ export function onClickForCell(
   cell?: KuiCell,
   selectRow: () => void = () => undefined
 ): CellOnClickHandler {
-  const handler = cell ? cell.onclick : row.onclick
+  const handler = cell && cell.onclick ? cell.onclick : row.onclick
   if (handler === false) {
     return () => handler
   } else if (typeof handler === 'function') {
@@ -53,12 +53,16 @@ export function onClickForCell(
       eventBus.emitCommandComplete(handler.completeEvent)
     })
   } else if (handler) {
-    const opts = { tab, echo: !row.onclickSilence }
+    const opts = { tab }
     if (!row.onclickExec || row.onclickExec === 'pexec') {
       return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
-        repl.pexec(handler, opts)
+        if (evt.metaKey) {
+          repl.pexec(`split --cmdline "${handler}"`)
+        } else {
+          repl.pexec(handler, opts)
+        }
       })
     } else {
       return whenNothingIsSelected((evt: React.MouseEvent) => {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,10 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       .catch(Common.oops(this, true))
   })
 
-  it('should show 500 error for helm get', () => {
-    return CLI.command('helm get', this.app)
-      .then(ReplExpect.error(500, 'Error: release name is required'))
-      .catch(Common.oops(this, true))
-  })
-
   const help = doHelp.bind(this)
   help('helm', ['helm'], ['Introduction', 'Options', 'Available'])
   help('helm -h', ['helm'], ['Introduction', 'Options', 'Available'])
+  help('helm get', ['helm', 'get'], ['Introduction', 'Flags', 'Global Flags', 'Available'])
   help('helm get -h', ['helm', 'get'], ['Introduction', 'Flags', 'Global Flags', 'Available'])
 
   it('should show 500 error for helm create', () => {
@@ -67,20 +62,26 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
   lists.forEach(list => {
     it(`should list empty releases via helm ${list}`, () => {
-      return CLI.command(`helm ${list}`, this.app)
+      return CLI.command(`helm ${list} -n ${ns}`, this.app)
         .then(ReplExpect.blank)
         .catch(Common.oops(this, true))
     })
   })
 
   const checkHelmInstall = async (res: ReplExpect.AppAndCount) => {
-    await ReplExpect.justOK(res)
-    await SidecarExpect.open(res.app)
-    await SidecarExpect.showingTopNav(name)(res.app)
+    await ReplExpect.ok(res)
+    await SidecarExpect.open(res)
+    await SidecarExpect.showingLeftNav('Overview')(res)
   }
 
+  it('should update the helm repo to add bitnami', () => {
+    return CLI.command(`helm repo add bitnami https://charts.bitnami.com/bitnami`, this.app)
+      .then(ReplExpect.okWithAny)
+      .catch(Common.oops(this, true))
+  })
+
   it(`should create sample helm chart`, () => {
-    return CLI.command(`helm install --name ${name} stable/mysql ${inNamespace}`, this.app)
+    return CLI.command(`helm install ${name} bitnami/mysql ${inNamespace}`, this.app)
       .then(checkHelmInstall)
       .catch(Common.oops(this, true))
   })
@@ -88,7 +89,7 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   it('should refresh as a quick way to close the sidecar', () => Common.refresh(this))
 
   it(`should show history`, () => {
-    return CLI.command(`helm history ${name}`, this.app)
+    return CLI.command(`helm history ${name} -n ${ns}`, this.app)
       .then(ReplExpect.okWithCustom({ selector: Selectors.TABLE_CELL('1', 'REVISION') }))
       .then(Util.expectText(this.app, '1'))
       .catch(Common.oops(this, true))
@@ -96,41 +97,46 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
   // confirm that helm list shows a row for our release
   it(`should list that new release via helm list`, () => {
-    return CLI.command(`helm list ${name}`, this.app)
+    return CLI.command(`helm list --filter ${name} -n ${ns}`, this.app)
       .then(ReplExpect.okWith(name))
       .catch(Common.oops(this, true))
   })
 
   // also confirm that there is a REVISION column in that row
   it(`should list that new release via helm list`, () => {
-    return CLI.command(`helm list ${name}`, this.app)
+    return CLI.command(`helm list --filter ${name} -n ${ns}`, this.app)
       .then(ReplExpect.okWithCustom({ selector: Selectors.TABLE_CELL(name, 'REVISION') }))
       .then(Util.expectText(this.app, '1'))
       .catch(Common.oops(this, true))
   })
 
-  help(`helm status ${name}`, ['helm', 'release', name], ['Status', 'Summary'])
+  help(`helm status ${name} -n ${ns}`, ['helm', 'release', name], ['Status', 'Summary'])
 
-  it(`should show the release in sidecar via helm get`, () => {
-    return CLI.command(`helm get ${name}`, this.app)
-      .then(ReplExpect.justOK)
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showingTopNav(name))
-      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('hooks')))
-      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('manifest')))
-      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('values')))
-      .then(() => this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('notes')))
-      .catch(Common.oops(this, true))
+  // helm get not yet ported to v3
+  xit(`should show the release in sidecar via helm get`, async () => {
+    try {
+      const res = await CLI.command(`helm get ${name} -n ${ns}`, this.app)
+        .then(ReplExpect.justOK)
+        .then(SidecarExpect.open)
+        .then(SidecarExpect.showingTopNav(name))
+
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'hooks'))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'manifest'))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'values'))
+      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'notes'))
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
   })
 
   it(`should delete sample helm chart`, () => {
-    return CLI.command(`helm delete --purge ${name}`, this.app)
-      .then(ReplExpect.okWithString(`release "${name}" deleted`))
+    return CLI.command(`helm delete ${name} -n ${ns}`, this.app)
+      .then(ReplExpect.okWithString(`release "${name}" uninstalled`))
       .catch(Common.oops(this, true))
   })
 
   it(`should list empty releases via helm list again`, () => {
-    return CLI.command(`helm list ${name}`, this.app)
+    return CLI.command(`helm list --filter ${name} -n ${ns}`, this.app)
       .then(ReplExpect.blank)
       .catch(Common.oops(this, true))
   })

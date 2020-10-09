@@ -20,6 +20,11 @@ $input-bg-minisplit: var(--color-base01);
 $input-border: rgba(100, 100, 100, 0.05);
 $input-border-editing: var(--color-brand-03);
 
+$input-padding-right: calc(1rem - 6px);
+$input-padding-left: 1rem;
+$repl-context-min-width: 3rem;
+$repl-context-margin-right: 0.5rem;
+
 /** Hover hysteresis for showing action buttons */
 $action-hover-delay: 210ms;
 
@@ -32,6 +37,14 @@ $action-hover-delay: 210ms;
 @mixin MiniSplit {
   @include Scrollback {
     &[data-is-minisplit] {
+      @content;
+    }
+  }
+}
+
+@mixin WidthConstrained {
+  @include Scrollback {
+    &[data-is-width-constrained] {
       @content;
     }
   }
@@ -51,12 +64,27 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin MaximizedBlock {
+  @include Block {
+    &[data-is-maximized] {
+      @content;
+    }
+  }
+}
+
 @mixin BlockHoverOrFocus {
   @include Scrollback {
     li:focus,
     .repl-input:hover {
       @content;
     }
+  }
+}
+
+/** A "T T" layout, i.e. two terminals side-by-side */
+@mixin SideBySide {
+  .repl:not(.sidecar-visible) .kui--terminal-split-container[data-split-count='2'] {
+    @content;
   }
 }
 

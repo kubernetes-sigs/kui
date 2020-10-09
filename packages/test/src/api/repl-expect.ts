@@ -149,7 +149,7 @@ export const ok = async (res: AppAndCount) =>
   expectOK(res, { passthrough: true })
     .then(N => res.app.client.elements(Selectors.LIST_RESULTS_BY_NAME_N(N, res.splitIndex)))
     .then(elts => assert.strictEqual(elts.value.length, 0))
-    .then(() => res.app)
+    .then(() => res)
 
 export const error = (statusCode: number | string, expect?: string) => async (res: AppAndCount) =>
   expectOK(res, {
@@ -262,7 +262,7 @@ export const okWithOnly = (entityName: string) => async (res: AppAndCount) =>
 export const okWith = (entityName: string) => async (res: AppAndCount) => expectOK(res, { expectArray: [entityName] })
 
 /** expect just ok, and no result value */
-export const justOK = async (res: AppAndCount) => expectOK(res, { expectJustOK: true }).then(() => res.app)
+export const justOK = async (res: AppAndCount) => expectOK(res, { expectJustOK: true }).then(() => res)
 
 /** Expect the given number of terminal splits in the current tab, and check whether the last split has inverse colors */
 export function splitCount(expectedSplitCount: number, inverseColors = false, expectedSplitIndex?: number) {
@@ -312,7 +312,7 @@ export function elsewhere(expectedBody: string, N?: number) {
 
 /** Expect a CommentaryResponse */
 export function comment(expectedBody: string, expectedTitle?: string) {
-  return async (res: AppAndCount) => {
+  return async (res: AppAndCount): Promise<AppAndCount> => {
     const output = Selectors.OUTPUT_N(res.count)
 
     if (expectedTitle) {
@@ -324,7 +324,7 @@ export function comment(expectedBody: string, expectedTitle?: string) {
     const actualBody: string = await res.app.client.getText(`${output} ${Selectors.TERMINAL_CARD_BODY}`)
     assert.strictEqual(actualBody, expectedBody)
 
-    return res.app
+    return res
   }
 }
 
@@ -352,4 +352,11 @@ export function blockCount(this: ISuite) {
       }
     })
   }
+}
+
+/** Transform the given block finder to one that can find the next block */
+export function blockAfter(res: AppAndCount, delta = 1): AppAndCount {
+  return Object.assign({}, res, {
+    count: res.count + delta
+  })
 }

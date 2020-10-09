@@ -46,24 +46,28 @@ commands.forEach(command => {
 
       it(`should create sample pod from URL via ${command}`, async () => {
         try {
-          const selector = await CLI.command(
+          const res = await CLI.command(
             `${command} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
             this.app
-          ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          )
+
+          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
 
           // now click on the table row
           await this.app.client.click(`${selector} .clickable`)
-          await SidecarExpect.open(this.app)
+          const resAfter = ReplExpect.blockAfter(res)
+          await SidecarExpect.open(resAfter)
             .then(SidecarExpect.mode(defaultModeForGet))
             .then(SidecarExpect.showing('nginx'))
             .then(SidecarExpect.button({ mode: 'show-node', label: 'Show Node' }))
 
           // click on Show Node button
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('show-node'))
-          await SidecarExpect.open(this.app).then(SidecarExpect.kind('Node'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'show-node'))
+
+          await SidecarExpect.open(ReplExpect.blockAfter(resAfter)).then(SidecarExpect.kind('Node'))
         } catch (err) {
           await Common.oops(this, true)(err)
         }
