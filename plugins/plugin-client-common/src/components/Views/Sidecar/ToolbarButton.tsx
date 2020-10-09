@@ -15,18 +15,11 @@
  */
 
 import React from 'react'
-import {
-  Tab as KuiTab,
-  Button,
-  ResourceWithMetadata,
-  isViewButton,
-  MultiModalResponse,
-  pexecInCurrentTab,
-  ParsedOptions
-} from '@kui-shell/core'
+import { Button, ResourceWithMetadata, isViewButton, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
 
-interface Props {
-  tab: KuiTab
+import LocationProps from './Location'
+
+type Props = LocationProps & {
   button: Button
   response: MultiModalResponse
   args: {
@@ -54,18 +47,28 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
 
   private async buttonOnclick() {
     const cmd = await this.getCommand()
-    const { tab, response, button, args } = this.props
+    const { tab, execUUID, response, button, args } = this.props
 
     if (typeof cmd === 'string') {
       if (isViewButton(button) || button.confirm) {
         return tab.REPL.qexec(cmd, undefined, undefined, { rethrowErrors: true })
       } else {
-        return pexecInCurrentTab(cmd)
+        if (button.inPlace) {
+          return tab.REPL.reexec(cmd, { execUUID })
+        } else {
+          return tab.REPL.pexec(cmd)
+        }
       }
-    } else {
+    } else if (typeof cmd === 'function') {
       cmd(tab, response, args)
+    } else {
+      // e.g. this happens for kubectl edit on apply error, this is
+      // because the error handling is captured by the
+      // Editor/index.tsx
     }
   }
+
+  private readonly _buttonOnclick = this.buttonOnclick.bind(this)
 
   public render() {
     const { button } = this.props
@@ -78,7 +81,7 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
         }
         data-mode={button.mode}
       >
-        <a role="presentation" href="#" onClick={this.buttonOnclick.bind(this)}>
+        <a role="presentation" href="#" onClick={this._buttonOnclick}>
           <span role="tab" title={button.label || button.mode}>
             {button.icon ? button.icon : button.label || button.mode}
           </span>

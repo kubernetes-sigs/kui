@@ -14,11 +14,34 @@
  * limitations under the License.
  */
 
-import { Common, CLI, Selectors, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
+
+/** confirm the given toggler state */
+async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean) {
+  // confirm the toggler UI
+  await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
+
+  if (isExpanded) {
+    // if it is expanded, also confirm the expanded editor state
+    await this.app.client.waitUntil(
+      () =>
+        Util.getValueFromMonaco(res, Selectors.SOURCE_REF_N(res.count)).then(
+          Util.expectYAML({ kind: 'Deployment' }, true)
+        ),
+      CLI.waitTimeout
+    )
+  }
+}
+
+/** click to toggle state */
+async function clickToToggle(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean) {
+  await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
+  return !isExpanded
+}
 
 describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -32,34 +55,14 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     try {
       const res = await CLI.command(`kubectl create -f ${ROOT}/data/k8s/deployment.yaml ${inNamespace}`, this.app)
 
-      let isExpanded = true
+      const confirm = confirmState.bind(this, res)
+      const toggle = clickToToggle.bind(this, res)
 
-      console.error('1', Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
-      // toggler should not be expanded (the false argument)
-      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
-
-      // click to toggle open: no longer needed, now opened by default https://github.com/IBM/kui/pull/5869
-      // console.error('2')
-      // await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, false))
-      // toggler should now be expanded (the true argument)
-      // console.error('3')
-      // await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
-
-      // click to toggle closed
-      console.error('4')
-      await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
-      isExpanded = false
-
-      // toggler should not be expanded (the false argument)
-      await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
-
-      await this.app.client.waitUntil(
-        () =>
-          Util.getValueFromMonaco(this.app, Selectors.SOURCE_REF_N(res.count)).then(
-            Util.expectYAML({ kind: 'Deployment' }, true)
-          ),
-        CLI.waitTimeout
-      )
+      let isExpanded = false // default isExpanded?
+      for (let idx = 0; idx < 5; idx++) {
+        await confirm(isExpanded)
+        isExpanded = await toggle(isExpanded)
+      }
     } catch (err) {
       await Common.oops(this, true)(err)
     }

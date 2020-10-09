@@ -67,7 +67,6 @@ async function doList(args: Arguments<ListOptions>): Promise<Table> {
       onclick: `ibmcloud plugin repo-plugin ${args.REPL.encodeComponent(name)}${
         whichRepo ? ' -r ' + args.REPL.encodeComponent(whichRepo) : ''
       }`,
-      onclickSilence: true,
       attributes: [
         {
           key: strings('STATUS'),

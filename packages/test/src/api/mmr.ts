@@ -23,7 +23,6 @@ import * as CLI from './cli'
 import * as ReplExpect from './repl-expect'
 import * as SidecarExpect from './sidecar-expect'
 import * as Selectors from './selectors'
-import { keys as Keys } from './keys'
 
 interface TestParam {
   command: string
@@ -87,14 +86,23 @@ export class TestMMR {
           })
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(heroName ? SidecarExpect.heroName(showName) : SidecarExpect.name(showName))
-          .then(app => (nameHash ? SidecarExpect.namehash(nameHash) : app))
+          .then(async res => {
+            if (heroName) {
+              await SidecarExpect.heroName(res.count, showName)
+            } else {
+              await SidecarExpect.name(res.count, showName)
+            }
+
+            if (nameHash) {
+              await SidecarExpect.namehash(res.count, nameHash)
+            }
+          })
           .catch(Common.oops(this, true)))
 
       if (onclick && onclick.name) {
         it('should click the name part of sidecar and expect the command shows in repl', async () => {
           try {
-            await this.app.client.click(Selectors.SIDECAR_TITLE)
+            await this.app.client.click(Selectors.SIDECAR_TITLE(cmdIdx))
             await testClickResult(++cmdIdx, onclick.name.command, onclick.name.expect)(this.app)
           } catch (err) {
             await Common.oops(this, true)(err)
@@ -105,7 +113,7 @@ export class TestMMR {
       if (onclick && onclick.nameHash) {
         it('should click the namehash part of sidecar and expect the command shows in repl', async () => {
           try {
-            await this.app.client.click(Selectors.SIDECAR_ACTIVATION_TITLE)
+            await this.app.client.click(Selectors.SIDECAR_ACTIVATION_TITLE(cmdIdx))
             await testClickResult(++cmdIdx, onclick.nameHash.command, onclick.nameHash.expect)(this.app)
           } catch (err) {
             await Common.oops(this, true)(err)
@@ -146,7 +154,7 @@ export class TestMMR {
       if (onclick) {
         it(`should click the namespace part of sidecar and expect the command shows in repl`, async () => {
           try {
-            await this.app.client.click(Selectors.SIDECAR_PACKAGE_NAME_TITLE)
+            await this.app.client.click(Selectors.SIDECAR_PACKAGE_NAME_TITLE(cmdIdx))
             await testClickResult(++cmdIdx, onclick.command, onclick.expect)(this.app)
           } catch (err) {
             await Common.oops(this, true)(err)
@@ -195,7 +203,7 @@ export class TestMMR {
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(app => Promise.all(badges.map(badge => SidecarExpect.badge(badge.title, badge.css)(app)))))
+          .then(res => Promise.all(badges.map(badge => SidecarExpect.badge(badge.title, badge.css)(res)))))
     })
   }
 
@@ -216,18 +224,23 @@ export class TestMMR {
       before(Common.before(this))
       after(Common.after(this))
 
+      let cmdIdx: number
       const showModes = () => {
-        it(`should show sidecar tabs`, () =>
+        it(`should show sidecar tabs with command=${command}`, () =>
           CLI.command(command, this.app)
             .then(ReplExpect.ok)
             .then(SidecarExpect.open)
             .then(SidecarExpect.defaultMode(defaultMode))
             .then(SidecarExpect.modes(expectModes))
+            .then(res => {
+              cmdIdx = res.count
+              return res
+            })
             .catch(Common.oops(this, true)))
       }
 
       const clickToActivateTab = async (mode: string) => {
-        const sel = Selectors.SIDECAR_MODE_BUTTON(mode)
+        const sel = Selectors.SIDECAR_MODE_BUTTON(cmdIdx, mode)
         await this.app.client.waitForExist(sel)
 
         await this.app.client.execute(sel => {
@@ -236,7 +249,7 @@ export class TestMMR {
 
         ok(await this.app.client.isVisibleWithinViewport(sel))
         await this.app.client.click(sel)
-        await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(mode))
+        await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(cmdIdx, mode))
       }
 
       const cycleTheTabs = () =>
@@ -252,8 +265,8 @@ export class TestMMR {
           if (expectMode.contentType === 'text/plain') {
             it(`should show plain text content via monaco in the ${expectMode.mode} tab`, async () => {
               try {
-                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                  await SidecarExpect.textPlainContentFromMonaco(expectMode.content)(this.app)
+                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                  await SidecarExpect.textPlainContentFromMonaco(expectMode.content)({ app: this.app, count: cmdIdx })
                 }
               } catch (err) {
                 return Common.oops(this, true)(err)
@@ -261,8 +274,8 @@ export class TestMMR {
             })
           } else if (expectMode.contentType === 'react') {
             it(`should show react content`, async () => {
-              if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                const selector = `${Selectors.SIDECAR_TAB_CONTENT} ${expectMode.selector}`
+              if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                const selector = `${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} ${expectMode.selector}`
                 await this.app.client.waitUntil(async () => {
                   await this.app.client.waitForVisible(selector)
                   return expectMode.innerText === (await this.app.client.getText(selector))
@@ -272,16 +285,16 @@ export class TestMMR {
           } else if (expectMode.contentType === 'table') {
             it(`should show ${expectMode.nRows} table rows in the ${expectMode.mode} tab`, async () => {
               try {
-                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
                   let idx = 0
                   await this.app.client.waitUntil(async () => {
-                    const rows = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT} tbody tr`)
+                    const rows = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} tbody tr`)
                     const actualRows = rows.value.length
                     const expectedRows = expectMode.nRows
                     if (++idx > 5) {
                       console.error(
                         `still waiting for table rows actualRows=${actualRows} expectedRows=${expectedRows}`,
-                        `${Selectors.SIDECAR_TAB_CONTENT} tbody tr`
+                        `${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} tbody tr`
                       )
                     }
                     return actualRows === expectedRows
@@ -293,9 +306,9 @@ export class TestMMR {
             })
             it(`should show ${expectMode.nCells} table cells in the ${expectMode.mode} tab`, async () => {
               try {
-                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
+                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
                   await this.app.client.waitUntil(async () => {
-                    const cells = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT} td`)
+                    const cells = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} td`)
                     return cells.value.length === expectMode.nCells
                   }, CLI.waitTimeout)
                 }
@@ -307,8 +320,8 @@ export class TestMMR {
             if (expectMode.editor === true) {
               it(`should open editor and show yaml content via monaco in the ${expectMode.mode} tab`, async () => {
                 try {
-                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                    await SidecarExpect.yaml(expectMode.content)(this.app)
+                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                    await SidecarExpect.yaml(expectMode.content)({ app: this.app, count: cmdIdx })
                   }
                 } catch (err) {
                   return Common.oops(this, true)(err)
@@ -317,8 +330,8 @@ export class TestMMR {
             } else {
               it(`should show random content in the ${expectMode.mode} tab`, async () => {
                 try {
-                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(expectMode.mode))) {
-                    await SidecarExpect.textPlainContent(expectMode.content)(this.app)
+                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                    await SidecarExpect.textPlainContent(expectMode.content)({ app: this.app, count: cmdIdx })
                   }
                 } catch (err) {
                   return Common.oops(this, true)(err)
@@ -328,95 +341,38 @@ export class TestMMR {
           }
         })
 
+      const backToOpen = () => {
+        it(`should resume the sidecar from maximized to open`, async () => {
+          try {
+            const button = Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx)
+            await this.app.client.waitForVisible(button)
+            await this.app.client.click(button)
+            await SidecarExpect.open({ app: this.app, count: cmdIdx })
+          } catch (err) {
+            await Common.oops(this, true)
+          }
+        })
+      }
+
       showModes()
       cycleTheTabs()
       cycleTheTabs()
 
       if (options && options.testWindowButtons === true) {
-        const toggleSidecarWithESC = (expectOpen = false) =>
-          it(`should hit ESCAPE key and expect sidecar ${expectOpen ? 'open' : 'closed'}`, async () => {
-            try {
-              await this.app.client.keys(Keys.ESCAPE)
-              expectOpen ? await SidecarExpect.open(this.app) : await SidecarExpect.closed(this.app)
-            } catch (err) {
-              await Common.oops(this, true)(err)
-            }
-          })
-
-        const quit = () =>
-          it('should fully close the sidecar', async () => {
-            try {
-              await this.app.client.waitForVisible(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
-              await this.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
-              await SidecarExpect.fullyClosed(this.app)
-            } catch (err) {
-              await Common.oops(this, true)(err)
-            }
-          })
-
         const maximize = () =>
           it('should maximize the sidecar', async () => {
             try {
-              await this.app.client.waitForVisible(Selectors.SIDECAR_MAXIMIZE_BUTTON)
-              await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON)
-              await SidecarExpect.fullscreen(this.app)
+              await this.app.client.waitForVisible(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
+              await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
+              await SidecarExpect.fullscreen({ app: this.app, count: cmdIdx })
             } catch (err) {
               await Common.oops(this, true)(err)
             }
           })
 
-        const minimize = () => {
-          it('should toggle the sidebar closed with ShowSidecarAndTerminal button', async () => {
-            try {
-              await this.app.client.waitForVisible(Selectors.TERMINAL_AND_SIDECAR_BUTTON)
-              console.log('see on ShowSidecarAndTerminal button')
-              await this.app.client.moveToObject(Selectors.TERMINAL_AND_SIDECAR_BUTTON)
-              console.log('hover on ShowSidecarAndTerminal button')
-              await this.app.client.waitForVisible(Selectors.ONLY_TERMINAL_BUTTON)
-              await this.app.client.click(Selectors.ONLY_TERMINAL_BUTTON)
-              await SidecarExpect.closed(this.app)
-            } catch (err) {
-              await Common.oops(this, true)
-            }
-          })
-        }
-
-        const backToOpen = (backFromMinimized: boolean) => {
-          const button = backFromMinimized ? Selectors.TERMINAL_AND_SIDECAR_BUTTON : Selectors.SIDECAR_MAXIMIZE_BUTTON
-
-          it(`should resume the sidecar from ${backFromMinimized ? 'minimized' : 'maximized'} to open`, async () => {
-            try {
-              if (backFromMinimized) {
-                await this.app.client.touch(Selectors.ONLY_TERMINAL_BUTTON, false)
-                console.log('hover on ShowOnlyTerminal button')
-              }
-              await this.app.client.waitForVisible(button)
-              await this.app.client.click(button)
-              await SidecarExpect.open(this.app)
-            } catch (err) {
-              await Common.oops(this, true)
-            }
-          })
-        }
-
         showModes()
-        toggleSidecarWithESC()
-        toggleSidecarWithESC(true)
-
-        toggleSidecarWithESC()
-        showModes()
-
-        minimize()
-        backToOpen(true)
-
-        minimize()
-        showModes()
-
         maximize()
-        backToOpen(false)
-        showModes()
-
-        quit()
+        backToOpen()
         showModes()
       }
     })
@@ -446,11 +402,16 @@ export class TestMMR {
       before(Common.before(this))
       after(Common.after(this))
 
+      let res: ReplExpect.AppAndCount
       it(`should show toolbar buttons in sidecar `, () =>
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(app => Promise.all(buttons.map(button => SidecarExpect.button(button)(app))))
+          .then(appAndCount => {
+            res = appAndCount
+            return appAndCount
+          })
+          .then(res => Promise.all(buttons.map(button => SidecarExpect.button(button)(res))))
           .catch(Common.oops(this, true)))
 
       const drilldownButtons = buttons.filter(_ => _.kind === 'drilldown')
@@ -459,11 +420,11 @@ export class TestMMR {
           try {
             const { app, count } = await CLI.command(command, this.app)
             await ReplExpect.ok({ app, count })
-            await SidecarExpect.open(app)
+            await SidecarExpect.open({ app, count })
 
             await promiseEach(drilldownButtons, async (button, index) => {
               // the button should be clickable
-              const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(button.mode)
+              const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, button.mode)
               await CLI.waitForRepl(this.app)
               await app.client.waitForVisible(buttonSelector)
               await app.client.click(buttonSelector)
@@ -543,7 +504,7 @@ export class TestMMR {
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(() => this.app.client.waitForExist(Selectors.SIDECAR_TOOLBAR, CLI.waitTimeout, false))
+          .then(res => this.app.client.waitForExist(Selectors.SIDECAR_TOOLBAR(res.count), CLI.waitTimeout, false))
           .catch(Common.oops(this, true)))
     })
   }

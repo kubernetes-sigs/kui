@@ -22,11 +22,10 @@ pushd /tmp
       (sudo apt-get update && sudo apt install -y socat) &
 
       PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
-      echo "Downloading this helm: https://storage.googleapis.com/kubernetes-helm/helm-v${TRAVIS_HELM_VERISON}-${PLATFORM}-amd.tar.gz"
-      curl -L "https://storage.googleapis.com/kubernetes-helm/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz" | tar zxf -
+      echo "Downloading this helm: https://get.helm.sh/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz"
+      curl -L "https://get.helm.sh/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz" | tar zxf -
       sudo cp ${PLATFORM}-amd64/helm /usr/local/bin
-      sudo cp ${PLATFORM}-amd64/tiller /usr/local/bin
-      sudo chmod +x /usr/local/bin/{helm,tiller}
+      sudo chmod +x /usr/local/bin/helm
   fi
 
   # Download and install openshift-client
@@ -65,39 +64,5 @@ echo "smashing microk8s kubeconfig into .kube/config [SUCCESS]"
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 
 kubectl version -o json
-
-if [ -n "$NEEDS_HELM" ]; then
-    # Install tiller into the cluster
-    /usr/local/bin/helm init --service-account default
-
-    # helm 2 versus kubernetes 1.16+
-    # See https://github.com/helm/helm/issues/6374#issuecomment-533427268
-    # helm init --service-account tiller --override spec.selector.matchLabels.'name'='tiller',spec.selector.matchLabels.'app'='helm' --output yaml | sed 's@apiVersion: extensions/v1beta1@apiVersion: apps/v1@' | kubectl apply -f -
-
-    # Wait for tiller to be ready
-    TIMEOUT=0
-    TIMEOUT_COUNT=60
-    set +e
-    until [ $TIMEOUT -eq $TIMEOUT_COUNT ]; do
-        TILLER_STATUS=$(kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $3}')
-        TILLER_READY_COUNT=$(kubectl -n kube-system get pods -o wide | grep tiller-deploy | awk '{print $2}')
-        if [[ "$TILLER_STATUS" == "Running" ]] && [[ "$TILLER_READY_COUNT" == "1/1" ]]; then
-            break
-        fi
-        echo "Waiting for tiller to be ready"
-        kubectl -n kube-system get pods -o wide
-        let TIMEOUT=TIMEOUT+1
-        sleep 5
-    done
-
-    if [ $TIMEOUT -eq $TIMEOUT_COUNT ]; then
-        echo "Failed to install tiller"
-
-        # Dump lowlevel logs to help diagnose failure to start tiller
-        $HOME/dind-cluster.sh dump
-        kubectl -n kube-system describe pods
-        exit 1
-    fi
-fi
 
 echo "microk8s setup script done"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI as ui } from '@kui-shell/test'
+import { Common, CLI as ui, ReplExpect } from '@kui-shell/test'
 import { Application } from 'spectron'
 import { CLI as headless } from '@kui-shell/core/tests/lib/headless'
 
@@ -107,7 +107,7 @@ declare var kubectl: headless
 declare function doHelp(this: Common.ISuite, cmd: string, breadcrumbs: string[], modes: string[], content?: string): Promise<void>
 
 /** Get text from a Terminal-oriented tab */
-declare function getTerminalText(this: Common.ISuite): Promise<string>
+declare function getTerminalText(this: Common.ISuite, res: ReplExpect.AppAndCount): Promise<string>
 
 /** Wait for the given checker to be true, w.r.t. the log text in the view */
-declare function waitForTerminalText (checker: string | RegExp | ((text: string) => boolean)): Promise<void>
+declare function waitForTerminalText(this: Common.ISuite, res: ReplExpect.AppAndCount, checker: string | RegExp | ((text: string) => boolean)): Promise<void>

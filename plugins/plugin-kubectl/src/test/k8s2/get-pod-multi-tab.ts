@@ -45,13 +45,17 @@ commands.forEach(command => {
     }
 
     /** get pod in the given namespace */
-    const getPod = (ns: string) => {
-      it(`should get pod in namespace ${ns} via ${command}`, () => {
-        return CLI.command(`${command} get pod ${podName} -n ${ns} -o yaml`, this.app)
-          .then(ReplExpect.justOK)
-          .then(SidecarExpect.open)
-          .then(SidecarExpect.showing(podName, undefined, undefined, ns))
-          .catch(Common.oops(this, true))
+    const getPod = (ns: string, gotRes: (res: ReplExpect.AppAndCount) => void) => {
+      it(`should get pod in namespace ${ns} via ${command}`, async () => {
+        try {
+          const res = await CLI.command(`${command} get pod ${podName} -n ${ns} -o yaml`, this.app)
+            .then(ReplExpect.ok)
+            .then(SidecarExpect.open)
+            .then(SidecarExpect.showing(podName, undefined, undefined, ns))
+          gotRes(res)
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
       })
     }
 
@@ -73,9 +77,9 @@ commands.forEach(command => {
     }
 
     /** expect sidecar to be showing pod in the given namespace */
-    const expectShowing = (ns: string) => {
+    const expectShowing = (res: () => ReplExpect.AppAndCount, ns: string) => {
       it(`should be showing pod in namespace ${ns} in the sidecar`, () => {
-        return SidecarExpect.showing(podName, undefined, undefined, ns)(this.app)
+        return SidecarExpect.showing(podName, undefined, undefined, ns)(res())
       })
     }
 
@@ -92,13 +96,16 @@ commands.forEach(command => {
     it('should refresh', () => Common.refresh(this))
     Util.closeAllExceptFirstTab.bind(this)()
 
-    getPod(ns1)
+    let res1: ReplExpect.AppAndCount
+    let res2: ReplExpect.AppAndCount
+
+    getPod(ns1, (res: ReplExpect.AppAndCount) => (res1 = res))
     newTab(2) // <-- expect the new tab to be the second tab
-    getPod(ns2)
+    getPod(ns2, (res: ReplExpect.AppAndCount) => (res2 = res))
     switchToTab(1)
-    expectShowing(ns1)
+    expectShowing(() => res1, ns1)
     switchToTab(2)
-    expectShowing(ns2)
+    expectShowing(() => res2, ns2)
 
     deleteNS(this, ns1)
     deleteNS(this, ns2)

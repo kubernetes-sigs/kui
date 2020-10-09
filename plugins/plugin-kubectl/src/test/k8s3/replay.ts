@@ -35,12 +35,12 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
   allocateNS(this, ns, 'kubectl')
 
   it(`should create, get and delete the sample pod from URL via kubectl, and replay`, async () => {
-    const verifySidecar = async (sidecarNotOpen = false) => {
+    const verifySidecar = async (res: ReplExpect.AppAndCount, sidecarNotOpen = false) => {
       console.error('verifying sidecar')
       if (sidecarNotOpen) {
-        await SidecarExpect.notOpen(this.app)
+        await SidecarExpect.notOpen(res)
       } else {
-        await SidecarExpect.open(this.app)
+        await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('nginx'))
           .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
@@ -70,7 +70,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       await verifyCreation(createSelector)
       await this.app.client.waitForExist(`${createSelector} .clickable`)
       await this.app.client.click(`${createSelector} .clickable`)
-      await verifySidecar()
+      await verifySidecar(ReplExpect.blockAfter(createRes))
 
       console.error('deleting')
       const deleteRes = await CLI.command(
@@ -89,7 +89,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
 
       await CLI.command(`replay ${file}`, this.app)
 
-      await verifySidecar(true)
+      await verifySidecar(deleteRes, true)
       await verifyDeletion(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
     } catch (err) {
       await Common.oops(this, true)(err)
@@ -144,12 +144,14 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
   allocateNS(this, ns, 'kubectl')
 
-  it('should replay a kubectl get pods table with re-execution ', async () => {
+  it(`should replay a kubectl get pods table with re-execution using snapshot file ${file}`, async () => {
     try {
-      const selector = await CLI.command(
+      const res = await CLI.command(
         `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
         this.app
-      ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+      )
+
+      const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
 
       await waitForGreen(this.app, selector)
 
@@ -157,12 +159,15 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
       await CLI.command(`replay ${file}`, this.app)
 
-      await SidecarExpect.notOpen(this.app)
-
       await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
+
+      const lastRes = await CLI.lastBlock(res)
+      await SidecarExpect.notOpen(res)
+      await SidecarExpect.notOpen(lastRes)
+
       await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`)
 
-      await SidecarExpect.open(this.app)
+      await SidecarExpect.openInBlockAfter(lastRes)
         .then(SidecarExpect.mode(defaultModeForGet))
         .then(SidecarExpect.showing('nginx'))
     } catch (err) {

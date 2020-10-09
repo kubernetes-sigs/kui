@@ -54,6 +54,7 @@ commands.forEach(command => {
     after(Common.after(this))
 
     const waitForLogText = waitForTerminalText.bind(this)
+    let res: ReplExpect.AppAndCount
 
     const ns: string = createNS()
     allocateNS(this, ns, command)
@@ -78,39 +79,51 @@ commands.forEach(command => {
     const allPods = pods.map(_ => _.podName).join(', ')
 
     const createPodWithoutWaiting = ({ input, podName }: PodDesc) => {
-      it(`should create sample pod from URL`, () => {
-        return CLI.command(`echo ${input} | base64 --decode | ${command} create -f - -n ${ns}`, this.app)
-          .then(ReplExpect.okWithPtyOutput(podName))
-          .catch(Common.oops(this, true))
+      it(`should create sample pod from URL`, async () => {
+        try {
+          res = await CLI.command(`echo ${input} | base64 --decode | ${command} create -f - -n ${ns}`, this.app).then(
+            ReplExpect.okWithPtyOutput(podName)
+          )
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
       })
     }
 
     const waitForPod = ({ podName }: PodDesc, waitIndex: number) => {
-      it(`should wait for the pod to come up`, () => {
-        return CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
-          .then(async () => {
-            await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(waitIndex + 2, podName))
-          })
-          .catch(Common.oops(this, true))
+      it(`should wait for the pod to come up`, async () => {
+        try {
+          res = await CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
+          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(waitIndex + 2, podName))
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
       })
     }
 
     const addLabel = ({ podName }: PodDesc) => {
-      it(`should add a label to pod ${podName}`, () => {
-        return CLI.command(`${command} label pod ${podName} -n ${ns} foo=bar`, this.app)
-          .then(ReplExpect.okWithPtyOutput('labeled'))
-          .catch(Common.oops(this, true))
+      it(`should add a label to pod ${podName}`, async () => {
+        try {
+          res = await CLI.command(`${command} label pod ${podName} -n ${ns} foo=bar`, this.app).then(
+            ReplExpect.okWithPtyOutput('labeled')
+          )
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
       })
     }
 
     const getLogsViaLabel = (containers: string) => {
       it(`should show the Logs tab via k logs -lfoo=bar`, async () => {
-        return CLI.command(`${command} logs -lfoo=bar -n ${ns} ${containers}`, this.app)
-          .then(ReplExpect.justOK)
-          .then(SidecarExpect.open)
-          .then(SidecarExpect.showing(allPods))
-          .then(SidecarExpect.mode('logs'))
-          .catch(Common.oops(this, true))
+        try {
+          res = await CLI.command(`${command} logs -lfoo=bar -n ${ns} ${containers}`, this.app)
+            .then(ReplExpect.justOK)
+            .then(SidecarExpect.open)
+            .then(SidecarExpect.showing(allPods))
+            .then(SidecarExpect.mode('logs'))
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
       })
     }
 
@@ -120,7 +133,7 @@ commands.forEach(command => {
           it(`should show ${showInLog} in log output`, async () => {
             try {
               await sleep(sleepTime)
-              await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
+              await waitForLogText(res, (text: string) => text.indexOf(showInLog) !== -1)
             } catch (err) {
               return Common.oops(this, true)(err)
             }
@@ -133,7 +146,7 @@ commands.forEach(command => {
           it(`should not show ${notShowInLog} in log output`, async () => {
             try {
               await sleep(sleepTime)
-              await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
+              await waitForLogText(res, (text: string) => text.indexOf(notShowInLog) === -1)
             } catch (err) {
               return Common.oops(this, true)(err)
             }
@@ -145,10 +158,14 @@ commands.forEach(command => {
     const switchContainer = (container: string, showInLog: string[], notShowInLog: string[]) => {
       it(`should switch to container ${container}`, async () => {
         try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-          await this.app.client.waitForVisible(`.bx--overflow-menu-options button[data-mode="${container}"]`)
-          await this.app.client.click(`.bx--overflow-menu-options button[data-mode="${container}"]`)
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
+          await this.app.client.waitForVisible(
+            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
+          )
+          await this.app.client.click(
+            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
+          )
         } catch (err) {
           return Common.oops(this, true)(err)
         }

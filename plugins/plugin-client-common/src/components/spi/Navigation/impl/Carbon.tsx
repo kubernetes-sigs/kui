@@ -42,7 +42,10 @@ export default class CarbonSideNav extends React.PureComponent<NavigationProps> 
             key={idx} // if you make this mode.mode, then data-mode doesn't work
             data-mode={mode.mode} // needed for tests
             isActive={this.props.current.current.menuIdx === menuIdx && this.props.current.current.tabIdx === idx}
-            onClick={() => this.props.changeCurrent(menuIdx, idx)}
+            onClick={evt => {
+              evt.stopPropagation()
+              this.props.changeCurrent(menuIdx, idx)
+            }}
             onMouseDown={event => event.preventDefault()}
           >
             <span className="kui--mode-placeholder" data-mode={mode.mode}>

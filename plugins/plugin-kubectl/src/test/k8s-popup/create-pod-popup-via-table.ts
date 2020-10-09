@@ -1,200 +1,200 @@
-/*
- * Copyright 2019 IBM Corporation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// /*
+//  * Copyright 2019 IBM Corporation
+//  *
+//  * Licensed under the Apache License, Version 2.0 (the "License");
+//  * you may not use this file except in compliance with the License.
+//  * You may obtain a copy of the License at
+//  *
+//  * http://www.apache.org/licenses/LICENSE-2.0
+//  *
+//  * Unless required by applicable law or agreed to in writing, software
+//  * distributed under the License is distributed on an "AS IS" BASIS,
+//  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  * See the License for the specific language governing permissions and
+//  * limitations under the License.
+//  */
 
-import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+// import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
+// import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-const wdescribe = Common.localDescribe
+// const wdescribe = Common.localDescribe
 
-const ns1: string = createNS()
-const ns2: string = createNS()
+// const ns1: string = createNS()
+// const ns2: string = createNS()
 
-const kubectl = 'kubectl'
+// const kubectl = 'kubectl'
 
-/** wait for a deletion to complete */
-const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) {
-  it(`should wait for deletion of resource named ${name}`, async () => {
-    try {
-      await waitForRed(this.app, Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name))
-    } catch (err) {
-      return Common.oops(this)(err)
-    }
-  })
-}
+// /** wait for a deletion to complete */
+// const waitForDelete = function(this: Common.ISuite, { name }: { name: string }) {
+//   it(`should wait for deletion of resource named ${name}`, async () => {
+//     try {
+//       await waitForRed(this.app, Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name))
+//     } catch (err) {
+//       return Common.oops(this)(err)
+//     }
+//   })
+// }
 
-/** verify that the monaco editor component contains the given substring */
-const verifyTextExists = async function(this: Common.ISuite, expectedSubstring: string) {
-  await SidecarExpect.textPlainContentFromMonaco(expectedSubstring, false)(this.app)
-}
+// /** verify that the monaco editor component contains the given substring */
+// const verifyTextExists = async function(this: Common.ISuite, expectedSubstring: string) {
+//   await SidecarExpect.textPlainContentFromMonaco(expectedSubstring, false)(this.app)
+// }
 
-/** wait for the creation to finish, then navigate a bit */
-interface CreateSpec {
-  name: string
-  kind: string
-  ns?: string
-  status: string
-}
+// /** wait for the creation to finish, then navigate a bit */
+// interface CreateSpec {
+//   name: string
+//   kind: string
+//   ns?: string
+//   status: string
+// }
 
-const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
-  const { name, kind, ns } = spec
+// const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
+//   const { name, kind, ns } = spec
 
-  it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {
-    const textExists = verifyTextExists.bind(this)
+//   it(`should wait for creation of resource named ${name} in namespace ${ns}`, async () => {
+//     const textExists = verifyTextExists.bind(this)
 
-    const waitForDescribeContent = async () => {
-      await SidecarExpect.yaml({ Name: name, Status: spec.status })(this.app)
-    }
+//     const waitForDescribeContent = async () => {
+//       await SidecarExpect.yaml({ Name: name, Status: spec.status })(this.app)
+//     }
 
-    const waitForRawContent = async () => {
-      await textExists(`apiVersion: v1`)
-      await textExists(`kind: ${kind}`)
-    }
+//     const waitForRawContent = async () => {
+//       await textExists(`apiVersion: v1`)
+//       await textExists(`kind: ${kind}`)
+//     }
 
-    try {
-      // first wait for the table entry to turn green
-      console.log('1')
-      await waitForGreen(this.app, Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name))
+//     try {
+//       // first wait for the table entry to turn green
+//       console.log('1')
+//       await waitForGreen(this.app, Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name))
 
-      // then click on the table row and switch back and forth between
-      // raw and summary modes, each time ensuring that the editor
-      // shows the expected content await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
-      console.log('2')
-      await this.app.client.click(`${Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name)} .clickable`)
-      console.log('3')
-      await SidecarExpect.open(this.app).then(SidecarExpect.mode(defaultModeForGet))
-      console.log('4')
-      await waitForDescribeContent()
+//       // then click on the table row and switch back and forth between
+//       // raw and summary modes, each time ensuring that the editor
+//       // shows the expected content await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
+//       console.log('2')
+//       await this.app.client.click(`${Selectors.LIST_RESULT_BY_N_FOR_NAME(0, name)} .clickable`)
+//       console.log('3')
+//       await SidecarExpect.open(this.app).then(SidecarExpect.mode(defaultModeForGet))
+//       console.log('4')
+//       await waitForDescribeContent()
 
-      console.log('5')
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
-      console.log('6')
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
-      console.log('7')
-      await waitForRawContent()
+//       console.log('5')
+//       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
+//       console.log('6')
+//       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+//       console.log('7')
+//       await waitForRawContent()
 
-      console.log('8')
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('summary'))
-      console.log('9')
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary'))
-      console.log('10')
-      await waitForDescribeContent()
+//       console.log('8')
+//       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('summary'))
+//       console.log('9')
+//       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('summary'))
+//       console.log('10')
+//       await waitForDescribeContent()
 
-      console.log('11')
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
-      console.log('12')
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
-    } catch (err) {
-      return Common.oops(this, true)(err)
-    }
-  })
-}
+//       console.log('11')
+//       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('raw'))
+//       console.log('12')
+//       await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('raw'))
+//     } catch (err) {
+//       return Common.oops(this, true)(err)
+//     }
+//   })
+// }
 
-/** resource names */
-const pod = 'nginx'
+// /** resource names */
+// const pod = 'nginx'
 
-wdescribe(`popup should error out for non-existant command`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: ['yoyo'] }))
-  after(Common.after(this))
+// wdescribe(`popup should error out for non-existant command`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: ['yoyo'] }))
+//   after(Common.after(this))
 
-  it(`should error out for non-existant command`, () => {
-    return ReplExpect.error(127)({ app: this.app, count: 0 }).catch(Common.oops(this, true))
-  })
-})
+//   it(`should error out for non-existant command`, () => {
+//     return ReplExpect.error(127)({ app: this.app, count: 0 }).catch(Common.oops(this, true))
+//   })
+// })
 
-wdescribe(`popup create pod creating namespace ${ns1}`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: [kubectl, 'create', 'ns', ns1] }))
-  after(Common.after(this))
+// wdescribe(`popup create pod creating namespace ${ns1}`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: [kubectl, 'create', 'ns', ns1] }))
+//   after(Common.after(this))
 
-  waitForCreate.bind(this)({ name: ns1, kind: 'Namespace', status: 'Active' })
-})
+//   waitForCreate.bind(this)({ name: ns1, kind: 'Namespace', status: 'Active' })
+// })
 
-wdescribe(`popup create pod creating pod in ${ns1}`, function(this: Common.ISuite) {
-  before(
-    Common.before(this, {
-      popup: [
-        kubectl,
-        'create',
-        '-f',
-        'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
-        '-n',
-        ns1
-      ]
-    })
-  )
-  after(Common.after(this))
+// wdescribe(`popup create pod creating pod in ${ns1}`, function(this: Common.ISuite) {
+//   before(
+//     Common.before(this, {
+//       popup: [
+//         kubectl,
+//         'create',
+//         '-f',
+//         'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
+//         '-n',
+//         ns1
+//       ]
+//     })
+//   )
+//   after(Common.after(this))
 
-  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
-})
+//   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
+// })
 
-wdescribe(`popup watch pods in ${ns1}`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: [kubectl, 'get', 'pods', '-w', '-n', ns1] }))
-  after(Common.after(this))
+// wdescribe(`popup watch pods in ${ns1}`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: [kubectl, 'get', 'pods', '-w', '-n', ns1] }))
+//   after(Common.after(this))
 
-  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
-})
+//   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns1, status: 'Running' })
+// })
 
-wdescribe(`popup create pod creating namespace ${ns2}`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: [kubectl, 'create', 'ns', ns2] }))
-  after(Common.after(this))
+// wdescribe(`popup create pod creating namespace ${ns2}`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: [kubectl, 'create', 'ns', ns2] }))
+//   after(Common.after(this))
 
-  waitForCreate.bind(this)({ name: ns2, kind: 'Namespace', status: 'Active' })
-})
+//   waitForCreate.bind(this)({ name: ns2, kind: 'Namespace', status: 'Active' })
+// })
 
-wdescribe(`popup create pod creating pod in ${ns2}`, function(this: Common.ISuite) {
-  before(
-    Common.before(this, {
-      popup: [
-        kubectl,
-        'create',
-        '-f',
-        'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
-        '-n',
-        ns2
-      ]
-    })
-  )
-  after(Common.after(this))
+// wdescribe(`popup create pod creating pod in ${ns2}`, function(this: Common.ISuite) {
+//   before(
+//     Common.before(this, {
+//       popup: [
+//         kubectl,
+//         'create',
+//         '-f',
+//         'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
+//         '-n',
+//         ns2
+//       ]
+//     })
+//   )
+//   after(Common.after(this))
 
-  waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns2, status: 'Running' })
-})
+//   waitForCreate.bind(this)({ name: pod, kind: 'Pod', ns: ns2, status: 'Running' })
+// })
 
-wdescribe(`popup create pod deleting pod in ${ns1}`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns1] }))
-  after(Common.after(this))
+// wdescribe(`popup create pod deleting pod in ${ns1}`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns1] }))
+//   after(Common.after(this))
 
-  waitForDelete.bind(this)({ name: pod })
-})
+//   waitForDelete.bind(this)({ name: pod })
+// })
 
-wdescribe(`popup create pod deleting pod in ${ns2}`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns2] }))
-  after(Common.after(this))
+// wdescribe(`popup create pod deleting pod in ${ns2}`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: [kubectl, 'delete', 'pod', pod, '-n', ns2] }))
+//   after(Common.after(this))
 
-  waitForDelete.bind(this)({ name: pod })
-})
+//   waitForDelete.bind(this)({ name: pod })
+// })
 
-wdescribe(`popup create pod deleting namespace ${ns1}`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: [kubectl, 'delete', 'ns', ns1] }))
-  after(Common.after(this))
+// wdescribe(`popup create pod deleting namespace ${ns1}`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: [kubectl, 'delete', 'ns', ns1] }))
+//   after(Common.after(this))
 
-  waitForDelete.bind(this)({ name: ns1 })
-})
+//   waitForDelete.bind(this)({ name: ns1 })
+// })
 
-wdescribe(`popup create pod deleting namespace ${ns2}`, function(this: Common.ISuite) {
-  before(Common.before(this, { popup: [kubectl, 'delete', 'ns', ns2] }))
-  after(Common.after(this))
+// wdescribe(`popup create pod deleting namespace ${ns2}`, function(this: Common.ISuite) {
+//   before(Common.before(this, { popup: [kubectl, 'delete', 'ns', ns2] }))
+//   after(Common.after(this))
 
-  waitForDelete.bind(this)({ name: ns2 })
-})
+//   waitForDelete.bind(this)({ name: ns2 })
+// })

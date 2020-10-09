@@ -44,11 +44,13 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
     this.setState({ toolbarText, extraButtons, extraButtonsOverride })
   }
 
+  private readonly _willUpdateToolbar = this.onToolbarUpdate.bind(this)
+
   /** Graft on the toolbar event management */
   private children() {
     if (React.isValidElement(this.props.children)) {
       // ^^^ this check avoids tsc errors
-      return React.cloneElement(this.props.children, { willUpdateToolbar: this.onToolbarUpdate.bind(this) })
+      return React.cloneElement(this.props.children, { willUpdateToolbar: this._willUpdateToolbar })
     } else {
       return this.props.children
     }
@@ -71,6 +73,7 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
         {toolbarHasContent && (
           <Toolbar
             tab={this.props.tab}
+            execUUID={this.props.execUUID}
             response={this.props.response}
             args={this.props.args}
             toolbarText={this.state.toolbarText}

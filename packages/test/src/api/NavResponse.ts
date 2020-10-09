@@ -23,6 +23,9 @@ import { promiseEach, Breadcrumb } from '@kui-shell/core'
 import { productName } from '@kui-shell/client/config.d/name.json'
 
 interface Param {
+  /** extra title for the mocha test section? */
+  title?: string
+
   command: string
   showing: string
   modes: string[]
@@ -37,26 +40,31 @@ export class TestNavResponse {
 
   public run() {
     const { command, showing, modes, commandLinks, hrefLinks, breadcrumbs } = this.param
-    describe(`test NavResponse ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    describe(`test NavResponse ${this.param.title || ''} ${process.env.MOCHA_RUN_TARGET ||
+      ''}`, function(this: Common.ISuite) {
       before(Common.before(this))
       after(Common.after(this))
 
       it(`should open LeftNavSidecar for known outer command=${command} showing=${showing}`, () =>
         CLI.command(command, this.app)
-          .then(ReplExpect.justOK)
+          .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(showing))
-          .then(() => Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(_)))))
+          .then(res =>
+            Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _))))
+          )
           .catch(Common.oops(this, true)))
 
       if (breadcrumbs && breadcrumbs.length > 0) {
         it(`should open LeftNavSidecar with breadcrumbs for known outer command=${command} showing=${showing}`, () =>
           CLI.command(command, this.app)
-            .then(ReplExpect.justOK)
+            .then(ReplExpect.ok)
             .then(SidecarExpect.open)
             .then(SidecarExpect.showing(showing))
-            .then(() => this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS))
-            .then(() => this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS))
+            .then(async res => {
+              await this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS(res.count))
+              return this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS(res.count))
+            })
             .then(expectArray(breadcrumbs.map(_ => _.label)))
             .catch(Common.oops(this, true)))
       }
@@ -64,37 +72,43 @@ export class TestNavResponse {
       if (hrefLinks && hrefLinks.length > 0) {
         it(`should open LeftNavSidecar with href links for known outer command=${command} showing=${showing}`, () =>
           CLI.command(command, this.app)
-            .then(ReplExpect.justOK)
+            .then(ReplExpect.ok)
             .then(SidecarExpect.open)
             .then(SidecarExpect.showing(showing))
-            .then(() =>
-              Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(_))))
-            )
-            .then(() =>
-              Promise.all(
-                hrefLinks.map(link => this.app.client.waitForVisible(Selectors.SIDECAR_NAV_HREF_LINKS(link.label)))
+            .then(async res => {
+              await Promise.all(
+                modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)))
               )
-            )
+              return Promise.all(
+                hrefLinks.map(link =>
+                  this.app.client.waitForVisible(Selectors.SIDECAR_NAV_HREF_LINKS(res.count, link.label))
+                )
+              )
+            })
             .catch(Common.oops(this, true)))
       }
 
       if (commandLinks && commandLinks.length > 0) {
         it(`should open LeftNavSidecar with command links for known outer command=${command} showing=${showing}`, () =>
           CLI.command(command, this.app)
-            .then(ReplExpect.justOK)
+            .then(ReplExpect.ok)
             .then(SidecarExpect.open)
             .then(SidecarExpect.showing(showing))
-            .then(() =>
-              Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(_))))
-            )
-            .then(() =>
+            .then(async res => {
+              await Promise.all(
+                modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)))
+              )
+              return res
+            })
+            .then(res =>
               promiseEach(commandLinks, async link => {
-                const commandLink = Selectors.SIDECAR_NAV_COMMAND_LINKS(link.label)
+                const commandLink = Selectors.SIDECAR_NAV_COMMAND_LINKS(res.count, link.label)
                 await this.app.client.waitForVisible(commandLink)
                 await this.app.client.click(commandLink)
                 if (link.expect.type === 'NavResponse') {
-                  await SidecarExpect.open(this.app)
-                  await SidecarExpect.showing(link.expect.showing)(this.app)
+                  const resAfter = ReplExpect.blockAfter(res)
+                  await SidecarExpect.open(resAfter)
+                  await SidecarExpect.showing(link.expect.showing)(resAfter)
                 }
               })
             )
@@ -109,12 +123,13 @@ export const testAbout = (self: Common.ISuite) => {
 
   it('should open the about window via command execution', () =>
     CLI.command('about', self.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(Overview))
       .then(SidecarExpect.breadcrumbs([productName]))
-      .then(() => self.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2('about')}`))
-      .then(async () => {
+      .then(async res => {
+        await self.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2(res.count, 'about')}`)
+
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
           return self.app.client.execute(sidecarSelector => {
             const imageSrc = document
@@ -124,7 +139,7 @@ export const testAbout = (self: Common.ISuite) => {
               .getAttribute('src')
             const fs = require('fs')
             return fs.statSync(`${__dirname}/${imageSrc}`)
-          }, Selectors.SIDECAR)
+          }, Selectors.SIDECAR(res.count))
         }
 
         if (process.env.MOCHA_RUN_TARGET === 'webpack') {
@@ -137,7 +152,7 @@ export const testAbout = (self: Common.ISuite) => {
             const image = new Image()
             image.src = `${window.location.origin}/${imageSrc}`
             if (image.height === 0) throw new Error(`image not found: ${window.location.origin}/${imageSrc}`)
-          }, Selectors.SIDECAR)
+          }, Selectors.SIDECAR(res.count))
         }
       })
       .catch(Common.oops(self, true)))

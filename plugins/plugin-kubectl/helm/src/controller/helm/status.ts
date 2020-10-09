@@ -16,8 +16,9 @@
 
 import Debug from 'debug'
 import { Arguments, ExecOptions, Registrar, NavResponse, i18n } from '@kui-shell/core'
-import { isUsage, doHelp, preprocessTable, formatTable, KubeOptions } from '@kui-shell/plugin-kubectl'
+import { doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 
+import isUsage from './usage'
 import doExecWithStdout from './exec'
 import commandPrefix from '../command-prefix'
 
@@ -42,18 +43,22 @@ export const format = async (
   debug('command', command)
   debug('verb', verb)
 
-  const [headerString, resourcesString, notesString] = response.split(/RESOURCES:|(?=NOTES:)/)
+  const [headerString] = response.split(/RESOURCES:|(?=NOTES:)/)
 
   const namespaceMatch = response.match(/^NAMESPACE:\s+(.*)$/m) || []
   const namespaceFromHelmStatusOutput = namespaceMatch[1]
   debug('namespace', namespaceFromHelmStatusOutput)
 
-  // const namespaceFor = (entityType: string) => {
-  const namespaceFor = () => {
-    return namespaceFromHelmStatusOutput
-  }
+  const revisionMatch = response.match(/^REVISION:\s+(.*)$/m) || []
+  const revisionFromHelmStatusOutput = revisionMatch[1]
+  debug('revision', revisionFromHelmStatusOutput)
 
-  const resources = resourcesString
+  // const namespaceFor = (entityType: string) => {
+  /* const namespaceFor = () => {
+    return namespaceFromHelmStatusOutput
+  } */
+
+  const resources = [] /* resourcesString
     .split(/==>/)
     .map(_ => _.split(/[\n\r]/))
     .filter(A => A.length > 0 && A[0])
@@ -88,7 +93,7 @@ export const format = async (
           preprocessTable([A.slice(1).join('\n')])[0]
         )
       }
-    })
+    }) */
 
   debug('resources', resources)
 
@@ -102,11 +107,7 @@ export const format = async (
       })
     )
   } else {
-    const notesMatch =
-      notesString &&
-      notesString.match(
-        /^NOTES:\n(\S+) can be accessed via port (\d+) on the following DNS name from within your cluster:\n(\S+)([s\S]+)?/
-      )
+    const notesMatch = response.match(/NOTES:\n([\s\S]+)?/)
 
     const statusMatch = headerString.match(/LAST DEPLOYED: (.*)\nNAMESPACE: (.*)\nSTATUS: (.*)/)
     const status = !statusMatch
@@ -117,22 +118,15 @@ ${statusMatch[1]}
 ### ${strings2('Namespace')}
 ${statusMatch[2]}
 
+### ${strings2('Revision')}
+${revisionFromHelmStatusOutput}
+
 ### ${strings('status')}
 \`${statusMatch[3]}\`
 `
 
-    const summary = !notesMatch
-      ? notesString
-      : `### Chart Name
-${notesMatch[1]}
-
-### Port
-\`${notesMatch[2]}\`
-
-### DNS Name
-${notesMatch[3]}`
-
-    const notes = notesMatch && notesMatch[4]
+    const summary = ''
+    const notes = notesMatch && notesMatch[1]
 
     const overviewMenu = {
       label: 'Overview',
@@ -163,7 +157,7 @@ ${notesMatch[3]}`
                 {
                   mode: 'notes',
                   label: strings2('Notes'),
-                  content: notes,
+                  content: `\`\`\`${notes}\`\`\``,
                   contentType: 'text/markdown'
                 }
               ]
@@ -180,19 +174,19 @@ ${notesMatch[3]}`
       )
     }
 
-    const response: NavResponse = {
+    const commandResponse: NavResponse = {
       apiVersion: 'kui-shell/v1',
       kind: 'NavResponse',
       breadcrumbs: [{ label: 'helm' }, { label: 'release', command: `helm ls` }, { label: name }],
       menus: [overviewMenu, resourcesMenu]
     }
 
-    return response
+    return commandResponse
   }
 }
 
 async function doStatus(args: Arguments<KubeOptions>) {
-  if (isUsage(args)) {
+  if (isUsage(args, 'status')) {
     return doHelp('helm', args)
   }
 

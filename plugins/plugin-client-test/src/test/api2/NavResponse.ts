@@ -17,6 +17,7 @@ import { TestNavResponse } from '@kui-shell/test'
 
 // test nav response with breadcrumbs
 const testNavResponseWithBreadcrumbs = new TestNavResponse({
+  title: 'testNavResponseWithBreadcrumbs',
   command: 'test nav --breadcrumb',
   showing: 'Test Nav Without Links',
   modes: ['table'],
@@ -26,6 +27,7 @@ testNavResponseWithBreadcrumbs.run()
 
 // test nav response with links
 const testFullNavResponse = new TestNavResponse({
+  title: 'testFullNavResponse',
   command: 'test nav',
   showing: 'Test Nav',
   modes: ['table'],
@@ -36,6 +38,7 @@ testFullNavResponse.run()
 
 // test plain nav response (no links, no breadcrumbs)
 const testNavResponseWithoutLinks = new TestNavResponse({
+  title: 'testNavResponseWithoutLinks',
   command: 'test nav --noLinks',
   showing: 'Test Nav Without Links',
   modes: ['table']

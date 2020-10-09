@@ -69,9 +69,11 @@ wdescribe(`kubectl logs follow via table ${process.env.MOCHA_RUN_TARGET || ''}`,
 
   it(`should follow the logs`, async () => {
     try {
-      await CLI.command(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app).then(ReplExpect.justOK)
+      const res = await CLI.command(`kubectl logs ${podName} ${containerName} -n ${ns} -f`, this.app).then(
+        ReplExpect.ok
+      )
 
-      const rows = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-rows`
+      const rows = `${Selectors.SIDECAR_TAB_CONTENT(res.count)} .xterm-rows`
 
       await sleep(sleepTime)
       const text1 = await getTextContent(this.app, rows)

@@ -167,20 +167,23 @@ export const expectArray = (expected: Array<string>, failFast = true, subset = f
 }
 
 /** get the monaco editor text */
-export const getValueFromMonaco = async (app: Application, container = '.bx--tab-content[aria-hidden="false"]') => {
+export const getValueFromMonaco = async (
+  res: AppAndCount,
+  container = `${Selectors.PROMPT_BLOCK_N(res.count)} .bx--tab-content[aria-hidden="false"]`
+) => {
   const selector = `${container} .monaco-editor-wrapper`
   try {
-    await app.client.waitForExist(selector, CLI.waitTimeout)
+    await res.app.client.waitForExist(selector, CLI.waitTimeout)
   } catch (err) {
     console.error('cannot find editor', err)
-    await app.client.getHTML(Selectors.SIDECAR).then(html => {
+    await res.app.client.getHTML(Selectors.SIDECAR(res.count)).then(html => {
       console.log('here is the content of the sidecar:')
       console.log(html)
     })
     throw err
   }
 
-  return app.client
+  return res.app.client
     .execute(selector => {
       try {
         return document.querySelector(selector)['getValueForTests']()
@@ -214,7 +217,7 @@ export const expectText = (app: Application, expectedText: string, exact = true)
       }
       return actualText.indexOf(expectedText) >= 0
     }
-  })
+  }, CLI.waitTimeout)
   return app
 }
 
@@ -266,8 +269,8 @@ export function expectSuggestionsFor(
                 //
                 // then wait for the sidecar to be open and showing the expected sidecar icon text
                 //
-                const icon = `${Selectors.SIDECAR} .sidecar-header-icon-wrapper .sidecar-header-icon`
-                return SidecarExpect.open(this.app)
+                const icon = `${Selectors.SIDECAR(N)} .sidecar-header-icon-wrapper .sidecar-header-icon`
+                return SidecarExpect.open({ app: this.app, count: N })
                   .then(() => this.app.client.getText(icon))
                   .then(actualIcon => actualIcon.toLowerCase())
                   .then(actualIcon => assert.strictEqual(actualIcon, expectedIcon))

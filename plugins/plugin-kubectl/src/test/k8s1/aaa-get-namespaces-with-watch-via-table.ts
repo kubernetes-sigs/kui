@@ -96,12 +96,13 @@ const testDrilldown = async (nsName: string, res: ReplExpect.AppAndCount) => {
 
   await res.app.client.click(`${selector} .entity-name`)
 
-  await SidecarExpect.open(res.app)
+  const sidecarRes = ReplExpect.blockAfter(res)
+  await SidecarExpect.open(sidecarRes)
     .then(SidecarExpect.mode(defaultModeForGet))
     .then(SidecarExpect.showing(nsName))
 
-  await res.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON)
-  await SidecarExpect.fullyClosed(res.app)
+  // await res.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON(sidecarRes.count))
+  // await SidecarExpect.fullyClosed(sidecarRes)
 }
 
 /** k get ns -w */

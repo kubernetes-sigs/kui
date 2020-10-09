@@ -42,7 +42,7 @@ describe(`helm repo add and search ${process.env.MOCHA_RUN_TARGET}`, function(th
 
     const searchRepo = (desiredImage: string) => {
       it(`should search for ${desiredImage}`, () => {
-        return CLI.command(`${helm} search ${desiredImage}`, this.app)
+        return CLI.command(`${helm} search repo ${desiredImage}`, this.app)
           .then(ReplExpect.okWith(desiredImage))
           .catch(Common.oops(this))
       })

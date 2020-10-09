@@ -24,8 +24,7 @@ interface Nav {
   buttons?: Button[]
 }
 
-export interface HistoryEntry extends BaseHistoryEntry {
-  execUUID: string
+export interface Model {
   current: { menuIdx: number; tabIdx: number }
   allNavs: Nav[]
   allLinks: Link[]
@@ -33,9 +32,14 @@ export interface HistoryEntry extends BaseHistoryEntry {
   response: NavResponse
 }
 
-interface Props {
+export type HistoryEntry = Model &
+  BaseHistoryEntry & {
+    execUUID: string
+  }
+
+interface Props<M extends Model = Model> {
   tab: Tab
-  current: HistoryEntry
+  current: M
   changeCurrent: (menuIdx: number, tabIdx: number) => void
 }
 

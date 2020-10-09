@@ -212,19 +212,19 @@ exports.kubectl = makeCLI('kubectl kui', bindir)
 exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
   it(`should give help for known outer command=${cmd} breadcrumbs=${breadcrumbs}`, async () => {
     try {
-      await CLI.command(cmd, this.app)
-        .then(ReplExpect.justOK)
+      const res = await CLI.command(cmd, this.app)
+        .then(ReplExpect.ok)
         .then(SidecarExpect.open)
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS)
-      await this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS)
+      await this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS(res.count))
+      await this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS(res.count))
       await expectArray(breadcrumbs.map(_ => _.label))
 
-      await Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(_))))
+      await Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _))))
 
       if (content) {
         return this.app.client.waitUntil(async () => {
-          const text = await this.app.client.getText(`${Selectors.SIDECAR} .kui--sidecar-text-content`)
+          const text = await this.app.client.getText(`${Selectors.SIDECAR(res.count)} .kui--sidecar-text-content`)
           return text.include(content)
         }, CLI.waitTimeout)
       }
@@ -235,18 +235,18 @@ exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
 }
 
 /** Selector to extract the Terminal rows */
-const terminalRows = `${Selectors.SIDECAR_TAB_CONTENT} .xterm-rows`
+const terminalRows = N => `${Selectors.SIDECAR_TAB_CONTENT(N)} .xterm-rows`
 
 /** Get text from a Terminal-oriented tab */
-exports.getTerminalText = async function() {
-  await this.app.client.waitForExist(terminalRows)
-  return this.app.client.getText(terminalRows)
+exports.getTerminalText = async function(res) {
+  await this.app.client.waitForExist(terminalRows(res.count))
+  return this.app.client.getText(terminalRows(res.count))
 }
 
 /** Wait for the given checker to be true, w.r.t. the log text in the view */
-exports.waitForTerminalText = async function(checker) {
+exports.waitForTerminalText = async function(res, checker) {
   let idx = 0
-  const get = exports.getTerminalText.bind(this)
+  const get = exports.getTerminalText.bind(this, res)
   return this.app.client.waitUntil(async () => {
     const text = await get()
     if (++idx > 5) {

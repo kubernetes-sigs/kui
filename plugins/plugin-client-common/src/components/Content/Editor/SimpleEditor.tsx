@@ -125,7 +125,7 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
         // for inline editor components, as opposed to editor
         // components that are intended to fill the full view), then:
         // size the height to fit the content
-        state.wrapper.style.height = Math.min(400, editor.getContentHeight()) + 'px'
+        state.wrapper.style.height = Math.min(0.3 * window.innerHeight, Math.max(250, editor.getContentHeight())) + 'px'
       }
 
       state.wrapper['getValueForTests'] = () => {

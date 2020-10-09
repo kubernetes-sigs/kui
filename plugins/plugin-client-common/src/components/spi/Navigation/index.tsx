@@ -18,7 +18,7 @@ import React from 'react'
 import { KuiContext } from '../../..'
 
 import NavigationProps from './model'
-export { HistoryEntry } from './model'
+export { Model as NavigationModel, HistoryEntry } from './model'
 
 const Carbon = React.lazy(() => import('./impl/Carbon'))
 const PatternFly = React.lazy(() => import('./impl/PatternFly'))

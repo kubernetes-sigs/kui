@@ -44,6 +44,6 @@ Common.localDescribe('popup mmr', function(this: Common.ISuite) {
   after(Common.after(this))
 
   it('should show title "this is the name part"', async () => {
-    await SidecarExpect.popupTitle(this.app, 'this is the name part')
+    await SidecarExpect.popupTitle({ app: this.app, count: 0 }, 'this is the name part')
   })
 })

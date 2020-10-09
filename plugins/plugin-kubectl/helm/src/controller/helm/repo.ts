@@ -15,13 +15,14 @@
  */
 
 import { Arguments, Registrar } from '@kui-shell/core'
-import { isUsage, doHelp, preprocessTable, formatTable, KubeOptions } from '@kui-shell/plugin-kubectl'
+import { doHelp, preprocessTable, formatTable, KubeOptions } from '@kui-shell/plugin-kubectl'
 
+import isUsage from './usage'
 import doExecWithStdout from './exec'
 import commandPrefix from '../command-prefix'
 
 async function doRepoList(args: Arguments<KubeOptions>) {
-  if (isUsage(args)) {
+  if (isUsage(args, 'repo')) {
     return doHelp('helm', args)
   }
 

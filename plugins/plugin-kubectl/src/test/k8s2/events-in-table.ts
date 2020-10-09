@@ -75,7 +75,7 @@ commands.forEach(command => {
 
         console.log('click on event to drill down')
         await this.app.client.click(Selectors.TABLE_FOOTER_MESSAGE_LINK(res.count, 1))
-        await SidecarExpect.open(this.app).then(SidecarExpect.kind('Event'))
+        await SidecarExpect.openInBlockAfter(res).then(SidecarExpect.kind('Event'))
       } catch (err) {
         return Common.oops(this, true)(err)
       }

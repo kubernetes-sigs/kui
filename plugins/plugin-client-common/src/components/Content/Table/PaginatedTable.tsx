@@ -90,7 +90,7 @@ export type State = ToolbarProps & {
 
 export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: BreadcrumbView[]) {
   const titleBreadcrumb: BreadcrumbView[] = response.title
-    ? [{ label: response.title, className: 'kui--data-table-title', isCurrentPage: true }]
+    ? [{ label: response.title, className: 'kui--data-table-title kui--sidecar-kind', isCurrentPage: true }]
     : []
 
   const _responseCrumbs = typeof response.breadcrumbs === 'function' ? response.breadcrumbs() : response.breadcrumbs
@@ -351,6 +351,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     )
   }
 
+  protected dataAttrs() {
+    return {}
+  }
+
   public render() {
     if (!this.state) {
       return <div className="oops">Internal Error</div>
@@ -364,7 +368,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         (lightweightTables ? ' kui--data-table-wrapper-lightweight flex-fill' : '')
 
       return (
-        <div className={className}>
+        <div className={className} {...this.dataAttrs()}>
           <div className="kui--screenshotable">
             {lightweightTables ? (
               this.content(true, true)

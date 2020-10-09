@@ -111,9 +111,10 @@ export function allocateTab(target: CommandStartEvent | CommandCompleteEvent, ta
 export function tabAlignment(block: CompleteBlock, tab: Tab): CompleteBlock {
   if (isTable(block.completeEvent.response)) {
     block.completeEvent.response.body.forEach(row => {
-      if (row.onclick && row.onclick.startEvent && row.onclick.completeEvent) {
-        allocateTab(row.onclick.startEvent, tab)
-        allocateTab(row.onclick.completeEvent, tab)
+      const onclickHome = row.onclick ? row : row.attributes.find(_ => _.onclick && _.key === 'NAME')
+      if (onclickHome && onclickHome.onclick && onclickHome.onclick.startEvent && onclickHome.onclick.completeEvent) {
+        allocateTab(onclickHome.onclick.startEvent, tab)
+        allocateTab(onclickHome.onclick.completeEvent, tab)
       }
     })
 
@@ -144,26 +145,31 @@ export class FlightRecorder {
             if (isTable(_.completeEvent.response)) {
               await Promise.all(
                 _.completeEvent.response.body.map(async row => {
-                  if (row.onclickIdempotent && typeof row.onclick === 'string') {
-                    const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
-                    const command = row.onclick
-                    row.onclick = {}
+                  if (row.onclickIdempotent) {
+                    // look for onclicks in either the row, or a cell NAME
+                    const onclickHome =
+                      typeof row.onclick === 'string' ? row : row.attributes.find(_ => _.onclick && _.key === 'NAME')
+                    if (onclickHome) {
+                      const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
+                      const command = onclickHome.onclick
+                      onclickHome.onclick = {}
 
-                    const onCommandStart = (startEvent: CommandStartEvent) => {
-                      Object.assign(row.onclick, { startEvent })
-                    }
-                    const onCommandComplete = (completeEvent: CommandCompleteEvent) => {
-                      Object.assign(row.onclick, { completeEvent })
-                    }
+                      const onCommandStart = (startEvent: CommandStartEvent) => {
+                        Object.assign(onclickHome.onclick, { startEvent })
+                      }
+                      const onCommandComplete = (completeEvent: CommandCompleteEvent) => {
+                        Object.assign(onclickHome.onclick, { completeEvent })
+                      }
 
-                    eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
-                    eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
+                      eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
+                      eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
 
-                    try {
-                      await fakeTab.REPL.pexec(command, { tab: fakeTab, echo: !row.onclickSilence })
-                    } finally {
-                      eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
-                      eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+                      try {
+                        await fakeTab.REPL.pexec(command, { tab: fakeTab })
+                      } finally {
+                        eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
+                        eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+                      }
                     }
                   }
                 })

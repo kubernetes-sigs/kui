@@ -84,8 +84,9 @@
 
     &:not(.bx--side-nav--fixed):hover,
     &.bx--side-nav--expanded {
-      width: 30%;
+      width: $nav-width;
       max-width: unset;
+      height: auto;
     }
 
     &.bx--side-nav--expanded ~ .bx--content {

@@ -15,8 +15,9 @@
  */
 
 import React from 'react'
-import { Tab as KuiTab, eventChannelUnsafe } from '@kui-shell/core'
+import { Tab as KuiTab, eventBus, eventChannelUnsafe } from '@kui-shell/core'
 
+import Width from '../../Sidecar/width'
 import Input, { InputOptions } from './Input'
 import Output from './Output'
 import {
@@ -88,6 +89,9 @@ interface State {
 
   /** Is the Input element focused? */
   isFocused: boolean
+
+  /** Does a child want to us to be maximized? */
+  isMaximized: boolean
 }
 
 export default class Block extends React.PureComponent<Props, State> {
@@ -97,7 +101,8 @@ export default class Block extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
     this.state = {
-      isFocused: false
+      isFocused: false,
+      isMaximized: false
     }
   }
 
@@ -112,6 +117,21 @@ export default class Block extends React.PureComponent<Props, State> {
     return this._input && this._input.value()
   }
 
+  /** Child wants to maximize/restore */
+  private willChangeSize(width: Width) {
+    this.setState({
+      isMaximized: width === Width.Maximized
+    })
+    setTimeout(() => {
+      eventBus.emitTabLayoutChange(this.props.tab.uuid)
+      if (this.state._block) {
+        this.state._block.scrollIntoView(true)
+      }
+    })
+  }
+
+  private readonly _willChangeSize = this.willChangeSize.bind(this)
+
   private output() {
     if (isFinished(this.props.model) || isProcessing(this.props.model)) {
       return (
@@ -125,6 +145,7 @@ export default class Block extends React.PureComponent<Props, State> {
           willRemove={this.props.willRemove}
           hasBlockAfter={this.props.hasBlockAfter}
           hasBlockBefore={this.props.hasBlockBefore}
+          willChangeSize={this._willChangeSize}
           onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
           willUpdateCommand={this.props.willUpdateCommand}
           prefersTerminalPresentation={this.props.prefersTerminalPresentation}
@@ -191,6 +212,7 @@ export default class Block extends React.PureComponent<Props, State> {
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
         <li
           className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
+          data-is-maximized={this.state.isMaximized || undefined}
           data-is-output-only={isOutputOnly(this.props.model) || undefined}
           data-is-quietly-elsewhere={isQuietlyPresentedElsewhere(this.props.model) || undefined}
           data-announcement={isAnnouncement(this.props.model) || undefined}

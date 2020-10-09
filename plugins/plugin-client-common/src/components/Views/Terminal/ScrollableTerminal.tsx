@@ -113,11 +113,7 @@ type Props = TerminalOptions & {
   closeSidecar: () => void
 }
 
-interface ScrollbackOptions {
-  /** use inverse colors in this split? */
-  inverseColors?: boolean
-}
-
+type ScrollbackOptions = NewSplitRequest['options']
 type ScrollbackState = ScrollbackOptions & {
   uuid: string
   blocks: BlockModel[]
@@ -482,6 +478,34 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return isOk(block) && (isTabLayoutModificationResponse(block.response) || isPresentedElsewhere(block))
   }
 
+  /**
+   * For click handlers in minisplits, we want to direct the command
+   * execution UI to a plain terminal, if that is possible.
+   *
+   * @return the sbuuid of a plain split, if the given split is a minisplit, and for a ClickHandler event
+   *
+   */
+  private redirectToPlainSplitIfNeeded(
+    sbuuid: string,
+    { execType }: Pick<CommandStartEvent | CommandCompleteEvent, 'execType'>
+  ): string {
+    if (execType === ExecType.ClickHandler) {
+      // <-- this is a click handler event
+      const idx = this.findSplit(this.state, sbuuid)
+      if (this.isMiniSplit(this.state.splits[idx], idx)) {
+        // <-- this is a minisplit
+        const plainSplit = this.state.splits.find((split, idx) => !this.isMiniSplit(split, idx))
+        if (plainSplit) {
+          // <-- we found a plain split!
+          return plainSplit.uuid
+        }
+      }
+    }
+
+    // otherwise, we are stuck with what we have
+    return sbuuid
+  }
+
   /** Output.tsx finished rendering something */
   private onOutputRender(scrollback: ScrollbackState, idx) {
     const block = scrollback.blocks[idx]
@@ -505,6 +529,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     // uuid might be undefined if the split is going away
     if (uuid) {
+      uuid = this.redirectToPlainSplitIfNeeded(uuid, event)
+
       this.splice(uuid, curState => {
         const idx = curState.blocks.length - 1
 
@@ -570,6 +596,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     insertIdx?: number
   ) {
     if (!uuid) return
+    else uuid = this.redirectToPlainSplitIfNeeded(uuid, event)
 
     if (isTabLayoutModificationResponse(event.response)) {
       const updatedResponse = this.onTabLayoutModificationRequest(event.response)
@@ -1200,7 +1227,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             )
           })}
 
-          {this.sidecar()}
+          {/* this.sidecar() */}
         </div>
       </div>
     )

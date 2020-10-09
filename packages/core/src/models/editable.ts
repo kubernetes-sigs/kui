@@ -16,7 +16,7 @@
 
 import { ToolbarText } from '../webapp/views/toolbar-text'
 
-type Save = void | { noToolbarUpdate?: boolean; toolbarText?: ToolbarText }
+type Save = void | { command?: string; noToolbarUpdate?: boolean; toolbarText?: ToolbarText }
 
 export interface SaveError extends Error {
   revealLine?: number

@@ -47,6 +47,10 @@ const yamlMode: ModeRegistration<KubeResource> = {
     label,
     icon: <Icons icon="Edit" />,
 
+    // we want to execute the command in place of the current block,
+    // rather than in a new block
+    inPlace: true,
+
     kind: 'drilldown' as const,
     command: (_, resource: KubeResource, args: { argvNoOptions: string[] }) =>
       `${getCommandFromArgs(args)} edit ${fqnOf(resource)}`

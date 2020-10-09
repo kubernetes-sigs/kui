@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 
 import PaginatedTable, { Props, State } from './PaginatedTable'
@@ -45,16 +44,19 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     this.initWatch()
   }
 
+  protected dataAttrs() {
+    return {
+      'data-table-watching': this.state.isWatching,
+      'data-table-as-grid': this.state.asGrid
+    }
+  }
+
   /** Render the component */
   public render() {
     if (this.props.onRender) {
       setTimeout(() => this.props.onRender(true))
     }
-    return (
-      <div data-table-watching={this.state.isWatching} data-table-as-grid={this.state.asGrid}>
-        {super.render()}
-      </div>
-    )
+    return super.render()
   }
 
   /**

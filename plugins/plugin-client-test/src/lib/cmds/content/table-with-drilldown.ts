@@ -43,7 +43,6 @@ export default (): Table => ({
     {
       name: 'TestMMRModeSilence',
       onclick: `test mmr mode`,
-      onclickSilence: true,
       attributes: [{ value: 'foo' }, { key: firstSeen, value: '5', css: 'green-background', tag: 'badge' }]
     }
   ]
@@ -70,7 +69,6 @@ export const durationTable = (): Table => ({
     },
     {
       name: 'test 4',
-      onclickSilence: true,
       attributes: [{ value: 'foo' }, { value: '4000' }]
     },
     {
@@ -297,7 +295,6 @@ export const sequenceDiagram = (): Table => {
       },
       {
         name: 'test 4',
-        onclickSilence: true,
         attributes: [
           { value: 'Running', css: 'green-background', tag: 'badge' },
           { value: 'Mon Aug 10 2020 15:10:08' },

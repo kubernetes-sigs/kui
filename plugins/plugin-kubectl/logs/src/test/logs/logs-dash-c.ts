@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, Selectors, SidecarExpect } from '@kui-shell/test'
+import { Common, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
 import {
   createNS,
   allocateNS,
@@ -23,7 +23,7 @@ import {
   deletePodByName
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-import { create, get, clickRetry, wait } from './helpers'
+import { res, create, get, clickRetry, wait } from './helpers'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
@@ -70,13 +70,13 @@ commands.forEach(command => {
     const containerName2 = 'vim'
     const podName2 = 'nginx'
 
-    const testLogsContent = (show: string[], notShow?: string[]) => {
+    const testLogsContent = (res: ReplExpect.AppAndCount, show: string[], notShow?: string[]) => {
       if (show) {
         show.forEach(showInLog => {
           it(`should show ${showInLog} in log output`, async () => {
             try {
               await sleep(sleepTime)
-              await waitForLogText((text: string) => text.indexOf(showInLog) !== -1)
+              await waitForLogText(res, (text: string) => text.indexOf(showInLog) !== -1)
             } catch (err) {
               return Common.oops(this, true)(err)
             }
@@ -89,7 +89,7 @@ commands.forEach(command => {
           it(`should not show ${notShowInLog} in log output`, async () => {
             try {
               await sleep(sleepTime)
-              await waitForLogText((text: string) => text.indexOf(notShowInLog) === -1)
+              await waitForLogText(res, (text: string) => text.indexOf(notShowInLog) === -1)
             } catch (err) {
               return Common.oops(this, true)(err)
             }
@@ -102,8 +102,8 @@ commands.forEach(command => {
       it('should hit retry', async () => {
         try {
           await click()
-          await SidecarExpect.toolbarText({ text: toolbar.text, type: toolbar.type, exact: false })(this.app)
-          testLogsContent(showInLog)
+          await SidecarExpect.toolbarText({ text: toolbar.text, type: toolbar.type, exact: false })(res)
+          testLogsContent(res, showInLog)
         } catch (err) {
           return Common.oops(this, true)(err)
         }
@@ -113,13 +113,13 @@ commands.forEach(command => {
     const switchToLogsTab = (showInLog: string[], toolbar: { text: string; type: string }) => {
       it('should show logs tab', async () => {
         try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('logs'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('logs'))
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('logs'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'logs'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'logs'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'logs'))
 
-          await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
+          await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(res)
 
-          testLogsContent(showInLog)
+          testLogsContent(res, showInLog)
         } catch (err) {
           return Common.oops(this, true)(err)
         }
@@ -134,32 +134,34 @@ commands.forEach(command => {
     ) => {
       it(`should switch to container ${container}`, async () => {
         try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('container-list'))
-          await this.app.client.waitForVisible(`.bx--overflow-menu-options button[data-mode="${container}"]`)
-          await this.app.client.click(`.bx--overflow-menu-options button[data-mode="${container}"]`)
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
+          await this.app.client.waitForVisible(
+            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
+          )
+          await this.app.client.click(
+            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
+          )
 
-          await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(this.app)
+          await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(res)
         } catch (err) {
           return Common.oops(this, true)(err)
         }
       })
 
-      testLogsContent(showInLog, notShowInLog)
+      testLogsContent(res, showInLog, notShowInLog)
     }
 
     const toggleStreaming = (changeToLive: boolean) => {
       it('should toggle streaming', async () => {
         try {
           await sleep(sleepTime)
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON('toggle-streaming'))
+          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'toggle-streaming'))
+          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'toggle-streaming'))
           if (changeToLive) {
-            await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(this.app)
+            await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(res)
           } else {
-            await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming is paused', exact: false })(
-              this.app
-            )
+            await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming is paused', exact: false })(res)
           }
         } catch (err) {
           return Common.oops(this, true)(err)
@@ -220,7 +222,7 @@ commands.forEach(command => {
     it('should see log streaming stopped', async () => {
       try {
         await sleep(sleepTime)
-        await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming stopped', exact: false })(this.app)
+        await SidecarExpect.toolbarText({ type: 'warning', text: 'Log streaming stopped', exact: false })(res)
       } catch (err) {
         return Common.oops(this, true)(err)
       }

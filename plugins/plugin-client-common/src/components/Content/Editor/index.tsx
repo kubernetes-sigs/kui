@@ -53,6 +53,9 @@ type Props = MonacoOptions &
 
     /** Use a light theme? Default: false */
     light?: boolean
+
+    /** Size height to fit? */
+    sizeToFit?: boolean
   }
 
 interface State {
@@ -163,7 +166,8 @@ export default class Editor extends React.PureComponent<Props, State> {
         buttons.push({
           mode: 'Save',
           label: props.content.spec.save.label || strings('saveLocalFile'),
-          kind: 'view' as const,
+          kind: 'drilldown' as const,
+          inPlace: true,
           command: async () => {
             try {
               const save = await onSave(editor.getValue())
@@ -172,6 +176,11 @@ export default class Editor extends React.PureComponent<Props, State> {
                   (save && save.toolbarText) || this.allClean(props),
                   !clearable ? undefined : [ClearButton(editor)]
                 )
+              }
+
+              /** return the command to be executed */
+              if (save && save.command) {
+                return save.command
               }
             } catch (error) {
               const err = error as SaveError
@@ -254,11 +263,11 @@ export default class Editor extends React.PureComponent<Props, State> {
   }
 
   /** Handle Toolbar registrations */
-  private static subscribeToChanges(props: Props, editor: Monaco.ICodeEditor) {
+  private static subscribeToChanges(props: Props, editor: Monaco.ICodeEditor, readOnly: boolean) {
     if (props.willUpdateToolbar) {
       // send an initial update; note how the initial toolbarText may
       // be governed by the response
-      const msg = props.response.toolbarText || this.allClean(props)
+      const msg = (readOnly && props.response.toolbarText) || this.allClean(props) // <-- always use allClean if !readOnly
       const buttons = props.response.toolbarText ? [] : !Editor.isClearable(props) ? undefined : [ClearButton(editor)]
       props.willUpdateToolbar(msg, buttons)
 
@@ -301,11 +310,37 @@ export default class Editor extends React.PureComponent<Props, State> {
       eventChannelUnsafe.on('/zoom', onZoom)
       cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
 
-      const onTabLayoutChange = () => {
-        editor.layout()
+      if (props.sizeToFit) {
+        const sizeToFit = (
+          width?: number,
+          height = Math.min(0.4 * window.innerHeight, Math.max(250, editor.getContentHeight()))
+        ) => {
+          // if we know 1) the height of the content won't change, and
+          // 2) we are running in "simple" mode (this is mostly the case
+          // for inline editor components, as opposed to editor
+          // components that are intended to fill the full view), then:
+          // size the height to fit the content
+          state.wrapper.style.flexBasis = height + 'px'
+        }
+        sizeToFit()
+
+        const observer = new ResizeObserver(entries => {
+          sizeToFit(entries[0].contentRect.width, entries[0].contentRect.height)
+          editor.layout()
+        })
+        observer.observe(state.wrapper)
+        cleaners.push(() => observer.disconnect())
+
+        const onTabLayoutChange = () => sizeToFit()
+        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+      } else {
+        const onTabLayoutChange = () => {
+          editor.layout()
+        }
+        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
       }
-      eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-      cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
 
       editor['clearDecorations'] = () => {
         // debug('clearing decorations', editor['__cloudshell_decorations'])
@@ -321,7 +356,7 @@ export default class Editor extends React.PureComponent<Props, State> {
         state.wrapper.focus()
       }
 
-      const subscription = Editor.subscribeToChanges(props, editor)
+      const subscription = Editor.subscribeToChanges(props, editor, providedOptions.readOnly)
       cleaners.push(() => subscription.dispose())
 
       cleaners.push(() => {

@@ -43,17 +43,19 @@ xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
       it(`should create sample pod from URL via ${kubectl}`, async () => {
         try {
-          const selector = await CLI.command(
+          const res = await CLI.command(
             `${kubectl} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
             this.app
-          ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          )
+
+          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
 
           // now click on the table row
           await this.app.client.click(`${selector} .clickable`)
-          await SidecarExpect.open(this.app)
+          await SidecarExpect.open(res)
             .then(SidecarExpect.mode(defaultModeForGet))
             .then(SidecarExpect.showing('nginx'))
         } catch (err) {

@@ -115,6 +115,9 @@ export type DrilldownButton<T = MetadataBearing> = Label &
         ) => string | Promise<string>)
     confirm?: boolean
     kind: 'drilldown'
+
+    /** Execute the command in place of the current block? Default: execute in a new block */
+    inPlace?: boolean
   }
 
 export type ViewButton<T = MetadataBearing> = Label &
