@@ -218,6 +218,7 @@ export default class Output extends React.PureComponent<Props, State> {
     if (isFinished(block) && !isCancelled(block) && !isEmpty(block)) {
       const { response } = block
       return (
+        isOops(block) ||
         isCommentaryResponse(response) ||
         isTabLayoutModificationResponse(response) ||
         isReactResponse(response) ||
