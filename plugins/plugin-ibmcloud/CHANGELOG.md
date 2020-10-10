@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.1](https://github.com/kui-shell/plugin-kubeui/compare/v9.0.0...v9.0.1) (2020-10-10)
+
+### Bug Fixes
+
+- improve discovery of ibmcloud s3 credentials ([0fe3b33](https://github.com/kui-shell/plugin-kubeui/commit/0fe3b33)), closes [#5926](https://github.com/kui-shell/plugin-kubeui/issues/5926)
+
 # [9.0.0](https://github.com/kui-shell/plugin-kubeui/compare/v4.5.0...v9.0.0) (2020-10-08)
 
 ### Bug Fixes

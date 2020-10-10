@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.1](https://github.com/IBM/kui/compare/v9.0.0...v9.0.1) (2020-10-10)
+
+### Bug Fixes
+
+- store the commentary text result to the command when editing is done ([fd05ceb](https://github.com/IBM/kui/commit/fd05ceb)), closes [#5916](https://github.com/IBM/kui/issues/5916) [#5672](https://github.com/IBM/kui/issues/5672)
+
 # [9.0.0](https://github.com/IBM/kui/compare/v4.5.0...v9.0.0) (2020-10-08)
 
 ### Bug Fixes

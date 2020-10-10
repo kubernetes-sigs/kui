@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.1](https://github.com/IBM/kui/compare/v9.0.0...v9.0.1) (2020-10-10)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** do not show the command rerun and remove button for offline kui ([e7c7457](https://github.com/IBM/kui/commit/e7c7457)), closes [#5917](https://github.com/IBM/kui/issues/5917)
+- **plugins/plugin-client-common:** double clicking on Commentary in minisplit often has the editor completely off screen ([60de879](https://github.com/IBM/kui/commit/60de879)), closes [#5897](https://github.com/IBM/kui/issues/5897)
+- **plugins/plugin-client-common:** empty pty response yields blank line ([633f119](https://github.com/IBM/kui/commit/633f119)), closes [#5928](https://github.com/IBM/kui/issues/5928)
+- **plugins/plugin-client-common:** error blocks are not indented properly ([da467ca](https://github.com/IBM/kui/commit/da467ca)), closes [#5938](https://github.com/IBM/kui/issues/5938)
+- add Kui version and github link to client-notebook ([d53337a](https://github.com/IBM/kui/commit/d53337a)), closes [#5918](https://github.com/IBM/kui/issues/5918)
+- improve discovery of ibmcloud s3 credentials ([0fe3b33](https://github.com/IBM/kui/commit/0fe3b33)), closes [#5926](https://github.com/IBM/kui/issues/5926)
+- store the commentary text result to the command when editing is done ([fd05ceb](https://github.com/IBM/kui/commit/fd05ceb)), closes [#5916](https://github.com/IBM/kui/issues/5916) [#5672](https://github.com/IBM/kui/issues/5672)
+- **plugins/plugin-client-notebook:** notebook client no longer needs to set an initialTabTitle ([4a700b5](https://github.com/IBM/kui/commit/4a700b5)), closes [#5919](https://github.com/IBM/kui/issues/5919)
+
 # [9.0.0](https://github.com/IBM/kui/compare/v4.5.0...v9.0.0) (2020-10-08)
 
 ### Bug Fixes

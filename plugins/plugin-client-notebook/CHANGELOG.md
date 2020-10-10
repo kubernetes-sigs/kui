@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.1](https://github.com/IBM/kui/compare/v9.0.0...v9.0.1) (2020-10-10)
+
+### Bug Fixes
+
+- add Kui version and github link to client-notebook ([d53337a](https://github.com/IBM/kui/commit/d53337a)), closes [#5918](https://github.com/IBM/kui/issues/5918)
+- **plugins/plugin-client-notebook:** notebook client no longer needs to set an initialTabTitle ([4a700b5](https://github.com/IBM/kui/commit/4a700b5)), closes [#5919](https://github.com/IBM/kui/issues/5919)
+
 # [9.0.0](https://github.com/IBM/kui/compare/v4.5.0...v9.0.0) (2020-10-08)
 
 ### Bug Fixes
