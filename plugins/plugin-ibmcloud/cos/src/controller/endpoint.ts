@@ -35,6 +35,10 @@ const shorthands = {
   jp: 's3.jp-tok.cloud-object-storage.appdomain.cloud'
 }
 
+export const usage = {
+  required: [{ name: 'endpoint', allowed: ['us', 'us-south', 'us-east', 'eu', 'uk', 'de', 'ap', 'au', 'jp'] }]
+}
+
 export default async function setEndpoint(args: Arguments) {
   const asGiven = args.argvNoOptions[args.argvNoOptions.length - 1]
   const endpoint = shorthands[asGiven] || asGiven

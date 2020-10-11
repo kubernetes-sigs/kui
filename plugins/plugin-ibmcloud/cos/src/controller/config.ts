@@ -18,8 +18,16 @@ import filepath from './filepath'
 import { Arguments } from '@kui-shell/core'
 
 export default async function readConfig({ REPL }: Pick<Arguments, 'REPL'>) {
-  return JSON.parse(
-    (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath())} --with-data`)).content.data ||
-      '{}'
-  )
+  try {
+    return JSON.parse(
+      (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath())} --with-data`)).content.data ||
+        '{}'
+    )
+  } catch (err) {
+    if (err.code === 404) {
+      return {}
+    } else {
+      throw err
+    }
+  }
 }
