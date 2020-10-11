@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
+import { CommandHandler, KResponse, ParsedOptions, Registrar, UsageModel } from '@kui-shell/core'
 
-import setEndpoint from './controller/endpoint'
 import validateConfig from './controller/validate'
 import findServiceInstances from './controller/find'
 import findAndBindCredentials from './controller/bind'
+import setEndpoint, { usage as endpointUsage } from './controller/endpoint'
 
-function On(this: Registrar, command: string, handler: CommandHandler<KResponse, ParsedOptions>) {
+function On(this: Registrar, command: string, handler: CommandHandler<KResponse, ParsedOptions>, usage?: UsageModel) {
   ;['cos', 'cloud-object-storage'].forEach(cos => {
-    this.listen(`/ibmcloud/${cos}/${command}`, handler)
+    this.listen(`/ibmcloud/${cos}/${command}`, handler, usage ? { usage } : undefined)
   })
 }
 
@@ -32,6 +32,6 @@ export default async (registrar: Registrar) => {
 
   on('service-instances', findServiceInstances)
   on('bind', findAndBindCredentials)
-  on('endpoint', setEndpoint)
+  on('endpoint', setEndpoint, endpointUsage)
   on('validate', validateConfig)
 }
