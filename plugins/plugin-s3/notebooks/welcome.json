@@ -2,10 +2,11 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Notebook",
   "metadata": {
-    "name": "Using S3",
+    "name": "Getting Started with S3",
     "description": ""
   },
   "spec": {
+    "preferReExecute": true,
     "splits": [
       {
         "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
@@ -15,16 +16,16 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Accessing S3 with Kui\n\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\n\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\n\nKui currently supports the following S3 providers:\n\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\n\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements."
+                "children": "# Getting Started with S3\n\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\n\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\n\nKui currently supports the following S3 providers:\n\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\n\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements."
               }
             },
-            "historyIdx": 253,
+            "historyIdx": 250,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# # Accessing S3 with Kui\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements.",
+            "command": "#  # Getting Started with S3\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements.",
             "startEvent": {
               "route": "/#",
-              "startTime": 1602105660446,
-              "command": "# # Accessing S3 with Kui\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements.",
+              "startTime": 1602455815872,
+              "command": "#  # Getting Started with S3\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -47,44 +48,52 @@
                 "outputOnly": true,
                 "plugin": "plugin-client-common"
               },
-              "execType": 0,
-              "execUUID": "990029ee-f3b8-4566-99ab-c82abadadae3"
+              "execType": 1,
+              "execUUID": "89e5ef85-cbe2-4807-933d-ca4e779598a2",
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602105660457,
-              "command": "# # Accessing S3 with Kui\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements.",
-              "argvNoOptions": ["#"],
+              "execType": 1,
+              "completeTime": 1602455816021,
+              "command": "# # Getting Started with S3\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements.",
+              "argvNoOptions": [
+                "#",
+                "  # Getting Started with S3\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements."
+              ],
               "parsedOptions": {
-                "_": ["#"]
+                "_": [
+                  "#",
+                  "  # Getting Started with S3\\n\\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\\n\\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\\n\\nKui currently supports the following S3 providers:\\n\\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\\n\\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements."
+                ]
               },
-              "execUUID": "990029ee-f3b8-4566-99ab-c82abadadae3",
+              "execUUID": "89e5ef85-cbe2-4807-933d-ca4e779598a2",
               "cancelled": false,
+              "echo": true,
               "evaluatorOptions": {
                 "outputOnly": true,
                 "plugin": "plugin-client-common"
               },
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "990029ee-f3b8-4566-99ab-c82abadadae3",
-                "history": 253,
+                "echo": true,
+                "type": 1,
+                "execUUID": "89e5ef85-cbe2-4807-933d-ca4e779598a2",
+                "history": 250,
                 "env": {}
               },
               "response": {
                 "apiVersion": "kui-shell/v1",
                 "kind": "CommentaryResponse",
                 "props": {
-                  "children": "# Accessing S3 with Kui\n\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support parallel operations.\n\n#### ** !! This support is still experimental. Please do not use Kui's S3 support against your production data. **\n\nKui currently supports the following S3 providers. It will attempt to discover the credentials and endpoints, and make them accessible using a given mount point:\n\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\n\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements."
+                  "children": "# Getting Started with S3\n\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support [parallel operations](#kuiexec?command=replay%20/kui/s3/parallelization).\n\n> ** This support is still experimental. Please do not use Kui's S3 support against your production data. **\n\nKui currently supports the following S3 providers:\n\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\n\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements."
                 }
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 253
+              "historyIdx": 250
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "990029ee-f3b8-4566-99ab-c82abadadae3",
-            "startTime": 1602105660446,
+            "execUUID": "89e5ef85-cbe2-4807-933d-ca4e779598a2",
+            "startTime": 1602455815872,
             "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
@@ -102,13 +111,13 @@
                 "children": "## Available Commands\n\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\n\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\n\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\n\n- `rmdir`, `rm`, and `mv` are also supported\n\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right."
               }
             },
-            "historyIdx": 251,
+            "historyIdx": 250,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ",
+            "command": "#  ## Available Commands\\n\\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\\n\\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\\n\\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\\n\\n- `rmdir`, `rm`, and `mv` are also supported\\n\\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right.",
             "startEvent": {
               "route": "/#",
-              "startTime": 1602105250968,
-              "command": "# ",
+              "startTime": 1602455815876,
+              "command": "#  ## Available Commands\\n\\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\\n\\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\\n\\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\\n\\n- `rmdir`, `rm`, and `mv` are also supported\\n\\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -131,44 +140,52 @@
                 "outputOnly": true,
                 "plugin": "plugin-client-common"
               },
-              "execType": 0,
-              "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964"
+              "execType": 1,
+              "execUUID": "08800557-1d00-43e1-80a0-321d9361b0de",
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602105250982,
-              "command": "#",
-              "argvNoOptions": ["#"],
+              "execType": 1,
+              "completeTime": 1602455816021,
+              "command": "# ## Available Commands\\n\\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\\n\\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\\n\\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\\n\\n- `rmdir`, `rm`, and `mv` are also supported\\n\\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right.",
+              "argvNoOptions": [
+                "#",
+                "  ## Available Commands\\n\\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\\n\\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\\n\\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\\n\\n- `rmdir`, `rm`, and `mv` are also supported\\n\\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right."
+              ],
               "parsedOptions": {
-                "_": ["#"]
+                "_": [
+                  "#",
+                  "  ## Available Commands\\n\\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\\n\\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\\n\\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\\n\\n- `rmdir`, `rm`, and `mv` are also supported\\n\\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right."
+                ]
               },
-              "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964",
+              "execUUID": "08800557-1d00-43e1-80a0-321d9361b0de",
               "cancelled": false,
+              "echo": true,
               "evaluatorOptions": {
                 "outputOnly": true,
                 "plugin": "plugin-client-common"
               },
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964",
-                "history": 251,
+                "echo": true,
+                "type": 1,
+                "execUUID": "08800557-1d00-43e1-80a0-321d9361b0de",
+                "history": 250,
                 "env": {}
               },
               "response": {
                 "apiVersion": "kui-shell/v1",
                 "kind": "CommentaryResponse",
                 "props": {
-                  "children": "## Available Commands\n\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\n\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. "
+                  "children": "## Available Commands\n\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\n\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\n\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\n\n- `rmdir`, `rm`, and `mv` are also supported\n\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right."
                 }
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 251
+              "historyIdx": 250
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964",
-            "startTime": 1602105250968,
+            "execUUID": "08800557-1d00-43e1-80a0-321d9361b0de",
+            "startTime": 1602455815876,
             "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
@@ -183,16 +200,16 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "## Getting Started\n\nFirst, let us ensure that you are set up properly to access your S3 Provider."
+                "children": "## Next Steps\n\n[Using S3 with Kui](#kuiexec?command=replay%20/kui/s3/using-s3.json)"
               }
             },
-            "historyIdx": 250,
+            "historyIdx": 256,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ## Getting Started\\n\\nFirst, let us ensure that you are set up properly to access your S3 Provider.",
+            "command": "# ## Next Steps\\n\\n[Using S3 with Kui](#kuiexec?command=replay%20/kui/s3/using-s3.json)",
             "startEvent": {
               "route": "/#",
-              "startTime": 1602252380330,
-              "command": "# ## Getting Started\\n\\nFirst, let us ensure that you are set up properly to access your S3 Provider.",
+              "startTime": 1602455830097,
+              "command": "# ## Next Steps\\n\\n[Using S3 with Kui](#kuiexec?command=replay%20/kui/s3/using-s3.json)",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -216,17 +233,17 @@
                 "plugin": "plugin-client-common"
               },
               "execType": 0,
-              "execUUID": "f55f6cfa-05c7-475d-9aa8-44425316f426"
+              "execUUID": "27297682-6aca-41c6-a615-a13e7688473e"
             },
             "completeEvent": {
               "execType": 0,
-              "completeTime": 1602252380354,
-              "command": "# ## Getting Started\\n\\nFirst, let us ensure that you are set up properly to access your S3 Provider.",
+              "completeTime": 1602455830124,
+              "command": "# ## Next Steps\\n\\n[Using S3 with Kui](#kuiexec?command=replay%20/kui/s3/using-s3.json)",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
               },
-              "execUUID": "f55f6cfa-05c7-475d-9aa8-44425316f426",
+              "execUUID": "27297682-6aca-41c6-a615-a13e7688473e",
               "cancelled": false,
               "evaluatorOptions": {
                 "outputOnly": true,
@@ -235,7 +252,99 @@
               "execOptions": {
                 "type": 0,
                 "language": "en-US",
-                "execUUID": "f55f6cfa-05c7-475d-9aa8-44425316f426",
+                "execUUID": "c58564bc-a23a-4a1e-ac2b-17585227835e",
+                "history": 256,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Next Steps\n\n[Using S3 with Kui](#kuiexec?command=replay%20/kui/s3/using-s3.json)"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 256
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "27297682-6aca-41c6-a615-a13e7688473e",
+            "startTime": 1602455830097,
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "2_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Setting up your connection to S3\n\nLet us ensure that you are set up properly to access your S3 Provider."
+              }
+            },
+            "historyIdx": 250,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ## Setting up your connection to S3\\n\\nLet us ensure that you are set up properly to access your S3 Provider.",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1602455815880,
+              "command": "# ## Setting up your connection to S3\\n\\nLet us ensure that you are set up properly to access your S3 Provider.",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 1,
+              "execUUID": "e62d6e3e-07da-418c-9d5e-06db9a6e631c",
+              "echo": true
+            },
+            "completeEvent": {
+              "execType": 1,
+              "completeTime": 1602455816021,
+              "command": "# ## Setting up your connection to S3\\n\\nLet us ensure that you are set up properly to access your S3 Provider.",
+              "argvNoOptions": [
+                "#",
+                "  ## Setting up your connection to S3\\n\\nFirst, let us ensure that you are set up properly to access your S3 Provider."
+              ],
+              "parsedOptions": {
+                "_": [
+                  "#",
+                  "  ## Setting up your connection to S3\\n\\nFirst, let us ensure that you are set up properly to access your S3 Provider."
+                ]
+              },
+              "execUUID": "e62d6e3e-07da-418c-9d5e-06db9a6e631c",
+              "cancelled": false,
+              "echo": true,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "echo": true,
+                "type": 1,
+                "execUUID": "50fa6c2b-254a-4e87-ab5b-bd2f1563c9e2",
                 "history": 250,
                 "env": {}
               },
@@ -243,7 +352,7 @@
                 "apiVersion": "kui-shell/v1",
                 "kind": "CommentaryResponse",
                 "props": {
-                  "children": "# Getting Started\n\nFirst, let us ensure that you are set up properly to access your S3 Provider."
+                  "children": "## Setting up your connection to S3\n\nLet us ensure that you are set up properly to access your S3 Provider."
                 }
               },
               "responseType": "ScalarResponse",
@@ -251,8 +360,8 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "f55f6cfa-05c7-475d-9aa8-44425316f426",
-            "startTime": 1602252380330,
+            "execUUID": "e62d6e3e-07da-418c-9d5e-06db9a6e631c",
+            "startTime": 1602455815880,
             "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
@@ -265,13 +374,13 @@
                 "children": "### Option 1: I am using Minio\n\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:"
               }
             },
-            "historyIdx": 250,
+            "historyIdx": 251,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ### Option 1: I am using Minio\\n\\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:",
+            "command": "#  ### Option 1: I am using Minio\\n\\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:",
             "startEvent": {
               "route": "/#",
-              "startTime": 1602252406049,
-              "command": "# ### Option 1: I am using Minio\\n\\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:",
+              "startTime": 1602455816067,
+              "command": "#  ### Option 1: I am using Minio\\n\\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -294,115 +403,54 @@
                 "outputOnly": true,
                 "plugin": "plugin-client-common"
               },
-              "execType": 0,
-              "execUUID": "42a26906-9afc-40be-b273-cff0a7ad3fe7"
+              "execType": 1,
+              "execUUID": "fb59656a-d8b6-4414-b1d9-d784b8df9838",
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602252406060,
+              "execType": 1,
+              "completeTime": 1602455816084,
               "command": "# ### Option 1: I am using Minio\\n\\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:",
-              "argvNoOptions": ["#"],
+              "argvNoOptions": [
+                "#",
+                "  ### Option 1: I am using Minio\\n\\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:"
+              ],
               "parsedOptions": {
-                "_": ["#"]
+                "_": [
+                  "#",
+                  "  ### Option 1: I am using Minio\\n\\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:"
+                ]
               },
-              "execUUID": "42a26906-9afc-40be-b273-cff0a7ad3fe7",
+              "execUUID": "fb59656a-d8b6-4414-b1d9-d784b8df9838",
               "cancelled": false,
+              "echo": true,
               "evaluatorOptions": {
                 "outputOnly": true,
                 "plugin": "plugin-client-common"
               },
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "42a26906-9afc-40be-b273-cff0a7ad3fe7",
-                "history": 250,
+                "echo": true,
+                "type": 1,
+                "execUUID": "3b1e409d-cb6c-4d4b-b2db-adf10354af60",
+                "history": 251,
                 "env": {}
               },
               "response": {
                 "apiVersion": "kui-shell/v1",
                 "kind": "CommentaryResponse",
                 "props": {
-                  "children": "## Option 1: I am using Minio\n\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:"
+                  "children": "### Option 1: I am using Minio\n\nMinio uses environment variables to communicate its credentials. We can confirm that you have these. Rerun the following commands to check that you have the necessary variables configured:"
                 }
-              },
-              "responseType": "ScalarResponse",
-              "historyIdx": 250
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "42a26906-9afc-40be-b273-cff0a7ad3fe7",
-            "startTime": 1602252406049,
-            "prefersTerminalPresentation": false,
-            "outputOnly": true,
-            "state": "valid-response"
-          },
-          {
-            "response": {
-              "apiVersion": "kui-shell/v1",
-              "kind": "XtermResponse",
-              "rows": [
-                [
-                  {
-                    "innerText": "no",
-                    "classList": [],
-                    "style": {},
-                    "textContent": "n"
-                  }
-                ]
-              ]
-            },
-            "historyIdx": 251,
-            "cwd": "~/git/whisk/nickm/kui",
-            "command": "printenv MINIO_ACCESS_KEY && echo yes || echo no",
-            "startEvent": {
-              "route": "*",
-              "startTime": 1602252494752,
-              "command": "printenv MINIO_ACCESS_KEY && echo yes || echo no",
-              "evaluatorOptions": {},
-              "execType": 0,
-              "execUUID": "e12c1ebe-2cc2-414a-8a3d-bd95aba0931b"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602252495310,
-              "command": "printenv MINIO_ACCESS_KEY && echo yes || echo no",
-              "argvNoOptions": ["printenv", "MINIO_ACCESS_KEY", "&&", "echo", "yes", "||", "echo", "no"],
-              "parsedOptions": {
-                "_": ["printenv", "MINIO_ACCESS_KEY", "&&", "echo", "yes", "||", "echo", "no"]
-              },
-              "execUUID": "e12c1ebe-2cc2-414a-8a3d-bd95aba0931b",
-              "cancelled": false,
-              "evaluatorOptions": {},
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "e12c1ebe-2cc2-414a-8a3d-bd95aba0931b",
-                "history": 251,
-                "env": {}
-              },
-              "response": {
-                "apiVersion": "kui-shell/v1",
-                "kind": "XtermResponse",
-                "rows": [
-                  [
-                    {
-                      "innerText": "no",
-                      "classList": [],
-                      "style": {},
-                      "textContent": "n"
-                    }
-                  ]
-                ]
               },
               "responseType": "ScalarResponse",
               "historyIdx": 251
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "e12c1ebe-2cc2-414a-8a3d-bd95aba0931b",
-            "startTime": 1602252494752,
+            "execUUID": "fb59656a-d8b6-4414-b1d9-d784b8df9838",
+            "startTime": 1602455816067,
             "prefersTerminalPresentation": false,
-            "outputOnly": false,
+            "outputOnly": true,
             "state": "valid-response"
           },
           {
@@ -422,30 +470,32 @@
             },
             "historyIdx": 252,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "printenv MINIO_SECRET_KEY && echo yes || echo no",
+            "command": "printenv MINIO_ACCESS_KEY && echo yes || echo no",
             "startEvent": {
               "route": "*",
-              "startTime": 1602252894725,
-              "command": "printenv MINIO_SECRET_KEY && echo yes || echo no",
+              "startTime": 1602455816109,
+              "command": "printenv MINIO_ACCESS_KEY && echo yes || echo no",
               "evaluatorOptions": {},
-              "execType": 0,
-              "execUUID": "a8bdc32e-45cb-4a03-93e4-d4680441bdf2"
+              "execType": 1,
+              "execUUID": "1e584c2a-743d-44d0-81b7-2b00742a0db0",
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602252894835,
-              "command": "printenv MINIO_SECRET_KEY && echo yes || echo no",
-              "argvNoOptions": ["printenv", "MINIO_SECRET_KEY", "&&", "echo", "yes", "||", "echo", "no"],
+              "execType": 1,
+              "completeTime": 1602455816585,
+              "command": "printenv MINIO_ACCESS_KEY && echo yes || echo no",
+              "argvNoOptions": ["printenv", "MINIO_ACCESS_KEY", "&&", "echo", "yes", "||", "echo", "no"],
               "parsedOptions": {
-                "_": ["printenv", "MINIO_SECRET_KEY", "&&", "echo", "yes", "||", "echo", "no"]
+                "_": ["printenv", "MINIO_ACCESS_KEY", "&&", "echo", "yes", "||", "echo", "no"]
               },
-              "execUUID": "a8bdc32e-45cb-4a03-93e4-d4680441bdf2",
+              "execUUID": "1e584c2a-743d-44d0-81b7-2b00742a0db0",
               "cancelled": false,
+              "echo": true,
               "evaluatorOptions": {},
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "a8bdc32e-45cb-4a03-93e4-d4680441bdf2",
+                "echo": true,
+                "type": 1,
+                "execUUID": "74ce4dc4-8b5a-4b30-b24b-4cf4abaecc80",
                 "history": 252,
                 "env": {}
               },
@@ -468,8 +518,79 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "a8bdc32e-45cb-4a03-93e4-d4680441bdf2",
-            "startTime": 1602252894725,
+            "execUUID": "1e584c2a-743d-44d0-81b7-2b00742a0db0",
+            "startTime": 1602455816109,
+            "prefersTerminalPresentation": false,
+            "outputOnly": false,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "XtermResponse",
+              "rows": [
+                [
+                  {
+                    "innerText": "no",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "n"
+                  }
+                ]
+              ]
+            },
+            "historyIdx": 253,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "printenv MINIO_SECRET_KEY && echo yes || echo no",
+            "startEvent": {
+              "route": "*",
+              "startTime": 1602455816623,
+              "command": "printenv MINIO_SECRET_KEY && echo yes || echo no",
+              "evaluatorOptions": {},
+              "execType": 1,
+              "execUUID": "db2d2177-f938-4e33-bbe1-007ed7c89cb9",
+              "echo": true
+            },
+            "completeEvent": {
+              "execType": 1,
+              "completeTime": 1602455816751,
+              "command": "printenv MINIO_SECRET_KEY && echo yes || echo no",
+              "argvNoOptions": ["printenv", "MINIO_SECRET_KEY", "&&", "echo", "yes", "||", "echo", "no"],
+              "parsedOptions": {
+                "_": ["printenv", "MINIO_SECRET_KEY", "&&", "echo", "yes", "||", "echo", "no"]
+              },
+              "execUUID": "db2d2177-f938-4e33-bbe1-007ed7c89cb9",
+              "cancelled": false,
+              "echo": true,
+              "evaluatorOptions": {},
+              "execOptions": {
+                "echo": true,
+                "type": 1,
+                "execUUID": "6551d8fc-e5fc-458d-9ae3-0a93916dd9de",
+                "history": 253,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "XtermResponse",
+                "rows": [
+                  [
+                    {
+                      "innerText": "no",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "n"
+                    }
+                  ]
+                ]
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 253
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "db2d2177-f938-4e33-bbe1-007ed7c89cb9",
+            "startTime": 1602455816623,
             "prefersTerminalPresentation": false,
             "outputOnly": false,
             "state": "valid-response"
@@ -482,596 +603,130 @@
                 "children": "### Option 2: I am using IBM Cloud\n\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:"
               }
             },
-            "historyIdx": 62,
-            "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:",
-            "startEvent": {
-              "route": "/#",
-              "startTime": 1602256329314,
-              "command": "# ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:",
-              "evaluatorOptions": {
-                "usage": {
-                  "command": "commentary",
-                  "strict": "commentary",
-                  "example": "commentary -f [<markdown file path>]",
-                  "docs": "Commentary",
-                  "optional": [
-                    {
-                      "name": "--title",
-                      "alias": "-t",
-                      "docs": "Title for the commentary"
-                    },
-                    {
-                      "name": "--file",
-                      "alias": "-f",
-                      "docs": "File that contains the texts"
-                    }
-                  ]
-                },
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execType": 0,
-              "execUUID": "9d66d1ca-e8de-4813-b2cf-b6b39efcdda6"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602256329340,
-              "command": "# ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:",
-              "argvNoOptions": ["#"],
-              "parsedOptions": {
-                "_": ["#"]
-              },
-              "execUUID": "9d66d1ca-e8de-4813-b2cf-b6b39efcdda6",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "9d66d1ca-e8de-4813-b2cf-b6b39efcdda6",
-                "history": 62,
-                "env": {}
-              },
-              "response": {
-                "apiVersion": "kui-shell/v1",
-                "kind": "CommentaryResponse",
-                "props": {
-                  "children": "## Option 2: I am using IBM Cloud\n\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:"
-                }
-              },
-              "responseType": "ScalarResponse",
-              "historyIdx": 62
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "9d66d1ca-e8de-4813-b2cf-b6b39efcdda6",
-            "startTime": 1602256329314,
-            "prefersTerminalPresentation": false,
-            "outputOnly": true,
-            "state": "valid-response"
-          },
-          {
-            "response": "Your connection to use IBM Cloud Object Storage looks good",
-            "historyIdx": 250,
-            "cwd": "~/git/whisk/nickm/kui",
-            "command": "ibmcloud cos validate",
-            "startEvent": {
-              "route": "/ibmcloud/cos/validate",
-              "startTime": 1602256517833,
-              "command": "ibmcloud cos validate",
-              "evaluatorOptions": {
-                "plugin": "plugin-ibmcloud/cos"
-              },
-              "execType": 0,
-              "execUUID": "c59f9d5c-bcd4-4330-a04f-d621eca8351b"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602256517855,
-              "command": "ibmcloud cos validate",
-              "argvNoOptions": ["ibmcloud", "cos", "validate"],
-              "parsedOptions": {
-                "_": ["ibmcloud", "cos", "validate"]
-              },
-              "execUUID": "c59f9d5c-bcd4-4330-a04f-d621eca8351b",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "plugin": "plugin-ibmcloud/cos"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "c59f9d5c-bcd4-4330-a04f-d621eca8351b",
-                "history": 250,
-                "env": {}
-              },
-              "response": "Your connection to use IBM Cloud Object Storage looks good",
-              "responseType": "ScalarResponse",
-              "historyIdx": 250
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "c59f9d5c-bcd4-4330-a04f-d621eca8351b",
-            "startTime": 1602256517833,
-            "prefersTerminalPresentation": false,
-            "outputOnly": false,
-            "state": "valid-response"
-          },
-          {
-            "response": {
-              "apiVersion": "kui-shell/v1",
-              "kind": "CommentaryResponse",
-              "props": {
-                "children": "## Trying our your connection\n\nNow let us try to interact with your S3 buckets via some familiar shell commands.\n\n> Note: if you are using IBM Cloud, replace \"minio\" with \"ibm\" in what follows."
-              }
-            },
-            "historyIdx": 251,
-            "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ## Trying our your connection\\n\\nNow let us try to interact with your S3 buckets via some familiar shell commands.\\n\\n> Note: if you are using IBM Cloud, replace \"minio\" with \"ibm\" in what follows.",
-            "startEvent": {
-              "route": "/#",
-              "startTime": 1602256598216,
-              "command": "# ## Trying our your connection\\n\\nNow let us try to interact with your S3 buckets via some familiar shell commands.\\n\\n> Note: if you are using IBM Cloud, replace \"minio\" with \"ibm\" in what follows.",
-              "evaluatorOptions": {
-                "usage": {
-                  "command": "commentary",
-                  "strict": "commentary",
-                  "example": "commentary -f [<markdown file path>]",
-                  "docs": "Commentary",
-                  "optional": [
-                    {
-                      "name": "--title",
-                      "alias": "-t",
-                      "docs": "Title for the commentary"
-                    },
-                    {
-                      "name": "--file",
-                      "alias": "-f",
-                      "docs": "File that contains the texts"
-                    }
-                  ]
-                },
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execType": 0,
-              "execUUID": "6b80c604-f441-4182-8bc7-a787dcd73b2d"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602256598250,
-              "command": "# ## Trying our your connection\\n\\nNow let us try to interact with your S3 buckets via some familiar shell commands.\\n\\n> Note: if you are using IBM Cloud, replace \"minio\" with \"ibm\" in what follows.",
-              "argvNoOptions": ["#"],
-              "parsedOptions": {
-                "_": ["#"]
-              },
-              "execUUID": "6b80c604-f441-4182-8bc7-a787dcd73b2d",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "6b80c604-f441-4182-8bc7-a787dcd73b2d",
-                "history": 251,
-                "env": {}
-              },
-              "response": {
-                "apiVersion": "kui-shell/v1",
-                "kind": "CommentaryResponse",
-                "props": {
-                  "children": "## Trying our your connection\n\nNow let us try to interact with your S3 buckets via some familiar shell commands."
-                }
-              },
-              "responseType": "ScalarResponse",
-              "historyIdx": 251
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "6b80c604-f441-4182-8bc7-a787dcd73b2d",
-            "startTime": 1602256598216,
-            "prefersTerminalPresentation": false,
-            "outputOnly": true,
-            "state": "valid-response"
-          },
-          {
-            "response": true,
-            "historyIdx": 253,
-            "cwd": "~/git/whisk/nickm/kui",
-            "command": "mkdir /s3/minio/kuitestbucket",
-            "startEvent": {
-              "route": "/mkdir",
-              "startTime": 1602256670226,
-              "command": "mkdir /s3/minio/kuitestbucket",
-              "evaluatorOptions": {
-                "flags": {
-                  "boolean": ["p", "v"]
-                },
-                "plugin": "plugin-bash-like/fs"
-              },
-              "execType": 0,
-              "execUUID": "b10afe02-0967-40d5-bafd-ace038f23ac5"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602256670291,
-              "command": "mkdir /s3/minio/kuitestbucket",
-              "argvNoOptions": ["mkdir", "/s3/minio/kuitestbucket"],
-              "parsedOptions": {
-                "_": ["mkdir", "/s3/minio/kuitestbucket"]
-              },
-              "execUUID": "b10afe02-0967-40d5-bafd-ace038f23ac5",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "plugin": "plugin-bash-like/fs"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "b10afe02-0967-40d5-bafd-ace038f23ac5",
-                "history": 253,
-                "env": {}
-              },
-              "response": true,
-              "responseType": "ScalarResponse",
-              "historyIdx": 253
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "b10afe02-0967-40d5-bafd-ace038f23ac5",
-            "startTime": 1602256670226,
-            "prefersTerminalPresentation": false,
-            "outputOnly": false,
-            "state": "valid-response"
-          },
-          {
-            "response": {
-              "apiVersion": "kui-shell/v1",
-              "kind": "XtermResponse",
-              "rows": []
-            },
             "historyIdx": 254,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "echo \"hello world\" > /tmp/kuitest.txt",
+            "command": "#  ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:",
             "startEvent": {
-              "route": "*",
-              "startTime": 1602256692767,
-              "command": "echo \"hello world\" > /tmp/kuitest.txt",
-              "evaluatorOptions": {},
-              "execType": 0,
-              "execUUID": "61c4bf39-6036-4694-9d27-527bd20cbe2b"
+              "route": "/#",
+              "startTime": 1602455816808,
+              "command": "#  ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 1,
+              "execUUID": "31c7a0e4-c301-4198-923a-68e2cc802f39",
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602256693084,
-              "command": "echo \"hello world\" > /tmp/kuitest.txt",
-              "argvNoOptions": ["echo", "hello world", ">", "/tmp/kuitest.txt"],
+              "execType": 1,
+              "completeTime": 1602455816827,
+              "command": "# ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:",
+              "argvNoOptions": [
+                "#",
+                "  ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:"
+              ],
               "parsedOptions": {
-                "_": ["echo", "hello world", ">", "/tmp/kuitest.txt"]
+                "_": [
+                  "#",
+                  "  ### Option 2: I am using IBM Cloud\\n\\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:"
+                ]
               },
-              "execUUID": "61c4bf39-6036-4694-9d27-527bd20cbe2b",
+              "execUUID": "31c7a0e4-c301-4198-923a-68e2cc802f39",
               "cancelled": false,
-              "evaluatorOptions": {},
+              "echo": true,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "61c4bf39-6036-4694-9d27-527bd20cbe2b",
+                "echo": true,
+                "type": 1,
+                "execUUID": "737259b5-b821-4aaf-82a4-a6069fbbf6ac",
                 "history": 254,
                 "env": {}
               },
               "response": {
                 "apiVersion": "kui-shell/v1",
-                "kind": "XtermResponse",
-                "rows": []
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "### Option 2: I am using IBM Cloud\n\nTo verify your connection to IBM Cloud Object Storage, you may rerun this command:"
+                }
               },
               "responseType": "ScalarResponse",
               "historyIdx": 254
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "61c4bf39-6036-4694-9d27-527bd20cbe2b",
-            "startTime": 1602256692767,
+            "execUUID": "31c7a0e4-c301-4198-923a-68e2cc802f39",
+            "startTime": 1602455816808,
             "prefersTerminalPresentation": false,
-            "outputOnly": false,
+            "outputOnly": true,
             "state": "valid-response"
           },
           {
-            "response": "Created object with etag 6f5902ac237024bdd0c176cb93063dc4",
+            "response": {},
             "historyIdx": 255,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "cp /tmp/kuitest.txt /s3/minio/kuitestbucket/",
+            "command": "ibmcloud cos validate",
             "startEvent": {
-              "route": "/cp",
-              "startTime": 1602256704906,
-              "command": "cp /tmp/kuitest.txt /s3/minio/kuitestbucket/",
+              "route": "/ibmcloud/cos/validate",
+              "startTime": 1602455816861,
+              "command": "ibmcloud cos validate",
               "evaluatorOptions": {
-                "flags": {
-                  "boolean": ["a", "c", "f", "H", "i", "L", "n", "P", "p", "R", "v", "X"]
-                },
-                "plugin": "plugin-bash-like/fs"
+                "plugin": "plugin-ibmcloud/cos"
               },
-              "execType": 0,
-              "execUUID": "78599074-aa29-476e-91d0-50cb7689f376"
+              "execType": 1,
+              "execUUID": "c557c93a-853f-4068-9428-a61abd075128",
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602256705008,
-              "command": "cp /tmp/kuitest.txt /s3/minio/kuitestbucket/",
-              "argvNoOptions": ["cp", "/tmp/kuitest.txt", "/s3/minio/kuitestbucket/"],
+              "execType": 1,
+              "completeTime": 1602455816894,
+              "command": "ibmcloud cos validate",
+              "argvNoOptions": ["ibmcloud", "cos", "validate"],
               "parsedOptions": {
-                "_": ["cp", "/tmp/kuitest.txt", "/s3/minio/kuitestbucket/"]
+                "_": ["ibmcloud", "cos", "validate"]
               },
-              "execUUID": "78599074-aa29-476e-91d0-50cb7689f376",
+              "execUUID": "c557c93a-853f-4068-9428-a61abd075128",
               "cancelled": false,
+              "echo": true,
               "evaluatorOptions": {
-                "plugin": "plugin-bash-like/fs"
+                "plugin": "plugin-ibmcloud/cos"
               },
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "78599074-aa29-476e-91d0-50cb7689f376",
+                "echo": true,
+                "type": 1,
+                "execUUID": "5c795a39-3b43-46bd-870e-a50bb79c3e61",
                 "history": 255,
                 "env": {}
               },
-              "response": "Created object with etag 6f5902ac237024bdd0c176cb93063dc4",
+              "response": {},
               "responseType": "ScalarResponse",
               "historyIdx": 255
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "78599074-aa29-476e-91d0-50cb7689f376",
-            "startTime": 1602256704906,
-            "prefersTerminalPresentation": false,
-            "outputOnly": false,
-            "state": "valid-response"
-          },
-          {
-            "response": {
-              "header": {
-                "name": "Name",
-                "attributes": [
-                  {
-                    "value": "User",
-                    "outerCSS": "hide-with-sidecar"
-                  },
-                  {
-                    "value": "Group",
-                    "outerCSS": "hide-with-sidecar"
-                  },
-                  {
-                    "value": "Size",
-                    "outerCSS": "hide-with-sidecar text-right"
-                  },
-                  {
-                    "value": "Last Modified",
-                    "outerCSS": "hide-with-narrow-window",
-                    "css": "elide-with-narrow-window"
-                  }
-                ]
-              },
-              "body": [
-                {
-                  "name": "kuitest.txt",
-                  "css": "",
-                  "onclickExec": "pexec",
-                  "onclick": "open /s3/minio/kuitestbucket/kuitest.txt",
-                  "onclickSilence": true,
-                  "attributes": [
-                    {
-                      "value": "s3user",
-                      "outerCSS": "hide-with-sidecar",
-                      "css": "slightly-deemphasize",
-                      "key": "User-0"
-                    },
-                    {
-                      "value": "0",
-                      "outerCSS": "hide-with-sidecar",
-                      "css": "slightly-deemphasize",
-                      "key": "Group-1"
-                    },
-                    {
-                      "value": "12B",
-                      "outerCSS": "hide-with-sidecar text-right",
-                      "key": "Size-2"
-                    },
-                    {
-                      "value": "Oct  9 15:18",
-                      "outerCSS": "hide-with-narrow-window",
-                      "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                      "key": "Last Modified-3"
-                    }
-                  ],
-                  "key": "Name"
-                }
-              ],
-              "markdown": true,
-              "noSort": true,
-              "defaultPresentation": "table",
-              "allowedPresentations": ["table"],
-              "noEntityColors": true
-            },
-            "historyIdx": 256,
-            "cwd": "~/git/whisk/nickm/kui",
-            "command": "ls -l /s3/minio/kuitestbucket/",
-            "startEvent": {
-              "route": "/ls",
-              "startTime": 1602256711193,
-              "command": "ls -l /s3/minio/kuitestbucket/",
-              "evaluatorOptions": {
-                "usage": {
-                  "command": "ls",
-                  "title": "local file list",
-                  "header": "Directory listing of your local filesystem",
-                  "noHelpAlias": true,
-                  "optional": [
-                    {
-                      "name": "path",
-                      "docs": "local file path",
-                      "file": true,
-                      "positional": true
-                    },
-                    {
-                      "name": "-A",
-                      "boolean": true,
-                      "docs": "List all entries except for . and .."
-                    },
-                    {
-                      "name": "-a",
-                      "boolean": true,
-                      "docs": "Include directory entries whose names begin with a dot (.)"
-                    },
-                    {
-                      "name": "-d",
-                      "boolean": true,
-                      "docs": "Directories are listed as plain files"
-                    },
-                    {
-                      "name": "-c",
-                      "boolean": true,
-                      "docs": "Use time when file status was last changed for sorting"
-                    },
-                    {
-                      "name": "-C",
-                      "boolean": true,
-                      "hidden": true
-                    },
-                    {
-                      "name": "-l",
-                      "boolean": true,
-                      "hidden": true
-                    },
-                    {
-                      "name": "-h",
-                      "boolean": true,
-                      "hidden": true
-                    },
-                    {
-                      "name": "-t",
-                      "boolean": true,
-                      "docs": "Sort by time modified (most recently modified first)"
-                    },
-                    {
-                      "name": "-r",
-                      "boolean": true,
-                      "docs": "Reverse the natural sort order"
-                    },
-                    {
-                      "name": "-s",
-                      "boolean": true,
-                      "hidden": true
-                    },
-                    {
-                      "name": "-S",
-                      "boolean": true,
-                      "docs": "Sort files by size"
-                    }
-                  ]
-                },
-                "flags": {
-                  "boolean": ["A", "a", "d", "c", "C", "l", "h", "t", "r", "s", "S"]
-                },
-                "plugin": "plugin-bash-like/fs"
-              },
-              "execType": 0,
-              "execUUID": "25a3bdd9-f56e-4945-8eff-cec02839725e"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1602256711256,
-              "command": "ls -l /s3/minio/kuitestbucket/",
-              "argvNoOptions": ["ls", "/s3/minio/kuitestbucket/"],
-              "parsedOptions": {
-                "_": ["ls", "/s3/minio/kuitestbucket/"],
-                "l": true
-              },
-              "execUUID": "25a3bdd9-f56e-4945-8eff-cec02839725e",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "plugin": "plugin-bash-like/fs"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "25a3bdd9-f56e-4945-8eff-cec02839725e",
-                "history": 256,
-                "env": {}
-              },
-              "response": {
-                "header": {
-                  "name": "Name",
-                  "attributes": [
-                    {
-                      "value": "User",
-                      "outerCSS": "hide-with-sidecar"
-                    },
-                    {
-                      "value": "Group",
-                      "outerCSS": "hide-with-sidecar"
-                    },
-                    {
-                      "value": "Size",
-                      "outerCSS": "hide-with-sidecar text-right"
-                    },
-                    {
-                      "value": "Last Modified",
-                      "outerCSS": "hide-with-narrow-window",
-                      "css": "elide-with-narrow-window"
-                    }
-                  ]
-                },
-                "body": [
-                  {
-                    "name": "kuitest.txt",
-                    "css": "",
-                    "onclickExec": "pexec",
-                    "onclick": "open /s3/minio/kuitestbucket/kuitest.txt",
-                    "onclickSilence": true,
-                    "attributes": [
-                      {
-                        "value": "s3user",
-                        "outerCSS": "hide-with-sidecar",
-                        "css": "slightly-deemphasize",
-                        "key": "User-0"
-                      },
-                      {
-                        "value": "0",
-                        "outerCSS": "hide-with-sidecar",
-                        "css": "slightly-deemphasize",
-                        "key": "Group-1"
-                      },
-                      {
-                        "value": "12B",
-                        "outerCSS": "hide-with-sidecar text-right",
-                        "key": "Size-2"
-                      },
-                      {
-                        "value": "Oct  9 15:18",
-                        "outerCSS": "hide-with-narrow-window",
-                        "css": "elide-with-narrow-window slightly-deemphasize pre-wrap",
-                        "key": "Last Modified-3"
-                      }
-                    ],
-                    "key": "Name"
-                  }
-                ],
-                "markdown": true,
-                "noSort": true,
-                "defaultPresentation": "table",
-                "allowedPresentations": ["table"],
-                "noEntityColors": true
-              },
-              "responseType": "ScalarResponse",
-              "historyIdx": 256
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "25a3bdd9-f56e-4945-8eff-cec02839725e",
-            "startTime": 1602256711193,
+            "execUUID": "c557c93a-853f-4068-9428-a61abd075128",
+            "startTime": 1602455816861,
             "prefersTerminalPresentation": false,
             "outputOnly": false,
             "state": "valid-response"
