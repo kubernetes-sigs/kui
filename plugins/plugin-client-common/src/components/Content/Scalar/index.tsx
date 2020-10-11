@@ -91,11 +91,25 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <React.Fragment />
       } else if (typeof response === 'number') {
         return <pre>{response}</pre>
-      } else if (typeof response === 'string') {
-        // Markdown interpretes escapes, so we need to double-escape
+      } else if (isUsageError(response)) {
+        // hopefully we can do away with this shortly
+        if (typeof response.raw === 'string') {
+          return <pre>{response.raw}</pre>
+        } else if (isMessageWithUsageModel(response.raw) || isMessageWithCode(response.raw)) {
+          return <pre>{response.raw.message}</pre>
+        } else {
+          return <HTMLDom content={response.raw} />
+        }
+      } else if (isXtermResponse(response)) {
+        return <XtermDom response={response} />
+      } else if (typeof response === 'string' || isError(response)) {
+        const message = isError(response) ? response.message : response
+        console.error('!!!!!!', message)
+
+        // Markdown interprets escapes, so we need to double-escape
         return (
           <pre>
-            <Markdown tab={tab} repl={tab.REPL} source={response.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')} />
+            <Markdown tab={tab} repl={tab.REPL} source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')} />
           </pre>
         )
       } else if (isCommentaryResponse(response)) {
@@ -149,19 +163,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
             ))}
           </div>
         )
-      } else if (isUsageError(response)) {
-        // hopefully we can do away with this shortly
-        if (typeof response.raw === 'string') {
-          return <pre>{response.raw}</pre>
-        } else if (isMessageWithUsageModel(response.raw) || isMessageWithCode(response.raw)) {
-          return <pre>{response.raw.message}</pre>
-        } else {
-          return <HTMLDom content={response.raw} />
-        }
-      } else if (isXtermResponse(response)) {
-        return <XtermDom response={response} />
-      } else if (isError(response)) {
-        return <React.Fragment>{response.message}</React.Fragment>
       } else if (isReactResponse(response)) {
         return response.react
       } else if (isHTML(response)) {
