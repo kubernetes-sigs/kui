@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Arguments, ExecType } from '@kui-shell/core'
+import { Arguments, ExecType, i18n } from '@kui-shell/core'
 
 import readConfig from './config'
 import { isGoodConfig } from './local'
+
+const strings = i18n('plugin-ibmcloud', 'cos')
 
 export default async function(args: Arguments) {
   const config = await readConfig(args)
@@ -28,13 +30,23 @@ export default async function(args: Arguments) {
     } else {
       return config
     }
-  } else if (!config.endpointForKui) {
-    throw new Error('Please set your IBM Cloud Object Storage endpoint via `ibmcloud cos endpoint`')
-  } else if (!config.HMACProvided || !config.AccessKeyID || !config.SecretAccessKey) {
-    throw new Error('An HMAC key is needed. Please try `ibmcloud cos bind`')
   } else {
-    const message = 'Invalid IBM Cloud Object Storage configuration detected'
-    console.error(message, config)
-    throw new Error(message)
+    const noEndpoint = !config.endpointForKui
+    const noCreds = !config.HMACProvided || !config.AccessKeyID || !config.SecretAccessKey
+
+    const noCredsMessage = strings('noCreds')
+    const noEndpointMessage = strings('noEndpoint')
+
+    if (noEndpoint && noCreds) {
+      throw new Error(`${noCredsMessage} ${noEndpointMessage}`)
+    } else if (noEndpoint) {
+      throw new Error(noEndpointMessage)
+    } else if (noCreds) {
+      throw new Error(noCredsMessage)
+    } else {
+      const message = strings('invalidConfiguration')
+      console.error(message, config)
+      throw new Error(message)
+    }
   }
 }
