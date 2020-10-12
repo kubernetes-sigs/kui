@@ -26,11 +26,13 @@ export function hasEndpoint(config: void | Record<string, any>): config is Pick<
   return typeof (config as Config).endpointForKui === 'string'
 }
 
-export function isOnlyMissingEndpoint(config: void | Record<string, any>): config is Omit<Config, 'endpointForKui'> {
+export function isGoodConfigIgnoringEndpoint(config: void | Record<string, any>): config is Config {
   const conf = config as Config
-  return (
-    config && typeof conf.AccessKeyID === 'string' && typeof conf.SecretAccessKey === 'string' && !hasEndpoint(config)
-  )
+  return config && typeof conf.AccessKeyID === 'string' && typeof conf.SecretAccessKey === 'string'
+}
+
+export function isOnlyMissingEndpoint(config: void | Record<string, any>): config is Omit<Config, 'endpointForKui'> {
+  return isGoodConfigIgnoringEndpoint(config) && !hasEndpoint(config)
 }
 
 export default Config
