@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import {
   defaultModeForGet,
   waitForGreen,
@@ -30,6 +30,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
+  const file = Util.uniqueFileForSnapshot()
 
   allocateNS(this, ns, 'kubectl')
 
@@ -81,12 +82,12 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       await verifyDeletion(deleteSelector)
 
       console.error('snapshoting')
-      await CLI.command('snapshot /tmp/test.kui', this.app).then(ReplExpect.justOK)
+      await CLI.command(`snapshot ${file}`, this.app).then(ReplExpect.justOK)
 
       console.error('replaying')
       await Common.refresh(this)
 
-      await CLI.command('replay /tmp/test.kui', this.app)
+      await CLI.command(`replay ${file}`, this.app)
 
       await verifySidecar(true)
       await verifyDeletion(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
@@ -104,6 +105,7 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
+  const file = Util.uniqueFileForSnapshot()
 
   allocateNS(this, ns, 'kubectl')
 
@@ -116,9 +118,9 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
 
       await waitForGreen(this.app, selector)
 
-      await CLI.command('snapshot /tmp/test.kui --exec', this.app).then(ReplExpect.justOK)
+      await CLI.command(`snapshot ${file} --exec`, this.app).then(ReplExpect.justOK)
 
-      await CLI.command('replay /tmp/test.kui', this.app)
+      await CLI.command(`replay ${file}`, this.app)
 
       await this.app.client.waitUntil(async () => {
         const errorMessage = await this.app.client.getText(`${Selectors.OUTPUT_LAST}.oops[data-status-code="409"]`)
@@ -138,6 +140,7 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
+  const file = Util.uniqueFileForSnapshot()
 
   allocateNS(this, ns, 'kubectl')
 
@@ -150,9 +153,9 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
       await waitForGreen(this.app, selector)
 
-      await CLI.command('snapshot /tmp/test.kui', this.app).then(ReplExpect.justOK)
+      await CLI.command(`snapshot ${file}`, this.app).then(ReplExpect.justOK)
 
-      await CLI.command('replay /tmp/test.kui', this.app)
+      await CLI.command(`replay ${file}`, this.app)
 
       await SidecarExpect.notOpen(this.app)
 
