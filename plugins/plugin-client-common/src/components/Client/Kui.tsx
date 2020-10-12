@@ -171,6 +171,7 @@ export class Kui extends React.PureComponent<Props, State> {
     return (
       <Alert
         hideCloseButton
+        className="kui--terminal-alert kui--connection-lost"
         alert={{
           type: 'error',
           title: strings('Lost connection to your cluster'),
