@@ -8,23 +8,23 @@
   "spec": {
     "splits": [
       {
-        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Accessing S3 with Kui\n\nKui has experimental support for using standard shell commands to manipulate your S3 objects. Some of the commands also support parallel operations.\n\n#### ** !! This support is still experimental. Please do not use Kui's S3 support against your production data. **\n\nKui currently supports the following S3 providers. It will attempt to discover the credentials and endpoints, and make them accessible using a given mount point:\n\n- [minio](https://min.io/), accessible via `/s3/minio/bucket/object`\n- [IBM Cloud Object Storage](https://www.ibm.com/cloud/object-storage), accessible via `/s3/ibm/bucket/object`\n\nWe are eager to add support for more S3 providers. [Let us know](https://github.com/IBM/kui/issues/new) of your requirements."
+                "children": "# Parallelizing your S3 Tasks\n\nKui has experimental support for parallelizing a subset of operations against S3 objects. \n\n#### ** !! This support is still experimental. Please do not use Kui's S3 parallel support against your production data. **\n\nTo take advantage of this feature, ensure you have [connected to your S3 provider](#kuiexec?command=replay%20/kui/s3/welcome.json).\n"
               }
             },
             "historyIdx": 253,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ",
+            "command": "# # Parallelizing your S3 Tasks\\n\\nKui has experimental support for parallelizing a subset of operations against S3 objects. \\n\\n#### ** !! This support is still experimental. Please do not use Kui's S3 parallel support against your production data. **\\n\\nTo take advantage of this feature, ensure you have [connected to your S3 provider](#kuiexec?command=replay%20/kui/s3/welcome.json).\\n",
             "startEvent": {
               "route": "/#",
               "startTime": 1602105660446,
-              "command": "# ",
+              "command": "# # Parallelizing your S3 Tasks\\n\\nKui has experimental support for parallelizing a subset of operations against S3 objects. \\n\\n#### ** !! This support is still experimental. Please do not use Kui's S3 parallel support against your production data. **\\n\\nTo take advantage of this feature, ensure you have [connected to your S3 provider](#kuiexec?command=replay%20/kui/s3/welcome.json).\\n",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -53,7 +53,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1602105660457,
-              "command": "#",
+              "command": "# # Parallelizing your S3 Tasks\\n\\nKui has experimental support for parallelizing a subset of operations against S3 objects. \\n\\n#### ** !! This support is still experimental. Please do not use Kui's S3 parallel support against your production data. **\\n\\nTo take advantage of this feature, ensure you have [connected to your S3 provider](#kuiexec?command=replay%20/kui/s3/welcome.json).\\n",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -92,23 +92,23 @@
         ]
       },
       {
-        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "uuid": "3_8205f6b8-87bf-5679-ac83-e3519c17d89c",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "## Available Commands\n\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\n\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)). If you add the `-P` option, the created S3 objects will have the public bit set.\n\n- `ls f1 f2 f3`. As with `cp`, you may intermix s3 and local files, and use glob patterns.\n\n- `rmdir`, `rm`, and `mv` are also supported\n\n- Highly experimental: `gzip f1 f2 f3`, which will attempt to parallelize the gzip across the s3 globs you have specified. This operation currently requires a Job scheduling backend to have been identified. We cover this in more detail to the right."
+                "children": "## Supported Parallel Operations\n\nParallel support is new, and currently only supports a few operations. The following operations will run in parallel against your S3 objects:\n\n### gzip\n\nFor example, `gzip /s3/minio/mybucket/myobject*.txt` will spawn `N` tasks, if the glob pattern matches `N` objects."
               }
             },
-            "historyIdx": 251,
+            "historyIdx": 250,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ",
+            "command": "# ## Supported Parallel Operations\\n\\nParallel support is new, and currently only supports a few operations. The following operations will run in parallel against your S3 objects:\\n\\n### gzip\\n\\nFor example, `gzip /s3/minio/mybucket/myobject*.txt` will spawn `N` tasks, if the glob pattern matches `N` objects.",
             "startEvent": {
               "route": "/#",
-              "startTime": 1602105250968,
-              "command": "# ",
+              "startTime": 1602516896792,
+              "command": "# ## Supported Parallel Operations\\n\\nParallel support is new, and currently only supports a few operations. The following operations will run in parallel against your S3 objects:\\n\\n### gzip\\n\\nFor example, `gzip /s3/minio/mybucket/myobject*.txt` will spawn `N` tasks, if the glob pattern matches `N` objects.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -132,17 +132,17 @@
                 "plugin": "plugin-client-common"
               },
               "execType": 0,
-              "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964"
+              "execUUID": "b857c687-b9b2-456d-817f-d39c25182a94"
             },
             "completeEvent": {
               "execType": 0,
-              "completeTime": 1602105250982,
-              "command": "#",
+              "completeTime": 1602516896813,
+              "command": "# ## Supported Parallel Operations\\n\\nParallel support is new, and currently only supports a few operations. The following operations will run in parallel against your S3 objects:\\n\\n### gzip\\n\\nFor example, `gzip /s3/minio/mybucket/myobject*.txt` will spawn `N` tasks, if the glob pattern matches `N` objects.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
               },
-              "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964",
+              "execUUID": "b857c687-b9b2-456d-817f-d39c25182a94",
               "cancelled": false,
               "evaluatorOptions": {
                 "outputOnly": true,
@@ -151,117 +151,636 @@
               "execOptions": {
                 "type": 0,
                 "language": "en-US",
-                "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964",
-                "history": 251,
+                "execUUID": "b857c687-b9b2-456d-817f-d39c25182a94",
+                "history": 250,
                 "env": {}
               },
               "response": {
                 "apiVersion": "kui-shell/v1",
                 "kind": "CommentaryResponse",
                 "props": {
-                  "children": "## Available Commands\n\nThe following commands support s3 filepaths. For example, when using minio, a filepath would be `/s3/minio/myBucket/myObject`.\n\n- `cp src dst`, where either or both of the source and destination can be s3 filepaths. "
+                  "children": "## Supported Parallel Operations\n\nParallel support is new, and currently only supports a few operations. The following operations will run in parallel against your S3 objects:\n\n### gzip\n\nFor example, `gzip /s3/minio/mybucket/myobject*.txt` will spawn `N` tasks, if the glob pattern matches `N` objects."
                 }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 250
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "b857c687-b9b2-456d-817f-d39c25182a94",
+            "startTime": 1602516896792,
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "3_de257cab-7893-5d39-9f8c-248a88026a18",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Connecting to your Job Scheduler\n\nNext, ensure that you have connected to a supported Job scheduler. The supported list is limited, and now includes the following Job schedulers:\n\n- [IBM CodeEngine](https://cloud.ibm.com/docs/codeengine?topic=codeengine-getting-started)\n\n### I am using IBM CodeEngine\n\nTo set up a connection to IBM CodeEngine, install the `ce` plugin for the `ibmcloud` CLI, and then target a project:"
+              }
+            },
+            "historyIdx": 249,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ## Connecting to your Job Scheduler\\n\\nNext, ensure that you have connected to a supported Job scheduler. The supported list is limited, and now includes the following Job schedulers:\\n\\n- [IBM CodeEngine](https://cloud.ibm.com/docs/codeengine?topic=codeengine-getting-started)\\n\\n### I am using IBM CodeEngine\\n\\nTo set up a connection to IBM CodeEngine, install the `ce` plugin for the `ibmcloud` CLI, and then target a project:",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1602516455118,
+              "command": "# ## Connecting to your Job Scheduler\\n\\nNext, ensure that you have connected to a supported Job scheduler. The supported list is limited, and now includes the following Job schedulers:\\n\\n- [IBM CodeEngine](https://cloud.ibm.com/docs/codeengine?topic=codeengine-getting-started)\\n\\n### I am using IBM CodeEngine\\n\\nTo set up a connection to IBM CodeEngine, install the `ce` plugin for the `ibmcloud` CLI, and then target a project:",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "7d9b7405-f5c1-493f-9a18-400f2a9acefc"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1602516455268,
+              "command": "# ## Connecting to your Job Scheduler\\n\\nNext, ensure that you have connected to a supported Job scheduler. The supported list is limited, and now includes the following Job schedulers:\\n\\n- [IBM CodeEngine](https://cloud.ibm.com/docs/codeengine?topic=codeengine-getting-started)\\n\\n### I am using IBM CodeEngine\\n\\nTo set up a connection to IBM CodeEngine, install the `ce` plugin for the `ibmcloud` CLI, and then target a project:",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "7d9b7405-f5c1-493f-9a18-400f2a9acefc",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "7d9b7405-f5c1-493f-9a18-400f2a9acefc",
+                "history": 249,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Connecting to your Job Scheduler\n\nNext, ensure that you have connected to a supported Job scheduler. The supported list is limited, and now includes the following Job schedulers:\n\n- [IBM CodeEngine](https://cloud.ibm.com/docs/codeengine?topic=codeengine-getting-started)\n\n### I am using IBM CodeEngine\n\nTo set up a connection to IBM CodeEngine, install the `ce` plugin for the `ibmcloud` CLI, and then target a project:"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 249
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "7d9b7405-f5c1-493f-9a18-400f2a9acefc",
+            "startTime": 1602516455118,
+            "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "XtermResponse",
+              "rows": [
+                [
+                  {
+                    "innerText": "Looking up '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "L"
+                  },
+                  {
+                    "innerText": "code-engine",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "c"
+                  },
+                  {
+                    "innerText": "' from repository '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  },
+                  {
+                    "innerText": "IBM Cloud",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "I"
+                  },
+                  {
+                    "innerText": "'...",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  }
+                ],
+                [
+                  {
+                    "innerText": "Plug-in '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "P"
+                  },
+                  {
+                    "innerText": "code-engine",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "c"
+                  },
+                  {
+                    "innerText": " ",
+                    "classList": [],
+                    "style": {},
+                    "textContent": " "
+                  },
+                  {
+                    "innerText": "0.4.2365",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "0"
+                  },
+                  {
+                    "innerText": "' found in repository '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  },
+                  {
+                    "innerText": "IBM Cloud",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "I"
+                  },
+                  {
+                    "innerText": "'",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  }
+                ],
+                [
+                  {
+                    "innerText": "Plug-in '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "P"
+                  },
+                  {
+                    "innerText": "code-engine/ce 0.4.2365",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "c"
+                  },
+                  {
+                    "innerText": "' was already installed. Do you want to update it with '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  },
+                  {
+                    "innerText": "code",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "c"
+                  },
+                  {
+                    "innerText": "-engine 0.4.2365",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "-"
+                  },
+                  {
+                    "innerText": "' or not? [y/N] ",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  },
+                  {
+                    "innerText": ">",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": ">"
+                  },
+                  {
+                    "innerText": " ",
+                    "classList": [],
+                    "style": {},
+                    "textContent": " "
+                  }
+                ],
+                [
+                  {
+                    "innerText": "Plugin installation was canceled.",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "P"
+                  }
+                ]
+              ]
+            },
+            "historyIdx": 251,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "ibmcloud plugin install code-engine",
+            "startEvent": {
+              "route": "*",
+              "startTime": 1602516645036,
+              "command": "ibmcloud plugin install code-engine",
+              "evaluatorOptions": {},
+              "execType": 0,
+              "execUUID": "0d93015f-c94d-4784-baf7-08f27338185d"
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1602516651519,
+              "command": "ibmcloud plugin install code-engine",
+              "argvNoOptions": ["ibmcloud", "plugin", "install", "code-engine"],
+              "parsedOptions": {
+                "_": ["ibmcloud", "plugin", "install", "code-engine"]
+              },
+              "execUUID": "0d93015f-c94d-4784-baf7-08f27338185d",
+              "cancelled": false,
+              "evaluatorOptions": {},
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "0d93015f-c94d-4784-baf7-08f27338185d",
+                "history": 251,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "XtermResponse",
+                "rows": [
+                  [
+                    {
+                      "innerText": "Looking up '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "L"
+                    },
+                    {
+                      "innerText": "code-engine",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "c"
+                    },
+                    {
+                      "innerText": "' from repository '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    },
+                    {
+                      "innerText": "IBM Cloud",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "I"
+                    },
+                    {
+                      "innerText": "'...",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    }
+                  ],
+                  [
+                    {
+                      "innerText": "Plug-in '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "P"
+                    },
+                    {
+                      "innerText": "code-engine",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "c"
+                    },
+                    {
+                      "innerText": " ",
+                      "classList": [],
+                      "style": {},
+                      "textContent": " "
+                    },
+                    {
+                      "innerText": "0.4.2365",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "0"
+                    },
+                    {
+                      "innerText": "' found in repository '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    },
+                    {
+                      "innerText": "IBM Cloud",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "I"
+                    },
+                    {
+                      "innerText": "'",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    }
+                  ],
+                  [
+                    {
+                      "innerText": "Plug-in '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "P"
+                    },
+                    {
+                      "innerText": "code-engine/ce 0.4.2365",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "c"
+                    },
+                    {
+                      "innerText": "' was already installed. Do you want to update it with '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    },
+                    {
+                      "innerText": "code",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "c"
+                    },
+                    {
+                      "innerText": "-engine 0.4.2365",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "-"
+                    },
+                    {
+                      "innerText": "' or not? [y/N] ",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    },
+                    {
+                      "innerText": ">",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": ">"
+                    },
+                    {
+                      "innerText": " ",
+                      "classList": [],
+                      "style": {},
+                      "textContent": " "
+                    }
+                  ],
+                  [
+                    {
+                      "innerText": "Plugin installation was canceled.",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "P"
+                    }
+                  ]
+                ]
               },
               "responseType": "ScalarResponse",
               "historyIdx": 251
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "0c691fd0-dd2d-4112-ba9d-230e2ce02964",
-            "startTime": 1602105250968,
+            "execUUID": "0d93015f-c94d-4784-baf7-08f27338185d",
+            "startTime": 1602516645036,
             "prefersTerminalPresentation": false,
-            "outputOnly": true,
+            "outputOnly": false,
             "state": "valid-response"
-          }
-        ]
-      },
-      {
-        "uuid": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-        "blocks": [
+          },
           {
             "response": {
               "apiVersion": "kui-shell/v1",
-              "kind": "CommentaryResponse",
-              "props": {
-                "children": "## Parallelizing your Tasks\n\nIf Kui detects a connection to a supported Job scheduling backend, it will attempt to parallelize certain operations against your S3 objects. The list of supported schedulers is small (one!) at the moment:\n\n- [IBM CodeEngine](https://cloud.ibm.com/docs/codeengine?topic=codeengine-getting-started)"
-              }
+              "kind": "XtermResponse",
+              "rows": [
+                [
+                  {
+                    "innerText": "Creating project '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "C"
+                  },
+                  {
+                    "innerText": "kui",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "k"
+                  },
+                  {
+                    "innerText": "'...",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  }
+                ],
+                [
+                  {
+                    "innerText": "Waiting for project '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "W"
+                  },
+                  {
+                    "innerText": "kui",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "k"
+                  },
+                  {
+                    "innerText": "' to be in ready state...",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  }
+                ],
+                [
+                  {
+                    "innerText": "Now selecting project '",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "N"
+                  },
+                  {
+                    "innerText": "kui",
+                    "classList": ["xterm-bold", "xterm-fg-6"],
+                    "style": {},
+                    "textContent": "k"
+                  },
+                  {
+                    "innerText": "'.",
+                    "classList": [],
+                    "style": {},
+                    "textContent": "'"
+                  }
+                ],
+                [
+                  {
+                    "innerText": "OK",
+                    "classList": ["xterm-bold", "xterm-fg-2"],
+                    "style": {},
+                    "textContent": "O"
+                  },
+                  {
+                    "innerText": "",
+                    "classList": [],
+                    "style": {},
+                    "textContent": " "
+                  }
+                ]
+              ]
             },
-            "historyIdx": 252,
+            "historyIdx": 255,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ",
+            "command": "ibmcloud ce project create --name kui --target",
             "startEvent": {
-              "route": "/#",
-              "startTime": 1602106895801,
-              "command": "# ",
-              "evaluatorOptions": {
-                "usage": {
-                  "command": "commentary",
-                  "strict": "commentary",
-                  "example": "commentary -f [<markdown file path>]",
-                  "docs": "Commentary",
-                  "optional": [
-                    {
-                      "name": "--title",
-                      "alias": "-t",
-                      "docs": "Title for the commentary"
-                    },
-                    {
-                      "name": "--file",
-                      "alias": "-f",
-                      "docs": "File that contains the texts"
-                    }
-                  ]
-                },
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
+              "route": "*",
+              "startTime": 1602516791594,
+              "command": "ibmcloud ce project create --name kui --target",
+              "evaluatorOptions": {},
               "execType": 0,
-              "execUUID": "f23cc74a-439c-46e6-b0ee-193cd718be7a"
+              "execUUID": "5008d82b-eab8-4f8a-ad4a-6210a37bcec6"
             },
             "completeEvent": {
               "execType": 0,
-              "completeTime": 1602106895814,
-              "command": "#",
-              "argvNoOptions": ["#"],
+              "completeTime": 1602516828775,
+              "command": "ibmcloud ce project create --name kui --target",
+              "argvNoOptions": ["ibmcloud", "ce", "project", "create"],
               "parsedOptions": {
-                "_": ["#"]
+                "_": ["ibmcloud", "ce", "project", "create"],
+                "name": "kui",
+                "target": true
               },
-              "execUUID": "f23cc74a-439c-46e6-b0ee-193cd718be7a",
+              "execUUID": "5008d82b-eab8-4f8a-ad4a-6210a37bcec6",
               "cancelled": false,
-              "evaluatorOptions": {
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
+              "evaluatorOptions": {},
               "execOptions": {
                 "type": 0,
                 "language": "en-US",
-                "execUUID": "f23cc74a-439c-46e6-b0ee-193cd718be7a",
-                "history": 252,
+                "execUUID": "5008d82b-eab8-4f8a-ad4a-6210a37bcec6",
+                "history": 255,
                 "env": {}
               },
               "response": {
                 "apiVersion": "kui-shell/v1",
-                "kind": "CommentaryResponse",
-                "props": {
-                  "children": "## Parallelizing your Tasks\n\nIf Kui detects a connection to a supported Job scheduling backend, it will attempt to parallelize certain operations against your S3 objects. The list of supported schedulers is small (one!) at the moment:\n\n- [IBM CodeEngine](https://cloud.ibm.com/docs/codeengine?topic=codeengine-getting-started)"
-                }
+                "kind": "XtermResponse",
+                "rows": [
+                  [
+                    {
+                      "innerText": "Creating project '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "C"
+                    },
+                    {
+                      "innerText": "kui",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "k"
+                    },
+                    {
+                      "innerText": "'...",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    }
+                  ],
+                  [
+                    {
+                      "innerText": "Waiting for project '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "W"
+                    },
+                    {
+                      "innerText": "kui",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "k"
+                    },
+                    {
+                      "innerText": "' to be in ready state...",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    }
+                  ],
+                  [
+                    {
+                      "innerText": "Now selecting project '",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "N"
+                    },
+                    {
+                      "innerText": "kui",
+                      "classList": ["xterm-bold", "xterm-fg-6"],
+                      "style": {},
+                      "textContent": "k"
+                    },
+                    {
+                      "innerText": "'.",
+                      "classList": [],
+                      "style": {},
+                      "textContent": "'"
+                    }
+                  ],
+                  [
+                    {
+                      "innerText": "OK",
+                      "classList": ["xterm-bold", "xterm-fg-2"],
+                      "style": {},
+                      "textContent": "O"
+                    },
+                    {
+                      "innerText": "",
+                      "classList": [],
+                      "style": {},
+                      "textContent": " "
+                    }
+                  ]
+                ]
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 252
+              "historyIdx": 255
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "f23cc74a-439c-46e6-b0ee-193cd718be7a",
-            "startTime": 1602106895801,
+            "execUUID": "5008d82b-eab8-4f8a-ad4a-6210a37bcec6",
+            "startTime": 1602516791594,
             "prefersTerminalPresentation": false,
-            "outputOnly": true,
+            "outputOnly": false,
             "state": "valid-response"
-          }
-        ]
-      },
-      {
-        "uuid": "2_8205f6b8-87bf-5679-ac83-e3519c17d89c",
-        "blocks": [
+          },
           {
             "response": {
               "header": {
@@ -3307,7 +3826,7 @@
                 "plugin": "plugin-bash-like/fs"
               },
               "execType": 0,
-              "execUUID": "fb68a543-d678-4d1d-a87b-0d4f2a0b94b1"
+              "execUUID": "11af7e35-752f-40d6-81ca-1e76af22f595"
             },
             "completeEvent": {
               "execType": 0,
@@ -3317,7 +3836,7 @@
               "parsedOptions": {
                 "_": ["gzip", "/s3/ibm/zzz/*.txt"]
               },
-              "execUUID": "fb68a543-d678-4d1d-a87b-0d4f2a0b94b1",
+              "execUUID": "11af7e35-752f-40d6-81ca-1e76af22f595",
               "cancelled": false,
               "evaluatorOptions": {
                 "plugin": "plugin-bash-like/fs"
@@ -6364,17 +6883,12 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "fb68a543-d678-4d1d-a87b-0d4f2a0b94b1",
+            "execUUID": "11af7e35-752f-40d6-81ca-1e76af22f595",
             "startTime": 1602107236059,
             "prefersTerminalPresentation": false,
             "outputOnly": false,
             "state": "valid-response"
-          }
-        ]
-      },
-      {
-        "uuid": "2_de257cab-7893-5d39-9f8c-248a88026a18",
-        "blocks": [
+          },
           {
             "response": {
               "header": {
@@ -6923,7 +7437,7 @@
                 "plugin": "plugin-bash-like/fs"
               },
               "execType": 0,
-              "execUUID": "8027209a-1ca2-4fd4-9941-8a2a6f9855ee"
+              "execUUID": "d0f59f8e-f9a8-4316-8395-ab095ab7c9a9"
             },
             "completeEvent": {
               "execType": 0,
@@ -6933,7 +7447,7 @@
               "parsedOptions": {
                 "_": ["ls", "/s3/ibm/zzz/*.gz"]
               },
-              "execUUID": "8027209a-1ca2-4fd4-9941-8a2a6f9855ee",
+              "execUUID": "d0f59f8e-f9a8-4316-8395-ab095ab7c9a9",
               "cancelled": false,
               "evaluatorOptions": {
                 "plugin": "plugin-bash-like/fs"
@@ -7414,7 +7928,7 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "8027209a-1ca2-4fd4-9941-8a2a6f9855ee",
+            "execUUID": "d0f59f8e-f9a8-4316-8395-ab095ab7c9a9",
             "startTime": 1602107412584,
             "prefersTerminalPresentation": false,
             "outputOnly": false,
