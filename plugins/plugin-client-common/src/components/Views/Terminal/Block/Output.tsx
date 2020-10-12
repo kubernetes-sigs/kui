@@ -215,7 +215,9 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private isShowingSomethingInTerminal(block: BlockModel): block is FinishedBlock {
-    if (isFinished(block) && !isCancelled(block) && !isEmpty(block)) {
+    if (isProcessing(this.props.model)) {
+      return this.hasStreamingOutput()
+    } else if (isFinished(block) && !isCancelled(block) && !isEmpty(block)) {
       const { response } = block
       return (
         isOops(block) ||
@@ -228,9 +230,7 @@ export default class Output extends React.PureComponent<Props, State> {
         (typeof response === 'string' && response.length > 0) ||
         isTable(response) ||
         isMixedResponse(response) ||
-        (isXtermResponse(response)
-          ? response.rows && response.rows.length !== 0
-          : this.state.streamingOutput.length > 0)
+        (isXtermResponse(response) && response.rows && response.rows.length !== 0)
       )
     } else {
       return false
@@ -285,10 +285,7 @@ export default class Output extends React.PureComponent<Props, State> {
 
     return (
       <div className={'repl-output ' + (hasContent ? ' repl-result-has-content' : '')}>
-        {!this.props.isPartOfMiniSplit &&
-          hasContent &&
-          ((isProcessing(this.props.model) && this.hasStreamingOutput()) || isFinished(this.props.model)) &&
-          this.ctx()}
+        {!this.props.isPartOfMiniSplit && hasContent && this.ctx()}
         <div className="result-vertical">
           {this.stream()}
           {this.result()}
