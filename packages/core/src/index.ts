@@ -95,6 +95,8 @@ export {
   isMarkdownResponse,
   ReactResponse,
   isReactResponse,
+  isRandomErrorResponse1,
+  isRandomErrorResponse2,
   MetadataBearing as ResourceWithMetadata,
   MetadataBearingWithContent as ResourceWithMetadataWithContent,
   isMetadataBearing as isResourceWithMetadata

@@ -21,11 +21,14 @@ import {
   Tab as KuiTab,
   ScalarResponse,
   getPrimaryTabId,
+  i18n,
   isCommentaryResponse,
   isHTML,
   isMarkdownResponse,
   isReactResponse,
   isRadioTable,
+  isRandomErrorResponse1,
+  isRandomErrorResponse2,
   isTable,
   isTabLayoutModificationResponse,
   isMixedResponse,
@@ -42,6 +45,8 @@ import { KuiContext } from '../../../'
 import RadioTableSpi from '../../spi/RadioTable'
 import { BlockViewTraits } from '../../Views/Terminal/Block'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
+
+const strings = i18n('plugin-client-common', 'errors')
 
 type Props = BlockViewTraits & {
   tab: KuiTab
@@ -170,6 +175,12 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <HTMLDom content={response} />
       } else if (isMarkdownResponse(response)) {
         return <Markdown tab={tab} repl={tab.REPL} source={response.content} />
+      } else if (isRandomErrorResponse1(response)) {
+        // maybe this is an error response from some random API?
+        return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError1', response.code)} />
+      } else if (isRandomErrorResponse2(response)) {
+        // maybe this is an error response from some random API?
+        return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError2', response.errno)} />
       }
     } catch (err) {
       console.error('catastrophic error rendering Scalar', err)

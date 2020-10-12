@@ -180,6 +180,17 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
   return raw.mode === 'raw' && raw.content !== undefined
 }
 
+type RandomErrorResponse1 = { code: string }
+export function isRandomErrorResponse1(response: Entity): response is RandomErrorResponse1 {
+  return typeof (response as RandomErrorResponse1).code === 'string'
+}
+
+type RandomErrorResponse2 = { errno: string | number }
+export function isRandomErrorResponse2(response: Entity): response is RandomErrorResponse2 {
+  const { errno } = response as RandomErrorResponse2
+  return typeof errno === 'string' && typeof errno === 'number'
+}
+
 /**
  * This type covers all responses with no complex internal structure
  * that views may wish to interpret into fancier views.
@@ -192,6 +203,8 @@ export type ScalarResponse<RowType extends Row = Row> =
   | CommentaryResponse
   | TabLayoutModificationResponse
   | XtermResponse
+  | RandomErrorResponse1
+  | RandomErrorResponse2
 
 export function isScalarResponse(response: Entity): response is ScalarResponse {
   return !isMultiModalResponse(response) && !isNavResponse(response)
