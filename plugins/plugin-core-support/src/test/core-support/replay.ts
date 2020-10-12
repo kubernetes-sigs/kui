@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 
 import { splitViaCommand, focus } from '../core-support2/split-helpers'
 import { doClear } from './clear'
@@ -29,13 +29,14 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
   before(Common.before(this))
   after(Common.after(this))
 
+  const file = Util.uniqueFileForSnapshot()
   const testTabLabel1 = 'test1'
   const testTabLabel2 = 'test2'
 
   const doReplay = (testTabLabel: string) => {
     it('should replay', async () => {
       try {
-        await CLI.command('replay /tmp/test.kui', this.app)
+        await CLI.command(`replay ${file}`, this.app)
 
         await this.app.client.waitForExist(Selectors.TOP_TAB_WITH_TITLE(testTabLabel), CLI.waitTimeout)
 
@@ -64,7 +65,7 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
       .catch(Common.oops(this, true)))
 
   it('should snapshot without specifying title', () =>
-    CLI.command('snapshot /tmp/test.kui', this.app)
+    CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
@@ -73,7 +74,7 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
   doReplay(testTabLabel1)
 
   it(`should snapshot with title ${testTabLabel2}`, () =>
-    CLI.command(`snapshot /tmp/test.kui --title ${testTabLabel2}`, this.app)
+    CLI.command(`snapshot ${file} --title ${testTabLabel2}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
@@ -82,7 +83,7 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
   doReplay(testTabLabel2)
 
   it('should snapshot again but without specifying title', () =>
-    CLI.command('snapshot /tmp/test.kui', this.app)
+    CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
@@ -97,6 +98,8 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   before(Common.before(this))
   after(Common.after(this))
 
+  const file = Util.uniqueFileForSnapshot()
+
   it(`should base64 ${base64Input}`, () =>
     CLI.command(`base64 ${base64Input}`, this.app)
       .then(ReplExpect.okWithString(base64Output))
@@ -110,7 +113,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       .catch(Common.oops(this, true)))
 
   it('should snapshot', () =>
-    CLI.command('snapshot /tmp/test.kui', this.app)
+    CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
@@ -118,7 +121,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
   it('should replay', async () => {
     try {
-      await CLI.command('replay /tmp/test.kui --status-stripe blue', this.app)
+      await CLI.command(`replay ${file} --status-stripe blue`, this.app)
 
       await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'), CLI.waitTimeout)
 
@@ -152,6 +155,7 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
   before(Common.before(this))
   after(Common.after(this))
 
+  const file = Util.uniqueFileForSnapshot()
   const splitTheTerminalViaCommand = splitViaCommand.bind(this)
   const clickToFocus = focus.bind(this)
   const clear = doClear.bind(this)
@@ -166,7 +170,7 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
 
   const doSnapShot = (splitIdx: number) => {
     it('should snapshot', () =>
-      CLI.commandInSplit('snapshot /tmp/test.kui', this.app, splitIdx)
+      CLI.commandInSplit(`snapshot ${file}`, this.app, splitIdx)
         .then(ReplExpect.justOK)
         .catch(Common.oops(this, true)))
   }
@@ -186,7 +190,7 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
   doSnapShot(2)
 
   it('should refresh', () => Common.refresh(this))
-  it('should replay', () => CLI.command('replay /tmp/test.kui', this.app).catch(Common.oops(this, true)))
+  it('should replay', () => CLI.command(`replay ${file}`, this.app).catch(Common.oops(this, true)))
   it('should validate replay', async () => {
     try {
       const countInSplit1 = await CLI.commandInSplit('version', this.app, 1).then(_ => _.count)
@@ -216,6 +220,8 @@ Common.proxyDescribe(`core snapshot and replay by query ${process.env.MOCHA_RUN_
   before(Common.before(this))
   after(Common.after(this))
 
+  const file = Util.uniqueFileForSnapshot()
+
   it(`should base64 ${base64Input}`, () =>
     CLI.command(`base64 ${base64Input}`, this.app)
       .then(ReplExpect.okWithString(base64Output))
@@ -224,13 +230,13 @@ Common.proxyDescribe(`core snapshot and replay by query ${process.env.MOCHA_RUN_
   const title = 'replay-by-query'
 
   it('should snapshot', () =>
-    CLI.command(`snapshot /tmp/test.kui --title ${title}`, this.app)
+    CLI.command(`snapshot ${file} --title ${title}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
   it('should replay by query', async () => {
     try {
-      await this.app.client.url(`${process.env.WEBPACK_CLIENT_URL}?command=replay /tmp/test.kui`)
+      await this.app.client.url(`${process.env.WEBPACK_CLIENT_URL}?command=replay ${file}`)
       await this.app.client.waitForExist(Selectors.TOP_TAB_WITH_TITLE(title), CLI.waitTimeout)
 
       // verify the base64 command replay
