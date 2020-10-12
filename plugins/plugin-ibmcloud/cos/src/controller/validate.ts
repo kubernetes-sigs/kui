@@ -18,6 +18,8 @@ import { Arguments, ExecType, i18n } from '@kui-shell/core'
 
 import readConfig from './config'
 import { isGoodConfig } from './local'
+import { hasEndpoint } from '../model/Config'
+import { setEndpointIfPossible } from './endpoint'
 
 const strings = i18n('plugin-ibmcloud', 'cos')
 
@@ -26,12 +28,16 @@ export default async function(args: Arguments) {
 
   if (isGoodConfig(config)) {
     if (args.execOptions.type === ExecType.TopLevel) {
-      return 'Your connection to IBM Cloud Object Storage looks good'
+      return strings('validCreds')
     } else {
       return config
     }
   } else {
-    const noEndpoint = !config.endpointForKui
+    let noEndpoint = !hasEndpoint(config)
+    if (!hasEndpoint(config)) {
+      noEndpoint = !(await setEndpointIfPossible(args))
+    }
+
     const noCreds = !config.HMACProvided || !config.AccessKeyID || !config.SecretAccessKey
 
     const noCredsMessage = strings('noCreds')
@@ -44,9 +50,7 @@ export default async function(args: Arguments) {
     } else if (noCreds) {
       throw new Error(noCredsMessage)
     } else {
-      const message = strings('invalidConfiguration')
-      console.error(message, config)
-      throw new Error(message)
+      return strings('validCreds')
     }
   }
 }
