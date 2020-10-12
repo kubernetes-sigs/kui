@@ -104,7 +104,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <XtermDom response={response} />
       } else if (typeof response === 'string' || isError(response)) {
         const message = isError(response) ? response.message : response
-        console.error('!!!!!!', message)
 
         // Markdown interprets escapes, so we need to double-escape
         return (
