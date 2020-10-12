@@ -2,7 +2,8 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Notebook",
   "metadata": {
-    "name": "Welcome to Kui"
+    "name": "Welcome to Kui",
+    "preferReExecute": true
   },
   "spec": {
     "splits": [
