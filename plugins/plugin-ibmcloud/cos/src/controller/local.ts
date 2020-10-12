@@ -17,16 +17,10 @@
 import { REPL } from '@kui-shell/core'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
 
-import Config from '../model/Config'
+import Config, { hasEndpoint, isOnlyMissingEndpoint } from '../model/Config'
 
 export function isGoodConfig(config: void | Record<string, any>): config is Config {
-  const conf = config as Config
-  return (
-    config &&
-    typeof conf.AccessKeyID === 'string' &&
-    typeof conf.SecretAccessKey === 'string' &&
-    typeof conf.endpointForKui === 'string'
-  )
+  return isOnlyMissingEndpoint(config) && hasEndpoint(config)
 }
 
 export default async function findLocal(repl: REPL): Promise<void | Config> {

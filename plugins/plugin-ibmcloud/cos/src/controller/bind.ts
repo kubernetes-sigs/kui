@@ -52,7 +52,8 @@ async function bind(
     await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(filepath())}`, {
       data: JSON.stringify(config, undefined, 2)
     })
-    eventChannelUnsafe.emit(updateChannel)
+
+    setTimeout(() => eventChannelUnsafe.emit(updateChannel))
 
     return config
   }
@@ -73,7 +74,7 @@ async function findCredentials(args: Arguments, instancesP?: Promise<ServiceInst
   const local = await findLocal(args.REPL)
 
   if (local) {
-    debug('already have local config')
+    debug('already have valid local config')
     return local
   } else {
     const instances = await (instancesP || findInstances(args))
@@ -102,7 +103,7 @@ export default async function findAndBindCredentials(args: Arguments) {
 
   if (!creds) {
     throw new Error('Unable to bind Cloud Object Storage credentials')
-  } else if (args.execOptions.type === ExecType.TopLevel) {
+  } else if (args.execOptions.type !== ExecType.Nested) {
     return 'Successfully identified Cloud Object Storage credentials'
   } else {
     return creds

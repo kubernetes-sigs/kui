@@ -22,4 +22,15 @@ interface Config {
   SecretAccessKey: string
 }
 
+export function hasEndpoint(config: void | Record<string, any>): config is Pick<Config, 'endpointForKui'> {
+  return typeof (config as Config).endpointForKui === 'string'
+}
+
+export function isOnlyMissingEndpoint(config: void | Record<string, any>): config is Omit<Config, 'endpointForKui'> {
+  const conf = config as Config
+  return (
+    config && typeof conf.AccessKeyID === 'string' && typeof conf.SecretAccessKey === 'string' && !hasEndpoint(config)
+  )
+}
+
 export default Config

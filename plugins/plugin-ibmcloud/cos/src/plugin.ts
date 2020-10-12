@@ -19,7 +19,7 @@ import { CommandHandler, KResponse, ParsedOptions, Registrar, UsageModel } from 
 import validateConfig from './controller/validate'
 import findServiceInstances from './controller/find'
 import findAndBindCredentials from './controller/bind'
-import setEndpoint, { usage as endpointUsage } from './controller/endpoint'
+import setEndpoint from './controller/endpoint'
 
 function On(this: Registrar, command: string, handler: CommandHandler<KResponse, ParsedOptions>, usage?: UsageModel) {
   ;['cos', 'cloud-object-storage'].forEach(cos => {
@@ -32,6 +32,6 @@ export default async (registrar: Registrar) => {
 
   on('service-instances', findServiceInstances)
   on('bind', findAndBindCredentials)
-  on('endpoint', setEndpoint, endpointUsage)
+  on('endpoint', setEndpoint)
   on('validate', validateConfig)
 }
