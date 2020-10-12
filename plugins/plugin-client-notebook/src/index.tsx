@@ -17,6 +17,7 @@
 import React from 'react'
 
 import { ContextWidgets, Icons, Kui, KuiProps, MeterWidgets, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { version } from '@kui-shell/client/package.json'
 
 /**
  * Format our body, with extra status stripe widgets
@@ -26,7 +27,7 @@ import { ContextWidgets, Icons, Kui, KuiProps, MeterWidgets, TextWithIconWidget 
  */
 export default function renderMain(props: KuiProps) {
   const kuiVersion = () => {
-    return <TextWithIconWidget text="Kui v9.0.0" viewLevel="normal" title="Kui version 9.0.0" />
+    return <TextWithIconWidget text={`Kui v${version}`} viewLevel="normal" title={`Kui version ${version}`} />
   }
 
   const githubIcon = () => {
