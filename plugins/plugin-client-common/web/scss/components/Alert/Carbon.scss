@@ -25,6 +25,11 @@
     white-space: normal;
     height: auto;
 
+    &.kui--connection-lost {
+      position: absolute;
+      width: unset;
+    }
+
     .bx--toast-notification__title,
     .bx--toast-notification__subtitle {
       color: var(--color-text-01);
