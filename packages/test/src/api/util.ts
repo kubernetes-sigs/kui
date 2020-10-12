@@ -15,6 +15,7 @@
  */
 import * as assert from 'assert'
 import { Application } from 'spectron'
+import { v4 as uuid } from 'uuid'
 
 // until we can use esModuleInterop...
 // import { safeLoad } from 'js-yaml'
@@ -304,4 +305,8 @@ export function closeAllExceptFirstTab(this: Common.ISuite) {
         .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(N - 1)))
     }
   })
+}
+
+export function uniqueFileForSnapshot() {
+  return `/tmp/${uuid()}.kui`
 }

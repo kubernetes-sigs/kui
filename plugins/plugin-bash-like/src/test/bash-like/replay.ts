@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   // should pwd
+  const file = Util.uniqueFileForSnapshot()
   let curentDirectory: string
   it('should echo current directory', () =>
     CLI.command('pwd', this.app)
@@ -31,7 +32,7 @@ describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, 
       .catch(Common.oops(this, true)))
 
   it('should snapshot', () =>
-    CLI.command('snapshot /tmp/test.kui', this.app)
+    CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
@@ -39,7 +40,7 @@ describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, 
 
   it('should replay', async () => {
     try {
-      await CLI.command('replay /tmp/test.kui', this.app)
+      await CLI.command(`replay ${file}`, this.app)
 
       // verify the pwd command replay
       let idx = 0

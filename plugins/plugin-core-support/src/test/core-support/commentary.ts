@@ -24,6 +24,8 @@ describe('commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
+  const file = Util.uniqueFileForSnapshot()
+
   const verifyComment = () => {
     return this.app.client.waitUntil(async () => {
       await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
@@ -53,14 +55,14 @@ describe('commentary and replay', function(this: Common.ISuite) {
   addComment()
 
   it('should snapshot', () =>
-    CLI.command('snapshot /tmp/test.kui', this.app)
+    CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
   it('should refresh', () => Common.refresh(this))
 
   it('should replay', () =>
-    CLI.command('replay /tmp/test.kui', this.app)
+    CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment())
       .catch(Common.oops(this, true)))
 })
@@ -68,6 +70,8 @@ describe('commentary and replay', function(this: Common.ISuite) {
 describe('edit commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+
+  const file = Util.uniqueFileForSnapshot()
 
   const verifyComment = (expectedText: string) => {
     let idx = 0
@@ -177,14 +181,14 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   clickCancel('foo1')
 
   it('should snapshot', () =>
-    CLI.command('snapshot /tmp/test.kui', this.app)
+    CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
   it('should refresh', () => Common.refresh(this))
 
   it('should replay', () =>
-    CLI.command('replay /tmp/test.kui', this.app)
+    CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment('foo1'))
       .catch(Common.oops(this, true)))
 
@@ -196,14 +200,14 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   clickDone('foo1\nfoo2')
 
   it('should snapshot with --exec', () =>
-    CLI.command('snapshot /tmp/test.kui --exec', this.app)
+    CLI.command(`snapshot ${file} --exec`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
   it('should refresh', () => Common.refresh(this))
 
   it('should replay', () =>
-    CLI.command('replay /tmp/test.kui', this.app)
+    CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment('foo1\nfoo2'))
       .catch(Common.oops(this, true)))
 })
