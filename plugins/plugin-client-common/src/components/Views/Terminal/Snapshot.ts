@@ -42,7 +42,6 @@ export type Split = {
 type NotebookSpec = {
   spec: {
     splits: Split[]
-    preferReExecute?: boolean
   }
 }
 

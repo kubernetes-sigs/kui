@@ -184,14 +184,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     this.initClipboardEvents()
 
-    const { name, description, splits } = this.props.snapshot
+    const { notebookMetadata, splits } = this.props.snapshot
       ? this.replaySnapshot()
-      : { name: this.props.tabTitle, description: '', splits: [this.scrollbackWithWelcome()] }
+      : {
+          notebookMetadata: {
+            name: this.props.tabTitle
+          },
+          splits: [this.scrollbackWithWelcome()]
+        }
 
     this.state = {
       focusedIdx: -1,
       splits,
-      notebookMetadata: { name, description }
+      notebookMetadata
     }
 
     this.initSnapshotEvents()
@@ -208,7 +213,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       const splits = model.spec.splits.map(split => {
         const newScrollback = this.scrollback(undefined, { inverseColors: split.inverseColors })
 
-        if (model.spec.preferReExecute) {
+        if (model.metadata.preferReExecute) {
           promiseEach(split.blocks, async _ => {
             if (hasStartEvent(_)) {
               await newScrollback.facade.REPL.pexec(_.startEvent.command)
@@ -230,8 +235,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       return {
         splits,
-        name: model.metadata.name,
-        description: model.metadata.description
+        notebookMetadata: model.metadata
       }
     }
   }
@@ -274,16 +278,18 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         await new FlightRecorder(this.props.tab, splits).record()
       }
 
+      const metadata = this.state.notebookMetadata
+      // assign options to the snapshot metadata
+      Object.keys(opts)
+        .filter(_ => _ !== 'shallow' && opts[_] !== undefined)
+        .forEach(_ => (metadata[_] = opts[_]))
+
       const serializedSnapshot: NotebookImpl = {
         apiVersion: 'kui-shell/v1',
         kind: 'Notebook',
-        metadata: {
-          name: opts.name || this.state.notebookMetadata.name,
-          description: opts.description || this.state.notebookMetadata.description
-        },
+        metadata,
         spec: {
-          splits,
-          preferReExecute: opts.preferReExecute
+          splits
         }
       }
 
