@@ -31,7 +31,12 @@ export default function renderMain(props: KuiProps) {
 
   const githubIcon = () => {
     return (
-      <a href="https://github.com/IBM/kui" target="#" title="Kui Github" className="kui--status-stripe-element">
+      <a
+        href="https://github.com/IBM/kui"
+        target="#"
+        title="Kui Github"
+        className="kui--status-stripe-element-clickable kui--status-stripe-element"
+      >
         <Icons icon="Github" />
       </a>
     )
