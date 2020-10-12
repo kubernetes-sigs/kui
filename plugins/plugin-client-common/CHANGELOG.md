@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.2](https://github.com/IBM/kui/compare/v9.0.1...v9.0.2) (2020-10-12)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** active pty output doesn't have repl-context ([5b4173d](https://github.com/IBM/kui/commit/5b4173d)), closes [#5960](https://github.com/IBM/kui/issues/5960)
+- improve error reporting from APIs ([fb90eaf](https://github.com/IBM/kui/commit/fb90eaf)), closes [#5950](https://github.com/IBM/kui/issues/5950)
+- preferReExecute is lost when re-saving a notebook ([d68a9c3](https://github.com/IBM/kui/commit/d68a9c3)), closes [#5954](https://github.com/IBM/kui/issues/5954)
+- **plugins/plugin-client-common:** remove leftover debugging in Scalar/index ([29d73ce](https://github.com/IBM/kui/commit/29d73ce)), closes [#5945](https://github.com/IBM/kui/issues/5945)
+
+### Features
+
+- **plugins/plugin-client-common:** error messages should format as markdown ([b072898](https://github.com/IBM/kui/commit/b072898)), closes [#5943](https://github.com/IBM/kui/issues/5943)
+
 ## [9.0.1](https://github.com/IBM/kui/compare/v9.0.0...v9.0.1) (2020-10-10)
 
 ### Bug Fixes

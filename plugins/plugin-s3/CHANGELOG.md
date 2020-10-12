@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.2](https://github.com/IBM/kui/compare/v9.0.1...v9.0.2) (2020-10-12)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** improve s3 parallelization notebook ([9ee0808](https://github.com/IBM/kui/commit/9ee0808)), closes [#5957](https://github.com/IBM/kui/issues/5957)
+- preferReExecute is lost when re-saving a notebook ([d68a9c3](https://github.com/IBM/kui/commit/d68a9c3)), closes [#5954](https://github.com/IBM/kui/issues/5954)
+- **plugins/plugin-s3:** using s3 notebook has an ECONNREFUSED ([6e24222](https://github.com/IBM/kui/commit/6e24222)), closes [#5952](https://github.com/IBM/kui/issues/5952)
+- a few more improvements to s3 onboarding ([6c57c16](https://github.com/IBM/kui/commit/6c57c16)), closes [#5947](https://github.com/IBM/kui/issues/5947)
+
 ## [9.0.1](https://github.com/IBM/kui/compare/v9.0.0...v9.0.1) (2020-10-10)
 
 ### Bug Fixes

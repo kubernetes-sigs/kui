@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.2](https://github.com/IBM/kui/compare/v9.0.1...v9.0.2) (2020-10-12)
+
+### Bug Fixes
+
+- **plugins/plugin-client-notebook:** github button in notebook client does not have hover effect ([e301fe0](https://github.com/IBM/kui/commit/e301fe0)), closes [#5941](https://github.com/IBM/kui/issues/5941)
+- **plugins/plugin-client-notebook:** notebook client's version widget has a hard-wired version ([b29c0aa](https://github.com/IBM/kui/commit/b29c0aa)), closes [#5942](https://github.com/IBM/kui/issues/5942)
+
 ## [9.0.1](https://github.com/IBM/kui/compare/v9.0.0...v9.0.1) (2020-10-10)
 
 ### Bug Fixes

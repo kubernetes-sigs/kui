@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.2](https://github.com/kui-shell/plugin-kubeui/compare/v9.0.1...v9.0.2) (2020-10-12)
+
+### Bug Fixes
+
+- **plugins/plugin-ibmcloud:** further refinements are needed for ibmcloud cos credentials validation ([85e3015](https://github.com/kui-shell/plugin-kubeui/commit/85e3015)), closes [#5962](https://github.com/kui-shell/plugin-kubeui/issues/5962)
+- a few more improvements to s3 onboarding ([6c57c16](https://github.com/kui-shell/plugin-kubeui/commit/6c57c16)), closes [#5947](https://github.com/kui-shell/plugin-kubeui/issues/5947)
+
 ## [9.0.1](https://github.com/kui-shell/plugin-kubeui/compare/v9.0.0...v9.0.1) (2020-10-10)
 
 ### Bug Fixes
