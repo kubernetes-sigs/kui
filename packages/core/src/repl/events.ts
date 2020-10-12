@@ -69,6 +69,7 @@ export interface Notebook {
   metadata?: {
     name?: string
     description?: string
+    preferReExecute?: boolean
   }
 }
 
