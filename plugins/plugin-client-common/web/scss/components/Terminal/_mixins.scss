@@ -46,7 +46,7 @@ $action-hover-delay: 210ms;
 }
 
 @mixin Block {
-  .repl-block {
+  li.repl-block {
     @content;
   }
 }
@@ -83,7 +83,9 @@ $action-hover-delay: 210ms;
 
 /** Hide the In[1] bits */
 @mixin HideIn {
-  .repl-context {
-    display: none;
+  @include Block {
+    .repl-context {
+      display: none;
+    }
   }
 }
