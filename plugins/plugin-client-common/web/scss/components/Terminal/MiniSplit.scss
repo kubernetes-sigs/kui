@@ -19,8 +19,6 @@
 /** distinguish the mini splits */
 @include MiniSplit {
   background-color: var(--color-base02);
-  box-shadow: 1px 1px var(--color-base01);
-  border: 1px dotted var(--color-base03);
   display: flex;
   flex-direction: column;
 
