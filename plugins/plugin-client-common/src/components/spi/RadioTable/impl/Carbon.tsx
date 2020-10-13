@@ -64,7 +64,11 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     }
   }
 
-  private async onChange(selectedIdx: number, onSelect: Selectable['onSelect']) {
+  private async onChange(
+    selectedIdx: number,
+    onSelect: Selectable['onSelect'],
+    onSelectExec?: Selectable['onSelectExec']
+  ) {
     // wow, carbon components isn't so great; we have to manage unchecking ourselves??
     const currentSelection = document.getElementById(this.id(this.props.selectedIdx)) as HTMLInputElement
     if (currentSelection) {
@@ -72,7 +76,11 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     }
 
     try {
-      await this.props.repl.pexec(onSelect)
+      if (onSelectExec === 'qexec') {
+        await this.props.repl.qexec(onSelect)
+      } else {
+        await this.props.repl.pexec(onSelect)
+      }
     } catch (err) {
       console.error('Error changing selection in RadioTable', err)
     }
@@ -104,7 +112,13 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
     return <Toolbar className="kui--data-table-toolbar-top" breadcrumbs={breadcrumbs.length > 0 && breadcrumbs} />
   }
 
-  private row(row: RadioTableRow, ridx: number, head = false, onSelect?: Selectable['onSelect']) {
+  private row(
+    row: RadioTableRow,
+    ridx: number,
+    head = false,
+    onSelect?: Selectable['onSelect'],
+    onSelectExec?: Selectable['onSelectExec']
+  ) {
     const isSelected = !head && ridx === this.props.selectedIdx - this.props.offset
     const name = this.id(ridx)
 
@@ -128,7 +142,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
             id={name}
             name={name}
             value={name}
-            onChange={this.onChange.bind(this, ridx, onSelect)}
+            onChange={this.onChange.bind(this, ridx, onSelect, onSelectExec)}
           />
         )}
 
@@ -177,7 +191,7 @@ export default class CarbonRadioTable extends React.PureComponent<Props, State> 
   private body() {
     return (
       <StructuredListBody className="kui--radio-table-body">
-        {this.props.table.body.map((row, idx) => this.row(row, idx, false, row.onSelect))}
+        {this.props.table.body.map((row, idx) => this.row(row, idx, false, row.onSelect, row.onSelectExec))}
       </StructuredListBody>
     )
   }
