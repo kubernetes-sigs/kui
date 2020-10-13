@@ -3,6 +3,7 @@
   "kind": "Notebook",
   "metadata": {
     "name": "Welcome to Kui",
+    "description": "Kui &mdash; `Welcome to Kui`",
     "preferReExecute": true
   },
   "spec": {

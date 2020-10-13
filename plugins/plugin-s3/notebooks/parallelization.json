@@ -3,7 +3,7 @@
   "kind": "Notebook",
   "metadata": {
     "name": "Parallelization with S3",
-    "description": ""
+    "description": "S3 &mdash; `Parallelization`"
   },
   "spec": {
     "splits": [
