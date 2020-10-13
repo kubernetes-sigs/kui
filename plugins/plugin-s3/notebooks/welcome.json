@@ -3,6 +3,7 @@
   "kind": "Notebook",
   "metadata": {
     "name": "Getting Started with S3",
+    "description": "S3 &mdash; `Getting Started`",
     "preferReExecute": true
   },
   "spec": {
