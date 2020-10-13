@@ -104,7 +104,7 @@ body[kui-theme-style='dark'] {
     }
     &.error:before {
       opacity: 1;
-      background-color: var(--color-error);
+      background-color: var(--color-red);
     }
     &:hover .repl-output .repl-context:after {
       border-color: var(--color-base03);
@@ -135,6 +135,12 @@ body[kui-theme-style='dark'] {
     &[data-is-output-only] {
       &:before {
         background-color: $focus-color;
+      }
+    }
+
+    &.error {
+      &:before {
+        background-color: hsl(0, 100%, 70%);
       }
     }
   }
