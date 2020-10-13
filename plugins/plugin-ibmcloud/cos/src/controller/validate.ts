@@ -27,7 +27,7 @@ export default async function(args: Arguments) {
   const config = await readConfig(args)
 
   if (isGoodConfig(config)) {
-    if (args.execOptions.type === ExecType.TopLevel) {
+    if (args.execOptions.type !== ExecType.Nested) {
       return strings('validCreds')
     } else {
       return config
