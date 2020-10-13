@@ -258,7 +258,7 @@ body[kui-theme-style='dark'] {
         }
       }
       .repl-input-element-wrapper {
-        border: 1px solid transparent;
+        border: 1px solid hsla(0, 0%, 39.2%, 0.1);
         align-items: stretch;
         padding-left: 0.5rem;
         position: relative; /* for repl-block-actions' position: absolute */
