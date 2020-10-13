@@ -84,7 +84,7 @@ class NotebookVFS implements VFS {
       const name = basename(mount.mountPath)
       const nameForDisplay =
         isLeaf(mount) && mount.data.metadata
-          ? mount.data.metadata.name || mount.data.metadata.description || name
+          ? mount.data.metadata.description || mount.data.metadata.name || name
           : name
       const isDir = !isLeaf(mount)
 
