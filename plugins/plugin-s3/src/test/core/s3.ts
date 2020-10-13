@@ -61,14 +61,18 @@ if (process.env.NEEDS_MINIO) {
     }
     const copyToS3 = (bucketName: string, specifiedDest?: string) => {
       it(`should copy a file ->TO the bucket ${bucketName}`, () =>
-        CLI.command(`cp ${README_LOCAL_PATH} /s3/${PROVIDER}/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''), this.app)
+        CLI.command(
+          `cp ${README_LOCAL_PATH} /s3/${PROVIDER}/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''),
+          this.app
+        )
           .then(ReplExpect.okWithString('Created object'))
           .catch(Common.oops(this, true)))
     }
     const multiCopyToS3 = (bucketName: string, specifiedDest?: string) => {
       it(`should copy a file1, file2 ->TO the bucket ${bucketName}`, () =>
         CLI.command(
-          `cp ${README_LOCAL_PATH} ${PJSON_LOCAL_PATH} /s3/${PROVIDER}/${bucketName}` + (specifiedDest ? `/${specifiedDest}` : ''),
+          `cp ${README_LOCAL_PATH} ${PJSON_LOCAL_PATH} /s3/${PROVIDER}/${bucketName}` +
+            (specifiedDest ? `/${specifiedDest}` : ''),
           this.app
         )
           .then(ReplExpect.okWithString('Created objects'))
@@ -140,6 +144,9 @@ if (process.env.NEEDS_MINIO) {
     // here come the tests:
     {
       const bucketName = `kuitest-${v4()}`
+
+      // see https://github.com/IBM/kui/issues/5972
+      it('should sleep', () => new Promise(resolve => setTimeout(resolve, 5000)))
 
       mkdir(bucketName)
       ls(bucketName) // ls /s3/${PROVIDER}, expect bucketName
