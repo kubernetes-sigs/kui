@@ -187,3 +187,21 @@
     flex: 1;
   }
 }
+
+body[kui-theme-style='dark'] {
+  @include Commentary {
+    .bx--snippet {
+      color: var(--color-base00);
+    }
+  }
+}
+
+body[kui-theme-style='light'] {
+  .kui--inverted-color-context {
+    @include Commentary {
+      .bx--snippet {
+        color: var(--color-base00);
+      }
+    }
+  }
+}
