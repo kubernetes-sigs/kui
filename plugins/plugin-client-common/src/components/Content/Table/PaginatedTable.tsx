@@ -302,6 +302,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
               }
             >
               <Table
+                {...renderOpts.getTableProps()}
                 size={
                   this.props.response.style === TableStyle.Heavy
                     ? 'tall'
