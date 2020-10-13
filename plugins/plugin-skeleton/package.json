@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-skeleton",
-  "version": "9.0.2",
+  "version": "9.0.3",
   "description": "",
   "main": "mdist/index.js",
   "scripts": {

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.3](https://github.com/kui-shell/plugin-kubeui/compare/v9.0.2...v9.0.3) (2020-10-13)
+
+### Bug Fixes
+
+- **plugins/plugin-ibmcloud:** ibmcloud cos initialization bug ([2745642](https://github.com/kui-shell/plugin-kubeui/commit/2745642)), closes [#5968](https://github.com/kui-shell/plugin-kubeui/issues/5968)
+- **plugins/plugin-ibmcloud:** ibmcloud cos validate misbehaves in reexecuted notebooks ([9b87a08](https://github.com/kui-shell/plugin-kubeui/commit/9b87a08)), closes [#5974](https://github.com/kui-shell/plugin-kubeui/issues/5974)
+
 ## [9.0.2](https://github.com/kui-shell/plugin-kubeui/compare/v9.0.1...v9.0.2) (2020-10-12)
 
 ### Bug Fixes

@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.3](https://github.com/IBM/kui/compare/v9.0.2...v9.0.3) (2020-10-13)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** the alert showing lost connection has incorrect height ([6239d66](https://github.com/IBM/kui/commit/6239d66)), closes [#5905](https://github.com/IBM/kui/issues/5905)
+- **plugins/plugin-ibmcloud:** ibmcloud cos initialization bug ([2745642](https://github.com/IBM/kui/commit/2745642)), closes [#5968](https://github.com/IBM/kui/issues/5968)
+- **plugins/plugin-ibmcloud:** ibmcloud cos validate misbehaves in reexecuted notebooks ([9b87a08](https://github.com/IBM/kui/commit/9b87a08)), closes [#5974](https://github.com/IBM/kui/issues/5974)
+
 ## [9.0.2](https://github.com/IBM/kui/compare/v9.0.1...v9.0.2) (2020-10-12)
 
 ### Bug Fixes
