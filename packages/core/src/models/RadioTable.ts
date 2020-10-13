@@ -41,6 +41,7 @@ export interface Selectable {
    *
    */
   onSelect: string
+  onSelectExec?: 'qexec' | 'pexec'
 }
 
 export function radioTableHintsAsCss(cell: RadioTableCell) {
