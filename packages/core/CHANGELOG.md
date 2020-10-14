@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.4](https://github.com/IBM/kui/compare/v9.0.3...v9.0.4) (2020-10-14)
+
+### Bug Fixes
+
+- RadioTable should have option to not echo the onSelect command ([ccb1b75](https://github.com/IBM/kui/commit/ccb1b75)), closes [#5991](https://github.com/IBM/kui/issues/5991)
+
 ## [9.0.3](https://github.com/IBM/kui/compare/v9.0.2...v9.0.3) (2020-10-13)
 
 **Note:** Version bump only for package @kui-shell/core

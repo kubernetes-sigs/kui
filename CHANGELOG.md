@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.4](https://github.com/IBM/kui/compare/v9.0.3...v9.0.4) (2020-10-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** hovering over error block turns red to blue ([fba1466](https://github.com/IBM/kui/commit/fba1466)), closes [#5979](https://github.com/IBM/kui/issues/5979)
+- **plugins/plugin-client-common:** sidecar markdown code snippet has poor color ([fb4614d](https://github.com/IBM/kui/commit/fb4614d)), closes [#5995](https://github.com/IBM/kui/issues/5995)
+- RadioTable should have option to not echo the onSelect command ([ccb1b75](https://github.com/IBM/kui/commit/ccb1b75)), closes [#5991](https://github.com/IBM/kui/issues/5991)
+- **plugins/plugin-client-common:** commentary editor can overflow with long lines ([c5f8b73](https://github.com/IBM/kui/commit/c5f8b73)), closes [#5981](https://github.com/IBM/kui/issues/5981)
+- **plugins/plugin-client-common:** enhance minisplit by updating the background color of scrollback and dark card ([df887e3](https://github.com/IBM/kui/commit/df887e3)), closes [#5989](https://github.com/IBM/kui/issues/5989)
+- **plugins/plugin-client-common:** update the commentary in settings notebook to store the texts as command ([a3674b0](https://github.com/IBM/kui/commit/a3674b0)), closes [#5992](https://github.com/IBM/kui/issues/5992)
+- tweak the input background and border to enhance the readability of notebooks ([8aa5a74](https://github.com/IBM/kui/commit/8aa5a74)), closes [#5982](https://github.com/IBM/kui/issues/5982)
+- **plugins/plugin-client-common:** group the notebooks together in the ls -l table ([1d4bdaa](https://github.com/IBM/kui/commit/1d4bdaa)), closes [#5977](https://github.com/IBM/kui/issues/5977)
+- **plugins/plugin-client-common:** restore hiding of In[1] in minisplit ([2c3e91d](https://github.com/IBM/kui/commit/2c3e91d)), closes [#5985](https://github.com/IBM/kui/issues/5985)
+- **plugins/plugin-client-common:** sorting widgets in table header are wrapping ([330badc](https://github.com/IBM/kui/commit/330badc)), closes [#5976](https://github.com/IBM/kui/issues/5976)
+
 ## [9.0.3](https://github.com/IBM/kui/compare/v9.0.2...v9.0.3) (2020-10-13)
 
 ### Bug Fixes
