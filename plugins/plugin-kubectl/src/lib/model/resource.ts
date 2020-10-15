@@ -398,17 +398,28 @@ export function isDeployment(resource: KubeResource): resource is Deployment {
  * Kubernetes ReplicaSet resource type
  *
  */
-export interface ReplicaSet extends KubeResource {
+export interface ReplicaSet1 extends KubeResource {
   apiVersion: 'extensions/v1beta1'
   kind: 'ReplicaSet'
 }
+
+export interface ReplicaSet2 extends KubeResource {
+  apiVersion: 'apps/v1'
+  kind: 'ReplicaSet'
+}
+
+export type ReplicaSet = ReplicaSet1 | ReplicaSet2
 
 /**
  * @return whether the given resource is an instance of a ReplicaSet
  *
  */
 export function isReplicaSet(resource: KubeResource): resource is ReplicaSet {
-  return isKubeResource(resource) && resource.apiVersion === 'extensions/v1beta1' && resource.kind === 'ReplicaSet'
+  return (
+    isKubeResource(resource) &&
+    (resource.apiVersion === 'extensions/v1beta1' || resource.apiVersion === 'apps/v1') &&
+    resource.kind === 'ReplicaSet'
+  )
 }
 
 /**
