@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { i18n, inBrowser } from '@kui-shell/core'
+import { i18n, inBrowser, isPopup } from '@kui-shell/core'
 import { Kui, KuiProps, ContextWidgets, MeterWidgets, CurrentWorkingDirectory } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
@@ -84,7 +84,7 @@ export default function renderMain(props: KuiProps) {
       <MeterWidgets>
         {/* <ClusterUtilization /> */}
         <ProxyOfflineIndicator />
-        {!inBrowser() && <UpdateChecker />}
+        {!isPopup() && !inBrowser() && <UpdateChecker />}
         <Screenshot />
       </MeterWidgets>
     </Kui>
