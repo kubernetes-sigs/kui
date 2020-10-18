@@ -75,7 +75,7 @@ export default function renderMain(props: KuiProps) {
       }
     >
       <ContextWidgets>
-        <CurrentWorkingDirectory />
+        {!isPopup() && <CurrentWorkingDirectory />}
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
         <CurrentNamespace />
@@ -83,7 +83,7 @@ export default function renderMain(props: KuiProps) {
 
       <MeterWidgets>
         {/* <ClusterUtilization /> */}
-        <ProxyOfflineIndicator />
+        {inBrowser() && <ProxyOfflineIndicator />}
         {!isPopup() && !inBrowser() && <UpdateChecker />}
         <Screenshot />
       </MeterWidgets>
