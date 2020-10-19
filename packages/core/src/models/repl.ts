@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { Tab } from '../webapp/tab'
 import { RawContent, RawResponse } from './entity'
 import { KResponse } from './command'
-import { ExecOptions } from './execOptions'
+import { ExecOptions, ExecOptionsWithUUID } from './execOptions'
 
 export default interface REPL {
   /**
@@ -62,7 +61,7 @@ export default interface REPL {
    * Evaluate a command and place the result in the current active view for the given tab
    *
    */
-  update(tab: Tab, command: string, execOptions?: ExecOptions): Promise<void>
+  reexec<T extends KResponse>(command: string, execOptions: ExecOptionsWithUUID): Promise<T>
 
   /**
    * Prepare a string to be part of a `command` argument to the *exec

@@ -62,7 +62,7 @@ export {
   isMetadataBearingByReference as isResourceByReference
 } from './models/entity'
 export { isCommandHandlerWithEvents } from './models/command'
-export { ExecOptions, withLanguage } from './models/execOptions'
+export { ExecOptions, ExecOptionsWithUUID, withLanguage } from './models/execOptions'
 export { Streamable, Stream } from './models/streamable'
 
 // Errors
