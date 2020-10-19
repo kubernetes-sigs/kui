@@ -102,6 +102,9 @@ export interface ExecOptions {
   entity?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
+/** Transform the `execUUID` field of `ExecOptions` to be required.  */
+export type ExecOptionsWithUUID = Exclude<ExecOptions, 'execUUID'> & Required<Pick<ExecOptions, 'execUUID'>>
+
 export interface LanguageBearing extends ExecOptions {
   /** navigator.language */
   language: string

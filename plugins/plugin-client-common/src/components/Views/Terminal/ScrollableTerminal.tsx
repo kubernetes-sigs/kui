@@ -24,6 +24,7 @@ import {
   ScalarResponse,
   Tab as KuiTab,
   ExecOptions,
+  ExecOptionsWithUUID,
   ExecType,
   isPopup,
   History,
@@ -216,7 +217,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         if (model.metadata.preferReExecute) {
           promiseEach(split.blocks, async _ => {
             if (hasStartEvent(_)) {
-              await newScrollback.facade.REPL.pexec(_.startEvent.command)
+              await newScrollback.facade.REPL.reexec(_.startEvent.command, { execUUID: _.startEvent.execUUID })
             }
           })
         } else {
@@ -524,7 +525,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           }
         }
 
-        const rerunIdx = curState.blocks.findIndex(_ => hasUUID(_) && _.execUUID === event.execUUID)
+        const rerunIdx =
+          event.execType === ExecType.Rerun
+            ? curState.blocks.findIndex(_ => hasUUID(_) && _.execUUID === event.execUUID)
+            : -1
 
         if (rerunIdx >= 0) {
           // The use case here is that the user clicked the Rerun
@@ -997,6 +1001,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         REPL: Object.assign({}, this.props.tab.REPL, {
           pexec: (command: string, execOptions?: ExecOptions) => {
             return this.props.tab.REPL.pexec(command, Object.assign({ tab: facade }, execOptions))
+          },
+          reexec: (command: string, execOptions: ExecOptionsWithUUID) => {
+            return this.props.tab.REPL.reexec(command, Object.assign({ tab: facade }, execOptions))
           },
           rexec: (command: string, execOptions?: ExecOptions) => {
             return this.props.tab.REPL.rexec(command, Object.assign({ tab: facade }, execOptions))

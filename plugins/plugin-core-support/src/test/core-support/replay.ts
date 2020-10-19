@@ -16,8 +16,7 @@
 
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 
-import { splitViaCommand, focus } from '../core-support2/split-helpers'
-import { doClear } from './clear'
+import { splitViaButton, focus } from '../core-support2/split-helpers'
 
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
@@ -156,9 +155,8 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
   after(Common.after(this))
 
   const file = Util.uniqueFileForSnapshot()
-  const splitTheTerminalViaCommand = splitViaCommand.bind(this)
+  const splitTheTerminalViaButton = splitViaButton.bind(this)
   const clickToFocus = focus.bind(this)
-  const clear = doClear.bind(this)
 
   const doBase64 = (splitIdx: number) => {
     clickToFocus(splitIdx)
@@ -169,44 +167,40 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
   }
 
   const doSnapShot = (splitIdx: number) => {
-    it('should snapshot', () =>
-      CLI.commandInSplit(`snapshot ${file}`, this.app, splitIdx)
+    it('should snapshot with exec', () =>
+      CLI.commandInSplit(`snapshot ${file} --exec`, this.app, splitIdx)
         .then(ReplExpect.justOK)
         .catch(Common.oops(this, true)))
   }
 
-  // Split the terminal, then validate that the snapshot will still
-  // replay with the split, despite the intervening clear. The 2
-  // argument to clear means we expect 2 residual blocks in the first
-  // split: one for the active block and one for the split command
-  // output
-  splitTheTerminalViaCommand(2)
-  it('should clear the console', () => clear(2))
-
   doBase64(1)
+  splitTheTerminalViaButton(2)
   clickToFocus(2)
   doBase64(2)
+  splitTheTerminalViaButton(3)
+  doBase64(3)
 
-  doSnapShot(2)
+  doSnapShot(3)
 
   it('should refresh', () => Common.refresh(this))
   it('should replay', () => CLI.command(`replay ${file}`, this.app).catch(Common.oops(this, true)))
   it('should validate replay', async () => {
     try {
-      const countInSplit1 = await CLI.commandInSplit('version', this.app, 1).then(_ => _.count)
-      const countInSplit2 = await CLI.commandInSplit('version', this.app, 2).then(_ => _.count)
-
       let idx = 0
       await this.app.client.waitUntil(async () => {
         // commands in split1: [session connect in browser],base64, split, version
-        const base64InSplit1 = await this.app.client.getText(Selectors.OUTPUT_N(countInSplit1 - 1, 1))
+        const base64InSplit1 = await this.app.client.getText(Selectors.OUTPUT_LAST_FOR_SPLIT(1))
         // commands in split2: base64,version
-        const base64InSplit2 = await this.app.client.getText(Selectors.OUTPUT_N(countInSplit2 - 1, 2))
+        const base64InSplit2 = await this.app.client.getText(Selectors.OUTPUT_LAST_FOR_SPLIT(2))
+
+        const base64InSplit3 = await this.app.client.getText(Selectors.OUTPUT_LAST_FOR_SPLIT(3))
 
         if (++idx > 5) {
-          console.error(`still waiting for expected=${base64Output}; actual=${base64InSplit1}, ${base64InSplit2}`)
+          console.error(
+            `still waiting for expected=${base64Output}; actual=${base64InSplit1}, ${base64InSplit2}, ${base64InSplit3}`
+          )
         }
-        return base64InSplit1 === base64Output && base64InSplit2 === base64Output
+        return base64InSplit1 === base64Output && base64InSplit2 === base64Output && base64InSplit3 === base64Output
       }, CLI.waitTimeout)
     } catch (err) {
       await Common.oops(this, true)(err)
