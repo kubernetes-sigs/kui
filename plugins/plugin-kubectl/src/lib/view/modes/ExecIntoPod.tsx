@@ -45,6 +45,9 @@ import '../../../../web/scss/components/Terminal/Terminal.scss'
 
 const strings = i18n('plugin-kubectl', 'exec')
 
+/** subclasses might override this */
+const mode = 'terminal'
+
 /**
  * Interval in milliseconds before we warn the user that we are about
  * to abort the PTY.
@@ -133,12 +136,12 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
       this.doFocus()
       this.doXon()
     }
-    const focusOnEvent = `/mode/focus/on/tab/${uuid}/mode/terminal`
+    const focusOnEvent = `/mode/focus/on/tab/${uuid}/mode/${this.mode()}`
     eventChannelUnsafe.on(focusOnEvent, focus)
     this.cleaners.push(() => eventChannelUnsafe.off(focusOnEvent, focus))
 
     const xoff = this.doXoff.bind(this)
-    const focusOffEvent = `/mode/focus/off/tab/${uuid}/mode/terminal`
+    const focusOffEvent = `/mode/focus/off/tab/${uuid}/mode/${this.mode()}`
     eventChannelUnsafe.on(focusOffEvent, xoff)
     this.cleaners.push(() => eventChannelUnsafe.off(focusOffEvent, xoff))
 
@@ -164,6 +167,11 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     return this.props.pod.spec.containers[0].name
   }
 
+  /** Subclasses: override this! */
+  protected mode() {
+    return mode
+  }
+
   private doXon() {
     if (this.state && this.state.job) {
       setTimeout(() => this.state.job.xon())
@@ -178,7 +186,9 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
   private doFocus() {
     if (this.state && this.state.xterm) {
-      setTimeout(() => this.state.xterm.focus())
+      setTimeout(() => {
+        this.state.xterm.focus()
+      })
     }
   }
 
@@ -598,7 +608,7 @@ async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
 export const terminalMode: ModeRegistration<KubeResource> = {
   when: (resource: KubeResource) => isPod(resource) && !resource.isSimulacrum,
   mode: {
-    mode: 'terminal',
+    mode,
     label: 'Terminal',
     content
   }
