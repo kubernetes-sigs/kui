@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.5](https://github.com/IBM/kui/compare/v9.0.4...v9.0.5) (2020-10-19)
+
+### Bug Fixes
+
+- **plugins/plugin-client-default:** Don't show CWD status stripe widget in Popup mode ([ac31e91](https://github.com/IBM/kui/commit/ac31e91)), closes [#6018](https://github.com/IBM/kui/issues/6018)
+- **plugins/plugin-client-default:** don't show UpdateChecker in popup mode ([9ab8dba](https://github.com/IBM/kui/commit/9ab8dba)), closes [#6016](https://github.com/IBM/kui/issues/6016)
+- **plugins/plugin-kubectl:** isReplicaSet needs to be updated to handle "apps/v1" apiVersion ([2309970](https://github.com/IBM/kui/commit/2309970)), closes [#6003](https://github.com/IBM/kui/issues/6003)
+
 ## [9.0.4](https://github.com/IBM/kui/compare/v9.0.3...v9.0.4) (2020-10-14)
 
 ### Bug Fixes
