@@ -58,6 +58,10 @@ export class Logs extends Terminal<State> {
     return true
   }
 
+  protected mode() {
+    return 'logs'
+  }
+
   /** Which container should we focus on by default? */
   protected defaultContainer() {
     if (this.props.args.argsForMode) {
