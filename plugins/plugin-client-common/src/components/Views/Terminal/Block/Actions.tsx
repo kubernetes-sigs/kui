@@ -56,7 +56,7 @@ export default class Actions extends React.PureComponent<Props> {
     ) {
       const handler = () => {
         if (hasUUID(this.props.model)) {
-          this.props.tab.REPL.pexec(this.props.command, { execUUID: this.props.model.execUUID })
+          this.props.tab.REPL.reexec(this.props.command, { execUUID: this.props.model.execUUID })
         }
       }
 

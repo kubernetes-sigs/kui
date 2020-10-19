@@ -42,7 +42,8 @@ export default KResponse
 export enum ExecType {
   TopLevel,
   ClickHandler,
-  Nested
+  Nested,
+  Rerun
 }
 
 export type ViewTransformer<T extends KResponse, O extends ParsedOptions> = (

@@ -47,7 +47,7 @@ import {
 
 import REPL from '../models/repl'
 
-import { ExecOptions, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
+import { ExecOptions, ExecOptionsWithUUID, DefaultExecOptions, DefaultExecOptionsForTab } from '../models/execOptions'
 import eventChannelUnsafe, { eventBus } from '../core/events'
 import { CodedError } from '../models/errors'
 import { UsageModel, UsageRow } from '../core/usage-error'
@@ -545,7 +545,11 @@ export const doEval = (tab: Tab, block: Block, command: string, execUUID?: strin
   //  const command = prompt.value.trim()
 
   // otherwise, this is a plain old eval, resulting from the user hitting Enter
-  return exec(command, new DefaultExecOptionsForTab(tab, block, execUUID))
+  const defaultExecOptions = new DefaultExecOptionsForTab(tab, block, execUUID)
+
+  const execOptions = !execUUID ? defaultExecOptions : Object.assign(defaultExecOptions, { type: ExecType.Rerun })
+
+  return exec(command, execOptions)
 }
 
 /**
@@ -613,6 +617,14 @@ export const rexec = async <Raw extends RawContent>(
 }
 
 /**
+ * Evaluate a command and place the result in the current active view for the given tab
+ *
+ */
+export const reexec = <T extends KResponse>(command: string, execOptions: ExecOptionsWithUUID): Promise<T> => {
+  return exec(command, Object.assign({ echo: true, type: ExecType.Rerun }, execOptions)) as Promise<T>
+}
+
+/**
  * Programmatic exec, as opposed to human typing and hitting enter
  *
  */
@@ -673,7 +685,7 @@ async function semicolonInvoke(commands: string[], execOptions: ExecOptions): Pr
  *
  */
 export function getImpl(tab: Tab): REPL {
-  const impl = { qexec, rexec, pexec, click, encodeComponent, split } as REPL
+  const impl = { qexec, rexec, pexec, reexec, click, encodeComponent, split } as REPL
   tab.REPL = impl
   return impl
 }

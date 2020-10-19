@@ -132,6 +132,9 @@ export const PROMPT_BLOCK_N_FOR_SPLIT = (N: number, splitIndex: number) =>
   `${SPLIT_N(splitIndex)} ${_PROMPT_BLOCK_N(N)}`
 export const PROMPT_N_FOR_SPLIT = (N: number, splitIndex: number) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_PROMPT}`
+export const PROMPT_BLOCK_LAST_FOR_SPLIT = (splitIndex: number) =>
+  `${PROMPT_BLOCK_FOR_SPLIT(splitIndex)}:nth-last-child(2)`
+export const OUTPUT_LAST_FOR_SPLIT = (splitIndex: number) => `${PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)} .repl-result`
 
 export const PROMPT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_PROMPT}`
 export const OUTPUT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result`

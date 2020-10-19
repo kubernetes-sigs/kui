@@ -25,6 +25,6 @@ export { encodeComponent }
 import { split, _split, Split } from '../repl/split'
 export { split, _split, Split }
 
-export { exec, click, qexec, pexec, rexec, getImpl, setEvaluatorImpl } from '../repl/exec'
+export { exec, click, qexec, pexec, rexec, reexec, getImpl, setEvaluatorImpl } from '../repl/exec'
 
 export { ReplEval, DirectReplEval } from '../repl/types'
