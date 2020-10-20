@@ -209,6 +209,7 @@ body.kui--patternfly4[kui-theme-style] {
     --color-brand-02: var(--color-magenta);
     --color-brand-03: var(--color-cyan);
 
+    --color-table-border1: var(--pf-global--palette--black-500);
     --color-table-border3: var(--color-ui-04);
 
     --color-sidecar-toolbar-foreground: var(--color-base01);
@@ -226,7 +227,7 @@ body.kui--patternfly4[kui-theme-style] {
 
     --color-repl-background: var(--color-ui-01);
 
-    --color-sidecar-header: var(--color-base03);
+    --color-sidecar-header: var(--pf-global--palette--black-800);
     --color-sidecar-background-01: var(--color-base01);
     --color-sidecar-background-02: var(--color-base03);
 
