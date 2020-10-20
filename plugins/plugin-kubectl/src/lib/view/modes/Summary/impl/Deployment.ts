@@ -48,8 +48,8 @@ export default function DeploymentSummary(deployment: Deployment) {
   return {
     Name: metadata.name,
     Ready: ready(deployment),
-    'Up-to-date': status.readyReplicas,
-    Available: status.availableReplicas,
+    'Up-to-date': status.readyReplicas || 0,
+    Available: status.availableReplicas || 0,
     Age: age(deployment),
     Containers: containers.map(_ => _.name).join(', '),
     Images: containers.map(_ => _.image).join(', '),
