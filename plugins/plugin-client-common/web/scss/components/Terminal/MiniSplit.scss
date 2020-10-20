@@ -16,9 +16,13 @@
 
 @import '_mixins';
 
+body {
+  --color-repl-background-02: var(--color-base02);
+}
+
 /** distinguish the mini splits */
 @include MiniSplit {
-  background-color: var(--color-base02);
+  background-color: var(--color-repl-background-02);
   display: flex;
   flex-direction: column;
 
