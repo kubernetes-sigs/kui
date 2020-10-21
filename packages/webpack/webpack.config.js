@@ -150,7 +150,9 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * Note: these are _webpack plugins_ not Kui plugins; we will assemble
  * this list of webpack plugins as we go.
  */
-const plugins = [new FontConfigWebpackPlugin()]
+const fontConfigOptions = contextRoot ? { name: `${contextRoot}/[name].[hash].[ext]` } : undefined
+console.log('fontConfig', fontConfigOptions || 'using the default settings')
+const plugins = [new FontConfigWebpackPlugin(fontConfigOptions)]
 
 // any compression plugins?
 if (CompressionPlugin) {
