@@ -218,17 +218,11 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   protected normalPrompt() {
     return (
-      <KuiContext.Consumer>
-        {config =>
-          config.prompt ? (
-            <div className="repl-prompt">{this.promptRight()}</div>
-          ) : (
-            <div className="repl-context" onClick={this.props.willFocusBlock}>
-              {this.contextContent()}
-            </div>
-          )
-        }
-      </KuiContext.Consumer>
+      <div className="repl-context" onClick={this.props.willFocusBlock}>
+        <KuiContext.Consumer>
+          {config => (config.prompt ? <div className="repl-prompt">{this.promptRight()}</div> : this.contextContent())}
+        </KuiContext.Consumer>
+      </div>
     )
   }
 
