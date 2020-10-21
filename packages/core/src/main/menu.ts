@@ -86,7 +86,9 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         {
           label: 'Interacting with S3',
           submenu: [notebook('Getting Started', '/kui/s3/welcome.json'), notebook('Using S3', '/kui/s3/using-s3.json')]
-        }
+        },
+        { type: 'separator' },
+        notebook('Make Your Own Notebook', '/kui/make-notebook.json')
       ]
     }
 
