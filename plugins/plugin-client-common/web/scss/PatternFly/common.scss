@@ -1,3 +1,5 @@
+$kui-font-factor: 0.875;
+
 /* attribution: @patternfly/react-core/dist/styles/base.css version 4.18.5; license MIT */
 body {
   --pf-global--BoxShadow--sm: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.12), 0 0 0.125rem 0 rgba(3, 3, 3, 0.06);
@@ -56,18 +58,18 @@ body {
   --pf-global--BorderRadius--sm: 3px;
   --pf-global--BorderRadius--lg: 30em;
 
-  --pf-global--icon--FontSize--sm: 0.625rem;
-  --pf-global--icon--FontSize--md: 1.125rem;
-  --pf-global--icon--FontSize--lg: 1.5rem;
-  --pf-global--icon--FontSize--xl: 3.375rem;
-  --pf-global--FontSize--4xl: 2.25rem;
-  --pf-global--FontSize--3xl: 1.75rem;
-  --pf-global--FontSize--2xl: 1.5rem;
-  --pf-global--FontSize--xl: 1.25rem;
-  --pf-global--FontSize--lg: 1.125rem;
-  --pf-global--FontSize--md: 1rem;
-  --pf-global--FontSize--sm: 0.875rem;
-  --pf-global--FontSize--xs: 0.75rem;
+  --pf-global--icon--FontSize--sm: calc(#{$kui-font-factor} * 0.625rem);
+  --pf-global--icon--FontSize--md: calc(#{$kui-font-factor} * 1.125rem);
+  --pf-global--icon--FontSize--lg: calc(#{$kui-font-factor} * 1.5rem);
+  --pf-global--icon--FontSize--xl: calc(#{$kui-font-factor} * 3.375rem);
+  --pf-global--FontSize--4xl: calc(#{$kui-font-factor} * 2.25rem);
+  --pf-global--FontSize--3xl: calc(#{$kui-font-factor} * 1.75rem);
+  --pf-global--FontSize--2xl: calc(#{$kui-font-factor} * 1.5rem);
+  --pf-global--FontSize--xl: calc(#{$kui-font-factor} * 1.25rem);
+  --pf-global--FontSize--lg: calc(#{$kui-font-factor} * 1.125rem);
+  --pf-global--FontSize--md: calc(#{$kui-font-factor} * 1rem);
+  --pf-global--FontSize--sm: calc(#{$kui-font-factor} * 0.875rem);
+  --pf-global--FontSize--xs: calc(#{$kui-font-factor} * 0.75rem);
   --pf-global--FontWeight--light: 300;
   --pf-global--FontWeight--normal: 400;
   --pf-global--FontWeight--semi-bold: 700;
