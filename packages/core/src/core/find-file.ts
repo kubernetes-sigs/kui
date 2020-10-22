@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-19 IBM Corporation
+ * Copyright 2017-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,20 @@
 
 import Debug from 'debug'
 
-import { basename, dirname, join, resolve } from 'path'
+import slash from 'slash'
+import { basename, dirname, join, resolve as defaultResolve } from 'path'
 
 import expandHomeDir from '../util/home'
 const debug = Debug('core/find-file')
-debug('loading')
+
+/** On Windows, we want to defer any / to \ conversion. On Windows,
+ * `path.resolve()` does this, using the default (i.e. win32) impl. We
+ * need to defer this so avoid problems with encodeComponent versus
+ * backslashes.
+ */
+function resolve(filepath: string): string {
+  return slash(defaultResolve(filepath))
+}
 
 /**
  * Maybe the given filepath is asar-relative, as indicated by a
@@ -93,9 +102,10 @@ export const findFileWithViewer = (
   } else if (keepRelative) {
     return { resolved: filepath }
   } else {
-    debug('resolving normal file', filepath)
+    const resolved = withMatchingTrailingSlash(filepath, resolve(expandHomeDir(filepath)))
+    debug('resolving normal file', filepath, resolved)
     return {
-      resolved: withMatchingTrailingSlash(filepath, resolve(expandHomeDir(filepath)))
+      resolved
     }
   }
 }
