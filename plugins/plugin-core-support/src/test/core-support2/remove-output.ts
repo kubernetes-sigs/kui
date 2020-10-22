@@ -23,10 +23,10 @@ function doEchoThenRemove(this: Common.ISuite, idx: number) {
       await ReplExpect.okWithPtyOutput(idx.toString())(res)
 
       const N = res.count
-      await this.app.client.moveToObject(Selectors.PROMPT_N(N))
-      await this.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON(N))
-      await this.app.client.click(Selectors.BLOCK_REMOVE_BUTTON(N))
-      await this.app.client.waitForExist(Selectors.OUTPUT_N(N), 5000, true)
+      await this.app.client.$(Selectors.PROMPT_N(N)).then(_ => _.moveTo())
+      await this.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N)).then(_ => _.waitForDisplayed())
+      await this.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N)).then(_ => _.click())
+      await this.app.client.$(Selectors.OUTPUT_N(N)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }

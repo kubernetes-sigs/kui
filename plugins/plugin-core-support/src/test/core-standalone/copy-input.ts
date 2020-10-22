@@ -28,11 +28,14 @@ describe(`copy command input ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       await ReplExpect.okWithPtyOutput(echoText)(res)
 
       const N = res.count
-      await this.app.client.moveToObject(Selectors.PROMPT_N(N))
-      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_BUTTON(N))
-      await this.app.client.click(Selectors.COMMAND_COPY_BUTTON(N))
-      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_DONE_BUTTON(N))
-      await this.app.client.waitForVisible(Selectors.COMMAND_COPY_DONE_BUTTON(N))
+      await this.app.client.$(Selectors.PROMPT_N(N)).then(_ => _.moveTo())
+
+      const copyButton = await this.app.client.$(Selectors.COMMAND_COPY_BUTTON(N))
+      await copyButton.waitForDisplayed()
+      await copyButton.click()
+
+      await this.app.client.$(Selectors.COMMAND_COPY_DONE_BUTTON(N)).then(_ => _.waitForDisplayed())
+      await this.app.client.$(Selectors.COMMAND_COPY_DONE_BUTTON(N)).then(_ => _.waitForDisplayed())
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -40,19 +43,24 @@ describe(`copy command input ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   it(`should past the command: ${command} in the next block`, async () => {
     try {
-      await this.app.client.waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
-      await this.app.client.click(Selectors.CURRENT_PROMPT_BLOCK)
+      await this.app.client.$(Selectors.CURRENT_PROMPT_BLOCK).then(async _ => {
+        await _.waitForExist()
+        await _.click()
+      })
       await this.app.client.execute(() => document.execCommand('paste'))
 
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const actualValue = await this.app.client.getValue(Selectors.CURRENT_PROMPT)
-        if (++idx > 5) {
-          console.error(`still waiting for text actualValue=${actualValue} expectedValue=${command}`)
-        }
+      await this.app.client.waitUntil(
+        async () => {
+          const actualValue = await this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.getValue())
+          if (++idx > 5) {
+            console.error(`still waiting for text actualValue=${actualValue} expectedValue=${command}`)
+          }
 
-        return command === actualValue
-      }, CLI.waitTimeout)
+          return command === actualValue
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }

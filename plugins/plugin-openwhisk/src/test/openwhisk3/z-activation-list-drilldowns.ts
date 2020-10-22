@@ -33,18 +33,24 @@ describe('List activations, then drill down to summary views', function(this: Co
 
         await ReplExpect.okWithCustom({ passthrough: true })(res).then(N =>
           SidecarExpect.closed(res)
-            .then(() => `${Selectors.OUTPUT_N(N)} .list-paginator-left-buttons span[data-button-command="${command}"]`)
+            .then(
+              () =>
+                `${Selectors.OUTPUT_N(
+                  (N as any) as number
+                )} .list-paginator-left-buttons span[data-button-command="${command}"]`
+            )
             .then(sel => {
               console.error(`Looking for ${sel}`)
               return sel
             })
             .then(async sel => {
-              await this.app.client.waitForEnabled(sel)
+              await this.app.client.$(sel).then(_ => _.waitForEnabled())
               return sel
             })
-            .then(sel => this.app.client.click(sel))
+            .then(sel => this.app.client.$(sel))
+            .then(_ => _.click())
             .catch(async err => {
-              const txt = await this.app.client.getText(Selectors.OUTPUT_N(N))
+              const txt = await this.app.client.$(Selectors.OUTPUT_N((N as any) as number)).then(_ => _.getText())
               console.log(`huh, got this ${txt}`)
               throw err
             })

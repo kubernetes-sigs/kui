@@ -39,8 +39,10 @@ export const grabFocus = async (
     : Selectors.BOTTOM_PROMPT
 ) => {
   return app.client
-    .click(currentPrompt)
-    .then(() => app.client.waitForEnabled(currentPromptBlock))
+    .$(currentPrompt)
+    .then(_ => _.click())
+    .then(() => app.client.$(currentPromptBlock))
+    .then(_ => _.waitForEnabled())
     .catch(err => {
       console.error(err)
       // probably ok, we are doing this is just in case it helps
@@ -69,14 +71,15 @@ export const command = async (
     : Selectors.BOTTOM_PROMPT
 ) => {
   return app.client
-    .waitForExist(block, waitTimeout)
+    .$(block)
+    .then(_ => _.waitForExist({ timeout: waitTimeout }))
     .then(async () => {
-      if (process.env.BOTTOM_INPUT_MODE) await app.client.waitForExist(Selectors.BOTTOM_PROMPT_BLOCK, timeout - 5000)
+      if (process.env.BOTTOM_INPUT_MODE)
+        await app.client.$(Selectors.BOTTOM_PROMPT_BLOCK).then(_ => _.waitForExist({ timeout: timeout - 5000 }))
       if (!noFocus) return grabFocus(app, block, currentPrompt)
     })
-    .then(() =>
-      app.client.getAttribute(process.env.BOTTOM_INPUT_MODE ? Selectors.BOTTOM_PROMPT_BLOCK : block, 'data-input-count')
-    )
+    .then(() => app.client.$(process.env.BOTTOM_INPUT_MODE ? Selectors.BOTTOM_PROMPT_BLOCK : block))
+    .then(_ => _.getAttribute('data-input-count'))
     .then(async count => {
       if (!noCopyPaste && cmd.length > 1) {
         // use the clipboard for a fast path
@@ -86,9 +89,9 @@ export const command = async (
         )
       } else {
         // slow path
-        const currentValue = await app.client.getValue(currentPrompt)
+        const currentValue = await app.client.$(currentPrompt).then(_ => _.getValue())
         const doThis = `${currentValue}${cmd}`
-        await app.client.setValue(currentPrompt, doThis)
+        await app.client.$(currentPrompt).then(_ => _.setValue(doThis))
       }
       if (noNewline !== true) await app.client.keys(keys.ENTER)
       return { app: app, count: parseInt(count) }
@@ -111,8 +114,10 @@ export const commandInSplit = async (cmd: string, app: Application, splitIndex: 
 
 export const paste = async (cmd: string, app: Application, nLines = 1) =>
   app.client
-    .waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
-    .then(() => app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+    .$(Selectors.CURRENT_PROMPT_BLOCK)
+    .then(_ => _.waitForExist())
+    .then(() => app.client.$(Selectors.CURRENT_PROMPT_BLOCK))
+    .then(_ => _.getAttribute('data-input-count'))
     .then(async count => {
       app.electron.clipboard.writeText(cmd)
       await app.client.execute(() => document.execCommand('paste'))
@@ -122,9 +127,9 @@ export const paste = async (cmd: string, app: Application, nLines = 1) =>
 /** wait for the repl to be active */
 export const waitForRepl = async (app: Application) => {
   if (process.env.KUI_POPUP) {
-    await app.client.waitForEnabled(Selectors.STATUS_STRIPE_PROMPT)
+    await app.client.$(Selectors.STATUS_STRIPE_PROMPT).then(_ => _.waitForEnabled())
   } else {
-    await app.client.waitForEnabled(Selectors.CURRENT_PROMPT)
+    await app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.waitForEnabled())
   }
   return app
 }
@@ -141,8 +146,8 @@ export const waitForSession = async (ctx: Common.ISuite, noProxySessionWait = fa
   if (process.env.MOCHA_RUN_TARGET === 'webpack' && process.env.KUI_USE_PROXY === 'true' && !noProxySessionWait) {
     // wait for the proxy session to be established
     try {
-      await ctx.app.client.waitForExist(`${Selectors.CURRENT_TAB}.kui--session-init-done`)
-      await ctx.app.client.waitForVisible(Selectors.WELCOME_BLOCK)
+      await ctx.app.client.$(`${Selectors.CURRENT_TAB}.kui--session-init-done`).then(_ => _.waitForExist())
+      await ctx.app.client.$(Selectors.WELCOME_BLOCK).then(_ => _.waitForDisplayed())
     } catch (err) {
       throw new Error('error waiting for proxy session init')
     }
@@ -150,16 +155,14 @@ export const waitForSession = async (ctx: Common.ISuite, noProxySessionWait = fa
 }
 
 export const getTextContent = async (app: Application, selector: string) => {
-  return app.client
-    .execute(selector => {
-      try {
-        return document.querySelector(selector).textContent
-      } catch (err) {
-        console.error('error in getTextContent', err)
-        // intentionally returning undefined
-      }
-    }, selector)
-    .then(_ => _.value)
+  return app.client.execute(selector => {
+    try {
+      return document.querySelector(selector).textContent
+    } catch (err) {
+      console.error('error in getTextContent', err)
+      // intentionally returning undefined
+    }
+  }, selector)
 }
 
 /** wait for the result of a cli.command */
@@ -176,28 +179,36 @@ export const makeCustom = (selector: string, expect: string, exact?: boolean) =>
 export const exitCode = (statusCode: number | string) => statusCode
 
 export const expectInput = (selector: string, expectedText: string) => async (app: Application) => {
-  await app.client.waitUntil(async () => {
-    const inputText = await app.client.getValue(selector)
-    return inputText === expectedText
-  }, waitTimeout)
+  await app.client.waitUntil(
+    async () => {
+      const inputText = await app.client.$(selector).then(_ => _.getValue())
+      return inputText === expectedText
+    },
+    { timeout: waitTimeout }
+  )
   return app
 }
 
 export const expectPriorInput = (selector: string, expectedText: string) => async (app: Application) => {
   let idx = 0
-  await app.client.waitUntil(async () => {
-    const inputText = await app.client.getText(selector)
-    if (++idx > 5) {
-      console.error(`still waiting for prior input actual=${inputText} expected=${expectedText}`)
-    }
-    return inputText === expectedText
-  }, waitTimeout)
+  await app.client.waitUntil(
+    async () => {
+      const inputText = await app.client.$(selector).then(_ => _.getText())
+      if (++idx > 5) {
+        console.error(`still waiting for prior input actual=${inputText} expected=${expectedText}`)
+      }
+      return inputText === expectedText
+    },
+    { timeout: waitTimeout }
+  )
   return app
 }
 
 /** @return the "N" of the current block */
 export async function nOfCurrentBlock(app: Application, splitIndex = 1) {
-  const attr = await app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex), Selectors.N_ATTR)
+  const attr = await app.client
+    .$(Selectors.CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex))
+    .then(_ => _.getAttribute(Selectors.N_ATTR))
   return parseInt(attr, 10)
 }
 
@@ -207,7 +218,9 @@ export async function lastBlock(res: AppAndCount): Promise<AppAndCount> {
     app: res.app,
     splitIndex: res.splitIndex,
     count: parseInt(
-      await res.app.client.getAttribute(Selectors.PROMPT_BLOCK_LAST_FOR_SPLIT(res.splitIndex), Selectors.N_ATTR),
+      await res.app.client
+        .$(Selectors.PROMPT_BLOCK_LAST_FOR_SPLIT(res.splitIndex))
+        .then(_ => _.getAttribute(Selectors.N_ATTR)),
       10
     )
   }

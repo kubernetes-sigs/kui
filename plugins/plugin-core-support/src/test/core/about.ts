@@ -23,9 +23,9 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   it('should open the about window via command execution with comment', async () => {
     try {
       await CLI.command('about #About Kui', this.app)
-      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
+      await this.app.client.$(Selectors.TAB_SELECTED_N(2)).then(_ => _.waitForDisplayed())
       await this.app.client.waitUntil(async () => {
-        const actualTitle = await this.app.client.getText(Selectors.TAB_TITLE_N(2))
+        const actualTitle = await this.app.client.$(Selectors.TAB_TITLE_N(2)).then(_ => _.getText())
         return actualTitle === 'Welcome to Kui'
       })
     } catch (err) {
@@ -38,17 +38,20 @@ describe(`about command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   it('should open the about via button click', async () => {
     try {
       await Common.refresh(this)
-      await this.app.client.waitForVisible('#help-button')
+      await this.app.client.$('#help-button').then(_ => _.waitForDisplayed())
 
       await CLI.command('sleep 1', this.app).then(ReplExpect.blank)
 
-      await this.app.client.click('#help-button')
+      await this.app.client.$('#help-button').then(_ => _.click())
 
-      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
-      await this.app.client.waitUntil(async () => {
-        const actualTitle = await this.app.client.getText(Selectors.TAB_TITLE_N(2))
-        return actualTitle === 'Welcome to Kui'
-      })
+      await this.app.client.$(Selectors.TAB_SELECTED_N(2)).then(_ => _.waitForDisplayed())
+      await this.app.client.waitUntil(
+        async () => {
+          const actualTitle = await this.app.client.$(Selectors.TAB_TITLE_N(2)).then(_ => _.getText())
+          return actualTitle === 'Welcome to Kui'
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }

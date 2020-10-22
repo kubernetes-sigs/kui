@@ -51,7 +51,9 @@ commands.forEach(command => {
       const doExpecting = (verb: 'apply' | 'delete', status: 'green' | 'red', expecting: string) => {
         it(`should create deployment from local kustomize directory via ${command} ${verb} ${dashK} expecting ${expecting}`, () => {
           return CLI.command(`${command} ${verb} ${dashK} "${BASE}" ${inNamespace}`, this.app)
-            .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(expecting) }))
+            .then(
+              ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(expecting) })
+            )
             .then(selector => (status === 'green' ? waitForGreen(this.app, selector) : waitForRed(this.app, selector)))
             .catch(Common.oops(this))
         })

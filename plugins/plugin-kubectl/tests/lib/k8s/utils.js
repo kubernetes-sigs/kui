@@ -43,14 +43,14 @@ exports.waitForGreen = async (app, selector) => {
   const yellowBadge = `${selector} [data-tag="badge"].yellow-background`
 
   try {
-    await app.client.waitForExist(yellowBadge, CLI.waitTimeout, true)
+    await app.client.$(yellowBadge).then(_ => _.waitForExist({ timeout: CLI.waitTimeout, reverse: true }))
   } catch (err) {
     console.log(`Creation is still yellow after ${CLI.waitTimeout} ${selector}`)
-    const text = await app.client.getText(badge)
+    const text = await app.client.$(badge).then(_ => _.getText())
     console.log(`Creation status ${text}`)
   }
 
-  await app.client.waitForExist(greenBadge, CLI.waitTimeout)
+  await app.client.$(greenBadge).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
   return greenBadge
 }
 
@@ -65,20 +65,20 @@ exports.waitForRed = async (app, selector) => {
 
   // the green badge should disappear, wait for 5 seconds at max
   try {
-    await app.client.waitForExist(badge.replace('red', 'green'), 5000, true)
+    await app.client.$(badge.replace('red', 'green')).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
   } catch (err) {
     console.log('Deletion is still green after 5000 ms')
   }
 
   try {
-    await app.client.waitForExist(yellowBadge, CLI.waitTimeout, true)
+    await app.client.$(yellowBadge).then(_ => _.waitForExist({ timeout: CLI.waitTimeout, reverse: true }))
   } catch (err) {
     console.log(`Deletion is still yellow after ${CLI.waitTimeout}`)
-    const text = await app.client.getText(yellowBadge)
+    const text = await app.client.$(yellowBadge).then(_ => _.getText())
     console.log(`Deletion status ${text}`)
   }
 
-  await app.client.waitForExist(badge, CLI.waitTimeout)
+  await app.client.$(badge).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
   return badge
 }
 
@@ -179,7 +179,7 @@ exports.waitTillTerminating = (kind, theCli = CLI, name, inNamespace) => app =>
  */
 exports.assertTableTitleMatches = async function(self, tableSelector, expectedTitle) {
   // getHTML rather than getText, in case the title is not visible in this client
-  const tableTitle = (await self.app.client.getHTML(`${tableSelector} .result-table-title`)).replace(
+  const tableTitle = (await self.app.client.$(`${tableSelector} .result-table-title`).then(_ => _.getHTML())).replace(
     /<div.*>(.*)<\/div>/,
     '$1'
   )
@@ -216,15 +216,21 @@ exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
         .then(ReplExpect.ok)
         .then(SidecarExpect.open)
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS(res.count))
-      await this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS(res.count))
+      await this.app.client.$(Selectors.SIDECAR_BREADCRUMBS(res.count)).then(_ => _.waitForDisplayed())
+      await this.app.client.$(Selectors.SIDECAR_BREADCRUMBS(res.count)).then(_ => _.getText())
       await expectArray(breadcrumbs.map(_ => _.label))
 
-      await Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _))))
+      await Promise.all(
+        modes.map(_ =>
+          this.app.client.$(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)).then(_ => _.waitForDisplayed())
+        )
+      )
 
       if (content) {
         return this.app.client.waitUntil(async () => {
-          const text = await this.app.client.getText(`${Selectors.SIDECAR(res.count)} .kui--sidecar-text-content`)
+          const text = await this.app.client
+            .$(`${Selectors.SIDECAR(res.count)} .kui--sidecar-text-content`)
+            .then(_ => _.getText())
           return text.include(content)
         }, CLI.waitTimeout)
       }
@@ -239,8 +245,8 @@ const terminalRows = N => `${Selectors.SIDECAR_TAB_CONTENT(N)} .xterm-rows`
 
 /** Get text from a Terminal-oriented tab */
 exports.getTerminalText = async function(res) {
-  await this.app.client.waitForExist(terminalRows(res.count))
-  return this.app.client.getText(terminalRows(res.count))
+  await this.app.client.$(terminalRows(res.count)).then(_ => _.waitForExist())
+  return this.app.client.$(terminalRows(res.count)).then(_ => _.getText())
 }
 
 /** Wait for the given checker to be true, w.r.t. the log text in the view */

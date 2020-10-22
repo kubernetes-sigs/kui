@@ -65,16 +65,16 @@ describe('edit actions', function(this: Common.ISuite) {
       // now we click on the edit/done buttons a few times to make
       // sure we can toggle back and forth between read-only and edit
       // mode
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'code'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'limits'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'annotations'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy'))
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Revert'))
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')).then(_ => _.click())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'code')).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'limits')).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'annotations')).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw')).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')).then(_ => _.click())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy')).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Revert')).then(_ => _.waitForExist())
     } catch (err) {
       await Common.oops(this)(err)
     }

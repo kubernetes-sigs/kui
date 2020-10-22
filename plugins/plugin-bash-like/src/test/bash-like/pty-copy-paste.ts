@@ -36,38 +36,46 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       const res = await CLI.command(`echo ${emittedText}`, this.app)
 
       // wait for the output to appear
-      await this.app.client.waitForExist(rows(res.count))
+      await this.app.client.$(rows(res.count)).then(_ => _.waitForExist())
 
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const actualText = await this.app.client.getText(rows(res.count))
-        if (++idx > 5) {
-          console.error('still waiting for emitted text', actualText, res.count)
-        }
-        return actualText === emittedText
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const actualText = await this.app.client.$(rows(res.count)).then(_ => _.getText())
+          if (++idx > 5) {
+            console.error('still waiting for emitted text', actualText, res.count)
+          }
+          return actualText === emittedText
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       console.log('now should copy from xterm output and paste outside of xterm')
 
-      await this.app.client.doubleClick(firstRow(res.count))
+      await this.app.client.$(firstRow(res.count)).then(_ => _.doubleClick())
       await this.app.client.execute(() => document.execCommand('copy'))
 
-      await this.app.client.waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
-      await this.app.client.click(Selectors.CURRENT_PROMPT_BLOCK)
+      await this.app.client.$(Selectors.CURRENT_PROMPT_BLOCK).then(async _ => {
+        await _.waitForExist()
+        await _.click()
+      })
       await this.app.client.execute(() => document.execCommand('paste'))
 
       idx = 0
-      await this.app.client.waitUntil(async () => {
-        const [actualValue, expectedValue] = await Promise.all([
-          this.app.client.getValue(Selectors.CURRENT_PROMPT),
-          this.app.client.getText(rows(res.count))
-        ])
-        if (++idx > 5) {
-          console.error(`still waiting for text actualValue=${actualValue} expectedValue=${expectedValue}`)
-        }
+      await this.app.client.waitUntil(
+        async () => {
+          const [actualValue, expectedValue] = await Promise.all([
+            this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.getValue()),
+            this.app.client.$(rows(res.count)).then(_ => _.getText())
+          ])
+          if (++idx > 5) {
+            console.error(`still waiting for text actualValue=${actualValue} expectedValue=${expectedValue}`)
+          }
 
-        return expectedValue === actualValue
-      }, CLI.waitTimeout)
+          return expectedValue === actualValue
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       return Common.oops(this, true)(err)
     }
@@ -88,14 +96,17 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
 
       // wait for those characters to appear in the prompt
       console.error('CP3')
-      await this.app.client.waitUntil(async () => {
-        const actualText = await this.app.client.getValue(Selectors.CURRENT_PROMPT)
-        return actualText === text
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const actualText = await this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.getValue())
+          return actualText === text
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       // copy the content of the current prompt
       console.error('CP4')
-      await this.app.client.doubleClick(Selectors.CURRENT_PROMPT)
+      await this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.doubleClick())
       console.error('CP5')
       await this.app.client.execute(() => document.execCommand('copy'))
 
@@ -110,16 +121,19 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
 
       // wait for vi to come up in alt buffer mode
       console.error('CP8')
-      await this.app.client.waitForExist(Selectors.ALT_BUFFER_N(1))
+      await this.app.client.$(Selectors.ALT_BUFFER_N(1)).then(_ => _.waitForExist())
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       console.error('CP9')
       await this.app.client.keys('i')
       console.error('CP10')
-      await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(lastRow(res.count))
-        return /INSERT/i.test(txt)
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await this.app.client.$(lastRow(res.count)).then(_ => _.getText())
+          return /INSERT/i.test(txt)
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       // now paste into the xterm vi
       console.error('CP11')
@@ -127,16 +141,19 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
 
       // escape then :wq
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        console.error(`CP12.${idx}`)
-        await this.app.client.keys(Keys.ESCAPE)
-        console.error(`CP13.${idx}`)
-        const txt = await this.app.client.getText(lastRow(res.count))
-        if (++idx > 5) {
-          console.error(`still waiting for text actualValue=${txt} whereas length should be zero`)
-        }
-        return !/INSERT/i.test(txt)
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          console.error(`CP12.${idx}`)
+          await this.app.client.keys(Keys.ESCAPE)
+          console.error(`CP13.${idx}`)
+          const txt = await this.app.client.$(lastRow(res.count)).then(_ => _.getText())
+          if (++idx > 5) {
+            console.error(`still waiting for text actualValue=${txt} whereas length should be zero`)
+          }
+          return !/INSERT/i.test(txt)
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       console.error('CP14')
       await this.app.client.keys(':wq')

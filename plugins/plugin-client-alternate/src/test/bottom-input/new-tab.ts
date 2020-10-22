@@ -24,24 +24,29 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`switch back to second tab via command`, () =>
     CLI.command('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it('should close tab via "tab close" command', () =>
     CLI.command('tab close', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_N(2)))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 })
@@ -52,15 +57,19 @@ describe('core new tab from pty active tab via button click', function(this: Com
 
   it('start vi, then new tab via button click', () =>
     CLI.command('vi', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.NOSPLIT_ALT_BUFFER_N(1)))
-      .then(() => this.app.client.click(tabButtonSelector))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.NOSPLIT_ALT_BUFFER_N(1)))
+      .then(_ => _.waitForExist())
+      .then(() => this.app.client.$(tabButtonSelector))
+      .then(_ => _.click())
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it('should report proper version', () =>
     CLI.command('version', this.app)
       .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 })

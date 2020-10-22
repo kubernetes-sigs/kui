@@ -31,22 +31,26 @@ describe(`kubectl get with limit ${process.env.MOCHA_RUN_TARGET || ''}`, functio
 
   it(`should create sample pod from local file`, () => {
     return CLI.command(`kubectl create -f "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+      )
       .then(selector => waitForGreen(this.app, selector))
-      .catch(Common.oops(this))
+      .catch(Common.oops(this, true))
   })
 
   it(`should create sample pod 2 from local file`, () => {
     return CLI.command(`kubectl create -f "${ROOT}/data/k8s/headless/pod2.yaml" ${inNamespace}`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx2') }))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx2') })
+      )
       .then(selector => waitForGreen(this.app, selector))
-      .catch(Common.oops(this))
+      .catch(Common.oops(this, true))
   })
   ;[1, 2].forEach(N => {
     it(`should list with --limit ${N} and see a table with ${N} rows`, () => {
       return CLI.command(`kubectl get pod --limit ${N} ${inNamespace}`, this.app)
         .then(ReplExpect.tableWithNRows(N))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
   })
 

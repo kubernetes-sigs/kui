@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
@@ -63,8 +63,7 @@ commands.forEach(command => {
 
         await sleep(sleepTime)
 
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
+        await Util.switchToTab('events')(res)
 
         /* 
         await Promise.resolve({ app: this.app, count: res.count + 1 }).then(ReplExpect.okWithAny)
@@ -91,14 +90,18 @@ commands.forEach(command => {
 
         const table = `${Selectors.OUTPUT_N(res.count)} .bx--data-table`
         const clickOn = `${table} tr:first-child .clickable`
-        await this.app.client.waitForVisible(clickOn)
-        await this.app.client.click(clickOn)
+        await this.app.client.$(clickOn).then(async _ => {
+          await _.waitForDisplayed()
+          await _.click()
+        })
 
         const resAfter = ReplExpect.blockAfter(res)
         await SidecarExpect.open(resAfter).then(SidecarExpect.showing(podName))
 
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'involvedObject'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'involvedObject'))
+        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'involvedObject')).then(async _ => {
+          await _.waitForDisplayed()
+          await _.click()
+        })
 
         await SidecarExpect.openInBlockAfter(resAfter)
           .then(SidecarExpect.showing(podName))

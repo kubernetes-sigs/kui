@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
+import { Common, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import {
   createNS,
   allocateNS,
@@ -113,11 +113,9 @@ commands.forEach(command => {
     const switchToLogsTab = (showInLog: string[], toolbar: { text: string; type: string }) => {
       it('should show logs tab', async () => {
         try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'logs'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'logs'))
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'logs'))
-
-          await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(res)
+          await Util.switchToTab('logs')(res).then(
+            SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })
+          )
 
           testLogsContent(res, showInLog)
         } catch (err) {
@@ -134,14 +132,16 @@ commands.forEach(command => {
     ) => {
       it(`should switch to container ${container}`, async () => {
         try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
-          await this.app.client.waitForVisible(
-            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
-          )
-          await this.app.client.click(
-            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
-          )
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list')).then(async _ => {
+            await _.waitForDisplayed()
+            await _.click()
+          })
+          await this.app.client
+            .$(`${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`)
+            .then(async _ => {
+              await _.waitForDisplayed()
+              await _.click()
+            })
 
           await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(res)
         } catch (err) {
@@ -156,8 +156,10 @@ commands.forEach(command => {
       it('should toggle streaming', async () => {
         try {
           await sleep(sleepTime)
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'toggle-streaming'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'toggle-streaming'))
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'toggle-streaming')).then(async _ => {
+            await _.waitForDisplayed()
+            await _.click()
+          })
           if (changeToLive) {
             await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(res)
           } else {

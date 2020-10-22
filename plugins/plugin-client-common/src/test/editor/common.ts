@@ -19,14 +19,16 @@ import { ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 /** grab focus for the editor */
 const grabFocus = async (res: ReplExpect.AppAndCount) => {
-  const selector = `${Selectors.SIDECAR(res.count)} .monaco-editor-wrapper .view-lines`
-  await res.app.client.click(selector).then(() => res.app.client.waitForEnabled(selector))
+  const element = await res.app.client.$(`${Selectors.SIDECAR(res.count)} .monaco-editor-wrapper .view-lines`)
+  await element.click()
+  await element.waitForEnabled()
 }
 
 /** set the monaco editor text */
 export const setValue = async (res: ReplExpect.AppAndCount, text: string): Promise<void> => {
-  await res.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Clear'))
-  await res.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Clear'))
+  const button = await res.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Clear'))
+  await button.waitForExist()
+  await button.click()
 
   const txt = await Util.getValueFromMonaco(res)
   strictEqual(txt, '')

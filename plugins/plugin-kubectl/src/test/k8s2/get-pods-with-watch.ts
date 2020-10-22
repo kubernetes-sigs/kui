@@ -31,7 +31,7 @@ enum Status {
 
 /** after a CLI.do (res), wait for a table row with the given status */
 const waitForStatus = async function(this: Common.ISuite, status: Status, res) {
-  const selector = await ReplExpect.okWithCustom({
+  const selector = await ReplExpect.okWithCustom<string>({
     selector: Selectors.BY_NAME(podName)
   })(res)
 
@@ -54,20 +54,20 @@ const createAndDeletePod = function(this: Common.ISuite, kubectl: string, ns: st
       const selector2 = await waitForOffline(await CLI.command(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
 
       // the first badge.Online selector had better still exist after the delete
-      await this.app.client.waitForExist(selector1)
+      await this.app.client.$(selector1).then(_ => _.waitForExist())
 
       const selector3 = await waitForOnline(await CLI.command(`${kubectl} create -f ${url} -n ${ns}`, this.app))
 
       // that second badge.Offline selector had better still exist after the (second) create
-      await this.app.client.waitForExist(selector2)
+      await this.app.client.$(selector2).then(_ => _.waitForExist())
 
       // one last delete...
       await waitForOffline(await CLI.command(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
 
       // the previous badges had all better still exist after that second delete
-      await this.app.client.waitForExist(selector1)
-      await this.app.client.waitForExist(selector2)
-      await this.app.client.waitForExist(selector3)
+      await this.app.client.$(selector1).then(_ => _.waitForExist())
+      await this.app.client.$(selector2).then(_ => _.waitForExist())
+      await this.app.client.$(selector3).then(_ => _.waitForExist())
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -87,25 +87,25 @@ const watchPods = function(this: Common.ISuite, kubectl: string, ns: string) {
       const selector3 = await waitForOffline(await CLI.command(`${kubectl} delete -f ${url} -n ${ns}`, this.app))
 
       // the create and delete badges had better still exist
-      await this.app.client.waitForExist(selector1)
-      await this.app.client.waitForExist(selector3)
+      await this.app.client.$(selector1).then(_ => _.waitForExist())
+      await this.app.client.$(selector3).then(_ => _.waitForExist())
 
       // the "online" badge from the watch had better *NOT* exist after the delete
       // (i.e. we had better actually be watching!)
-      await this.app.client.waitForExist(selector2, 20000, true)
+      await this.app.client.$(selector2).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
 
       // and, conversely, that watch had better eventually show Offline
-      await this.app.client.waitForExist(selector2ButOffline)
+      await this.app.client.$(selector2ButOffline).then(_ => _.waitForExist())
 
       // create again
       await waitForOnline(await CLI.command(`${kubectl} create -f ${url} -n ${ns}`, this.app))
 
       // the "online" badge from the watch had better now exist again after the create
       // (i.e. we had better actually be watching!)
-      await this.app.client.waitForExist(selector2)
+      await this.app.client.$(selector2).then(_ => _.waitForExist())
 
       // and, conversely, that watch had better NOT show Offline
-      await this.app.client.waitForExist(selector2ButOffline, 20000, true)
+      await this.app.client.$(selector2ButOffline).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -192,7 +192,8 @@ xdescribe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
     it('should add new tab via command', () =>
       CLI.command('tab new', this.app)
-        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+        .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+        .then(_ => _.waitForDisplayed())
         .then(() => CLI.waitForSession(this)) // should have an active repl
         .catch(Common.oops(this, true)))
 
@@ -207,8 +208,10 @@ xdescribe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
     it('should close tab via "tab close" command', () =>
       CLI.command('tab close', this.app)
-        .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 20000, true))
-        .then(() => this.app.client.waitForExist(Selectors.TAB_SELECTED_N(1)))
+        .then(() => this.app.client.$(Selectors.TAB_N(2)))
+        .then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
+        .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+        .then(_ => _.waitForExist())
         .then(() => CLI.waitForRepl(this.app)) // should have an active repl
         .catch(Common.oops(this, true)))
 
@@ -230,7 +233,7 @@ xdescribe(`kubectl watch pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       try {
         const { count } = await CLI.command(`kubectl get po -w -n ${ns}`, this.app)
 
-        const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(count))
+        const actualTitle = await this.app.client.$(Selectors.TABLE_TITLE(count)).then(_ => _.getText())
         assert.strictEqual(actualTitle, 'Pod')
       } catch (err) {
         return Common.oops(this, true)

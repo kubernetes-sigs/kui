@@ -24,14 +24,17 @@ describe('tab navigation', function(this: Common.ISuite) {
   Util.closeAllExceptFirstTab.bind(this)()
 
   const waitForFocus = (selector: string, timeout?: number) => {
-    return this.app.client.waitUntil(async () => {
-      try {
-        return await this.app.client.hasFocus(selector)
-      } catch (err) {
-        console.error(err)
-        throw err
-      }
-    }, timeout || CLI.waitTimeout)
+    return this.app.client.waitUntil(
+      async () => {
+        try {
+          return await this.app.client.$(selector).then(_ => _.isFocused())
+        } catch (err) {
+          console.error(err)
+          throw err
+        }
+      },
+      { timeout: timeout || CLI.waitTimeout }
+    )
   }
 
   /** keep hitting tab until the given `selector` is focused */
@@ -79,7 +82,7 @@ describe('tab navigation', function(this: Common.ISuite) {
           await this.app.client.keys(Keys.ENTER)
 
           if (selectedSelector) {
-            await this.app.client.waitForEnabled(selectedSelector, 5000)
+            await this.app.client.$(selectedSelector).then(_ => _.waitForEnabled({ timeout: 5000 }))
           }
         }
       } catch (err) {
@@ -102,7 +105,7 @@ describe('tab navigation', function(this: Common.ISuite) {
       try {
         const { count } = await CLI.command(' ', this.app, true, false, true)
         await this.app.client.keys(Keys.TAB)
-        await this.app.client.waitForEnabled(Selectors.PROMPT_N(count))
+        await this.app.client.$(Selectors.PROMPT_N(count)).then(_ => _.waitForEnabled())
       } catch (err) {
         await Common.oops(this)(err)
       }
@@ -118,7 +121,7 @@ describe('tab navigation', function(this: Common.ISuite) {
   const TAB_BUTTON_N = (N: number) => `.kui--tab:nth-child(${N}) .bx--header__menu-item`
 
   const promptBetterBeFocused = async () => {
-    const promptIsFocused = await this.app.client.hasFocus(Selectors.CURRENT_PROMPT)
+    const promptIsFocused = await this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.isFocused())
     ok(promptIsFocused)
   }
 
@@ -153,5 +156,5 @@ describe('tab navigation', function(this: Common.ISuite) {
   testSelector(tabButtonSelector)
   testSelector('#help-button', true, undefined, true)
   it('should have a new About Kui top tab', () =>
-    this.app.client.waitForVisible(Selectors.TOP_TAB_WITH_TITLE('Welcome to Kui'), 5000))
+    this.app.client.$(Selectors.TOP_TAB_WITH_TITLE('Welcome to Kui')).then(_ => _.waitForDisplayed({ timeout: 5000 })))
 })

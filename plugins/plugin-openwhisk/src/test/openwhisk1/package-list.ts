@@ -53,9 +53,9 @@ describe('wsk package list tests', function(this: Common.ISuite) {
   it(`should list ${pckage} with wsk package list then click`, async () => {
     try {
       const res = await CLI.command(`wsk package list`, this.app)
-      const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(pckage) })(res)
+      const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(pckage) })(res)
 
-      await this.app.client.click(`${selector} .clickable`)
+      await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
       await SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing(pckage))
     } catch (err) {
       return Common.oops(this, true)(err)

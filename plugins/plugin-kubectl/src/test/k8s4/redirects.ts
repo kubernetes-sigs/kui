@@ -54,7 +54,7 @@ xdescribe(`kubectl apply deployment against redirecting URL ${process.env.MOCHA_
           this.app
         )
 
-        const selector = await ReplExpect.okWithCustom({
+        const selector: string = await ReplExpect.okWithCustom<string>({
           selector: Selectors.BY_NAME('nginx-deployment')
         })(res)
 
@@ -62,7 +62,7 @@ xdescribe(`kubectl apply deployment against redirecting URL ${process.env.MOCHA_
         await waitForGreen(this.app, selector)
 
         // now click on the table row
-        await this.app.client.click(`${selector} .clickable`)
+        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
         await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('nginx-deployment'))
@@ -77,7 +77,7 @@ xdescribe(`kubectl apply deployment against redirecting URL ${process.env.MOCHA_
         this.app
       )
         .then(
-          ReplExpect.okWithCustom({
+          ReplExpect.okWithCustom<string>({
             selector: Selectors.BY_NAME('nginx-deployment')
           })
         )

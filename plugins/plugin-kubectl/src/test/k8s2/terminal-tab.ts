@@ -52,13 +52,13 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       try {
         const tableRes = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app)
 
-        const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })(tableRes)
+        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })(tableRes)
 
         // wait for the badge to become green
         await waitForGreen(this.app, selector)
 
         // now click on the table row
-        await this.app.client.click(`${selector} .clickable`)
+        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
         res = ReplExpect.blockAfter(tableRes)
         await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
@@ -70,9 +70,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   }
 
   const switchTo = async (res: ReplExpect.AppAndCount, mode: string) => {
-    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
-    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
-    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, mode))
+    return Util.switchToTab(mode)(res)
   }
 
   /** sleep for the given number of seconds */
@@ -113,8 +111,10 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   const doRetry = (toolbar: { type: string; text: string; exact: boolean }) => {
     it('should click retry button', async () => {
       try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming'))
+        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming')).then(async _ => {
+          await _.waitForDisplayed()
+          await _.click()
+        })
         await SidecarExpect.toolbarText(toolbar)(res)
       } catch (err) {
         return Common.oops(this, true)(err)
@@ -126,9 +126,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   const exitTerminalTabAndRetry = () => {
     it('should show terminal tab and exit with error', async () => {
       try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'terminal'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'terminal'))
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'terminal'))
+        await Util.switchToTab('terminal')(res)
 
         await SidecarExpect.toolbarText({
           type: 'info',
@@ -161,8 +159,10 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
       this.app
     )
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
-      .then((selector: string) => waitForGreen(this.app, selector))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+      )
+      .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })
 
@@ -186,9 +186,9 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       await sleep(3)
 
       console.error('3')
-      const elts = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT(res.count)} .xterm-rows`)
-      console.error('3b', elts && elts.value.length)
-      await this.app.client.click(`${Selectors.SIDECAR_TAB_CONTENT(res.count)}`)
+      const elts = await this.app.client.$$(`${Selectors.SIDECAR_TAB_CONTENT(res.count)} .xterm-rows`)
+      console.error('3b', elts && elts.length)
+      await this.app.client.$(`${Selectors.SIDECAR_TAB_CONTENT(res.count)}`).then(_ => _.click())
       await this.app.client.keys(`while true; do echo hi; sleep 1; done${Keys.ENTER}`)
 
       console.error('4')

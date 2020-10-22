@@ -34,8 +34,8 @@ if (process.env.NEEDS_OC) {
 }
 
 const currentEventCount = async (app: Application, outputCount: number): Promise<number> => {
-  const events = await app.client.elements(Selectors.TABLE_FOOTER(outputCount))
-  const res = !events || !events.value ? 0 : events.value.length
+  const events = await app.client.$$(Selectors.TABLE_FOOTER(outputCount))
+  const res = !events ? 0 : events.length
   return res
 }
 
@@ -58,23 +58,26 @@ commands.forEach(command => {
       try {
         const res = await CLI.command(`${command} get pods --watch ${inNamespace}`, this.app)
         console.log('wait for pod to come up')
-        await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(res).then(selector =>
+        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(res).then(selector =>
           waitForGreen(this.app, selector)
         )
 
         console.log('wait for events 1')
         let idx = 0
-        await this.app.client.waitUntil(async () => {
-          const actualEventCount = await currentEventCount(this.app, res.count)
-          if (++idx > 5) {
-            console.error('still waiting for events 1')
-          }
-          console.log('actualEventCount1', actualEventCount)
-          return actualEventCount > 0
-        }, CLI.waitTimeout)
+        await this.app.client.waitUntil(
+          async () => {
+            const actualEventCount = await currentEventCount(this.app, res.count)
+            if (++idx > 5) {
+              console.error('still waiting for events 1')
+            }
+            console.log('actualEventCount1', actualEventCount)
+            return actualEventCount > 0
+          },
+          { timeout: CLI.waitTimeout }
+        )
 
         console.log('click on event to drill down')
-        await this.app.client.click(Selectors.TABLE_FOOTER_MESSAGE_LINK(res.count, 1))
+        await this.app.client.$(Selectors.TABLE_FOOTER_MESSAGE_LINK(res.count, 1)).then(_ => _.click())
         await SidecarExpect.openInBlockAfter(res).then(SidecarExpect.kind('Event'))
       } catch (err) {
         return Common.oops(this, true)(err)
@@ -85,20 +88,23 @@ commands.forEach(command => {
       try {
         const res = await CLI.command(`${command} get pods ${name} --watch ${inNamespace}`, this.app)
         console.log('wait for pod to come up')
-        await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(res).then(selector =>
+        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(res).then(selector =>
           waitForGreen(this.app, selector)
         )
 
         console.log('wait for events 2')
         let idx = 0
-        await this.app.client.waitUntil(async () => {
-          const actualEventCount = await currentEventCount(this.app, res.count)
-          if (++idx > 5) {
-            console.error('still waiting for events 2')
-          }
-          console.log('actualEventCount2', actualEventCount)
-          return actualEventCount > 0
-        }, CLI.waitTimeout)
+        await this.app.client.waitUntil(
+          async () => {
+            const actualEventCount = await currentEventCount(this.app, res.count)
+            if (++idx > 5) {
+              console.error('still waiting for events 2')
+            }
+            console.log('actualEventCount2', actualEventCount)
+            return actualEventCount > 0
+          },
+          { timeout: CLI.waitTimeout }
+        )
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -124,29 +130,38 @@ commands.forEach(command => {
         )
 
         console.log('wait for creating the pod')
-        await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(createRes).then(selector =>
+        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(createRes).then(selector =>
           waitForGreen(this.app, selector)
         )
 
         console.log('wait for events 3')
         let idx = 0
-        await this.app.client.waitUntil(async () => {
-          const actualEventCount = await currentEventCount(this.app, createRes.count)
-          if (++idx > 5) {
-            console.error('still waiting for some events 3')
-          }
-          console.log('actualEventCount3', actualEventCount)
-          return actualEventCount > 0
-        }, CLI.waitTimeout)
-        const eventsBeforeDelete = await this.app.client.getText(Selectors.TABLE_FOOTER(createRes.count))
+        await this.app.client.waitUntil(
+          async () => {
+            const actualEventCount = await currentEventCount(this.app, createRes.count)
+            if (++idx > 5) {
+              console.error('still waiting for some events 3')
+            }
+            console.log('actualEventCount3', actualEventCount)
+            return actualEventCount > 0
+          },
+          { timeout: CLI.waitTimeout }
+        )
+        const eventsBeforeDelete = await this.app.client
+          .$(Selectors.TABLE_FOOTER(createRes.count))
+          .then(_ => _.getText())
 
         console.log('wait for deleting the pod')
         const deletion = await CLI.command(`${command} delete pods nginx ${inNamespace}`, this.app)
-        const deletionSelector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(deletion)
+        const deletionSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(
+          deletion
+        )
         await waitForRed(this.app, deletionSelector)
 
         // the events in the first table shouldn't be affected since that crud-watcher was done
-        const eventsAfterDelete = await this.app.client.getText(Selectors.TABLE_FOOTER(createRes.count))
+        const eventsAfterDelete = await this.app.client
+          .$(Selectors.TABLE_FOOTER(createRes.count))
+          .then(_ => _.getText())
         if (Array.isArray(eventsAfterDelete)) {
           eventsAfterDelete.forEach((event, idx) => assert.ok(event === eventsBeforeDelete[idx]))
         } else {

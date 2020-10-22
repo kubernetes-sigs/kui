@@ -72,7 +72,6 @@ describe('Delete using rimraf with wildcards', function(this: Common.ISuite) {
             exact: true
           })
         )
-        .then(SidecarExpect.closed)
         .catch(Common.oops(this)))
 
     verifyDeleted(listToBeDeleted)
@@ -83,15 +82,11 @@ describe('Delete using rimraf with wildcards', function(this: Common.ISuite) {
   it('should delete nothing with rimraf zzz*', () =>
     CLI.command(`wsk action rimraf zzz*`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'deleted 0 elements', exact: true }))
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
       .catch(Common.oops(this)))
 
   it('should delete foo and foo2 with rimraf foo*', () =>
     CLI.command(`wsk action rimraf foo*`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'deleted 2 elements', exact: true }))
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(actions[2])) // since goo was the last one we created, and we didn't delete it, it should still be open in the sidecar
       .catch(Common.oops(this)))
 
   // goo should still show up in the list and get views

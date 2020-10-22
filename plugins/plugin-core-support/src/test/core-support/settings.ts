@@ -23,15 +23,18 @@ describe('settings notebook', function(this: Common.ISuite) {
 
   it('should click on the settings status stripe button and show a new tab', async () => {
     try {
-      await this.app.client.click('#kui--settings-button')
+      await this.app.client.$('#kui--settings-button').then(_ => _.click())
 
       // better have a new tab
-      await this.app.client.waitForExist(Selectors.TOP_TAB_N(2))
+      await this.app.client.$(Selectors.TOP_TAB_N(2)).then(_ => _.waitForExist())
 
-      await this.app.client.waitUntil(async () => {
-        const actualTabTitle = await this.app.client.getText(Selectors.CURRENT_TAB_TITLE)
-        return actualTabTitle === 'Kui Settings'
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const actualTabTitle = await this.app.client.$(Selectors.CURRENT_TAB_TITLE).then(_ => _.getText())
+          return actualTabTitle === 'Kui Settings'
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -39,15 +42,15 @@ describe('settings notebook', function(this: Common.ISuite) {
 
   it('should click on the settings status stripe button AGAIN and NOT show a new tab', async () => {
     try {
-      await this.app.client.click('#kui--settings-button')
+      await this.app.client.$('#kui--settings-button').then(_ => _.click())
       await new Promise(resolve => setTimeout(resolve, 1000))
-      await this.app.client.click('#kui--settings-button')
+      await this.app.client.$('#kui--settings-button').then(_ => _.click())
       await new Promise(resolve => setTimeout(resolve, 1000))
-      await this.app.client.click('#kui--settings-button')
+      await this.app.client.$('#kui--settings-button').then(_ => _.click())
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       // better not have a third tab
-      await this.app.client.waitForExist(Selectors.TOP_TAB_N(3), 5000, true)
+      await this.app.client.$(Selectors.TOP_TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }

@@ -27,7 +27,7 @@ describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, 
     CLI.command('pwd', this.app)
       .then(ReplExpect.okWithAny)
       .then(async () => {
-        curentDirectory = await this.app.client.getText(Selectors.OUTPUT_LAST_PTY)
+        curentDirectory = await this.app.client.$(Selectors.OUTPUT_LAST_PTY).then(_ => _.getText())
       })
       .catch(Common.oops(this, true)))
 
@@ -44,13 +44,16 @@ describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, 
 
       // verify the pwd command replay
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(Selectors.OUTPUT_LAST_PTY)
-        if (++idx > 5) {
-          console.error(`still waiting for expected=${curentDirectory}; actual=${txt}`)
-        }
-        return txt === curentDirectory
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await this.app.client.$(Selectors.OUTPUT_LAST_PTY).then(_ => _.getText())
+          if (++idx > 5) {
+            console.error(`still waiting for expected=${curentDirectory}; actual=${txt}`)
+          }
+          return txt === curentDirectory
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }

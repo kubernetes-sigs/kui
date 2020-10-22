@@ -49,7 +49,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
             `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
             this.app
           )
-          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
+          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
 
           // wait for the badge to become green
           console.log(`kubectl apply pod 2 ${this.title}`)
@@ -57,7 +57,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
           // now click on the table row
           console.log(`kubectl apply pod 3 ${this.title}`)
-          await this.app.client.click(`${selector} .clickable`)
+          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
           res = ReplExpect.blockAfter(res)
           await SidecarExpect.open(res)
             .then(SidecarExpect.mode(defaultModeForGet))
@@ -72,9 +72,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         try {
           // make sure we have a last applied tab
           console.log(`kubectl apply pod 4 ${this.title}`)
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'last applied'))
+          await Util.switchToTab('last applied')(res)
 
           let idx = 0
           console.log(`kubectl apply pod 5 ${this.title}`)
@@ -111,7 +109,9 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
           this.app
         )
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForRed(this.app, selector))
           .catch(Common.oops(this, true))
       })

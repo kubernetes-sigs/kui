@@ -71,16 +71,19 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
   )
 
   const resultHasEmptyWatchText = async (count: number, positive = true) => {
-    await this.app.client.waitForExist(Selectors.OK_N(count), CLI.waitTimeout)
+    await this.app.client.$(Selectors.OK_N(count)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 
-    await this.app.client.waitUntil(async () => {
-      const emptyWatchText = await this.app.client.getText(Selectors.TABLE_TITLE_NROWS(count))
-      if (positive) {
-        return emptyWatchText.includes('0') // e.g. "0 rows"
-      } else {
-        return !emptyWatchText.includes('0') // better not have "0 rows"
-      }
-    }, CLI.waitTimeout)
+    await this.app.client.waitUntil(
+      async () => {
+        const emptyWatchText = await this.app.client.$(Selectors.TABLE_TITLE_NROWS(count)).then(_ => _.getText())
+        if (positive) {
+          return emptyWatchText.includes('0') // e.g. "0 rows"
+        } else {
+          return !emptyWatchText.includes('0') // better not have "0 rows"
+        }
+      },
+      { timeout: CLI.waitTimeout }
+    )
   }
 
   // here comes the tests should start watching successfully
@@ -100,7 +103,9 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
       console.error('watch from non-existent namespace 1')
       // create the namespace
       await CLI.command(`k create ns ${ns}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns) })
+        )
         .then(status => waitForGreen(this.app, status))
 
       console.error('watch from non-existent namespace 2')
@@ -109,13 +114,15 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
         `k create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
         this.app
       )
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+        )
         .then(status => waitForGreen(this.app, status))
 
       console.error('watch from non-existent namespace 3')
       // the watch table should have the new pods with online status
       const watchStatus = `${Selectors.OUTPUT_N(watchResult.count)} ${Selectors.BY_NAME('nginx')}`
-      await this.app.client.waitForExist(watchStatus, CLI.waitTimeout)
+      await this.app.client.$(watchStatus).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
       await waitForGreen(this.app, watchStatus)
 
       console.error('watch from non-existent namespace 4')
@@ -124,7 +131,9 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
 
       // delete the pod
       await CLI.command(`k delete pods nginx -n ${ns}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+        )
         .then(status => waitForRed(this.app, status))
 
       console.error('watch from non-existent namespace 5')
@@ -134,7 +143,9 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
       console.error('watch from non-existent namespace 6')
       // delete the namespace
       await CLI.command(`k delete ns ${ns}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns) })
+        )
         .then(nsStatus => waitForRed(this.app, nsStatus))
     } catch (err) {
       await Common.oops(this, true)(err)

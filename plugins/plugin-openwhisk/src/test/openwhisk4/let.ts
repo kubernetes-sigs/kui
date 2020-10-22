@@ -63,12 +63,12 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
 
   it('should create a sequence via let with annotations', () =>
     CLI.command(`let ${seqName5} = x=>x -> x=>x -a foo bar -a xxx 333`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(seqName5)))
   xit('should switch to annotations mode', () =>
     CLI.command('wsk action annotations', this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(seqName5))
       .then(Util.getValueFromMonaco)
@@ -76,88 +76,90 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
 
   it('should create an action via let without extension', () =>
     CLI.command(`let ${actionName2} = x=>({y:x.y})`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName2)))
 
   xit('should create an action via let with an explicit kind', () =>
     CLI.command(`let ${actionName23} = ${ROOT}/data/openwhisk/echo.js --kind nodejs:8`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName23))
       .then(res =>
-        res.app.client.getText(
-          `${Selectors.SIDECAR(res.count)} .sidecar-header-secondary-content .action-content .kind`
-        )
+        res.app.client.$(`${Selectors.SIDECAR(res.count)} .sidecar-header-secondary-content .action-content .kind`)
       )
+      .then(_ => _.getText())
       .then(kindString => assert.ok(kindString.indexOf('nodejs:8') >= 0)))
 
   it('should create an packaged action with new package that has a dot in its name', () =>
     CLI.command(`let ${packageName3}/${actionName17} = x=>x`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName17, packageName3)))
 
   it('should create a packaged action with new package', () =>
     CLI.command(`let ${packageName1}/${actionName12} = x=>({y:x.y})`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName12, packageName1)))
 
   it('should create a package', () =>
     CLI.command(`wsk package update ${packageName2}`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(packageName2)))
 
   it('should create a packaged action with existing package', () =>
     CLI.command(`let ${packageName2}/${actionName13} = x=>({y:x.y})`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName13, packageName2)))
 
-  xit('should create a sequence with inline file', () =>
-    CLI.command(`wsk action let ${seqName1} = ${actionName2} -> ${ROOT}/data/openwhisk/hello.html`, this.app)
-      .then(ReplExpect.okWithString('http')) // some web address, as this is a web action
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(seqName1)))
+  xit('should create a sequence with inline file', async () => {
+    const res = await CLI.command(
+      `wsk action let ${seqName1} = ${actionName2} -> ${ROOT}/data/openwhisk/hello.html`,
+      this.app
+    )
+    await ReplExpect.okWithString('http')(res) // some web address, as this is a web action
+    await SidecarExpect.open(res).then(SidecarExpect.showing(seqName1))
+  })
 
-  xit('should create a sequence with inline anonymous and inline file', () =>
-    CLI.command(`wsk action let ${seqName2} = x=>x -> ${ROOT}/data/openwhisk/hello.html`, this.app)
-      .then(ReplExpect.okWithString('http')) // some web address, as this is a web action
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(seqName2)))
+  xit('should create a sequence with inline anonymous and inline file', async () => {
+    const res = await CLI.command(`wsk action let ${seqName2} = x=>x -> ${ROOT}/data/openwhisk/hello.html`, this.app)
+    await ReplExpect.okWithString('http')(res) // some web address, as this is a web action
+    await SidecarExpect.open(res).then(SidecarExpect.showing(seqName2))
+  })
 
   xit('should create a sequence with inline anonymous and inline file (no whitespace)', () =>
     CLI.command(`wsk action let ${seqName3}=x=>x->${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(seqName3)))
 
-  xit('should create a sequence with two inline files', () =>
-    CLI.command(
+  xit('should create a sequence with two inline files', async () => {
+    const res = await CLI.command(
       `wsk action let ${seqName4}=${ROOT}/data/openwhisk/foo.js-> ${ROOT}/data/openwhisk/hello.html`,
       this.app
     )
-      .then(ReplExpect.okWithString('http')) // some web address, as this is a web action
-      .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(seqName4)))
+    await ReplExpect.okWithString('http')(res) // some web address, as this is a web action
+    await SidecarExpect.open(res).then(SidecarExpect.showing(seqName4))
+  })
 
   it('should create an anonymous action via wsk action let', () =>
     CLI.command(`wsk action let ${actionName9} = x=>({y:x.y})`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName9)))
 
   it('should create a file action via wsk action let', () =>
     CLI.command(`wsk action let ${actionName10} = ${ROOT}/data/openwhisk/foo.js`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName10)))
 
   it('should create a sequence via wsk action let from activation context', () =>
     CLI.command(`wsk action let ${actionName11} = ${actionName9}->${actionName10}`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName11)))
 
@@ -178,22 +180,24 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
 
   xit('should create an anonymous function with -p and -a', () =>
     CLI.command(`let ${actionName22} = x=>x -a x 3 -p y 4`, this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName22)))
   xit('should switch to parameters mode', () =>
     CLI.command('wsk action parameters', this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName22))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectStruct({ y: 4 })))
   xit('should switch to annotations mode', () =>
     CLI.command('wsk action annotations', this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName22))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectSubset({ x: 3 })))
 
   /* xit('should create an HTML web action via let, with actions and parameters', () =>
@@ -204,17 +208,19 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
       .then(() => this.app.client.waitForExist(Selectors.SIDECAR_WEB_ACTION_URL))) */
   xit('should switch to parameters mode', () =>
     CLI.command('wsk action parameters', this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName8))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectStruct({ y: 4 })))
   xit('should switch to annotations mode', () =>
     CLI.command('wsk action annotations', this.app)
-      .then(ReplExpect.justOK)
+      .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName8))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(
         Util.expectSubset({
           x: 3,
@@ -223,19 +229,21 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
         })
       ))
 
-  xit('should create an SVG web action via let', () =>
-    CLI.command(`let icon = ${ROOT}/data/openwhisk/icon.svg`, this.app)
-      .then(ReplExpect.okWithString('icon.svg')) // icon.svg will be part of the URL in the command line response
-      .then(SidecarExpect.open)
+  xit('should create an SVG web action via let', async () => {
+    const res = await CLI.command(`let icon = ${ROOT}/data/openwhisk/icon.svg`, this.app)
+    await ReplExpect.okWithString('icon.svg')(res) // icon.svg will be part of the URL in the command line response
+    await SidecarExpect.open(res)
       .then(SidecarExpect.showing('icon'))
-      .then(SidecarExpect.badge('web')))
+      .then(SidecarExpect.badge('web'))
+  })
 
-  xit('should create a JSON web action via let', () =>
-    CLI.command(`let ${actionName15}.json = x=>x`, this.app)
-      .then(ReplExpect.okWithString(actionName15)) // actionName15 will be part of teh URL in the command line response
-      .then(SidecarExpect.open)
+  xit('should create a JSON web action via let', async () => {
+    const res = await CLI.command(`let ${actionName15}.json = x=>x`, this.app)
+    await ReplExpect.okWithString(actionName15)(res) // actionName15 will be part of teh URL in the command line response
+    await SidecarExpect.open(res)
       .then(SidecarExpect.showing(actionName15))
-      .then(SidecarExpect.badge('web')))
+      .then(SidecarExpect.badge('web'))
+  })
 
   //
   // css action
@@ -244,8 +252,9 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
     try {
       const res = await CLI.command(`let ${actionName19}.css = ${CSS_INPUT}`, this.app)
 
-      await ReplExpect.okWithCustom({ selector: '.entity-web-export-url' })(res)
-        .then(selector => this.app.client.getText(selector))
+      await ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' })(res)
+        .then(selector => this.app.client.$(selector))
+        .then(_ => _.getText())
         .then(href => rp({ url: href, rejectUnauthorized: false }))
         .then(content =>
           readFile(CSS_INPUT, (err, data) => {
@@ -268,8 +277,9 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
     try {
       const res = await CLI.command(`let ${actionName21}.html = x=>({ html: "${body}" })`, this.app)
 
-      await ReplExpect.okWithCustom({ selector: '.entity-web-export-url' })(res)
-        .then(selector => this.app.client.getText(selector))
+      await ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' })(res)
+        .then(selector => this.app.client.$(selector))
+        .then(_ => _.getText())
         .then(href => rp({ url: href, rejectUnauthorized: false }))
         .then(content => assert.strictEqual(content, body))
 
@@ -286,7 +296,7 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
   //
   /* if (false) { // openwhisk broken on 20170831
     it('should create a png action via let', () => CLI.command(`let ${actionName20} = ${PNG_INPUT}`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
+      .then(ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' }))
       .then(selector => this.app.client.getText(selector))
       .then(href => rp({ url: href, rejectUnauthorized: false }))
       .then(content => fs.readFile(PNG_INPUT, (err, data) => {
@@ -316,14 +326,16 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName5))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectStruct({ y: 4 })))
   xit('should switch to annotations mode', () =>
     CLI.command('wsk action annotations', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName5))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectSubset({ x: 3 })))
 
   // let from file with multiple annotations and parameters
@@ -337,14 +349,16 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName6))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectStruct({ y: 4, yy: 44 })))
   xit('should switch to annotations mode', () =>
     CLI.command('wsk action annotations', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName6))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectSubset({ x: 3, xx: 33 })))
 
   // anonymous let from with annotations and parameters
@@ -358,14 +372,16 @@ describe('Create an action via let core tests', function(this: Common.ISuite) {
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName7))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectStruct({ y: 4 })))
   xit('should switch to annotations mode', () =>
     CLI.command('wsk action annotations', this.app)
       .then(ReplExpect.justOK)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing(actionName7))
-      .then(res => res.app.client.getText(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(res => res.app.client.$(`${Selectors.SIDECAR_CONTENT(res.count)} .action-source`))
+      .then(_ => _.getText())
       .then(Util.expectSubset({ x: 3 })))
 
   it('should create an action via let with extension', () =>

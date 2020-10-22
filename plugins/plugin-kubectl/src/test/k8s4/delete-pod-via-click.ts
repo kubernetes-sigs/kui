@@ -32,7 +32,9 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
       `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
       this.app
     )
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+      )
       .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this))
   })
@@ -44,9 +46,9 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
         .then(SidecarExpect.open)
         .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
 
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete'))
-      await this.app.client.waitForExist('#confirm-dialog')
-      await this.app.client.click('#confirm-dialog .bx--btn--danger')
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete')).then(_ => _.click())
+      await this.app.client.$('#confirm-dialog').then(_ => _.waitForExist())
+      await this.app.client.$('#confirm-dialog .bx--btn--danger').then(_ => _.click())
       const selector = `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`
 
       return waitForRed(this.app, selector)

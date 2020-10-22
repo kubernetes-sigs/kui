@@ -43,26 +43,28 @@ commands.forEach(command => {
      *
      */
     const testRawTab = async (ctx: Common.ISuite, res: ReplExpect.AppAndCount) => {
-      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
-      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+      await Util.switchToTab('raw')(res)
 
-      return ctx.app.client.waitUntil(async () => {
-        const ok: boolean = await Util.getValueFromMonaco(res).then(
-          Util.expectYAMLSubset(
-            {
-              apiVersion: 'v1',
-              kind: 'Pod',
-              metadata: {
-                name: 'nginx',
-                namespace: ns
-              }
-            },
-            false
+      return ctx.app.client.waitUntil(
+        async () => {
+          const ok: boolean = await Util.getValueFromMonaco(res).then(
+            Util.expectYAMLSubset(
+              {
+                apiVersion: 'v1',
+                kind: 'Pod',
+                metadata: {
+                  name: 'nginx',
+                  namespace: ns
+                }
+              },
+              false
+            )
           )
-        )
 
-        return ok
-      })
+          return ok
+        },
+        { timeout: CLI.waitTimeout }
+      )
     }
 
     /**
@@ -70,9 +72,7 @@ commands.forEach(command => {
      *
      */
     const testSummaryTab = async (ctx: Common.ISuite, res: ReplExpect.AppAndCount) => {
-      await ctx.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, defaultModeForGet))
-      await ctx.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, defaultModeForGet))
-      await SidecarExpect.yaml({ Name: 'nginx' })(res)
+      await Util.switchToTab(defaultModeForGet)(res).then(SidecarExpect.yaml({ Name: 'nginx' }))
     }
 
     allocateNS(this, ns, command)
@@ -107,7 +107,9 @@ commands.forEach(command => {
         `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
         this.app
       )
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+        )
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -143,13 +145,17 @@ commands.forEach(command => {
     // click delete button
     it('should initiate deletion of the pod via sidecar deletion button', async () => {
       try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete'))
+        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete')).then(async _ => {
+          await _.waitForDisplayed()
+          await _.click()
+        })
 
         // wait for delete confirmation popup
-        await this.app.client.waitForExist('#confirm-dialog .bx--btn--danger')
-        await this.app.client.click('#confirm-dialog .bx--btn--danger')
-        await this.app.client.waitForExist('#confirm-dialog', 20000, true) // go away!
+        await this.app.client.$('#confirm-dialog .bx--btn--danger').then(async _ => {
+          await _.waitForExist()
+          await _.click()
+        })
+        await this.app.client.$('#confirm-dialog').then(_ => _.waitForExist({ timeout: 20000, reverse: true })) // go away!
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -160,7 +166,7 @@ commands.forEach(command => {
       let idx = 0
       return this.app.client
         .waitUntil(async () => {
-          const value = await this.app.client.getText(Selectors.PROMPT_LAST)
+          const value = await this.app.client.$(Selectors.PROMPT_LAST).then(_ => _.getText())
           if (++idx > 5) {
             console.error(
               `kubectl get ${process.env.MOCHA_RUN_TARGET || ''} still waiting for delete command actual=${value}`
@@ -174,8 +180,11 @@ commands.forEach(command => {
 
     it('should wait for that click-delete to finish', async () => {
       try {
-        const count = parseInt(await this.app.client.getAttribute(Selectors.PROMPT_BLOCK_LAST, 'data-input-count'), 10)
-        const newResourceSelector = await ReplExpect.okWithCustom({
+        const count = parseInt(
+          await this.app.client.$(Selectors.PROMPT_BLOCK_LAST).then(_ => _.getAttribute('data-input-count')),
+          10
+        )
+        const newResourceSelector = await ReplExpect.okWithCustom<string>({
           selector: Selectors.BY_NAME('nginx')
         })({ app: this.app, count })
 

@@ -41,7 +41,7 @@ wdescribe(`kubectl exec basic stuff via watch pane ${process.env.MOCHA_RUN_TARGE
   it('should wait for the pod to come up', () => {
     return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
       .then(async () => {
-        await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(2, podName))
+        await this.app.client.$(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(2, podName)).then(_ => _.waitForExist())
       })
       .catch(Common.oops(this, true))
   })

@@ -169,6 +169,7 @@ describe(`experimental command ${process.env.MOCHA_RUN_TARGET || ''}`, function(
 
   it('should execute an experimental command', () =>
     CLI.command('test string', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.EXPERIMENTAL_PROMPT_BLOCK_TAG))
+      .then(() => this.app.client.$(Selectors.EXPERIMENTAL_PROMPT_BLOCK_TAG))
+      .then(_ => _.waitForExist())
       .catch(Common.oops(this, true)))
 })

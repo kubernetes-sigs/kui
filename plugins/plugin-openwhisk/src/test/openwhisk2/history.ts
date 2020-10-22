@@ -52,11 +52,9 @@ describe('History', function(this: Common.ISuite) {
 
   it('should re-execute from history', async () => {
     try {
-      const res = await CLI.command('history 5 create', this.app)
+      const res = await CLI.command('history 5 create', this.app).then(ReplExpect.justOK)
 
-      await ReplExpect.okWithCustom({ passthrough: true })(res).then(N =>
-        this.app.client.click(`${Selectors.LIST_RESULTS_N(N)}:first-child .entity-name`)
-      )
+      this.app.client.$(`${Selectors.LIST_RESULTS_N(res.count)}:first-child .entity-name`).then(_ => _.click())
 
       await SidecarExpect.open(res).then(SidecarExpect.showing(entityName))
     } catch (err) {

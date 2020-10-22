@@ -42,11 +42,14 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
     /** wait until the sidecar displays a superset of the given content */
     const expectContent = (res: ReplExpect.AppAndCount, content: object) => {
-      return this.app.client.waitUntil(async () => {
-        const ok: boolean = await getText(res).then(Util.expectYAMLSubset(content, false))
+      return this.app.client.waitUntil(
+        async () => {
+          const ok: boolean = await getText(res).then(Util.expectYAMLSubset(content, false))
 
-        return ok
-      })
+          return ok
+        },
+        { timeout: CLI.waitTimeout }
+      )
     }
 
     /**
@@ -58,13 +61,13 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       it(`should list configmaps via ${kubectl} then click on ${name}`, async () => {
         try {
           const tableRes = await CLI.command(`${kubectl} get cm ${inNamespace}`, this.app)
-          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(tableRes)
+          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(tableRes)
 
           // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
           // await waitForGreen(this.app, selector)
 
           // now click on the table row
-          await this.app.client.click(`${selector} .clickable`)
+          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
           const res = ReplExpect.blockAfter(tableRes)
           await SidecarExpect.open(res)
             .then(SidecarExpect.mode(defaultModeForGet))
@@ -74,7 +77,7 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
               await SidecarExpect.yaml(content.data)(res)
             }
 
-            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+            await Util.switchToTab('raw')(res)
             await expectContent(res, content)
           }
         } catch (err) {
@@ -87,7 +90,9 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     const deleteIt = (name: string) => {
       it(`should delete the configmap ${name} via ${kubectl} `, () => {
         return CLI.command(`${kubectl} delete cm ${name} ${inNamespace}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+          )
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('configmap', undefined, name, undefined, inNamespace))
           .catch(Common.oops(this))
@@ -98,7 +103,9 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     const createIt = (name: string, literals = '') => {
       it(`should create a configmap ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create configmap ${name} ${literals} ${inNamespace}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this))
       })

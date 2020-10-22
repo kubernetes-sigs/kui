@@ -28,7 +28,7 @@ Common.localDescribe('input queueing', function(this: Common.ISuite) {
             const outstanding = CLI.command(`sleep ${sleepTime}`, this.app)
 
             // first, wait until the sleep 5 has started
-            await this.app.client.waitForExist(Selectors.PROCESSING_N(N))
+            await this.app.client.$(Selectors.PROCESSING_N(N)).then(_ => _.waitForExist())
 
             // meanwhile, send keyboard input while queued
             this.app.client.keys(textWhileQueued)

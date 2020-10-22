@@ -22,13 +22,14 @@ const resetTheme = (ctx: Common.ISuite) => {
   it('should reset theme preference', () =>
     CLI.command('theme reset', ctx.app)
       .then(ReplExpect.justOK)
-      .catch(Common.oops(ctx)))
+      .catch(Common.oops(ctx, true)))
 
   it(`should show that we are using the default theme: ${defaultTheme}`, () =>
     CLI.command('theme current', ctx.app)
       .then(ReplExpect.okWithString(defaultTheme))
-      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${defaultTheme}"]`)) // Dark being the default
-      .catch(Common.oops(ctx)))
+      .then(() => ctx.app.client.$(`body[kui-theme="${defaultTheme}"]`)) // Dark being the default
+      .then(_ => _.waitForExist())
+      .catch(Common.oops(ctx, true)))
 }
 
 interface Theme {
@@ -43,13 +44,14 @@ const go = (theme: Theme) => (ctx: Common.ISuite) => {
   it(`should switch to ${theme.name} theme via command`, () =>
     CLI.command(`theme set "${theme.name}"`, ctx.app)
       .then(ReplExpect.justOK)
-      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-      .catch(Common.oops(ctx)))
+      .then(() => ctx.app.client.$(`body[kui-theme="${theme.name}"]`))
+      .then(_ => _.waitForExist())
+      .catch(Common.oops(ctx, true)))
 
   it(`should show that we are using the ${theme.name} theme`, () =>
     CLI.command('theme current', ctx.app)
       .then(ReplExpect.okWithString(theme.name))
-      .catch(Common.oops(ctx)))
+      .catch(Common.oops(ctx, true)))
 }
 
 /**
@@ -61,8 +63,9 @@ const restartAndThen = (theme: Theme) => (ctx: Common.ISuite) => {
   // Common.refresh electron's current page rather than restart the app to prevent clearing browser's local storage
   Common.localIt(`should still be using ${theme.name} theme after a browser restart`, () =>
     Common.refresh(ctx)
-      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-      .catch(Common.oops(ctx))
+      .then(() => ctx.app.client.$(`body[kui-theme="${theme.name}"]`))
+      .then(_ => _.waitForExist())
+      .catch(Common.oops(ctx, true))
   )
 }
 
@@ -74,8 +77,9 @@ const restartAndThen = (theme: Theme) => (ctx: Common.ISuite) => {
 const reloadAndThen = (theme: Theme) => (ctx: Common.ISuite) => {
   Common.localIt(`should still be using ${theme.name} theme after a reload`, () =>
     Common.refresh(ctx)
-      .then(() => ctx.app.client.waitForExist(`body[kui-theme="${theme.name}"]`))
-      .catch(Common.oops(ctx))
+      .then(() => ctx.app.client.$(`body[kui-theme="${theme.name}"]`))
+      .then(_ => _.waitForExist())
+      .catch(Common.oops(ctx, true))
   )
 }
 

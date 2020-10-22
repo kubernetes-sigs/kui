@@ -38,17 +38,39 @@ const expectArray = (expected /*: string[] */) => (actual /*: string | string[] 
   return Util.expectArray(expected)(act)
 }
 
+const waitForValue = expectedValue => elt => {
+  let idx = 0
+  return elt.waitUntil(
+    async () => {
+      const actualValue = await elt.getValue()
+      if (++idx > 5) {
+        console.error(`still waiting for actualValue='${actualValue}' expectedValue='${expectedValue}'`)
+      }
+      return actualValue === expectedValue || actualValue === expectedValue.replace(/\/$/, '')
+    },
+    { timeout: CLI.waitTimeout }
+  )
+}
+
+const setValue = value => elt => elt.setValue(value)
+
 exports.tabby = (ctx, partial, full, expectOK = true) =>
   ctx.app.client
-    .waitForExist(Selectors.CURRENT_PROMPT_BLOCK, CLI.waitTimeout)
-    .then(() => ctx.app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+    .$(Selectors.CURRENT_PROMPT_BLOCK)
+    .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+    .then(() => ctx.app.client.$(Selectors.CURRENT_PROMPT_BLOCK))
+    .then(_ => _.getAttribute('data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count =>
       ctx.app.client
-        .setValue(Selectors.CURRENT_PROMPT, partial)
-        .then(() => ctx.app.client.waitForValue(Selectors.PROMPT_N(count), partial))
-        .then(() => ctx.app.client.setValue(Selectors.CURRENT_PROMPT, `${partial}${Keys.TAB}`))
-        .then(() => ctx.app.client.waitForValue(Selectors.PROMPT_N(count), full))
+        .$(Selectors.CURRENT_PROMPT)
+        .then(setValue(partial))
+        .then(() => ctx.app.client.$(Selectors.PROMPT_N(count)))
+        .then(waitForValue(partial))
+        .then(() => ctx.app.client.$(Selectors.CURRENT_PROMPT))
+        .then(setValue(`${partial}${Keys.TAB}`))
+        .then(() => ctx.app.client.$(Selectors.PROMPT_N(count)))
+        .then(waitForValue(full))
     )
     .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
     .then(() => CLI.command('', ctx.app)) // "enter" to complete the repl
@@ -69,17 +91,22 @@ exports.tabbyWithOptions = (
   { click = undefined, nTabs = undefined, expectOK = true, expectedPromptAfterTab = undefined } = {}
 ) => {
   return ctx.app.client
-    .waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
-    .then(() => ctx.app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+    .$(Selectors.CURRENT_PROMPT_BLOCK)
+    .then(_ => _.waitForExist())
+    .then(() => ctx.app.client.$(Selectors.CURRENT_PROMPT_BLOCK))
+    .then(_ => _.getAttribute('data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count =>
       ctx.app.client
-        .setValue(Selectors.CURRENT_PROMPT, partial)
-        .then(() => ctx.app.client.waitForValue(Selectors.PROMPT_N(count), partial))
-        .then(() => ctx.app.client.setValue(Selectors.CURRENT_PROMPT, `${partial}${Keys.TAB}`))
+        .$(Selectors.CURRENT_PROMPT)
+        .then(setValue(partial))
+        .then(() => ctx.app.client.$(Selectors.PROMPT_N(count)))
+        .then(waitForValue(partial))
+        .then(() => ctx.app.client.$(Selectors.CURRENT_PROMPT))
+        .then(setValue(`${partial}${Keys.TAB}`))
         .then(() => {
           if (expectedPromptAfterTab) {
-            return ctx.app.client.waitForValue(Selectors.PROMPT_N(count), expectedPromptAfterTab)
+            return ctx.app.client.$(Selectors.PROMPT_N(count)).then(waitForValue(expectedPromptAfterTab))
           }
         })
         .then(() => {
@@ -87,10 +114,12 @@ exports.tabbyWithOptions = (
             // then we expect non-visibility of the tab-completion popup
             // console.error('Expecting non-existence of popup')
             return ctx.app.client
-              .waitForVisible(
-                `${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`,
-                10000,
-                true
+              .$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`)
+              .then(_ =>
+                _.waitForDisplayed({
+                  timeout: 10000,
+                  reverse: true
+                })
               )
               .then(() => {
                 // great, the tab completion popup does not exist; early exit
@@ -101,13 +130,13 @@ exports.tabbyWithOptions = (
           } else {
             const selector = `${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`
             // console.error('Expecting existence of popup', selector)
-            return ctx.app.client.waitForVisible(selector, 10000)
+            return ctx.app.client.$(selector).then(_ => _.waitForDisplayed({ timeout: 10000 }))
           }
         })
         .then(() =>
-          ctx.app.client.getText(
-            `${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`
-          )
+          ctx.app.client
+            .$$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`)
+            .then(elements => Promise.all(elements.map(_ => _.getText())))
         )
         .then(expectArray(expected))
         // .then(() => { console.error('Got expected options') })
@@ -121,7 +150,10 @@ exports.tabbyWithOptions = (
               '\\\\'
             )}"] a`
             // console.error('clicking', click, selector)
-            return ctx.app.client.waitForVisible(selector, 10000).then(() => ctx.app.client.click(selector))
+            return ctx.app.client.$(selector).then(async _ => {
+              await _.waitForDisplayed({ timeout: 10000 })
+              await _.click()
+            })
           } else {
             // otherwise hit tab a number of times, to cycle to the desired entry
             // console.error('tabbing', nTabs)
@@ -129,9 +161,12 @@ exports.tabbyWithOptions = (
           }
         })
         .then(() =>
-          ctx.app.client.waitForVisible(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions`, 8000, true)
+          ctx.app.client
+            .$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions`)
+            .then(_ => _.waitForDisplayed({ timeout: 8000, reverse: true }))
         ) // wait for non-existence of the temporary
-        .then(() => ctx.app.client.waitForValue(Selectors.PROMPT_N(count), full))
+        .then(() => ctx.app.client.$(Selectors.PROMPT_N(count)))
+        .then(waitForValue(full))
     )
     .then(() => CLI.command('', ctx.app))
     .then(data => {
@@ -150,29 +185,31 @@ exports.tabbyWithOptions = (
 
 exports.tabbyWithOptionsThenCancel = (ctx, partial, expected) =>
   ctx.app.client
-    .waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
-    .then(() => ctx.app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+    .$(Selectors.CURRENT_PROMPT_BLOCK)
+    .then(_ => _.waitForExist())
+    .then(() => ctx.app.client.$(Selectors.CURRENT_PROMPT_BLOCK))
+    .then(_ => _.getAttribute('data-input-count'))
     .then(count => parseInt(count, 10))
     .then(count =>
       ctx.app.client
-        .setValue(Selectors.CURRENT_PROMPT, partial)
-        .then(() => ctx.app.client.waitForValue(Selectors.PROMPT_N(count), partial))
-        .then(() => ctx.app.client.setValue(Selectors.CURRENT_PROMPT, `${partial}${Keys.TAB}`))
+        .$(Selectors.CURRENT_PROMPT)
+        .then(setValue(partial))
+        .then(() => ctx.app.client.$(Selectors.PROMPT_N(count)))
+        .then(waitForValue(partial))
+        .then(() => ctx.app.client.$(Selectors.CURRENT_PROMPT))
+        .then(setValue(`${partial}${Keys.TAB}`))
         .then(() =>
-          ctx.app.client.waitForVisible(
-            `${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`
-          )
+          ctx.app.client.$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`)
         )
+        .then(_ => _.waitForDisplayed())
         .then(() =>
-          ctx.app.client.getText(
-            `${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option`
-          )
+          ctx.app.client.$$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option`)
         )
+        .then(elements => Promise.all(elements.map(_ => _.getText())))
         .then(expectArray(expected))
         .then(() => ctx.app.client.keys('ffffff')) // type something random
-        .then(() =>
-          ctx.app.client.waitForVisible(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions`, 20000, true)
-        )
+        .then(() => ctx.app.client.$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions`))
+        .then(_ => _.waitForDisplayed({ timeout: 20000, reverse: true }))
     ) // wait for non-existence of the temporary
     .then(() => ctx.app.client.keys(Keys.ctrlC)) // clear the line
     .catch(Common.oops(ctx, true))

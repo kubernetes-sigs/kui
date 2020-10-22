@@ -37,13 +37,16 @@ describe('command history plain', function(this: Common.ISuite) {
       await this.app.client.keys(Keys.ctrlP)
 
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const promptValue = await this.app.client.getValue(Selectors.PROMPT_FINAL)
-        if (++idx > 5) {
-          console.error(`still waiting for expectedPromptValue=${listCommand}; actualPromptValue=${promptValue}`)
-        }
-        return promptValue === listCommand
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const promptValue = await this.app.client.$(Selectors.PROMPT_FINAL).then(_ => _.getValue())
+          if (++idx > 5) {
+            console.error(`still waiting for expectedPromptValue=${listCommand}; actualPromptValue=${promptValue}`)
+          }
+          return promptValue === listCommand
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -54,13 +57,16 @@ describe('command history plain', function(this: Common.ISuite) {
       await this.app.client.keys(Keys.ctrlN)
 
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const promptValue = await this.app.client.getValue(Selectors.PROMPT_FINAL)
-        if (++idx > 5) {
-          console.error(`still waiting for empty prompt; actualPromptValue=${promptValue}`)
-        }
-        return promptValue.length === 0
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const promptValue = await this.app.client.$(Selectors.PROMPT_FINAL).then(_ => _.getValue())
+          if (++idx > 5) {
+            console.error(`still waiting for empty prompt; actualPromptValue=${promptValue}`)
+          }
+          return promptValue.length === 0
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -86,9 +92,9 @@ describe('command history plain', function(this: Common.ISuite) {
   it('should re-execte from history via mouse click', async () => {
     try {
       const res = await CLI.command('history 5 lls', this.app)
-      const N = await ReplExpect.okWithCustom({ passthrough: true })(res)
+      const N = ((await ReplExpect.okWithCustom({ passthrough: true })(res)) as any) as number
       const selector = `${Selectors.LIST_RESULTS_N(N)}:last-child .entity-name`
-      await this.app.client.click(selector)
+      await this.app.client.$(selector).then(_ => _.click())
       return ReplExpect.okWith('README.md')({ app: this.app, count: N + 1 })
     } catch (err) {
       Common.oops(this, true)(err)

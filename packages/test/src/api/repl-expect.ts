@@ -15,6 +15,7 @@
  */
 
 import { Application } from 'spectron'
+import { ElementArray } from 'webdriverio'
 import * as assert from 'assert'
 
 import { ISuite } from './common'
@@ -51,7 +52,10 @@ interface Options {
   streaming?: boolean
 }
 
-const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
+function expectOK<T extends number | string | boolean | ElementArray | Application = boolean>(
+  appAndCount: AppAndCount,
+  opt?: Options
+): Promise<T> {
   // appAndCount.count is the prompt index of this command... so +1 gives us the next prompt, whose existence signals that this command has finished
   const app = appAndCount.app
   const N = appAndCount.count + 1
@@ -64,9 +68,12 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
     : Selectors.BOTTOM_PROMPT
 
   return app.client
-    .waitForVisible(nextPrompt, waitTimeout) // wait for the next prompt to appear
-    .then(() => app.client.getAttribute(nextPrompt, 'placeholder')) // it should have a placeholder text
-    .then(() => app.client.getValue(nextPrompt)) // it should have an empty value
+    .$(nextPrompt)
+    .then(_ => _.waitForDisplayed({ timeout: waitTimeout })) // wait for the next prompt to appear
+    .then(() => app.client.$(nextPrompt)) // it should have a placeholder text
+    .then(_ => _.getAttribute('placeholder'))
+    .then(() => app.client.$(nextPrompt)) // it should have an empty value
+    .then(_ => _.getValue())
     .then(promptValue => {
       if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk) && promptValue.length !== 0) {
         console.error(`Expected prompt value to be empty: ${promptValue}`)
@@ -78,77 +85,93 @@ const expectOK = (appAndCount: AppAndCount, opt?: Options) => {
     }) //      ... verify that
     .then(async () => {
       if (opt && opt.expectError) return false
-      const html = await app.client.getHTML(Selectors.OK_N(N - 1, splitIndex))
+      const html = await app.client.$(Selectors.OK_N(N - 1, splitIndex)).then(_ => _.getHTML())
       const okReg = new RegExp(process.env.OK) || /ok/
       assert.ok(okReg.test(html)) // make sure it says "ok" !
     })
-    .then(() => {
-      // validate any expected list entry
-      if (opt && opt.expectString) {
-        // expect exactly one entry
-        return app.client
-          .getText(`${Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex)} .entity-name`)
-          .then(name => assert.strictEqual(name, opt.expectString))
-      } else if (opt && opt.expectArray) {
-        // expect several entries, of which opt is one // NOTE: what does it mean by opt is one???
-        return app.client
-          .getText(Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex))
-          .then(name => (!Array.isArray(name) ? [name] : name))
-          .then(name => assert.ok(name !== opt.expectArray[0] && name.find(_ => _.indexOf(opt.expectArray[0]) >= 0)))
-      } else if (opt && (opt.selector || opt.expect)) {
-        // more custom, look for expect text under given selector
-        const selector = `${
-          opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1, splitIndex) : Selectors.OUTPUT_N(N - 1, splitIndex)
-        }${opt.selfSelector || ''} ${opt.selector || ''}`
-        if (opt.elements) {
-          return app.client.waitForExist(selector, waitTimeout).then(() => app.client.elements(selector))
+    .then(
+      async (): Promise<T> => {
+        // validate any expected list entry
+        if (opt && opt.expectString) {
+          // expect exactly one entry
+          await app.client
+            .$(`${Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex)} .entity-name`)
+            .then(_ => _.getText())
+            .then(name => assert.strictEqual(name, opt.expectString))
+        } else if (opt && opt.expectArray) {
+          // expect several entries, of which opt is one // NOTE: what does it mean by opt is one???
+          await app.client
+            .$$(Selectors.LIST_RESULTS_BY_NAME_N(N - 1, splitIndex))
+            .then(names => Promise.all(names.map(_ => _.getText())))
+            .then(names =>
+              assert.notStrictEqual(
+                names.findIndex(_ => _.indexOf(opt.expectArray[0]) >= 0),
+                -1,
+                `name="${opt.expectArray[0]}" not found in list=${names}`
+              )
+            )
+        } else if (opt && (opt.selector || opt.expect)) {
+          // more custom, look for expect text under given selector
+          const selector = `${
+            opt.streaming ? Selectors.OUTPUT_N_STREAMING(N - 1, splitIndex) : Selectors.OUTPUT_N(N - 1, splitIndex)
+          }${opt.selfSelector || ''} ${opt.selector || ''}`
+          if (opt.elements) {
+            return app.client.$$(selector) as Promise<T>
+          } else {
+            let idx = 0
+            return app.client
+              .waitUntil(
+                async () => {
+                  const txt = await app.client.$(selector).then(async _ => {
+                    await _.waitForExist({ timeout: waitTimeout })
+                    return _.getText()
+                  })
+
+                  if (++idx > 5) {
+                    console.error(`still waiting for expected text actualText=${txt} expectedText=${opt.expect}`)
+                  }
+
+                  if (opt.exact) return txt === opt.expect
+                  else if (opt.expect) {
+                    if (txt.indexOf(opt.expect) < 0) {
+                      console.error(
+                        `Expected string not found expected=${opt.expect} idx=${txt.indexOf(opt.expect)} actual=${txt}`
+                      )
+                      return txt.indexOf(opt.expect) >= 0
+                    }
+                  }
+
+                  return true
+                },
+                { timeout: waitTimeout }
+              )
+              .then(() => {
+                return opt.passthrough ? N - 1 : selector // so that the caller can inspect the selector in more detail
+              })
+              .then(res => res as T)
+          }
+        } else if (opt && opt.expectJustOK === true) {
+          // ensure that there is nothing other than "ok"
+          await app.client.waitUntil(async () => {
+            const txt = await app.client.$(Selectors.OUTPUT_N(N - 1, splitIndex)).then(_ => _.getText())
+            const justOK = process.env.OK || 'ok'
+            return txt.length === 0 || txt === justOK
+          })
         } else {
-          let idx = 0
-          return app.client
-            .waitUntil(async () => {
-              await app.client.waitForExist(selector, waitTimeout)
-              const txt = await app.client.getText(selector)
-
-              if (++idx > 5) {
-                console.error(`still waiting for expected text actualText=${txt} expectedText=${opt.expect}`)
-              }
-
-              if (opt.exact) return txt === opt.expect
-              else if (opt.expect) {
-                if (txt.indexOf(opt.expect) < 0) {
-                  console.error(
-                    `Expected string not found expected=${opt.expect} idx=${txt.indexOf(opt.expect)} actual=${txt}`
-                  )
-                  return txt.indexOf(opt.expect) >= 0
-                }
-              }
-
-              return true
-            }, waitTimeout)
-            .then(() => {
-              return opt.passthrough ? N - 1 : selector // so that the caller can inspect the selector in more detail
-            })
+          // nothing to validate with the "console" results of the command
+          // return the index of the last executed command
+          return ((N - 1) as any) as Promise<T>
         }
-      } else if (opt && opt.expectJustOK === true) {
-        // ensure that there is nothing other than "ok"
-        return app.client.waitUntil(async () => {
-          const txt = await app.client.getText(Selectors.OUTPUT_N(N - 1, splitIndex))
-          const justOK = process.env.OK || 'ok'
-          return txt.length === 0 || txt === justOK
-        })
-      } else {
-        // nothing to validate with the "console" results of the command
-        // return the index of the last executed command
-        return N - 1
       }
-    })
+    )
     .then(res => (opt && (opt.selector || opt.passthrough) ? res : app)) // return res rather than app, if requested
+    .then(res => res as T)
 }
 
 export const ok = async (res: AppAndCount) =>
-  expectOK(res, { passthrough: true })
-    .then(N => res.app.client.elements(Selectors.LIST_RESULTS_BY_NAME_N(N, res.splitIndex)))
-    .then(elts => assert.strictEqual(elts.value.length, 0))
+  expectOK<number>(res, { passthrough: true })
+    .then(N => res.app.client.$$(Selectors.LIST_RESULTS_BY_NAME_N(N, res.splitIndex)))
+    .then(elts => assert.strictEqual(elts.length, 0))
     .then(() => res)
 
 export const error = (statusCode: number | string, expect?: string) => async (res: AppAndCount) =>
@@ -158,7 +181,9 @@ export const error = (statusCode: number | string, expect?: string) => async (re
     expect: expect
   }).then(() => res.app)
 
-export const errorWithPassthrough = (statusCode: number | string, expect?: string) => async (res: AppAndCount) =>
+export const errorWithPassthrough = (statusCode: number | string, expect?: string) => async (
+  res: AppAndCount
+): Promise<number> =>
   expectOK(res, {
     selector: `.oops[data-status-code="${statusCode || 0}"]`,
     expectError: true,
@@ -174,17 +199,23 @@ export const blank = (res: AppAndCount) => blankWithOpts()(res)
 /** The return type `any` comes from webdriverio waitUntil */
 export const consoleToBeClear = (app: Application, residualBlockCount = 1, splitIndex = 1) => {
   let idx = 0
-  return app.client.waitUntil(async () => {
-    const actualBlockCount = (await app.client.elements(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex))).value.length
-    if (++idx > 5) {
-      console.error(`still waiting for residualBlockCount=${residualBlockCount}; actualBlockCount=${actualBlockCount}`)
-    }
-    return actualBlockCount === residualBlockCount
-  }, waitTimeout)
+  return app.client.waitUntil(
+    async () => {
+      const actualBlockCount = (await app.client.$$(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex))).length
+      if (++idx > 5) {
+        console.error(
+          `still waiting for residualBlockCount=${residualBlockCount}; actualBlockCount=${actualBlockCount}`
+        )
+      }
+      return actualBlockCount === residualBlockCount
+    },
+    { timeout: waitTimeout }
+  )
 }
 
 /** as long as its ok, accept anything */
-export const okWithCustom = (custom: CustomSpec) => async (res: AppAndCount) => expectOK(res, custom)
+export const okWithCustom = <T extends string | boolean>(custom: CustomSpec) => async (res: AppAndCount) =>
+  expectOK<T>(res, custom)
 
 export const okWithTextContent = (expect: string, exact = false, failFast = true, sel = ' ') => async (
   res: AppAndCount
@@ -195,7 +226,7 @@ export const okWithTextContent = (expect: string, exact = false, failFast = true
   // </span><span> </span></div> will preserve whitespace, but if
   // the inner spans have are inline-block, then innerText will not
   // preserve whitespace; textContent *will* preserve whitespace
-  const selector = await okWithCustom({ selector: sel })(res)
+  const selector = await okWithCustom<string>({ selector: sel })(res)
   const txt = await getTextContent(res.app, selector)
 
   if (exact) {
@@ -216,7 +247,7 @@ export const okWithTextContent = (expect: string, exact = false, failFast = true
 
 export const okWithString = (expect: string, exact = false, streaming = false) => async (res: AppAndCount) => {
   // first try innerText
-  return okWithCustom({ expect, exact, streaming })(res).catch(async err1 => {
+  return okWithCustom<boolean>({ expect, exact, streaming })(res).catch(async err1 => {
     // use .textContent as a backup plan
     return okWithTextContent(
       expect,
@@ -231,23 +262,29 @@ export const okWithStreamingOutput = (expect: string, exact = false) => okWithSt
 export const okWithPtyOutput = (expect: string, exact = false) => okWithString(expect, exact)
 
 export const okWithStringEventually = (expect: string, exact = false) => (res: AppAndCount) => {
-  return res.app.client.waitUntil(() => {
-    try {
-      return okWithString(expect, exact)(res)
-    } catch (err) {
-      // swallow
-    }
-  }, waitTimeout)
+  return res.app.client.waitUntil(
+    () => {
+      try {
+        return okWithString(expect, exact)(res)
+      } catch (err) {
+        // swallow
+      }
+    },
+    { timeout: waitTimeout }
+  )
 }
 
 export const okWithPtyOutputEventually = (expect: string, exact = false) => (res: AppAndCount) => {
-  return res.app.client.waitUntil(() => {
-    try {
-      return okWithPtyOutput(expect, exact)(res)
-    } catch (err) {
-      // swallow
-    }
-  }, waitTimeout)
+  return res.app.client.waitUntil(
+    () => {
+      try {
+        return okWithPtyOutput(expect, exact)(res)
+      } catch (err) {
+        // swallow
+      }
+    },
+    { timeout: waitTimeout }
+  )
 }
 
 /** as long as its ok, accept anything */
@@ -268,16 +305,21 @@ export const justOK = async (res: AppAndCount) => expectOK(res, { expectJustOK: 
 export function splitCount(expectedSplitCount: number, inverseColors = false, expectedSplitIndex?: number) {
   return async (app: Application) => {
     let idx = 0
-    await app.client.waitUntil(async () => {
-      const { value } = await app.client.elements(Selectors.SPLITS)
-      if (++idx > 5) {
-        console.error(`still waiting for splitCount; actual=${value.length} expected=${expectedSplitCount}`)
-      }
-      return value.length === expectedSplitCount
-    }, waitTimeout)
+    await app.client.waitUntil(
+      async () => {
+        const splits = await app.client.$$(Selectors.SPLITS)
+        if (++idx > 5) {
+          console.error(`still waiting for splitCount; actual=${splits.length} expected=${expectedSplitCount}`)
+        }
+        return splits.length === expectedSplitCount
+      },
+      { timeout: waitTimeout }
+    )
 
     if (inverseColors) {
-      await app.client.waitForExist(Selectors.SPLIT_N(expectedSplitIndex || expectedSplitCount, inverseColors))
+      await app.client
+        .$(Selectors.SPLIT_N(expectedSplitIndex || expectedSplitCount, inverseColors))
+        .then(_ => _.waitForExist())
     }
   }
 }
@@ -285,10 +327,13 @@ export function splitCount(expectedSplitCount: number, inverseColors = false, ex
 /** Expect table with N rows */
 export function tableWithNRows(N: number) {
   return (res: AppAndCount) => {
-    return res.app.client.waitUntil(async () => {
-      const rows = await res.app.client.elements(Selectors.LIST_RESULTS_N(res.count))
-      return rows.value.length === N
-    }, waitTimeout)
+    return res.app.client.waitUntil(
+      async () => {
+        const rows = await res.app.client.$$(Selectors.LIST_RESULTS_N(res.count))
+        return rows.length === N
+      },
+      { timeout: waitTimeout }
+    )
   }
 }
 
@@ -296,15 +341,18 @@ export function tableWithNRows(N: number) {
 export function elsewhere(expectedBody: string, N?: number) {
   return async (res: AppAndCount) => {
     let idx = 0
-    await res.app.client.waitUntil(async () => {
-      const actualBody = await res.app.client.getText(
-        Selectors.OUTPUT_N(res.count, N === undefined ? res.splitIndex : N)
-      )
-      if (++idx > 5) {
-        console.error(`still waiting for body; actual=${actualBody}; expected=${expectedBody}`)
-      }
-      return actualBody === expectedBody
-    }, waitTimeout)
+    await res.app.client.waitUntil(
+      async () => {
+        const actualBody = await res.app.client
+          .$(Selectors.OUTPUT_N(res.count, N === undefined ? res.splitIndex : N))
+          .then(_ => _.getText())
+        if (++idx > 5) {
+          console.error(`still waiting for body; actual=${actualBody}; expected=${expectedBody}`)
+        }
+        return actualBody === expectedBody
+      },
+      { timeout: waitTimeout }
+    )
 
     return res.app
   }
@@ -316,12 +364,18 @@ export function comment(expectedBody: string, expectedTitle?: string) {
     const output = Selectors.OUTPUT_N(res.count)
 
     if (expectedTitle) {
-      await res.app.client.waitForVisible(`${output} ${Selectors.TERMINAL_CARD}`, waitTimeout)
-      const actualTitle: string = await res.app.client.getText(`${output} ${Selectors.TERMINAL_CARD_TITLE}`)
+      await res.app.client
+        .$(`${output} ${Selectors.TERMINAL_CARD}`)
+        .then(_ => _.waitForDisplayed({ timeout: waitTimeout }))
+      const actualTitle: string = await res.app.client
+        .$(`${output} ${Selectors.TERMINAL_CARD_TITLE}`)
+        .then(_ => _.getText())
       assert.strictEqual(actualTitle, expectedTitle)
     }
 
-    const actualBody: string = await res.app.client.getText(`${output} ${Selectors.TERMINAL_CARD_BODY}`)
+    const actualBody: string = await res.app.client
+      .$(`${output} ${Selectors.TERMINAL_CARD_BODY}`)
+      .then(_ => _.getText())
     assert.strictEqual(actualBody, expectedBody)
 
     return res
@@ -340,18 +394,20 @@ export function blockCount(this: ISuite) {
 
           const expectedBlockCount = typeof expected === 'number' ? expected : expected()
 
-          return this.app.client.waitUntil(async () => {
-            const actualBlockCount = (await this.app.client.elements(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex)))
-              .value.length
+          return this.app.client.waitUntil(
+            async () => {
+              const actualBlockCount = (await this.app.client.$$(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex))).length
 
-            if (++idx > 5) {
-              console.error(
-                `still waiting for expectedBlockCount=${expectedBlockCount}; actualBlockCount=${actualBlockCount}`
-              )
-            }
+              if (++idx > 5) {
+                console.error(
+                  `still waiting for expectedBlockCount=${expectedBlockCount}; actualBlockCount=${actualBlockCount}`
+                )
+              }
 
-            return actualBlockCount === expectedBlockCount
-          }, waitTimeout)
+              return actualBlockCount === expectedBlockCount
+            },
+            { timeout: waitTimeout }
+          )
         })
       }
     })

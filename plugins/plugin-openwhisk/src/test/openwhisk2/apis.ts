@@ -65,7 +65,8 @@ describe('Create api gateway', function(this: Common.ISuite) {
       .then(res =>
         ReplExpect.okWithOnly('/hello/world')(res)
           .then(() => res.count)
-          .then(N => this.app.client.getAttribute(`${Selectors.LIST_RESULTS_N(N)} [data-key="url"]`, 'data-value'))
+          .then(N => this.app.client.$(`${Selectors.LIST_RESULTS_N(N)} [data-key="url"]`))
+          .then(_ => _.getAttribute('data-value'))
       )
 
       .then(_href => {

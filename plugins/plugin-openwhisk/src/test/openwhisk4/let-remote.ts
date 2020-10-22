@@ -56,8 +56,9 @@ xdescribe('Create an action via let from a remote resource', function(this: Comm
         this.app
       )
 
-      await ReplExpect.okWithCustom({ selector: '.entity-web-export-url' })(res)
-        .then(selector => this.app.client.getText(selector))
+      await ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' })(res)
+        .then(selector => this.app.client.$(selector))
+        .then(_ => _.getText())
         .then(href => rp({ url: href, rejectUnauthorized: false }))
         .then(content =>
           readFile(remote.local, (err, data) => {

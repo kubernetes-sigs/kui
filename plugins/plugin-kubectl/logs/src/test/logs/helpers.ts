@@ -32,7 +32,9 @@ export function wait(this: Common.ISuite, ns: string, command: string, podName: 
     it(`should wait for the pod to come up`, async () => {
       try {
         res = await CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
-        await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(splitIndex, podName))
+        await this.app.client
+          .$(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(splitIndex, podName))
+          .then(_ => _.waitForExist())
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -40,7 +42,9 @@ export function wait(this: Common.ISuite, ns: string, command: string, podName: 
   } else {
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
+        )
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -51,7 +55,7 @@ export function get(this: Common.ISuite, ns: string, command: string, podName: s
   it(`should get pod ${podName} via ${command} then click`, async () => {
     try {
       res = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app)
-      const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })(res)
+      const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })(res)
 
       if (wait) {
         // wait for the badge to become green
@@ -59,7 +63,7 @@ export function get(this: Common.ISuite, ns: string, command: string, podName: s
       }
 
       // now click on the table row
-      await this.app.client.click(`${selector} .clickable`)
+      await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
       await SidecarExpect.openInBlockAfter(res)
         .then(SidecarExpect.mode(defaultModeForGet))
         .then(SidecarExpect.showing(podName))
@@ -70,8 +74,10 @@ export function get(this: Common.ISuite, ns: string, command: string, podName: s
 }
 
 export async function clickRetry(this: Common.ISuite, res: ReplExpect.AppAndCount) {
-  await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming'))
-  await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming'))
+  await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming')).then(async _ => {
+    await _.waitForDisplayed()
+    await _.click()
+  })
 }
 
 async function waitUntilPreviousIs(
@@ -84,7 +90,7 @@ async function waitUntilPreviousIs(
 
   await new Promise(resolve => setTimeout(resolve, 2000))
   await this.app.client.waitUntil(async () => {
-    if (!(await this.app.client.isExisting(Selectors.SIDECAR_TOOLBAR_TEXT(res.count, type)))) {
+    if (!(await this.app.client.$(Selectors.SIDECAR_TOOLBAR_TEXT(res.count, type)).then(_ => _.isExisting()))) {
       await new Promise(resolve => setTimeout(resolve, 2000))
       await click(res)
       await new Promise(resolve => setTimeout(resolve, 2000))
@@ -131,8 +137,10 @@ export function clickPrevious(this: Common.ISuite, type: 'info' | 'warning', pre
 
   it(`should click the previous toggle button and expect previous=${previous}`, async () => {
     const mode = 'kubectl-logs-previous-toggle'
-    await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
-    await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
+    await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, mode)).then(async _ => {
+      await _.waitForDisplayed()
+      await _.click()
+    })
     await wait(res)
   })
 }

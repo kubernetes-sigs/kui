@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CLI, ReplExpect, SidecarExpect, Common, Selectors } from '@kui-shell/test'
+import { CLI, ReplExpect, SidecarExpect, Common, Selectors, Util } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
@@ -118,21 +118,22 @@ commands.forEach(command => {
           .then(SidecarExpect.tree(sourceTree))
           .then(async _ => {
             if (apply) {
-              const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(_.count, 'apply')
-              await this.app.client.waitForVisible(buttonSelector)
-              await this.app.client.click(buttonSelector)
+              const button = await this.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(_.count, 'apply'))
+              await button.waitForDisplayed()
+              await button.click()
               if (waitForApply) {
                 const res = ReplExpect.blockAfter(_)
-                const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(waitForApply) })(res)
+                const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(waitForApply) })(
+                  res
+                )
                 await waitForGreen(this.app, selector)
               }
             }
 
             if (deployedTree) {
-              const modeSelector = Selectors.SIDECAR_MODE_BUTTON(_.count, 'deployed resources')
-              await this.app.client.waitForVisible(modeSelector)
-              await this.app.client.click(modeSelector)
-              await SidecarExpect.mode('deployed resources')(_).then(SidecarExpect.tree(deployedTree))
+              await Util.switchToTab('deployed resources')(_)
+                .then(SidecarExpect.mode('deployed resources'))
+                .then(SidecarExpect.tree(deployedTree))
             }
 
             return _

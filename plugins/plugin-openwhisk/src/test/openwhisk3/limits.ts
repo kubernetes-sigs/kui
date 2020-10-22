@@ -19,7 +19,7 @@
  *    this test also covers toggling the sidecar
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
@@ -42,8 +42,7 @@ export const expectLimit = (type: string, expectedValue: number | string) => asy
   const expect: Record<string, number | string> = {}
   expect[type] = expectedValue
 
-  await res.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'limits'))
-  await res.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'limits'))
+  await Util.switchToTab('limits')(res)
 
   await res.app.client.waitUntil(async () => {
     const txt = await Util.getValueFromMonaco(res)

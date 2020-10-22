@@ -97,11 +97,10 @@ export class TestTable {
     it(`should have ${jobCount} jobs in the tab`, async () => {
       try {
         await ctx.app.client.waitUntil(async () => {
-          const watchableJobsRaw = await ctx.app.client.execute(() => {
+          const actualJobCount = await ctx.app.client.execute(() => {
             const tab = document.querySelector('.kui--tab-content.visible') as Tab
             return tab && tab.state && tab.state.jobs
           })
-          const actualJobCount = watchableJobsRaw.value
           return actualJobCount === jobCount
         })
       } catch (err) {
@@ -125,16 +124,16 @@ export class TestTable {
 
         await promiseEach(expectRow, async row => {
           const rowSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.BY_NAME(row.name)}`
-          ctx.app.client.waitForExist(rowSelector)
+          await (await ctx.app.client.$(rowSelector)).waitForExist()
 
           // wait for message
           const messageSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.TABLE_CELL(row.name, 'MESSAGE')}`
-          await ctx.app.client.waitForExist(messageSelector)
+          await (await ctx.app.client.$(messageSelector)).waitForExist()
           await Utils.expectText(ctx.app, row.message)(messageSelector)
 
           // wait for badge
           const badge = `${rowSelector} [data-tag="badge"].${row.badgeCss}`
-          await ctx.app.client.waitForExist(badge)
+          await (await ctx.app.client.$(badge)).waitForExist()
           await Utils.expectText(ctx.app, row.badgeText)(badge)
         })
       } catch (err) {
@@ -158,40 +157,47 @@ export class TestTable {
           return res
         })
         .then(async res => {
-          await res.app.client.waitForExist(Selectors.TABLE_TITLE(res.count - 1), CLI.waitTimeout, true)
+          await res.app.client
+            .$(Selectors.TABLE_TITLE(res.count - 1))
+            .then(_ => _.waitForExist({ timeout: CLI.waitTimeout, reverse: true }))
 
           if (validation) {
             if (validation.hasGridButton) {
-              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_GRID(res.count))
+              await res.app.client.$(Selectors.TABLE_SHOW_AS_GRID(res.count)).then(_ => _.waitForDisplayed())
             }
 
             if (validation.asGrid) {
-              await res.app.client.waitForVisible(Selectors.TABLE_AS_GRID(res.count))
+              await res.app.client.$(Selectors.TABLE_AS_GRID(res.count)).then(_ => _.waitForDisplayed())
             }
 
             if (validation.hasSequenceButton) {
-              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
+              await res.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
             }
 
             if (validation.switchToSequence) {
-              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
-              await res.app.client.click(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
-              await res.app.client.waitForVisible(Selectors.TABLE_AS_SEQUENCE(res.count))
+              await res.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(async _ => {
+                await _.waitForDisplayed()
+                await _.click()
+              })
+              await res.app.client.$(Selectors.TABLE_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
 
               if (validation.bars) {
                 await promiseEach(validation.bars, async width => {
                   res.app.client.waitUntil(async () => {
-                    await res.app.client.waitForVisible(Selectors.TABLE_AS_SEQUENCE_BAR_WIDTH(res.count, width))
-                    return true
+                    return res.app.client
+                      .$(Selectors.TABLE_AS_SEQUENCE_BAR_WIDTH(res.count, width))
+                      .then(_ => _.isDisplayed())
                   })
                 })
               }
             }
 
             if (validation.switchToList) {
-              await res.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_LIST(res.count))
-              await res.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
-              await res.app.client.waitForVisible(Selectors.TABLE_AS_LIST(res.count))
+              await res.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(async _ => {
+                await _.waitForDisplayed()
+                await _.click()
+              })
+              await res.app.client.$(Selectors.TABLE_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
             }
           }
 
@@ -209,14 +215,16 @@ export class TestTable {
         expectTable.body.forEach((_, rowIdx) => {
           it(`should validate cells of row ${rowIdx} in test table output: ${command}`, async () => {
             const cellSelector = `${Selectors.OUTPUT_LAST} tbody tr:nth-child(${rowIdx + 1}) td > .cell-inner`
-            const actualCellValues = await ctx.app.client.getText(cellSelector)
-            if (Array.isArray(actualCellValues)) {
-              actualCellValues.forEach((_, cellIdx) => validation.cells[cellIdx](_, rowIdx))
-            } else if (validation.cells.length === 1) {
+            const cells = await ctx.app.client.$$(cellSelector)
+            if (cells.length > 1) {
+              ;(await Promise.all(cells.map(_ => _.getText()))).forEach((_, cellIdx) =>
+                validation.cells[cellIdx](_, rowIdx)
+              )
+            } else if (validation.cells.length === 1 && cells.length === 1) {
               // got one cell, expecting one cell
-              validation.cells[0](actualCellValues, rowIdx)
+              validation.cells[0](await cells[0].getText(), rowIdx)
             } else {
-              const actualCellCount = Array.isArray(actualCellValues) ? actualCellValues.length : 1
+              const actualCellCount = cells.length
               assert.fail(
                 `mismatch between expected cell count ${validation.cells.length} and actual cell count ${actualCellCount}`
               )
@@ -240,9 +248,11 @@ export class TestTable {
     const clickCell = (row: Row, command: string, prompt: string) => {
       it(`should click to execute from test table: ${command}`, async () => {
         try {
-          const cell = `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
-          await ctx.app.client.waitForExist(cell)
-          await ctx.app.client.click(cell)
+          const cell = await ctx.app.client.$(
+            `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
+          )
+          await cell.waitForExist()
+          await cell.click()
           await CLI.expectPriorInput(prompt, command)(ctx.app)
         } catch (err) {
           await Common.oops(ctx, true)(err)

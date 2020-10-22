@@ -51,7 +51,11 @@ export class TestNavResponse {
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(showing))
           .then(res =>
-            Promise.all(modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _))))
+            Promise.all(
+              modes.map(_ =>
+                this.app.client.$(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)).then(_ => _.waitForDisplayed())
+              )
+            )
           )
           .catch(Common.oops(this, true)))
 
@@ -61,10 +65,8 @@ export class TestNavResponse {
             .then(ReplExpect.ok)
             .then(SidecarExpect.open)
             .then(SidecarExpect.showing(showing))
-            .then(async res => {
-              await this.app.client.waitForVisible(Selectors.SIDECAR_BREADCRUMBS(res.count))
-              return this.app.client.getText(Selectors.SIDECAR_BREADCRUMBS(res.count))
-            })
+            .then(res => this.app.client.$$(Selectors.SIDECAR_BREADCRUMBS(res.count)))
+            .then(crumbs => Promise.all(crumbs.map(_ => _.getText())))
             .then(expectArray(breadcrumbs.map(_ => _.label)))
             .catch(Common.oops(this, true)))
       }
@@ -77,11 +79,15 @@ export class TestNavResponse {
             .then(SidecarExpect.showing(showing))
             .then(async res => {
               await Promise.all(
-                modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)))
+                modes.map(_ =>
+                  this.app.client.$(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)).then(_ => _.waitForDisplayed())
+                )
               )
               return Promise.all(
                 hrefLinks.map(link =>
-                  this.app.client.waitForVisible(Selectors.SIDECAR_NAV_HREF_LINKS(res.count, link.label))
+                  this.app.client
+                    .$(Selectors.SIDECAR_NAV_HREF_LINKS(res.count, link.label))
+                    .then(_ => _.waitForDisplayed())
                 )
               )
             })
@@ -96,15 +102,17 @@ export class TestNavResponse {
             .then(SidecarExpect.showing(showing))
             .then(async res => {
               await Promise.all(
-                modes.map(_ => this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)))
+                modes.map(_ =>
+                  this.app.client.$(Selectors.SIDECAR_MODE_BUTTON_V2(res.count, _)).then(_ => _.waitForDisplayed())
+                )
               )
               return res
             })
             .then(res =>
               promiseEach(commandLinks, async link => {
-                const commandLink = Selectors.SIDECAR_NAV_COMMAND_LINKS(res.count, link.label)
-                await this.app.client.waitForVisible(commandLink)
-                await this.app.client.click(commandLink)
+                const commandLink = await this.app.client.$(Selectors.SIDECAR_NAV_COMMAND_LINKS(res.count, link.label))
+                await commandLink.waitForDisplayed()
+                await commandLink.click()
                 if (link.expect.type === 'NavResponse') {
                   const resAfter = ReplExpect.blockAfter(res)
                   await SidecarExpect.open(resAfter)
@@ -128,7 +136,9 @@ export const testAbout = (self: Common.ISuite) => {
       .then(SidecarExpect.showing(Overview))
       .then(SidecarExpect.breadcrumbs([productName]))
       .then(async res => {
-        await self.app.client.waitForVisible(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2(res.count, 'about')}`)
+        await (
+          await self.app.client.$(`${Selectors.SIDECAR_MODE_BUTTON_SELECTED_V2(res.count, 'about')}`)
+        ).waitForDisplayed()
 
         if (process.env.MOCHA_RUN_TARGET === 'electron') {
           return self.app.client.execute(sidecarSelector => {
