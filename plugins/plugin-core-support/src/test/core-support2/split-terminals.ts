@@ -35,11 +35,15 @@ import {
 
 /** Report Version */
 function version(this: Common.ISuite, splitIndex: number) {
-  it(`should report proper version with splitIndex=${splitIndex}`, () =>
-    CLI.commandInSplit('version', this.app, splitIndex)
-      .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
-      .then(ReplExpect.splitCount(splitIndex))
-      .catch(Common.oops(this, true)))
+  it(`should report proper version with splitIndex=${splitIndex}`, async () => {
+    try {
+      const res = await CLI.commandInSplit('version', this.app, splitIndex)
+      await ReplExpect.okWithCustom({ expect: Common.expectedVersion })(res)
+      await ReplExpect.splitCount(splitIndex)(res.app)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 }
 
 /** Make a temporary directory, and return its full path */
@@ -113,7 +117,8 @@ describe(`split terminals close all ${process.env.MOCHA_RUN_TARGET || ''}`, func
 
   it('should create a new tab via command', () =>
     CLI.command('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
@@ -123,8 +128,10 @@ describe(`split terminals close all ${process.env.MOCHA_RUN_TARGET || ''}`, func
 
   it('should close that new tab entirely, i.e. all splits plus the tab should be closed', () =>
     CLI.command('tab close -A', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_N(2)))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   showVersion(1)
@@ -140,22 +147,25 @@ describe(`split terminals output ${process.env.MOCHA_RUN_TARGET || ''}`, functio
       await ReplExpect.okWithCustom({ expect: Common.expectedVersion })(res)
       const N = res.count
 
-      await this.app.client.click(Selectors.NEW_SPLIT_BUTTON)
+      await this.app.client.$(Selectors.NEW_SPLIT_BUTTON).then(_ => _.click())
       await ReplExpect.splitCount(2)(this.app)
 
-      await this.app.client.click(Selectors.NEW_SPLIT_BUTTON)
+      await this.app.client.$(Selectors.NEW_SPLIT_BUTTON).then(_ => _.click())
       await ReplExpect.splitCount(3)(this.app)
 
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        console.error('test', `${Selectors.OUTPUT_N(N, 1)} .repl-result`)
-        const actualVersion = await this.app.client.getText(Selectors.OUTPUT_N(N, 1))
+      await this.app.client.waitUntil(
+        async () => {
+          console.error('test', `${Selectors.OUTPUT_N(N, 1)} .repl-result`)
+          const actualVersion = await this.app.client.$(Selectors.OUTPUT_N(N, 1)).then(_ => _.getText())
 
-        if (++idx > 5) {
-          console.error(`still waiting for expected=${Common.expectedVersion}; actual=${actualVersion}`)
-        }
-        return actualVersion === Common.expectedVersion
-      }, CLI.waitTimeout)
+          if (++idx > 5) {
+            console.error(`still waiting for expected=${Common.expectedVersion}; actual=${actualVersion}`)
+          }
+          return actualVersion === Common.expectedVersion
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }

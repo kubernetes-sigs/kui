@@ -21,7 +21,7 @@
 
 import * as assert from 'assert'
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
@@ -51,9 +51,8 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: C
   ) => (res: () => ReplExpect.AppAndCount) => {
     // click on parameters mode button
     it(`should show parameters for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res().count, 'parameters'))
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res().count, 'parameters'))
-      return SidecarExpect.open(res())
+      await Util.switchToTab('parameters')(res())
+        .then(SidecarExpect.open)
         .then(SidecarExpect.showing(name))
         .then(Util.getValueFromMonaco)
         .then(Util.expectYAML(expectedParams))
@@ -62,9 +61,8 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: C
 
     // click on annotations mode button
     it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res().count, 'annotations'))
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res().count, 'annotations'))
-      return SidecarExpect.open(res())
+      await Util.switchToTab('annotations')(res())
+        .then(SidecarExpect.open)
         .then(SidecarExpect.showing(name))
         .then(Util.getValueFromMonaco)
         .then(Util.expectYAMLSubset(expectedAnnotations))
@@ -73,9 +71,8 @@ localDescribe('Sidecar bottom stripe interactions for actions', function(this: C
 
     // click on code mode button
     it(`should show code for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res().count, 'code'))
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res().count, 'code'))
-      return SidecarExpect.open(res())
+      await Util.switchToTab('code')(res())
+        .then(SidecarExpect.open)
         .then(SidecarExpect.showing(name))
         .then(Util.getValueFromMonaco)
         .then(code => assert.strictEqual(code.replace(/\s+/g, ''), expectedSrc.replace(/\s+/g, '')))

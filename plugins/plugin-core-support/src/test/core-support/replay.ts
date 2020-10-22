@@ -37,16 +37,21 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
       try {
         await CLI.command(`replay ${file}`, this.app)
 
-        await this.app.client.waitForExist(Selectors.TOP_TAB_WITH_TITLE(testTabLabel), CLI.waitTimeout)
+        await this.app.client
+          .$(Selectors.TOP_TAB_WITH_TITLE(testTabLabel))
+          .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 
         let idx = 0
-        await this.app.client.waitUntil(async () => {
-          const txt = await this.app.client.getText(Selectors.OUTPUT_LAST)
-          if (++idx > 5) {
-            console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
-          }
-          return txt === base64Output
-        }, CLI.waitTimeout)
+        await this.app.client.waitUntil(
+          async () => {
+            const txt = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
+            if (++idx > 5) {
+              console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
+            }
+            return txt === base64Output
+          },
+          { timeout: CLI.waitTimeout }
+        )
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -122,19 +127,24 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     try {
       await CLI.command(`replay ${file} --status-stripe blue`, this.app)
 
-      await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'), CLI.waitTimeout)
+      await this.app.client
+        .$(Selectors.STATUS_STRIPE_TYPE('blue'))
+        .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 
       const res = await CLI.command('version', this.app)
 
       // verify the base64 command replay
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(Selectors.OUTPUT_N(res.count - 2))
-        if (++idx > 5) {
-          console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
-        }
-        return txt === base64Output
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await this.app.client.$(Selectors.OUTPUT_N(res.count - 2)).then(_ => _.getText())
+          if (++idx > 5) {
+            console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
+          }
+          return txt === base64Output
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       // verify the about replay
       await SidecarExpect.notOpen(res)
@@ -146,7 +156,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   it('should clear and show default status stripe', async () => {
     await CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app))
 
-    await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('default'))
+    await this.app.client.$(Selectors.STATUS_STRIPE_TYPE('default')).then(_ => _.waitForExist())
   })
 })
 
@@ -187,21 +197,24 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
   it('should validate replay', async () => {
     try {
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        // commands in split1: [session connect in browser],base64, split, version
-        const base64InSplit1 = await this.app.client.getText(Selectors.OUTPUT_LAST_FOR_SPLIT(1))
-        // commands in split2: base64,version
-        const base64InSplit2 = await this.app.client.getText(Selectors.OUTPUT_LAST_FOR_SPLIT(2))
+      await this.app.client.waitUntil(
+        async () => {
+          // commands in split1: [session connect in browser],base64, split, version
+          const base64InSplit1 = await this.app.client.$(Selectors.OUTPUT_LAST_FOR_SPLIT(1)).then(_ => _.getText())
+          // commands in split2: base64,version
+          const base64InSplit2 = await this.app.client.$(Selectors.OUTPUT_LAST_FOR_SPLIT(2)).then(_ => _.getText())
 
-        const base64InSplit3 = await this.app.client.getText(Selectors.OUTPUT_LAST_FOR_SPLIT(3))
+          const base64InSplit3 = await this.app.client.$(Selectors.OUTPUT_LAST_FOR_SPLIT(3)).then(_ => _.getText())
 
-        if (++idx > 5) {
-          console.error(
-            `still waiting for expected=${base64Output}; actual=${base64InSplit1}, ${base64InSplit2}, ${base64InSplit3}`
-          )
-        }
-        return base64InSplit1 === base64Output && base64InSplit2 === base64Output && base64InSplit3 === base64Output
-      }, CLI.waitTimeout)
+          if (++idx > 5) {
+            console.error(
+              `still waiting for expected=${base64Output}; actual=${base64InSplit1}, ${base64InSplit2}, ${base64InSplit3}`
+            )
+          }
+          return base64InSplit1 === base64Output && base64InSplit2 === base64Output && base64InSplit3 === base64Output
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -231,17 +244,22 @@ Common.proxyDescribe(`core snapshot and replay by query ${process.env.MOCHA_RUN_
   it('should replay by query', async () => {
     try {
       await this.app.client.url(`${process.env.WEBPACK_CLIENT_URL}?command=replay ${file}`)
-      await this.app.client.waitForExist(Selectors.TOP_TAB_WITH_TITLE(title), CLI.waitTimeout)
+      await this.app.client
+        .$(Selectors.TOP_TAB_WITH_TITLE(title))
+        .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 
       // verify the base64 command replay
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(Selectors.OUTPUT_LAST)
-        if (++idx > 5) {
-          console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
-        }
-        return txt === base64Output
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
+          if (++idx > 5) {
+            console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
+          }
+          return txt === base64Output
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       // back to the original url, without this line, the following tests will fail at `before` state
       await this.app.client.url(process.env.WEBPACK_CLIENT_URL)

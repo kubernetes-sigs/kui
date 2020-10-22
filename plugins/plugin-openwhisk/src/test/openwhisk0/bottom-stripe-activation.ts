@@ -36,7 +36,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: Co
       // this will form a part of the annotations record
       const subsetOfAnnotations = { path: `${openwhisk.expectedNamespace()}/${name}` }
       it(`should show annotations for ${name} by clicking on bottom stripe`, async () => {
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res().count, 'annotations'))
+        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res().count, 'annotations')).then(_ => _.click())
         return SidecarExpect.open(res())
           .then(SidecarExpect.showing(name))
           .then(Util.getValueFromMonaco)
@@ -47,7 +47,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: Co
 
     // click on result mode button
     it(`should show result for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res().count, 'result'))
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res().count, 'result')).then(_ => _.click())
       return SidecarExpect.open(res())
         .then(SidecarExpect.showing(name))
         .then(() =>
@@ -61,7 +61,7 @@ describe('Sidecar bottom stripe interactions for activations', function(this: Co
 
     // click on raw mode button
     it(`should show raw for ${name} by clicking on bottom stripe`, async () => {
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res().count, 'raw'))
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res().count, 'raw')).then(_ => _.click())
       return SidecarExpect.open(res())
         .then(SidecarExpect.showing(name))
         .then(() =>

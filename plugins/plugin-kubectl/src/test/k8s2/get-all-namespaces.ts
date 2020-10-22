@@ -36,7 +36,9 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     const createNs = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create namespace ${name}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -49,7 +51,9 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
           `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
           this.app
         )
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -65,24 +69,26 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
             const res = await CLI.command(`${kubectl} get pods ${allNamespace}`, this.app)
             const { app, count } = res
 
-            await this.app.client.waitForExist(Selectors.TABLE_TITLE(count))
+            await this.app.client.$(Selectors.TABLE_TITLE(count)).then(_ => _.waitForExist())
 
-            const actualTitle = await this.app.client.getText(Selectors.TABLE_TITLE(count))
+            const actualTitle = await this.app.client.$(Selectors.TABLE_TITLE(count)).then(_ => _.getText())
             assert.strictEqual(actualTitle, 'Pod')
 
-            const secondaryTitle = await this.app.client.getText(Selectors.TABLE_TITLE_SECONDARY(count))
+            const secondaryTitle = await this.app.client
+              .$(Selectors.TABLE_TITLE_SECONDARY(count))
+              .then(_ => _.getText())
             assert.strictEqual(secondaryTitle, 'all')
 
-            const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) })({ app, count })
+            const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns) })({ app, count })
 
             // wait for the badge to become green
             await waitForGreen(this.app, selector)
 
             // make sure the NAME cell is clickable (as opposed to, say, the NAMESPACE cell)
-            await this.app.client.waitForExist(`${selector} .clickable[data-key="NAME"]`)
+            await this.app.client.$(`${selector} .clickable[data-key="NAME"]`).then(_ => _.waitForExist())
 
             // now click on that cell
-            await this.app.client.click(`${selector} .clickable`)
+            await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
             await SidecarExpect.open(ReplExpect.blockAfter(res))
               .then(SidecarExpect.mode(defaultModeForGet))
               .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
@@ -97,7 +103,9 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     const deleteNs = (name: string) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} delete namespace ${name}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+          )
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(Common.oops(this, true))
@@ -108,7 +116,9 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     const deletePod = (ns: string) => {
       it(`should delete the pod in ns ${ns} by name via ${kubectl}`, () => {
         return CLI.command(`${kubectl} delete pod nginx -n ${ns}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForRed(this.app, selector))
           .catch(Common.oops(this, true))
       })

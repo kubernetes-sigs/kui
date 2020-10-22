@@ -154,6 +154,7 @@ export function createWindow(
         width,
         height,
         webPreferences: {
+          enableRemoteModule: true,
           backgroundThrottling: false,
           nodeIntegration: true // prior to electron 5, this was the default
         }
@@ -527,6 +528,7 @@ export async function initElectron(
     debug('loading electron')
     const Electron = await import('electron')
     app = Electron.app
+    Electron.app.allowRendererProcessReuse = false
 
     if (!app) {
       // then we're still in pure headless mode; we'll need to fork ourselves to spawn electron

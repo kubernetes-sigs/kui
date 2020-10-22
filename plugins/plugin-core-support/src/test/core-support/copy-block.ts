@@ -34,13 +34,15 @@ describe('block copy paste command', function(this: Common.ISuite) {
   }
 
   const focusBlock = async (N: number) => {
-    await this.app.client.click(Selectors.PROMPT_CONTEXT_N(N))
+    await this.app.client.$(Selectors.PROMPT_CONTEXT_N(N)).then(_ => _.click())
   }
 
   const execAndCopy = async () => {
     const N = await exec()
     await focusBlock(N)
-    await this.app.client.waitUntil(() => this.app.client.hasFocus(Selectors.PROMPT_BLOCK_N(N)), CLI.waitTimeout)
+    await this.app.client.waitUntil(() => this.app.client.$(Selectors.PROMPT_BLOCK_N(N)).then(_ => _.isFocused()), {
+      timeout: CLI.waitTimeout
+    })
     await this.app.client.execute(() => document.execCommand('copy'))
     return N
   }
@@ -94,8 +96,10 @@ describe('block copy paste command', function(this: Common.ISuite) {
 
   it('click new tab button', () =>
     this.app.client
-      .click(tabButtonSelector)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .$(tabButtonSelector)
+      .then(_ => _.click())
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 

@@ -50,7 +50,8 @@ localDescribe('Test synchronous action invocation', function(this: Common.ISuite
         .then(SidecarExpect.showing(actionName))
 
       await this.app.client
-        .getText(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))
+        .$(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))
+        .then(_ => _.getText())
         .then(openwhisk.expectValidActivationId)
 
       await Util.getValueFromMonaco(res).then(Util.expectYAML({ name: 'Step1 openwhisk' }))
@@ -74,7 +75,8 @@ localDescribe('Test synchronous action invocation', function(this: Common.ISuite
         .then(SidecarExpect.showing(actionName2))
 
       await this.app.client
-        .getText(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))
+        .$(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))
+        .then(_ => _.getText())
         .then(openwhisk.expectValidActivationId)
 
       await Util.getValueFromMonaco(res).then(Util.expectYAML({ name: 'Step1 openwhisker' }))
@@ -91,7 +93,8 @@ localDescribe('Test synchronous action invocation', function(this: Common.ISuite
         .then(SidecarExpect.showing(actionName))
 
       await this.app.client
-        .getText(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))
+        .$(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))
+        .then(_ => _.getText())
         .then(openwhisk.expectValidActivationId)
 
       await Util.getValueFromMonaco(res).then(Util.expectYAML({ name: 'Step1 openwhiskers' }))

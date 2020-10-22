@@ -41,7 +41,8 @@ const invokeABunch = (ctx: Common.ISuite, actionName: string) => {
         .then(ReplExpect.justOK)
         .then(SidecarExpect.open)
         .then(SidecarExpect.showing(actionName))
-        .then(res => ctx.app.client.getText(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))) // get the activationId
+        .then(res => ctx.app.client.$(Selectors.SIDECAR_ACTIVATION_TITLE(res.count))) // get the activationId
+        .then(_ => _.getText())
         .then(activationId => openwhisk.waitForActivation(ctx.app, activationId, { name: actionName })) // wait till activation list shows it
         .catch(Common.oops(ctx)))
   }
@@ -71,10 +72,10 @@ const testPagination = (ctx: Common.ISuite, actionName?: string) => {
       .then(ReplExpect.okWithAny)
       .then(() =>
         app.client.waitUntil(() => {
-          return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)]).then(
+          return Promise.all([app.client.$(description).then(_ => _.getText()), app.client.$$(tableRowsFiltered)]).then(
             ([paginatorText, rows]) => {
               return (
-                paginatorText.indexOf(`1\u2013${limit}`) === 0 && rows.value.length === limit // starts with "1-limit" ...
+                paginatorText.indexOf(`1\u2013${limit}`) === 0 && rows.length === limit // starts with "1-limit" ...
               )
             }
           )
@@ -82,13 +83,14 @@ const testPagination = (ctx: Common.ISuite, actionName?: string) => {
       )
 
       // click next button
-      .then(() => app.client.click(nextButton))
+      .then(() => app.client.$(nextButton))
+      .then(_ => _.click())
       .then(() =>
         app.client.waitUntil(() => {
-          return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)]).then(
+          return Promise.all([app.client.$(description).then(_ => _.getText()), app.client.$$(tableRowsFiltered)]).then(
             ([paginatorText, rows]) => {
               return (
-                paginatorText.indexOf(`${limit + 1}\u2013${limit + limit}`) === 0 && rows.value.length === limit // starts with 'N+1-N+limit+1'
+                paginatorText.indexOf(`${limit + 1}\u2013${limit + limit}`) === 0 && rows.length === limit // starts with 'N+1-N+limit+1'
               )
             }
           )
@@ -96,13 +98,14 @@ const testPagination = (ctx: Common.ISuite, actionName?: string) => {
       )
 
       // click prev button
-      .then(() => app.client.click(prevButton))
+      .then(() => app.client.$(prevButton))
+      .then(_ => _.click())
       .then(() =>
         app.client.waitUntil(() => {
-          return Promise.all([app.client.getText(description), app.client.elements(tableRowsFiltered)]).then(
+          return Promise.all([app.client.$(description).then(_ => _.getText()), app.client.$$(tableRowsFiltered)]).then(
             ([paginatorText, rows]) => {
               return (
-                paginatorText.indexOf(`1\u2013${limit}`) === 0 && rows.value.length === limit // starts with "1-limit" ...
+                paginatorText.indexOf(`1\u2013${limit}`) === 0 && rows.length === limit // starts with "1-limit" ...
               )
             }
           )

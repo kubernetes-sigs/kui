@@ -48,9 +48,9 @@ localDescribe('Create an action with implicit entity type, then invoke it, then 
     try {
       const res = await CLI.command(`wsk action async foo`, this.app)
 
-      await ReplExpect.okWithCustom(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
-        const activationId = await this.app.client.getText(selector)
-        await this.app.client.click(selector)
+      await ReplExpect.okWithCustom<string>(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
+        const activationId = await this.app.client.$(selector).then(_ => _.getText())
+        await this.app.client.$(selector).then(_ => _.click())
         return SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing('foo', activationId))
       })
     } catch (err) {

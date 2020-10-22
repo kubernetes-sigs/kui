@@ -38,8 +38,10 @@ commands.forEach(command => {
     const createPod = (ns: string) => {
       it(`should create sample pod from URL via ${command} in namespace ${ns}`, () => {
         return CLI.command(`${command} create -f ${yaml} -n ${ns}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
-          .then((selector: string) => waitForGreen(this.app, selector))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
+          )
+          .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
     }
@@ -63,7 +65,8 @@ commands.forEach(command => {
     const newTab = (expectedIdx: number) => {
       it('new tab via command', () =>
         CLI.command('tab new', this.app)
-          .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(expectedIdx)))
+          .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(expectedIdx)))
+          .then(_ => _.waitForDisplayed())
           .then(() => CLI.waitForSession(this)) // should have an active repl
           .catch(Common.oops(this, true)))
     }
@@ -72,7 +75,8 @@ commands.forEach(command => {
     const switchToTab = (idx: number) => {
       it(`switch to tab ${idx}`, () =>
         CLI.command(`tab switch ${idx}`, this.app)
-          .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(idx)))
+          .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(idx)))
+          .then(_ => _.waitForDisplayed())
           .catch(Common.oops(this, true)))
     }
 

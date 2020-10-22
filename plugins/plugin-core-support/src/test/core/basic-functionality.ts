@@ -22,7 +22,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 
-import { CLI, Common, Selectors, Keys } from '@kui-shell/test'
+import { CLI, Common } from '@kui-shell/test'
 
 const APP_TITLE = process.env.APP_TITLE || 'Kui'
 // const CLI_PLACEHOLDER = process.env.CLI_PLACEHOLDER || 'enter your command'
@@ -44,23 +44,22 @@ Common.localDescribe('Basic Functionality', function(this: Common.ISuite) {
       .getWindowCount()
       .then(count => assert.strictEqual(count, 1)) // Verify that one window is open
       .then(() =>
-        app.client.waitUntil(async () => {
-          // Check if the window is visible
-          console.log(`waiting for browser window visibility ${await app.browserWindow.isVisible()}`)
-          return app.browserWindow.isVisible()
-        }, CLI.waitTimeout)
+        app.client.waitUntil(
+          async () => {
+            // Check if the window is visible
+            console.log(`waiting for browser window visibility ${await app.browserWindow.isVisible()}`)
+            return app.browserWindow.isVisible()
+          },
+          { timeout: CLI.waitTimeout }
+        )
       )
       .then(() => app.client.getTitle()) // Get the window's title
       .then(title => assert.strictEqual(title, APP_TITLE)) // Verify the window's title
 
   it('shows an initial window', () => openWindow(this.app).catch(Common.oops(this, true)))
 
-  it('has an initial focus on the CLI prompt', () => assert.ok(this.app.client.hasFocus(selectors.PROMPT)))
-
-  it('should do nothing when hitting escape key', async () => {
-    await this.app.client.keys(Keys.ESCAPE)
-    await this.app.client.waitForExist(Selectors.TERMINAL_WITH_SIDECAR_VISIBLE, 2000, true)
-  })
+  it('has an initial focus on the CLI prompt', () =>
+    assert.ok(this.app.client.$(selectors.PROMPT).then(_ => _.isFocused())))
 
   /* it('has the expected placeholder text in the CLI prompt', async () => {
     try {
@@ -79,7 +78,7 @@ describe('bodyCss', function(this: Common.ISuite) {
 
   Common.localIt('should have kui.in-electron in bodyCss', async () => {
     try {
-      await this.app.client.waitForExist('body.in-electron')
+      await this.app.client.$('body.in-electron').then(_ => _.waitForExist())
     } catch (err) {
       return Common.oops(this)(err)
     }
@@ -87,7 +86,7 @@ describe('bodyCss', function(this: Common.ISuite) {
 
   Common.remoteIt('should have kui.not-electron in bodyCss', async () => {
     try {
-      await this.app.client.waitForExist('body.not-electron')
+      await this.app.client.$('body.not-electron').then(_ => _.waitForExist())
     } catch (err) {
       return Common.oops(this)(err)
     }

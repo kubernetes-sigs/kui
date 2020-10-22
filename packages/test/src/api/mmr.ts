@@ -102,7 +102,7 @@ export class TestMMR {
       if (onclick && onclick.name) {
         it('should click the name part of sidecar and expect the command shows in repl', async () => {
           try {
-            await this.app.client.click(Selectors.SIDECAR_TITLE(cmdIdx))
+            await this.app.client.$(Selectors.SIDECAR_TITLE(cmdIdx)).then(_ => _.click())
             await testClickResult(++cmdIdx, onclick.name.command, onclick.name.expect)(this.app)
           } catch (err) {
             await Common.oops(this, true)(err)
@@ -113,7 +113,7 @@ export class TestMMR {
       if (onclick && onclick.nameHash) {
         it('should click the namehash part of sidecar and expect the command shows in repl', async () => {
           try {
-            await this.app.client.click(Selectors.SIDECAR_ACTIVATION_TITLE(cmdIdx))
+            await this.app.client.$(Selectors.SIDECAR_ACTIVATION_TITLE(cmdIdx)).then(_ => _.click())
             await testClickResult(++cmdIdx, onclick.nameHash.command, onclick.nameHash.expect)(this.app)
           } catch (err) {
             await Common.oops(this, true)(err)
@@ -154,7 +154,7 @@ export class TestMMR {
       if (onclick) {
         it(`should click the namespace part of sidecar and expect the command shows in repl`, async () => {
           try {
-            await this.app.client.click(Selectors.SIDECAR_PACKAGE_NAME_TITLE(cmdIdx))
+            await this.app.client.$(Selectors.SIDECAR_PACKAGE_NAME_TITLE(cmdIdx)).then(_ => _.click())
             await testClickResult(++cmdIdx, onclick.command, onclick.expect)(this.app)
           } catch (err) {
             await Common.oops(this, true)(err)
@@ -241,15 +241,16 @@ export class TestMMR {
 
       const clickToActivateTab = async (mode: string) => {
         const sel = Selectors.SIDECAR_MODE_BUTTON(cmdIdx, mode)
-        await this.app.client.waitForExist(sel)
+        await this.app.client.$(sel).then(_ => _.waitForExist())
 
         await this.app.client.execute(sel => {
-          document.querySelector(sel).focus()
+          ;(document.querySelector(sel) as HTMLElement).focus()
         }, sel)
 
-        ok(await this.app.client.isVisibleWithinViewport(sel))
-        await this.app.client.click(sel)
-        await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON_SELECTED(cmdIdx, mode))
+        const elt = await this.app.client.$(sel)
+        ok(await elt.isDisplayedInViewport())
+        await elt.click()
+        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON_SELECTED(cmdIdx, mode)).then(_ => _.waitForExist())
       }
 
       const cycleTheTabs = () =>
@@ -265,7 +266,11 @@ export class TestMMR {
           if (expectMode.contentType === 'text/plain') {
             it(`should show plain text content via monaco in the ${expectMode.mode} tab`, async () => {
               try {
-                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                if (
+                  await this.app.client
+                    .$(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))
+                    .then(_ => _.isDisplayed())
+                ) {
                   await SidecarExpect.textPlainContentFromMonaco(expectMode.content)({ app: this.app, count: cmdIdx })
                 }
               } catch (err) {
@@ -274,31 +279,43 @@ export class TestMMR {
             })
           } else if (expectMode.contentType === 'react') {
             it(`should show react content`, async () => {
-              if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+              if (
+                await this.app.client
+                  .$(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))
+                  .then(_ => _.isDisplayed())
+              ) {
                 const selector = `${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} ${expectMode.selector}`
                 await this.app.client.waitUntil(async () => {
-                  await this.app.client.waitForVisible(selector)
-                  return expectMode.innerText === (await this.app.client.getText(selector))
+                  const elt = await this.app.client.$(selector)
+                  await elt.waitForDisplayed()
+                  return expectMode.innerText === (await elt.getText())
                 })
               }
             })
           } else if (expectMode.contentType === 'table') {
             it(`should show ${expectMode.nRows} table rows in the ${expectMode.mode} tab`, async () => {
               try {
-                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                if (
+                  await this.app.client
+                    .$(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))
+                    .then(_ => _.isDisplayed())
+                ) {
                   let idx = 0
-                  await this.app.client.waitUntil(async () => {
-                    const rows = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} tbody tr`)
-                    const actualRows = rows.value.length
-                    const expectedRows = expectMode.nRows
-                    if (++idx > 5) {
-                      console.error(
-                        `still waiting for table rows actualRows=${actualRows} expectedRows=${expectedRows}`,
-                        `${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} tbody tr`
-                      )
-                    }
-                    return actualRows === expectedRows
-                  }, CLI.waitTimeout)
+                  await this.app.client.waitUntil(
+                    async () => {
+                      const rows = await this.app.client.$$(`${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} tbody tr`)
+                      const actualRows = rows.length
+                      const expectedRows = expectMode.nRows
+                      if (++idx > 5) {
+                        console.error(
+                          `still waiting for table rows actualRows=${actualRows} expectedRows=${expectedRows}`,
+                          `${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} tbody tr`
+                        )
+                      }
+                      return actualRows === expectedRows
+                    },
+                    { timeout: CLI.waitTimeout }
+                  )
                 }
               } catch (err) {
                 return Common.oops(this, true)(err)
@@ -306,11 +323,18 @@ export class TestMMR {
             })
             it(`should show ${expectMode.nCells} table cells in the ${expectMode.mode} tab`, async () => {
               try {
-                if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
-                  await this.app.client.waitUntil(async () => {
-                    const cells = await this.app.client.elements(`${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} td`)
-                    return cells.value.length === expectMode.nCells
-                  }, CLI.waitTimeout)
+                if (
+                  await this.app.client
+                    .$(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))
+                    .then(_ => _.isDisplayed())
+                ) {
+                  await this.app.client.waitUntil(
+                    async () => {
+                      const cells = await this.app.client.$$(`${Selectors.SIDECAR_TAB_CONTENT(cmdIdx)} td`)
+                      return cells.length === expectMode.nCells
+                    },
+                    { timeout: CLI.waitTimeout }
+                  )
                 }
               } catch (err) {
                 return Common.oops(this, true)(err)
@@ -320,7 +344,11 @@ export class TestMMR {
             if (expectMode.editor === true) {
               it(`should open editor and show yaml content via monaco in the ${expectMode.mode} tab`, async () => {
                 try {
-                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                  if (
+                    await this.app.client
+                      .$(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))
+                      .then(_ => _.isDisplayed())
+                  ) {
                     await SidecarExpect.yaml(expectMode.content)({ app: this.app, count: cmdIdx })
                   }
                 } catch (err) {
@@ -330,7 +358,11 @@ export class TestMMR {
             } else {
               it(`should show random content in the ${expectMode.mode} tab`, async () => {
                 try {
-                  if (await this.app.client.isVisible(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))) {
+                  if (
+                    await this.app.client
+                      .$(Selectors.SIDECAR_MODE_BUTTON(cmdIdx, expectMode.mode))
+                      .then(_ => _.isDisplayed())
+                  ) {
                     await SidecarExpect.textPlainContent(expectMode.content)({ app: this.app, count: cmdIdx })
                   }
                 } catch (err) {
@@ -344,9 +376,9 @@ export class TestMMR {
       const backToOpen = () => {
         it(`should resume the sidecar from maximized to open`, async () => {
           try {
-            const button = Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx)
-            await this.app.client.waitForVisible(button)
-            await this.app.client.click(button)
+            const button = await this.app.client.$(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
+            await button.waitForDisplayed()
+            await button.click()
             await SidecarExpect.open({ app: this.app, count: cmdIdx })
           } catch (err) {
             await Common.oops(this, true)
@@ -362,8 +394,9 @@ export class TestMMR {
         const maximize = () =>
           it('should maximize the sidecar', async () => {
             try {
-              await this.app.client.waitForVisible(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
-              await this.app.client.click(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
+              const button = await this.app.client.$(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
+              await button.waitForDisplayed()
+              await button.click()
               await SidecarExpect.fullscreen({ app: this.app, count: cmdIdx })
             } catch (err) {
               await Common.oops(this, true)(err)
@@ -393,25 +426,31 @@ export class TestMMR {
           .then(async ({ count }) => {
             const testTree = async (nodes: TreeItem[]) => {
               await promiseEach(nodes, async node => {
-                await this.app.client.waitForVisible(Selectors.TREE_LIST(count, node.id))
-                await this.app.client.click(Selectors.TREE_LIST(count, node.id))
+                const treeList = await this.app.client.$(Selectors.TREE_LIST(count, node.id))
+                await treeList.waitForDisplayed()
+                await treeList.click()
 
                 if (node.contentType === 'text/plain') {
                   await SidecarExpect.textPlainContentFromMonaco(node.content)({ app: this.app, count })
                 } else if (node.contentType === 'yaml') {
-                  await this.app.client.waitUntil(async () => {
-                    const actualText = await this.app.client.getText(
-                      `${Selectors.SIDECAR(count)} .monaco-editor .view-lines`
-                    )
-                    return actualText.replace(/\s+$/, '') === node.content
-                  }, 20000)
+                  await this.app.client.waitUntil(
+                    async () => {
+                      const actualText = await this.app.client
+                        .$(`${Selectors.SIDECAR(count)} .monaco-editor .view-lines`)
+                        .then(_ => _.getText())
+                      return actualText.replace(/\s+$/, '') === node.content
+                    },
+                    { timeout: 20000 }
+                  )
                 }
 
                 if (node.children) {
-                  await this.app.client.waitForVisible(Selectors.TREE_LIST_EXPANDED(count, node.id))
+                  await this.app.client.$(Selectors.TREE_LIST_EXPANDED(count, node.id)).then(_ => _.waitForDisplayed())
                   return testTree(node.children)
                 } else {
-                  await this.app.client.waitForVisible(Selectors.TREE_LIST_AS_BUTTON_SELECTED(count, node.id))
+                  await this.app.client
+                    .$(Selectors.TREE_LIST_AS_BUTTON_SELECTED(count, node.id))
+                    .then(_ => _.waitForDisplayed())
                 }
               })
             }
@@ -469,28 +508,32 @@ export class TestMMR {
             await promiseEach(drilldownButtons, async (button, index) => {
               // the button should be clickable
               const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, button.mode)
+              const buttonElt = await app.client.$(buttonSelector)
               await CLI.waitForRepl(this.app)
-              await app.client.waitForVisible(buttonSelector)
-              await app.client.click(buttonSelector)
+              await buttonElt.waitForDisplayed()
+              await buttonElt.click()
 
               if (button.confirm) {
                 const dialog = '#confirm-dialog'
-                const denyIt = `${dialog} .bx--btn--secondary`
-                const confirmIt = `${dialog} .bx--btn--danger`
-                await Promise.all([app.client.waitForVisible(denyIt), app.client.waitForVisible(confirmIt)])
+                const denyItSel = `${dialog} .bx--btn--secondary`
+                const confirmItSel = `${dialog} .bx--btn--danger`
+                const [denyIt, confirmIt] = await Promise.all([app.client.$(denyItSel), app.client.$(confirmItSel)])
+
+                await Promise.all([denyIt, confirmIt].map(_ => _.waitForDisplayed()))
 
                 // first click deny, and expect the confirm dialog to be gone
-                await app.client.click(denyIt)
-                await app.client.waitForExist(denyIt, 5000, true)
+                await denyIt.click()
+                await denyIt.waitForExist({ timeout: 5000, reverse: true })
 
                 // after clicking deny, the next prompt should *not* exist
                 const nextPromptSelector = Selectors.PROMPT_N(count + 1 + index + 1)
-                await app.client.waitForExist(nextPromptSelector, 5000, true)
+                await app.client.$(nextPromptSelector).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
 
                 // now click the button again, then click confirm
-                await app.client.click(buttonSelector)
-                await Promise.all([app.client.waitForVisible(denyIt), await app.client.waitForVisible(confirmIt)])
-                await app.client.click(confirmIt)
+                await buttonElt.click()
+                const [denyIt2, confirmIt2] = await Promise.all([app.client.$(denyItSel), app.client.$(confirmItSel)])
+                await Promise.all([denyIt2, confirmIt2].map(_ => _.waitForDisplayed()))
+                await confirmIt2.click()
               }
 
               // after clicking the button, a command should show up in the next prompt
@@ -548,7 +591,11 @@ export class TestMMR {
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
-          .then(res => this.app.client.waitForExist(Selectors.SIDECAR_TOOLBAR(res.count), CLI.waitTimeout, false))
+          .then(res =>
+            this.app.client
+              .$(Selectors.SIDECAR_TOOLBAR(res.count))
+              .then(_ => _.waitForExist({ timeout: CLI.waitTimeout, reverse: true }))
+          )
           .catch(Common.oops(this, true)))
     })
   }

@@ -33,7 +33,8 @@ Common.localDescribe('blackbox actions docker', function(this: Common.ISuite) {
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
       .then(SidecarExpect.showing('bb1'))
-      .then(res => res.app.client.getText(Selectors.SIDECAR_CUSTOM_CONTENT(res.count)))
+      .then(res => res.app.client.$(Selectors.SIDECAR_CUSTOM_CONTENT(res.count)))
+      .then(_ => _.getText())
       .then(txt => assert.strictEqual(txt, 'dockerhub image: openwhisk/example'))
       .catch(Common.oops(this)))
 

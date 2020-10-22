@@ -37,7 +37,7 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
 
           await Promise.all(
             names.map(name => {
-              return ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(res)
+              return ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(res)
                 .then(selector => waitForRed(this.app, selector))
                 .then(() => waitTillNone('namespace', undefined, name))
             })
@@ -54,7 +54,9 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     const createIt = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create namespace ${name}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -100,17 +102,19 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
         const radioButtonSelected = Selectors.RADIO_BUTTON_SELECTED
 
         return CLI.command(`${kubectl} get ns ${ns1}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: radioButton }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: radioButton })
+          )
           .then(selector =>
             this.app.client.waitUntil(async () => {
               console.error('1', selector)
-              await this.app.client.click(selector)
+              await this.app.client.$(selector).then(_ => _.click())
               console.error('2')
-              const actualNamespace = await this.app.client.getText(
-                Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-kubeui--current-namespace')
-              )
+              const actualNamespace = await this.app.client
+                .$(Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-kubeui--current-namespace'))
+                .then(_ => _.getText())
               console.error('3', actualNamespace)
-              await this.app.client.waitForExist(selector.replace(radioButton, radioButtonSelected))
+              await this.app.client.$(selector.replace(radioButton, radioButtonSelected)).then(_ => _.waitForExist())
               console.error('4')
               return actualNamespace === ns1
             })
@@ -133,11 +137,17 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
         const res = await CLI.command('echo hi', this.app)
         await ReplExpect.okWithPtyOutput('hi')(res)
 
-        await this.app.client.click(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
+        await this.app.client
+          .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
+          .then(_ => _.click())
 
         // await ReplExpect.okWith('default')({ app: this.app, count: res.count + 1 })
-        await this.app.client.waitForExist(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
-        const title = await this.app.client.getText(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
+        await this.app.client
+          .$(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
+          .then(_ => _.waitForExist())
+        const title = await this.app.client
+          .$(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
+          .then(_ => _.getText())
         strictEqual(title, 'Namespaces')
       })
     }
@@ -162,7 +172,9 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
           `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
           this.app
         )
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -183,15 +195,15 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
             await ReplExpect.ok(res)
             await SidecarExpect.open(res)
 
-            const deletionButton = Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete')
-            await this.app.client.waitForExist(deletionButton)
-            await this.app.client.click(deletionButton)
+            const deletionButton = await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'delete'))
+            await deletionButton.waitForExist()
+            await deletionButton.click()
 
-            await this.app.client.waitForExist('#confirm-dialog')
-            await this.app.client.click('#confirm-dialog .bx--btn--danger')
+            await this.app.client.$('#confirm-dialog').then(_ => _.waitForExist())
+            await this.app.client.$('#confirm-dialog .bx--btn--danger').then(_ => _.click())
 
             // exepct a deletion table
-            const deletionEntitySelector = await ReplExpect.okWithCustom({
+            const deletionEntitySelector = await ReplExpect.okWithCustom<string>({
               selector: Selectors.BY_NAME(ns)
             })({ app: this.app, count: res.count + 1 })
 

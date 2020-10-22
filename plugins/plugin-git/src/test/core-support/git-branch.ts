@@ -108,15 +108,18 @@ describe(suiteName, function(this: Common.ISuite) {
 
       return CLI.command(`git branch`, this.app)
         .then(ReplExpect.okWithCustom({ selector: radioButton }))
-        .then(selector =>
-          this.app.client.waitUntil(async () => {
-            await this.app.client.click(selector)
-            const actualBranch = await this.app.client.getText(
-              Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-git--current-git-branch')
-            )
-            await this.app.client.waitForExist(selector.replace(radioButton, radioButtonSelected))
-            return actualBranch === branch
-          }, CLI.waitTimeout)
+        .then((selector: string) =>
+          this.app.client.waitUntil(
+            async () => {
+              await this.app.client.$(selector).then(_ => _.click())
+              const actualBranch = await this.app.client
+                .$(Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-git--current-git-branch'))
+                .then(_ => _.getText())
+              await this.app.client.$(selector.replace(radioButton, radioButtonSelected)).then(_ => _.waitForExist())
+              return actualBranch === branch
+            },
+            { timeout: CLI.waitTimeout }
+          )
         )
         .catch(Common.oops(this, true))
     })

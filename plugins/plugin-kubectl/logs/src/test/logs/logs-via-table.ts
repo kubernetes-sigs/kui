@@ -74,7 +74,9 @@ wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, 
   const waitForPod = (podName: string) => {
     it(`should wait for the pod ${podName} to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
+        )
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -115,8 +117,10 @@ wdescribe(`kubectl logs getty via table ${process.env.MOCHA_RUN_TARGET || ''}`, 
   const doRetry = (hasLogs: boolean) => {
     it('should click retry button', async () => {
       try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming'))
+        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming')).then(async _ => {
+          await _.waitForDisplayed()
+          await _.click()
+        })
 
         if (hasLogs) {
           await waitForLogText(res, 'hi')

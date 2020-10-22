@@ -66,7 +66,7 @@ describe(`kubectl top pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         const res = await CLI.command(top1, this.app)
         const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
 
-        await this.app.client.click(`${selector} .clickable`)
+        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
         await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('nginx'))

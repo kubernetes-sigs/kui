@@ -54,8 +54,9 @@ describe('Webbify actions', function(this: Common.ISuite) {
     try {
       const res = await CLI.command('wsk action webbify', this.app)
 
-      await ReplExpect.okWithCustom({ selector: '.entity-web-export-url' })(res)
-        .then(selector => this.app.client.getText(selector))
+      await ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' })(res)
+        .then(selector => this.app.client.$(selector))
+        .then(_ => _.getText())
         .then(href => rp({ url: `${href}?message=test`, rejectUnauthorized: false })) // provide an input to the remote request
         .then(Util.expectSubset({ message: 'test' })) // and expect it right back, since the action is an echo action
 
@@ -114,8 +115,9 @@ describe('Webbify actions', function(this: Common.ISuite) {
     try {
       const res = await CLI.command('wsk action webbify as http', this.app)
 
-      await ReplExpect.okWithCustom({ selector: '.entity-web-export-url' })(res)
-        .then(selector => this.app.client.getText(selector))
+      await ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' })(res)
+        .then(selector => this.app.client.$(selector))
+        .then(_ => _.getText())
         .then(href => rp({ url: `${href}?message=test5`, rejectUnauthorized: false })) // provide an input to the remote request
         .then(response => assert.strictEqual(response, 'test5')) // and expect it right back
 
@@ -133,8 +135,9 @@ describe('Webbify actions', function(this: Common.ISuite) {
       const res = await CLI.command(`wsk action create ${actionName7} ${ROOT}/data/openwhisk/foo.js --web`, this.app)
 
       // make sure the REPL output has the proper href:
-      await ReplExpect.okWithCustom({ selector: '.entity-web-export-url' })(res)
-        .then(selector => this.app.client.getText(selector))
+      await ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' })(res)
+        .then(selector => this.app.client.$(selector))
+        .then(_ => _.getText())
         .then(href =>
           rp({
             uri: href,
@@ -151,10 +154,9 @@ describe('Webbify actions', function(this: Common.ISuite) {
         .then(SidecarExpect.badge('web'))
       // finally, make sure the "web accessible" badge also has the proper href:
 
-      const href = await this.app.client.getAttribute(
-        `${Selectors.SIDECAR(res.count)} .badges .entity-web-export-url`,
-        'href'
-      )
+      const href = await this.app.client
+        .$(`${Selectors.SIDECAR(res.count)} .badges .entity-web-export-url`)
+        .then(_ => _.getAttribute('href'))
       await rp({
         uri: href,
         qs: { name: 'openwhisk' },

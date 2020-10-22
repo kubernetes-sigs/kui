@@ -50,7 +50,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
     const verifyCreation = async (createSelector: string) => {
       console.error('verifying creation')
       await waitForGreen(this.app, createSelector)
-      // await this.app.client.waitForVisible(Selectors.TABLE_FOOTER(createRes.count))
+      // await this.app.client.$(Selectors.TABLE_FOOTER(createRes.count)).then(_ => _.waitForDisplayed())
     }
 
     const verifyDeletion = async (deleteSelector: string) => {
@@ -66,10 +66,12 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
         this.app
       )
 
-      const createSelector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(createRes)
+      const createSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(createRes)
       await verifyCreation(createSelector)
-      await this.app.client.waitForExist(`${createSelector} .clickable`)
-      await this.app.client.click(`${createSelector} .clickable`)
+      await this.app.client.$(`${createSelector} .clickable`).then(async _ => {
+        await _.waitForExist()
+        await _.click()
+      })
       await verifySidecar(ReplExpect.blockAfter(createRes))
 
       console.error('deleting')
@@ -78,7 +80,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
         this.app
       )
 
-      const deleteSelector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(deleteRes)
+      const deleteSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(deleteRes)
       await verifyDeletion(deleteSelector)
 
       console.error('snapshoting')
@@ -114,7 +116,9 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
       const selector = await CLI.command(
         `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
         this.app
-      ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+      ).then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+      )
 
       await waitForGreen(this.app, selector)
 
@@ -122,10 +126,15 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
 
       await CLI.command(`replay ${file}`, this.app)
 
-      await this.app.client.waitUntil(async () => {
-        const errorMessage = await this.app.client.getText(`${Selectors.OUTPUT_LAST}.oops[data-status-code="409"]`)
-        return errorMessage.includes('pods "nginx"')
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const errorMessage = await this.app.client
+            .$(`${Selectors.OUTPUT_LAST}.oops[data-status-code="409"]`)
+            .then(_ => _.getText())
+          return errorMessage.includes('pods "nginx"')
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -151,7 +160,7 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
         this.app
       )
 
-      const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
+      const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
 
       await waitForGreen(this.app, selector)
 
@@ -159,13 +168,13 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
       await CLI.command(`replay ${file}`, this.app)
 
-      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
+      await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`).then(_ => _.waitForDisplayed())
 
       const lastRes = await CLI.lastBlock(res)
       await SidecarExpect.notOpen(res)
       await SidecarExpect.notOpen(lastRes)
 
-      await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`)
+      await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`).then(_ => _.click())
 
       await SidecarExpect.openInBlockAfter(lastRes)
         .then(SidecarExpect.mode(defaultModeForGet))

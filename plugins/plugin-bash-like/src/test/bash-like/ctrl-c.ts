@@ -25,8 +25,11 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
   const cancel = (app: Application, cmd = '') =>
     app.client
-      .waitForExist(Selectors.CURRENT_PROMPT_BLOCK)
-      .then(() => app.client.getAttribute(Selectors.CURRENT_PROMPT_BLOCK, 'data-input-count'))
+      .$(Selectors.CURRENT_PROMPT_BLOCK)
+      .then(async _ => {
+        _.waitForExist()
+        return _.getAttribute('data-input-count')
+      })
       .then(count => parseInt(count, 10))
       .then(count =>
         app.client
@@ -34,7 +37,8 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
           .then(() => app.client.keys(Keys.ctrlC))
           .then(() => ({ app: app, count: count }))
           .then(ReplExpect.blank)
-          .then(() => app.client.getText(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
+          .then(() => app.client.$(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
+          .then(_ => _.getText())
           .then(input => assert.strictEqual(input, cmd))
       )
       .catch(Common.oops(this, true))
@@ -51,7 +55,7 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       const res = await CLI.command('sleep 100000', this.app)
 
       // wait for the sleep command to commence
-      await this.app.client.waitForExist(Selectors.PROCESSING_N(res.count))
+      await this.app.client.$(Selectors.PROCESSING_N(res.count)).then(_ => _.waitForExist())
 
       // then issue the ctrl+c
       await this.app.client.keys(Keys.ctrlC)
@@ -76,7 +80,7 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
       await this.app.client.keys(Keys.ctrlC)
       return this.app.client.waitUntil(async () => {
-        const actualText = await this.app.client.getText(Selectors.OUTPUT_N_PTY(res.count))
+        const actualText = await this.app.client.$(Selectors.OUTPUT_N_PTY(res.count)).then(_ => _.getText())
         return /\^C/.test(actualText)
       })
     } catch (err) {

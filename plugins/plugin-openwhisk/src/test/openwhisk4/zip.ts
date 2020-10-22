@@ -40,7 +40,7 @@ describe('Create zip actions', function(this: Common.ISuite) {
 
         await Util.getValueFromMonaco(res).then(txt => assert.ok(txt.startsWith('/**')))
 
-        await this.app.client.click(`${Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw')}`)
+        await this.app.client.$(`${Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw')}`).then(_ => _.click())
 
         await Util.getValueFromMonaco(res).then(
           Util.expectYAMLSubset({

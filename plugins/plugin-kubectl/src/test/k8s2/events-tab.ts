@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import {
   createNS,
   allocateNS,
@@ -44,11 +44,13 @@ commands.forEach(command => {
     it('should create sample pod from URL', async () => {
       try {
         const tableRes = await CLI.command(`${command} create -f ${file} ${inNamespace}`, this.app)
-        const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(tableRes)
+        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(tableRes)
 
         await waitForGreen(this.app, selector)
-        await this.app.client.waitForExist(`${selector} .clickable`)
-        await this.app.client.click(`${selector} .clickable`)
+        await this.app.client.$(`${selector} .clickable`).then(async _ => {
+          await _.waitForExist()
+          await _.click()
+        })
         res = ReplExpect.blockAfter(tableRes)
         await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
@@ -60,18 +62,17 @@ commands.forEach(command => {
 
     it('should switch to Events tab', async () => {
       try {
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'events'))
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'events'))
-        await SidecarExpect.toolbarText({ type: 'info', text: 'Events are live streaming', exact: false })(res)
+        await Util.switchToTab('events')(res).then(
+          SidecarExpect.toolbarText({ type: 'info', text: 'Events are live streaming', exact: false })
+        )
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
 
     const currentEventCount = async (): Promise<number> => {
-      const events = await this.app.client.elements(`${Selectors.SIDECAR(res.count)} .kui--kubectl-event-record`)
-      return !events || !events.value ? 0 : events.value.length
+      const events = await this.app.client.$$(`${Selectors.SIDECAR(res.count)} .kui--kubectl-event-record`)
+      return !events ? 0 : events.length
     }
 
     it('should expect at least one event, since we just created the resource', () => {

@@ -47,7 +47,7 @@ describe('create action list it then click to show it again', function(this: Com
       const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('foo') })(res1)
 
       // click on the row entity, and expect sidecar to show it
-      this.app.client.click(`${selector} .clickable`)
+      this.app.client.$(`${selector} .clickable`).then(_ => _.click())
 
       const res = ReplExpect.blockAfter(res1)
       await SidecarExpect.open(res)

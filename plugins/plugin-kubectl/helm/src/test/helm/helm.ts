@@ -90,7 +90,9 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
   it(`should show history`, () => {
     return CLI.command(`helm history ${name} -n ${ns}`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.TABLE_CELL('1', 'REVISION') }))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.TABLE_CELL('1', 'REVISION') })
+      )
       .then(Util.expectText(this.app, '1'))
       .catch(Common.oops(this, true))
   })
@@ -105,7 +107,9 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
   // also confirm that there is a REVISION column in that row
   it(`should list that new release via helm list`, () => {
     return CLI.command(`helm list --filter ${name} -n ${ns}`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.TABLE_CELL(name, 'REVISION') }))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.TABLE_CELL(name, 'REVISION') })
+      )
       .then(Util.expectText(this.app, '1'))
       .catch(Common.oops(this, true))
   })
@@ -120,10 +124,10 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
         .then(SidecarExpect.open)
         .then(SidecarExpect.showingTopNav(name))
 
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'hooks'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'manifest'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'values'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'notes'))
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'hooks')).then(_ => _.click())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'manifest')).then(_ => _.click())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'values')).then(_ => _.click())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'notes')).then(_ => _.click())
     } catch (err) {
       await Common.oops(this, true)(err)
     }

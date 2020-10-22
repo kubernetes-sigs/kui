@@ -52,7 +52,9 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     const deleteIt = (name: string, errOk = false) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} delete namespace ${name}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name), errOk })) // FIXME
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name), errOk })
+          ) // FIXME
           .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('namespace', undefined, name))
           .catch(err => {
@@ -67,7 +69,9 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     const createIt = (name: string) => {
       it(`should create namespace ${name} via ${kubectl}`, () => {
         return CLI.command(`${kubectl} create namespace ${name}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -80,7 +84,9 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
           this.app
         )
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -140,16 +146,20 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it('should list contexts and show the default context', async () => {
         try {
           const currentContext = await CLI.command(`context`, this.app)
-            .then(ReplExpect.okWithCustom({ selector: ' ' }))
-            .then(selector => this.app.client.getText(selector))
+            .then(
+              ReplExpect.okWithCustom<string>({ selector: ' ' })
+            )
+            .then(selector => this.app.client.$(selector))
+            .then(_ => _.getText())
 
           const currentContextAsIndicatedByContextsTable = await CLI.command(`contexts -o wide`, this.app)
             .then(
-              ReplExpect.okWithCustom({
+              ReplExpect.okWithCustom<string>({
                 selector: `${Selectors.RADIO_BUTTON_SELECTED} [data-is-name]`
               })
             )
-            .then(selector => this.app.client.getText(selector))
+            .then(selector => this.app.client.$(selector))
+            .then(_ => _.getText())
 
           assert.strictEqual(currentContextAsIndicatedByContextsTable, currentContext)
         } catch (err) {
@@ -163,11 +173,11 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it(`should list contexts and show the context ${contextName}`, async () => {
         try {
           const allContextNames = await CLI.command(`contexts -o wide`, this.app)
-            .then(ReplExpect.okWithCustom({ selector: ' ' }))
-            .then(selector => this.app.client.elements(`${selector} [data-is-name]`))
-            .then(elements => elements.value.map(_ => _.ELEMENT))
-            .then(elements => Promise.all(elements.map(element => this.app.client.elementIdText(element))))
-            .then(texts => texts.map(_ => _.value))
+            .then(
+              ReplExpect.okWithCustom<string>({ selector: ' ' })
+            )
+            .then(selector => this.app.client.$$(`${selector} [data-is-name]`))
+            .then(elements => Promise.all(elements.map(_ => _.getText())))
 
           assert.ok(allContextNames.find(_ => _ === contextName))
         } catch (err) {
@@ -188,7 +198,9 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it(`should list pods and show ${name} maybe in namespace ${ns || 'nope'} and kubeconfig ${kubeconfig ||
         'nope'}`, () => {
         return CLI.command(`${kubectl} get pods ${ns ? '-n ' + ns : ''} ${kubeconfig}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
@@ -212,23 +224,23 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it(`should switch to the context ${contextName}`, async () => {
         try {
           const selector = await CLI.command(`contexts -o wide`, this.app).then(
-            ReplExpect.okWithCustom({
+            ReplExpect.okWithCustom<string>({
               selector: Selectors.RADIO_BUTTON_BY_NAME(contextName)
             })
           )
 
-          await this.app.client.click(selector)
+          await this.app.client.$(selector).then(_ => _.click())
 
           // the row in that first table had better now be selected
-          await this.app.client.waitForExist(`${selector}${Selectors.RADIO_BUTTON_IS_SELECTED}`)
+          await this.app.client.$(`${selector}${Selectors.RADIO_BUTTON_IS_SELECTED}`).then(_ => _.waitForExist())
 
           // and if we request a new contexts table, it'd better be selected there, too
           const selector2 = await CLI.command(`contexts -o wide`, this.app).then(
-            ReplExpect.okWithCustom({
+            ReplExpect.okWithCustom<string>({
               selector: Selectors.RADIO_BUTTON_BY_NAME(contextName)
             })
           )
-          await this.app.client.waitForExist(`${selector2}${Selectors.RADIO_BUTTON_IS_SELECTED}`)
+          await this.app.client.$(`${selector2}${Selectors.RADIO_BUTTON_IS_SELECTED}`).then(_ => _.waitForExist())
         } catch (err) {
           return Common.oops(this, true)(err)
         }

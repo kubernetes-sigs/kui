@@ -26,10 +26,13 @@ describe('alert command', function(this: Common.ISuite) {
       return CLI.command(`alert ${type} "foo" --body="bar"`, this.app)
         .then(ReplExpect.okWithCustom({ selector: Selectors.TERMINAL_ALERT(type) }))
         .then((selector: string) =>
-          this.app.client.waitUntil(async () => {
-            const alertText = await this.app.client.getText(selector)
-            return alertText.includes('foo') && alertText.includes('bar')
-          }, CLI.waitTimeout)
+          this.app.client.waitUntil(
+            async () => {
+              const alertText = await this.app.client.$(selector).then(_ => _.getText())
+              return alertText.includes('foo') && alertText.includes('bar')
+            },
+            { timeout: CLI.waitTimeout }
+          )
         )
         .catch(Common.oops(this, true))
     })

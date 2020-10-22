@@ -177,51 +177,55 @@ export const getValueFromMonaco = async (
 ) => {
   const selector = `${container} .monaco-editor-wrapper`
   try {
-    await res.app.client.waitForExist(selector, CLI.waitTimeout)
+    await res.app.client.$(selector).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
   } catch (err) {
     console.error('cannot find editor', err)
-    await res.app.client.getHTML(Selectors.SIDECAR(res.count)).then(html => {
-      console.log('here is the content of the sidecar:')
-      console.log(html)
-    })
+    await res.app.client
+      .$(Selectors.SIDECAR(res.count))
+      .then(_ => _.getHTML())
+      .then(html => {
+        console.log('here is the content of the sidecar:')
+        console.log(html)
+      })
     throw err
   }
 
-  return res.app.client
-    .execute(selector => {
-      try {
-        return document.querySelector(selector)['getValueForTests']()
-      } catch (err) {
-        console.error('error in getValueFromMonaco1', err)
-        // intentionally returning undefined
-      }
-    }, selector)
-    .then(_ => _.value)
+  return res.app.client.execute(selector => {
+    try {
+      return ((document.querySelector(selector) as any) as { getValueForTests: () => string }).getValueForTests()
+    } catch (err) {
+      console.error('error in getValueFromMonaco1', err)
+      // intentionally returning undefined
+    }
+  }, selector)
 }
 
 export const waitForXtermInput = (app: Application, N: number) => {
   const selector = `${Selectors.PROMPT_BLOCK_N(N)} .xterm-helper-textarea`
-  return app.client.waitForExist(selector)
+  return app.client.$(selector).then(_ => _.waitForExist())
 }
 
 export const expectText = (app: Application, expectedText: string, exact = true) => async (selector: string) => {
   let idx = 0
-  await app.client.waitUntil(async () => {
-    const actualText = await app.client.getText(selector)
-    if (++idx > 5) {
-      console.error(
-        `still waiting for text; actualText=${actualText} expectedText=${expectedText} selector=${selector}`
-      )
-    }
-    if (exact) {
-      return actualText === expectedText
-    } else {
-      if (actualText.indexOf(expectedText) < 0) {
-        console.error(`Expected string not found: expected=${expectedText} actual=${actualText}`)
+  await app.client.waitUntil(
+    async () => {
+      const actualText = await app.client.$(selector).then(_ => _.getText())
+      if (++idx > 5) {
+        console.error(
+          `still waiting for text; actualText=${actualText} expectedText=${expectedText} selector=${selector}`
+        )
       }
-      return actualText.indexOf(expectedText) >= 0
-    }
-  }, CLI.waitTimeout)
+      if (exact) {
+        return actualText === expectedText
+      } else {
+        if (actualText.indexOf(expectedText) < 0) {
+          console.error(`Expected string not found: expected=${expectedText} actual=${actualText}`)
+        }
+        return actualText.indexOf(expectedText) >= 0
+      }
+    },
+    { timeout: CLI.waitTimeout }
+  )
   return app
 }
 
@@ -253,41 +257,44 @@ export function expectSuggestionsFor(
       const availableItems = `${base} .clickable`
 
       return this.app.client
-        .getText(availableItems)
+        .$(availableItems)
+        .then(_ => _.getText())
         .then(expectArray(expectedAvailable, false, true))
-        .then(() => {
+        .then(async () => {
           if (click !== undefined) {
             // then click on the given index; note that nth-child is 1-indexed, hence the + 1 part
             const clickOn = `${base}:nth-child(${click + 1}) .clickable`
 
-            return this.app.client.click(clickOn).then(() => {
-              if (expectedBreadcrumb) {
-                //
-                // then expect the next command to have the given terminal breadcrumb
-                //
-                const breadcrumb = `${Selectors.OUTPUT_N(N + 1)} .bx--breadcrumb-item:last-child .bx--no-link`
-                return this.app.client
-                  .getText(breadcrumb)
-                  .then(actualBreadcrumb => assert.strictEqual(actualBreadcrumb, expectedBreadcrumb))
-              } else if (expectedIcon) {
-                //
-                // then wait for the sidecar to be open and showing the expected sidecar icon text
-                //
-                const icon = `${Selectors.SIDECAR(N)} .sidecar-header-icon-wrapper .sidecar-header-icon`
-                return SidecarExpect.open({ app: this.app, count: N })
-                  .then(() => this.app.client.getText(icon))
-                  .then(actualIcon => actualIcon.toLowerCase())
-                  .then(actualIcon => assert.strictEqual(actualIcon, expectedIcon))
-              } else if (expectedString) {
-                //
-                // then wait for the given command output
-                //
-                return this.app.client.waitUntil(async () => {
-                  const text = await this.app.client.getText(Selectors.OUTPUT_N(N + 1))
-                  return text === expectedString
-                })
-              }
-            })
+            await this.app.client.$(clickOn).then(_ => _.click())
+
+            if (expectedBreadcrumb) {
+              //
+              // then expect the next command to have the given terminal breadcrumb
+              //
+              const breadcrumb = `${Selectors.OUTPUT_N(N + 1)} .bx--breadcrumb-item:last-child .bx--no-link`
+              return this.app.client
+                .$(breadcrumb)
+                .then(_ => _.getText())
+                .then(actualBreadcrumb => assert.strictEqual(actualBreadcrumb, expectedBreadcrumb))
+            } else if (expectedIcon) {
+              //
+              // then wait for the sidecar to be open and showing the expected sidecar icon text
+              //
+              const icon = `${Selectors.SIDECAR(N)} .sidecar-header-icon-wrapper .sidecar-header-icon`
+              return SidecarExpect.open({ app: this.app, count: N })
+                .then(() => this.app.client.$(icon))
+                .then(_ => _.getText())
+                .then(actualIcon => actualIcon.toLowerCase())
+                .then(actualIcon => assert.strictEqual(actualIcon, expectedIcon))
+            } else if (expectedString) {
+              //
+              // then wait for the given command output
+              //
+              return this.app.client.waitUntil(async () => {
+                const text = await this.app.client.$(Selectors.OUTPUT_N(N + 1)).then(_ => _.getText())
+                return text === expectedString
+              })
+            }
           }
         })
     })
@@ -296,20 +303,28 @@ export function expectSuggestionsFor(
 
 /** @return the current number of tabs */
 export async function tabCount(app: Application): Promise<number> {
-  const topTabs = await app.client.elements(Selectors.TOP_TAB)
-  return topTabs.value.length
+  const topTabs = await app.client.$$(Selectors.TOP_TAB)
+  return topTabs.length
 }
 
 /** Close all except the first tab */
 export function closeAllExceptFirstTab(this: Common.ISuite) {
   it('should close all but first tab', async () => {
-    let nInitialTabs = await tabCount(this.app)
-    while (nInitialTabs > 1) {
-      const N = nInitialTabs--
-      await this.app.client.click(Selectors.TOP_TAB_CLOSE_N(N))
-      await this.app.client
-        .waitForExist(Selectors.TAB_N(N), 5000, true)
-        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(N - 1)))
+    try {
+      let nInitialTabs = await tabCount(this.app)
+
+      while (nInitialTabs > 1) {
+        const N = nInitialTabs--
+
+        await this.app.client.$(Selectors.TOP_TAB_CLOSE_N(N)).then(_ => _.click())
+
+        await this.app.client.waitUntil(async () => {
+          const currentCount = await tabCount(this.app)
+          return currentCount === N - 1
+        })
+      }
+    } catch (err) {
+      await Common.oops(this, true)(err)
     }
   })
 }
@@ -321,17 +336,20 @@ export function uniqueFileForSnapshot() {
 /** Click the close button on a block, and expect it to be gone */
 export async function removeBlock(res: AppAndCount) {
   const N = res.count
-  await res.app.client.moveToObject(Selectors.PROMPT_N(N))
-  await res.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON(N))
-  await res.app.client.click(Selectors.BLOCK_REMOVE_BUTTON(N))
+  await res.app.client.$(Selectors.PROMPT_N(N)).then(_ => _.moveTo())
+
+  const removeButton = await res.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N))
+  await removeButton.waitForDisplayed()
+  await removeButton.click()
 }
 
 /** Switch sidecar tab */
 export function switchToTab(mode: string) {
   return async (res: AppAndCount) => {
-    await res.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
-    await res.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
-    await res.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, mode))
+    const tab = await res.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
+    await tab.waitForDisplayed()
+    await tab.click()
+    await res.app.client.$(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, mode)).then(_ => _.waitForDisplayed())
     return res
   }
 }

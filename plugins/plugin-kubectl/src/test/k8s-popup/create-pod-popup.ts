@@ -17,7 +17,7 @@
 // temporary with disabled popup test
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
+import { Common, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const wdescribe = process.env.USE_WATCH_PANE ? Common.localDescribe : xdescribe
@@ -81,20 +81,17 @@ const waitForCreate = function(this: Common.ISuite, spec: CreateSpec) {
       // then click on the table row and switch back and forth between
       // raw and summary modes, each time ensuring that the editor
       // shows the expected content await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
-      await this.app.client.click(`${Selectors.BY_NAME(name)} .clickable`)
+      await this.app.client.$(`${Selectors.BY_NAME(name)} .clickable`).then(_ => _.click())
       await SidecarExpect.open(res).then(SidecarExpect.mode(defaultModeForGet))
       await waitForDescribeContent()
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+      await Util.switchToTab('raw')(res)
       await waitForRawContent()
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary'))
+      await Util.switchToTab('summary')(res)
       await waitForDescribeContent()
 
-      await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'raw'))
+      await Util.switchToTab('raw')(res)
     } catch (err) {
       return Common.oops(this, true)(err)
     }

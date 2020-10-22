@@ -60,7 +60,9 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
         `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
         this.app
       )
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+        )
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -68,7 +70,7 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     it(`should create tab-completion pod via ${kubectl}`, async () => {
       return CLI.command(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion.yaml -n ${ns}`, this.app)
         .then(
-          ReplExpect.okWithCustom({
+          ReplExpect.okWithCustom<string>({
             selector: Selectors.BY_NAME('tab-completion-1')
           })
         )
@@ -79,7 +81,7 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     it(`should create tab-completion2 pod via ${kubectl}`, async () => {
       return CLI.command(`${kubectl}  create -f ${ROOT}/data/k8s/tab-completion-2.yaml -n ${ns}`, this.app)
         .then(
-          ReplExpect.okWithCustom({
+          ReplExpect.okWithCustom<string>({
             selector: Selectors.BY_NAME('tab-completion-2')
           })
         )

@@ -19,12 +19,12 @@ import { CLI, Common, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** The actual split terminal via button impl; splitViaButton is the mocha test wrapper */
 export async function doSplitViaButton(ctx: Common.ISuite, splitCount: number) {
-  await ctx.app.client.click(Selectors.NEW_SPLIT_BUTTON)
+  await ctx.app.client.$(Selectors.NEW_SPLIT_BUTTON).then(_ => _.click())
   await ReplExpect.splitCount(splitCount)(ctx.app)
 
   await ctx.app.client.waitUntil(
-    () => ctx.app.client.hasFocus(Selectors.CURRENT_PROMPT_FOR_SPLIT(splitCount)),
-    CLI.waitTimeout
+    () => ctx.app.client.$(Selectors.CURRENT_PROMPT_FOR_SPLIT(splitCount)).then(_ => _.isFocused()),
+    { timeout: CLI.waitTimeout }
   )
 }
 
@@ -49,7 +49,11 @@ export function splitViaCommand(
       // need to remember the split ids before... and check this
       // against the id array after (which we do, just below **)
       const splitIdsBefore =
-        where === undefined ? undefined : await this.app.client.getAttribute(Selectors.SPLITS, Selectors.SPLIT_ID)
+        where === undefined
+          ? undefined
+          : await this.app.client
+              .$$(Selectors.SPLITS)
+              .then(elements => Promise.all(elements.map(_ => _.getAttribute(Selectors.SPLIT_ID))))
       if (where) {
         console.error('before', splitIdsBefore)
       }
@@ -73,9 +77,11 @@ export function splitViaCommand(
 
       if (where !== undefined) {
         // ** now we check that the new split was spliced in at the expected location
-        const splitIdsAfter = await this.app.client.getAttribute(Selectors.SPLITS, Selectors.SPLIT_ID)
-        const before = !splitIdsBefore ? [] : Array.isArray(splitIdsBefore) ? splitIdsBefore : [splitIdsBefore]
-        const after = !splitIdsAfter ? [] : Array.isArray(splitIdsAfter) ? splitIdsAfter : [splitIdsAfter]
+        const splitIdsAfter = await this.app.client
+          .$$(Selectors.SPLITS)
+          .then(elements => Promise.all(elements.map(_ => _.getAttribute(Selectors.SPLIT_ID))))
+        const before = !splitIdsBefore ? [] : splitIdsBefore
+        const after = !splitIdsAfter ? [] : splitIdsAfter
         console.error('after', splitIdsAfter)
 
         strictEqual(after.length, before.length + 1, 'expect one more split')
@@ -101,13 +107,13 @@ export function close(this: Common.ISuite, splitCount: number, inSplit: number) 
 
 async function clickToFocus(this: Common.ISuite, toSplitIndex: number) {
   console.error('1')
-  await this.app.client.click(Selectors.SPLIT_N_FOCUS(toSplitIndex))
+  await this.app.client.$(Selectors.SPLIT_N_FOCUS(toSplitIndex)).then(_ => _.click())
   console.error('2')
   await this.app.client.waitUntil(
-    () => this.app.client.hasFocus(Selectors.CURRENT_PROMPT_FOR_SPLIT(toSplitIndex)),
-    CLI.waitTimeout
+    () => this.app.client.$(Selectors.CURRENT_PROMPT_FOR_SPLIT(toSplitIndex)).then(_ => _.isFocused()),
+    { timeout: CLI.waitTimeout }
   )
-  console.error('3', await this.app.client.hasFocus(Selectors.CURRENT_PROMPT_FOR_SPLIT(toSplitIndex)))
+  console.error('3', await this.app.client.$(Selectors.CURRENT_PROMPT_FOR_SPLIT(toSplitIndex)).then(_ => _.isFocused()))
 }
 
 export function focus(this: Common.ISuite, toSplitIndex: number) {
@@ -125,14 +131,14 @@ export function focusAndValidate(this: Common.ISuite, fromSplitIndex: number, to
     try {
       const res1 = await CLI.commandInSplit('split-debug', this.app, fromSplitIndex)
       const N1 = res1.count
-      const id1 = await this.app.client.getText(Selectors.OUTPUT_N(N1, fromSplitIndex))
+      const id1 = await this.app.client.$(Selectors.OUTPUT_N(N1, fromSplitIndex)).then(_ => _.getText())
 
       await clickToFocus.bind(this)(toSplitIndex)
 
       // last true: noFocus, since we want to do this ourselves
       const res2 = await CLI.commandInSplit('split-debug', this.app, toSplitIndex)
       const N2 = res2.count
-      const id2 = await this.app.client.getText(Selectors.OUTPUT_N(N2, toSplitIndex))
+      const id2 = await this.app.client.$(Selectors.OUTPUT_N(N2, toSplitIndex)).then(_ => _.getText())
       console.error('5')
 
       notStrictEqual(id1, id2, 'the split identifiers should differ')

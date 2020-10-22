@@ -47,8 +47,10 @@ describe('create new actions in editor', function(this: Common.ISuite) {
   /** deploy the new action */
   const deploy = (res: ReplExpect.AppAndCount, action: string) => () => {
     return res.app.client
-      .click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy'))
-      .then(() => res.app.client.waitForVisible(`${Selectors.SIDECAR(res.count)} .editor-status.is-new`, 10000, true))
+      .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy'))
+      .then(_ => _.click())
+      .then(() => res.app.client.$(`${Selectors.SIDECAR(res.count)} .editor-status.is-new`))
+      .then(_ => _.waitForDisplayed({ timeout: 10000, reverse: true }))
       .catch(err => {
         console.error('Ouch, something bad happened, let us clean up the action before retrying')
         console.error(err)
@@ -61,9 +63,9 @@ describe('create new actions in editor', function(this: Common.ISuite) {
   /** set the monaco editor text */
   const setValue = async (res: ReplExpect.AppAndCount, text: string, status: string) => {
     // initially: the is-modified indicator should state what we expect to see
-    await res.app.client.waitForVisible(
-      `${Selectors.SIDECAR(res.count)} .sidecar-toolbar-text-content .editor-status.is-${status}`
-    )
+    await res.app.client
+      .$(`${Selectors.SIDECAR(res.count)} .sidecar-toolbar-text-content .editor-status.is-${status}`)
+      .then(_ => _.waitForDisplayed())
 
     // then: modify the content
     await res.app.client.execute(text => {
@@ -72,9 +74,13 @@ describe('create new actions in editor', function(this: Common.ISuite) {
 
     // finally: the is-modified indicator should not have "is new" or "is up to date"
     if (status !== 'new') {
-      await this.app.client.waitForVisible(
-        `${Selectors.SIDECAR(res.count)} .sidecar-toolbar-text-content .editor-status:not(.is-new):not(.is-up-to-date)`
-      )
+      await this.app.client
+        .$(
+          `${Selectors.SIDECAR(
+            res.count
+          )} .sidecar-toolbar-text-content .editor-status:not(.is-new):not(.is-up-to-date)`
+        )
+        .then(_ => _.waitForDisplayed())
     }
   }
 
@@ -103,17 +109,21 @@ describe('create new actions in editor', function(this: Common.ISuite) {
         const actionSrc = await Util.getValueFromMonaco(res)
         return actionSrc.trim() === 'let main = x => x'
       })
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')) // go to the edit mode
-      await this.app.client.waitForVisible(
-        `${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`
-      )
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')).then(_ => _.waitForExist())
+      await this.app.client
+        .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')) // go to the edit mode
+        .then(_ => _.click())
+      await this.app.client
+        .$(`${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`)
+        .then(_ => _.waitForDisplayed())
       await setValue(res, 'let main = y => y', 'up-to-date') // modify the content
-      await this.app.client.waitForVisible(
-        `${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status:not(.is-up-to-date)`
-      )
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')) // go to the view mode
+      await this.app.client
+        .$(`${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status:not(.is-up-to-date)`)
+        .then(_ => _.waitForDisplayed())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')).then(_ => _.waitForExist())
+      await this.app.client
+        .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')) // go to the view mode
+        .then(_ => _.click())
       await this.app.client.waitUntil(async () => {
         // expect the action content not to be changed
         console.log('lock: Expected action content: "let main = x => x"')
@@ -138,19 +148,25 @@ describe('create new actions in editor', function(this: Common.ISuite) {
         return actionSrc.trim() === 'let main = x => x'
       })
 
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')) // go to the edit mode
-      await this.app.client.waitForVisible(
-        `${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`
-      )
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')).then(_ => _.waitForExist())
+      await this.app.client
+        .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit')) // go to the edit mode
+        .then(_ => _.click())
+      await this.app.client
+        .$(`${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`)
+        .then(_ => _.waitForDisplayed())
       await setValue(res, 'let main = y => y', 'up-to-date') // modify the content
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy')) // deploy
-      await this.app.client.waitForVisible(
-        `${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`
-      )
-      await this.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock'))
-      await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')) // go to the view mode
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy')).then(_ => _.waitForExist())
+      await this.app.client
+        .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Deploy')) // deploy
+        .then(_ => _.click())
+      await this.app.client
+        .$(`${Selectors.SIDECAR} .sidecar-toolbar-text-content .editor-status.is-up-to-date .is-up-to-date`)
+        .then(_ => _.waitForDisplayed())
+      await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')).then(_ => _.waitForExist())
+      await this.app.client
+        .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'lock')) // go to the view mode
+        .then(_ => _.click())
       await this.app.client.waitUntil(async () => {
         // expect the action content to be changed
         console.log('lock: Expected action content "let main = y => y"')

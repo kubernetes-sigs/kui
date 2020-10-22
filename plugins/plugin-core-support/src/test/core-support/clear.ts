@@ -41,7 +41,9 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     try {
       const res = await CLI.command(`prompt ${enteredPlaceholder}`, this.app)
       await this.app.client.waitUntil(async () => {
-        const placeholder = await this.app.client.getAttribute(Selectors.PROMPT_N(res.count), 'placeholder')
+        const placeholder = await this.app.client
+          .$(Selectors.PROMPT_N(res.count))
+          .then(_ => _.getAttribute('placeholder'))
         return placeholder === expectedPlaceholder
       })
       if (cancel) {
@@ -91,13 +93,16 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       await ReplExpect.consoleToBeClear(this.app)
 
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const actualPromptText = await this.app.client.getValue(Selectors.CURRENT_PROMPT)
-        if (++idx > 5) {
-          console.error(`still waiting for expectedPromptText=${JUNK}; actualPromptText=${actualPromptText}`)
-        }
-        return actualPromptText === JUNK
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const actualPromptText = await this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.getValue())
+          if (++idx > 5) {
+            console.error(`still waiting for expectedPromptText=${JUNK}; actualPromptText=${actualPromptText}`)
+          }
+          return actualPromptText === JUNK
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
