@@ -58,7 +58,6 @@ describe('Delete multiple actions using rimraf', function(this: Common.ISuite) {
   it('should delete them both', () =>
     CLI.command(`wsk action rimraf ${actionName} ${actionName2}`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'deleted 2 elements', exact: true }))
-      .then(SidecarExpect.closed)
       .catch(Common.oops(this)))
 
   it('should NOT find a deleted action', () =>
@@ -89,7 +88,6 @@ describe('Delete multiple actions using rimraf', function(this: Common.ISuite) {
   it('should delete the package recursively', () =>
     CLI.command(`wsk package rimraf -r ${packageName}`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'deleted 3 elements', exact: true }))
-      .then(SidecarExpect.closed)
       .catch(Common.oops(this)))
   it('should FAIL to delete the removed package', () =>
     CLI.command(`wsk package rimraf -r ${packageName} --no-retry`, this.app)
@@ -116,7 +114,6 @@ describe('Delete multiple actions using rimraf', function(this: Common.ISuite) {
   it('should delete the package recursively', () =>
     CLI.command(`wsk package rimraf -r "${packageNameWithSpaces}"`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'deleted 2 elements', exact: true }))
-      .then(SidecarExpect.closed)
       .catch(Common.oops(this)))
   it('should FAIL to delete the removed package', () =>
     CLI.command(`wsk package rimraf -r "${packageNameWithSpaces}" --no-retry`, this.app)
@@ -155,6 +152,5 @@ describe('Delete multiple actions using rimraf', function(this: Common.ISuite) {
   it('should delete the sequence recursively', () =>
     CLI.command(`wsk action rimraf -r ${seqName}`, this.app)
       .then(ReplExpect.okWithCustom({ expect: 'deleted 2 elements', exact: true }))
-      .then(SidecarExpect.closed)
       .catch(Common.oops(this)))
 })

@@ -27,17 +27,26 @@ describe('commentary and replay', function(this: Common.ISuite) {
   const file = Util.uniqueFileForSnapshot()
 
   const verifyComment = () => {
-    return this.app.client.waitUntil(async () => {
-      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+    return this.app.client.waitUntil(
+      async () => {
+        await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.waitForDisplayed())
 
-      const title = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`)
-      const head1 = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
-      const head2 = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
+        const title = await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`)
+          .then(_ => _.getText())
+        const head1 = await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
+          .then(_ => _.getText())
+        const head2 = await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
+          .then(_ => _.getText())
 
-      return (
-        title === 'hello there' && head1 === 'The Kui Framework for Graphical Terminals' && head2 === 'Installation'
-      )
-    }, CLI.waitTimeout)
+        return (
+          title === 'hello there' && head1 === 'The Kui Framework for Graphical Terminals' && head2 === 'Installation'
+        )
+      },
+      { timeout: CLI.waitTimeout }
+    )
   }
 
   const addComment = () => {
@@ -75,35 +84,46 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   const verifyComment = (expectedText: string) => {
     let idx = 0
-    return this.app.client.waitUntil(async () => {
-      await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
-      const actualText = await this.app.client.getText(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+    return this.app.client.waitUntil(
+      async () => {
+        await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.waitForDisplayed())
+        const actualText = await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+          .then(_ => _.getText())
 
-      if (++idx > 5) {
-        console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
-      }
+        if (++idx > 5) {
+          console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
+        }
 
-      return actualText === expectedText
-    }, CLI.waitTimeout)
+        return actualText === expectedText
+      },
+      { timeout: CLI.waitTimeout }
+    )
   }
 
   const verifyTextInMonaco = (expectedText: string) => {
     let idx = 0
-    return this.app.client.waitUntil(async () => {
-      const actualText = await Util.getValueFromMonaco({ app: this.app, count: -1 }, Selectors.OUTPUT_LAST)
+    return this.app.client.waitUntil(
+      async () => {
+        const actualText = await Util.getValueFromMonaco({ app: this.app, count: -1 }, Selectors.OUTPUT_LAST)
 
-      if (++idx > 5) {
-        console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
-      }
+        if (++idx > 5) {
+          console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
+        }
 
-      return actualText === expectedText
-    }, CLI.waitTimeout)
+        return actualText === expectedText
+      },
+      { timeout: CLI.waitTimeout }
+    )
   }
 
   /** set the monaco editor text */
   const type = async (text: string): Promise<void> => {
     const selector = `${Selectors.OUTPUT_LAST} .monaco-editor-wrapper .view-lines`
-    await this.app.client.click(selector).then(() => this.app.client.waitForEnabled(selector))
+    await this.app.client.$(selector).then(async _ => {
+      await _.click()
+      await _.waitForEnabled()
+    })
 
     await this.app.client.keys(text)
   }
@@ -120,7 +140,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   const openEditor = (expect: string) => {
     it('should open editor by clicking', async () => {
       try {
-        await this.app.client.doubleClick(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
+        await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.doubleClick())
         await verifyTextInMonaco(expect)
       } catch (err) {
         await Common.oops(this, true)(err)
@@ -130,8 +150,12 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   const clickDone = (expect: string) => {
     it('should close the editor by clicking the Done button', async () => {
       try {
-        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
-        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`, 500, true)
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
+          .then(_ => _.click())
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
         await verifyComment(expect)
       } catch (err) {
         await Common.oops(this, true)(err)
@@ -141,8 +165,12 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   const clickRevert = (expect: string) => {
     it('should revert the editor by clicking the Revert button', async () => {
       try {
-        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_REVERT}`)
-        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`) // still open!
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_REVERT}`)
+          .then(_ => _.click())
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .then(_ => _.waitForDisplayed()) // still open!
         await verifyTextInMonaco(expect)
       } catch (err) {
         await Common.oops(this, true)(err)
@@ -152,8 +180,12 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   const clickCancel = (expect: string) => {
     it('should close the editor by clicking the Cancel button', async () => {
       try {
-        await this.app.client.click(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_CANCEL}`)
-        await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`, 500, true)
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_CANCEL}`)
+          .then(_ => _.click())
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
         await verifyComment(expect)
       } catch (err) {
         await Common.oops(this, true)(err)

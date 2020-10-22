@@ -33,7 +33,8 @@ export const BOTTOM_PROMPT = `${BOTTOM_PROMPT_BLOCK} input`
 export const STATUS_STRIPE_BLOCK = '.kui--status-stripe .kui--input-stripe .repl-block'
 export const STATUS_STRIPE_PROMPT = `${STATUS_STRIPE_BLOCK} input`
 export const OOPS = `${CURRENT_TAB} .repl .repl-block .oops`
-export const SIDECAR_BASE = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--sidecar`
+export const _SIDECAR = '.kui--sidecar'
+export const SIDECAR_BASE = (N: number) => `${PROMPT_BLOCK_N(N)} ${_SIDECAR}`
 export const SIDECAR = (N: number) => `${SIDECAR_BASE(N)}.visible:not(.minimized)`
 export const SIDECAR_FULLSCREEN = (N: number) => `${SIDECAR(N)}.maximized`
 export const SIDECAR_WITH_FAILURE = (N: number) => `${SIDECAR_BASE(N)}.visible.activation-success-false`

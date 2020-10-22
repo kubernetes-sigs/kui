@@ -31,9 +31,11 @@ describe(`kubectl run ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Com
 
     it(`should create pod/deployment from ${kubectl} run`, () => {
       return CLI.command(`${kubectl} run nginx --image nginx -n ${ns}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+        )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     const kind =
@@ -43,7 +45,7 @@ describe(`kubectl run ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Com
     it(`should delete the ${kind} by name via ${kubectl}`, () => {
       return CLI.command(`${kubectl} delete ${kind} nginx -n ${ns}`, this.app)
         .then(ReplExpect.okWithAny)
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     deleteNS(this, ns)

@@ -89,7 +89,8 @@ describe('export command', function(this: Common.ISuite) {
 
   Common.pit('should switch back to the first tab', () =>
     CLI.command('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this))
   )
 
@@ -101,7 +102,8 @@ describe('export command', function(this: Common.ISuite) {
 
   Common.pit('should switch back to the second tab', () =>
     CLI.command('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this))
   )
 

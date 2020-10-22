@@ -36,9 +36,9 @@ describe('test client status stripe', function(this: Common.ISuite) {
 
   it('should show as ok', async () => {
     console.error('A')
-    await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET(id))
+    await this.app.client.$(Selectors.STATUS_STRIPE_WIDGET(id)).then(_ => _.waitForDisplayed())
     console.error('B')
-    const text = await this.app.client.getText(Selectors.STATUS_STRIPE_WIDGET_LABEL(id))
+    const text = await this.app.client.$(Selectors.STATUS_STRIPE_WIDGET_LABEL(id)).then(_ => _.getText())
     console.error('C', text)
 
     const match = text.match(/^count: (\d+)$/)
@@ -47,7 +47,7 @@ describe('test client status stripe', function(this: Common.ISuite) {
 
     const color = colorOf(count)
     console.error('D', count, color)
-    await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', color))
+    await this.app.client.$(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', color)).then(_ => _.waitForDisplayed())
   })
 
   it('should click on the icon part and show count+1', async () => {
@@ -56,11 +56,15 @@ describe('test client status stripe', function(this: Common.ISuite) {
       const nextColor = colorOf(count + 1)
       console.error('E', count, currColor, nextColor)
 
-      await this.app.client.click(Selectors.STATUS_STRIPE_WIDGET_ICON_WITH_ATTR(id, 'view', currColor))
+      await this.app.client.$(Selectors.STATUS_STRIPE_WIDGET_ICON_WITH_ATTR(id, 'view', currColor)).then(_ => _.click())
       console.error('F1')
-      await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
+      await this.app.client
+        .$(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
+        .then(_ => _.waitForDisplayed())
       console.error('F2')
-      const text = await this.app.client.getText(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
+      const text = await this.app.client
+        .$(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
+        .then(_ => _.getText())
       console.error('F3', text)
       assert.strictEqual(text, `count: ${++count}`)
       console.error('F4')
@@ -74,9 +78,15 @@ describe('test client status stripe', function(this: Common.ISuite) {
       const currColor = colorOf(count)
       const nextColor = colorOf(count + 1)
 
-      await this.app.client.click(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', currColor))
-      await this.app.client.waitForVisible(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
-      const text = await this.app.client.getText(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
+      await this.app.client
+        .$(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', currColor))
+        .then(_ => _.click())
+      await this.app.client
+        .$(Selectors.STATUS_STRIPE_WIDGET_WITH_ATTR(id, 'view', nextColor))
+        .then(_ => _.waitForDisplayed())
+      const text = await this.app.client
+        .$(Selectors.STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR(id, 'view', nextColor))
+        .then(_ => _.getText())
       assert.strictEqual(text, `count: ${++count}`)
     } catch (err) {
       await Common.oops(this, true)(err)

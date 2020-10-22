@@ -25,8 +25,10 @@ describe('Confirm dialog', function(this: Common.ISuite) {
 
   it('should not do anything if user cancels', () => {
     return CLI.command('confirm "echo hello"', this.app)
-      .then(() => this.app.client.waitForExist('#confirm-dialog'))
-      .then(() => this.app.client.click('#confirm-dialog .bx--btn--secondary'))
+      .then(() => this.app.client.$('#confirm-dialog'))
+      .then(_ => _.waitForExist())
+      .then(() => this.app.client.$('#confirm-dialog .bx--btn--secondary'))
+      .then(_ => _.click())
       .then(() =>
         ReplExpect.okWithCustom({
           expect: 'Confirmation modal pop up'
@@ -36,10 +38,13 @@ describe('Confirm dialog', function(this: Common.ISuite) {
 
   it('should execute if user confirms', () => {
     return CLI.command('confirm "echo hello"', this.app)
-      .then(() => this.app.client.waitForExist('#confirm-dialog'))
-      .then(() => this.app.client.click('#confirm-dialog .bx--btn--danger'))
-      .then(() => this.app.client.waitForExist(`${Selectors.OUTPUT_LAST}`))
-      .then(() => ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('hello') }))
+      .then(() => this.app.client.$('#confirm-dialog'))
+      .then(_ => _.waitForExist())
+      .then(() => this.app.client.$('#confirm-dialog .bx--btn--danger'))
+      .then(_ => _.click())
+      .then(() => this.app.client.$(`${Selectors.OUTPUT_LAST}`))
+      .then(_ => _.waitForExist())
+      .then(() => ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('hello') })) // <-- FIXME this does not seem correct
       .catch(Common.oops(this))
   })
 })

@@ -59,9 +59,9 @@ describe('Click on action part of activation sidecar', function(this: Common.ISu
     try {
       res = await CLI.command(`wsk action async foo`, this.app)
 
-      await ReplExpect.okWithCustom(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
-        const activationId = await this.app.client.getText(selector)
-        await this.app.client.click(selector)
+      await ReplExpect.okWithCustom<string>(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
+        const activationId = await this.app.client.$(selector).then(_ => _.getText())
+        await this.app.client.$(selector).then(_ => _.click())
         return SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing('foo', activationId))
       })
     } catch (err) {
@@ -71,7 +71,8 @@ describe('Click on action part of activation sidecar', function(this: Common.ISu
 
   it('should click on name part of activation', () =>
     this.app.client
-      .click(Selectors.SIDECAR_TITLE(res.count))
+      .$(Selectors.SIDECAR_TITLE(res.count))
+      .then(_ => _.click())
       .then(() => res)
       .then(SidecarExpect.showing('foo'))
       .catch(Common.oops(this)))
@@ -81,9 +82,9 @@ describe('Click on action part of activation sidecar', function(this: Common.ISu
     try {
       res = await CLI.command(`wsk action async ppp/foo`, this.app)
 
-      await ReplExpect.okWithCustom(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
-        const activationId = await this.app.client.getText(selector)
-        await this.app.client.click(selector)
+      await ReplExpect.okWithCustom<string>(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
+        const activationId = await this.app.client.$(selector).then(_ => _.getText())
+        await this.app.client.$(selector).then(_ => _.click())
         return SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing('foo', activationId))
       })
     } catch (err) {
@@ -95,7 +96,8 @@ describe('Click on action part of activation sidecar', function(this: Common.ISu
 
   it('should click on name part of activation', () =>
     this.app.client
-      .click(Selectors.SIDECAR_TITLE(res.count))
+      .$(Selectors.SIDECAR_TITLE(res.count))
+      .then(_ => _.click())
       .then(() => res)
       .then(SidecarExpect.showing('foo', 'ppp'))
       .catch(Common.oops(this)))

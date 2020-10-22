@@ -25,24 +25,29 @@ describe('core new tab switch tabs', function(this: Common.ISuite) {
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`switch back to second tab via command`, () =>
     CLI.command('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it('should close tab via "tab close" command', () =>
     CLI.command('tab close', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_N(2)))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 })
@@ -55,9 +60,9 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   it('should NOT open a new tab with if on false condition', async () => {
     try {
       await CLI.command('tab new --if "kuiconfig is set yoyoyo"', this.app)
-      await this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+      await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -65,9 +70,9 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   it('should YES open a new tab with ifnot on false condition', async () => {
     try {
       await CLI.command('tab new --ifnot "kuiconfig is set yoyoyo"', this.app)
-      await this.app.client.waitForExist(Selectors.TAB_N(2))
-      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+      await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -88,9 +93,9 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   it('should NOT open a new tab with ifnot on true condition', async () => {
     try {
       await CLI.command('tab new --ifnot "kuiconfig is set yoyoyo"', this.app)
-      await this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+      await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -98,9 +103,9 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   it('should NOT open a new tab with if on false condition using config not yet', async () => {
     try {
       await CLI.command('tab new --if "kuiconfig not set yoyoyo"', this.app)
-      await this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+      await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -108,9 +113,9 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   it('should YES open a new tab with if on true condition', async () => {
     try {
       await CLI.command('tab new --if "kuiconfig is set yoyoyo"', this.app)
-      await this.app.client.waitForExist(Selectors.TAB_N(2))
-      await this.app.client.waitForExist(Selectors.TAB_N(3), 5000, true)
-      await this.app.client.waitForExist(Selectors.TAB_N(4), 5000, true)
+      await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist())
+      await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -126,8 +131,10 @@ describe('core new tab onClose', function(this: Common.ISuite) {
     () =>
       it('should close tab via "tab close" command', () =>
         CLI.command('tab close', this.app)
-          .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
-          .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+          .then(() => this.app.client.$(Selectors.TAB_N(2)))
+          .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+          .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+          .then(_ => _.waitForDisplayed())
           .then(() => CLI.waitForRepl(this.app)) // should have an active repl
           .catch(Common.oops(this, true))),
 
@@ -135,10 +142,12 @@ describe('core new tab onClose', function(this: Common.ISuite) {
     () =>
       it('should close by clicking on the tab closer button', async () => {
         try {
-          await this.app.client.click(Selectors.CURRENT_TAB_CLOSE)
+          await this.app.client.$(Selectors.CURRENT_TAB_CLOSE).then(_ => _.click())
           await this.app.client
-            .waitForExist(Selectors.TAB_N(2), 5000, true)
-            .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+            .$(Selectors.TAB_N(2))
+            .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+            .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+            .then(_ => _.waitForDisplayed())
           await CLI.waitForRepl(this.app) // should have an active repl
         } catch (err) {
           await Common.oops(this, true)(err)
@@ -157,7 +166,7 @@ describe('core new tab onClose', function(this: Common.ISuite) {
       try {
         await CLI.command(`tab new --onClose "kuiconfig set ${key} ${value}"`, this.app)
         await CLI.waitForRepl(this.app) // should have an active repl
-        await this.app.client.waitForExist(Selectors.TAB_N(2))
+        await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist())
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -167,15 +176,18 @@ describe('core new tab onClose', function(this: Common.ISuite) {
     it(`should show the effect of the onClose handler, now that the tab is closed: ${key}=${value}`, async () => {
       try {
         let idx = 0
-        await this.app.client.waitUntil(async () => {
-          const res = await CLI.command(`kuiconfig get ${key}`, this.app)
+        await this.app.client.waitUntil(
+          async () => {
+            const res = await CLI.command(`kuiconfig get ${key}`, this.app)
 
-          const actualValue = await this.app.client.getText(Selectors.OUTPUT_N(res.count))
-          if (++idx > 5) {
-            console.error(`still waiting for kuiconfig value actualValue=${actualValue} expectedValue=${value}`)
-          }
-          return actualValue === value
-        }, CLI.waitTimeout)
+            const actualValue = await this.app.client.$(Selectors.OUTPUT_N(res.count)).then(_ => _.getText())
+            if (++idx > 5) {
+              console.error(`still waiting for kuiconfig value actualValue=${actualValue} expectedValue=${value}`)
+            }
+            return actualValue === value
+          },
+          { timeout: CLI.waitTimeout }
+        )
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -192,13 +204,17 @@ describe('core new tab with custom title', function(this: Common.ISuite) {
   const newTabWithTitle = (title: string, N: number, again = false, expectedTitle = title) => {
     it(`new tab via command with custom title: ${title}`, () =>
       CLI.command(`tab new --title ${/s/.test(title) ? `"${title}"` : title}`, this.app)
-        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(N)))
+        .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(N)))
+        .then(_ => _.waitForDisplayed())
         .then(() => (again ? Promise.resolve() : CLI.waitForSession(this))) // should have an active repl
         .then(() =>
-          this.app.client.waitUntil(async () => {
-            const actualTitle = await this.app.client.getText(Selectors.CURRENT_TAB_TITLE)
-            return actualTitle === expectedTitle
-          }, CLI.waitTimeout)
+          this.app.client.waitUntil(
+            async () => {
+              const actualTitle = await this.app.client.$(Selectors.CURRENT_TAB_TITLE).then(_ => _.getText())
+              return actualTitle === expectedTitle
+            },
+            { timeout: CLI.waitTimeout }
+          )
         )
         .catch(Common.oops(this, true)))
   }
@@ -211,7 +227,8 @@ describe('core new tab with custom title', function(this: Common.ISuite) {
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   // do that again, after switching back to the first tab; we should be back in the second tab again
@@ -232,19 +249,24 @@ describe('core new tab with status stripe decoration', function(this: Common.ISu
 
   const validateDecorations = async () => {
     // blue status stripe
-    await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('blue'), CLI.waitTimeout)
+    await this.app.client
+      .$(Selectors.STATUS_STRIPE_TYPE('blue'))
+      .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 
     // and our hello world message
-    await this.app.client.waitUntil(async () => {
-      const actualText = await this.app.client.getText(Selectors.STATUS_STRIPE_MESSAGE)
-      return actualText === 'hello world'
-    }, CLI.waitTimeout)
+    await this.app.client.waitUntil(
+      async () => {
+        const actualText = await this.app.client.$(Selectors.STATUS_STRIPE_MESSAGE).then(_ => _.getText())
+        return actualText === 'hello world'
+      },
+      { timeout: CLI.waitTimeout }
+    )
   }
 
   it('should create a new tab with special status stripe decoration', async () => {
     try {
       await CLI.command('tab new --status-stripe-type blue --status-stripe-message "hello world"', this.app)
-      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
+      await this.app.client.$(Selectors.TAB_SELECTED_N(2)).then(_ => _.waitForDisplayed())
       await CLI.waitForSession(this) // should have an active repl
       await validateDecorations()
     } catch (err) {
@@ -254,16 +276,20 @@ describe('core new tab with status stripe decoration', function(this: Common.ISu
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it('should show a status stripe with default decoration', async () => {
-    await this.app.client.waitForExist(Selectors.STATUS_STRIPE_TYPE('default'), CLI.waitTimeout)
+    await this.app.client
+      .$(Selectors.STATUS_STRIPE_TYPE('default'))
+      .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
   })
 
   it(`switch back to second tab via command`, () =>
     CLI.command('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it('should show a status stripe with blue decoration', async () => {
@@ -278,7 +304,8 @@ Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
@@ -286,32 +313,38 @@ Common.localDescribe('core new tab switch tabs via keyboard shortcuts', function
     it(`switch back to first tab via keyboard shortcut: meta+1`, () =>
       this.app.client
         .keys([Keys.META, Keys.Numpad1, 'NULL'])
-        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+        .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+        .then(_ => _.waitForDisplayed())
         .catch(Common.oops(this, true)))
 
     it(`switch back to second tab via keyboard shortcut: meta+2`, () =>
       this.app.client
         .keys([Keys.META, Keys.Numpad2, 'NULL'])
-        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+        .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+        .then(_ => _.waitForDisplayed())
         .catch(Common.oops(this, true)))
   }
 
   it(`switch back to first tab via keyboard shortcut: control+pageUp`, () =>
     this.app.client
       .keys([Keys.CONTROL, Keys.PageUp, 'NULL'])
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`switch back to second tab via keyboard shortcut: control+pageDown`, () =>
     this.app.client
       .keys([Keys.CONTROL, Keys.PageDown, 'NULL'])
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it('should close tab via "tab close" command', () =>
     CLI.command('tab close', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_N(2)))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 })
@@ -333,7 +366,7 @@ Common.pDescribe('core new tab from pty active tab via click', function(this: Co
       const res = await CLI.command('less ../../README.md', this.app)
 
       const selector = `${Selectors.OUTPUT_N_STREAMING(res.count)} .xterm`
-      await this.app.client.waitForExist(selector)
+      await this.app.client.$(selector).then(_ => _.waitForExist())
     } catch (err) {
       return Common.oops(this, true)(err)
     }
@@ -341,14 +374,19 @@ Common.pDescribe('core new tab from pty active tab via click', function(this: Co
 
   it('click new tab button', () =>
     this.app.client
-      .click(tabButtonSelector)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .$(tabButtonSelector)
+      .then(_ => _.click())
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   // no xterm copied over!
   it('should have a clean tab', () =>
-    this.app.client.waitForVisible(`${Selectors.CURRENT_TAB} .xterm`, 5000, true).catch(Common.oops(this, true)))
+    this.app.client
+      .$(`${Selectors.CURRENT_TAB} .xterm`)
+      .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
+      .catch(Common.oops(this, true)))
 })
 
 describe('core new tab from quiescent tab via command', function(this: Common.ISuite) {
@@ -366,14 +404,16 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
       .then(ReplExpect.okWithPtyOutput('hi'))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} in tab2`, () =>
@@ -393,8 +433,10 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it('should close tab via "exit" command', () =>
     CLI.command('exit', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_N(2)))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 
@@ -405,7 +447,8 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it('new tab via command', () =>
     CLI.command('tab new', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
@@ -416,7 +459,8 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
@@ -426,7 +470,8 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`switch back to second tab via command`, () =>
     CLI.command('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () =>
@@ -436,7 +481,8 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`switch back to first tab via command`, () =>
     CLI.command('tab switch 1', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
@@ -452,28 +498,34 @@ describe('core new tab from quiescent tab via button click', function(this: Comm
 
   it('new tab via button click', () =>
     this.app.client
-      .click(tabButtonSelector)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .$(tabButtonSelector)
+      .then(_ => _.click())
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
       .then(ReplExpect.okWithPtyOutput('hi'))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it('should close tab via "tab close" command', () =>
     CLI.command('tab close', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.TAB_N(2), 5000, true))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_N(2)))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it('should execute echo in first tab', () =>
     CLI.command('echo hi', this.app)
       .then(ReplExpect.okWithPtyOutput('hi'))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 })
 
@@ -484,15 +536,18 @@ describe('core new tab from active tab via button click', function(this: Common.
 
   it('start a sleep, then new tab via button click', () =>
     CLI.command('sleep 10000', this.app)
-      .then(() => this.app.client.click(tabButtonSelector))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(tabButtonSelector))
+      .then(_ => _.click())
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
       .then(ReplExpect.okWithPtyOutput('hi'))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 })
 
@@ -503,16 +558,20 @@ describe('core new tab from pty active tab via button click', function(this: Com
 
   it('start vi, then new tab via button click', () =>
     CLI.command('vi', this.app)
-      .then(() => this.app.client.waitForExist(Selectors.ALT_BUFFER_N(1)))
-      .then(() => this.app.client.click(tabButtonSelector))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.ALT_BUFFER_N(1)))
+      .then(_ => _.waitForExist())
+      .then(() => this.app.client.$(tabButtonSelector))
+      .then(_ => _.click())
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForSession(this)) // should have an active repl
       .catch(Common.oops(this, true)))
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
       .then(ReplExpect.okWithPtyOutput('hi'))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 })
 
@@ -524,37 +583,45 @@ describe('core new tab from active tab that is emitting output via button click'
   it('start an echo loop, then new tab via button click', () =>
     CLI.command('while true; do echo hi; sleep 1; done', this.app)
       .then(() => new Promise(resolve => setTimeout(resolve, 4000)))
-      .then(() => this.app.client.click(tabButtonSelector))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(tabButtonSelector))
+      .then(_ => _.click())
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .then(() => CLI.waitForRepl(this.app)) // should have an active repl
-      .then(() => this.app.client.waitForExist(`${Selectors.CURRENT_TAB} .xterm`, 5000, true)) // no xterm DOM in the new tab
+      .then(() => this.app.client.$(`${Selectors.CURRENT_TAB} .xterm`))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true })) // no xterm DOM in the new tab
       .catch(Common.oops(this, true)))
 
   it('should execute echo in new tab', () =>
     CLI.command('echo hi', this.app)
       .then(ReplExpect.okWithPtyOutput('hi'))
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it('should close by clicking on the tab closer button', async () => {
-    await this.app.client.click(Selectors.CURRENT_TAB_CLOSE)
+    await this.app.client.$(Selectors.CURRENT_TAB_CLOSE).then(_ => _.click())
     await this.app.client
-      .waitForExist(Selectors.TAB_N(2), 5000, true)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+      .$(Selectors.TAB_N(2))
+      .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+      .then(_ => _.waitForDisplayed())
   })
 
   it('should execute echo in the new tab, and close the previous tab', async () => {
     try {
-      await this.app.client.click(tabButtonSelector)
-      await this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2))
+      await this.app.client.$(tabButtonSelector).then(_ => _.click())
+      await this.app.client.$(Selectors.TAB_SELECTED_N(2)).then(_ => _.waitForDisplayed())
 
       const echoRes = await CLI.command('echo hi', this.app)
       await ReplExpect.okWithPtyOutput('hi')(echoRes)
 
-      await this.app.client.click(Selectors.TOP_TAB_CLOSE_N(1))
+      await this.app.client.$(Selectors.TOP_TAB_CLOSE_N(1)).then(_ => _.click())
       await this.app.client
-        .waitForExist(Selectors.TAB_N(2), 5000, true)
-        .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(1)))
+        .$(Selectors.TAB_N(2))
+        .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+        .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+        .then(_ => _.waitForDisplayed())
 
       await ReplExpect.okWithPtyOutput('hi')(echoRes)
     } catch (err) {

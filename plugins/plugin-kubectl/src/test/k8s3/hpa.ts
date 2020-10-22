@@ -46,7 +46,7 @@ describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TAR
       try {
         const res = await CLI.command(`${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
 
-        const selector = await ReplExpect.okWithCustom({
+        const selector = await ReplExpect.okWithCustom<string>({
           selector: Selectors.BY_NAME('travelapp-hpa')
         })(res)
 
@@ -54,7 +54,7 @@ describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TAR
         await waitForGreen(this.app, selector)
 
         // now click on the table row
-        await this.app.client.click(`${selector} .clickable`)
+        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
         await SidecarExpect.openInBlockAfter(res)
           .then(SidecarExpect.mode(defaultModeForGet))
           .then(SidecarExpect.showing('travelapp-hpa'))
@@ -66,7 +66,7 @@ describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TAR
     it(`should delete the HorizontalPodAutoscaler hpa from URL via ${kubectl}`, () => {
       return CLI.command(`${kubectl} delete -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
         .then(
-          ReplExpect.okWithCustom({
+          ReplExpect.okWithCustom<string>({
             selector: Selectors.BY_NAME('travelapp-hpa')
           })
         )

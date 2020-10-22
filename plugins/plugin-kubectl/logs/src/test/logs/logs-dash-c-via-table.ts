@@ -32,7 +32,7 @@ const inputEncoded = inputBuffer.toString('base64')
 const sleepTime = 8
 
 function getTextContent(app: Application, selector) {
-  return app.client.getText(selector)
+  return app.client.$(selector).then(_ => _.getText())
 }
 
 /** sleep for N seconds */
@@ -62,7 +62,9 @@ wdescribe(`kubectl logs dashC follow via table ${process.env.MOCHA_RUN_TARGET ||
 
   it(`should wait for the pod to come up`, () => {
     return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
+      )
       .then(selector => waitForGreen(this.app, selector))
       .catch(Common.oops(this, true))
   })

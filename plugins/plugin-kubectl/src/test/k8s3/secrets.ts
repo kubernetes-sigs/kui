@@ -31,9 +31,9 @@ describe('kubectl secrets', function(this: Common.ISuite) {
 
   it('should create a generic secret', async () => {
     try {
-      const selector = await CLI.command(`${kubectl} create secret generic ${name} ${inNamespace}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
-        .catch(Common.oops(this))
+      const selector = await CLI.command(`${kubectl} create secret generic ${name} ${inNamespace}`, this.app).then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+      )
 
       // wait for the badge to become green
       await waitForGreen(this.app, selector)
@@ -44,9 +44,9 @@ describe('kubectl secrets', function(this: Common.ISuite) {
 
   it('should delete a generic secret', async () => {
     try {
-      const selector = await CLI.command(`${kubectl} delete secret ${name} ${inNamespace}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) }))
-        .catch(Common.oops(this))
+      const selector = await CLI.command(`${kubectl} delete secret ${name} ${inNamespace}`, this.app).then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
+      )
 
       // wait for the badge to become green
       await waitForRed(this.app, selector)

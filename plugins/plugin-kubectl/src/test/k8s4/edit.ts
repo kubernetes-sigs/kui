@@ -46,7 +46,7 @@ commands.forEach(command => {
             this.app
           )
 
-          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(name) })(res)
+          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(res)
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
@@ -84,7 +84,7 @@ commands.forEach(command => {
           // +1 here because nth-child is indexed from 1
           const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
             1}) .mtk22`
-          await this.app.client.click(lineSelector)
+          await this.app.client.$(lineSelector).then(_ => _.click())
 
           // we'll inject some garbage that we expect to fail validation
           const garbage = 'zzzzzz'
@@ -92,22 +92,25 @@ commands.forEach(command => {
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.keys(`${where}${garbage}`) // <-- injecting garbage
           await new Promise(resolve => setTimeout(resolve, 2000))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save')).then(_ => _.click())
 
           // an error state and the garbage text had better appear in the toolbar text
           await SidecarExpect.toolbarAlert({ type: 'error', text: expectedError || garbage, exact: false })(res)
 
           // expect line number to be highlighted, and for that line to be visible
-          await this.app.client.waitForVisible(
-            `${Selectors.SIDECAR_TAB_CONTENT(res.count)} .kui--editor-line-highlight`
-          )
+          await this.app.client
+            .$(`${Selectors.SIDECAR_TAB_CONTENT(res.count)} .kui--editor-line-highlight`)
+            .then(_ => _.waitForDisplayed())
 
           if (revert) {
-            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Revert'))
-            await this.app.client.waitUntil(async () => {
-              const revertedText = await Util.getValueFromMonaco(res)
-              return revertedText === actualText
-            }, CLI.waitTimeout)
+            await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Revert')).then(_ => _.click())
+            await this.app.client.waitUntil(
+              async () => {
+                const revertedText = await Util.getValueFromMonaco(res)
+                return revertedText === actualText
+              },
+              { timeout: CLI.waitTimeout }
+            )
           }
         } catch (err) {
           await Common.oops(this, true)(err)
@@ -134,15 +137,17 @@ commands.forEach(command => {
           // +2 here because nth-child is indexed from 1, and we want the line after that
           const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
             2}) .mtk5:last-child`
-          await this.app.client.click(lineSelector)
+          await this.app.client.$(lineSelector).then(_ => _.click())
 
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.keys(`${Keys.End}${Keys.ENTER}${key}: ${value}${Keys.ENTER}`)
           await new Promise(resolve => setTimeout(resolve, 2000))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save')).then(_ => _.click())
           // await SidecarExpect.toolbarAlert({ type: 'success', text: 'Successfully Applied', exact: false })(res)
           console.error('1')
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'), 10000, true)
+          await this.app.client
+            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+            .then(_ => _.waitForDisplayed({ timeout: 10000, reverse: true }))
           console.error('2')
         } catch (err) {
           await Common.oops(this, true)(err)
@@ -176,14 +181,18 @@ commands.forEach(command => {
           await SidecarExpect.mode(defaultModeForGet)(res)
 
           // click the edit button
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button')).then(async _ => {
+            await _.waitForDisplayed()
+            await _.click()
+          })
 
           console.error('1')
           await new Promise(resolve => setTimeout(resolve, 5000))
 
           // edit button should not exist
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'), 5000, true)
+          await this.app.client
+            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
+            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
 
           // should still be showing pod {name}, but now with the yaml tab selected
           console.error('2')
@@ -193,9 +202,13 @@ commands.forEach(command => {
 
           // also: no back/forward buttons should be visible
           console.error('4')
-          await this.app.client.waitForVisible(Selectors.SIDECAR_BACK_BUTTON(res.count), 5000, true)
+          await this.app.client
+            .$(Selectors.SIDECAR_BACK_BUTTON(res.count))
+            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
           console.error('5')
-          await this.app.client.waitForVisible(Selectors.SIDECAR_FORWARD_BUTTON(res.count), 5000, true)
+          await this.app.client
+            .$(Selectors.SIDECAR_FORWARD_BUTTON(res.count))
+            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
           console.error('6')
         } catch (err) {
           await Common.oops(this, true)(err)
@@ -209,15 +222,23 @@ commands.forEach(command => {
 
       it('should switch to summary tab, expect no alerts and not editable', async () => {
         try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary'))
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'summary'))
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary')).then(async _ => {
+            await _.waitForDisplayed()
+            await _.click()
+          })
+          await this.app.client
+            .$(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'summary'))
+            .then(_ => _.waitForDisplayed())
 
           // toolbar alert should not exist
-          await this.app.client.waitForExist(Selectors.SIDECAR_ALERT(res.count, 'success'), CLI.waitTimeout, true)
+          await this.app.client
+            .$(Selectors.SIDECAR_ALERT(res.count, 'success'))
+            .then(_ => _.waitForExist({ timeout: CLI.waitTimeout, reverse: true }))
 
           // edit button should not exist
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'), 5000, true)
+          await this.app.client
+            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
+            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
 
           // try editing the summary mode
           const actualText = await Util.getValueFromMonaco(res)
@@ -226,7 +247,7 @@ commands.forEach(command => {
           // +2 here because nth-child is indexed from 1, and we want the line after that
           const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
             2}) .mtk5:last-child`
-          await this.app.client.click(lineSelector)
+          await this.app.client.$(lineSelector).then(_ => _.click())
 
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.keys('x') // random key
@@ -236,7 +257,9 @@ commands.forEach(command => {
           const actualText2 = await Util.getValueFromMonaco(res)
           assert.ok(actualText === actualText2)
 
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'), 10000, true) // should not have apply button
+          await this.app.client
+            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+            .then(_ => _.waitForDisplayed({ timeout: 10000, reverse: true })) // should not have apply button
         } catch (err) {
           await Common.oops(this, true)(err)
         }

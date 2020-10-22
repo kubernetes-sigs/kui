@@ -31,16 +31,19 @@ describe(`Background tab open onload ${process.env.MOCHA_RUN_TARGET || ''}`, fun
   it('should have a second tab named Welcome to Kui', async () => {
     try {
       let idx = 0
-      await this.app.client.waitUntil(async () => {
-        const [actualTitle1, actualTitle2] = await Promise.all([
-          this.app.client.getText(Selectors.CURRENT_TAB_TITLE), // intentional: check CURRENT, not N(1)
-          this.app.client.getText(Selectors.TAB_TITLE_N(2))
-        ])
-        if (++idx > 5) {
-          console.error(`Still waiting for tab titles; actualTitle1=${actualTitle1} actualTitle2=${actualTitle2}`)
-        }
-        return /^Tab/.test(actualTitle1) && actualTitle2 === 'Welcome to Kui'
-      }, CLI.waitTimeout)
+      await this.app.client.waitUntil(
+        async () => {
+          const [actualTitle1, actualTitle2] = await Promise.all([
+            this.app.client.$(Selectors.CURRENT_TAB_TITLE).then(_ => _.getText()), // intentional: check CURRENT, not N(1)
+            this.app.client.$(Selectors.TAB_TITLE_N(2)).then(_ => _.getText())
+          ])
+          if (++idx > 5) {
+            console.error(`Still waiting for tab titles; actualTitle1=${actualTitle1} actualTitle2=${actualTitle2}`)
+          }
+          return /^Tab/.test(actualTitle1) && actualTitle2 === 'Welcome to Kui'
+        },
+        { timeout: CLI.waitTimeout }
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -48,7 +51,8 @@ describe(`Background tab open onload ${process.env.MOCHA_RUN_TARGET || ''}`, fun
 
   it('should switch to the second tab via command', () =>
     CLI.command('tab switch 2', this.app)
-      .then(() => this.app.client.waitForVisible(Selectors.TAB_SELECTED_N(2)))
+      .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+      .then(_ => _.waitForDisplayed())
       .catch(Common.oops(this, true)))
 
   it(`should have ${nSplitsInWelcomeNotebook} splits`, () => ReplExpect.splitCount(nSplitsInWelcomeNotebook)(this.app))

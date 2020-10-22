@@ -51,13 +51,13 @@ commands.forEach(command => {
             this.app
           )
 
-          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
+          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
 
           // now click on the table row
-          await this.app.client.click(`${selector} .clickable`)
+          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
           const resAfter = ReplExpect.blockAfter(res)
           await SidecarExpect.open(resAfter)
             .then(SidecarExpect.mode(defaultModeForGet))
@@ -65,7 +65,7 @@ commands.forEach(command => {
             .then(SidecarExpect.button({ mode: 'show-node', label: 'Show Node' }))
 
           // click on Show Node button
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'show-node'))
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'show-node')).then(_ => _.click())
 
           await SidecarExpect.open(ReplExpect.blockAfter(resAfter)).then(SidecarExpect.kind('Node'))
         } catch (err) {
@@ -78,14 +78,18 @@ commands.forEach(command => {
           `${command} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
           this.app
         )
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForRed(this.app, selector))
           .catch(Common.oops(this))
       })
 
       it(`should create sample pod from local file via ${command}`, () => {
         return CLI.command(`${command} create ${dashF} "${ROOT}/data/k8s/headless/pod.yaml" ${inNamespace}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this))
       })
@@ -93,13 +97,15 @@ commands.forEach(command => {
       it(`should delete the sample pod by name via ${command}`, () => {
         return CLI.command(`${command} delete pod nginx ${inNamespace}`, this.app)
           .then(async res => {
-            await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res).then(selector =>
+            await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res).then(selector =>
               waitForRed(this.app, selector)
             )
 
-            await this.app.client.click(Selectors.TABLE_SHOW_AS_GRID(res.count))
-            await this.app.client.waitForVisible(Selectors.TABLE_AS_GRID(res.count))
-            await this.app.client.waitForVisible(`${Selectors.TABLE_AS_GRID_CELL_RED(res.count, 'nginx')}`)
+            await this.app.client.$(Selectors.TABLE_SHOW_AS_GRID(res.count)).then(_ => _.click())
+            await this.app.client.$(Selectors.TABLE_AS_GRID(res.count)).then(_ => _.waitForDisplayed())
+            await this.app.client
+              .$(`${Selectors.TABLE_AS_GRID_CELL_RED(res.count, 'nginx')}`)
+              .then(_ => _.waitForDisplayed())
           })
           .catch(Common.oops(this))
       })

@@ -36,9 +36,9 @@ synonyms.forEach(kubectl => {
     it('should create a job', async () => {
       try {
         const res = await CLI.command(`${kubectl} apply -f ${jobYaml} ${inNamespace}`, this.app)
-        await this.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
-        await this.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_LIST(res.count))
-        await this.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())
         await ReplExpect.okWith(jobName)(res)
       } catch (err) {
         return Common.oops(this, true)(err)
@@ -48,9 +48,9 @@ synonyms.forEach(kubectl => {
     it('should list pods of job', async () => {
       try {
         const res = await CLI.command(`${kubectl} get job`, this.app)
-        await this.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
-        await this.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_LIST(res.count))
-        await this.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())
         await ReplExpect.okWith(jobName)(res)
       } catch (err) {
         return Common.oops(this, true)
@@ -60,9 +60,9 @@ synonyms.forEach(kubectl => {
     it('should list pods of job', async () => {
       try {
         const res = await CLI.command(`${kubectl} get job ${jobName}`, this.app)
-        await this.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count))
-        await this.app.client.waitForVisible(Selectors.TABLE_SHOW_AS_LIST(res.count))
-        await this.app.client.click(Selectors.TABLE_SHOW_AS_LIST(res.count))
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
+        await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())
         await ReplExpect.okWith(jobName)(res)
       } catch (err) {
         return Common.oops(this, true)
@@ -72,7 +72,7 @@ synonyms.forEach(kubectl => {
     it('should delete a job', async () => {
       try {
         const selector: string = await CLI.command(`${kubectl} delete job ${jobName} ${inNamespace}`, this.app).then(
-          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(jobName) })
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(jobName) })
         )
 
         await waitForRed(this.app, selector)

@@ -36,7 +36,7 @@ describe('Create a javascript web action via let', function(this: Common.ISuite)
   // javascript web action: NO LONGER NEEDED, the html let should create the javascript action for us
   //
   /* it('should create an JS web action via let', () => CLI.command(`let ${JS_INPUT}.webjs = ${JS_INPUT_FILE}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
+        .then(ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' }))
        .then(selector => this.app.client.getText(selector))
        .then(href => rp({ url: href, rejectUnauthorized: false }))
        .then(content => fs.readFile(JS_INPUT_FILE, (err, data) => {
@@ -51,10 +51,14 @@ describe('Create a javascript web action via let', function(this: Common.ISuite)
 
   xit('should create an HTML web action that uses a JS web action, via let', () =>
     CLI.command(`let ${actionName} = ${HTML_WITH_JS_INPUT}`, this.app)
-      .then(ReplExpect.okWithCustom({ selector: '.entity-web-export-url' }))
-      .then(selector => this.app.client.getText(selector))
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: '.entity-web-export-url' })
+      )
+      .then(selector => this.app.client.$(selector))
+      .then(_ => _.getText())
       .then(href => this.app.client.url(href))
-      .then(() => this.app.client.getText('#hello'))
+      .then(() => this.app.client.$('#hello'))
+      .then(_ => _.getText())
       .then(content => assert.strictEqual(content, 'hello'))
       .then(() => Common.restart(this)) // to unsmash the .url call
       .catch(Common.oops(this)))

@@ -30,14 +30,17 @@ describe('xterm focus', function(this: Common.ISuite) {
   const tmpFile = `/tmp/kui-${uuid()}`
 
   const waitForFocus = (selector: string, timeout?: number) => {
-    return this.app.client.waitUntil(async () => {
-      try {
-        return await this.app.client.hasFocus(selector)
-      } catch (err) {
-        console.error(err)
-        throw err
-      }
-    }, timeout || CLI.waitTimeout)
+    return this.app.client.waitUntil(
+      async () => {
+        try {
+          return await this.app.client.$(selector).then(_ => _.isFocused())
+        } catch (err) {
+          console.error(err)
+          throw err
+        }
+      },
+      { timeout: timeout || CLI.waitTimeout }
+    )
   }
 
   it(`should touch ${tmpFile}`, () =>

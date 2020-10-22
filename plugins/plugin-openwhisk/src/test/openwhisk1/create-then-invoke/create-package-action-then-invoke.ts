@@ -46,9 +46,9 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
     try {
       const res = await CLI.command(`wsk action async`, this.app)
 
-      await ReplExpect.okWithCustom(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
-        const activationId = await this.app.client.getText(selector)
-        await this.app.client.click(selector)
+      await ReplExpect.okWithCustom<string>(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
+        const activationId = await this.app.client.$(selector).then(_ => _.getText())
+        await this.app.client.$(selector).then(_ => _.click())
         return SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing('foo', activationId))
       })
     } catch (err) {
@@ -76,9 +76,9 @@ localDescribe('Create a packaged action then invoke with implicit entity', funct
     try {
       const res = await CLI.command(`wsk action async`, this.app)
 
-      await ReplExpect.okWithCustom(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
-        const activationId = await this.app.client.getText(selector)
-        await this.app.client.click(selector)
+      await ReplExpect.okWithCustom<string>(CLI.makeCustom('.activationId', ''))(res).then(async selector => {
+        const activationId = await this.app.client.$(selector).then(_ => _.getText())
+        await this.app.client.$(selector).then(_ => _.click())
         return SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing('foo', activationId))
       })
     } catch (err) {

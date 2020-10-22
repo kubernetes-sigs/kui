@@ -54,11 +54,9 @@ localDescribe('Create a sequence with whitespacey names', function(this: Common.
 
   it(`should show ${actionName1} by clicking on the result of "ls"`, async () => {
     try {
-      const res = await CLI.command('wsk action list', this.app)
+      const res = await CLI.command('wsk action list', this.app).then(ReplExpect.justOK)
 
-      await ReplExpect.okWithCustom({ passthrough: true })(res).then(N =>
-        this.app.client.click(Selectors.LIST_RESULT_BY_N_AND_NAME(N, actionName1))
-      )
+      await this.app.client.$(Selectors.LIST_RESULT_BY_N_AND_NAME(res.count, actionName1)).then(_ => _.click())
 
       await SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing(actionName1))
     } catch (err) {

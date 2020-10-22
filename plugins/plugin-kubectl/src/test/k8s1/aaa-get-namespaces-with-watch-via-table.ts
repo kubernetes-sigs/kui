@@ -39,7 +39,7 @@ const waitForStatus = async function(
   nsName: string,
   res: ReplExpect.AppAndCount
 ): Promise<string> {
-  const selector = await ReplExpect.okWithCustom({
+  const selector = await ReplExpect.okWithCustom<string>({
     selector: Selectors.BY_NAME(nsName)
   })(res)
   if (status === Status.Offline) {
@@ -90,11 +90,11 @@ const deleteNS = function(this: Common.ISuite, kubectl: string) {
  *
  */
 const testDrilldown = async (nsName: string, res: ReplExpect.AppAndCount) => {
-  const selector = await ReplExpect.okWithCustom({
+  const selector = await ReplExpect.okWithCustom<string>({
     selector: Selectors.BY_NAME(nsName)
   })(res)
 
-  await res.app.client.click(`${selector} .entity-name`)
+  await res.app.client.$(`${selector} .entity-name`).then(_ => _.click())
 
   const sidecarRes = ReplExpect.blockAfter(res)
   await SidecarExpect.open(sidecarRes)
@@ -134,35 +134,35 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         const deleteBadge = await waitForOffline(await CLI.command(`${kubectl} delete ns ${nsNameForIter}`, this.app))
 
         // the create and delete badges had better still exist
-        await this.app.client.waitForExist(createBadge)
-        await this.app.client.waitForExist(deleteBadge)
+        await this.app.client.$(createBadge).then(_ => _.waitForExist())
+        await this.app.client.$(deleteBadge).then(_ => _.waitForExist())
 
         // the "online" badge from the watch had better *NOT* exist after the delete
         // (i.e. we had better actually be watching!)
-        await this.app.client.waitForExist(watchBadge, 20000, true)
+        await this.app.client.$(watchBadge).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
 
         // and, conversely, that watch had better eventually show Offline
-        await this.app.client.waitForExist(watchBadgeButOffline)
+        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist())
 
         // create again
         await waitForOnline(await CLI.command(`${kubectl} create ns ${nsNameForIter}`, this.app))
 
         // the "online" badge from the watch had better now exist again after the create
         // (i.e. we had better actually be watching!)
-        await this.app.client.waitForExist(watchBadge)
+        await this.app.client.$(watchBadge).then(_ => _.waitForExist())
 
         // and, conversely, that watch had better NOT show Offline
-        await this.app.client.waitForExist(watchBadgeButOffline, 20000, true)
+        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
 
         // delete again
         await waitForOffline(await CLI.command(`${kubectl} delete ns ${nsNameForIter}`, this.app))
 
         // the "online" badge from the watch had better *NOT* exist after the delete
         // (i.e. we had better actually be watching!)
-        await this.app.client.waitForExist(watchBadge, 20000, true)
+        await this.app.client.$(watchBadge).then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
 
         // and, conversely, that watch had better eventually show Offline
-        await this.app.client.waitForExist(watchBadgeButOffline)
+        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist())
       } catch (err) {
         await Common.oops(this, true)(err)
       }

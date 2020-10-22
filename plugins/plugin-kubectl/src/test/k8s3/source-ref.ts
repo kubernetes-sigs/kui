@@ -23,7 +23,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 /** confirm the given toggler state */
 async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean) {
   // confirm the toggler UI
-  await this.app.client.waitForVisible(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
+  await this.app.client.$(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded)).then(_ => _.waitForDisplayed())
 
   if (isExpanded) {
     // if it is expanded, also confirm the expanded editor state
@@ -32,14 +32,14 @@ async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, is
         Util.getValueFromMonaco(res, Selectors.SOURCE_REF_N(res.count)).then(
           Util.expectYAML({ kind: 'Deployment' }, true)
         ),
-      CLI.waitTimeout
+      { timeout: CLI.waitTimeout }
     )
   }
 }
 
 /** click to toggle state */
 async function clickToToggle(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean) {
-  await this.app.client.click(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
+  await this.app.client.$(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded)).then(_ => _.click())
   return !isExpanded
 }
 

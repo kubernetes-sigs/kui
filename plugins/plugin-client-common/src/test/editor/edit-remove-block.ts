@@ -23,13 +23,16 @@ import { setValue } from './common'
 
 function expectText(res: ReplExpect.AppAndCount, expectedText: string) {
   let idx = 0
-  return res.app.client.waitUntil(async () => {
-    const actualText = await Util.getValueFromMonaco(res)
-    if (++idx > 5) {
-      console.error(`still waiting for actualText=${actualText} expectedText=${expectedText}`)
-    }
-    return actualText === expectedText
-  }, CLI.waitTimeout)
+  return res.app.client.waitUntil(
+    async () => {
+      const actualText = await Util.getValueFromMonaco(res)
+      if (++idx > 5) {
+        console.error(`still waiting for actualText=${actualText} expectedText=${expectedText}`)
+      }
+      return actualText === expectedText
+    },
+    { timeout: CLI.waitTimeout }
+  )
 }
 
 describe(`remove command output verify editor content is preserved ${process.env.MOCHA_RUN_TARGET ||

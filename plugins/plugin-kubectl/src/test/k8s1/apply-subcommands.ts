@@ -43,7 +43,7 @@ commands.forEach(command => {
       it(`should ${verb === 'create' ? 'create' : 'update'} sample pod from URL via ${command} ${verb}`, async () => {
         try {
           const selector = await CLI.command(`${command} ${verb} -f ${sourceFile} ${inNamespace}`, this.app).then(
-            ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) })
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
           )
 
           // wait for the badge to become green
@@ -68,16 +68,18 @@ commands.forEach(command => {
             // +2 here because nth-child is indexed from 1, and we want the line after that
             const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
               2}) .mtk5:last-child`
-            await this.app.client.click(lineSelector)
+            await this.app.client.$(lineSelector).then(_ => _.click())
 
             await new Promise(resolve => setTimeout(resolve, 2000))
             await this.app.client.keys(`${Keys.End}${Keys.ENTER}${key}: ${value}${Keys.ENTER}`)
             await new Promise(resolve => setTimeout(resolve, 2000))
             console.error('1')
-            await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+            await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save')).then(_ => _.click())
             // FIXME: the apply in place can't give us 'Successfully Applied'
             await SidecarExpect.toolbarAlert({ type: 'success', text: 'Successfully Applied', exact: false })(res)
-            await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'), 10000, true)
+            await this.app.client
+              .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+              .then(_ => _.waitForDisplayed({ timeout: 10000, reverse: true }))
           })
           .catch(Common.oops(this, true)))
     }

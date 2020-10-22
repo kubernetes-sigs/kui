@@ -44,9 +44,9 @@ localDescribe('wsk activation result and wsk activation logs', function(this: Co
 
   it(`should async that action then show its logs and result`, () =>
     CLI.command(`wsk action async ${actionName1}`, this.app)
-      .then(ReplExpect.okWithCustom(CLI.makeCustom('.activationId', '')))
+      .then(ReplExpect.okWithCustom<string>(CLI.makeCustom('.activationId', '')))
       .then(async selector => {
-        const activationId = await this.app.client.getText(selector)
+        const activationId = await this.app.client.$(selector).then(_ => _.getText())
         return this.app.client.waitUntil(() => {
           return CLI.command(`wsk activation logs ${activationId}`, this.app)
             .then(ReplExpect.ok)

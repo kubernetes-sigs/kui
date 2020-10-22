@@ -48,7 +48,9 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
   if (!process.env.USE_WATCH_PANE) {
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(podName) }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })
+        )
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))
     })
@@ -56,7 +58,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
     it(`should wait for the pod to come up`, () => {
       return CLI.command(`kubectl get pod ${podName} -n ${ns} -w`, this.app)
         .then(async () => {
-          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(2, podName))
+          await this.app.client.$(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(2, podName)).then(_ => _.waitForExist())
         })
         .catch(Common.oops(this, true))
     })
@@ -89,14 +91,17 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       const lastRowSelector = `${rows} > div:last-child`
 
       const lastRow = async (): Promise<string> => {
-        return this.app.client.getText(lastRowSelector)
+        return this.app.client.$(lastRowSelector).then(_ => _.getText())
       }
 
       // wait for vi to come up
-      await this.app.client.waitUntil(async () => {
-        await this.app.client.waitForExist(rows)
-        return this.app.client.hasFocus(focusArea)
-      })
+      await this.app.client.waitUntil(
+        async () => {
+          await this.app.client.$(rows).then(_ => _.waitForExist())
+          return this.app.client.$(focusArea).then(_ => _.isFocused())
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       sleep(3)
 

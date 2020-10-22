@@ -23,21 +23,25 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-client-common/tests/data
 
 /** click the save buttom */
 const save = async (res: ReplExpect.AppAndCount) => {
-  await res.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
-  await res.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+  const button = await res.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+  await button.waitForExist()
+  await button.click()
 
   // save button had better be gone after clicking Save
-  await res.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'), 10000, true)
+  await button.waitForExist({ timeout: 10000, reverse: true })
 }
 
 /** for some reason, monaco inserts a trailing view-line even for one-line files :( */
 const verifyTextExist = (selector: string, expectedText: string) => async (
   res: ReplExpect.AppAndCount
 ): Promise<ReplExpect.AppAndCount> => {
-  await res.app.client.waitUntil(async () => {
-    const actualText = await res.app.client.getText(selector)
-    return actualText.replace(/\s+$/, '') === expectedText
-  }, 20000)
+  await res.app.client.waitUntil(
+    async () => {
+      const actualText = await res.app.client.$(selector).then(_ => _.getText())
+      return actualText.replace(/\s+$/, '') === expectedText
+    },
+    { timeout: 20000 }
+  )
 
   return res
 }

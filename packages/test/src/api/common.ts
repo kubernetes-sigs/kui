@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,13 @@ async function writeCodeCoverage(app: Application) {
   if (codeCoverageDesired() && app && app.client) {
     console.log('Writing code coverage data')
     await app.client.executeAsync(
-      (tempDirectory: string, nycModule: string, root: string, TMP: string, done: () => void) => {
+      function() {
+        const tempDirectory: string = arguments[0] // eslint-disable-line prefer-rest-params
+        const nycModule: string = arguments[1] // eslint-disable-line prefer-rest-params
+        const root: string = arguments[2] // eslint-disable-line prefer-rest-params
+        const TMP: string = arguments[3] // eslint-disable-line prefer-rest-params
+        const done: () => void = arguments[4] // eslint-disable-line prefer-rest-params
+
         // Notes: in several places, the nyc constructor assumes
         // process.cwd() exists; in some of our tests, e.g. those that
         // cd around, this might not be the case. So: before we invoke
@@ -130,7 +136,11 @@ interface SpectronOptions {
   port?: number
   path?: typeof Electron | string
   args?: string[]
+  chromeDriverLogPath?: string
+  webdriverLogPath?: string
 }
+
+const waitTimeout = parseInt(process.env.TIMEOUT) || 60000
 
 const prepareElectron = (popup: string[]) => {
   const Application = require('spectron').Application
@@ -140,8 +150,10 @@ const prepareElectron = (popup: string[]) => {
   const opts: SpectronOptions = {
     env: {},
     chromeDriverArgs: ['--no-sandbox'],
+    // chromeDriverLogPath: '/tmp/cd.log',
+    // webdriverLogPath: '/tmp',
     startTimeout: parseInt(process.env.TIMEOUT) || 60000, // see https://github.com/IBM/kui/issues/2227
-    waitTimeout: parseInt(process.env.TIMEOUT) || 60000
+    waitTimeout
   }
 
   /* if (!popup && (process.env.HEADLESS !== undefined || process.env.TRAVIS_JOB_ID !== undefined)) {
@@ -213,7 +225,7 @@ export const refresh = async (ctx: ISuite, wait = true, clean = false) => {
   }
 
   if (clean) {
-    await ctx.app.client.localStorage('DELETE') // clean out local storage
+    await ctx.app.client.execute(() => localStorage.clear())
   }
   if (wait) {
     await CLI.waitForSession(ctx)
@@ -299,13 +311,21 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
                 // commenting out setTitle due to buggy spectron (?) "Cannot call function 'setTitle' on missing remote object 1"
                 // .then(() => ctx.title && ctx['app].browserWindow.setTitle(ctx.title)) // set the window title to the current test
                 .then(() => CLI.waitForSession(ctx, noProxySessionWait))
-                .then(() => ctx.app.client.localStorage('DELETE')) // clean out local storage
+                .then(() => ctx.app.client.execute(() => localStorage.clear()))
                 .then(() => !noProxySessionWait && CLI.waitForRepl(ctx.app))
             ) // should have an active repl
           }
 
       ctx.timeout(process.env.TIMEOUT || 60000)
       await start()
+
+      // see https://github.com/electron-userland/spectron/issues/763
+      // and https://github.com/webdriverio/webdriverio/issues/6092
+      // in short: with webdriverio v5+, the implicit timeout has to be 0
+      // but spectron is hard-coded to have implicit==pageLoad==script
+      if (!noApp && ctx.app) {
+        ctx.app.client.setTimeout({ implicit: 0, pageLoad: waitTimeout, script: waitTimeout })
+      }
 
       if (afterStart) {
         await afterStart()
@@ -336,6 +356,7 @@ export const after = (ctx: ISuite, f?: () => void): HookFunction => async () => 
   if (anyFailed && ctx.app && ctx.app.client) {
     ctx.app.client.getRenderProcessLogs().then(logs =>
       logs
+        .map(log => log as { level: string; message: string })
         .filter(log => !/SFMono/.test(log.message))
         .filter(log => !/fonts.gstatic/.test(log.message))
         .forEach(log => {
@@ -375,7 +396,8 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
       try {
         promises.push(
           await ctx.app.client
-            .getHTML(Selectors.OUTPUT_LAST)
+            .$(Selectors.OUTPUT_LAST)
+            .then(_ => _.getHTML())
             .then(html => {
               console.log('here is the output of the prior output:')
               console.log(html.replace(/<style>.*<\/style>/, ''))
@@ -386,7 +408,8 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
         )
         promises.push(
           await ctx.app.client
-            .getHTML(Selectors.PROMPT_BLOCK_FINAL)
+            .$(Selectors.PROMPT_BLOCK_FINAL)
+            .then(_ => _.getHTML())
             .then(html => {
               console.log('here is the content of the last block:')
               console.log(html.replace(/<style>.*<\/style>/, ''))
@@ -411,25 +434,29 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
       )
       promises.push(
         // filter out the "Not allowed to load local resource" font loading errors
-        ctx.app.client.getRenderProcessLogs().then(logs =>
-          logs
-            .filter(log => !/SFMono/.test(log.message))
-            .filter(log => !/fonts.gstatic/.test(log.message))
-            .forEach(log => {
-              if (log.message.indexOf('%c') === -1) {
-                console.log('RENDER'.yellow.bold, log.message.red)
-              } else {
-                // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
-                const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
-                console.log('RENDER'.yellow.bold, logMessage)
-              }
-            })
-        )
+        ctx.app.client
+          .getRenderProcessLogs()
+          .then(logs => logs as { message: string }[])
+          .then(logs =>
+            logs
+              .filter(log => !/SFMono/.test(log.message))
+              .filter(log => !/fonts.gstatic/.test(log.message))
+              .forEach(log => {
+                if (log.message.indexOf('%c') === -1) {
+                  console.log('RENDER'.yellow.bold, log.message.red)
+                } else {
+                  // clean up the render log message. e.g.RENDER console-api INFO /home/travis/build/composer/cloudshell/dist/build/IBM Cloud Shell-linux-x64/resources/app.asar/plugins/node_modules/debug/src/browser.js 182:10 "%chelp %cloading%c +0ms"
+                  const logMessage = log.message.substring(log.message.indexOf('%c') + 2).replace(/%c|%s|"/g, '')
+                  console.log('RENDER'.yellow.bold, logMessage)
+                }
+              })
+          )
       )
 
       promises.push(
         await ctx.app.client
-          .getText(Selectors.OOPS)
+          .$$(Selectors.OOPS)
+          .then(elts => Promise.all(elts.map(_ => _.getText())))
           .then(anyErrors => {
             if (anyErrors) {
               console.log('Error from the UI'.magenta.bold, anyErrors)

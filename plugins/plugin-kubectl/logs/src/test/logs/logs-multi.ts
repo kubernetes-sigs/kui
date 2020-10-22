@@ -81,9 +81,8 @@ commands.forEach(command => {
     const createPodWithoutWaiting = ({ input, podName }: PodDesc) => {
       it(`should create sample pod from URL`, async () => {
         try {
-          res = await CLI.command(`echo ${input} | base64 --decode | ${command} create -f - -n ${ns}`, this.app).then(
-            ReplExpect.okWithPtyOutput(podName)
-          )
+          res = await CLI.command(`echo ${input} | base64 --decode | ${command} create -f - -n ${ns}`, this.app)
+          await ReplExpect.okWithPtyOutput(podName)(res)
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -94,7 +93,9 @@ commands.forEach(command => {
       it(`should wait for the pod to come up`, async () => {
         try {
           res = await CLI.command(`${command} get pod ${podName} -n ${ns} -w`, this.app)
-          await this.app.client.waitForExist(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(waitIndex + 2, podName))
+          await this.app.client
+            .$(Selectors.CURRENT_GRID_ONLINE_FOR_SPLIT(waitIndex + 2, podName))
+            .then(_ => _.waitForExist())
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -104,9 +105,8 @@ commands.forEach(command => {
     const addLabel = ({ podName }: PodDesc) => {
       it(`should add a label to pod ${podName}`, async () => {
         try {
-          res = await CLI.command(`${command} label pod ${podName} -n ${ns} foo=bar`, this.app).then(
-            ReplExpect.okWithPtyOutput('labeled')
-          )
+          res = await CLI.command(`${command} label pod ${podName} -n ${ns} foo=bar`, this.app)
+          await ReplExpect.okWithPtyOutput('labeled')(res)
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -158,14 +158,16 @@ commands.forEach(command => {
     const switchContainer = (container: string, showInLog: string[], notShowInLog: string[]) => {
       it(`should switch to container ${container}`, async () => {
         try {
-          await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
-          await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list'))
-          await this.app.client.waitForVisible(
-            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
-          )
-          await this.app.client.click(
-            `${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`
-          )
+          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list')).then(async _ => {
+            await _.waitForDisplayed()
+            await _.click()
+          })
+          await this.app.client
+            .$(`${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`)
+            .then(async _ => {
+              await _.waitForDisplayed()
+              await _.click()
+            })
         } catch (err) {
           return Common.oops(this, true)(err)
         }

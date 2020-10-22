@@ -37,21 +37,24 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
       const res = await CLI.command(`vim -i NONE ${file.name}`, this.app)
 
       // wait for vi to come up
-      await this.app.client.waitForExist(rows(res.count))
+      await this.app.client.$(rows(res.count)).then(_ => _.waitForExist())
 
       // wait for vi to come up in alt buffer mode
-      await this.app.client.waitForExist(Selectors.ALT_BUFFER_N(1))
+      await this.app.client.$(Selectors.ALT_BUFFER_N(1)).then(_ => _.waitForExist())
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       let iter = 0
       await this.app.client.keys('i')
-      await this.app.client.waitUntil(async () => {
-        const txt = await this.app.client.getText(lastRow(res.count))
-        if (++iter > 5) {
-          console.error('xterm vi still waiting for Insert mode', txt)
-        }
-        return /INSERT/i.test(txt)
-      })
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await this.app.client.$(lastRow(res.count)).then(_ => _.getText())
+          if (++iter > 5) {
+            console.error('xterm vi still waiting for Insert mode', txt)
+          }
+          return /INSERT/i.test(txt)
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       // type our input
       await this.app.client.keys(typeThisText)
@@ -59,13 +62,16 @@ describe(`xterm vi 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
       // exit from insert mode
       iter = 0
       await this.app.client.keys(Keys.ESCAPE)
-      await this.app.client.waitUntil(async () => {
-        const txt = await lastRow(res.count)
-        if (++iter > 5) {
-          console.error('xterm vi still waiting to exit insert mode', txt)
-        }
-        return !/INSERT/i.test(txt)
-      })
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await lastRow(res.count)
+          if (++iter > 5) {
+            console.error('xterm vi still waiting to exit insert mode', txt)
+          }
+          return !/INSERT/i.test(txt)
+        },
+        { timeout: CLI.waitTimeout }
+      )
 
       await this.app.client.keys(':wq')
       await this.app.client.keys(Keys.ENTER)
@@ -99,10 +105,10 @@ describe(`xterm vi 2 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Comm
       const res = await CLI.command(`vim -i NONE`, this.app)
 
       // wait for vi to come up
-      await this.app.client.waitForExist(rows(res.count))
+      await this.app.client.$(rows(res.count)).then(_ => _.waitForExist())
 
       // wait for vi to come up in alt buffer mode
-      await this.app.client.waitForExist(Selectors.ALT_BUFFER_N(1))
+      await this.app.client.$(Selectors.ALT_BUFFER_N(1)).then(_ => _.waitForExist())
 
       // :wq
       await this.app.client.keys(':wq')

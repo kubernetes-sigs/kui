@@ -48,13 +48,13 @@ xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
             this.app
           )
 
-          const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
+          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
 
           // wait for the badge to become green
           await waitForGreen(this.app, selector)
 
           // now click on the table row
-          await this.app.client.click(`${selector} .clickable`)
+          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
           await SidecarExpect.open(res)
             .then(SidecarExpect.mode(defaultModeForGet))
             .then(SidecarExpect.showing('nginx'))
@@ -65,28 +65,36 @@ xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
       it(`should get with semicolon 1`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns}; echo ${echoString}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
 
       it(`should get with semicolon 2`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns} ; echo ${echoString}`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
 
       it(`should get with semicolon 3`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns} ;echo ${echoString};`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })
 
       it(`should get with semicolon 4`, () => {
         return CLI.command(`${kubectl} get pods -n ${ns} ;echo ${echoString}; ; ; ;;;`, this.app)
-          .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
+          .then(
+            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+          )
           .then(selector => waitForGreen(this.app, selector))
           .catch(Common.oops(this, true))
       })

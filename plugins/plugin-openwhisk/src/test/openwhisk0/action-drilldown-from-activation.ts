@@ -38,9 +38,9 @@ describe('activation list, activation get, click on header', function(this: Comm
       const res1 = await CLI.command(`wsk action async ${actionName}`, this.app)
       res = ReplExpect.blockAfter(res1)
 
-      await ReplExpect.okWithCustom(CLI.makeCustom('.activationId', ''))(res1).then(async selector => {
-        const activationId = await this.app.client.getText(selector)
-        await this.app.client.click(selector)
+      await ReplExpect.okWithCustom<string>(CLI.makeCustom('.activationId', ''))(res1).then(async selector => {
+        const activationId = await this.app.client.$(selector).then(_ => _.getText())
+        await this.app.client.$(selector).then(_ => _.click())
         return SidecarExpect.open(res).then(SidecarExpect.showing(actionName, activationId))
       })
     } catch (err) {
@@ -49,7 +49,7 @@ describe('activation list, activation get, click on header', function(this: Comm
   })
 
   it(`click on action name in sidecar header and show action source`, async () => {
-    await this.app.client.click(Selectors.SIDECAR_TITLE(res.count))
+    await this.app.client.$(Selectors.SIDECAR_TITLE(res.count)).then(_ => _.click())
     return SidecarExpect.openInBlockAfter(res)
       .then(SidecarExpect.showing(actionName))
       .then(res =>

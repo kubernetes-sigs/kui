@@ -50,7 +50,7 @@ commands.forEach(command => {
         console.error(`${command} apply crd 1`)
         res = await CLI.command(`${command} apply -f ${ROOT}/data/k8s/crd.yaml ${inNamespace}`, this.app)
 
-        const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(crdName) })(res)
+        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) })(res)
 
         // wait for the badge to become green
         console.error(`${command} apply crd 2`)
@@ -58,7 +58,7 @@ commands.forEach(command => {
 
         // now click on the table row
         console.error(`${command} apply crd 3`)
-        await this.app.client.click(`${selector} .clickable`)
+        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
         res = ReplExpect.blockAfter(res)
         await SidecarExpect.open(res)
           .then(SidecarExpect.mode(defaultModeForGet))
@@ -73,9 +73,7 @@ commands.forEach(command => {
       try {
         // make sure we have a last applied tab
         console.error(`${command} apply crd 4`)
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'last applied'))
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, 'last applied'))
+        await Util.switchToTab('last applied')(res)
 
         let idx = 0
         console.error(`${command} apply crd 5`)
@@ -116,11 +114,13 @@ commands.forEach(command => {
           .then(SidecarExpect.showing(crdName))
           .catch(Common.oops(this, true))
 
-        await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, 'show-crd-resources'))
-        await this.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'show-crd-resources'))
+        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'show-crd-resources')).then(async _ => {
+          await _.waitForDisplayed()
+          await _.click()
+        })
 
         await Promise.resolve({ app: this.app, count: res.count + 1 }).then(
-          ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(crdName) })
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) })
         )
       } catch (err) {
         await Common.oops(this, true)(err)
@@ -129,7 +129,9 @@ commands.forEach(command => {
 
     it(`should delete the custom resource definition from URL via ${command}`, () => {
       return CLI.command(`${command} delete -f ${ROOT}/data/k8s/crd.yaml ${inNamespace}`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(crdName) }))
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) })
+        )
         .then(selector => waitForRed(this.app, selector))
         .catch(Common.oops(this, true))
     })
