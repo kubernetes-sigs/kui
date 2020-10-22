@@ -77,8 +77,7 @@ function changeDir(this: Common.ISuite, dir: string, splitIndex: number) {
       .catch(Common.oops(this, true)))
 }
 
-// ensure that the "created split" block disappears when the new split is closed
-describe(`split terminals created split check ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`split terminals via command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
@@ -86,24 +85,14 @@ describe(`split terminals created split check ${process.env.MOCHA_RUN_TARGET || 
   const clear = doClear.bind(this)
   const count = expectSplits.bind(this)
   const closeTheSplit = close.bind(this)
-  const verifyBlockCount = ReplExpect.blockCount
-    .bind(this)()
-    .inSplit(1)
   const splitTheTerminalViaCommand = splitViaCommand.bind(this)
 
   it('should clear the console', () => clear(1, 1))
-  verifyBlockCount.is(1)
   splitTheTerminalViaCommand(2)
   count(2)
-
-  it('should clear the console', () => clear(2, 1))
-  verifyBlockCount.is(2) // the "created split" message should persist, since the split is still alive
-
   closeTheSplit(1, 2) // expect 1 residual split, and execute the `exit` command in split 2
 
-  verifyBlockCount.is(1) // the "created split" message should be gone!
   it('should clear the console', () => clear())
-  verifyBlockCount.is(1) // the "created split" message should be gone!
 })
 
 describe(`split terminals spliceIndex variant 1 ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {

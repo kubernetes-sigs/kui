@@ -61,14 +61,9 @@ export function splitViaCommand(
         this.app,
         splitCount - 1
       )
-        .then(
-          expectErr
-            ? ReplExpect.error(500)
-            : ReplExpect.elsewhere(
-                inverseColors ? 'Created a split with inverted colors' : 'Created a split',
-                messageShouldAppearHere
-              )
-        )
+        .then(res => {
+          return expectErr ? ReplExpect.error(500) : res.app
+        })
         .then(ReplExpect.splitCount(splitCount, inverseColors, messageShouldAppearHere))
 
       if (where !== undefined) {

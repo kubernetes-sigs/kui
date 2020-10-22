@@ -482,6 +482,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return isOk(block) && (isTabLayoutModificationResponse(block.response) || isPresentedElsewhere(block))
   }
 
+  /** is the block presented a new split request? */
+  private isBlockNewSplitRequest(block: BlockModel) {
+    return isOk(block) && isTabLayoutModificationResponse(block.response) && isNewSplitRequest(block.response)
+  }
+
   /** Output.tsx finished rendering something */
   private onOutputRender(scrollback: ScrollbackState, idx) {
     const block = scrollback.blocks[idx]
@@ -1102,7 +1107,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
             const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
 
-            const blocks = scrollback.blocks.filter(_ => !isHidden(_) && !(isMiniSplit && this.isBreadcrumb(_)))
+            const blocks = scrollback.blocks.filter(
+              _ => !isHidden(_) && !(isMiniSplit && this.isBreadcrumb(_)) && !this.isBlockNewSplitRequest(_)
+            )
             const nBlocks = blocks.length
             const showThisIdxInMiniSplit =
               scrollback.showThisIdxInMiniSplit < 0
