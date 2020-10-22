@@ -179,7 +179,6 @@ export default function plugin(commandTree: Registrar) {
       }
     },
     {
-      outputOnly: true,
       usage: {
         optional: [
           { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
