@@ -20,8 +20,6 @@ import {
   KResponse,
   ScalarResponse,
   UsageError,
-  ExecType,
-  isElsewhereCommentaryResponse,
   isXtermErrorResponse,
   inBrowser
 } from '@kui-shell/core'
@@ -279,21 +277,6 @@ export function isOutputOnly(block: BlockModel) {
   }
 }
 
-/**
- * If the `responseType` of the `completeEvent` is not 'ScalarResponse',
- * it's not presented in `ScrollableTerminal`
- *
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function isPresentedElsewhere(block: BlockModel) {
-  return false /* (
-    isOk(block) &&
-    block.completeEvent &&
-    (block.completeEvent.responseType !== 'ScalarResponse' ||
-      isElsewhereCommentaryResponse(block.completeEvent.response))
-  ) */
-}
-
 /** @return whether the block as a startEvent trait */
 export function hasStartEvent(block: BlockModel): block is BlockModel & WithCommandStart {
   return !isAnnouncement(block) && (isProcessing(block) || isOk(block) || isOops(block))
@@ -307,26 +290,4 @@ export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
 /** @return whether the block is from replay */
 export function isReplay(block: BlockModel) {
   return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
-}
-
-/**
- * Same as `isPresentedElsewhere`, but also for commands that ask not
- * to echo their execution.
- */
-export function isQuietlyPresentedElsewhere(block: BlockModel) {
-  return (
-    isPresentedElsewhere(block) &&
-    isWithCompleteEvent(block) &&
-    (isElsewhereCommentaryResponse(block.completeEvent.response) || block.completeEvent.echo === false)
-  )
-}
-
-/**
- * Is this block the result of the user clicking somewhere? (i.e. in
- * contrast to the user typing a command in a terminal and hitting
- * enter)
- *
- */
-export function isResultOfClick(block: BlockModel) {
-  return isWithCompleteEvent(block) && block.completeEvent.execOptions.type === ExecType.ClickHandler
 }

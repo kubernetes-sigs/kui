@@ -20,7 +20,7 @@ export default async (registrar: Registrar) => {
   if (!isHeadless()) {
     await import(/* webpackMode: "lazy" */ './controller/confirm').then(_ => _.default(registrar))
     await import(/* webpackMode: "lazy" */ './controller/split').then(_ => {
-      registrar.listen('/split', _.default, { outputOnly: true, flags: { boolean: ['inverse'] } })
+      registrar.listen('/split', _.default, { flags: { boolean: ['inverse'] } })
       registrar.listen('/split-debug', _.debug)
     })
     await import(/* webpackMode: "lazy" */ './controller/alert').then(_ => _.default(registrar))
