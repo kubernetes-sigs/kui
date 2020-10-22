@@ -51,20 +51,14 @@ process.argv.shift()
 
 const nodePty = 'node-pty-prebuilt-multiarch'
 
-async function copyNodePty(buildPath, electronVersion, targetPlatform, arch, callback) {
+async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArch, callback) {
   if (process.platform === targetPlatform) {
     // if the current platform matches the target platform, there is
     // nothing to do
     callback()
   } else {
-    const sourceDir = join(
-      process.env.BUILDER_HOME,
-      'dist/electron/vendor',
-      nodePty,
-      'build',
-      targetPlatform,
-      'electron'
-    )
+    const target = `${targetPlatform}-${targetArch}`
+    const sourceDir = join(process.env.BUILDER_HOME, 'dist/electron/vendor', nodePty, 'build', target, 'electron')
 
     readdir(sourceDir, async (err, files) => {
       if (err) {
@@ -107,12 +101,14 @@ async function copyNodePty(buildPath, electronVersion, targetPlatform, arch, cal
 const dir = process.argv[0]
 const name = process.argv[1]
 const platform = process.argv[2]
-const icon = process.argv[3]
+const arch = process.argv[3]
+const icon = process.argv[4]
 
 const args = {
   dir,
   name,
   platform,
+  arch,
   icon,
 
   // required environmental parameters:

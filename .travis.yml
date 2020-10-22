@@ -48,7 +48,7 @@ install:
   - if [ -n "$NEEDS_IBMCLOUD" ]; then ./tools/travis/ibmcloud.sh && ./tools/travis/ibmcloud-plugin-build-install.sh; fi
   - if [ "$CLIENT" != "default" ]; then ./bin/switch-client.sh ${CLIENT-default}; fi
   - ./tools/codecov/instrument.sh
-  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; if [ "$DEPLOY" = "cluster" ]; then npx kui-build-webpack && npx kui-build-docker-with-proxy && (kui-run-cproxy &); else npm run watch:webpack; fi; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME; fi
+  - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; if [ "$DEPLOY" = "cluster" ]; then npx kui-build-webpack && npx kui-build-docker-with-proxy && (kui-run-cproxy &); else npm run watch:webpack; fi; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME:${TRAVIS_CPU_ARCH-amd64}; fi
   - if [ -n "$k8s" ]; then wait $k8s; fi
   - if [ -n "$minio" ]; then wait $minio; fi
 
@@ -60,6 +60,12 @@ jobs:
     - if: os = windows AND env(NO_WINDOWS) IS present
 
   include:
+    #
+    # Basic arm64 tests
+    #
+    #- arch: arm64
+    #  env: LAYERS=core
+
     #
     # Kubernetes Tests, using an electron-based client
     #

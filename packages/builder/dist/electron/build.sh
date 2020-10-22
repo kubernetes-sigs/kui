@@ -155,31 +155,33 @@ function cleanup {
 }
 
 function win32 {
+    local ARCH=$1
+
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "win32" ] || [ "$PLATFORM" == "windows" ]; then
         # create the bundles
-        echo "Electron build for win32"
+        echo "Electron build for win32 $ARCH"
 
         if [[ `uname` == Darwin ]]; then
           which mono || brew install mono
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" win32 $ICON_WIN32)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" win32 $ARCH $ICON_WIN32)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
-	    rm -rf "$BUILDDIR/${CLIENT_NAME}-win32-x64/"
-	    mv "$BUILDDIR/${PRODUCT_NAME}-win32-x64/" "$BUILDDIR/${CLIENT_NAME}-win32-x64/"
+	    rm -rf "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH/"
+	    mv "$BUILDDIR/${PRODUCT_NAME}-win32-$ARCH/" "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH/"
 	fi
 
-        echo "Add kubectl-kui UNIX shell script to electron build win32"
-        (cd "$BUILDDIR/${CLIENT_NAME}-win32-x64" && touch kubectl-kui && chmod +x kubectl-kui \
+        echo "Add kubectl-kui UNIX shell script to electron build win32 $ARCH"
+        (cd "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
 export KUI_POPUP_WINDOW_RESIZE=true
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 "$SCRIPTDIR"/Kui kubectl $@ &' >> kubectl-kui)
 
-        echo "Add kubectl-kui PowerShell script to electron build win32"
-        (cd "$BUILDDIR/${CLIENT_NAME}-win32-x64" && touch kubectl-kui.ps1 && chmod +x kubectl-kui.ps1 \
+        echo "Add kubectl-kui PowerShell script to electron build win32 $ARCH"
+        (cd "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH" && touch kubectl-kui.ps1 && chmod +x kubectl-kui.ps1 \
           && echo '$Env:KUI_POPUP_WINDOW_RESIZE="true"
 $ScriptDir = Split-Path $script:MyInvocation.MyCommand.Path
 $argv = "kubectl " + $args
@@ -190,7 +192,7 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-ku
         #
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for win32"
-            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-win32-x64" "${CLIENT_NAME}-win32-x64" -x \*~) &
+            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-win32-$ARCH" "${CLIENT_NAME}-win32-$ARCH" -x \*~) &
             WIN_ZIP_PID=$!
 
             # build squirrel and msi installers
@@ -205,18 +207,20 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-ku
 # deal with darwin/macOS packaging
 #
 function mac {
-    if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ] || [ "$PLATFORM" == "osx" ]; then
-        echo "Electron build darwin $STAGING"
+    local ARCH=$1
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" darwin $ICON_MAC)
+    if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ] || [ "$PLATFORM" == "osx" ]; then
+        echo "Electron build darwin $ARCH"
+
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" darwin $ARCH $ICON_MAC)
 
         # use a custom icon for mac
-        cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
+        cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
 
         # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
-	    rm -rf "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
-            mv "$BUILDDIR/${PRODUCT_NAME}-darwin-x64/" "$BUILDDIR/${CLIENT_NAME}-darwin-x64/"
+	    rm -rf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/"
+            mv "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/"
 	fi
 
         # create the installers
@@ -227,7 +231,7 @@ function mac {
             if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
                 echo "DMG build for darwin"
                 (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
-	            "$BUILDDIR/${CLIENT_NAME}-darwin-x64/${PRODUCT_NAME}.app" \
+	            "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app" \
 	            "${CLIENT_NAME}" \
 	            --out="$BUILDDIR" \
 	            --icon="$ICON_MAC" \
@@ -236,8 +240,8 @@ function mac {
                 MAC_DMG_PID=$!
             fi
 
-            echo "Add kubectl-kui to electron build darwin"
-            (cd "$BUILDDIR/${CLIENT_NAME}-darwin-x64/${PRODUCT_NAME}.app/Contents/Resources/" \
+            echo "Add kubectl-kui to electron build darwin $ARCH"
+            (cd "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/" \
             && touch kubectl-kui && chmod +x kubectl-kui \
             && echo '#!/usr/bin/env bash
 export KUI_POPUP_WINDOW_RESIZE=true
@@ -267,7 +271,7 @@ fi
 ' >> kubectl-kui)
 
             echo "TGZ build for darwin"
-            tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-x64.tar.bz2" "${CLIENT_NAME}-darwin-x64" &
+            tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH.tar.bz2" "${CLIENT_NAME}-darwin-$ARCH" &
             MAC_TAR_PID=$!
         fi
 
@@ -278,24 +282,26 @@ fi
 # deal with linux packaging
 #
 function linux {
+    local ARCH=$1
+
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "linux" ]; then
-        echo "Electron build linux"
+        echo "Electron build linux $ARCH"
 
         if [[ `uname` == Darwin ]]; then
           which dpkg || brew install dpkg
           which fakeroot || brew install fakeroot
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" linux $ICON_LINUX)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" linux $ARCH $ICON_LINUX)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
-	    rm -rf "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
-	    mv "$BUILDDIR/${PRODUCT_NAME}-linux-x64/" "$BUILDDIR/${CLIENT_NAME}-linux-x64/"
+	    rm -rf "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH/"
+	    mv "$BUILDDIR/${PRODUCT_NAME}-linux-$ARCH/" "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH/"
 	fi
 
-        echo "Add kubectl-kui to electron build linux"
-        (cd "$BUILDDIR/${CLIENT_NAME}-linux-x64" && touch kubectl-kui && chmod +x kubectl-kui \
+        echo "Add kubectl-kui to electron build linux $ARCH"
+        (cd "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH" && touch kubectl-kui && chmod +x kubectl-kui \
           && echo '#!/usr/bin/env sh
 export KUI_POPUP_WINDOW_RESIZE=true
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
@@ -303,11 +309,11 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
-            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-linux-x64" "${CLIENT_NAME}-linux-x64" -x \*~) &
+            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-linux-$ARCH" "${CLIENT_NAME}-linux-$ARCH" -x \*~) &
             LINUX_ZIP_PID=$!
 
             echo "DEB build for linux"
-            "$BUILDER_HOME"/dist/electron/builders/deb.sh &
+            ARCH=$ARCH "$BUILDER_HOME"/dist/electron/builders/deb.sh &
             LINUX_DEB_PID=$!
         fi
     fi
@@ -411,9 +417,17 @@ function build {
     echo "webpack" && webpack
     echo "builddeps" && builddeps
     echo "theme" && theme
-    echo "win32" && win32
-    echo "mac" && mac
-    echo "linux" && linux
+    echo "win32" && win32 x64
+    echo "mac" && mac x64
+
+    if [ -z "$ARCH" ] || [ "$ARCH" = "all" ]; then
+	echo "Building all arch for linux"
+	echo "linux x64" && linux x64
+	echo "linux arm64" && linux arm64
+    else
+	echo "linux" && linux ${ARCH-x64}
+    fi
+
     echo "tarball" && tarball
     echo "cleanup" && cleanup
 }
