@@ -27,7 +27,7 @@ const strings = i18n('plugin-client-common')
  * https://github.com/IBM/kui/issues/4876
  *
  */
-export default class SplitTerminalButtonButton extends React.PureComponent {
+export default class SplitTerminalButton extends React.PureComponent {
   public render() {
     return (
       <KuiContext.Consumer>

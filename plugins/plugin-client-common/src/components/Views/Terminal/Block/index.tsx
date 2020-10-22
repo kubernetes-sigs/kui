@@ -26,7 +26,6 @@ import {
   isEmpty,
   isFinished,
   isOutputOnly,
-  isQuietlyPresentedElsewhere,
   isProcessing,
   isAnnouncement,
   hasUUID
@@ -214,7 +213,6 @@ export default class Block extends React.PureComponent<Props, State> {
           className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
           data-is-maximized={this.state.isMaximized || undefined}
           data-is-output-only={isOutputOnly(this.props.model) || undefined}
-          data-is-quietly-elsewhere={isQuietlyPresentedElsewhere(this.props.model) || undefined}
           data-announcement={isAnnouncement(this.props.model) || undefined}
           data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
           data-scrollback-uuid={this.props.uuid}

@@ -60,7 +60,6 @@ import {
   isOk,
   isOutputOnly,
   isProcessing,
-  isPresentedElsewhere,
   hasStartEvent,
   hasCommand,
   hasUUID,
@@ -473,11 +472,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
-  /** is the block presented as a breadcrumb? */
-  private isBreadcrumb(block: BlockModel) {
-    return isOk(block) && (isTabLayoutModificationResponse(block.response) || isPresentedElsewhere(block))
-  }
-
   /**
    * For click handlers in minisplits, we want to direct the command
    * execution UI to a plain terminal, if that is possible.
@@ -507,13 +501,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Output.tsx finished rendering something */
-  private onOutputRender(scrollback: ScrollbackState, idx) {
-    const block = scrollback.blocks[idx]
-    if (this.isBreadcrumb(block)) {
-      // no scroll to bottom for these responses
-    } else {
-      setTimeout(() => scrollback.facade.scrollToBottom())
-    }
+  private onOutputRender(scrollback: ScrollbackState) {
+    setTimeout(() => scrollback.facade.scrollToBottom())
   }
 
   /** the REPL started executing a command */
@@ -1129,7 +1118,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
             const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
 
-            const blocks = scrollback.blocks.filter(_ => !isHidden(_) && !(isMiniSplit && this.isBreadcrumb(_)))
+            const blocks = scrollback.blocks.filter(
+              _ => !isHidden(_) && !(isMiniSplit && isOk(_) && isTabLayoutModificationResponse(_.response))
+            )
             const nBlocks = blocks.length
             const showThisIdxInMiniSplit =
               scrollback.showThisIdxInMiniSplit < 0
@@ -1199,7 +1190,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     uuid={scrollback.uuid}
                     tab={tab}
                     noActiveInput={this.props.noActiveInput || isOfflineClient()}
-                    onOutputRender={this.onOutputRender.bind(this, scrollback, idx)}
+                    onOutputRender={this.onOutputRender.bind(this, scrollback)}
                     onFocus={userHitTabToChangeBlockFocus}
                     willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}

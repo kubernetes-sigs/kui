@@ -48,13 +48,11 @@ import {
   isOk,
   isCancelled,
   isEmpty,
-  isPresentedElsewhere,
   isOutputOnly,
   isOops,
   isWithCompleteEvent
 } from './BlockModel'
 
-import Else from './Else'
 import Actions from './Actions'
 import Scalar from '../../../Content/Scalar/'
 import KuiContext from '../../../Client/context'
@@ -244,7 +242,6 @@ export default class Output extends React.PureComponent<Props, State> {
         isTabLayoutModificationResponse(response) ||
         isReactResponse(response) ||
         isHTML(response) ||
-        isPresentedElsewhere(this.props.model) ||
         isMarkdownResponse(response) ||
         (typeof response === 'string' && response.length > 0) ||
         isTable(response) ||
@@ -258,16 +255,7 @@ export default class Output extends React.PureComponent<Props, State> {
 
   private ok(hasContent: boolean) {
     if (isOk(this.props.model)) {
-      if (isPresentedElsewhere(this.props.model)) {
-        // Else signifies where the content is presented,
-        // and provides ways to re-interact with the content if it's gone
-        return (
-          <React.Fragment>
-            <Else block={this.props.model} />
-            <span className="ok" />
-          </React.Fragment>
-        )
-      } else if (hasContent) {
+      if (hasContent) {
         return <div className="ok" />
       } else {
         return <div className="ok">{strings('ok')}</div>
