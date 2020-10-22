@@ -11,10 +11,12 @@ fi
 if [ "$1" = "electron" ]; then
     # create an electron dist to test against
     PLATFORM=$(node -e 'console.log(process.platform)')
-    echo "node-pty PLATFORM=$PLATFORM"
+    ARCH=$(node -e 'console.log(require("os").arch())')
+    TARGET="${PLATFORM}-${ARCH}"
+    echo "node-pty PLATFORM=$TARGET"
     mkdir -p node_modules/node-pty-prebuilt-multiarch/build/Release
     rm -f node_modules/node-pty-prebuilt-multiarch/build/Release/*
-    cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty-prebuilt-multiarch/build/$PLATFORM/electron/* node_modules/node-pty-prebuilt-multiarch/build/Release
+    cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty-prebuilt-multiarch/build/$TARGET/electron/* node_modules/node-pty-prebuilt-multiarch/build/Release
     gunzip node_modules/node-pty-prebuilt-multiarch/build/Release/*.gz
     ls node_modules/node-pty-prebuilt-multiarch/build/Release
 else

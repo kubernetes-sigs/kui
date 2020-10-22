@@ -24,8 +24,8 @@ cd "$ROOTDIR"
 
 rm -f "${BUILDDIR}/installers/*.deb"
 
-./node_modules/.bin/electron-installer-debian --src "${BUILDDIR}/${CLIENT_NAME}-linux-x64" --dest ${BUILDDIR}/installers/ --arch amd64 --config dpkg-config.json
+./node_modules/.bin/electron-installer-debian --src "${BUILDDIR}/${CLIENT_NAME}-linux-$ARCH" --dest ${BUILDDIR}/installers/ --arch amd64 --config dpkg-config.json
 
 for deb in "${BUILDDIR}/installers/*.deb"; do
-    mv -f $deb "${BUILDDIR}/${CLIENT_NAME}-linux-x64.deb"
+    mv -f $deb "${BUILDDIR}/${CLIENT_NAME}-linux-$ARCH.deb"
 done
