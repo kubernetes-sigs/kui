@@ -17,7 +17,6 @@
 import REPL from './repl'
 import { Entity } from './entity'
 import { CodedError } from './errors'
-import AlwaysViewIn from './AlwaysViewIn'
 import { ExecOptions } from './execOptions'
 import { UsageModel } from '../core/usage-error'
 import { Tab } from '../webapp/tab'
@@ -86,12 +85,6 @@ export interface CommandOptions extends CapabilityRequirements {
   override?: CommandHandler<KResponse, ParsedOptions>
   plugin?: string
   okOptions?: string[]
-
-  /*
-   * always show the view in terminal, e.g. for certain commands producing watchable table,
-   * we want them to always show in `Terminal`
-   */
-  alwaysViewIn?: AlwaysViewIn
 
   /** model to view transformer */
   viewTransformer?: ViewTransformer<KResponse, ParsedOptions>

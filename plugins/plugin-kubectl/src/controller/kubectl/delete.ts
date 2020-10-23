@@ -16,7 +16,7 @@
 
 import { Arguments, Registrar } from '@kui-shell/core'
 
-import { crudFlags } from './flags'
+import defaultFlags from './flags'
 import { KubeOptions } from './options'
 import { doExecWithStatus } from './exec'
 import commandPrefix from '../command-prefix'
@@ -47,6 +47,6 @@ export const doDelete = (command = 'kubectl') => async (args: Arguments<KubeOpti
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/kubectl/delete`, doDelete(), crudFlags)
-  registrar.listen(`/${commandPrefix}/k/delete`, doDelete(), crudFlags)
+  registrar.listen(`/${commandPrefix}/kubectl/delete`, doDelete(), defaultFlags)
+  registrar.listen(`/${commandPrefix}/k/delete`, doDelete(), defaultFlags)
 }

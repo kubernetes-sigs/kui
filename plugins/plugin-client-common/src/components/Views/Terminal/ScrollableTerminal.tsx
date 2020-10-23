@@ -601,10 +601,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const inProcess = curState.blocks[inProcessIdx]
         if (isProcessing(inProcess)) {
           try {
-            const prefersTerminalPresentation =
-              (event.evaluatorOptions && event.evaluatorOptions.alwaysViewIn === 'Terminal') ||
-              (event.execOptions && event.execOptions.alwaysViewIn === 'Terminal')
-
             // note: even if the command registration asked for
             // `outputOnly`, we ignore that if the response is a plain
             // `true`; e.g. the `commentary` controller uses this to
@@ -613,7 +609,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
-              .concat([Finished(inProcess, event, prefersTerminalPresentation, outputOnly, asReplay)]) // mark as finished
+              .concat([Finished(inProcess, event, outputOnly, asReplay)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
               .concat(!inProcess.isRerun && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
@@ -1201,7 +1197,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     willUpdateCommand={this.willUpdateCommand.bind(this, scrollback.uuid, idx, _)}
                     isExperimental={hasCommand(_) && _.isExperimental}
                     isFocused={isFocused}
-                    prefersTerminalPresentation={isOk(_) && _.prefersTerminalPresentation}
                     isPartOfMiniSplit={isMiniSplit}
                     isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
                     isWidthConstrained={isWidthConstrained}

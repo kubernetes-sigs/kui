@@ -42,7 +42,7 @@ type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends KResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
 type WithAnnouncement = { isAnnouncement: boolean }
-type WithPreferences = { prefersTerminalPresentation: boolean; outputOnly?: boolean }
+type WithPreferences = { outputOnly?: boolean }
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 type WithRerun = { isRerun: boolean }
@@ -216,7 +216,6 @@ export function Cancelled(block: BlockModel, typedSoFar?: string): CancelledBloc
 export function Finished(
   block: ProcessingBlock,
   event: CommandCompleteEvent,
-  prefersTerminalPresentation = false,
   outputOnly = false,
   isReplay = false
 ): FinishedBlock {
@@ -252,7 +251,6 @@ export function Finished(
       isReplay,
       execUUID: block.execUUID,
       startTime: block.startTime,
-      prefersTerminalPresentation,
       outputOnly,
       state: BlockState.ValidResponse
     }

@@ -475,7 +475,6 @@
                     "show-labels"
                   ]
                 },
-                "alwaysViewIn": "Terminal",
                 "plugin": "plugin-kubectl"
               },
               "execType": 3,
@@ -492,7 +491,6 @@
               "execUUID": "c7897d93-b5be-489a-b8db-5370811d81d1",
               "cancelled": false,
               "evaluatorOptions": {
-                "alwaysViewIn": "Terminal",
                 "plugin": "plugin-kubectl"
               },
               "execOptions": {
@@ -7574,7 +7572,6 @@
                     "show-labels"
                   ]
                 },
-                "alwaysViewIn": "Terminal",
                 "plugin": "plugin-kubectl"
               },
               "execType": 3,
@@ -7593,7 +7590,6 @@
               "execUUID": "0ab2020f-47bb-41eb-9f15-67a104633797",
               "cancelled": false,
               "evaluatorOptions": {
-                "alwaysViewIn": "Terminal",
                 "plugin": "plugin-kubectl"
               },
               "execOptions": {

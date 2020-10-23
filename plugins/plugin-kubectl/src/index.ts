@@ -59,7 +59,7 @@ export { doExecRaw, doNativeExec } from './controller/kubectl/raw'
 
 export { default as commandPrefix } from './controller/command-prefix'
 
-export { default as defaultFlags, crudFlags, flags } from './controller/kubectl/flags'
+export { default as defaultFlags, flags } from './controller/kubectl/flags'
 
 export { getCurrentContext, getCurrentContextName, getCurrentDefaultNamespace } from './controller/kubectl/contexts'
 
