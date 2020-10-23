@@ -169,13 +169,6 @@ body[kui-theme-style='dark'] {
       padding: 0.875rem 0;
     }
 
-    &[data-is-quietly-elsewhere] {
-      padding: 0.1875rem;
-      repl-output {
-        margin-top: 0;
-      }
-    }
-
     /* special bg color for Actions inside of output-only versus input blocks, to occlude repl-input-element */
     .kui--block-actions-buttons {
       background-color: var(--color-base03);

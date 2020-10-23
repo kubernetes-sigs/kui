@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Entity } from './entity'
-import { ElsewhereCommentaryResponse } from './CommentaryResponse'
+import { Entity, MarkdownResponse } from './entity'
 
 /**
  * If your controller wants to manipulate the tab layout, this is your
@@ -26,7 +25,7 @@ type TabLayoutModificationResponse<Request extends ModificationRequest = Modific
   apiVersion: 'kui-shell/v1'
   kind: 'TabLayoutModificationResponse'
   spec: Request & {
-    ok: ElsewhereCommentaryResponse
+    ok: MarkdownResponse
   }
 }
 

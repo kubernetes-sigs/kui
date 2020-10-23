@@ -40,7 +40,7 @@ export default class SplitTerminalButton extends React.PureComponent {
               aria-label="Split terminal"
               tabIndex={0}
               title={strings('Split the Terminal')}
-              onClick={() => pexecInCurrentTab('split')}
+              onClick={() => pexecInCurrentTab('split', undefined, false, true)}
             >
               <Icons icon="Split" />
             </a>
