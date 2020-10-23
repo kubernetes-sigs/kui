@@ -1153,9 +1153,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               },
 
               blocks.map((_, idx) => {
+                /** To find the focused block, we check:
+                 *  1. the block is in a focused scrollback
+                 *  2. the block idx matches scrollback.focusedBlockIdx (considering blocks that were hidden)
+                 *  3. return the active block if there's no scrollback.focusedBlockIdx */
                 const isFocused =
                   sbidx === this.state.focusedIdx &&
-                  (idx === scrollback.focusedBlockIdx ||
+                  (idx === scrollback.focusedBlockIdx - (scrollback.blocks.length - nBlocks) ||
                     (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
 
                 /** Interior view wants to focus this block based on non-browser activity */
