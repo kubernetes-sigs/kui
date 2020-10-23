@@ -109,7 +109,6 @@ type Props = TerminalOptions & {
   config: KuiConfiguration
 
   sidecarWidth: Width
-  closeSidecar: () => void
 }
 
 type ScrollbackOptions = NewSplitRequest['options']
@@ -436,32 +435,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.props.onClear()
     }
 
-    // if we want to close the sidecar, too:
-    /* if (this.props.closeSidecar) {
-      this.props.closeSidecar()
-    } */
-
     this.splice(uuid, scrollback => {
       const residualBlocks = scrollback.blocks
         .filter(_ => {
-          // rule 1: when clearing, we want to keep the last active block
-          // const isLastActiveBlock = isActive(_) && idx === scrollback.blocks.length - 1
-
-          // rule 2: when clearing, we want to keep any "created split"
-          // blocks for splits that are still around!
-          const isPertainingToLiveSplit =
-            isOk(_) &&
-            isTabLayoutModificationResponse(_.response) &&
-            isNewSplitRequest(_.response) &&
-            this.findSplit(this.state, _.response.spec.ok.props.tabUUID) >= 0
-
-          const keepIt = /* isLastActiveBlock || */ isPertainingToLiveSplit
-
-          if (!keepIt) {
-            this.removeWatchableBlock(_)
-          }
-
-          return keepIt
+          this.removeWatchableBlock(_)
+          return false
         })
         .concat([Active(scrollback._activeBlock ? scrollback._activeBlock.inputValue() : '')])
 
@@ -507,11 +485,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** the REPL started executing a command */
   public onExecStart(uuid = this.currentUUID, asReplay: boolean, event: CommandStartEvent, insertIdx?: number) {
-    if (event.echo !== false && isPopup() && this.isSidecarVisible()) {
-      // see https://github.com/IBM/kui/issues/4183
-      this.props.closeSidecar()
-    }
-
     const processing = (block: BlockModel, asRerun = false) => {
       return [Processing(block, event, event.evaluatorOptions.isExperimental, asRerun, asReplay)]
     }
@@ -1114,10 +1087,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
             const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
 
-            const blocks = scrollback.blocks.filter(
-              _ => !isHidden(_) && !(isMiniSplit && isOk(_) && isTabLayoutModificationResponse(_.response))
-            )
+            // don't render any echo:false blocks
+            const blocks = scrollback.blocks.filter(_ => !isHidden(_))
             const nBlocks = blocks.length
+
             const showThisIdxInMiniSplit =
               scrollback.showThisIdxInMiniSplit < 0
                 ? nBlocks + scrollback.showThisIdxInMiniSplit
