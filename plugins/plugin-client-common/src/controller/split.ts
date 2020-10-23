@@ -43,14 +43,8 @@ export default function split(args?: Arguments<CommandLineOptions>): TabLayoutMo
       modification: 'NewSplit',
       options,
       ok: {
-        apiVersion: 'kui-shell/v1',
-        kind: 'CommentaryResponse',
-        props: {
-          elsewhere: true,
-          tabUUID: '0',
-          tab: undefined,
-          children: strings(args.parsedOptions.inverse ? 'Created a split with inverted colors' : 'Created a split')
-        }
+        content: strings(args.parsedOptions.inverse ? 'Created a split with inverted colors' : 'Created a split'),
+        contentType: 'text/markdown'
       }
     }
   }

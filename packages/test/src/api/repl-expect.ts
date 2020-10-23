@@ -298,7 +298,7 @@ export function elsewhere(expectedBody: string, N?: number) {
     let idx = 0
     await res.app.client.waitUntil(async () => {
       const actualBody = await res.app.client.getText(
-        `${Selectors.OUTPUT_N(res.count, N === undefined ? res.splitIndex : N)} .kui--repl-result-else`
+        Selectors.OUTPUT_N(res.count, N === undefined ? res.splitIndex : N)
       )
       if (++idx > 5) {
         console.error(`still waiting for body; actual=${actualBody}; expected=${expectedBody}`)

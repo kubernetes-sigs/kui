@@ -125,16 +125,10 @@ export default function plugin(commandTree: Registrar) {
       // this is our response to the user if the tab was created
       // successfully
       const ok = {
-        apiVersion: 'kui-shell/v1',
-        kind: 'CommentaryResponse',
-        props: {
-          elsewhere: true,
-          tabUUID: '0',
-          tab: undefined,
-          children: args.parsedOptions.title
-            ? strings('Created a new tab named X', args.parsedOptions.title)
-            : strings('Created a new tab')
-        }
+        content: args.parsedOptions.title
+          ? strings('Created a new tab named X', args.parsedOptions.title)
+          : strings('Created a new tab'),
+        contentType: 'text/markdown'
       }
 
       const file = args.parsedOptions.snapshot || args.parsedOptions.s

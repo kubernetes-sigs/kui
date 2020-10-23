@@ -126,7 +126,7 @@ export type SimpleEntity =
   | MarkdownResponse
   | ReactResponse
 
-type MarkdownResponse = { content: string; contentType: 'text/markdown' }
+export type MarkdownResponse = { content: string; contentType: 'text/markdown' }
 
 export function isMarkdownResponse(entity: Entity): entity is MarkdownResponse {
   const md = entity as MarkdownResponse

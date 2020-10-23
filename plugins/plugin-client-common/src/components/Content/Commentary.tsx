@@ -18,7 +18,6 @@ import React from 'react'
 import { CommentaryResponse, REPL, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
-import Markdown from './Markdown'
 import Button from '../spi/Button'
 import SimpleEditor from './Editor/SimpleEditor'
 
@@ -32,6 +31,7 @@ interface State {
 }
 
 type Props = CommentaryResponse['props'] & {
+  tabUUID: string
   isPartOfMiniSplit: boolean
   willUpdateResponse?: (text: string) => void
   willRemove?: () => void
@@ -208,18 +208,10 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (this.props.elsewhere) {
-      return (
-        <span className="kui--repl-result-else">
-          <Markdown source={this.props.children} repl={this.props.repl} />
-        </span>
-      )
-    } else {
-      return (
-        <div className="kui--commentary" data-is-editing={this.state.isEdit || undefined}>
-          {this.card()}
-        </div>
-      )
-    }
+    return (
+      <div className="kui--commentary" data-is-editing={this.state.isEdit || undefined}>
+        {this.card()}
+      </div>
+    )
   }
 }

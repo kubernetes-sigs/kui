@@ -177,7 +177,7 @@ export class EventWatcher implements Abortable, Watcher {
           const eventName = row[3].value
           const onClick = `#kuiexec?command=${encodeURIComponent(
             withKubeconfigFrom(this.args, `kubectl get event ${eventName} -o yaml`)
-          )}&quiet`
+          )}`
           return `[[${agos[idx]}]](${onClick})` + ` **${involvedObjectName}**: ${message}`
         })
 

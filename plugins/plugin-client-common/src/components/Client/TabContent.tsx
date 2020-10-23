@@ -222,7 +222,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
                 tab={this.state.tab}
                 config={config}
                 sidecarWidth={this.state.sidecarWidth}
-                closeSidecar={() => this.setState({ sidecarWidth: Width.Closed })}
                 onClear={() => {
                   this.setState({ showSessionInitDone: false })
 
