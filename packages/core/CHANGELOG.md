@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.6](https://github.com/IBM/kui/compare/v9.0.5...v9.0.6) (2020-10-23)
+
+### Bug Fixes
+
+- **packages/core:** edit+save may save with bogus file name ([f262dbd](https://github.com/IBM/kui/commit/f262dbd)), closes [#6005](https://github.com/IBM/kui/issues/6005) [#6006](https://github.com/IBM/kui/issues/6006)
+
+### Features
+
+- Make a notebook about making notebooks ([d3acb21](https://github.com/IBM/kui/commit/d3acb21)), closes [#6040](https://github.com/IBM/kui/issues/6040)
+
 ## [9.0.5](https://github.com/IBM/kui/compare/v9.0.4...v9.0.5) (2020-10-19)
 
 **Note:** Version bump only for package @kui-shell/core

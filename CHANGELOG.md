@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.6](https://github.com/IBM/kui/compare/v9.0.5...v9.0.6) (2020-10-23)
+
+### Bug Fixes
+
+- **packages/core:** edit+save may save with bogus file name ([f262dbd](https://github.com/IBM/kui/commit/f262dbd)), closes [#6005](https://github.com/IBM/kui/issues/6005) [#6006](https://github.com/IBM/kui/issues/6006)
+- **plugins/plugin-client-common:** a few more patternfly navigation styling issues ([a065721](https://github.com/IBM/kui/commit/a065721)), closes [#6049](https://github.com/IBM/kui/issues/6049)
+- **plugins/plugin-client-common:** custom repl-prompt is misaligned with repl-output ([d97455f](https://github.com/IBM/kui/commit/d97455f)), closes [#6046](https://github.com/IBM/kui/issues/6046)
+- **plugins/plugin-client-common:** in dark themes, the inter-split gutter is not visible ([cd08a53](https://github.com/IBM/kui/commit/cd08a53)), closes [#6022](https://github.com/IBM/kui/issues/6022)
+- **plugins/plugin-client-common:** In some themes, grid inner text color can have low contrast. ([3cf575d](https://github.com/IBM/kui/commit/3cf575d)), closes [#6032](https://github.com/IBM/kui/issues/6032)
+- **plugins/plugin-client-common:** PatternFly assumes a 16px body font size, whereas the rest of Kui assumes 14px ([00554f3](https://github.com/IBM/kui/commit/00554f3)), closes [#6041](https://github.com/IBM/kui/issues/6041)
+- **plugins/plugin-client-common:** PatternFly LeftNav view has excessive padding ([5c761d4](https://github.com/IBM/kui/commit/5c761d4)), closes [#6038](https://github.com/IBM/kui/issues/6038)
+- **plugins/plugin-client-common:** rendering of blockquotes in markdown is inconsistent ([21d2212](https://github.com/IBM/kui/commit/21d2212)), closes [#6043](https://github.com/IBM/kui/issues/6043)
+- A few more themes tweaks are needed ([a72e14f](https://github.com/IBM/kui/commit/a72e14f)), closes [#6034](https://github.com/IBM/kui/issues/6034)
+- **plugins/plugin-kubectl:** kubectl Deployment summary does not handle `undefined` fields ([d178bdb](https://github.com/IBM/kui/commit/d178bdb)), closes [#6028](https://github.com/IBM/kui/issues/6028)
+- **Plugins/plugin-kubectl:** Logs tab may become stale when switching away/back ([6e15584](https://github.com/IBM/kui/commit/6e15584)), closes [#6024](https://github.com/IBM/kui/issues/6024)
+- **plugins/plugin-patternfly4-themes:** sidecar header does not have proper contrast in patternfly themes ([ee9b19a](https://github.com/IBM/kui/commit/ee9b19a)), closes [#6030](https://github.com/IBM/kui/issues/6030)
+
+### Features
+
+- Make a notebook about making notebooks ([d3acb21](https://github.com/IBM/kui/commit/d3acb21)), closes [#6040](https://github.com/IBM/kui/issues/6040)
+
 ## [9.0.5](https://github.com/IBM/kui/compare/v9.0.4...v9.0.5) (2020-10-19)
 
 ### Bug Fixes

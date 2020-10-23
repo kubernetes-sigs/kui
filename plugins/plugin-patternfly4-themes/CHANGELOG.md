@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.6](https://github.com/IBM/kui/compare/v9.0.5...v9.0.6) (2020-10-23)
+
+### Bug Fixes
+
+- A few more themes tweaks are needed ([a72e14f](https://github.com/IBM/kui/commit/a72e14f)), closes [#6034](https://github.com/IBM/kui/issues/6034)
+- **plugins/plugin-patternfly4-themes:** sidecar header does not have proper contrast in patternfly themes ([ee9b19a](https://github.com/IBM/kui/commit/ee9b19a)), closes [#6030](https://github.com/IBM/kui/issues/6030)
+
 ## [9.0.5](https://github.com/IBM/kui/compare/v9.0.4...v9.0.5) (2020-10-19)
 
 **Note:** Version bump only for package @kui-shell/plugin-patternfly4-themes

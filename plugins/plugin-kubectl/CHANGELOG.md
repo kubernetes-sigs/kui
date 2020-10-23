@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.6](https://github.com/IBM/kui/compare/v9.0.5...v9.0.6) (2020-10-23)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl Deployment summary does not handle `undefined` fields ([d178bdb](https://github.com/IBM/kui/commit/d178bdb)), closes [#6028](https://github.com/IBM/kui/issues/6028)
+- **Plugins/plugin-kubectl:** Logs tab may become stale when switching away/back ([6e15584](https://github.com/IBM/kui/commit/6e15584)), closes [#6024](https://github.com/IBM/kui/issues/6024)
+
 ## [9.0.5](https://github.com/IBM/kui/compare/v9.0.4...v9.0.5) (2020-10-19)
 
 ### Bug Fixes
