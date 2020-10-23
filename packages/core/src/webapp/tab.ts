@@ -90,10 +90,11 @@ export const getTab = (idx: Tab | number): Tab => {
 /**
  * Execute the given command in the current (or given) tab.
  *
- * @param quiet Execute the command quietly, i.e. without echo
+ * @param isInternalCallPath This is one plugin calling another
+ * @param incognito Execute the command quietly but do not display the result in the Terminal
  *
  */
-export function pexecInCurrentTab(command: string, topLevelTab?: Tab, quiet = false) {
+export function pexecInCurrentTab(command: string, topLevelTab?: Tab, isInternalCallpath = false, incognito = false) {
   const scrollback = ((topLevelTab || document).querySelector(
     (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback:not([data-is-minisplit])'
   ) as any) as {
@@ -101,7 +102,9 @@ export function pexecInCurrentTab(command: string, topLevelTab?: Tab, quiet = fa
   }
   if (scrollback) {
     const { facade: tab } = scrollback
-    return quiet ? tab.REPL.qexec(command, undefined, undefined, { tab }) : tab.REPL.pexec(command, { tab })
+    return isInternalCallpath
+      ? tab.REPL.qexec(command, undefined, undefined, { tab })
+      : tab.REPL.pexec(command, { tab, echo: !incognito })
   } else {
     return Promise.reject(
       new Error(

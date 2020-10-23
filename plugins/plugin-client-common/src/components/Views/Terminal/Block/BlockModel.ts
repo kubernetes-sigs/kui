@@ -257,12 +257,6 @@ export function Finished(
   }
 }
 
-export function isHidden(block: BlockModel) {
-  if (isActive(block) || isAnnouncement(block) || isCancelled(block) || isEmpty(block)) {
-    return false
-  }
-}
-
 export function isOutputOnly(block: BlockModel) {
   if (isProcessing(block)) {
     return block.startEvent.echo === false
@@ -282,10 +276,15 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
 
 /** @return whether the block has a completeEvent trait */
 export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
-  return isOk(block) || isOops(block)
+  return (isOk(block) || isOops(block)) && block.completeEvent !== undefined
+}
+
+/** @return whether this block was asked to be incognito */
+export function isHidden(block: BlockModel): boolean {
+  return isWithCompleteEvent(block) && block.completeEvent.execOptions && block.completeEvent.execOptions.echo === false
 }
 
 /** @return whether the block is from replay */
-export function isReplay(block: BlockModel) {
+export function isReplay(block: BlockModel): boolean {
   return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
 }

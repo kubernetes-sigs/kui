@@ -32,7 +32,6 @@ import {
   isRandomErrorResponse1,
   isRandomErrorResponse2,
   isTable,
-  isTabLayoutModificationResponse,
   isMixedResponse,
   isXtermResponse,
   isUsageError
@@ -140,8 +139,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
             />
           </span>
         )
-      } else if (isTabLayoutModificationResponse(response)) {
-        return <Commentary {...response.spec.ok.props} isPartOfMiniSplit={this.props.isPartOfMiniSplit} />
       } else if (isRadioTable(response)) {
         return (
           <KuiContext.Consumer>
