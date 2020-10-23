@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.7](https://github.com/IBM/kui/compare/v9.0.6...v9.0.7) (2020-10-23)
+
+**Note:** Version bump only for package @kui-shell/plugin-s3
+
 ## [9.0.6](https://github.com/IBM/kui/compare/v9.0.5...v9.0.6) (2020-10-23)
 
 **Note:** Version bump only for package @kui-shell/plugin-s3
