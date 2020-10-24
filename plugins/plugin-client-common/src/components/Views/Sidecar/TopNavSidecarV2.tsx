@@ -38,7 +38,6 @@ import { BreadcrumbView } from '../../spi/Breadcrumb'
 import BaseSidecar, { Props, State } from './BaseSidecarV2'
 
 import '../../../../web/css/static/ToolbarButton.scss'
-import '../../../../web/scss/components/Sidecar/Nested.scss'
 
 /** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
 const KuiContent = React.lazy(() => import('../../Content/KuiContent'))
@@ -228,7 +227,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     const { toolbarText } = this.props.response
 
     return (
-      <div className="sidecar-content-container">
+      <div className="sidecar-content-container kui--tab-content">
         <div className="custom-content">
           <ToolbarContainer
             tab={this.props.tab}
