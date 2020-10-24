@@ -12,6 +12,7 @@
     "url": "git+https://github.com/IBM/kui.git"
   },
   "bin": {
+    "kui-hack-carbon": "./bin/hackCarbon.sh",
     "kui-pty-rebuild": "./bin/pty-rebuild.sh",
     "kui-build-headless": "./dist/headless/build.sh",
     "kui-build-electron": "./dist/electron/build.sh",
