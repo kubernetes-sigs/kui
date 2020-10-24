@@ -113,7 +113,7 @@ body.still-loading .repl {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 1rem;
+  padding: 1rem;
   font-size: 1.5rem;
   font-family: var(--font-sans-serif);
 }
