@@ -85,9 +85,6 @@ export interface InputOptions extends BlockOperationTraits {
   /** Optional: onFocus handler */
   onInputFocus?: (event: React.FocusEvent<HTMLInputElement>) => void
 
-  /** insert an active block before this block */
-  willInsertBlock?: () => void
-
   /** Capture a screenshot of the enclosing block */
   willScreenshot?: () => void
 
@@ -485,7 +482,7 @@ export default class Input extends InputProvider {
     if (active) {
       if (this.props.isFocused && this.state.prompt && document.activeElement !== this.state.prompt) {
         setTimeout(() => {
-          if (isInViewport(this.state.prompt)) {
+          if (isInViewport(this.state.prompt) && this.props.isFocused) {
             this.state.prompt.focus()
           }
         })
