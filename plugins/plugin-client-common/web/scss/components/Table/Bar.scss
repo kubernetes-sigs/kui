@@ -42,11 +42,6 @@ $border-radius: 2px 4px;
   }
 }
 
-@include sidecar-visible {
-  .kui--bar-wrapper {
-    min-width: 10rem;
-  }
-}
 @include narrow-window {
   .kui--bar-wrapper {
     min-width: 10rem;

@@ -15,16 +15,36 @@
  */
 
 import React from 'react'
-import { KResponse, ParsedOptions, eventChannelUnsafe, isPopup } from '@kui-shell/core'
+import { KResponse, Tab as KuiTab, ParsedOptions, eventChannelUnsafe, isPopup } from '@kui-shell/core'
 
 import Width from './width'
 import LocationProps from './Location'
-import { Props as BaseProps } from './BaseSidecar'
 import TitleBar, { Props as TitleBarProps } from './TitleBar'
 
+import '../../../../web/css/static/sidecar.scss'
+import '../../../../web/css/static/sidecar-main.css'
+import '../../../../web/css/static/sidecar-carbon.css'
 import '../../../../web/scss/components/Sidecar/_index.scss'
 
-export type Props<R extends KResponse> = BaseProps &
+export interface SidecarOptions {
+  defaultWidth?: Width
+  onClose?: () => void
+
+  /** Current presentation of the sidecar; e.g. Maximized or Closed or Default width? */
+  width?: Width
+  willChangeSize?: (width: Width) => void
+
+  willLoseFocus?: () => void
+}
+
+export type BaseProps = {
+  uuid?: string
+  tab?: KuiTab
+  active?: boolean
+}
+
+export type Props<R extends KResponse> = SidecarOptions &
+  BaseProps &
   LocationProps & {
     response?: R
     argvNoOptions?: string[]

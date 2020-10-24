@@ -47,10 +47,6 @@ $grid-cell-size: 1.25rem;
 }
 
 .repl {
-  &.sidecar-visible .kui--data-table-wrapper.kui--data-table-as-grid {
-    flex: initial;
-  }
-
   .kui--data-table-as-grid {
     .kui--card-header {
       border-bottom: 1px solid var(--color-base03);
@@ -132,9 +128,6 @@ $grid-cell-size: 1.25rem;
 }
 
 /* fine-tune the STATUS/badge presentation of tables when the sidecar is open, or with narrower windows */
-.repl.sidecar-visible {
-  @include badge-only;
-}
 @include narrow-window {
   @include badge-only;
 

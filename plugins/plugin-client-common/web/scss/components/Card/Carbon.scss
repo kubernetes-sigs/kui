@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+@import '_mixins';
 @import '~carbon-components/scss/components/tile/_tile.scss';
-@import '../WatchPane/WatchPane.scss';
 
-[kui-theme-style] .bx--tile {
+body[kui-theme-style] .bx--tile {
   min-width: unset;
   min-height: unset;
   background-color: var(--color-base01);

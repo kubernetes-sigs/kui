@@ -4,7 +4,7 @@
    see https://github.com/xtermjs/xterm.js/pull/2067
    see https://github.com/IBM/kui/issues/1518
 */
-[kui-theme-style] .kui--tab-content {
+body[kui-theme-style] .kui--tab-content {
   .xterm-screen,
   .xterm-rows > div {
     width: 100% !important;
@@ -288,6 +288,6 @@ disabled see https://github.com/IBM/kui/issues/3939
 }
 
 /* selection */
-[kui-theme-style='light'] .xterm-container .xterm-screen .xterm-selection div {
+body[kui-theme-style='light'] .xterm-container .xterm-screen .xterm-selection div {
   background-color: rgba(0, 0, 0, 0.3);
 }

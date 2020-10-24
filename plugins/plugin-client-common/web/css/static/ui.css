@@ -293,7 +293,7 @@ code.fancy-code.hljs {
 .somewhat-smaller-text {
   font-size: 0.925rem;
 }
-[kui-theme-style] .sub-text {
+body[kui-theme-style] .sub-text {
   color: var(--color-text-02);
 }
 .lighter-text {
@@ -394,7 +394,7 @@ pre.monospace {
   font-size: inherit;
   font-weight: inherit;
 }
-[kui-theme-style] {
+body[kui-theme-style] {
   .small-bottom-pad {
     margin-bottom: 1ex;
     display: inline-flex;
@@ -427,7 +427,7 @@ pre.monospace {
     margin-right: 1em;
   }
 }
-.repl:not(.sidecar-visible) .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div,
+.repl .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div,
 body.subwindow .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > div {
   padding-right: 2em;
 }
@@ -731,7 +731,7 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-size: 0.75rem;
   border-radius: 6px;
 }
-[kui-theme-style="dark"] {
+body[kui-theme-style="dark"] {
   @include CommentaryCode {
     background-color: rgba(227, 231, 235, 0.1);
   }

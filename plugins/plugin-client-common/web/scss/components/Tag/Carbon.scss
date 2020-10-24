@@ -16,7 +16,7 @@
 
 @import '~carbon-components/scss/components/tag/_tag.scss';
 
-[kui-theme-style] .kui--status-stripe .kui--tag {
+body[kui-theme-style] .kui--status-stripe .kui--tag {
   color: var(--color-base00);
   background-color: var(--color-brand-03);
 

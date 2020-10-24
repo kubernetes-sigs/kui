@@ -16,9 +16,6 @@
 .repl-result > p:not(:first-child) {
   padding-top: 1rem;
 }
-.repl.sidecar-visible p {
-  white-space: normal;
-}
 .repl {
   .repl-prompt {
     --color-prompt-text: var(--color-brand-01);
@@ -74,7 +71,7 @@
   }
 }
 
-[kui-theme-style] .kui--repl-block-right-element {
+body[kui-theme-style] .kui--repl-block-right-element {
   color: inherit;
   font-size: 0.75rem;
 }
@@ -134,10 +131,6 @@
 .repl-block.valid-response .repl-output {
   display: flex;
   /* align-items: flex-start; */
-}
-.sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.processing .repl-output,
-.sidecar-visible tab:not(.sidecar-is-minimized) .repl-block.valid-response .repl-output {
-  align-items: stretch;
 }
 .repl-result-spinner {
   font-size: 0.875rem;
