@@ -348,6 +348,7 @@ class InProcessExecutor implements Executor {
         evaluatorOptions,
         execType,
         execUUID,
+        execOptions,
         echo: execOptions.echo
       })
 

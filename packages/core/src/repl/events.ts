@@ -25,6 +25,7 @@ export interface CommandStartEvent {
   command: string
   execUUID: string
   execType: ExecType
+  execOptions: ExecOptions
   echo: boolean
   evaluatorOptions: CommandOptions
 }
