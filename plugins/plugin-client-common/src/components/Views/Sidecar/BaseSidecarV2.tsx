@@ -22,6 +22,8 @@ import LocationProps from './Location'
 import { Props as BaseProps } from './BaseSidecar'
 import TitleBar, { Props as TitleBarProps } from './TitleBar'
 
+import '../../../../web/scss/components/Sidecar/_index.scss'
+
 export type Props<R extends KResponse> = BaseProps &
   LocationProps & {
     response?: R
