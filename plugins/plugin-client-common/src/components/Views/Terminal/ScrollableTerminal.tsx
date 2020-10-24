@@ -55,7 +55,7 @@ import {
   Cancelled,
   Processing,
   isActive,
-  isHidden,
+  isAnnouncement,
   isWithCompleteEvent,
   isOk,
   isOutputOnly,
@@ -115,7 +115,6 @@ type ScrollbackOptions = NewSplitRequest['options']
 type ScrollbackState = ScrollbackOptions & {
   uuid: string
   blocks: BlockModel[]
-  nAnnouncements: number
   forceMiniSplit: boolean
 
   /** tab facade */
@@ -343,7 +342,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 })
               ]
 
-          scrollback.nAnnouncements++
           scrollback.blocks = welcomeBlocks.concat(scrollback.blocks)
 
           if (welcomeMax !== -1) {
@@ -395,7 +393,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       uuid: sbuuid,
       cleaners: [],
       forceMiniSplit: false,
-      nAnnouncements: 0,
       inverseColors: opts.inverseColors,
       showThisIdxInMiniSplit: -2,
       blocks: this.restoreBlocks(sbuuid).concat([Active()])
@@ -485,6 +482,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** the REPL started executing a command */
   public onExecStart(uuid = this.currentUUID, asReplay: boolean, event: CommandStartEvent, insertIdx?: number) {
+    if (event.execOptions && event.execOptions.echo === false) {
+      return
+    }
+
     const processing = (block: BlockModel, asRerun = false) => {
       return [Processing(block, event, event.evaluatorOptions.isExperimental, asRerun, asReplay)]
     }
@@ -566,6 +567,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         event.response = updatedResponse
       }
     }
+
+    if (event.execOptions && event.execOptions.echo === false) return
 
     this.splice(uuid, curState => {
       const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === event.execUUID)
@@ -889,28 +892,22 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
-  /** insert an active block before the given idx */
-  private willInsertBlock(uuid: string, idx: number) {
-    this.splice(uuid, curState => {
-      return {
-        blocks: curState.blocks
-          .slice(0, idx)
-          .concat([Active()])
-          .concat(curState.blocks.slice(idx))
-      }
-    })
-  }
-
   /** remove the block at the given index */
   public willRemoveBlock(uuid: string, idx: number) {
     this.splice(uuid, curState => {
       this.removeWatchableBlock(curState.blocks[idx])
 
+      const blocks = curState.blocks
+        .slice(0, idx)
+        .concat(curState.blocks.slice(idx + 1))
+        .concat(this.hasActiveBlock(curState) ? [] : [Active()]) // plus a new block, if needed
+
+      const focusedBlockIdx =
+        curState.focusedBlockIdx >= idx ? this.findActiveBlock({ blocks }) : curState.focusedBlockIdx
+
       return {
-        blocks: curState.blocks
-          .slice(0, idx)
-          .concat(curState.blocks.slice(idx + 1))
-          .concat(this.hasActiveBlock(curState) ? [] : [Active()]) // plus a new block, if needed
+        blocks,
+        focusedBlockIdx
       }
     })
   }
@@ -921,8 +918,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** return the index of the Active Block from a scrollback */
-  private findActiveBlock(scrollback: ScrollbackState) {
-    return scrollback.blocks.findIndex(b => isActive(b))
+  private findActiveBlock({ blocks }: Pick<ScrollbackState, 'blocks'>) {
+    return blocks.findIndex(b => isActive(b))
   }
 
   private tabRefFor(scrollback: ScrollbackState, ref: HTMLElement) {
@@ -1065,28 +1062,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
 
             // don't render any echo:false blocks
-            const blocks = scrollback.blocks.filter(_ => !isHidden(_))
+            const blocks = scrollback.blocks
             const nBlocks = blocks.length
 
-            const showThisIdxInMiniSplit =
-              scrollback.showThisIdxInMiniSplit < 0
-                ? nBlocks + scrollback.showThisIdxInMiniSplit
-                : scrollback.showThisIdxInMiniSplit
-
-            // nOutputOnlyBlocks records the indices of commentary blocks
-            const nOutputOnlyBlocks = blocks
-              .map((_, idx) => {
-                if (isOutputOnly(_)) {
-                  return idx
-                }
-              })
-              .filter(_ => _ !== undefined)
-
-            const findDisplayedIdx = (idx: number) => {
-              const idxWithAnnouncements = idx - scrollback.nAnnouncements + 1
-              const nOutputOnlyBlocksSofar = nOutputOnlyBlocks.filter(x => x < idx).length
-              return idxWithAnnouncements - nOutputOnlyBlocksSofar
-            }
+            // running tally for In[_idx_]
+            let displayedIdx = 0
 
             return React.createElement(
               'ul',
@@ -1103,13 +1083,29 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               },
 
               blocks.map((_, idx) => {
+                if (!isAnnouncement(_) && !isOutputOnly(_)) {
+                  displayedIdx++
+                }
+
+                if (isMiniSplit) {
+                  const isVisibleInMiniSplit =
+                    isActive(_) ||
+                    (scrollback.showThisIdxInMiniSplit >= 0
+                      ? idx === scrollback.showThisIdxInMiniSplit
+                      : idx === scrollback.showThisIdxInMiniSplit + nBlocks)
+
+                  if (!isVisibleInMiniSplit) {
+                    return
+                  }
+                }
+
                 /** To find the focused block, we check:
                  *  1. the block is in a focused scrollback
                  *  2. the block idx matches scrollback.focusedBlockIdx (considering blocks that were hidden)
                  *  3. return the active block if there's no scrollback.focusedBlockIdx */
                 const isFocused =
                   sbidx === this.state.focusedIdx &&
-                  (idx === scrollback.focusedBlockIdx - (scrollback.blocks.length - nBlocks) ||
+                  (idx === scrollback.focusedBlockIdx ||
                     (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
 
                 /** Interior view wants to focus this block based on non-browser activity */
@@ -1135,14 +1131,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   <Block
                     key={(hasUUID(_) ? _.execUUID : _.state) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
                     idx={idx}
-                    displayedIdx={findDisplayedIdx(idx)}
+                    displayedIdx={displayedIdx}
                     model={_}
                     uuid={scrollback.uuid}
                     tab={tab}
                     noActiveInput={this.props.noActiveInput || isOfflineClient()}
                     onOutputRender={this.onOutputRender.bind(this, scrollback)}
                     onFocus={userHitTabToChangeBlockFocus}
-                    willInsertBlock={this.willInsertBlock.bind(this, scrollback.uuid, idx)}
                     willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
                     hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}
                     hasBlockBefore={this.hasBlockBefore(idx)}
@@ -1152,7 +1147,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     isExperimental={hasCommand(_) && _.isExperimental}
                     isFocused={isFocused}
                     isPartOfMiniSplit={isMiniSplit}
-                    isVisibleInMiniSplit={idx === showThisIdxInMiniSplit || idx === nBlocks - 1}
+                    isVisibleInMiniSplit={true}
                     isWidthConstrained={isWidthConstrained}
                     navigateTo={this.navigateTo.bind(this, scrollback)}
                     ref={c => {
