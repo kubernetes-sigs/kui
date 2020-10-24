@@ -23,7 +23,7 @@ body .bx--toast-notification {
   font-weight: normal !important;
 }
 
-[kui-theme-style] {
+body[kui-theme-style] {
   #screenshot-captured.bx--toast-notification {
     flex-direction: row;
 
@@ -133,9 +133,9 @@ body .bx--toast-notification {
   }
 }
 
-[kui-theme-style='light'] #kui--screenshot-overlay {
+body[kui-theme-style='light'] #kui--screenshot-overlay {
   background: var(--color-base02);
 }
-[kui-theme-style='dark'] #kui--screenshot-overlay {
+body[kui-theme-style='dark'] #kui--screenshot-overlay {
   background: var(--color-base04);
 }

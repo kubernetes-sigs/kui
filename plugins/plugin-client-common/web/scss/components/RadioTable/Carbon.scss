@@ -21,7 +21,7 @@
 $max-body-height: 40rem;
 $min-body-width: 30rem;
 
-[kui-theme-style] .kui--radio-table .kui--radio-table-row:hover:not([data-is-selected]) .bx--structured-list-svg {
+body[kui-theme-style] .kui--radio-table .kui--radio-table-row:hover:not([data-is-selected]) .bx--structured-list-svg {
   fill: var(--color-text-02);
 }
 

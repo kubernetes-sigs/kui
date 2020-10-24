@@ -20,8 +20,7 @@
 import React from 'react'
 import { eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
 
-import Width from '../Views/Sidecar/width'
-import { ComboSidecar, ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '../..'
+import { ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '../..'
 
 import '../../../web/css/static/Popup.scss'
 
@@ -76,9 +75,7 @@ export default class Popup extends React.PureComponent<Props, State> {
           active
           state={this.state.model.state}
           onTabReady={this.onTabReady.bind(this)}
-        >
-          <ComboSidecar defaultWidth={Width.Split75} />
-        </TabContent>
+        ></TabContent>
         <StatusStripe>
           <ContextWidgets className="kui--input-stripe-in-status-stripe">
             <InputStripe promptPlaceholder={this.state.promptPlaceholder} uuid={this.state.model.uuid} />

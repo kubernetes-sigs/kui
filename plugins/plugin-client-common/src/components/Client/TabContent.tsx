@@ -17,16 +17,12 @@
 import React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession } from '@kui-shell/core'
 
-import Icons from '../spi/Icons'
 import KuiContext from './context'
 import Confirm from '../Views/Confirm'
 import { TopTabButton } from './TabModel'
-import Width from '../Views/Sidecar/width'
 
 import getSize from '../Views/Terminal/getSize'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
-
-import '../../../web/css/static/split-pane.scss'
 
 type Cleaner = () => void
 
@@ -55,19 +51,12 @@ type Props = TabContentOptions &
     willUpdateTopTabButtons?: (buttons: TopTabButton[]) => void
   }
 
-type CurrentlyShowing = 'TerminalOnly' | 'TerminalPlusSidecar' | 'TerminalPlusWatcher' | 'TerminalSidecarWatcher'
 type SessionInitStatus = 'NotYet' | 'InProgress' | 'Reinit' | 'Done' | 'Error'
 
 type State = Partial<WithTab> & {
   sessionInit: SessionInitStatus
   sessionInitError?: Error
   showSessionInitDone: boolean
-
-  sidecarWidth: Width
-  priorSidecarWidth: Width /* prior to closing */
-  sidecarHasContent: boolean
-
-  activeView: CurrentlyShowing
 
   /** grab a ref (below) so that we can maintain focus */
   _terminal: ScrollableTerminal
@@ -100,10 +89,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
       tab: undefined,
       sessionInit: 'NotYet',
       showSessionInitDone: true,
-      sidecarWidth: Width.Closed,
-      priorSidecarWidth: Width.Closed,
-      sidecarHasContent: false,
-      activeView: 'TerminalOnly',
       _terminal: undefined
     }
   }
@@ -221,7 +206,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
                 {...this.props}
                 tab={this.state.tab}
                 config={config}
-                sidecarWidth={this.state.sidecarWidth}
                 onClear={() => {
                   this.setState({ showSessionInitDone: false })
 
@@ -244,50 +228,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
-  private onWillChangeSize(desiredWidth: Width) {
-    this.setState(curState => {
-      eventBus.emitTabLayoutChange(curState.tab.uuid, { isSidecarNowHidden: desiredWidth === Width.Closed })
-
-      const sidecarWidth = desiredWidth
-
-      const activeView: CurrentlyShowing = sidecarWidth === Width.Closed ? 'TerminalOnly' : 'TerminalPlusSidecar'
-
-      const newState = {
-        sidecarHasContent: true,
-        sidecarWidth,
-        priorSidecarWidth: curState.sidecarWidth,
-        activeView
-      }
-
-      this.updateTopTabButtons(newState)
-      return newState
-    })
-  }
-
-  private show(activeView: CurrentlyShowing) {
-    this.setState(curState => {
-      const showSidecar = activeView === 'TerminalPlusSidecar' || activeView === 'TerminalSidecarWatcher'
-      const sidecarWidth = showSidecar ? Width.Split60 : Width.Closed
-
-      const newState = {
-        sidecarWidth,
-        activeView,
-        priorSidecarWidth: curState.sidecarWidth,
-        sidecarHasContent: curState.sidecarHasContent
-      }
-
-      this.updateTopTabButtons(newState)
-      return newState
-    })
-  }
-
-  /** Switch to the given view, if we aren't already there */
-  private showIfNot(desiredView: CurrentlyShowing) {
-    if (this.state.activeView !== desiredView) {
-      this.show(desiredView)
-    }
-  }
-
   private onWillLoseFocus() {
     if (this.state._terminal) {
       this.state._terminal.doFocus()
@@ -301,8 +241,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
         key,
         uuid: this.props.uuid,
         active: this.props.active,
-        width: this.state.sidecarWidth,
-        willChangeSize: this.onWillChangeSize.bind(this),
         willLoseFocus: this.onWillLoseFocus.bind(this)
       })
     } else {
@@ -396,7 +334,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
         >
           <div className="kui--rows">
             <div className="kui--columns" style={{ position: 'relative' }}>
-              {this.leftRightSplit()}
+              {this.terminal()}
             </div>
             {this.bottom()}
           </div>
@@ -404,66 +342,5 @@ export default class TabContent extends React.PureComponent<Props, State> {
         </div>
       </React.Fragment>
     )
-  }
-
-  /**
-   * [ Terminal | Sidecar ]
-   */
-  private leftRightSplit() {
-    return this.terminal()
-  }
-
-  /**
-   * If given, use the top tab button controller to provide the
-   * latest button model.
-   *
-   */
-  private updateTopTabButtons(newState: Pick<State, 'activeView' | 'sidecarHasContent'>) {
-    if (this.props.willUpdateTopTabButtons) {
-      this.props.willUpdateTopTabButtons([this.terminalButton(newState), this.sidecarButton(newState)].filter(_ => _))
-    }
-  }
-
-  /**
-   * Note how we use the argument `state` to initialize things, but we
-   * intentionally use this.state in the onClick. The onClick handler
-   * may be invoked after any number of onClicks in this or other
-   * buttons. So it must pay attention to the *current* state, not the
-   * state at the time of creation.
-   *
-   */
-  private terminalButton(state: Pick<State, 'activeView'>): TopTabButton {
-    const key = 'show only terminal'
-
-    return {
-      icon: (
-        <Icons
-          icon="TerminalOnly"
-          key={key}
-          data-mode={key}
-          data-active={state.activeView === 'TerminalOnly' || undefined}
-          onClick={this.showIfNot.bind(this, 'TerminalOnly')}
-        />
-      )
-    }
-  }
-
-  /** Caution: see the Note for this.terminalButton, re: `state` versus `this.state` */
-  private sidecarButton(state: Pick<State, 'activeView' | 'sidecarHasContent'>): TopTabButton {
-    if (state.sidecarHasContent) {
-      const key = 'show terminal and sidecar'
-
-      return {
-        icon: (
-          <Icons
-            icon="TerminalPlusSidecar"
-            key={key}
-            data-mode={key}
-            data-active={state.activeView === 'TerminalPlusSidecar' || undefined}
-            onClick={this.showIfNot.bind(this, 'TerminalPlusSidecar')}
-          />
-        )
-      }
-    }
   }
 }

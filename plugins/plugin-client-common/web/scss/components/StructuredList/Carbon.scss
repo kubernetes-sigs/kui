@@ -33,22 +33,7 @@
   }
 }
 
-[kui-theme-style] {
-  .sidecar-visible {
-    .bx--structured-list.kui--radio-table {
-      width: 100%;
-
-      .bx--structured-list-td,
-      .bx--structured-list-th {
-        &.hide-with-sidecar {
-          display: none;
-        }
-      }
-    }
-  }
-}
-
-[kui-theme-style] .bx--structured-list.kui--table-like {
+body[kui-theme-style] .bx--structured-list.kui--table-like {
   font-family: var(--font-sans-serif);
   color: var(--color-text-01);
 }

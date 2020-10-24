@@ -323,11 +323,6 @@ body[kui-theme-style='dark'] {
   }
 }
 
-@include sidecar-visible {
-  @include Scrollback {
-    @include HideIn;
-  }
-}
 @include MiniSplit {
   @include HideIn;
 }
@@ -349,12 +344,5 @@ body[kui-theme-style='dark'] {
   }
   .kui--repl-block-re-editing {
     @include timestamp-like();
-  }
-}
-@include sidecar-visible {
-  /* timestamp when sidecar is visible */
-  .kui--repl-block-timestamp {
-    /* hide repl timestamp  */
-    display: none;
   }
 }

@@ -44,7 +44,6 @@ import {
 
 import Block from './Block'
 import getSize from './getSize'
-import Width from '../Sidecar/width'
 import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder, tabAlignment } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 import { onCopy, onCut, onPaste } from './ClipboardTransfer'
@@ -107,8 +106,6 @@ type Props = TerminalOptions & {
 
   /** KuiConfiguration */
   config: KuiConfiguration
-
-  sidecarWidth: Width
 }
 
 type ScrollbackOptions = NewSplitRequest['options']
@@ -992,20 +989,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     )
   }
 
-  /** Is the sidecar currently visible? */
-  private isSidecarVisible() {
-    return this.props.sidecarWidth !== Width.Closed
-  }
-
-  /** Render sidecar */
-  private sidecar() {
-    return (
-      <span className="kui--full-height kui--sidecar-container" data-visible={this.isSidecarVisible() || undefined}>
-        {this.props.children}
-      </span>
-    )
-  }
-
   /** Update the viewport to show a particular entry */
   private navigateTo(scrollback: ScrollbackState, dir: 'first' | 'last' | 'previous' | 'next') {
     this.splice(scrollback.uuid, ({ blocks, showThisIdxInMiniSplit }) => {
@@ -1050,16 +1033,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const nTerminals = this.state.splits.length
 
     return (
-      <div className={'repl' + (this.isSidecarVisible() ? ' sidecar-visible' : '')} id="main-repl">
-        <div
-          className="repl-inner zoomable kui--terminal-split-container"
-          data-split-count={nTerminals}
-          data-sidecar={!this.isSidecarVisible() ? undefined : this.props.sidecarWidth}
-        >
+      <div className="repl" id="main-repl">
+        <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={nTerminals}>
           {this.state.splits.map((scrollback, sbidx) => {
             const tab = this.tabFor(scrollback)
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
-            const isWidthConstrained = isMiniSplit || this.isSidecarVisible() || this.state.splits.length > 1
+            const isWidthConstrained = isMiniSplit || this.state.splits.length > 1
 
             // don't render any echo:false blocks
             const blocks = scrollback.blocks
@@ -1161,8 +1140,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               })
             )
           })}
-
-          {/* this.sidecar() */}
         </div>
       </div>
     )

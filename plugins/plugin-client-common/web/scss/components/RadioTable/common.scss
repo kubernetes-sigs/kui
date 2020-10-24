@@ -18,7 +18,7 @@
 @import '../Table/common';
 @import '../common/_narrow-window';
 
-[kui-theme-style] .kui--radio-table-wrapper {
+body[kui-theme-style] .kui--radio-table-wrapper {
   [data-tag='badge-circle'] {
     display: inline-block;
     vertical-align: middle;

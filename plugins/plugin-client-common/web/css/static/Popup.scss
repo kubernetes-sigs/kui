@@ -19,9 +19,6 @@ body.subwindow .kui--sidecar {
 body.subwindow[data-presentation='FixedSize'] .kui--sidecar .sidecar-header {
   border-bottom-color: var(--color-base01);
 }
-/* body.subwindow:not(.sidecar-visible) .kui--sidecar {
-  width: 0;
-} */
 body.subwindow .kui--sidecar .sidecar-header .sidecar-header-text.is-repl-like .entity-name {
   display: none;
 }

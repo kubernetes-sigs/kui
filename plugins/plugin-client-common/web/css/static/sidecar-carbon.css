@@ -31,7 +31,7 @@
   outline-color: var(--color-brand-03);
 }
 
-[kui-theme-style] .kui--sidecar {
+body[kui-theme-style] .kui--sidecar {
   .bx--tabs,
   .bx--tabs .bx--tabs__nav,
   .bx--tabs .bx--tabs__nav li,
@@ -88,7 +88,7 @@ body[kui-theme-style] a.bx--tabs--scrollable__nav-link {
 }
 
 /* override carbon color when hovering over tab */
-[kui-theme-style]
+body[kui-theme-style]
   .bx--tabs--scrollable__nav-item:hover:not(.bx--tabs--scrollable__nav-item--selected):not(.bx--tabs--scrollable__nav-item--disabled)
   .bx--tabs--scrollable__nav-link {
   color: var(--color-text-01) !important;
@@ -96,7 +96,7 @@ body[kui-theme-style] a.bx--tabs--scrollable__nav-link {
 }
 
 @include somewhat-narrow-window {
-  [kui-theme-style] .kui--sidecar {
+  body[kui-theme-style] .kui--sidecar {
     a.bx--tabs--scrollable__nav-link,
     a.bx--tabs--scrollable__nav-link:active {
       min-width: 5rem;
@@ -105,7 +105,7 @@ body[kui-theme-style] a.bx--tabs--scrollable__nav-link {
 }
 
 @include medium-width-window {
-  [kui-theme-style] .kui--sidecar {
+  body[kui-theme-style] .kui--sidecar {
     a.bx--tabs--scrollable__nav-link,
     a.bx--tabs--scrollable__nav-link:active {
       min-width: 6rem;

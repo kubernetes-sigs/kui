@@ -170,9 +170,6 @@ body .bx--data-table {
   }
 }
 
-body[kui-theme-style] .repl.sidecar-visible {
-  @include full-width-tables-with-constrained-width;
-}
 @include narrow-window {
   @include full-width-tables-with-constrained-width;
 }
@@ -236,6 +233,6 @@ body[kui-theme-style] .kui--data-table-wrapper {
   background-color: var(--color-sidecar-header);
 }
 
-[kui-theme-style='dark'] .kui--radio-table-row.kui--inverted-color-context.bx--structured-list-row--selected {
+body[kui-theme-style='dark'] .kui--radio-table-row.kui--inverted-color-context.bx--structured-list-row--selected {
   background-color: var(--color-sidecar-background);
 }

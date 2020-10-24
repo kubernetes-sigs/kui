@@ -83,7 +83,7 @@ $action-hover-delay: 210ms;
 
 /** A "T T" layout, i.e. two terminals side-by-side */
 @mixin SideBySide {
-  .repl:not(.sidecar-visible) .kui--terminal-split-container[data-split-count='2'] {
+  .repl .kui--terminal-split-container[data-split-count='2'] {
     @content;
   }
 }

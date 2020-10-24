@@ -16,7 +16,7 @@
 
 @import 'carbon-components/scss/components/notification/_toast-notification.scss';
 
-[kui-theme-style] {
+body[kui-theme-style] {
   .kui--terminal-alert.bx--toast-notification {
     flex-direction: row;
     background-color: var(--color-repl-background);

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-@import '../WatchPane/WatchPane.scss';
+@import '_mixins';
 @import '../../PatternFly/common';
 
-[kui-theme-style] .kui--watch-pane {
+body[kui-theme-style] .kui--watch-pane {
   .kui--card {
     background-color: var(--color-background-03);
 
@@ -58,11 +58,11 @@
     background-color: var(--color-sidecar-header);
   }
 }
-[kui-theme-style='dark'] .kui--card-footer.kui--inverted-color-context {
+body[kui-theme-style='dark'] .kui--card-footer.kui--inverted-color-context {
   background-color: var(--color-sidecar-background);
 }
 
-[kui-theme-style] .kui--card {
+body[kui-theme-style] .kui--card {
   white-space: normal;
   font-family: var(--font-sans-serif);
 
