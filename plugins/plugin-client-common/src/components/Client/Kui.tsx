@@ -37,7 +37,7 @@ import Card from '../spi/Card'
 import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
 import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
-import { ComboSidecar, InputStripe, TabContainer, Loading, Alert } from '../..'
+import { InputStripe, TabContainer, Loading, Alert } from '../..'
 
 import KuiIcon from '../../../icons/png/WelcomeLight.png'
 
@@ -298,9 +298,7 @@ export class Kui extends React.PureComponent<Props, State> {
               bottom={bottom}
               title={this.props.initialTabTitle}
               onTabReady={this.state.commandLine && this._onTabReady}
-            >
-              <ComboSidecar />
-            </TabContainer>
+            ></TabContainer>
             {this.props.toplevel}
             <StatusStripe {...this.statusStripeProps()}>{this.props.children}</StatusStripe>
           </div>

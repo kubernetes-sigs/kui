@@ -17,7 +17,7 @@
 @import './common';
 @import 'carbon-components/scss/components/ui-shell/_side-nav.scss';
 
-[kui-theme-style] {
+body[kui-theme-style] {
   .bx--side-nav {
     z-index: unset;
     position: unset;

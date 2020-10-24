@@ -17,7 +17,6 @@
 @import 'SidecarCommon.css';
 @import '../../scss/components/Sidecar/_mixins';
 @import '../../scss/components/Terminal/_mixins';
-@import '../../scss/components/Navigation/common';
 
 $focus-color: var(--color-brand-03);
 
@@ -213,7 +212,7 @@ $focus-color: var(--color-brand-03);
   flex-basis: 100%;
 }
 
-[kui-theme-style] .bx--copy-btn {
+body[kui-theme-style] .bx--copy-btn {
   border-color: transparent;
   background-color: transparent;
   font-family: var(--font-sans-serif);

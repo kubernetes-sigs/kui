@@ -59,24 +59,3 @@ body[kui-theme-style] .bx--pagination {
     background-color: var(--color-table-border3);
   }
 }
-
-body[kui-theme-style] .sidecar-visible {
-  .bx--pagination__left {
-    .bx--form-item,
-    label.bx--pagination__text {
-      /* left: hide the items per page if the sidecar is open */
-      display: none;
-    }
-
-    span.bx--pagination__text {
-      margin: 0;
-    }
-  }
-  .bx--pagination__right {
-    .bx--form-item,
-    .bx--pagination__text {
-      /* hide the "1 of N pages" text if the sidecar is open */
-      display: none;
-    }
-  }
-}

@@ -71,9 +71,6 @@
     height: 15rem !important; /* re: important, see https://github.com/IBM/kui/issues/5744 */
   }
 }
-@include sidecar-visible {
-  @include FullWidthEditor;
-}
 @include narrow-window {
   @include FullWidthEditor;
 }

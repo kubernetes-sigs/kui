@@ -14,48 +14,10 @@
  * limitations under the License.
  */
 
-@mixin sidecar-maximized-no-user {
-  .toggle-sidecar-maximization-button {
-    display: none;
-  }
-}
-
-@mixin Sidecar {
-  .kui--sidecar {
-    @content;
-  }
-}
-
-@mixin NestedSidecar {
-  .kui--sidecar-nested {
-    @content;
-  }
-}
-
-@mixin NestedTopNav {
-  @include NestedSidecar {
-    &[data-view='topnav'] {
-      @content;
-    }
-  }
-}
-
-@mixin NestedLeftNav {
-  @include NestedSidecar {
-    &[data-view='leftnav'] {
-      @content;
-    }
-  }
-}
-
-@mixin NotMaximized {
-  &:not(.maximized) {
-    @content;
-  }
-}
-
-@mixin Maximized {
-  &.maximized {
-    @content;
-  }
-}
+$num-columns: 4; /* keep in sync with WatchPane.capacity() */
+$master-font-size: 0.75em;
+$cell-size: 0.875em;
+$head-spacing: 0.5em;
+$body-spacing: 0.5em;
+$pane-gap: 0.5em;
+$header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wrapper */

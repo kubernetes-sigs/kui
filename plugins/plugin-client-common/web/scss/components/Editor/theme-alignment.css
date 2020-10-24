@@ -1,49 +1,49 @@
 /* these are the indentation indicators */
-[kui-theme-style] .monaco-editor .lines-content .cigra {
+body[kui-theme-style] .monaco-editor .lines-content .cigra {
   /* this is the active indentation indicator */
   box-shadow: 1px 0 0 0 var(--color-base0D) inset;
   transition: box-shadow 300ms ease-in-out;
 }
-[kui-theme-style] .monaco-editor .lines-content .cigr {
+body[kui-theme-style] .monaco-editor .lines-content .cigr {
   /* this is the inactive indentation indicator */
   box-shadow: 1px 0 0 0 var(--color-base04) inset;
   transition: box-shadow 300ms ease-in-out;
 }
 
-[kui-theme-style] .monaco-editor {
+body[kui-theme-style] .monaco-editor {
   transition: color 300ms ease-in-out;
   color: var(--color-text-01);
 }
 
-[kui-theme-style] .monaco-editor .current-line ~ .line-numbers {
+body[kui-theme-style] .monaco-editor .current-line ~ .line-numbers {
   transition: color 300ms ease-in-out;
   color: var(--color-brand-02);
 }
-[kui-theme-style] .monaco-editor .line-numbers {
+body[kui-theme-style] .monaco-editor .line-numbers {
   transition: color 300ms ease-in-out;
   color: var(--color-text-02);
   font-weight: 300;
 }
 
-[kui-theme-style] .monaco-editor .mtk8,
-[kui-theme-style] .monaco-editor .keyword {
+body[kui-theme-style] .monaco-editor .mtk8,
+body[kui-theme-style] .monaco-editor .keyword {
   transition: color 300ms ease-in-out;
   color: var(--color-base0C);
 }
 
-[kui-theme-style] .monaco-editor .mtk6,
-[kui-theme-style] .monaco-editor .selector-tag,
-[kui-theme-style] .monaco-editor .title,
-[kui-theme-style] .monaco-editor .section,
-[kui-theme-style] .monaco-editor .doctag,
-[kui-theme-style] .monaco-editor .name,
-[kui-theme-style] .monaco-editor .strong {
+body[kui-theme-style] .monaco-editor .mtk6,
+body[kui-theme-style] .monaco-editor .selector-tag,
+body[kui-theme-style] .monaco-editor .title,
+body[kui-theme-style] .monaco-editor .section,
+body[kui-theme-style] .monaco-editor .doctag,
+body[kui-theme-style] .monaco-editor .name,
+body[kui-theme-style] .monaco-editor .strong {
   font-weight: bold;
   color: var(--color-base0D);
 }
 
-[kui-theme-style] .monaco-editor .mtk22,
-[kui-theme-style] .monaco-editor .mtk4 {
+body[kui-theme-style] .monaco-editor .mtk22,
+body[kui-theme-style] .monaco-editor .mtk4 {
   /* map keys */
   /* notes:
        mtk22 is the CSS class for YAML keys
@@ -53,74 +53,74 @@
   color: var(--color-map-key);
 }
 
-[kui-theme-style] .monaco-editor .mtk1 {
+body[kui-theme-style] .monaco-editor .mtk1 {
   /* map keys */
   transition: color 300ms ease-in-out;
   color: var(--color-map-value);
 }
-[kui-theme-style] .monaco-editor .mtk5 {
+body[kui-theme-style] .monaco-editor .mtk5 {
   /* map values */
   transition: color 300ms ease-in-out;
   color: var(--color-text-01);
 }
 
-[kui-theme-style] .monaco-editor .mti20,
-[kui-theme-style] .monaco-editor .comment {
+body[kui-theme-style] .monaco-editor .mti20,
+body[kui-theme-style] .monaco-editor .comment {
   transition: color 300ms ease-in-out;
   color: var(--color-base03);
 }
 
-[kui-theme-style] .monaco-editor .mtk7 {
+body[kui-theme-style] .monaco-editor .mtk7 {
   /* comments */
   transition: color 300ms ease-in-out;
   color: var(--color-text-02);
 }
 
-[kui-theme-style] .monaco-editor .mtk20,
-[kui-theme-style] .monaco-editor .string,
-[kui-theme-style] .monaco-editor .title,
-[kui-theme-style] .monaco-editor .section,
-[kui-theme-style] .monaco-editor .built_in,
-[kui-theme-style] .monaco-editor .literal,
-[kui-theme-style] .monaco-editor .type,
-[kui-theme-style] .monaco-editor .addition,
-[kui-theme-style] .monaco-editor .tag,
-[kui-theme-style] .monaco-editor .quote,
-[kui-theme-style] .monaco-editor .name,
-[kui-theme-style] .monaco-editor .selector-id,
-[kui-theme-style] .monaco-editor .selector-class {
+body[kui-theme-style] .monaco-editor .mtk20,
+body[kui-theme-style] .monaco-editor .string,
+body[kui-theme-style] .monaco-editor .title,
+body[kui-theme-style] .monaco-editor .section,
+body[kui-theme-style] .monaco-editor .built_in,
+body[kui-theme-style] .monaco-editor .literal,
+body[kui-theme-style] .monaco-editor .type,
+body[kui-theme-style] .monaco-editor .addition,
+body[kui-theme-style] .monaco-editor .tag,
+body[kui-theme-style] .monaco-editor .quote,
+body[kui-theme-style] .monaco-editor .name,
+body[kui-theme-style] .monaco-editor .selector-id,
+body[kui-theme-style] .monaco-editor .selector-class {
   transition: color 300ms ease-in-out;
   color: var(--color-map-key);
 }
 
 /* e.g. markdown code */
-[kui-theme-style] .monaco-editor .mtk23 {
+body[kui-theme-style] .monaco-editor .mtk23 {
   transition: color 300ms ease-in-out;
   color: var(--color-base0F);
 }
 
-[kui-theme-style] .monaco-editor .meta,
-[kui-theme-style] .monaco-editor .subst,
-[kui-theme-style] .monaco-editor .symbol,
-[kui-theme-style] .monaco-editor .regexp,
-[kui-theme-style] .monaco-editor .attribute,
-[kui-theme-style] .monaco-editor .deletion,
-[kui-theme-style] .monaco-editor .variable,
-[kui-theme-style] .monaco-editor .template-variable,
-[kui-theme-style] .monaco-editor .link,
-[kui-theme-style] .monaco-editor .bullet {
+body[kui-theme-style] .monaco-editor .meta,
+body[kui-theme-style] .monaco-editor .subst,
+body[kui-theme-style] .monaco-editor .symbol,
+body[kui-theme-style] .monaco-editor .regexp,
+body[kui-theme-style] .monaco-editor .attribute,
+body[kui-theme-style] .monaco-editor .deletion,
+body[kui-theme-style] .monaco-editor .variable,
+body[kui-theme-style] .monaco-editor .template-variable,
+body[kui-theme-style] .monaco-editor .link,
+body[kui-theme-style] .monaco-editor .bullet {
   transition: color 300ms ease-in-out;
   color: var(--color-base03);
 }
 
-[kui-theme-style] .monaco-editor .emphasis {
+body[kui-theme-style] .monaco-editor .emphasis {
   font-style: italic;
 }
 
 /* hover/tooltip */
-[kui-theme-style] .monaco-editor .monaco-editor-overlaymessage {
+body[kui-theme-style] .monaco-editor .monaco-editor-overlaymessage {
 }
-[kui-theme-style] .monaco-editor .monaco-editor-overlaymessage .message {
+body[kui-theme-style] .monaco-editor .monaco-editor-overlaymessage .message {
   background-color: var(--color-base05);
   border-color: transparent;
   color: var(--color-base01);
@@ -130,27 +130,27 @@
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-[kui-theme-style] .monaco-editor .monaco-editor-overlaymessage .anchor {
+body[kui-theme-style] .monaco-editor .monaco-editor-overlaymessage .anchor {
   border-top-color: var(--color-base05);
 }
 
 /* bracket matches */
-[kui-theme-style] .cdr.bracket-match {
+body[kui-theme-style] .cdr.bracket-match {
   border-color: rgba(255, 255, 255, 0.25);
   background-color: transparent;
 }
 
 /* current line highlight */
-[kui-theme-style] .monaco-editor .margin-view-overlays .current-line-margin,
-[kui-theme-style] .monaco-editor .view-overlays .current-line {
+body[kui-theme-style] .monaco-editor .margin-view-overlays .current-line-margin,
+body[kui-theme-style] .monaco-editor .view-overlays .current-line {
   border-color: var(--color-base03);
 }
 
 /* cursor */
-[kui-theme-style] .monaco-editor .cursor {
+body[kui-theme-style] .monaco-editor .cursor {
   background-color: var(--color-support-01);
 }
 
-[kui-theme-style] .monaco-editor .folded-background {
+body[kui-theme-style] .monaco-editor .folded-background {
   background-color: var(--color-table-border3);
 }

@@ -17,7 +17,7 @@
 @import '../../PatternFly/common';
 @import './common';
 
-[kui-theme-style] {
+body[kui-theme-style] {
   .pf-c-data-list {
     white-space: normal;
     border: none;
@@ -34,19 +34,5 @@
 
   .pf-m-selected [data-is-name] {
     font-weight: 700;
-  }
-
-  .sidecar-visible {
-    .pf-c-data-list {
-      width: 100%;
-
-      .pf-c-data-list__cell:not([data-is-name]) {
-        flex: initial;
-      }
-
-      .hide-with-sidecar {
-        display: none;
-      }
-    }
   }
 }

@@ -45,9 +45,8 @@ export { default as Loading } from './components/spi/Loading'
 export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 
 // sidecar components
-export { default as ComboSidecar } from './components/Views/Sidecar/ComboSidecar'
-export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidecar'
-export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecar'
+export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidecarV2'
+export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecarV2'
 
 // SPI
 export { default as Card } from './components/spi/Card'

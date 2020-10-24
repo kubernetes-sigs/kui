@@ -31,46 +31,25 @@
   grid-area: T5;
 }
 
-/** Grid assignment for sidecar */
-.kui--sidecar-container {
-  display: none;
-  &[data-visible] {
-    display: block;
-    grid-area: S;
-  }
-}
-
 /** Case: no splits */
-.repl:not(.sidecar-visible),
-.repl.sidecar-visible {
-  .kui--terminal-split-container[data-split-count='1'] {
-    grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(1, 1fr);
-    grid-template-areas: 'T1';
-
-    &[data-sidecar] {
-      grid-template-columns: repeat(5, 1fr);
-      grid-template-areas: 'T1 T1 S S S'; /* 40/60 split */
-    }
-  }
+.kui--terminal-split-container[data-split-count='1'] {
+  grid-template-columns: repeat(1, 1fr);
+  grid-template-rows: repeat(1, 1fr);
+  grid-template-areas: 'T1';
 }
 
-/**
- * Case: sidecar closed
- *
- */
-.repl:not(.sidecar-visible) .kui--terminal-split-container {
+.kui--terminal-split-container {
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
 
-  /* sidecar closed, two terminals */
+  /* two terminals */
   &[data-split-count='2'] {
     grid-template-areas:
       'T1 T2'
       'T1 T2';
   }
 
-  /* sidecar closed, three terminals */
+  /* three terminals */
   &[data-split-count='3'] {
     grid-template-areas:
       'T1 T3 T3'
@@ -78,7 +57,7 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* sidecar closed, four terminals */
+  /* four terminals */
   &[data-split-count='4'] {
     grid-template-areas:
       'T1 T2 T3'
@@ -86,85 +65,11 @@
     grid-template-columns: repeat(3, 1fr);
   }
 
-  /* sidecar closed, five terminals */
+  /* five terminals */
   &[data-split-count='5'] {
     grid-template-areas:
       'T1 T2 T3'
       'T4 T5 T5';
     grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@mixin sidecar-maximized {
-  grid-template: repeat(1, 1fr) / repeat(1, 1fr);
-  grid-template-areas: 'S';
-  .kui--scrollback {
-    display: none;
-  }
-}
-
-@mixin sidecar-maximized-always {
-  &[data-sidecar][data-split-count] {
-    @include sidecar-maximized;
-  }
-}
-
-@mixin sidecar-maximized-by-user {
-  &[data-sidecar='100%'][data-split-count] {
-    @include sidecar-maximized;
-  }
-}
-
-/** 
- * Case: sidecar open
- *
- */
-.repl.sidecar-visible .kui--terminal-split-container {
-  grid-template-columns: repeat(1, 1fr);
-
-  @include sidecar-maximized-by-user;
-
-  /* sidecar open, two terminals */
-  &[data-split-count='2'] {
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    grid-template-areas: 'T1 T1 S S S' 'T2 T2 S S S';
-  }
-
-  /* sidecar open, three terminals */
-  &[data-split-count='3'] {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(10, 1fr);
-    grid-template-areas:
-      'T1 S S'
-      'T1 S S'
-      'T1 S S'
-      'T1 S S'
-      'T1 S S'
-      'T2 S S'
-      'T2 T3 T3'
-      'T2 T3 T3'
-      'T2 T3 T3'
-      'T2 T3 T3';
-  }
-
-  /* sidecar open, four terminals */
-  &[data-split-count='4'] {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    grid-template-areas:
-      'T1 S S'
-      'T2 S S'
-      'T3 T4 T4';
-  }
-
-  /* sidecar open, five terminals */
-  &[data-split-count='5'] {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    grid-template-areas:
-      'T1 S S'
-      'T2 S S'
-      'T3 T4 T5';
   }
 }

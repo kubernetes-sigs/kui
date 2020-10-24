@@ -146,9 +146,6 @@
 @include narrow-window {
   @include FullWidthInScrollback;
 }
-@include sidecar-visible {
-  @include FullWidthInScrollback;
-}
 @include MiniSplit {
   @include FullWidth;
   @include Commentary {
