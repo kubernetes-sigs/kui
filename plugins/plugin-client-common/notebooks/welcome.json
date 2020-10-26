@@ -9,7 +9,7 @@
   "spec": {
     "splits": [
       {
-        "uuid": "4_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
@@ -19,13 +19,13 @@
                 "children": "# Kui: A Framework for Graphical Terminals\n\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\n\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app."
               }
             },
-            "historyIdx": 250,
-            "cwd": "~/Workspace8/kui",
-            "command": "#  # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app.",
+            "historyIdx": 249,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "#   # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app.",
             "startEvent": {
               "route": "/#",
-              "startTime": 1603205290447,
-              "command": "#  # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app.",
+              "startTime": 1603730521108,
+              "command": "#   # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -50,20 +50,27 @@
               },
               "execType": 3,
               "execUUID": "a0ff5b92-3661-45c7-88e4-a5d8694502ea",
+              "execOptions": {
+                "echo": true,
+                "type": 3,
+                "execUUID": "a0ff5b92-3661-45c7-88e4-a5d8694502ea",
+                "history": 249,
+                "env": {}
+              },
               "echo": true
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1603205290658,
-              "command": "# # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app.",
+              "completeTime": 1603730521211,
+              "command": "#  # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app.",
               "argvNoOptions": [
                 "#",
-                "  # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app."
+                "   # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app."
               ],
               "parsedOptions": {
                 "_": [
                   "#",
-                  "  # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app."
+                  "   # Kui: A Framework for Graphical Terminals\\n\\nKui is a **Terminal** where commands are not limited to ASCII art. With Kui, commands may respond with **Graphics**, and a graphical session can be saved and shared, via **Notebooks**. What you are seeing now is a Notebook. Everything you see is the output of some terminal command.\\n\\nKui uses [Electron](https://electronjs.org). Using Electron, Kui can be distributed as a double-clickable platform application, as a static single-page web application, or as a fully hosted client-server web app."
                 ]
               },
               "execUUID": "a0ff5b92-3661-45c7-88e4-a5d8694502ea",
@@ -77,7 +84,7 @@
                 "echo": true,
                 "type": 3,
                 "execUUID": "a0ff5b92-3661-45c7-88e4-a5d8694502ea",
-                "history": 250,
+                "history": 249,
                 "env": {}
               },
               "response": {
@@ -88,36 +95,35 @@
                 }
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 250
+              "historyIdx": 249
             },
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "a0ff5b92-3661-45c7-88e4-a5d8694502ea",
-            "startTime": 1603205290447,
-            "prefersTerminalPresentation": false,
+            "startTime": 1603730521108,
             "outputOnly": true,
             "state": "valid-response"
           }
         ]
       },
       {
-        "uuid": "4_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "### Installation\n\nYou may choose to download a prebuilt image that bundles the core Kui features:\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\n### Contributing\n\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\n\n"
+                "children": "### Installation\n\nYou may choose to download a prebuilt image that bundles the core Kui features:\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\n### Contributing\n\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\n\n"
               }
             },
             "historyIdx": 250,
-            "cwd": "~/Workspace8/kui",
-            "command": "#  ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n",
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n",
             "startEvent": {
               "route": "/#",
-              "startTime": 1603205290448,
-              "command": "#  ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n",
+              "startTime": 1603730521109,
+              "command": "# ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -142,20 +148,27 @@
               },
               "execType": 3,
               "execUUID": "e35b71a6-201e-4448-90a1-958b69102767",
+              "execOptions": {
+                "echo": true,
+                "type": 3,
+                "execUUID": "e35b71a6-201e-4448-90a1-958b69102767",
+                "history": 250,
+                "env": {}
+              },
               "echo": true
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1603205290658,
-              "command": "# ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n",
+              "completeTime": 1603730521211,
+              "command": "# ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n",
               "argvNoOptions": [
                 "#",
-                "  ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n"
+                "   ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n"
               ],
               "parsedOptions": {
                 "_": [
                   "#",
-                  "  ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n"
+                  "   ### Installation\\n\\nYou may choose to download a prebuilt image that bundles the core Kui features:\\n\\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\\n\\n### Contributing\\n\\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\\n\\n"
                 ]
               },
               "execUUID": "e35b71a6-201e-4448-90a1-958b69102767",
@@ -176,7 +189,7 @@
                 "apiVersion": "kui-shell/v1",
                 "kind": "CommentaryResponse",
                 "props": {
-                  "children": "### Installation\n\nYou may choose to download a prebuilt image that bundles the core Kui features:\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\n### Contributing\n\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\n\n"
+                  "children": "### Installation\n\nYou may choose to download a prebuilt image that bundles the core Kui features:\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\n### Contributing\n\nIf you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).\n\n"
                 }
               },
               "responseType": "ScalarResponse",
@@ -185,15 +198,14 @@
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "e35b71a6-201e-4448-90a1-958b69102767",
-            "startTime": 1603205290448,
-            "prefersTerminalPresentation": false,
+            "startTime": 1603730521109,
             "outputOnly": true,
             "state": "valid-response"
           }
         ]
       },
       {
-        "uuid": "4_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+        "uuid": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
         "blocks": [
           {
             "response": {
@@ -203,13 +215,13 @@
                 "children": "### As a `kubectl` plugin\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\n\n```bash\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\nkubectl kui get pods\n```"
               }
             },
-            "historyIdx": 250,
-            "cwd": "~/Workspace8/kui",
-            "command": "#  ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```",
+            "historyIdx": 249,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "#   ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```",
             "startEvent": {
               "route": "/#",
-              "startTime": 1603205290450,
-              "command": "#  ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```",
+              "startTime": 1603730521110,
+              "command": "#   ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -234,20 +246,27 @@
               },
               "execType": 3,
               "execUUID": "5f62893f-8d4a-4c31-8442-29708bb5739a",
+              "execOptions": {
+                "echo": true,
+                "type": 3,
+                "execUUID": "5f62893f-8d4a-4c31-8442-29708bb5739a",
+                "history": 249,
+                "env": {}
+              },
               "echo": true
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1603205290658,
-              "command": "# ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```",
+              "completeTime": 1603730521211,
+              "command": "#  ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```",
               "argvNoOptions": [
                 "#",
-                "  ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```"
+                "   ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```"
               ],
               "parsedOptions": {
                 "_": [
                   "#",
-                  "  ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```"
+                  "   ### As a `kubectl` plugin\\nTo run Kui as `kubectl kui`, first ensure that your Kubernetes client version is 1.12 or higher. Then, add the unpacked directory to your PATH. For MacOS, the PATH is slightly different:\\n\\n```bash\\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\\nkubectl kui get pods\\n```"
                 ]
               },
               "execUUID": "5f62893f-8d4a-4c31-8442-29708bb5739a",
@@ -261,7 +280,7 @@
                 "echo": true,
                 "type": 3,
                 "execUUID": "5f62893f-8d4a-4c31-8442-29708bb5739a",
-                "history": 250,
+                "history": 249,
                 "env": {}
               },
               "response": {
@@ -272,20 +291,19 @@
                 }
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 250
+              "historyIdx": 249
             },
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "5f62893f-8d4a-4c31-8442-29708bb5739a",
-            "startTime": 1603205290450,
-            "prefersTerminalPresentation": false,
+            "startTime": 1603730521110,
             "outputOnly": true,
             "state": "valid-response"
           }
         ]
       },
       {
-        "uuid": "4_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+        "uuid": "2_8205f6b8-87bf-5679-ac83-e3519c17d89c",
         "inverseColors": true,
         "blocks": [
           {
@@ -296,13 +314,13 @@
                 "children": "## Learning via Notebooks\n\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\n\n### Authoring your own Notebook\n\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file."
               }
             },
-            "historyIdx": 250,
-            "cwd": "~/Workspace8/kui",
-            "command": "#  ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file.",
+            "historyIdx": 249,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "#   ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file.",
             "startEvent": {
               "route": "/#",
-              "startTime": 1603205290451,
-              "command": "#  ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file.",
+              "startTime": 1603730521111,
+              "command": "#   ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -327,20 +345,27 @@
               },
               "execType": 3,
               "execUUID": "1d787e36-a378-4b39-b976-d8a4097e30ee",
+              "execOptions": {
+                "echo": true,
+                "type": 3,
+                "execUUID": "1d787e36-a378-4b39-b976-d8a4097e30ee",
+                "history": 249,
+                "env": {}
+              },
               "echo": true
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1603205290658,
-              "command": "# ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file.",
+              "completeTime": 1603730521211,
+              "command": "#  ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file.",
               "argvNoOptions": [
                 "#",
-                "  ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file."
+                "   ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file."
               ],
               "parsedOptions": {
                 "_": [
                   "#",
-                  "  ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file."
+                  "   ## Learning via Notebooks\\n\\nUsing Kui, you may craft notebooks that intermix commentary (such as this) with command executions. The notebooks preserve the output of commands, so that you may share a full session with others. You can even serve up notebooks with a purely static single page web application.\\n\\n### Authoring your own Notebook\\n\\nTo author a notebook, execute the commands you'd like to capture, then either use File->Save, or the `snapshot /path/to/notebook.json` command to capture the contents of the current tab to a file."
                 ]
               },
               "execUUID": "1d787e36-a378-4b39-b976-d8a4097e30ee",
@@ -354,7 +379,7 @@
                 "echo": true,
                 "type": 3,
                 "execUUID": "1d787e36-a378-4b39-b976-d8a4097e30ee",
-                "history": 250,
+                "history": 249,
                 "env": {}
               },
               "response": {
@@ -365,20 +390,19 @@
                 }
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 250
+              "historyIdx": 249
             },
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "1d787e36-a378-4b39-b976-d8a4097e30ee",
-            "startTime": 1603205290451,
-            "prefersTerminalPresentation": false,
+            "startTime": 1603730521111,
             "outputOnly": true,
             "state": "valid-response"
           }
         ]
       },
       {
-        "uuid": "4_de257cab-7893-5d39-9f8c-248a88026a18",
+        "uuid": "2_de257cab-7893-5d39-9f8c-248a88026a18",
         "inverseColors": true,
         "blocks": [
           {
@@ -390,12 +414,12 @@
               }
             },
             "historyIdx": 250,
-            "cwd": "~/Workspace8/kui",
-            "command": "#  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "#   To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
             "startEvent": {
               "route": "/#",
-              "startTime": 1603205290452,
-              "command": "#  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
+              "startTime": 1603730521112,
+              "command": "#   To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -420,20 +444,27 @@
               },
               "execType": 3,
               "execUUID": "ab8e8b7c-f03c-43aa-bcc2-ad007df0e525",
+              "execOptions": {
+                "echo": true,
+                "type": 3,
+                "execUUID": "ab8e8b7c-f03c-43aa-bcc2-ad007df0e525",
+                "history": 250,
+                "env": {}
+              },
               "echo": true
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1603205290658,
-              "command": "# To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
+              "completeTime": 1603730521211,
+              "command": "#  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab.",
               "argvNoOptions": [
                 "#",
-                "  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
+                "   To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
               ],
               "parsedOptions": {
                 "_": [
                   "#",
-                  "  To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
+                  "   To start, click on one of these notebooks. You will then be able to browse your selected notebook in a new Kui tab."
                 ]
               },
               "execUUID": "ab8e8b7c-f03c-43aa-bcc2-ad007df0e525",
@@ -463,8 +494,7 @@
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "ab8e8b7c-f03c-43aa-bcc2-ad007df0e525",
-            "startTime": 1603205290452,
-            "prefersTerminalPresentation": false,
+            "startTime": 1603730521112,
             "outputOnly": true,
             "state": "valid-response"
           },
@@ -496,6 +526,14 @@
                   "css": "",
                   "onclickExec": "pexec",
                   "onclick": "open /kui/kubernetes/create-jobs.json",
+                  "attributes": [],
+                  "key": "Name"
+                },
+                {
+                  "name": "Kui &mdash; `Make Your Own Notebook`",
+                  "css": "",
+                  "onclickExec": "pexec",
+                  "onclick": "open /kui/make-notebook.json",
                   "attributes": [],
                   "key": "Name"
                 },
@@ -547,11 +585,11 @@
               "noEntityColors": true
             },
             "historyIdx": 251,
-            "cwd": "~/Workspace8/kui",
+            "cwd": "~/git/whisk/nickm/kui",
             "command": "ls -l /kui/**/*.json",
             "startEvent": {
               "route": "/ls",
-              "startTime": 1603205293207,
+              "startTime": 1603730521285,
               "command": "ls -l /kui/**/*.json",
               "evaluatorOptions": {
                 "usage": {
@@ -630,11 +668,18 @@
               },
               "execType": 3,
               "execUUID": "debdc233-42b5-4428-a382-5ed8d72dc112",
+              "execOptions": {
+                "echo": true,
+                "type": 3,
+                "execUUID": "debdc233-42b5-4428-a382-5ed8d72dc112",
+                "history": 251,
+                "env": {}
+              },
               "echo": true
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1603205293233,
+              "completeTime": 1603730521314,
               "command": "ls -l /kui/**/*.json",
               "argvNoOptions": ["ls", "/kui/**/*.json"],
               "parsedOptions": {
@@ -681,6 +726,14 @@
                     "css": "",
                     "onclickExec": "pexec",
                     "onclick": "open /kui/kubernetes/create-jobs.json",
+                    "attributes": [],
+                    "key": "Name"
+                  },
+                  {
+                    "name": "Kui &mdash; `Make Your Own Notebook`",
+                    "css": "",
+                    "onclickExec": "pexec",
+                    "onclick": "open /kui/make-notebook.json",
                     "attributes": [],
                     "key": "Name"
                   },
@@ -737,8 +790,7 @@
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "debdc233-42b5-4428-a382-5ed8d72dc112",
-            "startTime": 1603205293207,
-            "prefersTerminalPresentation": false,
+            "startTime": 1603730521285,
             "outputOnly": false,
             "state": "valid-response"
           }

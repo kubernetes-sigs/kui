@@ -16,7 +16,7 @@ aggregate views of operational data.
 
 We offer prebuilt images that provide Kubernetes enhancements:
 
-[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
+[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
 To run Kui as a [kubectl
 plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
