@@ -118,7 +118,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
     const nCells = visibleRows.length
     const nColumns = Math.ceil(Math.sqrt(nCells))
     const style = { gridTemplateColumns: `repeat(${nColumns}, 1.25rem)` }
-    const colorByDuration = response.durationColumnIdx >= 0
+    const colorByDuration = response.colorBy === 'duration' || (!response.colorBy && response.durationColumnIdx >= 0)
 
     return (
       <div className="bx--data-table kui--data-table-as-grid" style={style}>
@@ -148,7 +148,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
           }
 
           return (
-            <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name}>
+            <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name} className="kui--grid-cell">
               <span {...props}>{/red-background/.test(css) ? <ErrorCell /> : label}</span>
             </span>
           )

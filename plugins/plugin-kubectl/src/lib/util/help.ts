@@ -87,7 +87,6 @@ const commandDocTable = (
   style = TableStyle.Light
 ): Table => ({
   noSort: true,
-  noEntityColors: true,
   style,
   header: {
     name: headerKey,

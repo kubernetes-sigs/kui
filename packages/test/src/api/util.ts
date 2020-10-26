@@ -56,6 +56,8 @@ const sameStruct = (struct1: Record<string, any>, struct2: Record<string, any>, 
       }
     } else if (typeof struct1[key] !== typeof struct2[key]) {
       console.log(`typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[key]} ${typeof struct2[key]}`)
+      console.log(struct1)
+      console.log(struct2)
       return false
     } else if (typeof struct1[key] === 'object') {
       if (!sameStruct(struct1[key], struct2[key], subset)) {
@@ -80,6 +82,8 @@ const sameStruct = (struct1: Record<string, any>, struct2: Record<string, any>, 
       }
     } else if (typeof struct1[key] !== typeof struct2[key]) {
       console.log(`typeof struct1[${key}] !== typeof struct2[${key}] ${typeof struct1[key]} ${typeof struct2[key]}`)
+      console.log(struct1)
+      console.log(struct2)
       return false
     } else if (typeof struct2[key] === 'object') {
       if (!sameStruct(struct1[key], struct2[key], subset)) {
@@ -320,4 +324,14 @@ export async function removeBlock(res: AppAndCount) {
   await res.app.client.moveToObject(Selectors.PROMPT_N(N))
   await res.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON(N))
   await res.app.client.click(Selectors.BLOCK_REMOVE_BUTTON(N))
+}
+
+/** Switch sidecar tab */
+export function switchToTab(mode: string) {
+  return async (res: AppAndCount) => {
+    await res.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
+    await res.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
+    await res.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, mode))
+    return res
+  }
 }

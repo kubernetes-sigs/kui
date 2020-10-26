@@ -1,0 +1,23 @@
+# test a comment
+let api/demo.json = x => ({forecast: `sunny in ${x.address}`})
+   # test another comment
+let public/icon.svg = https://ibm.box.com/shared/static/gnttk3ehi44l6jsos670i7wcn3nzz247.svg
+
+
+# this better not be executed:
+#let foo = x=>x
+
+# this better not be executed, either:
+# let foo = x=>x
+
+#####
+#
+#########
+
+let public/hello.html = https://ibm.box.com/shared/static/zsye0mwai0kce2p6wssltpsi5bfj9dy0.html
+
+#
+#
+#
+
+

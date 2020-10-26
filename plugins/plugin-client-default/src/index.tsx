@@ -24,6 +24,7 @@ import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/comp
 // import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 import { Screenshot, Search, UpdateChecker } from '@kui-shell/plugin-electron-components'
+import { GridWidget as OpenWhiskGridWidget } from '@kui-shell/plugin-openwhisk'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
@@ -83,6 +84,7 @@ export default function renderMain(props: KuiProps) {
 
       <MeterWidgets>
         {/* <ClusterUtilization /> */}
+        <OpenWhiskGridWidget />
         {inBrowser() && <ProxyOfflineIndicator />}
         {!isPopup() && !inBrowser() && <UpdateChecker />}
         <Screenshot />
