@@ -257,6 +257,15 @@ export function createWindow(
       }
     })
 
+    /**
+     * Intercept window.location=...
+     * see https://github.com/IBM/kui/issues/2881
+     */
+    mainWindow.webContents.on('will-navigate', async (event, url) => {
+      event.preventDefault()
+      ;(await import('electron')).shell.openExternal(url)
+    })
+
     /** jump in and manage the way popups create new windows */
     mainWindow.webContents.on(
       'new-window',
