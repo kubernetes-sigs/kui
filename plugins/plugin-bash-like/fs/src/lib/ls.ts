@@ -223,7 +223,6 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
     noSort: true,
     defaultPresentation,
     allowedPresentations,
-    noEntityColors: true,
     style: wide ? undefined : TableStyle.Light
   }
 }

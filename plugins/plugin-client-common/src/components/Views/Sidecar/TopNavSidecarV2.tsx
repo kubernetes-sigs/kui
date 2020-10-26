@@ -160,6 +160,11 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     )
   }
 
+  /** Special case with no hero name, but badges... we need a filler element */
+  private fillerNamePart() {
+    return <div className="header-left-bits" />
+  }
+
   /** Tell the world that we have changed the focused mode */
   private broadcastFocusChange(idx: number) {
     // de-focus the old mode
@@ -279,7 +284,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
           <div className="header-main-content">
             <div className="kui--sidecar-header-and-toolbar">
               <div className="header-top-bits">
-                {namePart}
+                {namePart || this.fillerNamePart()}
 
                 <div className="header-right-bits">
                   <div className="custom-header-content">{badges}</div>

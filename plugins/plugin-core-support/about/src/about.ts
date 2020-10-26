@@ -167,7 +167,6 @@ function renderFullVersion(name: string, version: string): Table {
 
   return {
     noSort: true,
-    noEntityColors: true,
     header: {
       name: 'COMPONENT',
       attributes: [{ value: 'VERSION' }]

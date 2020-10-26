@@ -156,6 +156,9 @@ export class Table<RowType extends Row = Row> {
   /** Column index to be interpreted as a complete timestamp column */
   completeColumnIdx?: number
 
+  /** Coloring strategy for e.g. 'grid' and 'sequence-diagram' */
+  colorBy?: 'status' | 'duration'
+
   style?: TableStyle
 
   header?: RowType
@@ -163,8 +166,6 @@ export class Table<RowType extends Row = Row> {
   footer?: string[]
 
   noSort?: boolean
-
-  noEntityColors?: boolean
 
   title?: string
   breadcrumbs?: Breadcrumb[] | (() => Breadcrumb[])

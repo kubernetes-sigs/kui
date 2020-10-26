@@ -1,0 +1,10 @@
+build
+src
+tests/data/*
+tests/data/openwhisk/*
+!tests/data/openwhisk/headless/*
+dist/test/*
+dist/test/openwhisk1/*
+!dist/test/openwhisk1/headless.js
+tsconfig*
+/*.tgz

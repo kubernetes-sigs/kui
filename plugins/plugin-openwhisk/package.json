@@ -1,0 +1,44 @@
+{
+  "name": "@kui-shell/plugin-openwhisk",
+  "version": "9.1.0",
+  "description": "Kui plugin for OpenWhisk",
+  "license": "Apache-2.0",
+  "author": "Nick Mitchell",
+  "homepage": "https://github.com/kui-shell/oui#readme",
+  "bugs": {
+    "url": "https://github.com/kui-shell/oui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kui-shell/oui.git"
+  },
+  "keywords": [
+    "kui",
+    "plugin",
+    "openwhisk"
+  ],
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "dependencies": {
+    "adm-zip": "0.4.13",
+    "debug": "4.1.1",
+    "htmlparser2": "4.0.0",
+    "indefinite": "^2.3.1",
+    "js-yaml": "^3.13.1",
+    "needle": "2.4.0",
+    "openwhisk": "starpit/openwhisk-client-js#fix-214",
+    "parse-duration": "0.1.2",
+    "pretty-ms": "5.1.0",
+    "promise-retry": "1.1.1",
+    "tmp": "0.1.0",
+    "yargs-parser": "16.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32"
+}

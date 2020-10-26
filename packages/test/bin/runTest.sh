@@ -39,17 +39,16 @@ if [ -n "$LAYER" ]; then
         # Notes:
         # - see tools/travis/installers/openwhisk.sh for the creation of these files
         #
-        export WSK_CONFIG_FILE=~/.wskprops_${KEY}_${PORT_OFFSET}
-        export WSK_CONFIG_FILEb=~/.wskpropsb_${KEY}_${PORT_OFFSET}
-        export TEST_SPACE="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}"
-        export TEST_SPACE2="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}b"
+        export TEST_SPACE=guest
+        #export TEST_SPACE2="${TEST_SPACE_PREFIX-ns}${KEY}_${PORT_OFFSET}b"
 
+        WSK_CONFIG_FILE=~/.wskprops
         echo "Using wskconfig $WSK_CONFIG_FILE"
         echo "Using TEST_SPACE ${TEST_SPACE}"
 
         # check if we have already did auth allocation from previous tests against other mocha target
-        . ${WSK_CONFIG_FILEb}
-        export AUTH2=$AUTH
+        #. ${WSK_CONFIG_FILEb}
+        #export AUTH2=$AUTH
 
         . ${WSK_CONFIG_FILE}
         export API_HOST=$APIHOST

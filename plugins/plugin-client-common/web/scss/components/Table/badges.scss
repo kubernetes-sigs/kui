@@ -1,7 +1,31 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'mixins';
+@import 'colors';
 @import '../common/narrow-window';
 @import '../common/stippling';
 
 $grid-cell-size: 1.25rem;
+
+.kui--grid-cell:hover {
+  filter: $grid-cell-hover-filter;
+  cursor: pointer;
+  opacity: 1;
+}
 
 .bx--data-table,
 .kui--table-like-wrapper {
@@ -19,17 +43,17 @@ $grid-cell-size: 1.25rem;
     }
   }
   [data-tag='badge-circle'].green-background {
-    background-color: var(--color-green);
-    color: var(--color-ui-01);
+    color: $color-fg--bar-green;
+    background-color: $color-bg--bar-green;
   }
   [data-tag='badge-circle'].blue-background {
-    background-color: var(--color-latency-1);
-    color: var(--color-text-01);
+    background-color: $color-bg--bar-blue;
+    color: $color-fg--bar-blue;
   }
   [data-tag='badge-circle'].yellow-background,
   button.yellow-background {
-    background: var(--color-yellow);
-    color: var(--color-ui-01);
+    color: $color-fg--bar-yellow;
+    background: $color-bg--bar-yellow;
   }
   [data-tag='badge-circle'].red-background {
     --color1: var(--color-light-red);
@@ -40,8 +64,8 @@ $grid-cell-size: 1.25rem;
   [data-tag='badge-circle'] {
     &.gray-background,
     &.kui--status-unknown {
-      background: var(--color-base05);
-      color: var(--color-base00);
+      color: $color-fg--bar-gray;
+      background: $color-bg--bar-gray;
     }
   }
 }
@@ -88,10 +112,6 @@ $grid-cell-size: 1.25rem;
 
         [data-tag='badge'] [data-tag='badge-circle'] {
           &:hover {
-            filter: saturate(2) brightness(1.25);
-            cursor: pointer;
-            opacity: 1;
-
             .kui--grid-cell-label {
               mix-blend-mode: hard-light;
             }

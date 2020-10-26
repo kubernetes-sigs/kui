@@ -41,6 +41,9 @@
       "path": "plugins/plugin-skeleton"
     },
     {
+      "path": "plugins/plugin-openwhisk"
+    },
+    {
       "path": "plugins/plugin-client-default"
     },
     {

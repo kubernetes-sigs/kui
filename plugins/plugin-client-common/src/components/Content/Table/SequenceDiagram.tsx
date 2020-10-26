@@ -20,6 +20,7 @@ import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
 
 import Bar from './Bar'
 import DefaultColoring from './Coloring'
+import trafficLight from './css-for-status'
 import { /* renderCell, */ onClickForCell, CellOnClickHandler } from './TableCell'
 
 import '../../../../web/scss/components/Table/SequenceDiagram.scss'
@@ -30,6 +31,13 @@ interface Props {
   response: Table
   tab: Tab
   repl: REPL
+
+  /**
+   * Threshold in millis below which two rows will be considered to be
+   * part of the same dense region of time. Default: 120s
+   *
+   */
+  denseThreshold?: number
 }
 
 /**
@@ -70,19 +78,18 @@ function prettyPrintDuration(duration: number): string {
 
 export default class SequenceDiagram extends React.PureComponent<Props, State> {
   /**
-   * Threshold in millis below which two rows will be considered to be
-   * part of the same dense region of time.
+   * @see Props.denseThreshold
    *
    */
-  private static readonly denseThreshold = 120 * 1000
+  private static readonly DEFAULT_DENSE_THRESHOLD = 120 * 1000
 
   public constructor(props: Props) {
     super(props)
-    this.state = SequenceDiagram.computeGapModel(props.response, SequenceDiagram.denseThreshold)
+    this.state = SequenceDiagram.computeGapModel(props.response, props.denseThreshold)
   }
 
   public static getDerivedStateFromProps(props: Props) {
-    return SequenceDiagram.computeGapModel(props.response, SequenceDiagram.denseThreshold)
+    return SequenceDiagram.computeGapModel(props.response, props.denseThreshold)
   }
 
   /** @return numerator/interval formatted */
@@ -103,7 +110,10 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
    * `response` Table model.
    *
    */
-  private static computeGapModel(response: Table, denseThreshold: number): State {
+  private static computeGapModel(
+    response: Table,
+    denseThreshold = response.colorBy === 'status' ? Number.MAX_SAFE_INTEGER : SequenceDiagram.DEFAULT_DENSE_THRESHOLD
+  ): State {
     // indices of start and complete attributes
     const idx1 = response.startColumnIdx
     const idx2 = response.completeColumnIdx
@@ -115,6 +125,10 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
       .slice(0) // [SLICE]
       .sort((a, b) => {
         // [SORT]
+        if (response.noSort) {
+          return 0
+        }
+
         const jobNameComparo = a.name.localeCompare(b.name)
         if (jobNameComparo === 0) {
           // same job name; then compare by startTime
@@ -161,7 +175,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
           const currentInterval = intervals[intervals.length - 1]
           const gap = endMillis - currentInterval.startMillis
 
-          if (gap < denseThreshold && currentInterval.jobName === jobName) {
+          if (gap < denseThreshold && (response.colorBy === 'status' || currentInterval.jobName === jobName)) {
             // case 2: the gap is small relative to the start of the
             // current interval and for the same job as the current
             // interval, in which case we add to current interval
@@ -192,7 +206,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
         <tr>
           {/*  <th className="kui--header-cell">Name</th> */}
           <th className="kui--header-cell">Interval</th>
-          <th className="kui--header-cell hide-with-sidecar">Delta</th>
+          <th className="kui--header-cell">Delta</th>
           {/* this.props.response.statusColumnIdx >= 0 && <th className="kui--header-cell">Status</th> */}
         </tr>
       </thead>
@@ -200,7 +214,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
   }
 
   private nSpanCols() {
-    return 1 // this.props.response.statusColumnIdx >= 0 ? 4 : 3
+    return 2 // this.props.response.statusColumnIdx >= 0 ? 4 : 3
   }
 
   private overheads(interval: DenseInterval): { coldStartFraction: number; gapFraction: number } {
@@ -252,7 +266,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     const gap = [
       <tr key={`gaprowB-${intervalIdx}`} className="kui--interval-start">
         {/* <td /> */}
-        <td className="kui--gap-cell" colSpan={2}>
+        <td className="kui--gap-cell" colSpan={this.nSpanCols()}>
           <span className="flex-layout">
             {!hasStart ? '' : new Date(startMillis).toLocaleString()}
             {hasStart && endMillis && (
@@ -263,7 +277,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   ? `${Math.round(100 * overheads.coldStartFraction).toFixed(0)}% cold starts`
                   : ''}
                 {overheads.gapFraction > 0
-                  ? `, ${Math.round(100 * overheads.gapFraction).toFixed(0)}% scheduling gaps`
+                  ? `${overheads.coldStartFraction > 0 ? ', ' : ''}${Math.round(100 * overheads.gapFraction).toFixed(
+                      0
+                    )}% scheduling gaps`
                   : ''}
                 {overheads.coldStartFraction > 0 || overheads.gapFraction > 0 ? ')' : ''}
               </span>
@@ -274,7 +290,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
       <tr key={`gaprowB-${intervalIdx}-jobName`} className="kui--interval-start-jobName">
         <td
           className={['kui--gap-cell', 'kui--table-cell-is-name', onClick ? 'clickable' : ''].join(' ')}
-          colSpan={2}
+          colSpan={this.nSpanCols()}
           onClick={onClick}
         >
           {interval.jobName}
@@ -295,10 +311,18 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
         ]
   }
 
+  private colorByStatus() {
+    return this.props.response.colorBy === 'status' && this.props.response.statusColumnIdx >= 0
+  }
+
   private rows() {
     const idx1 = this.props.response.startColumnIdx
     const idx2 = this.props.response.completeColumnIdx
-    const coloring = new DefaultColoring(this.props.response)
+    const idx4 = this.props.response.statusColumnIdx
+
+    const colorByStatus = this.colorByStatus()
+    const durationColoring = new DefaultColoring(this.props.response)
+    const durationColor = durationColoring.durationCss.bind(durationColoring)
 
     return flatten(
       this.state.intervals.map((interval, intervalIdx) =>
@@ -318,6 +342,19 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
             const left = this.getFraction(startMillis - interval.startMillis, interval)
             const width = !duration ? undefined : this.getFraction(duration)
+            /* if (left + width >= 1) {
+              console.error(
+                'oops',
+                left,
+                width,
+                duration,
+                startMillis - interval.startMillis,
+                interval.endMillis - interval.startMillis,
+                interval.endMillis - duration - interval.startMillis,
+                interval,
+                this.state.maxEndMillis
+              )
+            } */
             const coldStart =
               this.props.response.coldStartColumnIdx >= 0 && row.attributes[this.props.response.coldStartColumnIdx]
                 ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
@@ -325,7 +362,18 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const widthB = coldStart ? this.getFraction(coldStart) : undefined
             const title = strings('Duration', prettyPrintDuration(duration))
             const titleB = coldStart ? strings('Cold Start', prettyPrintDuration(coldStart), title) : undefined
-            const className = coloring.durationCss(duration, false)
+            const className = colorByStatus ? trafficLight(row.attributes[idx4]) : durationColor(duration, false)
+            if (left + widthB >= 1) {
+              console.error(
+                'oopsB',
+                left,
+                widthB,
+                startMillis - interval.startMillis,
+                interval,
+                interval.endMillis - interval.startMillis,
+                interval
+              )
+            }
 
             const gap =
               intervalIdx === 0 && rowIdx === 0
@@ -343,24 +391,40 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const onClick = onClickForCell(row, this.props.tab, this.props.repl, row.attributes[0])
 
             // rows that help to define the contents of the interval; e.g. jobName
-            const interGroupGapRow = rowIdx === 0 ? this.gapRow(startMillis, intervalIdx, onClick) : []
+            const interGroupGapRow =
+              rowIdx === 0 && !colorByStatus ? this.gapRow(startMillis, intervalIdx, onClick) : []
+
+            // does this row represent scheduling overhead?
+            const isOverheadRow = /Overhead/i.test(row.attributes[idx4].value)
 
             return interGroupGapRow.concat([
               <tr
                 key={`${intervalIdx}-${rowIdx}`}
                 className={
-                  rowIdx === interval.rows.length - 1 ? 'kui--sequence-diagram-last-row-in-interval' : undefined
+                  'kui--sequence-diagram-data-row' +
+                  (rowIdx === interval.rows.length - 1 ? ' kui--sequence-diagram-last-row-in-interval' : '')
                 }
               >
-                {/* <td>
-                  <span
-                    className={'kui--table-cell-is-name cell-inner ' + (row.onclick ? 'clickable' : '')}
-                    onClick={onClick}
-                  >
-                    {row.name}
-                  </span>
-                  </td> */}
-                <td className="kui--sequence-diagram-bar-cell">
+                {colorByStatus && (
+                  <td className="kui--secondary-text">
+                    <span
+                      className={
+                        'kui--table-cell-is-name cell-inner ' + (row.onclick ? 'clickable' : '') + (row.css || '')
+                      }
+                      onClick={onClick}
+                    >
+                      {row.name}
+                    </span>
+                  </td>
+                )}
+                {colorByStatus && (
+                  <td className="kui--secondary-text">
+                    <span className={'cell-inner ' + trafficLight(row.attributes[idx4])}>
+                      {!isOverheadRow && row.attributes[idx4].value}
+                    </span>
+                  </td>
+                )}
+                <td className="kui--sequence-diagram-bar-cell" onClick={onClick}>
                   <Bar
                     left={left}
                     width={width}
@@ -371,7 +435,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                     titleOverlay={titleB}
                   />
                 </td>
-                <td className="sub-text hide-with-sidecar">{gapText}</td>
+                <td className="kui--tertiary-text">{gapText}</td>
                 {/* this.props.response.statusColumnIdx >= 0
                   ? renderCell(
                       this.props.response,
@@ -399,6 +463,12 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     )
   }
 
+  /** To help with adjusting row height, a data-size attribute */
+  private size() {
+    const nRows = this.props.response.body.length
+    return nRows <= 10 ? 'small' : nRows <= 40 ? 'medium' : nRows <= 200 ? 'large' : 'huge'
+  }
+
   public render() {
     if (!this.state) {
       return <React.Fragment />
@@ -406,7 +476,11 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
     return (
       <div className="kui--data-table-container bx--data-table-container">
-        <table className="bx--data-table bx--data-table--compact kui--sequence-diagram">
+        <table
+          className="bx--data-table bx--data-table--compact kui--sequence-diagram"
+          data-size={this.size()}
+          data-color-by={this.props.response.colorBy || 'duration'}
+        >
           {/* this.header() */}
           <tbody>{this.rows()}</tbody>
         </table>
