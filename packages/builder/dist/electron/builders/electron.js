@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@
  */
 
 const { join } = require('path')
+const { arch: osArch } = require('os')
 const { createGunzip } = require('zlib')
 const { createReadStream, createWriteStream, readdir } = require('fs')
 const packager = require('electron-packager')
@@ -52,7 +53,7 @@ process.argv.shift()
 const nodePty = 'node-pty-prebuilt-multiarch'
 
 async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArch, callback) {
-  if (process.platform === targetPlatform) {
+  if (process.platform === targetPlatform && targetArch === osArch()) {
     // if the current platform matches the target platform, there is
     // nothing to do
     callback()
