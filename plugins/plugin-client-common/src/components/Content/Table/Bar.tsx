@@ -15,7 +15,6 @@
  */
 
 import React from 'react'
-import '../../../../web/scss/components/Table/Bar.scss'
 
 interface Props {
   left: number

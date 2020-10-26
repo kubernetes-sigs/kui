@@ -29,6 +29,7 @@
 
 @mixin charts-light {
   @include charts-purple-teal-diverging;
+  /* @include charts-red-blue-diverging; */
 }
 
 @mixin charts-dark {

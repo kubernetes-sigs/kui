@@ -73,19 +73,23 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         notebook('Welcome to Kui', '/kui/welcome.json'),
         { type: 'separator' },
         {
-          label: 'Learning Kubernetes',
+          label: 'Kubernetes',
           submenu: [
             notebook('CRUD Operations', '/kui/kubernetes/crud-operations.json'),
             notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json')
           ]
         },
         {
-          label: 'Learning iter8',
+          label: 'iter8',
           submenu: [notebook('Welcome to iter8', '/kui/iter8/welcome.json')]
         },
         {
-          label: 'Interacting with S3',
+          label: 'S3',
           submenu: [notebook('Getting Started', '/kui/s3/welcome.json'), notebook('Using S3', '/kui/s3/using-s3.json')]
+        },
+        {
+          label: 'OpenWhisk',
+          submenu: [notebook('Getting Started', '/kui/openwhisk/welcome.json')]
         },
         { type: 'separator' },
         notebook('Make Your Own Notebook', '/kui/make-notebook.json')

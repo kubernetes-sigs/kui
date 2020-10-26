@@ -14,94 +14,188 @@
  * limitations under the License.
  */
 
-.kui--data-table-container .kui--sequence-diagram {
-  .kui--sequence-diagram-bar-cell {
-    vertical-align: middle;
-    padding: 0;
-  }
-  tr {
-    height: 0.625rem;
-  }
-  td {
-    line-height: 0.625rem;
-    font-size: 0.625rem;
-    padding-bottom: 0;
-    padding-top: 0;
-  }
-  tr:not(.kui--interval-start),
-  tr:not(.kui--interval-start):hover {
-    td {
-      border: none;
-    }
-  }
-  tr:hover {
-    &,
-    td {
-      background-color: transparent !important;
-      .kui--bar {
-        filter: saturate(2) brightness(1.25);
-      }
-    }
-  }
-  .kui--interval-blank {
-    height: 0.5rem;
-  }
-  .kui--interval-start,
-  .kui--interval-start-jobName {
-    height: 1rem;
-    td.kui--gap-cell {
-      opacity: 0.75;
-      font-size: 0.6875rem;
-      text-align: left;
-      padding: 0.25rem 0;
-    }
-  }
-  .kui--interval-start-jobName td.kui--gap-cell {
-    padding-top: 0;
-  }
-  .kui--interval-start,
-  .kui--interval-start:hover {
-    &,
-    td {
-      /* background-color: var(--color-table-border1) !important; */
-      background-color: transparent !important;
-    }
-    td {
-      border-bottom: none;
-    }
+@import 'Bar';
+@import 'mixins';
+@import '../Terminal/_mixins';
 
-    &:not(:first-child) td {
-      border-top: 1px dashed var(--color-base03);
-    }
+@mixin BarHeight {
+  --row-border: none;
+  /* --row-border: 1px solid var(--color-table-border1); */
+  &[data-size='small'] {
+    --bar-height: #{$bar-height-small};
   }
-  tr {
-    &,
-    &:hover {
-      td.sub-text {
-        color: var(--color-text-02);
-      }
-    }
+  &[data-size='medium'] {
+    --bar-height: #{$bar-height-medium};
   }
-
-  [data-tag='badge-circle'] {
-    width: 0.75rem;
-    height: 0.75rem;
+  &[data-size='large'] {
+    --bar-height: #{$bar-height-large};
   }
-
-  $loading1: var(--color-base03);
-  $loading2: var(--color-base01);
-  .kui--sequence-diagram-in-progress {
-    background: linear-gradient(100deg, $loading1, $loading2 50%, $loading1 55%);
-    background-size: 400%;
-    animation: kui--sequence-diagram-in-progress 1.2s ease-in-out infinite;
+  &[data-size='huge'] {
+    --bar-height: #{$bar-height-huge};
   }
 }
 
-@keyframes kui--sequence-diagram-in-progress {
-  0% {
-    background-position: 100% 50%;
+@mixin SequenceDiagram {
+  .kui--data-table-container .kui--sequence-diagram {
+    @include BarHeight;
+    @content;
   }
-  100% {
-    background-position: 0 50%;
+}
+
+@include PlainTerminal {
+  @include SequenceDiagram {
+    min-width: 50rem;
+  }
+}
+
+body[kui-theme-style] {
+  @include SequenceDiagram {
+    .kui--gap-cell.kui--table-cell-is-name {
+      font-weight: bold;
+    }
+
+    .kui--sequence-diagram-bar-cell {
+      vertical-align: middle;
+      padding: 0;
+    }
+    tr {
+      height: var(--bar-height);
+    }
+
+    tr.kui--sequence-diagram-data-row {
+      &,
+      &:hover {
+        border: var(--row-border);
+        border-left: none;
+        border-right: none;
+
+        /* td.kui--sequence-diagram-bar-cell {
+          border-right: 1px solid var(--color-table-border1);
+        } */
+      }
+    }
+
+    &[data-color-by='duration'] {
+      td {
+        line-height: var(--bar-height);
+        padding: 0 0.375rem;
+      }
+    }
+
+    td.kui--secondary-text {
+      font-size: 0.75rem;
+    }
+    td.kui--tertiary-text {
+      font-size: 0.625rem;
+    }
+
+    .cell-inner {
+      &.gray-background {
+        color: $color-bg--bar-gray;
+      }
+      &.red-background {
+        color: var(--color-red);
+      }
+      &.green-background {
+        color: $color-bg--bar-green;
+      }
+      &.yellow-background {
+        color: $color-bg--bar-yellow;
+      }
+      &.blue-background {
+        color: $color-bg--bar-blue;
+      }
+    }
+
+    tr:not(.kui--interval-start),
+    tr:not(.kui--interval-start):hover {
+      td {
+        border: none;
+      }
+    }
+    tr.kui--sequence-diagram-data-row:hover {
+      &,
+      td {
+        background-color: transparent;
+        .kui--bar {
+          filter: $grid-cell-hover-filter;
+        }
+      }
+    }
+    tbody tr.kui--interval-blank {
+      height: 0.875rem;
+
+      &,
+      &:hover {
+        &,
+        td {
+          background-color: var(--color-repl-background);
+        }
+      }
+    }
+    tr.kui--interval-start,
+    tr.kui--interval-start-jobName {
+      height: 2rem;
+
+      &,
+      &:hover {
+        &,
+        td {
+          background-color: var(--color-base03);
+        }
+      }
+
+      td.kui--gap-cell {
+        border: none;
+        font-size: 0.875rem;
+        text-align: left;
+        padding: 0.375rem;
+      }
+    }
+    .kui--interval-start-jobName td.kui--gap-cell {
+      padding-top: 0;
+    }
+    .kui--interval-start,
+    .kui--interval-start:hover {
+      td {
+        border-bottom: none;
+      }
+    }
+    tr {
+      &,
+      &:hover {
+        td.kui--tertiary-text {
+          color: var(--color-text-02);
+        }
+      }
+    }
+
+    [data-tag='badge-circle'] {
+      width: 0.75rem;
+      height: 0.75rem;
+    }
+
+    $loading1: var(--color-base03);
+    $loading2: var(--color-base01);
+    .kui--sequence-diagram-in-progress {
+      background: linear-gradient(100deg, $loading1, $loading2 50%, $loading1 55%);
+      background-size: 400%;
+      animation: kui--sequence-diagram-in-progress 1.2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes kui--sequence-diagram-in-progress {
+    0% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0 50%;
+    }
+  }
+}
+
+@include LightweightTableContainer {
+  @include SequenceDiagram {
+    margin: 1rem 0;
   }
 }

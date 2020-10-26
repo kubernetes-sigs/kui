@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+@import 'mixins';
+@import 'colors';
 @import '../Sidecar/_mixins';
+@import '../common/stippling';
 @import '../common/_narrow-window';
-
-$bgcolor: transparent;
-$border-radius: 2px 4px;
 
 .kui--bar-wrapper {
   display: flex;
-  height: 0.625rem;
+  height: var(--bar-height);
   min-width: 25rem;
   position: relative;
   background-color: $bgcolor;
@@ -70,5 +70,32 @@ $border-radius: 2px 4px;
 
   &.kui--bar-default-color {
     background-color: var(--color-latency-1);
+  }
+
+  &.gray-background {
+    background: $color-bg--bar-gray;
+    color: $color-fg--bar-gray;
+  }
+
+  &.red-background {
+    --color1: var(--color-light-red);
+    --color2: var(--color-red);
+    --color3: transparent;
+    @include kui--crosshatch;
+  }
+
+  &.yellow-background {
+    color: $color-fg--bar-yellow;
+    background: $color-bg--bar-yellow;
+  }
+
+  &.green-background {
+    color: $color-fg--bar-green;
+    background: $color-bg--bar-green;
+  }
+
+  &.blue-background {
+    color: $color-fg--bar-blue;
+    background: $color-bg--bar-blue;
   }
 }

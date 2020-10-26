@@ -220,6 +220,9 @@
    https://github.com/IBM/kui/issues/1334 */
     min-width: 0;
   }
+  .header-left-bits {
+    flex: 1;
+  }
   .header-right-bits {
     white-space: nowrap;
     margin-left: 1rem;
@@ -447,8 +450,8 @@
   }
 }
 
-.kui--sidecar[data-view="topnav"] {
+/* .kui--sidecar[data-view="topnav"] {
   .kui--data-table-wrapper {
     margin: 1rem 0;
   }
-}
+} */
