@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.1.0](https://github.com/IBM/kui/compare/v4.5.0...v9.1.0) (2020-10-26)
+
+### Bug Fixes
+
+- **plugin-client-common:** RadioTable onSelect changes do not always result in status stripe updates ([3549b7a](https://github.com/IBM/kui/commit/3549b7a)), closes [#5644](https://github.com/IBM/kui/issues/5644)
+- avoid excessive status stripe overheads when replaying Notebooks ([58de9c0](https://github.com/IBM/kui/commit/58de9c0)), closes [#5635](https://github.com/IBM/kui/issues/5635)
+- improve handling of narrower windows ([7a32591](https://github.com/IBM/kui/commit/7a32591)), closes [#4181](https://github.com/IBM/kui/issues/4181)
+- pick a winner if more than one tab completion enumerator has offerings ([fbd6696](https://github.com/IBM/kui/commit/fbd6696)), closes [#3736](https://github.com/IBM/kui/issues/3736)
+- RadioTables are not replayable ([d0dd00e](https://github.com/IBM/kui/commit/d0dd00e)), closes [#5599](https://github.com/IBM/kui/issues/5599)
+- restore status stripe to default behavior on terminal clear ([128ec92](https://github.com/IBM/kui/commit/128ec92)), closes [#5495](https://github.com/IBM/kui/issues/5495)
+- **plugins/plugin-git:** CurrentGitBranch excessively reports errors to the console ([aa53c0a](https://github.com/IBM/kui/commit/aa53c0a)), closes [#5291](https://github.com/IBM/kui/issues/5291)
+- improve hover effect for status stripe buttons ([50ced8f](https://github.com/IBM/kui/commit/50ced8f)), closes [#4896](https://github.com/IBM/kui/issues/4896)
+- **packages/core:** status stripe fragments should be hidden until data arrives ([5792746](https://github.com/IBM/kui/commit/5792746)), closes [#3538](https://github.com/IBM/kui/issues/3538)
+- **plugins/plugin-core-support:** tab completion of "interior" text is buggy ([b13cdb7](https://github.com/IBM/kui/commit/b13cdb7)), closes [#3605](https://github.com/IBM/kui/issues/3605)
+- **plugins/plugin-git:** CurrentGitBranch widget can produce spurious console error messages ([705de4e](https://github.com/IBM/kui/commit/705de4e)), closes [#3941](https://github.com/IBM/kui/issues/3941)
+
+### Features
+
+- s3 plugin, and vfs ([970ba6e](https://github.com/IBM/kui/commit/970ba6e)), closes [#5319](https://github.com/IBM/kui/issues/5319)
+- **plugins/plugin-git:** git branch should respond with RadioTable ([59a9213](https://github.com/IBM/kui/commit/59a9213)), closes [#5256](https://github.com/IBM/kui/issues/5256)
+- SPI for icons ([3d034e3](https://github.com/IBM/kui/commit/3d034e3)), closes [#4441](https://github.com/IBM/kui/issues/4441) [#4364](https://github.com/IBM/kui/issues/4364)
+
 # [9.0.0](https://github.com/IBM/kui/compare/v4.5.0...v9.0.0) (2020-10-08)
 
 ### Bug Fixes
