@@ -353,7 +353,7 @@ export default class Editor extends React.PureComponent<Props, State> {
       }
 
       if (!props.readOnly) {
-        state.wrapper.focus()
+        setTimeout(() => editor.focus())
       }
 
       const subscription = Editor.subscribeToChanges(props, editor, providedOptions.readOnly)
