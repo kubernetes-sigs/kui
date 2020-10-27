@@ -171,7 +171,6 @@ export function onCopy(this: ScrollableTerminal, evt: ClipboardEvent, onSuccess?
  */
 export function onCut(this: ScrollableTerminal, evt: ClipboardEvent) {
   onCopy.bind(this)(evt, target => {
-    const { uuid } = this.state.splits[target.scrollbackIdx]
-    this.willRemoveBlock(uuid, target.insertionIdx)
+    this.state.splits[target.scrollbackIdx].willRemoveBlock(undefined, target.insertionIdx)
   })
 }

@@ -27,12 +27,15 @@ const strings = i18n('plugin-client-common')
 type Props = InputOptions & {
   tab?: Tab
 
+  /** block index */
+  idx: number
+
   // MYAN TODO: instead pass in execUUID, or willRerun and willCopy? to avoid spurious rerenders
   command?: string
   model?: BlockModel
 }
 
-function Action(props: { onClick: () => void; icon: SupportedIcon; title: string }) {
+function Action(props: { onClick: (evt: React.SyntheticEvent) => void; icon: SupportedIcon; title: string }) {
   return (
     <TwoFaceIcon
       a={props.icon}
@@ -80,7 +83,11 @@ export default class Actions extends React.PureComponent<Props> {
     return (
       !isOfflineClient() &&
       this.props.willRemove && (
-        <Action icon="WindowClose" onClick={() => this.props.willRemove()} title="Remove this block" />
+        <Action
+          icon="WindowClose"
+          onClick={evt => this.props.willRemove(evt, this.props.idx)}
+          title="Remove this block"
+        />
       )
     )
   }

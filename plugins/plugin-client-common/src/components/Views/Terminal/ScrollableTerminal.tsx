@@ -131,6 +131,15 @@ type ScrollbackState = ScrollbackOptions & {
    * negative number, interpreted as an index from the end.
    */
   showThisIdxInMiniSplit: number
+
+  /** Memoized handlers */
+  onClick: (evt: React.FocusEvent) => void
+  onFocus: (evt: React.FocusEvent) => void
+  onOutputRender: () => void
+  navigateTo: (dir: 'first' | 'last' | 'previous' | 'next') => void
+  willFocusBlock: (evt: React.SyntheticEvent) => void
+  willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
+  willUpdateCommand: (idx: number, command: string) => void
 }
 
 interface State {
@@ -375,16 +384,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return []
   }
 
-  /** is there any block before the given block index */
-  private hasBlockBefore(idx: number): boolean {
-    return idx > 0
-  }
-
-  /** is there any block (except the active input block) after the given block index */
-  private hasBlockAfter(blocks: BlockModel[], idx: number): boolean {
-    return idx < blocks.length - 2
-  }
-
   private scrollback(sbuuid = this.allocateUUIDForScrollback(), opts: ScrollbackOptions = {}): ScrollbackState {
     const state: ScrollbackState = {
       uuid: sbuuid,
@@ -392,7 +391,147 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       forceMiniSplit: false,
       inverseColors: opts.inverseColors,
       showThisIdxInMiniSplit: -2,
-      blocks: this.restoreBlocks(sbuuid).concat([Active()])
+      blocks: this.restoreBlocks(sbuuid).concat([Active()]),
+      onClick: undefined,
+      onFocus: undefined,
+      onOutputRender: undefined,
+      navigateTo: undefined,
+      willFocusBlock: undefined,
+      willRemoveBlock: undefined,
+      willUpdateCommand: undefined
+    }
+
+    const getBlockIndexFromEvent = (evt: React.SyntheticEvent, doNotComplain = false) => {
+      const idxAttr = evt.currentTarget.getAttribute('data-input-count')
+      if (!idxAttr) {
+        if (!doNotComplain) {
+          console.error('Failed to focus, due to missing data-input-count attribute', evt.currentTarget, evt.target)
+        }
+        return -1
+      } else {
+        return parseInt(idxAttr, 10)
+      }
+    }
+
+    state.onClick = (evt: React.FocusEvent) => {
+      if (getSelectionText().length === 0) {
+        const sbidx = this.findSplit(this.state, sbuuid)
+        if (sbidx >= 0) {
+          evt.stopPropagation()
+          const scrollback = this.state.splits[sbidx]
+          this.doFocus(scrollback)
+        }
+      }
+    }
+
+    /** Output.tsx finished rendering something */
+    state.onOutputRender = () => {
+      const sbidx = this.findSplit(this.state, sbuuid)
+      if (sbidx >= 0) {
+        const scrollback = this.state.splits[sbidx]
+        setTimeout(() => scrollback.facade.scrollToBottom())
+      }
+    }
+
+    /** Update the viewport to show a particular entry */
+    state.navigateTo = (dir: 'first' | 'last' | 'previous' | 'next') => {
+      this.splice(sbuuid, ({ blocks, showThisIdxInMiniSplit }) => {
+        const newIdx =
+          dir === 'first'
+            ? 0
+            : dir === 'last'
+            ? -2
+            : dir === 'previous'
+            ? Math.max(-blocks.length, showThisIdxInMiniSplit - 1)
+            : Math.min(-2, showThisIdxInMiniSplit + 1)
+
+        return {
+          blocks,
+          showThisIdxInMiniSplit: newIdx
+        }
+      })
+    }
+
+    /**
+     * User clicked to focus a block.
+     *
+     * @param uuid scrollback UUID
+     * @param focusedBlockIdx index into the ScrollbackState of that scrollback
+     *
+     */
+    state.willFocusBlock = (evt: React.SyntheticEvent) => {
+      const sbidx = this.findSplit(this.state, sbuuid)
+      if (sbidx >= 0) {
+        const idx = getBlockIndexFromEvent(evt)
+        evt.stopPropagation()
+
+        const split = typeof sbuuid === 'string' ? this.state.splits[this.findSplit(this.state, sbuuid)] : sbuuid
+        this.setFocusOnScrollback(split, idx)
+      }
+    }
+
+    state.willUpdateCommand = (idx: number, command: string) => {
+      return this.splice(sbuuid, curState => {
+        const block = Object.assign({}, curState.blocks[idx])
+        if (hasCommand(block)) {
+          block.command = command
+        }
+        if (hasStartEvent(block)) {
+          block.startEvent.command = command
+        }
+        if (isWithCompleteEvent(block)) {
+          block.completeEvent.command = command
+        }
+
+        return {
+          blocks: curState.blocks
+            .slice(0, idx)
+            .concat([block])
+            .concat(curState.blocks.slice(idx + 1))
+        }
+      })
+    }
+
+    /** The focus event is coming
+     * from the browser, e.g. when the user hits tab to
+     * navigate between the <li> of each block */
+    state.onFocus = (evt: React.FocusEvent) => {
+      const sbidx = this.findSplit(this.state, sbuuid)
+      if (sbidx >= 0) {
+        const scrollback = this.state.splits[sbidx]
+        const idx = getBlockIndexFromEvent(evt)
+
+        if (
+          isElement(evt.relatedTarget) &&
+          /li/i.test(evt.relatedTarget.tagName) &&
+          /li/i.test(evt.target.tagName) &&
+          scrollback.focusedBlockIdx !== idx
+        ) {
+          scrollback.willFocusBlock(evt)
+        }
+      }
+    }
+
+    /** remove the block at the given index */
+    state.willRemoveBlock = (evt: React.SyntheticEvent, idx = getBlockIndexFromEvent(evt)) => {
+      if (idx >= 0) {
+        this.splice(sbuuid, curState => {
+          this.removeWatchableBlock(curState.blocks[idx])
+
+          const blocks = curState.blocks
+            .slice(0, idx)
+            .concat(curState.blocks.slice(idx + 1))
+            .concat(this.hasActiveBlock(curState) ? [] : [Active()]) // plus a new block, if needed
+
+          const focusedBlockIdx =
+            curState.focusedBlockIdx >= idx ? this.findActiveBlock({ blocks }) : curState.focusedBlockIdx
+
+          return {
+            blocks,
+            focusedBlockIdx
+          }
+        })
+      }
     }
 
     // prefetch command history; this helps with master history
@@ -470,11 +609,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     // otherwise, we are stuck with what we have
     return sbuuid
-  }
-
-  /** Output.tsx finished rendering something */
-  private onOutputRender(scrollback: ScrollbackState) {
-    setTimeout(() => scrollback.facade.scrollToBottom())
   }
 
   /** the REPL started executing a command */
@@ -616,20 +750,23 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
+  /** Only set focus if we haven't, yet */
+  public doFocusIfNeeded() {
+    if (this.state.focusedIdx < 0) {
+      this.doFocus(this.current)
+    }
+  }
+
   /** Owner wants us to focus on the current prompt */
   private _focusDebouncer: NodeJS.Timeout
-  public doFocus(scrollback = this.current, idx = this.state.focusedIdx) {
-    if (this.state.focusedIdx >= 0 && idx === this.state.focusedIdx) {
-      return
-    }
-
+  private doFocus(scrollback: ScrollbackState) {
     if (this._focusDebouncer) {
       clearTimeout(this._focusDebouncer)
       this._focusDebouncer = undefined
     }
 
     const ourDebouncer = setTimeout(() => {
-      if (this._focusDebouncer !== ourDebouncer || (this.state.focusedIdx >= 0 && idx === this.state.focusedIdx)) {
+      if (this._focusDebouncer !== ourDebouncer) {
         return
       } else {
         this._focusDebouncer = undefined
@@ -656,20 +793,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this._focusDebouncer = ourDebouncer
   }
 
-  /**
-   * User clicked to focus a block.
-   *
-   * @param uuid scrollback UUID
-   * @param focusedBlockIdx index into the ScrollbackState of that scrollback
-   *
-   */
-  private doFocusBlock(evt: React.SyntheticEvent, sbuuid: string | ScrollbackState, focusedBlockIdx: number) {
-    evt.stopPropagation()
-
-    const split = typeof sbuuid === 'string' ? this.state.splits[this.findSplit(this.state, sbuuid)] : sbuuid
-    this.setFocusOnScrollback(split, focusedBlockIdx)
-  }
-
   private setFocusOnScrollback(scrollback: ScrollbackState, focusedBlockIdx?: number) {
     this.setState(curState => {
       const focusedIdx = this.findSplit(curState, scrollback.uuid)
@@ -685,7 +808,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       return Object.assign(
         this.spliceMutate(curState, scrollback.uuid, ({ blocks }) => ({
           blocks,
-          focusedBlockIdx: focusedBlockIdx !== undefined ? focusedBlockIdx : blocks.length - 1
+          focusedBlockIdx: focusedBlockIdx !== undefined && focusedBlockIdx >= 0 ? focusedBlockIdx : blocks.length - 1
         })),
         { focusedIdx }
       )
@@ -786,16 +909,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.uninitEvents()
   }
 
-  private onClick(scrollback: ScrollbackState) {
-    /* if (document.activeElement === document.body && !getSelection().toString()) {
-      this.doFocus(scrollback)
-    } else */ if (
-      getSelectionText().length === 0
-    ) {
-      this.setFocusOnScrollback(scrollback)
-    }
-  }
-
   /**
    * @return the index of the given scrollback, in the context of the
    * current (given) state
@@ -889,26 +1002,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
-  /** remove the block at the given index */
-  public willRemoveBlock(uuid: string, idx: number) {
-    this.splice(uuid, curState => {
-      this.removeWatchableBlock(curState.blocks[idx])
-
-      const blocks = curState.blocks
-        .slice(0, idx)
-        .concat(curState.blocks.slice(idx + 1))
-        .concat(this.hasActiveBlock(curState) ? [] : [Active()]) // plus a new block, if needed
-
-      const focusedBlockIdx =
-        curState.focusedBlockIdx >= idx ? this.findActiveBlock({ blocks }) : curState.focusedBlockIdx
-
-      return {
-        blocks,
-        focusedBlockIdx
-      }
-    })
-  }
-
   /** whether the given scrollback has Active Block */
   private hasActiveBlock(scrollback: ScrollbackState) {
     return scrollback.blocks.findIndex(b => isActive(b)) > -1
@@ -989,46 +1082,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     )
   }
 
-  /** Update the viewport to show a particular entry */
-  private navigateTo(scrollback: ScrollbackState, dir: 'first' | 'last' | 'previous' | 'next') {
-    this.splice(scrollback.uuid, ({ blocks, showThisIdxInMiniSplit }) => {
-      const newIdx =
-        dir === 'first'
-          ? 0
-          : dir === 'last'
-          ? -2
-          : dir === 'previous'
-          ? Math.max(-scrollback.blocks.length, showThisIdxInMiniSplit - 1)
-          : Math.min(-2, showThisIdxInMiniSplit + 1)
-
-      return {
-        blocks,
-        showThisIdxInMiniSplit: newIdx
-      }
-    })
-  }
-
-  private willUpdateCommand(sbuuid: string, idx: number, block: BlockModel, command: string) {
-    if (hasCommand(block)) {
-      block.command = command
-    }
-
-    if (hasStartEvent(block)) {
-      block.startEvent.command = command
-    }
-    if (isWithCompleteEvent(block)) {
-      block.completeEvent.command = command
-    }
-
-    return this.splice(sbuuid, curState => {
-      curState.blocks[idx] = block
-
-      return {
-        blocks: curState.blocks
-      }
-    })
-  }
-
   public render() {
     const nTerminals = this.state.splits.length
 
@@ -1058,7 +1111,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 key: tab.uuid,
                 'data-scrollback-id': tab.uuid,
                 ref: ref => this.tabRefFor(scrollback, ref),
-                onClick: this.onClick.bind(this, scrollback)
+                onClick: scrollback.onClick
               },
 
               blocks.map((_, idx) => {
@@ -1087,54 +1140,27 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   (idx === scrollback.focusedBlockIdx ||
                     (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
 
-                /** Interior view wants to focus this block based on non-browser activity */
-                const willFocusBlock = (evt: React.SyntheticEvent) => {
-                  this.doFocusBlock(evt, scrollback, idx)
-                }
-
-                /** Similar, but in this case, the event is coming
-                 * from the browser, e.g. when the user hits tab to
-                 * navigate between the <li> of each block */
-                const userHitTabToChangeBlockFocus = (evt: React.FocusEvent) => {
-                  if (
-                    isElement(evt.relatedTarget) &&
-                    /li/i.test(evt.relatedTarget.tagName) &&
-                    /li/i.test(evt.target.tagName) &&
-                    scrollback.focusedBlockIdx !== idx
-                  ) {
-                    willFocusBlock(evt)
-                  }
-                }
-
                 return (
                   <Block
-                    key={(hasUUID(_) ? _.execUUID : _.state) + `-${idx}-isPartOfMiniSplit=${isMiniSplit}`}
+                    key={hasUUID(_) ? _.execUUID : idx}
                     idx={idx}
                     displayedIdx={displayedIdx}
                     model={_}
                     uuid={scrollback.uuid}
                     tab={tab}
                     noActiveInput={this.props.noActiveInput || isOfflineClient()}
-                    onOutputRender={this.onOutputRender.bind(this, scrollback)}
-                    onFocus={userHitTabToChangeBlockFocus}
-                    willRemove={this.willRemoveBlock.bind(this, scrollback.uuid, idx)}
-                    hasBlockAfter={this.hasBlockAfter(scrollback.blocks, idx)}
-                    hasBlockBefore={this.hasBlockBefore(idx)}
-                    willLoseFocus={() => this.doFocus(scrollback, idx)}
-                    willFocusBlock={willFocusBlock}
-                    willUpdateCommand={this.willUpdateCommand.bind(this, scrollback.uuid, idx, _)}
+                    onFocus={scrollback.onFocus}
+                    willRemove={scrollback.willRemoveBlock}
+                    willFocusBlock={scrollback.willFocusBlock}
+                    willUpdateCommand={scrollback.willUpdateCommand}
                     isExperimental={hasCommand(_) && _.isExperimental}
                     isFocused={isFocused}
                     isPartOfMiniSplit={isMiniSplit}
                     isVisibleInMiniSplit={true}
                     isWidthConstrained={isWidthConstrained}
-                    navigateTo={this.navigateTo.bind(this, scrollback)}
-                    ref={c => {
-                      if (idx === this.findActiveBlock(scrollback)) {
-                        // grab a ref to the active block, to help us maintain focus
-                        scrollback._activeBlock = c
-                      }
-                    }}
+                    onOutputRender={scrollback.onOutputRender}
+                    navigateTo={scrollback.navigateTo}
+                    ref={idx !== this.findActiveBlock(scrollback) ? undefined : c => (scrollback._activeBlock = c)}
                   />
                 )
               })

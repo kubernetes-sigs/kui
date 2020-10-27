@@ -34,7 +34,6 @@ import {
 export type BlockViewTraits = {
   isExperimental?: boolean
   isFocused?: boolean
-  prefersTerminalPresentation?: boolean
   isPartOfMiniSplit?: boolean
   isWidthConstrained?: boolean
 
@@ -47,13 +46,7 @@ export type BlockViewTraits = {
 
 export interface BlockOperationTraits {
   /** Remove the enclosing block */
-  willRemove?: () => void
-
-  /** is there any block before the give block? */
-  hasBlockBefore?: boolean
-
-  /** is there any block after the give block? */
-  hasBlockAfter?: boolean
+  willRemove?: (evt: React.SyntheticEvent, idx?: number) => void
 }
 
 type Props = InputOptions & {
@@ -78,8 +71,8 @@ type Props = InputOptions & {
   isVisibleInMiniSplit?: boolean
 
   noOutput?: boolean
-  onOutputRender?: (idx: number) => void
-  willUpdateCommand?: (command: string) => void
+  onOutputRender?: () => void
+  willUpdateCommand?: (idx: number, command: string) => void
 } & BlockViewTraits
 
 interface State {
@@ -135,19 +128,14 @@ export default class Block extends React.PureComponent<Props, State> {
     if (isFinished(this.props.model) || isProcessing(this.props.model)) {
       return (
         <Output
-          key={`Output-${this.props.idx}`}
           uuid={this.props.uuid}
           tab={this.props.tab}
           idx={this.props.idx}
           model={this.props.model}
-          isFocused={this.props.isFocused}
           willRemove={this.props.willRemove}
-          hasBlockAfter={this.props.hasBlockAfter}
-          hasBlockBefore={this.props.hasBlockBefore}
           willChangeSize={this._willChangeSize}
-          onRender={this.props.onOutputRender && (() => this.props.onOutputRender(this.props.idx))}
+          onRender={this.props.onOutputRender}
           willUpdateCommand={this.props.willUpdateCommand}
-          prefersTerminalPresentation={this.props.prefersTerminalPresentation}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}
           isWidthConstrained={this.props.isWidthConstrained}
           willFocusBlock={this.props.willFocusBlock}
@@ -157,11 +145,6 @@ export default class Block extends React.PureComponent<Props, State> {
   }
 
   private willScreenshot() {
-    if (this.props.willLoseFocus) {
-      this.props.willLoseFocus()
-    }
-
-    // async, to allow willLoseFocus() to take affect
     setTimeout(() => {
       const element = this.state._block.querySelector('.kui--screenshotable') || this.state._block
       eventChannelUnsafe.emit('/screenshot/element', element)

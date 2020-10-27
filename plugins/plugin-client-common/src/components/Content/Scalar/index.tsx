@@ -48,10 +48,10 @@ import { Maximizable } from '../../Views/Sidecar/width'
 import LocationProps from '../../Views/Sidecar/Location'
 import { BlockViewTraits } from '../../Views/Terminal/Block'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
+import TopNavSidecar from '../../Views/Sidecar/TopNavSidecarV2'
+import LeftNavSidecar from '../../Views/Sidecar/LeftNavSidecarV2'
 
 const strings = i18n('plugin-client-common', 'errors')
-const TopNavSidecar = React.lazy(() => import('../../Views/Sidecar/TopNavSidecarV2'))
-const LeftNavSidecar = React.lazy(() => import('../../Views/Sidecar/LeftNavSidecarV2'))
 
 type Props = Maximizable &
   BlockViewTraits &
@@ -77,8 +77,11 @@ interface State {
 export default class Scalar extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
+    this.state = Scalar.getDerivedStateFromProps()
+  }
 
-    this.state = {
+  public static getDerivedStateFromProps() {
+    return {
       catastrophicError: undefined
     }
   }
@@ -125,7 +128,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         )
       } else if (isCommentaryResponse(response)) {
         return (
-          <span onClick={this.props.willFocusBlock} className="flex-fill flex-layout flex-align-stretch">
+          <span className="flex-fill flex-layout flex-align-stretch">
             <Commentary
               {...response.props}
               repl={tab.REPL}
@@ -149,7 +152,9 @@ export default class Scalar extends React.PureComponent<Props, State> {
         const renderBottomToolbar = true
         const isLargeTable = response.body.length >= 50
         const isLargeMiniTable = this.props.isPartOfMiniSplit && response.body.length > 5
-        const renderGrid = !this.props.prefersTerminalPresentation && (isLargeTable || isLargeMiniTable)
+        const renderGrid =
+          (isLargeTable || isLargeMiniTable) &&
+          (response.allowedPresentations === undefined || response.allowedPresentations.indexOf('grid') >= 0)
         return renderTable(
           tab,
           tab.REPL,
@@ -188,35 +193,31 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError2', response.errno)} />
       } else if (isMultiModalResponse(response)) {
         return (
-          <React.Suspense fallback={<div />}>
-            <TopNavSidecar
-              uuid={tab.uuid}
-              tab={tab}
-              execUUID={this.props.execUUID}
-              active
-              response={response}
-              onRender={this.props.onRender}
-              willChangeSize={this.props.willChangeSize}
-              argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
-              parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
-            />
-          </React.Suspense>
+          <TopNavSidecar
+            uuid={tab.uuid}
+            tab={tab}
+            execUUID={this.props.execUUID}
+            active
+            response={response}
+            onRender={this.props.onRender}
+            willChangeSize={this.props.willChangeSize}
+            argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
+            parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
+          />
         )
       } else if (isNavResponse(response)) {
         return (
-          <React.Suspense fallback={<div />}>
-            <LeftNavSidecar
-              uuid={tab.uuid}
-              tab={tab}
-              execUUID={this.props.execUUID}
-              active
-              response={response}
-              onRender={this.props.onRender}
-              willChangeSize={this.props.willChangeSize}
-              argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
-              parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
-            />
-          </React.Suspense>
+          <LeftNavSidecar
+            uuid={tab.uuid}
+            tab={tab}
+            execUUID={this.props.execUUID}
+            active
+            response={response}
+            onRender={this.props.onRender}
+            willChangeSize={this.props.willChangeSize}
+            argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
+            parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
+          />
         )
       }
     } catch (err) {

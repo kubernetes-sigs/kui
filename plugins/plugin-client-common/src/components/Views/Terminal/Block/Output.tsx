@@ -75,7 +75,7 @@ type Props = {
 
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
-  willUpdateCommand?: (command: string) => void
+  willUpdateCommand?: (idx: number, command: string) => void
 } & Maximizable &
   BlockViewTraits &
   BlockOperationTraits
@@ -90,6 +90,9 @@ interface State {
 }
 
 export default class Output extends React.PureComponent<Props, State> {
+  private readonly _willRemove = () => this.props.willRemove(undefined, this.props.idx)
+  private readonly _willUpdateCommand = (command: string) => this.props.willUpdateCommand(this.props.idx, command)
+
   public constructor(props: Props) {
     super(props)
 
@@ -146,6 +149,8 @@ export default class Output extends React.PureComponent<Props, State> {
     this.setState({ assertHasContent })
   }
 
+  private readonly _onRender = this.onRender.bind(this)
+
   private hasStreamingOutput() {
     return this.state.streamingOutput.length > 0
   }
@@ -160,12 +165,11 @@ export default class Output extends React.PureComponent<Props, State> {
               tab={this.props.tab}
               execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
               response={part}
-              prefersTerminalPresentation={this.props.prefersTerminalPresentation}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               isWidthConstrained={this.props.isWidthConstrained}
               willChangeSize={this.props.willChangeSize}
-              willUpdateCommand={this.props.willUpdateCommand}
-              onRender={this.onRender.bind(this)}
+              willUpdateCommand={this._willUpdateCommand}
+              onRender={this._onRender}
             />
           ))}
         </div>
@@ -205,13 +209,12 @@ export default class Output extends React.PureComponent<Props, State> {
               execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
               response={this.props.model.response}
               completeEvent={this.props.model.completeEvent}
-              prefersTerminalPresentation={this.props.prefersTerminalPresentation}
               isPartOfMiniSplit={this.props.isPartOfMiniSplit}
               isWidthConstrained={this.props.isWidthConstrained}
               willChangeSize={this.props.willChangeSize}
               willFocusBlock={this.props.willFocusBlock}
-              willRemove={this.props.willRemove}
-              willUpdateCommand={this.props.willUpdateCommand}
+              willRemove={this._willRemove}
+              willUpdateCommand={this._willUpdateCommand}
             />
           )}
         </div>
@@ -268,7 +271,7 @@ export default class Output extends React.PureComponent<Props, State> {
       <KuiContext.Consumer>
         {config =>
           !config.noPromptContext && (
-            <span className="repl-context" onClick={this.props.willFocusBlock}>
+            <span className="repl-context" onClick={this.props.willFocusBlock} data-input-count={this.props.idx}>
               Out[{insideBrackets}]
             </span>
           )
