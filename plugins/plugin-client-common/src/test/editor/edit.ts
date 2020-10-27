@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 IBM Corporation
+ * Copyright 2018-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,33 +14,12 @@
  * limitations under the License.
  */
 
-import { strictEqual } from 'assert'
 import { dirname, join } from 'path'
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { setValue } from './common'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/editor/package.json'))
-
-/** grab focus for the editor */
-const grabFocus = async (res: ReplExpect.AppAndCount) => {
-  const selector = `${Selectors.SIDECAR(res.count)} .monaco-editor-wrapper .view-lines`
-  await res.app.client.click(selector).then(() => res.app.client.waitForEnabled(selector))
-}
-
-/** set the monaco editor text */
-const setValue = async (res: ReplExpect.AppAndCount, text: string): Promise<void> => {
-  await res.app.client.waitForExist(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Clear'))
-  await res.app.client.click(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Clear'))
-
-  const txt = await Util.getValueFromMonaco(res)
-  strictEqual(txt, '')
-
-  await grabFocus(res)
-  await res.app.client.keys(text)
-
-  const txt2 = await Util.getValueFromMonaco(res)
-  strictEqual(txt2, text)
-}
 
 /** click the save buttom */
 const save = async (res: ReplExpect.AppAndCount) => {
