@@ -15,10 +15,10 @@
  */
 
 import React from 'react'
-import { basename } from 'path'
 import prettyPrintDuration from 'pretty-ms'
 import { dots as spinnerFrames } from 'cli-spinners'
-import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences, eventBus, getPrimaryTabId } from '@kui-shell/core'
+import { basename } from 'path'
+import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences, getPrimaryTabId } from '@kui-shell/core'
 
 import Actions from './Actions'
 import onPaste from './OnPaste'
@@ -45,10 +45,9 @@ import { BlockViewTraits, BlockOperationTraits } from './'
 
 import Tag from '../../../spi/Tag'
 import Icons from '../../../spi/Icons'
-import ExpandableSection from '../../../spi/ExpandableSection'
+import Accordion from '../../../spi/Accordion'
 
 const SimpleEditor = React.lazy(() => import('../../../Content/Editor/SimpleEditor'))
-
 const strings = i18n('plugin-client-common')
 
 export interface InputOptions extends BlockOperationTraits {
@@ -237,6 +236,20 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     }
   }
 
+  /** render sourceRef content. Currently only use SimpleEditor. */
+  protected sourceRefContent(content: string, contentType: string) {
+    return (
+      <SimpleEditor
+        tabUUID={getPrimaryTabId(this.props.tab)}
+        content={content.replace(/\n$/, '')} /* monaco's renderFinalNewline option doesn't seem to do what we need */
+        contentType={contentType}
+        className="kui--source-ref-editor kui--inverted-color-context"
+        fontSize={12}
+        simple
+      />
+    )
+  }
+
   /** If contained in the model, present the sources associated with this Input operation */
   protected sourceRef() {
     const { model } = this.props
@@ -246,31 +259,12 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
       return (
         <div className="repl-input-sourceref">
           <div className="repl-context"></div>
-          <div className="flex-layout flex-fill">
-            {sourceRef.templates.map((_, idx) => {
-              const name = basename(_.filepath)
-              return (
-                <ExpandableSection
-                  key={idx}
-                  className={this.props.isWidthConstrained && 'flex-fill'}
-                  showMore={strings('Show X', name)}
-                  showLess={strings('Hide X', name)}
-                  onToggle={() => eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))}
-                >
-                  <SimpleEditor
-                    tabUUID={getPrimaryTabId(this.props.tab)}
-                    content={
-                      _.data.replace(/\n$/, '') /* monaco's renderFinalNewline option doesn't seem to do what we need */
-                    }
-                    contentType={_.contentType}
-                    className="kui--source-ref-editor kui--inverted-color-context"
-                    fontSize={12}
-                    simple
-                  />
-                </ExpandableSection>
-              )
-            })}
-          </div>
+          <Accordion
+            names={sourceRef.templates.map(_ => basename(_.filepath))}
+            isWidthConstrained={this.props.isWidthConstrained}
+            tab={this.props.tab}
+            content={sourceRef.templates.map(_ => this.sourceRefContent(_.data, _.contentType))}
+          />
         </div>
       )
     }

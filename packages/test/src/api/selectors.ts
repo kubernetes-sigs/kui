@@ -275,10 +275,9 @@ export const RADIO_BUTTON_IS_SELECTED = '[data-is-selected]'
 export const RADIO_BUTTON_SELECTED = `${RADIO_BUTTON}${RADIO_BUTTON_IS_SELECTED}`
 
 /** SourceRef */
-export const SOURCE_REF_N = (N: number, splitIndex = 1) =>
-  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--expandable-section`
+export const SOURCE_REF_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--accordion`
 export const SOURCE_REF_TOGGLE_N = (N: number, expanded = false, splitIndex = 1) =>
-  `${SOURCE_REF_N(N, splitIndex)} .pf-c-expandable-section__toggle[aria-expanded=${expanded.toString()}]`
+  `${SOURCE_REF_N(N, splitIndex)} .kui--accordion-item button[aria-expanded=${expanded.toString()}]`
 
 export const COMMENTARY_EDITOR_BUTTON_CANCEL =
   '.kui--commentary-editor-toolbar .kui--commentary-button.kui--commentary-cancel-button'
