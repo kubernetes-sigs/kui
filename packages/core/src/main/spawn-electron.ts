@@ -262,7 +262,8 @@ export function createWindow(
      * see https://github.com/IBM/kui/issues/2881
      */
     mainWindow.webContents.on('will-navigate', async (event, url) => {
-      if (!/kui-shell\/build\/index.html$/.test(url)) {
+      if (!/kui-shell\/build\/index.html/.test(url)) {
+        // webpack-dev-server causes this navigation; ignore
         event.preventDefault()
         ;(await import('electron')).shell.openExternal(url)
       }
