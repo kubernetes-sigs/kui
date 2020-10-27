@@ -132,21 +132,25 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       window.addEventListener('resize', adjustMaxHeight)
     }
 
+    this.state = PaginatedTable.getDerivedStateFromProps(props) as S
+  }
+
+  public static getDerivedStateFromProps(props: Props, state?: State) {
     try {
       // assemble the data model
-      const { headers, rows, footer } = kui2carbon(this.props.response)
+      const { headers, rows, footer } = kui2carbon(props.response)
 
-      const { defaultPresentation } = this.props.response
+      const { defaultPresentation } = props.response
       const asGrid =
         ((!defaultPresentation || defaultPresentation === 'grid') &&
-          this.props.asGrid &&
-          findGridableColumn(this.props.response) >= 0) ||
+          props.asGrid &&
+          findGridableColumn(props.response) >= 0) ||
         defaultPresentation === 'grid'
       const asSequence =
-        (!asGrid && this.hasSequenceButton() && this.props.response.body.length > 1) ||
+        (!asGrid && PaginatedTable.hasSequenceButton(props) && props.response.body.length > 1) ||
         defaultPresentation === 'sequence-diagram'
 
-      this.state = {
+      const initialState = {
         headers,
         rows,
         footer,
@@ -154,8 +158,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         asSequence,
         asTimeline: false,
         page: 1,
-        pageSize: this.defaultPageSize
-      } as S
+        pageSize: props.pageSize || 10
+      }
+
+      if (!state) {
+        return initialState
+      } else {
+        return Object.assign(initialState, state)
+      }
     } catch (err) {
       console.error('Internal error preparing PaginatedTable', err)
     }
@@ -214,14 +224,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return this.state.footer ? this.state.footer.slice(nRows) : undefined
   }
 
-  private hasSequenceButton() {
-    return isTableWithTimestamp(this.props.response)
+  private static hasSequenceButton(props: Props) {
+    return isTableWithTimestamp(props.response)
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private bottomToolbar(lightweightTables = false) {
     const gridableColumn = findGridableColumn(this.props.response)
-    const hasSequenceButton = this.hasSequenceButton()
+    const hasSequenceButton = PaginatedTable.hasSequenceButton(this.props)
     const hasTimelineButton = false // disabled for now, see https://github.com/IBM/kui/issues/5864
 
     const needsBottomToolbar =

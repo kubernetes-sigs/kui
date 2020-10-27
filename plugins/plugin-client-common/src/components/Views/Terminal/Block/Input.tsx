@@ -87,9 +87,6 @@ export interface InputOptions extends BlockOperationTraits {
   /** Capture a screenshot of the enclosing block */
   willScreenshot?: () => void
 
-  /** Block is about to lose focus */
-  willLoseFocus?: () => void
-
   /** Navigation controller */
   navigateTo?(dir: 'first' | 'last' | 'previous' | 'next'): void
 }
@@ -185,7 +182,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
           {config =>
             !config.noPromptContext &&
             this.props.model && (
-              <span className="repl-context" onClick={this.props.willFocusBlock}>
+              <span className="repl-context" onClick={this.props.willFocusBlock} data-input-count={this.props.idx}>
                 {this.contextContent()}
               </span>
             )
@@ -214,7 +211,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   protected normalPrompt() {
     return (
-      <div className="repl-context" onClick={this.props.willFocusBlock}>
+      <div className="repl-context" onClick={this.props.willFocusBlock} data-input-count={this.props.idx}>
         <KuiContext.Consumer>
           {config => (config.prompt ? <div className="repl-prompt">{this.promptRight()}</div> : this.contextContent())}
         </KuiContext.Consumer>
@@ -555,7 +552,11 @@ export default class Input extends InputProvider {
       } else {
         // for "done" blocks, render the value as a plain div
         return (
-          <div className="repl-input-element-wrapper flex-layout flex-fill" onClick={this._onClickFinished}>
+          <div
+            className="repl-input-element-wrapper flex-layout flex-fill"
+            onClick={this._onClickFinished}
+            data-input-count={this.props.idx}
+          >
             <span className="repl-input-element flex-fill">{value}</span>
             {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
             {this.inputStatus(value)}
@@ -632,7 +633,7 @@ export default class Input extends InputProvider {
   /** DropDown menu for completed blocks */
   private actions(command: string) {
     if (isFinished(this.props.model) && !!this.props.tab && !!this.props.model) {
-      return <Actions command={command} {...this.props} />
+      return <Actions command={command} idx={this.props.idx} {...this.props} />
     }
   }
 
