@@ -120,11 +120,6 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
   }
 
   private onScreenshot() {
-    if (this.props.willLoseFocus) {
-      this.props.willLoseFocus()
-    }
-
-    // async, to allow willLoseFocus() to take affect
     setTimeout(() => {
       eventChannelUnsafe.emit('/screenshot/element', this.state.dom)
     })

@@ -166,7 +166,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       }
     } else {
       if (props.active && state._terminal) {
-        state._terminal.doFocus()
+        state._terminal.doFocusIfNeeded()
       }
       return state
     }
@@ -228,20 +228,13 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
-  private onWillLoseFocus() {
-    if (this.state._terminal) {
-      this.state._terminal.doFocus()
-    }
-  }
-
   private graft(node: React.ReactNode | {}, key?: number) {
     if (React.isValidElement(node)) {
       // ^^^ this check avoids tsc errors
       return React.cloneElement(node, {
         key,
         uuid: this.props.uuid,
-        active: this.props.active,
-        willLoseFocus: this.onWillLoseFocus.bind(this)
+        active: this.props.active
       })
     } else {
       return node
