@@ -332,9 +332,13 @@ export function comment(expectedBody: string, expectedTitle?: string) {
 export function blockCount(this: ISuite) {
   return {
     inSplit: (splitIndex: number) => ({
-      is: (expectedBlockCount: number) => {
-        it(`should have expectedBlockCount=${expectedBlockCount} inSplit=${splitIndex}`, () => {
+      is: (expected: number | (() => number)) => {
+        it(`should have expectedBlockCount=${
+          typeof expected === 'number' ? expected : '...'
+        } inSplit=${splitIndex}`, () => {
           let idx = 0
+
+          const expectedBlockCount = typeof expected === 'number' ? expected : expected()
 
           return this.app.client.waitUntil(async () => {
             const actualBlockCount = (await this.app.client.elements(Selectors.PROMPT_BLOCK_FOR_SPLIT(splitIndex)))

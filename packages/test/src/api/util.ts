@@ -313,3 +313,11 @@ export function closeAllExceptFirstTab(this: Common.ISuite) {
 export function uniqueFileForSnapshot() {
   return `/tmp/${uuid()}.kui`
 }
+
+/** Click the close button on a block, and expect it to be gone */
+export async function removeBlock(res: AppAndCount) {
+  const N = res.count
+  await res.app.client.moveToObject(Selectors.PROMPT_N(N))
+  await res.app.client.waitForVisible(Selectors.BLOCK_REMOVE_BUTTON(N))
+  await res.app.client.click(Selectors.BLOCK_REMOVE_BUTTON(N))
+}
