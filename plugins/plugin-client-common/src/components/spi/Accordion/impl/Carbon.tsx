@@ -46,7 +46,7 @@ export default class CarbonAccordion extends React.PureComponent<Props, State> {
             className={'kui--accordion-item'}
             key={idx}
             title={this.state.expandedIdx !== idx ? strings('Show X', name) : strings('Hide X', name)}
-            onClick={() => {
+            onHeadingClick={() => {
               this.setState(curState => ({ expandedIdx: curState.expandedIdx !== idx ? idx : -1 }))
               eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
             }}
