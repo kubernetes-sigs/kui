@@ -352,7 +352,7 @@ export default class Editor extends React.PureComponent<Props, State> {
         return editor.getValue()
       }
 
-      if (!props.readOnly) {
+      if (!options.readOnly) {
         setTimeout(() => editor.focus())
       }
 
