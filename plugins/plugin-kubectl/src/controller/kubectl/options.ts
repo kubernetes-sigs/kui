@@ -241,6 +241,8 @@ export interface KubeOptions extends ParsedOptions {
   context?: string
   kubeconfig?: string
 
+  'dry-run'?: boolean | string
+
   n?: string
   namespace?: string
 
@@ -306,6 +308,12 @@ export function withKubeconfigFrom(args: { parsedOptions: KubeOptions }, cmdline
   } else {
     return cmdline.slice(0, insertionIndex) + extras + cmdline.slice(insertionIndex)
   }
+}
+
+/** Apply --dry-run? */
+export function isDryRun(args: Arguments<KubeOptions>): boolean {
+  const opt = args.parsedOptions['dry-run']
+  return typeof opt === 'boolean' || opt === 'client' || opt === 'server'
 }
 
 export default KubeOptions
