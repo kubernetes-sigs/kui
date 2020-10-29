@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-@import 'carbon-components/scss/components/accordion/_accordion.scss';
-@import 'carbon-components/scss/components/accordion/_keyframes.scss';
+@import '~carbon-components/scss/components/accordion/_accordion.scss';
+@import '~carbon-components/scss/components/accordion/_keyframes.scss';
 
 @import '_mixins';
 
 @include Accordion {
   margin: 0.5rem 0 0;
   width: unset;
+}
+
+@include AccordionItem {
+  background-color: var(--color-base00);
 }
 
 @include AccordionToggle {

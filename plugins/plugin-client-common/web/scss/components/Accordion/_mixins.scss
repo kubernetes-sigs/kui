@@ -22,6 +22,12 @@ $accordion--spacing: 0.125rem;
   }
 }
 
+@mixin AccordionItem {
+  .kui--accordion-item {
+    @content;
+  }
+}
+
 @mixin AccordionContentBody {
   @include Accordion {
     .pf-c-accordion__expanded-content-body {
