@@ -31,7 +31,7 @@ import {
 import RawResponse from './response'
 import commandPrefix from '../command-prefix'
 import KubeResource from '../../lib/model/resource'
-import { KubeOptions, getContextForArgv, getFileForArgv, getNamespace } from './options'
+import { KubeOptions, getContextForArgv, getFileForArgv, getNamespace, isDryRun } from './options'
 
 import { FinalState } from '../../lib/model/states'
 import { stringToTable, KubeTableResponse } from '../../lib/view/formatTable'
@@ -263,6 +263,9 @@ export const doExecWithStatus = <O extends KubeOptions>(
   } else {
     const contextArgs = `-n ${await getNamespace(args)} ${getContextForArgv(args)}`
     const watchArgs = `--final-state ${finalState} --watch`
+    const dryRunArgs = isDryRun(args)
+      ? `--dry-run ${typeof args.parsedOptions['dry-run'] === 'boolean' ? '' : args.parsedOptions['dry-run']}`
+      : ''
 
     // this helps with error reporting: if something goes wrong with
     // displaying "status", we can always report the initial response
@@ -273,7 +276,7 @@ export const doExecWithStatus = <O extends KubeOptions>(
 
     const commandArgs = `--command ${command}`
 
-    const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs}`
+    const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${dryRunArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs}`
 
     return args.REPL.qexec(statusCmd, args.block)
   }
