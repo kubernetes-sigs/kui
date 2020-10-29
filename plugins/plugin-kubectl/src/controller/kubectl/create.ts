@@ -17,8 +17,8 @@
 import { Registrar, Arguments, WithSourceReferences, Table, isTable } from '@kui-shell/core'
 
 import defaultFlags from './flags'
-import { doExecWithStatus } from './exec'
 import { KubeOptions } from './options'
+import { doExecWithStatus } from './exec'
 import commandPrefix from '../command-prefix'
 
 import { FinalState } from '../../lib/model/states'

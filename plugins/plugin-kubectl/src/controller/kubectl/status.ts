@@ -39,6 +39,7 @@ import {
   kustomizeOf,
   getNamespace,
   getContextForArgv,
+  isDryRun,
   withKubeconfigFrom
 } from './options'
 import commandPrefix from '../command-prefix'
@@ -98,6 +99,9 @@ const usage = (command: string) => ({
       name: '--command',
       string: true,
       docs: 'The initial command from the CRUD command'
+    },
+    {
+      name: '--dry-run'
     },
     {
       name: '--watching',
@@ -453,6 +457,7 @@ class StatusWatcher implements Abortable, Watcher {
    *
    */
   public initialTable(): Table & Watchable {
+    const dryRun = isDryRun(this.args)
     const anyNonDefaultNamespaces = this.resourcesToWaitFor.some(({ namespace }) => namespace !== 'default')
 
     this.initialBody = this.resourcesToWaitFor.map(ref => {
@@ -469,7 +474,13 @@ class StatusWatcher implements Abortable, Watcher {
             outerCSS: '',
             css: ''
           },
-          { key: 'STATUS', tag: 'badge', value: strings('Pending'), outerCSS: '', css: TrafficLight.Yellow }
+          {
+            key: 'STATUS',
+            tag: 'badge',
+            value: dryRun ? strings('Dry Run') : strings('Pending'),
+            outerCSS: '',
+            css: TrafficLight.Yellow
+          }
           // { key: 'MESSAGE', value: '', outerCSS: 'hide-with-sidecar' }
         ])
       }
@@ -488,7 +499,7 @@ class StatusWatcher implements Abortable, Watcher {
     return {
       header: initialHeader,
       body: this.initialBody,
-      watch: this
+      watch: dryRun ? undefined : this
     }
   }
 }
