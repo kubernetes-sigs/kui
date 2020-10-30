@@ -267,7 +267,7 @@ export default class Editor extends React.PureComponent<Props, State> {
     if (props.willUpdateToolbar) {
       // send an initial update; note how the initial toolbarText may
       // be governed by the response
-      const msg = (readOnly && props.response.toolbarText) || this.allClean(props) // <-- always use allClean if !readOnly
+      const msg = (readOnly && props.response.toolbarText) || (!readOnly && this.allClean(props)) // <-- always use allClean if !readOnly
       const buttons = props.response.toolbarText ? [] : !Editor.isClearable(props) ? undefined : [ClearButton(editor)]
       props.willUpdateToolbar(msg, buttons)
 
@@ -356,7 +356,7 @@ export default class Editor extends React.PureComponent<Props, State> {
         setTimeout(() => editor.focus())
       }
 
-      const subscription = Editor.subscribeToChanges(props, editor, providedOptions.readOnly)
+      const subscription = Editor.subscribeToChanges(props, editor, options.readOnly)
       cleaners.push(() => subscription.dispose())
 
       cleaners.push(() => {
