@@ -132,7 +132,6 @@ class NotebookVFS implements VFS {
           try {
             // require versus import to work with babelized headless
             const file = match1 ? match1[2] : match2[1]
-            console.error('!!!!!!!!', match1, match2, file)
             const data = match1
               ? require('@kui-shell/plugin-' + match1[1] + '/notebooks/' + file + '.json')
               : require('@kui-shell/client/notebooks/' + file + '.json')
