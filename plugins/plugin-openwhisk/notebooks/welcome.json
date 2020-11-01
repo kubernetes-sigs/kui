@@ -8,7 +8,7 @@
   "spec": {
     "splits": [
       {
-        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
@@ -963,7 +963,7 @@
         ]
       },
       {
-        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "uuid": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
         "blocks": [
           {
             "response": {
@@ -1109,16 +1109,16 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "### The Grid View\n\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as a abbreviation for `activation`."
+                "children": "### The Grid View\n\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as an abbreviation for `activation`."
               }
             },
             "historyIdx": 251,
             "cwd": "~/git/whisk/nickm/kui",
-            "command": "# ### The Grid View\\n\\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as a abbreviation for `activation`.",
+            "command": "# ### The Grid View\\n\\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as an abbreviation for `activation`.",
             "startEvent": {
               "route": "/#",
               "startTime": 1604182293980,
-              "command": "# ### The Grid View\\n\\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as a abbreviation for `activation`.",
+              "command": "# ### The Grid View\\n\\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as an abbreviation for `activation`.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -1154,7 +1154,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1604182294083,
-              "command": "# ### The Grid View\\n\\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as a abbreviation for `activation`.",
+              "command": "# ### The Grid View\\n\\nNow let us view these activations in a grid. In Kui, you may use `$` interchangeably, as an abbreviation for `activation`.",
               "argvNoOptions": ["#", "  Now let's view these activations in a grid."],
               "parsedOptions": {
                 "_": ["#", "  Now let's view these activations in a grid."]
@@ -7836,12 +7836,12 @@
                 ]
               }
             },
-            "historyIdx": 250,
+            "historyIdx": 60,
             "cwd": "~/git/whisk/nickm/kui",
             "command": "wsk $ grid seq --limit 200",
             "startEvent": {
               "route": "/wsk/$/grid",
-              "startTime": 1604184212093,
+              "startTime": 1604253855776,
               "command": "wsk $ grid seq --limit 200",
               "evaluatorOptions": {
                 "usage": {
@@ -7901,13 +7901,13 @@
                 "type": 3,
                 "language": "en-US",
                 "execUUID": "651f25f3-ffdf-4bdb-93e6-469bac2441d4",
-                "history": 250,
+                "history": 60,
                 "env": {}
               }
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1604184212457,
+              "completeTime": 1604253856264,
               "command": "wsk $ grid seq --limit 200",
               "argvNoOptions": ["wsk", "$", "grid", "seq"],
               "parsedOptions": {
@@ -7926,7 +7926,7 @@
                 "type": 3,
                 "language": "en-US",
                 "execUUID": "651f25f3-ffdf-4bdb-93e6-469bac2441d4",
-                "history": 250,
+                "history": 60,
                 "env": {}
               },
               "response": {
@@ -14576,12 +14576,12 @@
                 }
               },
               "responseType": "ScalarResponse",
-              "historyIdx": 250
+              "historyIdx": 60
             },
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "651f25f3-ffdf-4bdb-93e6-469bac2441d4",
-            "startTime": 1604184212093,
+            "startTime": 1604253855776,
             "outputOnly": false,
             "state": "valid-response"
           },
@@ -14735,14 +14735,207 @@
               "data": "{\n  \"activationId\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"annotations\": [\n    {\n      \"key\": \"topmost\",\n      \"value\": true\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/seq\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"duration\": 2765,\n  \"end\": 1604182264696,\n  \"logs\": [\n    \"a9aeb8c3188e4587aeb8c3188e6587ff\",\n    \"4c57b5e06fd747ee97b5e06fd7c7ee67\",\n    \"b294f0d219974d1294f0d21997cd12f9\"\n  ],\n  \"name\": \"seq\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257344,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.1\"\n}",
               "createdOnString": "Started on",
               "modes": [],
-              "defaultMode": "logs"
+              "defaultMode": "logs",
+              "currentNamespace": "kuishell_foobar",
+              "componentActivations": [
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:11:01 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182261750,
+                  "end": 1604182264503,
+                  "duration": 2753,
+                  "activationId": "a9aeb8c3188e4587aeb8c3188e6587ff",
+                  "nameHash": "a9aeb8c3188e4587aeb8c3188e6587ff",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    },
+                    {
+                      "key": "initTime",
+                      "value": 2743
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"a9aeb8c3188e4587aeb8c3188e6587ff\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    },\n    {\n      \"key\": \"initTime\",\n      \"value\": 2743\n    }\n  ],\n  \"cause\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"duration\": 2753,\n  \"end\": 1604182264503,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182261750,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                },
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:11:04 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182264522,
+                  "end": 1604182264527,
+                  "duration": 5,
+                  "activationId": "4c57b5e06fd747ee97b5e06fd7c7ee67",
+                  "nameHash": "4c57b5e06fd747ee97b5e06fd7c7ee67",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"4c57b5e06fd747ee97b5e06fd7c7ee67\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"duration\": 5,\n  \"end\": 1604182264527,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182264522,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                },
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:11:04 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182264574,
+                  "end": 1604182264581,
+                  "duration": 7,
+                  "activationId": "b294f0d219974d1294f0d21997cd12f9",
+                  "nameHash": "b294f0d219974d1294f0d21997cd12f9",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"b294f0d219974d1294f0d21997cd12f9\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"duration\": 7,\n  \"end\": 1604182264581,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182264574,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                }
+              ]
             },
-            "historyIdx": 251,
+            "historyIdx": 57,
             "cwd": "~/git/whisk/nickm/kui",
             "command": "wsk activation trace 05425b6d7cd64dab825b6d7cd65dab19",
             "startEvent": {
               "route": "/wsk/activation/trace",
-              "startTime": 1604184215782,
+              "startTime": 1604253827227,
               "command": "wsk activation trace 05425b6d7cd64dab825b6d7cd65dab19",
               "evaluatorOptions": {
                 "usage": {
@@ -14779,13 +14972,13 @@
                 "type": 3,
                 "language": "en-US",
                 "execUUID": "10498ea3-fc76-4d35-b32b-dfd6e2e29760",
-                "history": 251,
+                "history": 57,
                 "env": {}
               }
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1604184216021,
+              "completeTime": 1604253827756,
               "command": "wsk activation trace 05425b6d7cd64dab825b6d7cd65dab19",
               "argvNoOptions": ["wsk", "activation", "trace", "05425b6d7cd64dab825b6d7cd65dab19"],
               "parsedOptions": {
@@ -14800,7 +14993,7 @@
                 "type": 3,
                 "language": "en-US",
                 "execUUID": "10498ea3-fc76-4d35-b32b-dfd6e2e29760",
-                "history": 251,
+                "history": 57,
                 "env": {}
               },
               "response": {
@@ -14864,15 +15057,208 @@
                 "data": "{\n  \"activationId\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"annotations\": [\n    {\n      \"key\": \"topmost\",\n      \"value\": true\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/seq\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"duration\": 2765,\n  \"end\": 1604182264696,\n  \"logs\": [\n    \"a9aeb8c3188e4587aeb8c3188e6587ff\",\n    \"4c57b5e06fd747ee97b5e06fd7c7ee67\",\n    \"b294f0d219974d1294f0d21997cd12f9\"\n  ],\n  \"name\": \"seq\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257344,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.1\"\n}",
                 "createdOnString": "Started on",
                 "modes": [],
-                "defaultMode": "logs"
+                "defaultMode": "logs",
+                "currentNamespace": "kuishell_foobar",
+                "componentActivations": [
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:11:01 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182261750,
+                    "end": 1604182264503,
+                    "duration": 2753,
+                    "activationId": "a9aeb8c3188e4587aeb8c3188e6587ff",
+                    "nameHash": "a9aeb8c3188e4587aeb8c3188e6587ff",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      },
+                      {
+                        "key": "initTime",
+                        "value": 2743
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"a9aeb8c3188e4587aeb8c3188e6587ff\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    },\n    {\n      \"key\": \"initTime\",\n      \"value\": 2743\n    }\n  ],\n  \"cause\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"duration\": 2753,\n  \"end\": 1604182264503,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182261750,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  },
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:11:04 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182264522,
+                    "end": 1604182264527,
+                    "duration": 5,
+                    "activationId": "4c57b5e06fd747ee97b5e06fd7c7ee67",
+                    "nameHash": "4c57b5e06fd747ee97b5e06fd7c7ee67",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"4c57b5e06fd747ee97b5e06fd7c7ee67\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"duration\": 5,\n  \"end\": 1604182264527,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182264522,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  },
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:11:04 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182264574,
+                    "end": 1604182264581,
+                    "duration": 7,
+                    "activationId": "b294f0d219974d1294f0d21997cd12f9",
+                    "nameHash": "b294f0d219974d1294f0d21997cd12f9",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"b294f0d219974d1294f0d21997cd12f9\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"05425b6d7cd64dab825b6d7cd65dab19\",\n  \"duration\": 7,\n  \"end\": 1604182264581,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182264574,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  }
+                ]
               },
               "responseType": "MultiModalResponse",
-              "historyIdx": 251
+              "historyIdx": 57
             },
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "10498ea3-fc76-4d35-b32b-dfd6e2e29760",
-            "startTime": 1604184215782,
+            "startTime": 1604253827227,
             "outputOnly": false,
             "state": "valid-response"
           },
@@ -15029,14 +15415,207 @@
               "data": "{\n  \"activationId\": \"0d2ac468e5914976aac468e59129764e\",\n  \"annotations\": [\n    {\n      \"key\": \"topmost\",\n      \"value\": true\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/seq\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"duration\": 2218,\n  \"end\": 1604182263205,\n  \"logs\": [\n    \"1cba55c82a0a40ddba55c82a0ac0dd60\",\n    \"0cfe0a485a254d9fbe0a485a25fd9f04\",\n    \"f4dc431e348441289c431e3484912847\"\n  ],\n  \"name\": \"seq\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257300,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.1\"\n}",
               "createdOnString": "Started on",
               "modes": [],
-              "defaultMode": "logs"
+              "defaultMode": "logs",
+              "currentNamespace": "kuishell_foobar",
+              "componentActivations": [
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:10:57 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182257624,
+                  "end": 1604182257629,
+                  "duration": 5,
+                  "activationId": "1cba55c82a0a40ddba55c82a0ac0dd60",
+                  "nameHash": "1cba55c82a0a40ddba55c82a0ac0dd60",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"1cba55c82a0a40ddba55c82a0ac0dd60\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"0d2ac468e5914976aac468e59129764e\",\n  \"duration\": 5,\n  \"end\": 1604182257629,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257624,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                },
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:11:00 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182260945,
+                  "end": 1604182263155,
+                  "duration": 2210,
+                  "activationId": "0cfe0a485a254d9fbe0a485a25fd9f04",
+                  "nameHash": "0cfe0a485a254d9fbe0a485a25fd9f04",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    },
+                    {
+                      "key": "initTime",
+                      "value": 2178
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"0cfe0a485a254d9fbe0a485a25fd9f04\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    },\n    {\n      \"key\": \"initTime\",\n      \"value\": 2178\n    }\n  ],\n  \"cause\": \"0d2ac468e5914976aac468e59129764e\",\n  \"duration\": 2210,\n  \"end\": 1604182263155,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182260945,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                },
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:11:03 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182263191,
+                  "end": 1604182263194,
+                  "duration": 3,
+                  "activationId": "f4dc431e348441289c431e3484912847",
+                  "nameHash": "f4dc431e348441289c431e3484912847",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"f4dc431e348441289c431e3484912847\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"0d2ac468e5914976aac468e59129764e\",\n  \"duration\": 3,\n  \"end\": 1604182263194,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182263191,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                }
+              ]
             },
-            "historyIdx": 252,
+            "historyIdx": 58,
             "cwd": "~/git/whisk/nickm/kui",
             "command": "wsk activation trace 0d2ac468e5914976aac468e59129764e",
             "startEvent": {
               "route": "/wsk/activation/trace",
-              "startTime": 1604184218440,
+              "startTime": 1604253830903,
               "command": "wsk activation trace 0d2ac468e5914976aac468e59129764e",
               "evaluatorOptions": {
                 "usage": {
@@ -15073,13 +15652,13 @@
                 "type": 3,
                 "language": "en-US",
                 "execUUID": "a4b596d3-aaf0-40d5-adaa-affb0049d824",
-                "history": 252,
+                "history": 58,
                 "env": {}
               }
             },
             "completeEvent": {
               "execType": 3,
-              "completeTime": 1604184218739,
+              "completeTime": 1604253831443,
               "command": "wsk activation trace 0d2ac468e5914976aac468e59129764e",
               "argvNoOptions": ["wsk", "activation", "trace", "0d2ac468e5914976aac468e59129764e"],
               "parsedOptions": {
@@ -15094,7 +15673,7 @@
                 "type": 3,
                 "language": "en-US",
                 "execUUID": "a4b596d3-aaf0-40d5-adaa-affb0049d824",
-                "history": 252,
+                "history": 58,
                 "env": {}
               },
               "response": {
@@ -15158,15 +15737,208 @@
                 "data": "{\n  \"activationId\": \"0d2ac468e5914976aac468e59129764e\",\n  \"annotations\": [\n    {\n      \"key\": \"topmost\",\n      \"value\": true\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/seq\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"duration\": 2218,\n  \"end\": 1604182263205,\n  \"logs\": [\n    \"1cba55c82a0a40ddba55c82a0ac0dd60\",\n    \"0cfe0a485a254d9fbe0a485a25fd9f04\",\n    \"f4dc431e348441289c431e3484912847\"\n  ],\n  \"name\": \"seq\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257300,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.1\"\n}",
                 "createdOnString": "Started on",
                 "modes": [],
-                "defaultMode": "logs"
+                "defaultMode": "logs",
+                "currentNamespace": "kuishell_foobar",
+                "componentActivations": [
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:10:57 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182257624,
+                    "end": 1604182257629,
+                    "duration": 5,
+                    "activationId": "1cba55c82a0a40ddba55c82a0ac0dd60",
+                    "nameHash": "1cba55c82a0a40ddba55c82a0ac0dd60",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"1cba55c82a0a40ddba55c82a0ac0dd60\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"0d2ac468e5914976aac468e59129764e\",\n  \"duration\": 5,\n  \"end\": 1604182257629,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257624,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  },
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:11:00 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182260945,
+                    "end": 1604182263155,
+                    "duration": 2210,
+                    "activationId": "0cfe0a485a254d9fbe0a485a25fd9f04",
+                    "nameHash": "0cfe0a485a254d9fbe0a485a25fd9f04",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      },
+                      {
+                        "key": "initTime",
+                        "value": 2178
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"0cfe0a485a254d9fbe0a485a25fd9f04\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    },\n    {\n      \"key\": \"initTime\",\n      \"value\": 2178\n    }\n  ],\n  \"cause\": \"0d2ac468e5914976aac468e59129764e\",\n  \"duration\": 2210,\n  \"end\": 1604182263155,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182260945,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  },
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:11:03 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182263191,
+                    "end": 1604182263194,
+                    "duration": 3,
+                    "activationId": "f4dc431e348441289c431e3484912847",
+                    "nameHash": "f4dc431e348441289c431e3484912847",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"f4dc431e348441289c431e3484912847\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"0d2ac468e5914976aac468e59129764e\",\n  \"duration\": 3,\n  \"end\": 1604182263194,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182263191,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  }
+                ]
               },
               "responseType": "MultiModalResponse",
-              "historyIdx": 252
+              "historyIdx": 58
             },
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "a4b596d3-aaf0-40d5-adaa-affb0049d824",
-            "startTime": 1604184218440,
+            "startTime": 1604253830903,
             "outputOnly": false,
             "state": "valid-response"
           },
@@ -15323,14 +16095,203 @@
               "data": "{\n  \"activationId\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"annotations\": [\n    {\n      \"key\": \"topmost\",\n      \"value\": true\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/seq\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"duration\": 20,\n  \"end\": 1604182258150,\n  \"logs\": [\n    \"147c480b71694eecbc480b71691eec8c\",\n    \"3025d08b89f0408ea5d08b89f0d08e71\",\n    \"bb9e4223cec542389e4223cec59238ca\"\n  ],\n  \"name\": \"seq\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257613,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.1\"\n}",
               "createdOnString": "Started on",
               "modes": [],
-              "defaultMode": "logs"
+              "defaultMode": "logs",
+              "currentNamespace": "kuishell_foobar",
+              "componentActivations": [
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:10:58 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182258036,
+                  "end": 1604182258047,
+                  "duration": 11,
+                  "activationId": "147c480b71694eecbc480b71691eec8c",
+                  "nameHash": "147c480b71694eecbc480b71691eec8c",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"147c480b71694eecbc480b71691eec8c\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"duration\": 11,\n  \"end\": 1604182258047,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182258036,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                },
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:10:58 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182258100,
+                  "end": 1604182258106,
+                  "duration": 6,
+                  "activationId": "3025d08b89f0408ea5d08b89f0d08e71",
+                  "nameHash": "3025d08b89f0408ea5d08b89f0d08e71",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"3025d08b89f0408ea5d08b89f0d08e71\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"duration\": 6,\n  \"end\": 1604182258106,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182258100,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                },
+                {
+                  "apiVersion": "openwhisk/v1",
+                  "kind": "Activation",
+                  "metadata": {
+                    "name": "foo",
+                    "namespace": "kuishell_foobar",
+                    "creationTimestamp": "10/31/2020, 6:10:58 PM"
+                  },
+                  "onclick": {
+                    "namespace": "wsk action list /kuishell_foobar",
+                    "name": "wsk action get /kuishell_foobar/foo"
+                  },
+                  "start": 1604182258138,
+                  "end": 1604182258141,
+                  "duration": 3,
+                  "activationId": "bb9e4223cec542389e4223cec59238ca",
+                  "nameHash": "bb9e4223cec542389e4223cec59238ca",
+                  "annotations": [
+                    {
+                      "key": "causedBy",
+                      "value": "sequence"
+                    },
+                    {
+                      "key": "path",
+                      "value": "kuishell_foobar/foo"
+                    },
+                    {
+                      "key": "kind",
+                      "value": "nodejs:10"
+                    },
+                    {
+                      "key": "timeout",
+                      "value": false
+                    },
+                    {
+                      "key": "limits",
+                      "value": {
+                        "concurrency": 1,
+                        "logs": 10,
+                        "memory": 256,
+                        "timeout": 60000
+                      }
+                    }
+                  ],
+                  "limits": {
+                    "concurrency": 1,
+                    "logs": 10,
+                    "memory": 256,
+                    "timeout": 60000
+                  },
+                  "version": "0.0.3",
+                  "logs": [],
+                  "response": {
+                    "result": {},
+                    "size": 2,
+                    "status": "success",
+                    "success": true
+                  },
+                  "data": "{\n  \"activationId\": \"bb9e4223cec542389e4223cec59238ca\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"duration\": 3,\n  \"end\": 1604182258141,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182258138,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                  "createdOnString": "Started on",
+                  "modes": []
+                }
+              ]
             },
-            "historyIdx": 254,
+            "historyIdx": 59,
             "cwd": "~/git/whisk/nickm/kui",
             "command": "wsk activation trace c044b8c4b580418c84b8c4b580018c62",
             "startEvent": {
               "route": "/wsk/activation/trace",
-              "startTime": 1604184294132,
+              "startTime": 1604253834082,
               "command": "wsk activation trace c044b8c4b580418c84b8c4b580018c62",
               "evaluatorOptions": {
                 "usage": {
@@ -15361,20 +16322,19 @@
                 },
                 "plugin": "plugin-openwhisk"
               },
-              "execType": 1,
+              "execType": 3,
               "execUUID": "c6ee8020-cd0d-4e35-8681-1efb8aea3aec",
               "execOptions": {
-                "echo": true,
-                "type": 1,
+                "type": 3,
+                "language": "en-US",
                 "execUUID": "c6ee8020-cd0d-4e35-8681-1efb8aea3aec",
-                "history": 254,
+                "history": 59,
                 "env": {}
-              },
-              "echo": true
+              }
             },
             "completeEvent": {
-              "execType": 1,
-              "completeTime": 1604184294574,
+              "execType": 3,
+              "completeTime": 1604253834614,
               "command": "wsk activation trace c044b8c4b580418c84b8c4b580018c62",
               "argvNoOptions": ["wsk", "activation", "trace", "c044b8c4b580418c84b8c4b580018c62"],
               "parsedOptions": {
@@ -15382,15 +16342,14 @@
               },
               "execUUID": "c6ee8020-cd0d-4e35-8681-1efb8aea3aec",
               "cancelled": false,
-              "echo": true,
               "evaluatorOptions": {
                 "plugin": "plugin-openwhisk"
               },
               "execOptions": {
-                "echo": true,
-                "type": 1,
+                "type": 3,
+                "language": "en-US",
                 "execUUID": "c6ee8020-cd0d-4e35-8681-1efb8aea3aec",
-                "history": 254,
+                "history": 59,
                 "env": {}
               },
               "response": {
@@ -15454,15 +16413,204 @@
                 "data": "{\n  \"activationId\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"annotations\": [\n    {\n      \"key\": \"topmost\",\n      \"value\": true\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/seq\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"duration\": 20,\n  \"end\": 1604182258150,\n  \"logs\": [\n    \"147c480b71694eecbc480b71691eec8c\",\n    \"3025d08b89f0408ea5d08b89f0d08e71\",\n    \"bb9e4223cec542389e4223cec59238ca\"\n  ],\n  \"name\": \"seq\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182257613,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.1\"\n}",
                 "createdOnString": "Started on",
                 "modes": [],
-                "defaultMode": "logs"
+                "defaultMode": "logs",
+                "currentNamespace": "kuishell_foobar",
+                "componentActivations": [
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:10:58 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182258036,
+                    "end": 1604182258047,
+                    "duration": 11,
+                    "activationId": "147c480b71694eecbc480b71691eec8c",
+                    "nameHash": "147c480b71694eecbc480b71691eec8c",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"147c480b71694eecbc480b71691eec8c\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"duration\": 11,\n  \"end\": 1604182258047,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182258036,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  },
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:10:58 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182258100,
+                    "end": 1604182258106,
+                    "duration": 6,
+                    "activationId": "3025d08b89f0408ea5d08b89f0d08e71",
+                    "nameHash": "3025d08b89f0408ea5d08b89f0d08e71",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"3025d08b89f0408ea5d08b89f0d08e71\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"duration\": 6,\n  \"end\": 1604182258106,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182258100,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  },
+                  {
+                    "apiVersion": "openwhisk/v1",
+                    "kind": "Activation",
+                    "metadata": {
+                      "name": "foo",
+                      "namespace": "kuishell_foobar",
+                      "creationTimestamp": "10/31/2020, 6:10:58 PM"
+                    },
+                    "onclick": {
+                      "namespace": "wsk action list /kuishell_foobar",
+                      "name": "wsk action get /kuishell_foobar/foo"
+                    },
+                    "start": 1604182258138,
+                    "end": 1604182258141,
+                    "duration": 3,
+                    "activationId": "bb9e4223cec542389e4223cec59238ca",
+                    "nameHash": "bb9e4223cec542389e4223cec59238ca",
+                    "annotations": [
+                      {
+                        "key": "causedBy",
+                        "value": "sequence"
+                      },
+                      {
+                        "key": "path",
+                        "value": "kuishell_foobar/foo"
+                      },
+                      {
+                        "key": "kind",
+                        "value": "nodejs:10"
+                      },
+                      {
+                        "key": "timeout",
+                        "value": false
+                      },
+                      {
+                        "key": "limits",
+                        "value": {
+                          "concurrency": 1,
+                          "logs": 10,
+                          "memory": 256,
+                          "timeout": 60000
+                        }
+                      }
+                    ],
+                    "limits": {
+                      "concurrency": 1,
+                      "logs": 10,
+                      "memory": 256,
+                      "timeout": 60000
+                    },
+                    "version": "0.0.3",
+                    "logs": [],
+                    "response": {
+                      "result": {},
+                      "size": 2,
+                      "status": "success",
+                      "success": true
+                    },
+                    "data": "{\n  \"activationId\": \"bb9e4223cec542389e4223cec59238ca\",\n  \"annotations\": [\n    {\n      \"key\": \"causedBy\",\n      \"value\": \"sequence\"\n    },\n    {\n      \"key\": \"path\",\n      \"value\": \"kuishell_foobar/foo\"\n    },\n    {\n      \"key\": \"kind\",\n      \"value\": \"nodejs:10\"\n    },\n    {\n      \"key\": \"timeout\",\n      \"value\": false\n    },\n    {\n      \"key\": \"limits\",\n      \"value\": {\n        \"concurrency\": 1,\n        \"logs\": 10,\n        \"memory\": 256,\n        \"timeout\": 60000\n      }\n    }\n  ],\n  \"cause\": \"c044b8c4b580418c84b8c4b580018c62\",\n  \"duration\": 3,\n  \"end\": 1604182258141,\n  \"logs\": [],\n  \"name\": \"foo\",\n  \"namespace\": \"kuishell_foobar\",\n  \"publish\": false,\n  \"response\": {\n    \"result\": {},\n    \"size\": 2,\n    \"status\": \"success\",\n    \"success\": true\n  },\n  \"start\": 1604182258138,\n  \"subject\": \"nickm@us.ibm.com\",\n  \"version\": \"0.0.3\"\n}",
+                    "createdOnString": "Started on",
+                    "modes": []
+                  }
+                ]
               },
               "responseType": "MultiModalResponse",
-              "historyIdx": 254
+              "historyIdx": 59
             },
             "isExperimental": false,
             "isReplay": true,
             "execUUID": "c6ee8020-cd0d-4e35-8681-1efb8aea3aec",
-            "startTime": 1604184294132,
+            "startTime": 1604253834082,
             "outputOnly": false,
             "state": "valid-response"
           },
