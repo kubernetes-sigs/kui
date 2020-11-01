@@ -355,9 +355,23 @@ export function isActivation<T extends Dict>(resource: ResourceWithNonOptionalMe
   return isOpenWhiskResource(resource) && resource.kind === 'Activation'
 }
 
-export function isSequenceActivation<T extends Dict>(
+/** OpenWhisk current namespace at the time the resource was fetched */
+type WithCurrentNamespace = {
+  currentNamespace: string
+}
+
+/** Prefetched component activations of a sequence */
+type WithSequenceComponents<T extends Dict> = {
+  componentActivations: Activation<T>[]
+}
+
+export type SequenceActivation<T1 extends Dict = Dict, T2 = T1> = Activation<T1> &
+  WithCurrentNamespace &
+  WithSequenceComponents<T2>
+
+export function isSequenceActivation<T1 extends Dict = Dict, T2 = T1>(
   resource: ResourceWithNonOptionalMetadata
-): resource is Activation<T> {
+): resource is SequenceActivation<T1, T2> {
   return isActivation(resource) && hasAnnotation(resource, 'kind', 'sequence')
 }
 

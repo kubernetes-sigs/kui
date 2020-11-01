@@ -18,9 +18,9 @@ import { Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import respondWith from './as-activation'
 import { synonyms } from '../../models/synonyms'
-import { Activation } from '../../models/resource'
 import { clientOptions, getClient } from '../../client/get'
 import { activationID, withStandardOptions } from '../usage'
+import { Activation, SequenceActivation, isSequenceActivation } from '../../models/resource'
 
 export interface Options extends ParsedOptions {
   last: boolean | string
@@ -48,7 +48,7 @@ export async function doGet(get: string, { REPL, argvNoOptions, parsedOptions, e
       `wsk activation last ${typeof parsedOptions.last === 'string' ? parsedOptions.last : ''}`
     )
   } else {
-    return respondWith(
+    const response = respondWith(
       await getClient(execOptions).activations.get(
         Object.assign(
           {
@@ -58,6 +58,26 @@ export async function doGet(get: string, { REPL, argvNoOptions, parsedOptions, e
         )
       )
     )
+
+    if (isSequenceActivation(response)) {
+      const seq: SequenceActivation = Object.assign({}, response)
+
+      const [currentNamespace, componentActivations] = await Promise.all([
+        REPL.qexec<string>('wsk namespace current'),
+        Promise.all(
+          response.logs.map(activationId => {
+            return REPL.qexec<Activation>(`wsk activation get ${activationId}`)
+          })
+        )
+      ])
+
+      seq.currentNamespace = currentNamespace
+      seq.componentActivations = componentActivations
+
+      return seq
+    } else {
+      return response
+    }
   }
 }
 
