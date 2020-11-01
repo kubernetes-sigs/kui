@@ -14,32 +14,23 @@
  * limitations under the License.
  */
 
-import { i18n, Tab, Table, TableStyle } from '@kui-shell/core'
+import { i18n, Table, TableStyle } from '@kui-shell/core'
 
 import { fqn } from '../controller/fqn'
 import { startupPenalty } from '../controller/activation/list'
-import { Activation, WithLogs, isSequenceActivation } from '../models/resource'
+import { Activation, SequenceActivation, isSequenceActivation } from '../models/resource'
 
 const strings = i18n('plugin-openwhisk')
 
 /** As SequenceDiagram-compatible table */
-async function asSequenceTable(repl: Tab['REPL'], resource: WithLogs): Promise<Table> {
-  const currentNamespaceP = repl.qexec<string>('wsk namespace current')
-
-  const componentActivations = await Promise.all(
-    resource.logs.map(activationId => {
-      return repl.qexec<Activation>(`wsk activation get ${activationId}`)
-    })
-  )
-
-  const currentNamespace = await currentNamespaceP
-  const body = componentActivations
+async function asSequenceTable(resource: SequenceActivation): Promise<Table> {
+  const body = resource.componentActivations
     .reduce((A, activation, idx) => {
       // add a Scheduling Delay bar, if needed
-      if (idx > 0 && activation.start - componentActivations[idx - 1].end > 0) {
+      if (idx > 0 && activation.start - resource.componentActivations[idx - 1].end > 0) {
         const delay = Object.assign({}, activation, {
           end: activation.start,
-          start: componentActivations[idx - 1].end,
+          start: resource.componentActivations[idx - 1].end,
           response: undefined,
           annotations: activation.annotations.filter(_ => _.key !== 'waitTime' && _.key !== 'initTime'),
           metadata: Object.assign({}, activation.metadata, { name: strings('Scheduling Delay') })
@@ -53,7 +44,7 @@ async function asSequenceTable(repl: Tab['REPL'], resource: WithLogs): Promise<T
       return A
     }, [] as Activation[])
     .map(_ => ({
-      name: !_.response ? _.metadata.name : fqn(_, currentNamespace),
+      name: !_.response ? _.metadata.name : fqn(_, resource.currentNamespace),
       onclick: _.response ? `wsk activation get ${_.activationId}` : false,
       css: !_.response ? 'sub-text' : undefined,
       attributes: [
@@ -78,8 +69,8 @@ async function asSequenceTable(repl: Tab['REPL'], resource: WithLogs): Promise<T
   }
 }
 
-function content({ REPL }: Pick<Tab, 'REPL'>, resource: WithLogs) {
-  return asSequenceTable(REPL, resource)
+function content(_, resource: SequenceActivation) {
+  return asSequenceTable(resource)
 }
 
 /**
