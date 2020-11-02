@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { inBrowser } from '@kui-shell/core'
 import { notebookVFS } from '@kui-shell/plugin-core-support'
 
-import vfs from './vfs'
-
 export default () => {
-  vfs()
+  if (inBrowser()) {
+    import('./vfs/browser').then(_ => _.default())
+  } else {
+    import('./vfs').then(_ => _.default())
+  }
 
   // mount notebooks
   notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })

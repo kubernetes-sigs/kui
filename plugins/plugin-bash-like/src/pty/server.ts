@@ -30,7 +30,7 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import { CodedError, ExecOptions, Registrar } from '@kui-shell/core'
+import { CodedError, ExecOptions, Registrar, expandHomeDir } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/pty/server')
 
@@ -334,6 +334,10 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
               if (process.env.DEBUG && (!msg.env || !msg.env.DEBUG)) {
                 // don't pass DEBUG unless the user asked for it!
                 delete env.DEBUG
+              }
+
+              if (env.HOME) {
+                env.HOME = expandHomeDir(env.HOME)
               }
 
               const end = msg.cmdline.indexOf(' ')

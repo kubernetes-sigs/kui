@@ -30,7 +30,8 @@ const FontConfigWebpackPlugin = require('font-config-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const { IgnorePlugin, ProvidePlugin } = require('webpack')
 
 // in case the client has some oddities that require classnames to be preserved
 const terserOptions = process.env.KEEP_CLASSNAMES
@@ -46,7 +47,6 @@ const sassLoaderChain = [
   {
     loader: MiniCssExtractPlugin.loader,
     options: {
-      hmr: mode === 'development',
       esModule: true
     }
   },
@@ -59,7 +59,7 @@ if (process.env.NO_OPT) {
   console.log('optimization? disabled')
   optimization.minimize = false
 } else {
-  optimization.minimizer = [new TerserJSPlugin(terserOptions), new OptimizeCSSAssetsPlugin({})]
+  optimization.minimizer = [new TerserJSPlugin(terserOptions), new CssMinimizerPlugin()]
 }
 
 const PORT_OFFSET = process.env.WEBPACK_PORT_OFFSET || process.env.PORT_OFFSET
@@ -159,6 +159,18 @@ if (CompressionPlugin) {
   plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
 }
 
+plugins.push(new IgnorePlugin({ contextRegExp: /\/tests\// }))
+plugins.push(new IgnorePlugin({ contextRegExp: /\/@kui-shell\/build/ }))
+
+if (inBrowser) {
+  plugins.push(
+    new ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+      process: require.resolve('./process.js')
+    })
+  )
+}
+
 /**
  * Convenience function that makes a regexp out of a path; this helps with avoiding windows path.sep issues
  */
@@ -227,8 +239,6 @@ const pluginEntries = allKuiPlugins.map(dir => {
 const entry = Object.assign({ main }, ...pluginEntries)
 console.log('entry', entry)
 
-console.log('webpack plugins', plugins)
-
 const clientBase = path.join(stageDir, 'node_modules/@kui-shell/client')
 
 plugins.push(
@@ -273,7 +283,9 @@ const htmlBuildOptions = Object.assign(
 plugins.push(new HtmlWebpackPlugin(htmlBuildOptions))
 plugins.push(new MiniCssExtractPlugin())
 
-// the Kui builder plugin
+//
+// touch the LOCKFILE when we are done
+//
 plugins.push({
   apply: compiler => {
     compiler.hooks.done.tap('done', () => {
@@ -289,6 +301,8 @@ plugins.push({
     })
   }
 })
+
+console.log('webpack plugins', plugins)
 
 // Notes: when !inBrowser, we want electron to pull
 // node-pty-prebuilt-multiarch in as a commonjs external module; this
@@ -342,7 +356,25 @@ kuiPluginExternals.forEach(_ => {
   }
 })
 
-const emptyIfInBrowser = inBrowser ? 'empty' : true
+const fallback = !inBrowser
+  ? {}
+  : {
+      fs: false,
+      child_process: false, // eslint-disable-line @typescript-eslint/camelcase
+      'docker-modem': false,
+      'fs-extra': false,
+      assert: require.resolve('assert'),
+      constants: require.resolve('constants-browserify'),
+      crypto: require.resolve('crypto-browserify'),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify/browser'),
+      path: require.resolve('path-browserify'),
+      stream: require.resolve('stream-browserify'),
+      timers: require.resolve('timers-browserify'),
+      util: require.resolve('util'),
+      zlib: require.resolve('stream-browserify')
+    }
 
 module.exports = {
   context: stageDir,
@@ -355,16 +387,12 @@ module.exports = {
   mode,
   node: {
     __filename: true,
-    __dirname: true,
-    fs: emptyIfInBrowser,
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    child_process: emptyIfInBrowser,
-    'docker-modem': emptyIfInBrowser,
-    'fs-extra': emptyIfInBrowser
+    __dirname: true
   },
   externals,
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    fallback
   },
   resolveLoader: {
     alias: {
@@ -378,7 +406,7 @@ module.exports = {
     watchOptions: {
       'info-verbosity': 'verbose',
       poll: pollInterval,
-      ignored: ['**/*.d.ts', '**/*.js.map', /node_modules/, '**/clients/default/**']
+      ignored: ['**/*.d.ts', '**/*.js.map', '**/node_modules/**', '**/clients/default/**']
     },
     writeToDisk: !inBrowser,
     contentBase: buildDir,
@@ -452,7 +480,6 @@ module.exports = {
       // end of typescript rules
       { test: /\/terser\/tools/, use: 'ignore-loader' },
       { test: /beautify-html\.js/, use: 'ignore-loader' },
-      { test: /package-lock\.json/, use: 'ignore-loader' },
       { test: /jquery\.map/, use: 'ignore-loader' },
       { test: /sizzle\.min\.map/, use: 'ignore-loader' },
       { test: /\/modules\/queue-view\//, use: 'ignore-loader' },
@@ -469,7 +496,6 @@ module.exports = {
       // { test: /modules\/composer\/@demos\/.*\.js/, use: 'raw-loader' },
       // DANGEROUS: some node modules must have critical files under src/: { test: /\/src\//, use: 'ignore-loader' },
       // { test: /\/test\//, use: 'ignore-loader' },
-      { test: /\/tests\//, use: 'ignore-loader' },
       { test: /AUTHORS/, use: 'ignore-loader' },
       { test: /LICENSE/, use: 'ignore-loader' },
       { test: /license.txt/, use: 'ignore-loader' },
@@ -501,7 +527,7 @@ module.exports = {
   plugins,
   output: {
     globalObject: 'self', // for monaco
-    filename: '[name].[hash].bundle.js',
+    filename: mode === 'production' ? '[name].[hash].bundle.js' : '[name].bundle.js',
     publicPath: contextRoot || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
     path: outputPath
   }

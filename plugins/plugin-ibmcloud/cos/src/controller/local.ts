@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { REPL } from '@kui-shell/core'
+import { REPL, encodeComponent } from '@kui-shell/core'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
 
+import filepath from './filepath'
 import Config, { hasEndpoint, isGoodConfigIgnoringEndpoint } from '../model/Config'
 
 export function isGoodConfig(config: void | Record<string, any>): config is Config {
@@ -26,8 +27,7 @@ export function isGoodConfig(config: void | Record<string, any>): config is Conf
 export default async function findLocal(repl: REPL): Promise<void | Config> {
   try {
     const config = JSON.parse(
-      (await repl.rexec<FStat>(`vfs fstat ~/.bluemix/plugins/cloud-object-storage/config.json --with-data`)).content
-        .data
+      (await repl.rexec<FStat>(`vfs fstat ${encodeComponent(filepath())} --with-data`)).content.data
     )
     if (isGoodConfig(config)) {
       return config

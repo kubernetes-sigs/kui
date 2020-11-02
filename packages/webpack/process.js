@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2019-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+/**
+ * Browser-oriented shims for 'process'
+ *
+ */
 
-import ssc from './ssc/controller'
-import forwarder from './vfs/browser/forwarder'
-
-export default async function(registrar: Registrar) {
-  await Promise.all([ssc(registrar), forwarder(registrar)])
+exports.env = {
+  HOME: '~'
 }
+
+let cwd = exports.env.HOME
+exports.cwd = () => cwd
+
+exports.chdir = dir => (cwd = dir)

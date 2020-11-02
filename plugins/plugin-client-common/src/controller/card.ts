@@ -24,7 +24,7 @@ import { fetchMarkdownFile } from './commentary'
  */
 interface CardOptions extends ParsedOptions {
   title: string
-  icon: string
+  // icon: string
   filename: string
   f: string
 }
@@ -46,10 +46,10 @@ const usage: UsageModel = {
       name: '--title',
       docs: 'Content rendered inside the CardTitle'
     },
-    {
+    /* {
       name: '--icon',
       docs: 'Attribute that specifies the URL of the image to put on the card.'
-    },
+    }, */
     {
       name: '-f',
       docs: 'File that contains the texts'
@@ -68,16 +68,16 @@ const usage: UsageModel = {
 async function doCard(opts: Arguments<CardOptions>): Promise<ReactResponse> {
   const argv = opts.argvNoOptions
   const option = opts.parsedOptions
-  const { title, icon } = option
+  const { title /* , icon */ } = option
 
   const filepath = option.filename || option.f
   if (filepath) {
     const data = await fetchMarkdownFile(filepath, opts)
-    return { react: card({ title, children: data, icon }) }
+    return { react: card({ title, children: data /*, icon */ }) }
   } else {
     const body = argv.slice(1)
     if (body) {
-      return { react: card({ title, children: body, icon }) }
+      return { react: card({ title, children: body /* , icon */ }) }
     } else {
       throw new Error('Invalid arguments: need card body text')
     }

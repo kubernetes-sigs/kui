@@ -18,7 +18,7 @@ import React from 'react'
 import { eventChannelUnsafe, inBrowser, i18n } from '@kui-shell/core'
 import { TagWidget } from '@kui-shell/plugin-client-common'
 
-import { proxyServer } from '@kui-shell/client/config.d/proxy.json'
+import ProxyConfig from '@kui-shell/client/config.d/proxy.json'
 
 const strings = i18n('plugin-proxy-support')
 
@@ -38,6 +38,7 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
   public constructor(props: Props) {
     super(props)
 
+    const { proxyServer } = ProxyConfig
     const proxyEnabled = proxyServer['enabled'] === undefined || proxyServer['enabled'] !== false
     this.state = {
       proxyEnabled,

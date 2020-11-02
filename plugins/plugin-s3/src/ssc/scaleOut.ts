@@ -17,8 +17,8 @@
 import Debug from 'debug'
 import { Arguments } from '@kui-shell/core'
 
-import { minioConfig } from '../vfs'
 import { MinioConfig } from '../providers'
+import { minioConfig } from '../vfs/responders'
 import JobProvider, { JobOptions } from '../jobs/providers/CodeEngine2'
 
 const debug = Debug('plugin-s3/forwarder')

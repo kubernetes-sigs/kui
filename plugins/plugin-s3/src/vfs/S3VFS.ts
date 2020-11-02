@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import { join } from 'path'
 
-import ssc from './ssc/controller'
-import forwarder from './vfs/browser/forwarder'
+export const S3_TAG = 's3'
+const baseMountPath = '/s3'
 
-export default async function(registrar: Registrar) {
-  await Promise.all([ssc(registrar), forwarder(registrar)])
+abstract class S3VFS {
+  public readonly mountPath: string
+  public readonly isLocal = false
+  public readonly isVirtual = false
+  public readonly tags = [S3_TAG]
+  protected readonly s3Prefix: RegExp
+
+  public constructor(mountName: string) {
+    this.mountPath = join(baseMountPath, mountName)
+    this.s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
+  }
 }
+
+export default S3VFS
