@@ -49,7 +49,7 @@ else
     rm -f $LOCKFILE
 fi
 
-npx --no-install webpack-dev-server --progress --config "$CONFIG" $OPEN &
+npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
 
 if [ -n "$LOCKFILE" ]; then
     # don't exit until the dev server is ready

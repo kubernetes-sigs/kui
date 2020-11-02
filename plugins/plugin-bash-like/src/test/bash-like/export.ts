@@ -35,13 +35,17 @@ describe('export command', function(this: Common.ISuite) {
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
 
-  Common.pit(`should cd and still have a value for HOME`, () =>
-    CLI.command('cd', this.app)
+  Common.pit(`should cd and still have a value for HOME`, async () => {
+    const res = await CLI.command('printenv HOME', this.app)
+    await ReplExpect.okWithAny(res)
+    const home = await Util.outputOf(res)
+
+    return CLI.command('cd', this.app)
       .then(ReplExpect.okWithAny)
       .then(() => CLI.command('pwd', this.app).then(ReplExpect.okWithPtyOutput(process.env.HOME)))
-      .then(() => CLI.command('printenv HOME', this.app).then(ReplExpect.okWithPtyOutput(process.env.HOME)))
+      .then(() => CLI.command('printenv HOME', this.app).then(ReplExpect.okWithPtyOutput(home)))
       .catch(Common.oops(this))
-  )
+  })
 
   Common.pit(`should fail with export without args`, () =>
     CLI.command(`export`, this.app)

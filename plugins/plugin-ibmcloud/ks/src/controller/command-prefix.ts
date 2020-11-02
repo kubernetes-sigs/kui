@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { krew } from '@kui-shell/plugin-kubectl/package.json'
+import KubectlConfig from '@kui-shell/plugin-kubectl/package.json'
 
 /**
  * The command prefix we want to use for all commands. For example,
  * `${commandPrefix} ibmcloud ks clusters`
  *
  */
-const { commandPrefix } = krew
+const { commandPrefix } = KubectlConfig.krew
 export default commandPrefix

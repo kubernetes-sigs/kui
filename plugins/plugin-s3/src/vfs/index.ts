@@ -18,35 +18,21 @@ import Debug from 'debug'
 import { basename, join } from 'path'
 import * as micromatch from 'micromatch'
 import { Client, CopyConditions } from 'minio'
+import { Arguments, CodedError, REPL, encodeComponent, flatten, i18n } from '@kui-shell/core'
 import { DirEntry, FStat, GlobStats, ParallelismOptions, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, REPL, Table, encodeComponent, flatten, inBrowser, i18n } from '@kui-shell/core'
 
 import { username, uid, gid } from './username'
-import findAvailableProviders, { Provider, MinioConfig } from '../providers'
+import findAvailableProviders, { Provider } from '../providers'
 
-import runWithProgress, { runWithLogs } from '../ssc/scaleOut'
+import S3VFS, { S3_TAG } from './S3VFS'
+import setResponders from './responders'
 import JobProvider, { JobEnv } from '../jobs'
 import ParallelOperation from './parallel/operations'
 import CodeEngine from '../jobs/providers/CodeEngine'
+import runWithProgress, { runWithLogs } from '../ssc/scaleOut'
 
 const strings = i18n('plugin-s3')
 const debug = Debug('plugin-s3/vfs')
-
-const S3_TAG = 's3'
-const baseMountPath = '/s3'
-
-export abstract class S3VFS {
-  public readonly mountPath: string
-  public readonly isLocal = false
-  public readonly isVirtual = false
-  public readonly tags = [S3_TAG]
-  protected readonly s3Prefix: RegExp
-
-  public constructor(mountName: string) {
-    this.mountPath = join(baseMountPath, mountName)
-    this.s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
-  }
-}
 
 function isS3Provider(vfs: VFS): vfs is S3VFSResponder {
   return !!vfs && !!vfs.tags && vfs.tags.includes(S3_TAG)
@@ -691,139 +677,20 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 }
 
-class S3VFSForwarder extends S3VFS implements VFS {
-  /** Directory listing */
-  public async ls(opts: Pick<Arguments, 'tab' | 'REPL' | 'parsedOptions'>, filepaths: string[]): Promise<DirEntry[]> {
-    return (
-      await opts.REPL.rexec<DirEntry[]>(
-        `vfs-s3 ls ${this.mountPath} ${filepaths.map(_ => encodeComponent(_)).join(' ')}`
-      )
-    ).content
-  }
-
-  /** Insert filepath into directory */
-  public cp(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    srcFilepaths: string[],
-    dstFilepath: string,
-    srcIsSelf: boolean[],
-    dstIsSelf: boolean,
-    srcProvider: VFS[],
-    dstProvider: VFS
-  ): Promise<string> {
-    return opts.REPL.qexec<string>(
-      `vfs-s3 cp ${this.mountPath} ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')} ${encodeComponent(
-        dstFilepath
-      )} ${srcIsSelf.join(',')} ${dstIsSelf.toString()} ${srcProvider.map(_ => _.mountPath).join(',')} ${
-        dstProvider.mountPath
-      }`
-    )
-  }
-
-  /** Remove filepath */
-  public rm(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    filepath: string,
-    recursive?: boolean
-  ): ReturnType<VFS['rm']> {
-    return opts.REPL.qexec(`vfs-s3 rm ${this.mountPath} ${encodeComponent(filepath)} ${!!recursive}`)
-  }
-
-  /** Fetch contents */
-  public async fstat(
-    opts: Pick<Arguments, 'REPL' | 'parsedOptions'>,
-    filepath: string,
-    withData?: boolean,
-    enoentOk?: boolean
-  ): Promise<FStat> {
-    return (
-      await opts.REPL.rexec<FStat>(
-        `vfs-s3 fstat ${this.mountPath} ${encodeComponent(filepath)} ${!!withData} ${!!enoentOk}`
-      )
-    ).content
-  }
-
-  /** Create a directory/bucket */
-  public async mkdir(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    filepath: string
-  ): Promise<void> {
-    await opts.REPL.qexec(`vfs-s3 mkdir ${this.mountPath} ${encodeComponent(filepath)}`)
-  }
-
-  /** remove a directory/bucket */
-  public async rmdir(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    filepath: string
-  ): Promise<void> {
-    await opts.REPL.qexec(`vfs-s3 rmdir ${this.mountPath} ${encodeComponent(filepath)}`)
-  }
-
-  public async grep(opts: Arguments, pattern: string, filepaths: string[]): Promise<string[]> {
-    return opts.REPL.qexec(
-      `vfs-s3 grep ${this.mountPath} ${encodeComponent(pattern)} ${filepaths.map(_ => encodeComponent(_)).join(' ')}`
-    )
-  }
-
-  /** zip a set of files */
-  public gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
-    return parameters[0].REPL.qexec<Table>(
-      `vfs-s3 gzip ${this.mountPath} ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`
-    )
-  }
-
-  /** unzip a set of files */
-  public gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
-    return parameters[0].REPL.qexec<Table>(
-      `vfs-s3 gunzip ${this.mountPath} ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`
-    )
-  }
-}
-
-let responders: VFS[]
-let providers: Provider[]
-
-export function responderFor({ argvNoOptions }: Pick<Arguments, 'argvNoOptions'>) {
-  const mountPath = argvNoOptions[2]
-  return responders.find(_ => _.mountPath === mountPath)
-}
-
-export function vfsFor(mountPath: string): VFS {
-  return responders.find(_ => _.mountPath === mountPath)
-}
-
-export function minioConfig(): MinioConfig {
-  return {
-    version: '10',
-    aliases: providers.reduce((M, _, idx) => {
-      M[responders[idx].mountPath] = {
-        url: /^http/.test(_.endPoint) ? _.endPoint : `https://${_.endPoint}`,
-        accessKey: _.accessKey,
-        secretKey: _.secretKey,
-        api: 's3v4',
-        path: 'auto'
-      }
-      return M
-    }, {} as MinioConfig['aliases'])
-  }
-}
-
 export default async () => {
   const init = () => {
     mount(async (repl: REPL) => {
       try {
-        providers = await findAvailableProviders(repl, init)
+        const providers = await findAvailableProviders(repl, init)
         debug(
           'available s3 providers',
           providers.map(_ => _.mountName)
         )
 
-        if (inBrowser()) {
-          return providers.map(provider => new S3VFSForwarder(provider.mountName))
-        } else {
-          responders = providers.map(provider => new S3VFSResponder(provider))
-          return responders
-        }
+        return setResponders(
+          providers,
+          providers.map(provider => new S3VFSResponder(provider))
+        )
       } catch (err) {
         console.error('Error initializing s3 vfs', err)
       }
