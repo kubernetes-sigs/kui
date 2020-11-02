@@ -41,7 +41,7 @@ function expand(args: Args, option: FilepathOption) {
 }
 
 /** Expand ~ to the full path of the user's home directory */
-function expandTildes(args: Args) {
+function expandTildes(args: Args, env: Arguments['execOptions']['env']) {
   expand(args, 'cache-dir')
   expand(args, 'certificate-authority')
   expand(args, 'client-key')
@@ -49,6 +49,10 @@ function expandTildes(args: Args) {
   expand(args, 'kubeconfig')
   expand(args, args.parsedOptions.f ? 'f' : 'filename')
   expand(args, args.parsedOptions.k ? 'k' : 'kustomize')
+
+  if (env.HOME) {
+    env.HOME = expandHomeDir(env.HOME)
+  }
 }
 
 /**
@@ -61,7 +65,7 @@ export const doNativeExec = (args: Args): Promise<RawResponse> =>
     const env = Object.assign({}, !inBrowser() ? process.env : {}, args.execOptions.env)
     delete env.DEBUG
 
-    expandTildes(args)
+    expandTildes(args, env)
 
     const executable = args.argv[0].replace(/^_/, '')
     const child = spawn(executable, args.argv.slice(1), { env })

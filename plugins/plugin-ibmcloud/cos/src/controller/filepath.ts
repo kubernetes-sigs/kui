@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
-import { expandHomeDir } from '@kui-shell/core'
-
 export default function filepath() {
-  return join(expandHomeDir('~/.bluemix/plugins/cloud-object-storage/config.json'))
+  return '~/.bluemix/plugins/cloud-object-storage/config.json'
 }
