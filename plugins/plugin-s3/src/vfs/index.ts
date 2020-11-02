@@ -18,30 +18,18 @@ import { basename, join } from 'path'
 import * as micromatch from 'micromatch'
 import { Client, CopyConditions } from 'minio'
 import { DirEntry, FStat, GlobStats, ParallelismOptions, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, REPL, encodeComponent, flatten, inBrowser, i18n } from '@kui-shell/core'
+import { Arguments, CodedError, REPL, encodeComponent, flatten, i18n } from '@kui-shell/core'
 
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider } from '../providers'
 
+import S3VFS from './S3VFS'
+import setResponders from './responders'
 import JobProvider, { JobEnv } from '../jobs'
 import ParallelOperation from './parallel/operations'
 import CodeEngine from '../jobs/providers/CodeEngine'
 
 const strings = i18n('plugin-s3')
-
-const baseMountPath = '/s3'
-
-export abstract class S3VFS {
-  public readonly mountPath: string
-  public readonly isLocal = false
-  public readonly isVirtual = false
-  protected readonly s3Prefix: RegExp
-
-  public constructor(mountName: string) {
-    this.mountPath = join(baseMountPath, mountName)
-    this.s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
-  }
-}
 
 class S3VFSResponder extends S3VFS implements VFS {
   private readonly client: Client
@@ -202,7 +190,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     srcFilepaths: string[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
     const { bucketName, fileName } = this.split(dstFilepath)
 
     // make public?
@@ -242,7 +230,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     srcFilepaths: string[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
 
     // NOTE: intentionally not lstat; we want what is referenced by
     // the symlink
@@ -291,7 +279,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     srcFilepaths: string[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
 
     const etags = await Promise.all(
       (await sources).content
@@ -555,7 +543,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     const { REPL } = parameters[0]
     const srcFilepaths = parameters[1]
     const sources = (
-      await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+      await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
     ).content.map(_ => _.path)
 
     const nTasks = sources.length
@@ -598,112 +586,12 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 }
 
-class S3VFSForwarder extends S3VFS implements VFS {
-  /** Directory listing */
-  public async ls(opts: Pick<Arguments, 'tab' | 'REPL' | 'parsedOptions'>, filepaths: string[]): Promise<DirEntry[]> {
-    return (
-      await opts.REPL.rexec<DirEntry[]>(
-        `vfs-s3 ls ${this.mountPath} ${filepaths.map(_ => opts.REPL.encodeComponent(_)).join(' ')}`
-      )
-    ).content
-  }
-
-  /** Insert filepath into directory */
-  public cp(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    srcFilepaths: string[],
-    dstFilepath: string,
-    srcIsSelf: boolean[],
-    dstIsSelf: boolean
-  ): Promise<string> {
-    return opts.REPL.qexec<string>(
-      `vfs-s3 cp ${this.mountPath} ${srcFilepaths
-        .map(_ => opts.REPL.encodeComponent(_))
-        .join(' ')} ${opts.REPL.encodeComponent(dstFilepath)} ${srcIsSelf.join(',')} ${dstIsSelf.toString()}`
-    )
-  }
-
-  /** Remove filepath */
-  public rm(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    filepath: string,
-    recursive?: boolean
-  ): ReturnType<VFS['rm']> {
-    return opts.REPL.qexec(`vfs-s3 rm ${this.mountPath} ${opts.REPL.encodeComponent(filepath)} ${!!recursive}`)
-  }
-
-  /** Fetch contents */
-  public async fstat(
-    opts: Pick<Arguments, 'REPL' | 'parsedOptions'>,
-    filepath: string,
-    withData?: boolean,
-    enoentOk?: boolean
-  ): Promise<FStat> {
-    return (
-      await opts.REPL.rexec<FStat>(
-        `vfs-s3 fstat ${this.mountPath} ${opts.REPL.encodeComponent(filepath)} ${!!withData} ${!!enoentOk}`
-      )
-    ).content
-  }
-
-  /** Create a directory/bucket */
-  public async mkdir(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    filepath: string
-  ): Promise<void> {
-    await opts.REPL.qexec(`vfs-s3 mkdir ${this.mountPath} ${opts.REPL.encodeComponent(filepath)}`)
-  }
-
-  /** remove a directory/bucket */
-  public async rmdir(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
-    filepath: string
-  ): Promise<void> {
-    await opts.REPL.qexec(`vfs-s3 rmdir ${this.mountPath} ${opts.REPL.encodeComponent(filepath)}`)
-  }
-
-  public async grep(opts: Arguments, pattern: string, filepaths: string[]): Promise<string[]> {
-    return opts.REPL.qexec(
-      `vfs-s3 grep ${this.mountPath} ${opts.REPL.encodeComponent(pattern)} ${filepaths
-        .map(_ => opts.REPL.encodeComponent(_))
-        .join(' ')}`
-    )
-  }
-
-  /** zip a set of files */
-  public async gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
-    await parameters[0].REPL.qexec(
-      `vfs-s3 gzip ${this.mountPath} ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`
-    )
-  }
-
-  /** unzip a set of files */
-  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
-    await parameters[0].REPL.qexec(
-      `vfs-s3 gunzip ${this.mountPath} ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`
-    )
-  }
-}
-
-let responders: VFS[]
-
-export function responderFor({ argvNoOptions }: Pick<Arguments, 'argvNoOptions'>) {
-  const mountPath = argvNoOptions[2]
-  return responders.find(_ => _.mountPath === mountPath)
-}
-
 export default async () => {
   const init = () => {
     mount(async (repl: REPL) => {
       try {
         const providers = await findAvailableProviders(repl, init)
-
-        if (inBrowser()) {
-          return providers.map(provider => new S3VFSForwarder(provider.mountName))
-        } else {
-          responders = providers.map(provider => new S3VFSResponder(provider))
-          return responders
-        }
+        return setResponders(providers.map(provider => new S3VFSResponder(provider)))
       } catch (err) {
         console.error('Error initializing s3 vfs', err)
       }

@@ -17,7 +17,7 @@
 import { Registrar } from '@kui-shell/core'
 import { VFS } from '@kui-shell/plugin-bash-like/fs'
 
-import { responderFor } from '.'
+import { responderFor } from '../responders'
 
 export default function(registrar: Registrar) {
   registrar.listen(

@@ -30,6 +30,7 @@ import * as SidecarExpect from './sidecar-expect'
 export interface AppAndCount {
   app: Application
   count: number
+  splitIndex?: number
 }
 
 /**
@@ -334,4 +335,9 @@ export function switchToTab(mode: string) {
     await res.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, mode))
     return res
   }
+}
+
+/** Output of the given block */
+export function outputOf(res: AppAndCount) {
+  return res.app.client.getText(Selectors.OUTPUT_N(res.count, res.splitIndex))
 }

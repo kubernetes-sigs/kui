@@ -54,7 +54,8 @@ describe('card command', function(this: Common.ISuite) {
       })
       .catch(Common.oops(this)))
 
-  it('should execute the command and show card with image: card foo --title=bar --icon="icons/png/TestIcon.png"', () =>
+  /** Disabled: --icon support removed, for now, until we figure out what we mean by icon paths */
+  xit('should execute the command and show card with image: card foo --title=bar --icon="icons/png/TestIcon.png"', () =>
     CLI.command('card foo --title=bar --icon="icons/png/TestIcon.png"', this.app)
       .then(async () => {
         await this.app.client.waitForVisible(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)

@@ -84,7 +84,7 @@ export default function renderMain(props: KuiProps) {
 
       <MeterWidgets>
         {/* <ClusterUtilization /> */}
-        <OpenWhiskGridWidget />
+        {!isPopup() && !inBrowser() && <OpenWhiskGridWidget />}
         {inBrowser() && <ProxyOfflineIndicator />}
         {!isPopup() && !inBrowser() && <UpdateChecker />}
         <Screenshot />

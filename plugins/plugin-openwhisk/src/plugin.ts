@@ -71,7 +71,6 @@ import wipeAll from './controller/generic/wipe'
 import cp from './controller/generic/cp'
 import mv from './controller/generic/mv'
 import rm from './controller/generic/rm'
-import loadTest from './controller/generic/load-test'
 import auth from './controller/generic/auth'
 import actionLet from './controller/action/let/let'
 import actionWebbify from './controller/action/webbify'
@@ -87,7 +86,6 @@ export default async (registrar: Registrar) => {
   cp(registrar)
   mv(registrar)
   rm(registrar)
-  loadTest(registrar)
   auth(registrar)
   actionLet(registrar)
   actionWebbify(registrar)

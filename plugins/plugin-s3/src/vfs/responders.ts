@@ -14,5 +14,17 @@
  * limitations under the License.
  */
 
-import forwarder from './vfs/browser/forwarder'
-export default forwarder
+import { Arguments } from '@kui-shell/core'
+import { VFS } from '@kui-shell/plugin-bash-like/fs'
+
+let _responders: VFS[] = []
+
+export function responderFor({ argvNoOptions }: Pick<Arguments, 'argvNoOptions'>) {
+  const mountPath = argvNoOptions[2]
+  return _responders.find(_ => _.mountPath === mountPath)
+}
+
+export default function setResponders(responders: VFS[]) {
+  _responders = responders.slice(0)
+  return _responders
+}

@@ -14,5 +14,20 @@
  * limitations under the License.
  */
 
-import forwarder from './vfs/browser/forwarder'
-export default forwarder
+import { join } from 'path'
+
+const baseMountPath = '/s3'
+
+abstract class S3VFS {
+  public readonly mountPath: string
+  public readonly isLocal = false
+  public readonly isVirtual = false
+  protected readonly s3Prefix: RegExp
+
+  public constructor(mountName: string) {
+    this.mountPath = join(baseMountPath, mountName)
+    this.s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
+  }
+}
+
+export default S3VFS
