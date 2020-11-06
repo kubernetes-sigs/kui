@@ -194,7 +194,6 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
         >
           {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
             <Tab
-              href="#"
               key={mode.mode}
               id={mode.mode}
               className="sidecar-bottom-stripe-button"

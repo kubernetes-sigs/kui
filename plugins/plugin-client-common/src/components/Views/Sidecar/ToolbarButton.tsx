@@ -81,11 +81,11 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
         }
         data-mode={button.mode}
       >
-        <a role="presentation" href="#" onClick={this._buttonOnclick}>
+        <button role="presentation" onClick={this._buttonOnclick}>
           <span role="tab" title={button.label || button.mode}>
             {button.icon ? button.icon : button.label || button.mode}
           </span>
-        </a>
+        </button>
       </span>
     )
   }

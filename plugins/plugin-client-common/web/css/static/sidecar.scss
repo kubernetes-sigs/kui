@@ -106,7 +106,7 @@ $focus-color: var(--color-brand-03);
     }
   }
 
-  .kui--sidecar-tabs-container > .bx--tabs--scrollable,
+  .kui--sidecar-tabs-container .bx--tab-content,
   .bx--tab-content {
     /* TODO    @extend .full-height; */
     flex: 1;
@@ -117,7 +117,8 @@ $focus-color: var(--color-brand-03);
     /* carbon override */
     padding: 0;
 
-    &[aria-hidden='true'] {
+    &[aria-hidden='true'],
+    &[hidden] {
       display: none;
     }
   }

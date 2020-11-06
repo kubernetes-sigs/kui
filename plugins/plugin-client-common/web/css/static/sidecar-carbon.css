@@ -21,7 +21,7 @@
 .bx--tabs--scrollable__nav-item:not(.bx--tabs--scrollable__nav-item--selected):not(.bx--tabs--scrollable__nav-item--disabled):not(.bx--tabs--scrollable__nav-item--selected)
   .bx--tabs--scrollable__nav-link:focus,
 .bx--tabs--scrollable__nav-item:not(.bx--tabs--scrollable__nav-item--selected):not(.bx--tabs--scrollable__nav-item--disabled):not(.bx--tabs--scrollable__nav-item--selected)
-  a.bx--tabs--scrollable__nav-link:active {
+  .bx--tabs--scrollable__nav-link:active {
   color: var(--color-text-02);
 }
 .bx--tabs--scrollable__nav-item--selected:not(.bx--tabs--scrollable__nav-item--disabled)
@@ -35,14 +35,14 @@ body[kui-theme-style] .kui--sidecar {
   .bx--tabs,
   .bx--tabs .bx--tabs__nav,
   .bx--tabs .bx--tabs__nav li,
-  .bx--tabs .bx--tabs__nav li a {
+  .bx--tabs .bx--tabs__nav li button {
     width: unset;
     min-height: unset;
     position: unset;
     font-size: unset;
   }
-  a.bx--tabs--scrollable__nav-link,
-  a.bx--tabs--scrollable__nav-link:active {
+  .bx--tabs--scrollable__nav-link,
+  .bx--tabs--scrollable__nav-link:active {
     outline: none;
     width: unset;
     min-width: 7rem;
@@ -81,7 +81,7 @@ body[kui-theme-style] .kui--sidecar {
   }
 }
 
-body[kui-theme-style] a.bx--tabs--scrollable__nav-link {
+body[kui-theme-style] .bx--tabs--scrollable__nav-link {
   color: var(--color-text-01);
   border-bottom: 2px solid var(--color-base04);
   opacity: 0.875;
@@ -97,8 +97,8 @@ body[kui-theme-style]
 
 @include somewhat-narrow-window {
   body[kui-theme-style] .kui--sidecar {
-    a.bx--tabs--scrollable__nav-link,
-    a.bx--tabs--scrollable__nav-link:active {
+    .bx--tabs--scrollable__nav-link,
+    .bx--tabs--scrollable__nav-link:active {
       min-width: 5rem;
     }
   }
@@ -106,8 +106,8 @@ body[kui-theme-style]
 
 @include medium-width-window {
   body[kui-theme-style] .kui--sidecar {
-    a.bx--tabs--scrollable__nav-link,
-    a.bx--tabs--scrollable__nav-link:active {
+    .bx--tabs--scrollable__nav-link,
+    .bx--tabs--scrollable__nav-link:active {
       min-width: 6rem;
     }
   }
