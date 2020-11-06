@@ -24,18 +24,18 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "adm-zip": "0.4.13",
-    "debug": "4.1.1",
-    "htmlparser2": "4.0.0",
-    "indefinite": "^2.3.1",
-    "js-yaml": "^3.13.1",
-    "needle": "2.4.0",
-    "openwhisk": "starpit/openwhisk-client-js#fix-214",
-    "parse-duration": "0.1.2",
-    "pretty-ms": "5.1.0",
-    "promise-retry": "1.1.1",
-    "tmp": "0.1.0",
-    "yargs-parser": "16.1.0"
+    "adm-zip": "0.4.16",
+    "debug": "4.2.0",
+    "htmlparser2": "5.0.1",
+    "indefinite": "^2.4.1",
+    "js-yaml": "3.14.0",
+    "needle": "2.5.2",
+    "openwhisk": "3.21.3",
+    "parse-duration": "0.4.4",
+    "pretty-ms": "7.0.1",
+    "promise-retry": "2.0.1",
+    "tmp": "0.2.1",
+    "yargs-parser": "18.1.3"
   },
   "publishConfig": {
     "access": "public"
