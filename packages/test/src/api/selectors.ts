@@ -63,7 +63,7 @@ export const TERMINAL_SIDECAR_WATCHER_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="s
 
 // sidecar toolbar
 export const SIDECAR_TOOLBAR = (N: number) =>
-  `${SIDECAR(N)} .bx--tab-content[aria-hidden="false"] .sidecar-bottom-stripe-toolbar`
+  `${SIDECAR(N)} .bx--tab-content:not([hidden]) .sidecar-bottom-stripe-toolbar`
 export const SIDECAR_TOOLBAR_TEXT = (N: number, type: string) =>
   `${SIDECAR_TOOLBAR(N)} .sidecar-toolbar-text[data-type="${type}"] .sidecar-toolbar-text-content`
 export const SIDECAR_TOOLBAR_BUTTON = (N: number, mode: string) =>
@@ -73,20 +73,20 @@ export const SIDECAR_TOOLBAR_BUTTON = (N: number, mode: string) =>
 
 // sidecar alert
 export const SIDECAR_ALERT = (N: number, type: string) =>
-  `${SIDECAR(N)} .bx--tab-content[aria-hidden="false"] .kui--toolbar-alert[data-type="${type}"]`
+  `${SIDECAR(N)} .bx--tab-content:not([hidden]) .kui--toolbar-alert[data-type="${type}"]`
 
 // terminal alert
 export const TERMINAL_ALERT = (type: string) => `.kui--terminal-alert[data-type="${type}"]`
 
 // sidecar tab content, for visible tab
-export const SIDECAR_TAB_CONTENT = (N: number) => `${SIDECAR(N)} .bx--tab-content[aria-hidden="false"] .custom-content`
+export const SIDECAR_TAB_CONTENT = (N: number) => `${SIDECAR(N)} .bx--tab-content:not([hidden]) .custom-content`
 export const SIDECAR_CUSTOM_CONTENT = (N: number) => `${SIDECAR_TAB_CONTENT(N)} .code-highlighting`
 
 // top nav sidecar
 export const SIDECAR_MODE_BUTTONS = (N: number) =>
   `${SIDECAR(N)} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 export const _SIDECAR_MODE_BUTTON = (N: number, mode: string) => `${SIDECAR_MODE_BUTTONS(N)}[data-mode="${mode}"]` // specific mode button in the bottom stripe
-export const SIDECAR_MODE_BUTTON = (N: number, mode: string) => `${_SIDECAR_MODE_BUTTON(N, mode)} > a` // clickable part of mode button
+export const SIDECAR_MODE_BUTTON = (N: number, mode: string) => `${_SIDECAR_MODE_BUTTON(N, mode)} > button` // clickable part of mode button
 export const SIDECAR_MODE_BUTTON_SELECTED = (N: number, mode: string) =>
   `${_SIDECAR_MODE_BUTTON(N, mode)}.bx--tabs--scrollable__nav-item--selected`
 
@@ -288,7 +288,7 @@ export const COMMENTARY_EDITOR_BUTTON_REVERT =
 export const COMMENTARY_EDITOR = '.kui--commentary .kui--source-ref-editor'
 
 export const SIDECAR_LAST = `${OUTPUT_LAST} .kui--sidecar.visible:not(.minimized)`
-export const SIDECAR_TOOLBAR_LAST = `${SIDECAR_LAST} .bx--tab-content[aria-hidden="false"] .sidecar-bottom-stripe-toolbar`
+export const SIDECAR_TOOLBAR_LAST = `${SIDECAR_LAST} .bx--tab-content:not([hidden]) .sidecar-bottom-stripe-toolbar`
 export const SIDECAR_TOOLBAR_TEXT_LAST = (type: string) =>
   `${SIDECAR_TOOLBAR_LAST} .sidecar-toolbar-text[data-type="${type}"] .sidecar-toolbar-text-content`
 export const SIDECAR_TOOLBAR_BUTTON_LAST = (mode: string) =>
