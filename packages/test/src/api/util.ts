@@ -173,7 +173,7 @@ export const expectArray = (expected: Array<string>, failFast = true, subset = f
 /** get the monaco editor text */
 export const getValueFromMonaco = async (
   res: AppAndCount,
-  container = `${Selectors.PROMPT_BLOCK_N(res.count)} .bx--tab-content[aria-hidden="false"]`
+  container = `${Selectors.PROMPT_BLOCK_N(res.count)} .bx--tab-content:not([hidden])`
 ) => {
   const selector = `${container} .monaco-editor-wrapper`
   try {

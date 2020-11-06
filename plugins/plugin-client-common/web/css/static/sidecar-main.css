@@ -165,9 +165,15 @@
     line-height: 1.5rem;
     padding: 0 0.5rem;
 
-    a {
+    button {
+      padding: 0;
+    }
+
+    a,
+    button {
       color: inherit;
-      text-decoration: none;
+      background-color: transparent;
+      border: none;
       &:hover {
         cursor: pointer;
         [role="tab"] {
@@ -178,7 +184,6 @@
 
     [role="tab"] {
       display: flex;
-      font-size: 0.875rem;
     }
   }
   .graphical-icon svg {
@@ -393,7 +398,8 @@
     align-items: center;
     margin-right: 3px;
 
-    a {
+    a,
+    button {
       padding: 3px;
       display: flex;
       color: var(--color-text-01);
@@ -403,12 +409,13 @@
       }
     }
 
-    a.disabled svg {
+    button.disabled svg {
       fill: var(--color-text-02);
     }
 
     &:not(.disabled):hover {
-      a {
+      a,
+      button {
         background-color: var(--color-table-border1);
         svg {
           fill: var(--color-text-01);

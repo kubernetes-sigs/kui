@@ -20,15 +20,15 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@carbon/icons-react": "10.19.0",
+    "@carbon/icons-react": "10.20.0",
     "@patternfly/react-core": "4.50.2",
-    "carbon-components": "10.22.0",
-    "carbon-components-react": "7.22.0",
+    "carbon-components": "10.23.2",
+    "carbon-components-react": "7.23.2",
     "carbon-icons": "7.0.7",
-    "cli-spinners": "^2.4.0",
+    "cli-spinners": "2.5.0",
     "monaco-editor": "0.21.2",
     "monaco-editor-webpack-plugin": "2.0.0",
-    "react-markdown": "5.0.1",
+    "react-markdown": "5.0.2",
     "tmp": "0.2.1"
   },
   "kui": {
