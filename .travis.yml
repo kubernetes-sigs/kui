@@ -94,7 +94,7 @@ jobs:
     #   !! not work.
     #
     - os: osx
-      env: N="core mac" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1 
+      env: N="core mac" CLIENT="default" TEST_FROM_BUILD=`[ "$TRAVIS_OS_NAME" = linux ] && echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" || echo "${TRAVIS_BUILD_DIR}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui"` HOMEBREW_NO_AUTO_UPDATE=1 HOMEBREW_NO_INSTALL_CLEANUP=1
       before_install: which jq || brew install jq
       script:
         - concurrently -n COPY 'npm run test1 core-standalone' # tests that use the Clipboard
