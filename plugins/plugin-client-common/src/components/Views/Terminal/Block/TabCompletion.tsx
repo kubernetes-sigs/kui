@@ -201,7 +201,9 @@ class TabCompletionInitialState extends TabCompletionState {
 
   private async init() {
     const completions = await this.findCompletions()
-    this.update(completions)
+    if (this.willUpdate(completions)) {
+      this.update(completions)
+    }
   }
 
   public render() {
