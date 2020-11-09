@@ -25,6 +25,7 @@ import { Arguments, ParsedOptions, Registrar, Tab, MultiModalResponse } from '@k
 import { metadataWithNameOnly as metadata } from './metadata'
 import { modeOrderVariants } from './content/modes'
 import reactContent from './content/react'
+import tree from './content/tree'
 import { MyResource } from '../models'
 
 // exporting this for consumption in tests
@@ -83,12 +84,25 @@ const doModes = (idx: number): ((args: Arguments<Options>) => MultiModalResponse
   }
 }
 
+/** This is the handler of command: `mmr test react` */
 function doReact() {
   return Object.assign(metadata, {
     modes: [
       {
         mode: 'react',
         react: reactContent()
+      }
+    ]
+  })
+}
+
+/** This is the handler of command: `mmr test tree` */
+async function doTree() {
+  return Object.assign(metadata, {
+    modes: [
+      {
+        mode: 'tree',
+        content: tree
       }
     ]
   })
@@ -104,6 +118,12 @@ export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/react', doReact, {
     usage: {
       docs: 'A test of MultiModalResponse mode that presents a React component'
+    }
+  })
+
+  commandTree.listen('/test/mmr/tree', doTree, {
+    usage: {
+      docs: 'A test of MultiModalResponse mode that presents a TreeResponse'
     }
   })
 

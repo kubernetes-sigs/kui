@@ -357,7 +357,9 @@ export default class Editor extends React.PureComponent<Props, State> {
       }
 
       const subscription = Editor.subscribeToChanges(props, editor, options.readOnly)
-      cleaners.push(() => subscription.dispose())
+      if (subscription) {
+        cleaners.push(() => subscription.dispose())
+      }
 
       cleaners.push(() => {
         editor.dispose()
