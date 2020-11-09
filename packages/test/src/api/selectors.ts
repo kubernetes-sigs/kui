@@ -118,6 +118,21 @@ export const SIDECAR_FULLY_CLOSED = (N: number) => `${SIDECAR(N)} .kui--sidecar:
 export const INVERTED_COLORS = '.kui--inverted-color-context'
 
 /**
+ * Tree
+ *
+ */
+export const TREE = (N: number) => `${SIDECAR_TAB_CONTENT(N)} .kui--treeview`
+export const TREE_VIEWS_AND_BODY = (N: number) => `${TREE(N)} .kui--treeview-nav-and-body`
+export const TREE_VIEWS = (N: number) => `${TREE_VIEWS_AND_BODY(N)} ul[role="tree"]`
+export const _TREE_LIST = (id: string) => `li[id="${id}"]`
+export const TREE_LIST = (N: number, id: string) => `${TREE_VIEWS(N)} ${_TREE_LIST(id)}`
+export const TREE_LIST_EXPANDED = (N: number, id: string) => `${TREE_VIEWS(N)} ${_TREE_LIST(id)}[aria-expanded="true"]`
+export const TREE_LIST_AS_BUTTON = (N: number, id: string) => `${TREE_LIST(N, id)} button.pf-c-tree-view__node`
+export const TREE_LIST_AS_BUTTON_SELECTED = (N: number, id: string) => `${TREE_LIST_AS_BUTTON(N, id)}.pf-m-current`
+export const TREE_LIST_IN_A_LIST = (N: number, id: string, parentId: string) =>
+  `${TREE_LIST_EXPANDED(N, parentId)} ul[role="group"] ${_TREE_LIST}`
+
+/**
  * Terminal splits
  *
  */
