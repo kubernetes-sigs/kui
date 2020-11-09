@@ -27,6 +27,7 @@ import {
   isReactProvider,
   isStringWithOptionalContentType,
   isTable,
+  isTreeResponse,
   isCommandStringContent,
   isFunctionContent,
   isScalarContent,
@@ -37,6 +38,7 @@ import {
 import Eval from './Eval'
 import Editor from './Editor'
 import renderTable from './Table'
+import TreeView from './TreeView'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
@@ -128,6 +130,8 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
         // <PaginatedTable {...props} />
       } else if (isHTML(mode.content)) {
         return <HTMLDom content={mode.content} />
+      } else if (isTreeResponse(mode.content)) {
+        return <TreeView tab={this.props.tab} data={mode.content.data} response={this.props.response} />
       } else {
         console.error('Unsupported scalar content', mode)
       }

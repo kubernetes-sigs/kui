@@ -16,7 +16,7 @@
 
 import { ok } from 'assert'
 import { Application } from 'spectron'
-import { promiseEach, BadgeSpec } from '@kui-shell/core'
+import { promiseEach, BadgeSpec, TreeResponse, TreeItem } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -375,6 +375,50 @@ export class TestMMR {
         backToOpen()
         showModes()
       }
+    })
+  }
+
+  public tree(expectTree: TreeResponse, mode: string) {
+    const { command, testName } = this.param
+
+    describe(`tree ${testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it('should should open sidecar with tree view', () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.mode(mode))
+          .then(async ({ count }) => {
+            const testTree = async (nodes: TreeItem[]) => {
+              await promiseEach(nodes, async node => {
+                await this.app.client.waitForVisible(Selectors.TREE_LIST(count, node.id))
+                await this.app.client.click(Selectors.TREE_LIST(count, node.id))
+
+                if (node.contentType === 'text/plain') {
+                  await SidecarExpect.textPlainContentFromMonaco(node.content)({ app: this.app, count })
+                } else if (node.contentType === 'yaml') {
+                  await this.app.client.waitUntil(async () => {
+                    const actualText = await this.app.client.getText(
+                      `${Selectors.SIDECAR(count)} .monaco-editor .view-lines`
+                    )
+                    return actualText.replace(/\s+$/, '') === node.content
+                  }, 20000)
+                }
+
+                if (node.children) {
+                  await this.app.client.waitForVisible(Selectors.TREE_LIST_EXPANDED(count, node.id))
+                  return testTree(node.children)
+                } else {
+                  await this.app.client.waitForVisible(Selectors.TREE_LIST_AS_BUTTON_SELECTED(count, node.id))
+                }
+              })
+            }
+
+            return testTree(expectTree.data)
+          })
+          .catch(Common.oops(this, true)))
     })
   }
 

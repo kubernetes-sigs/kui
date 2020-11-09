@@ -22,6 +22,7 @@ import { Entity, MetadataBearing } from '../entity'
 import { isHTML } from '../../util/types'
 import { ModeOrButton, Button } from './types'
 import { ToolbarText } from '../../webapp/views/toolbar-text'
+import { TreeResponse, isTreeResponse } from '../TreeResponse'
 import { Editable } from '../editable'
 
 /**
@@ -30,7 +31,7 @@ import { Editable } from '../editable'
  * function call.
  *
  */
-export type ScalarResource = string | HTMLElement | Table
+export type ScalarResource = string | HTMLElement | Table | TreeResponse
 export interface ScalarContent<T = ScalarResource> {
   content: T
 }
@@ -56,7 +57,8 @@ export function isScalarContent<T extends MetadataBearing>(entity: ScalarLike<T>
   const content = (entity as ScalarContent).content
   return (
     isReactProvider(entity) ||
-    (content !== undefined && (typeof content === 'string' || isTable(content) || isHTML(content)))
+    (content !== undefined &&
+      (typeof content === 'string' || isTable(content) || isHTML(content) || isTreeResponse(content)))
   )
 }
 
