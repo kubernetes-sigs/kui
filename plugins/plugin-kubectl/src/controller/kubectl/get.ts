@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import { Arguments, CodedError, KResponse, MultiModalResponse, Registrar, isHeadless, i18n } from '@kui-shell/core'
+import { basename } from 'path'
+import {
+  Arguments,
+  Button,
+  CodedError,
+  KResponse,
+  MultiModalResponse,
+  Registrar,
+  isHeadless,
+  i18n
+} from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
@@ -24,8 +34,20 @@ import { kindAndNamespaceOf } from './fqn'
 import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
+import { getSources, getDeployedResources } from '../../lib/util/tree'
 import { isUsage, doHelp } from '../../lib/util/help'
-import { KubeOptions, isEntityRequest, isTableRequest, fileOf, formatOf, isWatchRequest, getNamespace } from './options'
+import {
+  KubeOptions,
+  isEntityRequest,
+  isTableRequest,
+  fileOf,
+  formatOf,
+  isWatchRequest,
+  getNamespace,
+  isTreeReq,
+  fileOfWithDetail,
+  isRecursive
+} from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse, computeDurations } from '../../lib/view/formatTable'
 import {
   KubeResource,
@@ -34,6 +56,7 @@ import {
   sameResourceVersion,
   hasResourceVersion
 } from '../../lib/model/resource'
+import { getCommandFromArgs } from '../../lib/util/util'
 
 const strings = i18n('plugin-kubectl')
 
@@ -85,7 +108,10 @@ export async function doGetAsTable(
  * `kubectl get` as entity response
  *
  */
-export async function doGetAsEntity(args: Arguments<KubeOptions>, response: RawResponse): Promise<KubeResource> {
+export async function doGetAsEntity(
+  args: Arguments<KubeOptions>,
+  response: RawResponse
+): Promise<KubeResource | RawResponse> {
   try {
     // this is the raw data string we get from `kubectl`
     const data = response.content.stdout
@@ -101,8 +127,12 @@ export async function doGetAsEntity(args: Arguments<KubeOptions>, response: RawR
     })
 
     if (isKubeItems(kuiResponse)) {
-      // so that isPod() etc. work on the items
-      kuiResponse.items.forEach(_ => (_.isKubeResource = true))
+      if (kuiResponse.items.length > 0) {
+        // so that isPod() etc. work on the items
+        kuiResponse.items.forEach(_ => (_.isKubeResource = true))
+      } else {
+        return response
+      }
     }
 
     return kuiResponse
@@ -183,6 +213,49 @@ export async function doGetAsMMR(
   } catch (err) {
     console.error('error handling entity response', resource)
     throw err
+  }
+}
+
+/**
+ * This is the handler of `kubectl get if`, which returns
+ * `MultiModalResponse` with three tabs:
+ * 1. tree of templates
+ * 2. tree of applied resources
+ * 3. tree of apply-dry-run resources (TODO)
+ *
+ */
+async function doGetTreeAsMMR(args: Arguments<KubeOptions>, filepath: string, response: KubeResource) {
+  const namespace = await getNamespace(args)
+  const cmd = getCommandFromArgs(args)
+  const recursive = isRecursive(args) ? '-r' : undefined
+  const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', '-n', namespace, '-f', recursive, filepath].filter(_ => _)
+
+  const applyButton: Button = {
+    mode: 'apply',
+    label: 'Apply',
+    kind: 'drilldown' as const,
+    command: argv.join(' ')
+  }
+
+  return {
+    kind: 'Resources',
+    metadata: {
+      name: basename(filepath),
+      namespace
+    },
+    toolbarText: {
+      type: 'info',
+      text:
+        isKubeResource(response) && isKubeItems(response) && response.items.length !== 0
+          ? strings('You are viewing deployed resource.')
+          : strings('You are viewing undeployed resource.')
+    },
+    onclick: {
+      kind: `open ${filepath}`,
+      name: `open ${filepath}`,
+      namespace: `kubectl get ns ${namespace} -o yaml`
+    },
+    modes: [await getSources(args, filepath), await getDeployedResources(response), applyButton].filter(_ => _)
   }
 }
 
@@ -275,6 +348,12 @@ export const doGet = (command: string) =>
       }
     }
 
+    // fetch raw yaml for tree request
+    if (isTreeReq(args)) {
+      args.command = `${args.command} -o yaml`
+      args.parsedOptions.o = 'yaml'
+    }
+
     const response = await rawGet(args, command)
 
     if (isKubeTableResponse(response)) {
@@ -305,7 +384,18 @@ export function viewTransformer(args: Arguments<KubeOptions>, response: KubeReso
   }
 }
 
-export const getFlags = Object.assign({}, flags, { viewTransformer })
+/** KubeResource -> MultiModalResponse view transformer for `kubectl get` */
+function viewTransformerForGet(args: Arguments<KubeOptions>, response: KubeResource) {
+  // tranform getFile response to MMR with tree response
+  const fileOf = fileOfWithDetail(args)
+  if (fileOf.filepath) {
+    return doGetTreeAsMMR(args, fileOf.filepath, response)
+  } else {
+    return viewTransformer(args, response)
+  }
+}
+
+export const getFlags = Object.assign({}, flags, { viewTransformer: viewTransformerForGet })
 
 /** Register a command listener */
 export function getter(registrar: Registrar, command: string, cli = command) {

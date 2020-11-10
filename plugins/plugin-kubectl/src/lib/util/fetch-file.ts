@@ -16,7 +16,9 @@
 
 import Debug from 'debug'
 import needle from 'needle'
-import { REPL, inBrowser, isHeadless, hasProxy, CodedError, i18n } from '@kui-shell/core'
+import { join } from 'path'
+import { Arguments, REPL, inBrowser, isHeadless, hasProxy, CodedError, i18n } from '@kui-shell/core'
+import { KubeOptions, isRecursive } from '../../controller/kubectl/options'
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
@@ -101,6 +103,25 @@ async function _needle({ qexec }: REPL, method: 'get', url: string): Promise<{ s
   }
 }
 
+async function fetchRemote (repl: REPL, url: string) {
+  const fetchOnce = () => _needle(repl, 'get', url).then(_ => _.body)
+
+  const retry = (delay: number) => async (err: Error) => {
+    if (/timeout/.test(err.message) || /hang up/.test(err.message) || /hangup/.test(err.message)) {
+      debug('retrying', err)
+      await new Promise(resolve => setTimeout(resolve, delay))
+      return fetchOnce()
+    } else {
+      throw err
+    }
+  }
+
+  // fetch with three retries
+  return fetchOnce()
+    .catch(retry(500))
+    .catch(retry(1000))
+    .catch(retry(5000))
+}
 /**
  * Either fetch a remote file or read a local one
  *
@@ -114,23 +135,7 @@ export function fetchFile(repl: REPL, url: string): Promise<(string | Buffer)[]>
     urls.map(async url => {
       if (url.match(/http(s)?:\/\//)) {
         debug('fetch remote', url)
-        const fetchOnce = () => _needle(repl, 'get', url).then(_ => _.body)
-
-        const retry = (delay: number) => async (err: Error) => {
-          if (/timeout/.test(err.message) || /hang up/.test(err.message) || /hangup/.test(err.message)) {
-            debug('retrying', err)
-            await new Promise(resolve => setTimeout(resolve, delay))
-            return fetchOnce()
-          } else {
-            throw err
-          }
-        }
-
-        // fetch with three retries
-        return fetchOnce()
-          .catch(retry(500))
-          .catch(retry(1000))
-          .catch(retry(5000))
+        return fetchRemote(repl, url)
       } else {
         const filepath = url
         debug('fetch local', filepath)
@@ -153,6 +158,37 @@ export async function fetchFileKustomize(repl: REPL, url: string): Promise<{ dat
     await repl.rexec<{ data: string; dir?: string }>(`_fetchfile ${repl.encodeComponent(url)} --kustomize`)
   ).content
   return stats
+}
+
+/**
+ * fetch raw files from `filepath`
+ */
+export async function fetchRawFiles(args: Arguments<KubeOptions>, filepath: string) {
+  if (filepath.match(/http(s)?:\/\//)) {
+    return fetchRemote(args.REPL, filepath)
+  } else {
+    const path = args.REPL.encodeComponent(filepath)
+    const resourceStats = (
+      await args.REPL.rexec<{ data?: string; isDirectory?: boolean }>(`vfs fstat ${path} --with-data`)
+    ).content
+
+      if (resourceStats.isDirectory) {
+      return args.REPL.rexec<{ path: string }[]>(
+        `vfs ls ${join(path, isRecursive(args) ? '/**/*.yaml' : '/*.yaml')} --with-data`
+      )
+        .then(_ => _.content)
+        .then(filenames =>
+          Promise.all(
+            filenames.map(({ path }) =>
+              args.REPL.rexec<{ data: string }>(`vfs fstat ${path} --with-data`).then(_ => _.content.data)
+            )
+          )
+        )
+        .then(_ => _.join('---\n'))
+    } else {
+      return resourceStats.data
+    }
+  }
 }
 
 export default fetchFileString
