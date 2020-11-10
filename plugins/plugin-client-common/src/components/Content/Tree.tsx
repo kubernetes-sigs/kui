@@ -22,7 +22,7 @@ import Editor from './Editor'
 
 import '../../../web/scss/components/Tree/index.scss'
 
-interface Props {
+type Props = {
   response: MultiModalResponse
   tab: Tab
   data: TreeResponse['data']
