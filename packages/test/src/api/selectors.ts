@@ -121,8 +121,8 @@ export const INVERTED_COLORS = '.kui--inverted-color-context'
  * Tree
  *
  */
-export const TREE = (N: number) => `${SIDECAR_TAB_CONTENT(N)} .kui--treeview`
-export const TREE_VIEWS_AND_BODY = (N: number) => `${TREE(N)} .kui--treeview-nav-and-body`
+export const TREE = (N: number) => `${SIDECAR_TAB_CONTENT(N)} .kui--tree`
+export const TREE_VIEWS_AND_BODY = (N: number) => `${TREE(N)} .kui--tree-nav-and-body`
 export const TREE_VIEWS = (N: number) => `${TREE_VIEWS_AND_BODY(N)} ul[role="tree"]`
 export const _TREE_LIST = (id: string) => `li[id="${id}"]`
 export const TREE_LIST = (N: number, id: string) => `${TREE_VIEWS(N)} ${_TREE_LIST(id)}`
