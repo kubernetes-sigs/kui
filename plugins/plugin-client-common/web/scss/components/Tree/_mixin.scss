@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@mixin Tree {
+  .kui--tree {
+    @content;
+  }
+}
 
-.kui--treeview-nav-and-body {
-  display: flex;
-
-  @include TreeViewNav {
-    background-color: var(--color-sidecar-header);
-
-    @include TreeViewBadge {
-      color: var(--color-text-01);
-    }
-
-    @include TreeViewItemNotSelected {
-      color: var(--color-text-01);
-    }
-
-    @include TeeViewItem {
-      background-color: var(--color-sidecar-header);
-      font-size: 0.875rem;
-    }
+@mixin TreeNavAndBody {
+  .kui--tree-nav-and-body {
+    @content;
   }
 }
