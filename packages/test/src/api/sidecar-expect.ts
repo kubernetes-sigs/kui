@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { promiseEach } from '@kui-shell/core'
 import * as assert from 'assert'
 
 import { timeout, waitTimeout } from './cli'
@@ -157,6 +158,31 @@ export const defaultMode = (expected: { mode: string; label?: string }) => async
     }
   }, waitTimeout)
 
+  return res
+}
+
+export type ExpectedTree = {
+  id: string,
+  children?: ExpectedTree[]
+}
+
+export const tree = (expected: ExpectedTree[]) => async (res: AppAndCount) => {
+  const count = res.count
+  const testTree = async (nodes: ExpectedTree[]) => {
+    await promiseEach(nodes, async node => {
+      await res.app.client.waitForVisible(Selectors.TREE_LIST(count, node.id))
+      await res.app.client.click(Selectors.TREE_LIST(count, node.id))
+
+      if (node.children) {
+        await res.app.client.waitForVisible(Selectors.TREE_LIST_EXPANDED(count, node.id))
+        return testTree(node.children)
+      } else {
+        await res.app.client.waitForVisible(Selectors.TREE_LIST_AS_BUTTON_SELECTED(count, node.id))
+      }
+    })
+  }
+
+  await testTree(expected)
   return res
 }
 
