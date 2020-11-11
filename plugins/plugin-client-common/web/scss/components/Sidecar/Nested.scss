@@ -18,13 +18,6 @@
 @import '../Editor/_mixins';
 @import '../Terminal/_mixins';
 
-/* room for the resize handle */
-$resize-spacer: 0.5rem;
-
-@include NestedTopNav {
-  padding-bottom: $resize-spacer;
-}
-
 @include NestedSidecar {
   min-width: 0;
   max-width: 100%;
@@ -65,7 +58,7 @@ $resize-spacer: 0.5rem;
     bottom: 0;
 
     /* !important needed to override drag-resize which sets element styles */
-    height: calc(100% - 3rem - #{$resize-spacer}) !important;
+    height: calc(100% - 3rem) !important;
     width: auto !important;
 
     @include EditorContainer {

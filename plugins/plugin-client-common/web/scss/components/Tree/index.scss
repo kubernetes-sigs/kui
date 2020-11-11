@@ -20,6 +20,7 @@
 @include Tree {
   @include TreeNavAndBody {
     display: flex;
+    flex-direction: row;
   }
 
   @include TreeViewNav {

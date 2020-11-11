@@ -786,6 +786,7 @@ $kui--page-content-paragraph-padding: 0.375rem;
   position: absolute;
   bottom: -5px;
   width: 100%;
+  z-index: 100;
 }
 .page-content > h3:first-child,
 .page-content > h2:first-child,
