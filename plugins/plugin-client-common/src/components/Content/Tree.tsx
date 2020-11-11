@@ -75,8 +75,8 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <div className="kui--tree">
-        <div className="kui--tree-nav-and-body">
+      <div className="kui--tree kui--full-height">
+        <div className="kui--tree-nav-and-body kui--full-height">
           {this.tree()}
           {this.editor()}
         </div>
