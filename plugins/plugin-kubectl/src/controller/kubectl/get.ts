@@ -255,7 +255,11 @@ async function doGetTreeAsMMR(args: Arguments<KubeOptions>, filepath: string, re
       name: `open ${filepath}`,
       namespace: `kubectl get ns ${namespace} -o yaml`
     },
-    modes: [await getSources(args, filepath), await getDeployedResources(response), applyButton].filter(_ => _)
+    modes: [
+      await getSources(args, namespace, filepath),
+      await getDeployedResources(args, namespace, response),
+      applyButton
+    ].filter(_ => _)
   }
 }
 

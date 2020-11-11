@@ -35,6 +35,39 @@ export type TreeItem = {
 
   /** Flag indicating if node is expanded by default */
   defaultExpanded?: boolean
+
+  /** The extensions of this tree item */
+  extends?: {
+    kind?: string[]
+    name?: string[]
+    apiVersion?: string[]
+  }
+
+  /** Arguments that produce events */
+  eventArgs?: {
+    /** command that produces events */
+    command: string
+    /**
+     * schema of the event output a table string
+     * with each column separated by | and each row separated by \n
+     * e.g. 20:18:39Z|eventgen|Back-off|v1|Pod|\n20:18:39Z|eventgen|Error|v1|Pod|\n
+     *
+     */
+    schema?: {
+      /** columns that produced by the command */
+      nCol: number
+      /** nth column that means timestamp */
+      timestampCol?: number
+      /** nth column that means message */
+      messageCol?: number
+      /** nth column that means name */
+      nameCol?: number
+      /** nth column that means kind */
+      kindCol?: number
+      /** nth column that means apiVersion */
+      apiVersionCol?: number
+    }
+  }
 }
 
 export interface TreeResponse {

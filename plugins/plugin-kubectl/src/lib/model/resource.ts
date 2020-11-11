@@ -635,4 +635,12 @@ export function isNode(resource: KubeResource): resource is Node {
   return resource.apiVersion === 'v1' && resource.kind === 'Node'
 }
 
+/**
+ * @return whether the given resource might possibly have events;
+ * since Events never have Events, we can exclude those always
+ *
+ */
+export function hasEvents(resource: KubeResource): boolean {
+  return isCrudableKubeResource(resource) && !isEvent(resource) && isNamespaced(resource)
+}
 export default KubeResource

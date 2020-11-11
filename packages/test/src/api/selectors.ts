@@ -132,6 +132,9 @@ export const TREE_LIST_AS_BUTTON = (N: number, id: string) => `${TREE_LIST(N, id
 export const TREE_LIST_AS_BUTTON_SELECTED = (N: number, id: string) => `${TREE_LIST_AS_BUTTON(N, id)}.pf-m-current`
 export const TREE_LIST_IN_A_LIST = (N: number, id: string, parentId: string) =>
   `${TREE_LIST_EXPANDED(N, parentId)} ul[role="group"] ${_TREE_LIST}`
+export const TREE_EVENT_MESSAGES = (N: number) => `${TREE(N)} .kui--tree-events .kui--tree-event-messages`
+export const TREE_EVENT_MESSAGE = (N: number, M: number) =>
+  `${TREE_EVENT_MESSAGES(N)} .kui--tree-event-message:nth-child(${M})`
 
 /**
  * Terminal splits

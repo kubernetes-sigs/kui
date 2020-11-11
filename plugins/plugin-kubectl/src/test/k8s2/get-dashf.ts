@@ -86,6 +86,11 @@ const bunch = [
   }
 ]
 
+const currentEventCount = async (res: ReplExpect.AppAndCount): Promise<number> => {
+  const events = await res.app.client.$$(Selectors.TREE_EVENT_MESSAGES(res.count))
+  return !events ? 0 : events.length
+}
+
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
   commands.push('oc')
@@ -133,6 +138,22 @@ commands.forEach(command => {
             if (deployedTree) {
               await Util.switchToTab('deployed resources')(_)
                 .then(SidecarExpect.mode('deployed resources'))
+                .then(async _ => {
+                  console.error('expect at least one event, since we just created the resource')
+                  let idx = 0
+                  await this.app.client.waitUntil(
+                    async () => {
+                      const actualEventCount = await currentEventCount(_)
+                      if (++idx > 5) {
+                        console.error('still waiting for events 1', actualEventCount)
+                      }
+                      return actualEventCount > 0
+                    },
+                    { timeout: CLI.waitTimeout }
+                  )
+
+                  return _
+                })
                 .then(SidecarExpect.tree(deployedTree))
             }
 
