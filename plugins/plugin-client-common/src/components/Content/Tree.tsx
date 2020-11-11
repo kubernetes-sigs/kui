@@ -19,6 +19,7 @@ import React from 'react'
 import { MultiModalResponse, Tab, TreeItem, TreeResponse } from '@kui-shell/core'
 import TreeView from '../spi/TreeView'
 import Editor from './Editor'
+import Events from './Events'
 
 import '../../../web/scss/components/Tree/index.scss'
 
@@ -73,6 +74,21 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
     )
   }
 
+  private events() {
+    if (this.state.activeItems[0].eventArgs) {
+      const { command, schema } = this.state.activeItems[0].eventArgs
+
+      return (
+        <Events
+          tab={this.props.tab}
+          command={command}
+          schema={schema}
+          involvedObjects={this.state.activeItems[0].extends}
+        />
+      )
+    }
+  }
+
   public render() {
     return (
       <div className="kui--tree kui--full-height">
@@ -80,6 +96,7 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
           {this.tree()}
           {this.editor()}
         </div>
+        {this.events()}
       </div>
     )
   }
