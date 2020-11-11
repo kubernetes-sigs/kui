@@ -16,9 +16,10 @@
 
 import { Arguments, i18n, TreeItem, TreeResponse } from '@kui-shell/core'
 
-import { KubeOptions } from '../../controller/kubectl/options'
+import { KubeOptions, withKubeconfigFrom } from '../../controller/kubectl/options'
 import { fetchRawFiles } from './fetch-file'
-import { KubeResource, isKubeResource, isKubeItems } from '../model/resource'
+import { KubeResource, isKubeResource, isKubeItems, hasEvents } from '../model/resource'
+import { getCommandFromArgs } from './util'
 
 const strings = i18n('plugin-kubectl')
 const KEYSEPARATER = '---'
@@ -30,7 +31,8 @@ function joinKey(keys: string[]) {
 interface BucketValue {
   raw: TreeItem['content']
   name: string
-  parents: string[]
+  extends: TreeItem['extends']
+  eventArgs?: TreeItem['eventArgs']
 }
 
 interface Bucket {
@@ -45,11 +47,32 @@ interface Buckets {
   name: Bucket
 }
 
+function getArgsThatProducesEvents(args: Arguments<KubeOptions>, namespace: string): BucketValue['eventArgs'] {
+  const cmd = getCommandFromArgs(args)
+  const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|"}{.involvedObject.apiVersion}{"|"}{.involvedObject.kind}{"|\\n"}'`
+  const command = withKubeconfigFrom(
+    args,
+    `${cmd} get events -w -n ${namespace} ${output}`.replace(/^k(\s)/, 'kubectl$1')
+  )
+
+  return {
+    command,
+    schema: {
+      nCol: 5,
+      timestampCol: 0,
+      nameCol: 1,
+      messageCol: 2,
+      apiVersionCol: 3,
+      kindCol: 4
+    }
+  }
+}
+
 /**
  * This function categorizes `resources` into buckets
  *
  */
-async function categorizeResources(resources: KubeResource[]) {
+async function categorizeResources(args: Arguments<KubeOptions>, namespace: string, resources: KubeResource[]) {
   const { safeDump } = await import('js-yaml')
 
   const buckets: Buckets = {
@@ -68,13 +91,35 @@ async function categorizeResources(resources: KubeResource[]) {
       const name = resource.metadata.name
       const raw = resource.kuiRawData ? resource.kuiRawData : await safeDump(resource)
 
-      const append = (bucket: Bucket, name: string, key?: string) => {
+      const eventArgs = hasEvents(resource) ? getArgsThatProducesEvents(args, namespace) : undefined
+
+      const append = (bucket: Bucket, label: string, key?: string) => {
         if (!key) {
-          return Object.assign(bucket, { raw, name, parents: [name] })
+          return Object.assign(bucket, {
+            raw,
+            name: label,
+            extends: {
+              kind: [kind],
+              name: [name]
+            },
+            eventArgs
+          })
         } else if (!bucket[key]) {
-          return Object.assign(bucket, { [key]: { raw, name } })
+          return Object.assign(bucket, {
+            [key]: {
+              raw,
+              name: label,
+              extends: {
+                kind: [kind],
+                name: [name]
+              },
+              eventArgs
+            }
+          })
         } else {
           bucket[key].raw = !bucket[key].raw ? raw : `${bucket[key].raw}---\n${raw}`
+          bucket[key].extends.kind.push(kind)
+          bucket[key].extends.name.push(name)
         }
       }
 
@@ -135,12 +180,14 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
     return !nextBucket || nextBucket.length === 0
       ? undefined
       : nextBucket.map(([key, value]) => {
-          const _value = value as Bucket
+          const { name, raw, eventArgs } = value as BucketValue
           return {
-            name: _value.name,
+            name,
             id: key,
-            content: _value.raw,
+            extends: value['extends'],
+            content: raw,
             contentType: 'yaml' as const,
+            eventArgs,
             children: next(buckets, idx + 1, key)
           }
         })
@@ -150,12 +197,15 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
     {
       name: buckets.all.all.name,
       id: 'all',
+      extends: buckets.all.all.extends,
       content: buckets.all.all.raw,
       contentType: 'yaml' as const,
+      eventArgs: buckets.all.all.eventArgs,
       defaultExpanded: true,
       children: next(buckets, 1)
     }
   ]
+
   return data
 }
 
@@ -166,12 +216,12 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
  * 3. it transforms the buckets into `TreeResponse` and returns a `MultiModalMode`
  *
  */
-export async function getSources(args: Arguments<KubeOptions>, filepath: string) {
+export async function getSources(args: Arguments<KubeOptions>, namesapce: string, filepath: string) {
   const raw = await fetchRawFiles(args, filepath)
 
   const { safeLoadAll } = await import('js-yaml')
   const resources: KubeResource[] = await safeLoadAll(raw)
-  const buckets = await categorizeResources(resources)
+  const buckets = await categorizeResources(args, namesapce, resources)
 
   return {
     mode: 'sources',
@@ -190,11 +240,11 @@ export async function getSources(args: Arguments<KubeOptions>, filepath: string)
  * 3. it transforms the buckets into `TreeResponse` and returns a `MultiModalMode`
  *
  */
-export async function getDeployedResources(resource: KubeResource) {
+export async function getDeployedResources(args: Arguments<KubeOptions>, namespace: string, resource: KubeResource) {
   if (isKubeResource(resource)) {
     const raw = isKubeItems(resource) ? resource.items : [resource]
     if (raw && raw.length !== 0) {
-      const buckets = await categorizeResources(raw)
+      const buckets = await categorizeResources(args, namespace, raw)
 
       return {
         mode: 'deployed resources',

@@ -16,6 +16,7 @@
 
 @import '_mixin.scss';
 @import '../TreeView/mixins';
+@import '../Table//Events.scss';
 
 @include Tree {
   @include TreeNavAndBody {
@@ -33,6 +34,33 @@
     @include TeeViewItem {
       background-color: var(--color-sidecar-header);
       font-size: 0.875rem;
+    }
+  }
+
+  .kui--tree-events {
+    background-color: var(--color-base03);
+
+    .kui--tree-event-messages:first-child {
+      .kui--tree-event-message {
+        @include bottom-events-first-child-padding;
+      }
+    }
+
+    .kui--tree-event-messages {
+      .kui--tree-event-message {
+        @include bottom-events-padding;
+        @include bottom-events-message;
+      }
+
+      .padding-content {
+        padding: 0;
+      }
+    }
+
+    .kui--tree-event-messages:last-child {
+      .kui--tree-event-message {
+        @include bottom-events-last-child-padding;
+      }
     }
   }
 }
