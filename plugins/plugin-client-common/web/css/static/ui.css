@@ -251,11 +251,10 @@ code.fancy-code.hljs {
   align-items: flex-start;
 }
 .grid-layout {
-  display: grid;
-  grid-column-gap: 0.875em;
-  grid-template-columns: repeat(auto-fill, minmax(10em, auto));
-  grid-template-rows: repeat(auto-fill, minmax(1.25em, auto));
   flex: 1;
+  display: grid;
+  grid-gap: 0.125rem 0.875rem;
+  grid-template-columns: repeat(auto-fill, minmax(10em, auto));
 }
 .grid-layout > div {
   overflow: hidden;
