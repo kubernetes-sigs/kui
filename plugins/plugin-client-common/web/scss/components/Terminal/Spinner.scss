@@ -1,0 +1,50 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.kui--repl-block-spinner {
+  --sk-size: 0.75rem;
+  --sk-color: var(--active-tab-color);
+}
+.repl-context .kui--repl-block-spinner {
+  --sk-size: 0.625rem;
+}
+
+/** Some overrides for the Plane spinner */
+.kui--repl-block-spinner .sk-plane {
+  animation: sk-plane2 1.5s infinite ease-in-out;
+}
+@keyframes sk-plane2 {
+  0% {
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    filter: brightness(1);
+  }
+  25% {
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    filter: brightness(1.75);
+  }
+  50% {
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    filter: brightness(1.75);
+  }
+  75% {
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    filter: brightness(2.25);
+  }
+  100% {
+    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    filter: brightness(2.25);
+  }
+}

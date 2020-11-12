@@ -24,23 +24,6 @@
   .repl-block:hover .repl-context {
     opacity: 1;
   }
-  .repl-input .repl-context {
-    align-items: flex-start;
-  }
-  /* .repl-output {
-    margin-top: 2px;
-
-    .repl-context {
-      &:after {
-        content: '';
-        border: 0.25px solid var(--color-table-border3);
-        position: absolute;
-        bottom: -1rem;
-        top: 1.25rem;
-        right: 1em;
-      }
-    }
-  } */
 
   .repl-prompt-righty {
     font-weight: 700;

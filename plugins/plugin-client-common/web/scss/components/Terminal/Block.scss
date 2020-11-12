@@ -241,6 +241,7 @@ body[kui-theme-style='dark'] {
     .repl-context {
       color: var(--color-text-02);
       display: flex;
+      align-items: center;
       justify-content: flex-end;
       flex-basis: 3rem;
       min-width: $repl-context-min-width;
@@ -255,11 +256,6 @@ body[kui-theme-style='dark'] {
     }
 
     &:not(.repl-active) {
-      .repl-input {
-        .repl-context {
-          padding-top: $inset;
-        }
-      }
       .repl-input-element-wrapper {
         border: 1px solid hsla(0, 0%, 39.2%, 0.1);
         align-items: stretch;
@@ -308,18 +304,6 @@ body[kui-theme-style='dark'] {
   }
   .kui--repl-block-right-element {
     font-size: 0.6875rem;
-  }
-
-  .kui--repl-block-spinner {
-    font-size: 1.25rem;
-    color: var(--active-tab-color);
-    &:not(:empty) {
-      margin: 0 0.5rem;
-    }
-  }
-  .repl-context .kui--repl-block-spinner {
-    font-size: initial;
-    margin: 0;
   }
 }
 

@@ -16,7 +16,6 @@
 
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
-import { dots as spinnerFrames } from 'cli-spinners'
 import { basename } from 'path'
 import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences, getPrimaryTabId } from '@kui-shell/core'
 
@@ -26,6 +25,7 @@ import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
 import isInViewport from '../visible'
 import KuiContext from '../../../Client/context'
+import { Plane as Spinner } from './Spinner'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import whenNothingIsSelected from '../../../../util/selection'
@@ -131,10 +131,6 @@ export interface State {
 
   /** state of tab completion */
   tabCompletion?: TabCompletionState
-
-  /** spinner? */
-  spinner?: ReturnType<typeof setInterval>
-  spinnerDom?: HTMLSpanElement
 
   /** durationDom, used for counting up duration while Processing */
   counter?: ReturnType<typeof setInterval>
@@ -296,8 +292,7 @@ export default class Input extends InputProvider {
     this.state = {
       isReEdit: false,
       execUUID: hasUUID(props.model) ? props.model.execUUID : undefined,
-      prompt: undefined,
-      spinner: undefined
+      prompt: undefined
     }
   }
 
@@ -328,27 +323,6 @@ export default class Input extends InputProvider {
     )
   }
 
-  private static newSpinner(spinnerDom: HTMLSpanElement) {
-    let frame = 0
-
-    spinnerDom.innerText = spinnerFrames.frames[frame++]
-    return setInterval(function() {
-      frame = frame + 1 === spinnerFrames.frames.length ? 0 : frame + 1
-      spinnerDom.innerText = spinnerFrames.frames[frame]
-    }, spinnerFrames.interval)
-  }
-
-  private static updateSpinner(props: Props, state: State) {
-    const spinner = isProcessing(props.model)
-      ? state.spinner || (state.spinnerDom && Input.newSpinner(state.spinnerDom))
-      : undefined
-    if (!spinner && state.spinner) {
-      clearInterval(state.spinner)
-    }
-
-    return spinner
-  }
-
   private static newCountup(startTime: number, durationDom: HTMLSpanElement) {
     return setInterval(() => {
       durationDom.innerText = prettyPrintDuration((~~(Date.now() - startTime) / 1000) * 1000)
@@ -367,12 +341,10 @@ export default class Input extends InputProvider {
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    const spinner = Input.updateSpinner(props, state)
     const counter = Input.updateCountup(props, state)
 
     if (hasUUID(props.model)) {
       return {
-        spinner,
         counter,
         execUUID: props.model.execUUID
       }
@@ -380,7 +352,6 @@ export default class Input extends InputProvider {
       // e.g. terminal has been cleared; we need to excise the current
       // <input/> because react aggressively caches these
       return {
-        spinner,
         counter,
         prompt: undefined,
         execUUID: undefined
@@ -614,12 +585,9 @@ export default class Input extends InputProvider {
   /** spinner for processing blocks */
   private spinner() {
     return (
-      <span
-        className="kui--repl-block-spinner"
-        ref={spinnerDom => {
-          this.setState({ spinnerDom })
-        }}
-      />
+      <span className="kui--repl-block-spinner">
+        <Spinner />
+      </span>
     )
   }
 
@@ -658,7 +626,7 @@ export default class Input extends InputProvider {
       <React.Fragment>
         <span className="repl-prompt-right-elements">
           {this.experimentalTag()}
-          {!this.showSpinnerInContext() && this.spinner()}
+          {!this.showSpinnerInContext() && isProcessing(this.props.model) && this.spinner()}
           {this.timestamp()}
         </span>
         {this.actions(input)}
