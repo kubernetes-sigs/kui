@@ -25,10 +25,10 @@
     "carbon-components": "10.23.2",
     "carbon-components-react": "7.23.2",
     "carbon-icons": "7.0.7",
-    "cli-spinners": "2.5.0",
     "monaco-editor": "0.21.2",
     "monaco-editor-webpack-plugin": "2.0.0",
     "react-markdown": "5.0.2",
+    "spinkit": "2.0.1",
     "tmp": "0.2.1"
   },
   "kui": {
