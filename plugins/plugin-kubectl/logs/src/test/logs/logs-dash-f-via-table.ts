@@ -88,11 +88,11 @@ wdescribe(`kubectl logs follow via table ${process.env.MOCHA_RUN_TARGET || ''}`,
       console.log('nRows2', nRows2)
       assert.ok(nRows2 > nRows1, `${nRows2} is not > ${nRows1}`)
 
-      await sleep(sleepTime)
+      /* await sleep(sleepTime)
       const text3 = await getTextContent(this.app, rows)
       const nRows3 = text3.split(/\n/).length
       console.log('nRows3', nRows3)
-      assert.ok(nRows3 > nRows2, `${nRows3} is not > ${nRows2}`)
+      assert.ok(nRows3 > nRows2, `${nRows3} is not > ${nRows2}`) */
 
       // await this.app.client.click(rows)
       await this.app.client.keys(Keys.ctrlC)
