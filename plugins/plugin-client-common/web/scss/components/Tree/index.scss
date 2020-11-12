@@ -26,10 +26,6 @@
   @include TreeViewNav {
     background-color: var(--color-sidecar-header);
 
-    @include TreeViewBadge {
-      color: var(--color-text-01);
-    }
-
     @include TreeViewItemNotSelected {
       color: var(--color-text-01);
     }
