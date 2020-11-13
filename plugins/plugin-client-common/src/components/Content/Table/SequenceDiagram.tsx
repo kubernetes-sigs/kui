@@ -360,12 +360,12 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
               this.props.response.coldStartColumnIdx >= 0 && row.attributes[this.props.response.coldStartColumnIdx]
                 ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
                 : undefined
-            const widthB = coldStart ? this.getFraction(coldStart) : undefined
+            let widthB = coldStart ? this.getFraction(coldStart) : undefined
             const title = strings('Duration', prettyPrintDuration(duration))
             const titleB = coldStart ? strings('Cold Start', prettyPrintDuration(coldStart), title) : undefined
             const className = colorByStatus ? trafficLight(row.attributes[idx4]) : durationColor(duration, false)
-            if (left + widthB >= 1) {
-              console.error(
+            if (left + widthB > 1) {
+              /* console.error(
                 'oopsB',
                 left,
                 widthB,
@@ -373,7 +373,8 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 interval,
                 interval.endMillis - interval.startMillis,
                 interval
-              )
+                ) */
+              widthB = 1 - left
             }
 
             const gap =
