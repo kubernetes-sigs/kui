@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { MultiModalResponse, Tab, TreeItem, TreeResponse } from '@kui-shell/core'
+import { MultiModalResponse, Tab, ToolbarProps, TreeItem, TreeResponse } from '@kui-shell/core'
 import TreeView from '../spi/TreeView'
 import Editor from './Editor'
 import Events from './Events'
@@ -27,7 +27,7 @@ type Props = {
   response: MultiModalResponse
   tab: Tab
   data: TreeResponse['data']
-}
+} & ToolbarProps
 
 interface State {
   activeItem: TreeItem

@@ -20,9 +20,20 @@ import Debug from 'debug'
 
 import { Tab, Abortable, Streamable, i18n, TreeItem } from '@kui-shell/core'
 import Markdown from '../Content/Markdown'
+import Loading from '../spi/Loading'
 
 const debug = Debug('plugin-client-common/events')
 const strings = i18n('plugin-client-common') // TODO: i18n('plugin-client-common', 'events')
+
+/**
+ * We will wait this many milliseconds after the PTY is ready for log
+ * data to arrive before proclaiming No log data.
+ *
+ */
+const HYSTERESIS = 1500
+
+/** Interval in milliseconds with which we update the "ago" timestamps */
+const UPDATE_INTERVAL = 60 * 1000
 
 interface Props {
   tab: Tab
@@ -32,19 +43,34 @@ interface Props {
 }
 
 type Streams = {
-  involvedObjects?: {
-    name?: string
-    kind?: string
-    apiVersion?: string
-  }
+  lastTimestamp: number
+  name?: string
+  kind?: string
+  apiVersion?: string
   message: string
 }
 
 interface State {
-  job?: Abortable /** The underlying PTY streaming job */
-  streams?: Streams[]
+  /** The "now" used to compute the "ago" properties */
+  now: number
+
+  /** Timer used to update now */
+  timer: ReturnType<typeof setInterval>
+
+  /** The underlying PTY streaming job */
+  job?: Abortable
+
+  /** List of events. */
+  streams: Streams[]
+
+  /** Filter the events based on involvedObjects. */
   involvedObjects: Props['involvedObjects']
+
   eventsRef: React.RefObject<HTMLDivElement>
+
+  /** It may take a second or two between establishing the PTY stream
+   * and receiving the first log record. */
+  waitingForHysteresis: boolean
 }
 
 /**
@@ -112,18 +138,28 @@ function notEmpty<TValue>(value: TValue | void | null | undefined): value is TVa
 
 export default class Events extends React.PureComponent<Props, State> {
   private eventLeftover: string
-  /** Timestamp when we started up */
-  private now = Date.now()
 
   public constructor(props) {
     super(props)
 
-    this.initStream()
-
     this.state = {
+      streams: [],
       eventsRef: React.createRef<HTMLDivElement>(),
-      involvedObjects: props.involvedObjects
+      involvedObjects: props.involvedObjects,
+      now: this.now(),
+      timer: setInterval(this.updateNow.bind(this), UPDATE_INTERVAL),
+      waitingForHysteresis: false
     }
+
+    this.initStream()
+  }
+
+  private now() {
+    return new Date().getTime()
+  }
+
+  private updateNow() {
+    this.setState({ now: this.now() })
   }
 
   public static getDerivedStateFromProps(props: Props) {
@@ -133,7 +169,8 @@ export default class Events extends React.PureComponent<Props, State> {
   }
 
   private onPTYInitDone(job: State['job']) {
-    this.setState({ job })
+    setTimeout(() => this.setState({ waitingForHysteresis: false }), HYSTERESIS)
+    this.setState({ job, waitingForHysteresis: true })
   }
 
   private onPTYEventInit() {
@@ -147,60 +184,25 @@ export default class Events extends React.PureComponent<Props, State> {
         const preprocessed = preprocessTable(rawData, nCol)
         this.eventLeftover = preprocessed.leftover === '\n' ? undefined : preprocessed.leftover
 
-        // filter and format the row as `[ago] involvedObject.name: message`
-        const sortedRows = preprocessed.rows.filter(notEmpty)
-
-        if (timestampCol !== undefined) {
-          sortedRows.sort((rowA, rowB) => {
-            const lastSeenA = new Date(rowA[timestampCol].value).getTime()
-            const lastSeenB = new Date(rowB[timestampCol].value).getTime()
-            return lastSeenA - lastSeenB
-          })
-        }
-
-        const agos =
-          timestampCol !== undefined
-            ? sortedRows.map(row => {
-                const ts = new Date(row[timestampCol].value).getTime()
-                const ago = this.now - ts
-
-                if (isNaN(ago)) {
-                  // kubectl displays "<unknown>"
-                  return strings('<unknown>')
-                } else if (ago <= 0) {
-                  // < 0 is probably due to clock skew
-                  return strings('ago', prettyPrintDuration(0))
-                } else {
-                  return strings('ago', prettyPrintDuration(ago >= 0 ? ago : 0, { compact: true }).toString())
-                }
-              })
-            : undefined
-
-        const rows = sortedRows.map((row, idx) => {
-          const name = nameCol !== undefined ? ` **${row[nameCol].value}**:` : ''
-
-          const message = messageCol !== undefined ? row[messageCol].value : row
-
-          const kind = kindCol !== undefined ? row[kindCol].value : ''
-
-          const ago = agos ? `[[${agos[idx]}]]()` : ''
-
+        const rows = preprocessed.rows.filter(notEmpty).map(row => {
           return {
-            message: `${ago}${name} ${message}`,
-            involvedObjects: {
-              name: row[nameCol].value,
-              kind
-            }
+            message: messageCol !== undefined ? row[messageCol].value : '',
+            lastTimestamp: timestampCol !== undefined ? new Date(row[timestampCol].value).getTime() : undefined,
+            name: nameCol !== undefined ? row[nameCol].value : undefined,
+            kind: kindCol !== undefined ? row[kindCol].value : undefined
           }
         })
 
-        if (rows) {
-          // concat with all streams
+        if (rows && rows.length !== 0) {
           this.setState(curState => {
-            const streams = curState.streams ? curState.streams.concat(rows) : rows
-
             return {
-              streams
+              streams: curState.streams.concat(rows).sort((a, b) => {
+                if (isNaN(a.lastTimestamp) || isNaN(b.lastTimestamp)) {
+                  return -1
+                } else {
+                  return a.lastTimestamp - b.lastTimestamp
+                }
+              })
             }
           })
         }
@@ -226,6 +228,7 @@ export default class Events extends React.PureComponent<Props, State> {
   }
 
   public componentWillUnmount() {
+    clearInterval(this.state.timer)
     if (this.state.job) {
       this.state.job.abort()
     }
@@ -250,44 +253,78 @@ export default class Events extends React.PureComponent<Props, State> {
     }
   }
 
+  private age(lastTimestamp: number) {
+    const delta = this.state.now - lastTimestamp
+
+    if (isNaN(lastTimestamp)) {
+      return strings('<unknown>')
+    } else if (delta <= 0) {
+      // < 0 is probably due to clock skew
+      return strings('just now')
+    } else {
+      return strings('ago', prettyPrintDuration(delta, { compact: true }))
+    }
+  }
+
   private readonly _onScroll = this.onScroll.bind(this)
 
   // TODO: add streams back to tree response for replay
   private messageStream() {
-    if (this.state.streams) {
-      const streams = this.state.streams.filter(({ involvedObjects }) => {
-        if (!involvedObjects || !this.state.involvedObjects || Object.keys(this.state.involvedObjects).length === 0) {
-          return true
-        } else {
-          return Object.entries(involvedObjects).every(([key, value]) => {
-            return this.state.involvedObjects[key].includes(value)
-          })
-        }
-      })
+    const filteredStreams = this.state.streams.filter(({ name, kind }) => {
+      const hasName =
+        !this.state.involvedObjects ||
+        !this.state.involvedObjects.name ||
+        !name ||
+        this.state.involvedObjects.name.includes(name)
 
-      if (streams.length === 0) {
-        return this.nothingToShow()
-      } else {
-        return streams.map(({ message }, idx) => (
+      const hasKind =
+        !this.state.involvedObjects ||
+        !this.state.involvedObjects.kind ||
+        !kind ||
+        this.state.involvedObjects.kind.includes(kind)
+
+      return hasName && hasKind
+    })
+
+    if (filteredStreams.length === 0) {
+      return this.nothingToShow()
+    } else {
+      return filteredStreams.map(({ name, message, lastTimestamp }, idx) => {
+        const ago = `[[${this.age(lastTimestamp)}]]()`
+        const _name = !name ? '' : ` **${name}**`
+        const _message = !message ? '' : ` ${message}`
+
+        const source = `${ago}${_name}${_message}`
+
+        return (
           <div key={`${message}-${idx}`} className="kui--tree-event-messages">
             <div className="kui--tree-event-message">
-              <Markdown tab={this.props.tab} source={message} noExternalLinks repl={this.props.tab.REPL} />
+              <Markdown tab={this.props.tab} source={source} noExternalLinks repl={this.props.tab.REPL} />
             </div>
           </div>
-        ))
-      }
+        )
+      })
     }
   }
 
   /** Render the events in the case we no logs to show. */
   private nothingToShow() {
-    return <div className="kui--tree-event-messages">{strings('No events')}</div>
+    return <div className="kui--tree-event-messages kui--hero-text">{strings('No events')}</div>
+  }
+
+  /** Render the events in the case we not yet finished initializing. */
+  private notDoneLoading() {
+    return <Loading />
   }
 
   public render() {
     return (
       <div className="kui--tree-events" onScroll={this._onScroll} ref={this.state.eventsRef}>
-        {!this.state.streams ? this.nothingToShow() : this.messageStream()}
+        {!this.state.job || this.state.waitingForHysteresis
+          ? this.notDoneLoading()
+          : !this.state.streams || this.state.streams.length === 0
+          ? this.nothingToShow()
+          : this.messageStream()}
       </div>
     )
   }
