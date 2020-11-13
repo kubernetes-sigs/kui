@@ -63,7 +63,6 @@ $inter-message-spacing: 0.1875rem;
 
 @mixin bottom-events-message {
   p {
-    line-height: initial;
     white-space: pre-wrap;
     font-family: var(--font-monospace);
     font-size: 0.75rem;
@@ -71,10 +70,9 @@ $inter-message-spacing: 0.1875rem;
   }
 
   a {
-    line-height: initial;
     color: var(--color-base0F);
-    font-weight: normal;
-    font-size: 0.75rem;
+    min-width: 4rem;
+    display: inline-flex;
   }
 }
 
