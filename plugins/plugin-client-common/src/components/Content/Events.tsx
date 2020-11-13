@@ -44,6 +44,7 @@ interface State {
   job?: Abortable /** The underlying PTY streaming job */
   streams?: Streams[]
   involvedObjects: Props['involvedObjects']
+  eventsRef: React.RefObject<HTMLDivElement>
 }
 
 /**
@@ -120,6 +121,7 @@ export default class Events extends React.PureComponent<Props, State> {
     this.initStream()
 
     this.state = {
+      eventsRef: React.createRef<HTMLDivElement>(),
       involvedObjects: props.involvedObjects
     }
   }
@@ -229,6 +231,27 @@ export default class Events extends React.PureComponent<Props, State> {
     }
   }
 
+  public componentDidUpdate() {
+    const div = this.state.eventsRef.current
+    if (div && this._lastScroll === undefined) {
+      div.scrollTop = div.scrollHeight
+    }
+  }
+
+  private _lastScroll: number = undefined
+  private onScroll() {
+    const div = this.state.eventsRef.current
+    if (div) {
+      if (div.scrollHeight - div.scrollTop > 200) {
+        this._lastScroll = div.scrollTop
+      } else {
+        this._lastScroll = undefined
+      }
+    }
+  }
+
+  private readonly _onScroll = this.onScroll.bind(this)
+
   // TODO: add streams back to tree response for replay
   private messageStream() {
     if (this.state.streams) {
@@ -262,6 +285,10 @@ export default class Events extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    return <div className="kui--tree-events">{!this.state.streams ? this.nothingToShow() : this.messageStream()}</div>
+    return (
+      <div className="kui--tree-events" onScroll={this._onScroll} ref={this.state.eventsRef}>
+        {!this.state.streams ? this.nothingToShow() : this.messageStream()}
+      </div>
+    )
   }
 }
