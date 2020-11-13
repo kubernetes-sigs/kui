@@ -181,10 +181,10 @@ export default class Events extends React.PureComponent<Props, State> {
 
           const kind = kindCol !== undefined ? row[kindCol].value : ''
 
-          const ago = agos ? `[${agos[idx]}]` : ''
+          const ago = agos ? `[[${agos[idx]}]]()` : ''
 
           return {
-            message: `${ago}${name}${message}`,
+            message: `${ago}${name} ${message}`,
             involvedObjects: {
               name: row[nameCol].value,
               kind
@@ -248,7 +248,7 @@ export default class Events extends React.PureComponent<Props, State> {
         return streams.map(({ message }, idx) => (
           <div key={`${message}-${idx}`} className="kui--tree-event-messages">
             <div className="kui--tree-event-message">
-              <Markdown source={message} noExternalLinks repl={this.props.tab.REPL} />
+              <Markdown tab={this.props.tab} source={message} noExternalLinks repl={this.props.tab.REPL} />
             </div>
           </div>
         ))

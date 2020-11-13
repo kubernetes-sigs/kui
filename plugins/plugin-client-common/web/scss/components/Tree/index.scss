@@ -25,6 +25,7 @@
   }
 
   @include TreeViewNav {
+    width: 19rem;
     background-color: var(--color-sidecar-header);
 
     @include TreeViewItemNotSelected {
@@ -38,7 +39,10 @@
   }
 
   .kui--tree-events {
-    background-color: var(--color-base03);
+    background-color: var(--color-base00);
+    border-top: 1px soild var(--color-base02);
+    overflow-y: auto;
+    height: 9rem;
 
     .kui--tree-event-messages:first-child {
       .kui--tree-event-message {
