@@ -27,9 +27,19 @@
   --color-latency-0: #005d5d; /* t70 */
 }
 
+@mixin charts-color-brewer-green-purple-diverging {
+  --color-latency-0: #00441b;
+  --color-latency-1: #1b7837;
+  --color-latency-2: #a6dba0;
+  --color-latency-3: #9970ab;
+  --color-latency-4: #762a83;
+  --color-latency-5: #40004b;
+}
+
 @mixin charts-light {
-  @include charts-purple-teal-diverging;
+  /* @include charts-purple-teal-diverging; */
   /* @include charts-red-blue-diverging; */
+  @include charts-color-brewer-green-purple-diverging;
 }
 
 @mixin charts-dark {

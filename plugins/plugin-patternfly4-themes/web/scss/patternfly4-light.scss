@@ -1,4 +1,21 @@
-@import './common';
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'charts';
+@import 'common';
 
 body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
   --color-base00: var(--pf-global--palette--black-100);
@@ -36,13 +53,6 @@ body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
   --color-yellow-sidecar: var(--pf-global--palette--gold-200);
   --color-green-sidecar: var(--pf-global--palette--green-200);
 
-  --color-latency-0: #0066cc;
-  --color-latency-1: #4cb140;
-  --color-latency-2: #009596;
-  --color-latency-3: #5752d1;
-  --color-latency-4: #f4c145;
-  --color-latency-5: #ec7a08;
-  --color-latency-6: #8b8d8f;
-
   @include patternfly-sidecar;
+  @include charts-light;
 }
