@@ -247,8 +247,8 @@ async function doGetTreeAsMMR(args: Arguments<KubeOptions>, filepath: string, re
       type: 'info',
       text:
         isKubeResource(response) && isKubeItems(response) && response.items.length !== 0
-          ? strings('You are viewing deployed resource.')
-          : strings('You are viewing undeployed resource.')
+          ? strings('You are viewing deployed resources.')
+          : strings('You are viewing undeployed resources.')
     },
     onclick: {
       kind: `open ${filepath}`,
