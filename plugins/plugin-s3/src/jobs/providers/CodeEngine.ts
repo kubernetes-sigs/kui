@@ -63,7 +63,6 @@ export default class CodeEngine implements JobProvider<JobName> {
   /** Schedule a Job execution */
   public async run(image: string, params: JobParameters, env: JobEnv = {}) {
     const { nTasks, nShards } = params
-    const jobName = `kui-job-${v4()}`
 
     const parOpts = this.dashE(params)
     const envOpts = this.dashE(env)
@@ -73,14 +72,14 @@ export default class CodeEngine implements JobProvider<JobName> {
       S3_ENDPOINT: this.s3.endPoint
     })
 
-    const cmdline = `ibmcloud ce job create --image ${image} --name ${jobName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
+    /* const cmdline = `ibmcloud ce job create --image ${image} --name ${jobName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
     await this.repl.qexec<string>(cmdline).catch(err => {
       console.error(err)
       throw new Error(err.message)
-    })
+    }) */
 
     const jobrunName = `kui-jobrun-${v4()}`
-    const cmdline2 = `ibmcloud ce jobrun submit --job ${jobName} --name ${jobrunName}`
+    const cmdline2 = `ibmcloud ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
     await this.repl.qexec<string>(cmdline2).catch(err => {
       console.error(err)
       throw new Error(err.message)
