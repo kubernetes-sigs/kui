@@ -131,7 +131,14 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
       } else if (isHTML(mode.content)) {
         return <HTMLDom content={mode.content} />
       } else if (isTreeResponse(mode.content)) {
-        return <Tree tab={this.props.tab} data={mode.content.data} response={this.props.response} />
+        return (
+          <Tree
+            tab={this.props.tab}
+            data={mode.content.data}
+            response={this.props.response}
+            willUpdateToolbar={willUpdateToolbar}
+          />
+        )
       } else {
         console.error('Unsupported scalar content', mode)
       }
