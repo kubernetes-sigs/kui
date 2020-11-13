@@ -341,9 +341,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const duration = durationCol || (!endMillis ? 0 : endMillis - startMillis)
 
             const left = this.getFraction(startMillis - interval.startMillis, interval)
-            const width = !duration ? undefined : this.getFraction(duration)
-            /* if (left + width >= 1) {
-              console.error(
+            let width = !duration ? undefined : this.getFraction(duration)
+            if (left + width > 1) {
+              /* console.error(
                 'oops',
                 left,
                 width,
@@ -353,8 +353,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 interval.endMillis - duration - interval.startMillis,
                 interval,
                 this.state.maxEndMillis
-              )
-            } */
+              ) */
+              width = 1 - left
+            }
             const coldStart =
               this.props.response.coldStartColumnIdx >= 0 && row.attributes[this.props.response.coldStartColumnIdx]
                 ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
