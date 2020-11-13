@@ -80,7 +80,6 @@ export default class Markdown extends React.PureComponent<Props> {
           link: props => {
             const isLocal = !/^http/i.test(props.href)
             const target = !isLocal ? '_blank' : undefined
-            const href = isLocal ? '#' : props.href
             const onClick = !isLocal
               ? (evt: React.MouseEvent) => evt.stopPropagation()
               : async (evt: React.MouseEvent) => {
@@ -100,18 +99,23 @@ export default class Markdown extends React.PureComponent<Props> {
                     if (elt) {
                       return elt.scrollIntoView()
                     }
-                  } else if (this.props.fullpath) {
-                    const absoluteHref = join(dirname(this.props.fullpath), props.href)
-                    const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
-                    file = relativeToCWD
+                  } else if (file) {
+                    if (this.props.fullpath) {
+                      const absoluteHref = join(dirname(this.props.fullpath), props.href)
+                      const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
+                      file = relativeToCWD
+                    }
+
+                    return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
                   }
-                  return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
                 }
 
-            if (!isLocal && this.props.noExternalLinks) {
-              return <span className={this.props.className}>{href}</span>
+            if (!props.href) {
+              return <a className={this.props.className}>{props.children}</a>
+            } else if (!isLocal && this.props.noExternalLinks) {
+              return <span className={this.props.className}>{props.href}</span>
             } else {
-              return <Link {...props} href={href} target={target} onClick={onClick} />
+              return <Link {...props} href={props.href} target={target} onClick={onClick} />
             }
           },
           code: props => (
