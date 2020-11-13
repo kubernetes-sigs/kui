@@ -65,7 +65,7 @@ $inter-message-spacing: 0.1875rem;
   p {
     line-height: initial;
     white-space: pre-wrap;
-    font-family: monospace;
+    font-family: var(--font-monospace);
     font-size: 0.75rem;
     padding: 0;
   }

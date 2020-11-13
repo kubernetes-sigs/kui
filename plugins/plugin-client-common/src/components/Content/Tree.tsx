@@ -30,7 +30,7 @@ type Props = {
 }
 
 interface State {
-  activeItems: TreeItem[]
+  activeItem: TreeItem
 }
 
 export default class KuiTreeView extends React.PureComponent<Props, State> {
@@ -38,7 +38,7 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      activeItems: [this.props.data[0]]
+      activeItem: this.props.data[0]
     }
   }
 
@@ -47,8 +47,8 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
     return (
       <React.Suspense fallback={<div />}>
         <Editor
-          key={this.state.activeItems[0].id}
-          content={{ content: this.state.activeItems[0].content, contentType: this.state.activeItems[0].contentType }}
+          key={this.state.activeItem.id}
+          content={{ content: this.state.activeItem.content, contentType: this.state.activeItem.contentType }}
           readOnly={false}
           sizeToFit
           response={this.props.response}
@@ -63,10 +63,10 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
     return (
       <TreeView
         data={this.props.data}
-        activeItems={this.state.activeItems}
-        onSelect={(_, treeViewItem, parentItem) => {
+        activeItems={[this.state.activeItem]}
+        onSelect={(_, treeViewItem) => {
           this.setState({
-            activeItems: [treeViewItem as TreeItem, parentItem as TreeItem]
+            activeItem: treeViewItem as TreeItem
           })
         }}
         hasBadges
@@ -75,15 +75,15 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
   }
 
   private events() {
-    if (this.state.activeItems[0].eventArgs) {
-      const { command, schema } = this.state.activeItems[0].eventArgs
+    if (this.state.activeItem.eventArgs) {
+      const { command, schema } = this.state.activeItem.eventArgs
 
       return (
         <Events
           tab={this.props.tab}
           command={command}
           schema={schema}
-          involvedObjects={this.state.activeItems[0].extends}
+          involvedObjects={this.state.activeItem.extends}
         />
       )
     }
