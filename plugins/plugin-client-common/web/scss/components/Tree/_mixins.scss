@@ -25,3 +25,9 @@
     @content;
   }
 }
+
+@mixin TreeEvents {
+  .kui--tree-events {
+    @content;
+  }
+}

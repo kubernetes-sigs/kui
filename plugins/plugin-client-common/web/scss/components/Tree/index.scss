@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-@import '_mixin.scss';
+@import 'mixins.scss';
+@import '../Table/Events';
 @import '../TreeView/mixins';
-@import '../Table//Events.scss';
 
 @include Tree {
   @include TreeNavAndBody {
@@ -38,11 +38,11 @@
     }
   }
 
-  .kui--tree-events {
+  @include TreeEvents {
     background-color: var(--color-base00);
     border-top: 1px inset var(--color-sidecar-header);
     overflow-y: auto;
-    height: 9rem;
+    height: 5rem;
 
     .kui--tree-event-messages:first-child {
       .kui--tree-event-message {
