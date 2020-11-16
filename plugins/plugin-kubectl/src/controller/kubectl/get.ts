@@ -15,16 +15,7 @@
  */
 
 import { basename } from 'path'
-import {
-  Arguments,
-  Button,
-  CodedError,
-  KResponse,
-  MultiModalResponse,
-  Registrar,
-  isHeadless,
-  i18n
-} from '@kui-shell/core'
+import { Arguments, CodedError, KResponse, MultiModalResponse, Registrar, isHeadless, i18n } from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
@@ -34,7 +25,7 @@ import { kindAndNamespaceOf } from './fqn'
 import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
-import { getSources, getDeployedResources } from '../../lib/util/tree'
+import { sourceMode, deployedMode, getSources, doDeployedMode } from '../../lib/util/tree'
 import { isUsage, doHelp } from '../../lib/util/help'
 import {
   KubeOptions,
@@ -45,8 +36,7 @@ import {
   isWatchRequest,
   getNamespace,
   isTreeReq,
-  fileOfWithDetail,
-  isRecursive
+  fileOfWithDetail
 } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse, computeDurations } from '../../lib/view/formatTable'
 import {
@@ -56,7 +46,7 @@ import {
   sameResourceVersion,
   hasResourceVersion
 } from '../../lib/model/resource'
-import { getCommandFromArgs } from '../../lib/util/util'
+import { formDashFileCommandFromArgs } from '../../lib/util/util'
 
 const strings = i18n('plugin-kubectl')
 
@@ -115,10 +105,11 @@ export async function doGetAsEntity(
   try {
     // this is the raw data string we get from `kubectl`
     const data = response.content.stdout
+    const { safeLoad, safeDump } = await import('js-yaml')
 
     // parse the raw response; the parser we use depends on whether
     // the user asked for JSON or for YAML
-    const resource = formatOf(args) === 'json' ? JSON.parse(data) : (await import('js-yaml')).safeLoad(data)
+    const resource = formatOf(args) === 'json' ? JSON.parse(data) : await safeLoad(data)
 
     const kuiResponse = Object.assign(resource, {
       isKubeResource: true,
@@ -129,7 +120,15 @@ export async function doGetAsEntity(
     if (isKubeItems(kuiResponse)) {
       if (kuiResponse.items.length > 0) {
         // so that isPod() etc. work on the items
-        kuiResponse.items.forEach(_ => (_.isKubeResource = true))
+        await Promise.all(
+          kuiResponse.items.map(async _ => {
+            return Object.assign(_, {
+              isKubeResource: true,
+              originatingCommand: args, // here, not in viewTransformer otherwise nested qexecs won't work
+              kuiRawData: await safeDump(_)
+            })
+          })
+        )
       } else {
         return response
       }
@@ -216,6 +215,47 @@ export async function doGetAsMMR(
   }
 }
 
+export async function doTreeMMR(
+  args: Arguments<KubeOptions>,
+  namespace: string,
+  filepath: string,
+  resource: KubeResource,
+  dryRun: KubeResource
+) {
+  try {
+    const applyButton = {
+      mode: 'apply',
+      label: 'Apply Changes',
+      kind: 'drilldown' as const,
+      command: formDashFileCommandFromArgs(args, namespace, filepath, 'apply')
+    }
+
+    const isDeployed =
+      isKubeResource(resource) && (!isKubeItems(resource) || (isKubeItems(resource) && resource.items.length !== 0))
+
+    return {
+      kind: 'Resources',
+      metadata: {
+        name: basename(filepath),
+        namespace
+      },
+      onclick: {
+        kind: `open ${filepath}`,
+        name: `open ${filepath}`,
+        namespace: `kubectl get ns ${namespace} -o yaml`
+      },
+      defaultMode: isDeployed ? deployedMode : sourceMode,
+      modes: [
+        await getSources(args, namespace, filepath, isDeployed),
+        await doDeployedMode(args, namespace, isDeployed ? resource : undefined, dryRun, applyButton),
+        !isDeployed ? applyButton : undefined // if it's deployed, let the mode to decide if it wants to have the apply button according to diff
+      ].filter(_ => _)
+    }
+  } catch (err) {
+    console.error(err)
+    throw err
+  }
+}
 /**
  * This is the handler of `kubectl get if`, which returns
  * `MultiModalResponse` with three tabs:
@@ -224,42 +264,16 @@ export async function doGetAsMMR(
  * 3. tree of apply-dry-run resources (TODO)
  *
  */
-async function doGetTreeAsMMR(args: Arguments<KubeOptions>, filepath: string, response: KubeResource) {
-  const namespace = await getNamespace(args)
-  const cmd = getCommandFromArgs(args)
-  const recursive = isRecursive(args) ? '-r' : undefined
-  const argv = [cmd === 'k' ? 'kubectl' : cmd, 'apply', '-n', namespace, '-f', recursive, filepath].filter(_ => _)
-
-  const applyButton: Button = {
-    mode: 'apply',
-    label: 'Apply',
-    kind: 'drilldown' as const,
-    command: argv.join(' ')
-  }
-
-  return {
-    kind: 'Resources',
-    metadata: {
-      name: basename(filepath),
-      namespace
-    },
-    toolbarText: {
-      type: 'info',
-      text:
-        isKubeResource(response) && (!isKubeItems(response) || (isKubeItems(response) && response.items.length !== 0))
-          ? strings('You are viewing deployed resources.')
-          : strings('You are viewing undeployed resources.')
-    },
-    onclick: {
-      kind: `open ${filepath}`,
-      name: `open ${filepath}`,
-      namespace: `kubectl get ns ${namespace} -o yaml`
-    },
-    modes: [
-      await getSources(args, namespace, filepath),
-      await getDeployedResources(args, namespace, response),
-      applyButton
-    ].filter(_ => _)
+export async function doGetAsMMRTree(args: Arguments<KubeOptions>, filepath: string, resource: KubeResource) {
+  try {
+    const namespace = await getNamespace(args)
+    const dryRunResponse = await args.REPL.qexec<KubeResource>(
+      `${formDashFileCommandFromArgs(args, namespace, filepath, 'apply')} -o yaml --dry-run=server`
+    )
+    return doTreeMMR(args, namespace, filepath, resource, dryRunResponse)
+  } catch (err) {
+    console.error('error getting tree as MMR', err)
+    throw err
   }
 }
 
@@ -393,7 +407,7 @@ function viewTransformerForGet(args: Arguments<KubeOptions>, response: KubeResou
   // tranform getFile response to MMR with tree response
   const fileOf = fileOfWithDetail(args)
   if (fileOf.filepath) {
-    return doGetTreeAsMMR(args, fileOf.filepath, response)
+    return doGetAsMMRTree(args, fileOf.filepath, response)
   } else {
     return viewTransformer(args, response)
   }

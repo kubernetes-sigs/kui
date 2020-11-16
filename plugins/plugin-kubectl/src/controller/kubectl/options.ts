@@ -45,10 +45,6 @@ export function isRecursive(args: Arguments<KubeOptions>) {
   return args.parsedOptions.R || args.parsedOptions.recursive
 }
 
-/** @return is request file and without format */
-export function isTreeReq(args: Arguments<KubeOptions>) {
-  return !formatOf(args) && fileOf(args)
-}
 /** @return the -k or --kustomize option */
 export function kustomizeOf(args: Arguments<KubeOptions>): string {
   return args.parsedOptions.k || args.parsedOptions.kustomize
@@ -70,6 +66,11 @@ export function getFileForArgv(args: Arguments<KubeOptions>, addSpace = false): 
 
 export function formatOf(args: Arguments<KubeOptions>): OutputFormat {
   return args.parsedOptions.o || args.parsedOptions.output
+}
+
+/** @return is request file and without format */
+export function isTreeReq(args: Arguments<KubeOptions>) {
+  return !formatOf(args) && fileOf(args)
 }
 
 export function isEntityFormat(format: OutputFormat): format is EntityFormat {

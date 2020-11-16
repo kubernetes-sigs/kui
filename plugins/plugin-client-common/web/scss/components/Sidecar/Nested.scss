@@ -19,7 +19,7 @@
 @import '../Terminal/_mixins';
 
 @include NestedSidecar {
-  min-width: 0;
+  min-width: 70rem;
   max-width: 100%;
   min-height: 20rem;
 
