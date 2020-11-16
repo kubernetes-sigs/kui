@@ -16,17 +16,31 @@
 
 import React from 'react'
 
-import { MultiModalResponse, Tab, ToolbarProps, TreeItem, TreeResponse } from '@kui-shell/core'
+import {
+  Button,
+  i18n,
+  MultiModalResponse,
+  Tab,
+  ToolbarProps,
+  TreeItem,
+  TreeResponse,
+  ToolbarText
+} from '@kui-shell/core'
 import TreeView from '../spi/TreeView'
 import Editor from './Editor'
+import DiffEditor from './Editor/DiffEditor'
 import Events from './Events'
 
 import '../../../web/scss/components/Tree/index.scss'
+
+const strings = i18n('plugin-client-common')
 
 type Props = {
   response: MultiModalResponse
   tab: Tab
   data: TreeResponse['data']
+  toolbarText: ToolbarText
+  toolbarButtons: Button[]
 } & ToolbarProps
 
 interface State {
@@ -42,19 +56,55 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
     }
   }
 
+  public static getDerivedStateFromProps(props: Props, state: State) {
+    if (props.toolbarText) {
+      props.willUpdateToolbar(props.toolbarText)
+    }
+    return state
+  }
+
+  private updateToolbar(updateToolbarText: string, buttons: Button[]) {
+    if (this.props.toolbarText) {
+      const toolbarText = {
+        type: this.props.toolbarText.type,
+        text: `${this.props.toolbarText.text} ${updateToolbarText}`
+      }
+
+      this.props.willUpdateToolbar(toolbarText, buttons)
+    }
+  }
+
   /** render tree item content in `Editor` */
   private editor() {
     return (
       <React.Suspense fallback={<div />}>
-        <Editor
-          key={this.state.activeItem.id}
-          content={{ content: this.state.activeItem.content, contentType: this.state.activeItem.contentType }}
-          readOnly={false}
-          sizeToFit
-          response={this.props.response}
-          repl={this.props.tab.REPL}
-          tabUUID={this.props.tab.uuid}
-        />
+        {!this.state.activeItem.modifiedContent ? (
+          <Editor
+            key={this.state.activeItem.id}
+            content={{ content: this.state.activeItem.content, contentType: this.state.activeItem.contentType }}
+            readOnly={false}
+            sizeToFit
+            response={this.props.response}
+            repl={this.props.tab.REPL}
+            tabUUID={this.props.tab.uuid}
+          />
+        ) : (
+          <DiffEditor
+            key={this.state.activeItem.id}
+            tabUUID={this.props.tab.uuid}
+            originalContent={this.state.activeItem.content}
+            modifiedContent={this.state.activeItem.modifiedContent}
+            hasPendingChanges={this.updateToolbar.bind(
+              this,
+              strings('with pending changes'),
+              this.props.toolbarButtons
+            )}
+            noPendingChange={this.updateToolbar.bind(this, strings('with no pending changes'))}
+            contentType={this.state.activeItem.contentType}
+            sizeToFit
+            renderSideBySide={false}
+          />
+        )}
       </React.Suspense>
     )
   }

@@ -18,6 +18,7 @@ import { CLI, ReplExpect, SidecarExpect, Common, Selectors, Util } from '@kui-sh
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
+import { AppAndCount } from '@kui-shell/test/mdist/api/repl-expect'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 
 const crashy: SidecarExpect.ExpectedTree[] = [
@@ -32,6 +33,61 @@ const crashy: SidecarExpect.ExpectedTree[] = [
             children: [
               {
                 id: 'unlabeled---Pod---kui-crashy'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
+const modifiedCrashySource: SidecarExpect.ExpectedTree[] = [
+  {
+    id: 'all',
+    children: [
+      {
+        id: 'foo',
+        children: [
+          {
+            id: 'foo---Pod',
+            children: [
+              {
+                id: 'foo---Pod---kui-crashy'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
+const modifiedCrashyDryRun: SidecarExpect.ExpectedTree[] = [
+  {
+    id: 'all',
+    children: [
+      {
+        id: 'unlabeled',
+        children: [
+          {
+            id: 'unlabeled---Pod',
+            children: [
+              {
+                id: 'unlabeled---Pod---kui-crashy'
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'foo',
+        children: [
+          {
+            id: 'foo---Pod',
+            children: [
+              {
+                id: 'foo---Pod---kui-crashy'
               }
             ]
           }
@@ -91,10 +147,49 @@ const currentEventCount = async (res: ReplExpect.AppAndCount): Promise<number> =
   return !events ? 0 : events.length
 }
 
-const commands = ['kubectl']
-if (process.env.NEEDS_OC) {
-  commands.push('oc')
+const clickApplyButton = async (res: AppAndCount, waitForResourceName: string) => {
+  const button = await res.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'apply'))
+  await button.waitForDisplayed()
+  await button.click()
+  if (waitForResourceName) {
+    const tableRes = ReplExpect.blockAfter(res)
+    const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(waitForResourceName) })(
+      tableRes
+    )
+    await waitForGreen(res.app, selector)
+  }
+  return res
 }
+
+const hasEvents = async (res: AppAndCount) => {
+  let idx = 0
+  await res.app.client.waitUntil(
+    async () => {
+      const actualEventCount = await currentEventCount(res)
+      if (++idx > 5) {
+        console.error('still waiting for events 1', actualEventCount)
+      }
+      return actualEventCount > 0
+    },
+    { timeout: CLI.waitTimeout }
+  )
+  return res
+}
+
+const hasDiff = async (res: AppAndCount, diffText: string) => {
+  let idx = 0
+  await res.app.client.waitUntil(async () => {
+    const text = await Util.getValueFromMonaco(res)
+    if (++idx > 5) {
+      console.error(`still waiting for ${diffText}, actual=`, text)
+    }
+    return text.includes(diffText)
+  })
+
+  return res
+}
+
+const commands = ['kubectl']
 
 commands.forEach(command => {
   const ns: string = createNS()
@@ -106,66 +201,65 @@ commands.forEach(command => {
 
     allocateNS(this, ns)
 
-    const doGet = (
+    const getOfflineFile = (
       file: string,
-      sourceTree: SidecarExpect.ExpectedTree[],
-      deployedTree?: SidecarExpect.ExpectedTree[],
-      apply?: boolean,
+      source: SidecarExpect.ExpectedTree[],
+      dryRun: SidecarExpect.ExpectedTree[],
       waitForApply?: string
     ) => {
-      it(`should get dashF ${deployedTree ? 'deployed' : 'undeployed'} file ${file} ${
-        apply ? 'and hit apply' : ''
-      }`, () =>
+      it(`should get -f offline file and apply ${process.env.MOCHA_RUN_TARGET || ''}`, () =>
         CLI.command(`${command} get -f ${file} ${inNamespace}`, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.mode('sources'))
-          .then(SidecarExpect.tree(sourceTree))
-          .then(async _ => {
-            if (apply) {
-              const button = await this.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(_.count, 'apply'))
-              await button.waitForDisplayed()
-              await button.click()
-              if (waitForApply) {
-                const res = ReplExpect.blockAfter(_)
-                const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(waitForApply) })(
-                  res
-                )
-                await waitForGreen(this.app, selector)
-              }
-            }
-
-            if (deployedTree) {
-              await Util.switchToTab('deployed resources')(_)
-                .then(SidecarExpect.mode('deployed resources'))
-                .then(async _ => {
-                  console.error('expect at least one event, since we just created the resource')
-                  let idx = 0
-                  await this.app.client.waitUntil(
-                    async () => {
-                      const actualEventCount = await currentEventCount(_)
-                      if (++idx > 5) {
-                        console.error('still waiting for events 1', actualEventCount)
-                      }
-                      return actualEventCount > 0
-                    },
-                    { timeout: CLI.waitTimeout }
-                  )
-
-                  return _
-                })
-                .then(SidecarExpect.tree(deployedTree))
-            }
-
-            return _
-          })
+          .then(SidecarExpect.toolbarText({ type: 'info', text: 'Offline', exact: false }))
+          .then(SidecarExpect.tree(source))
+          .then(Util.switchToTab('dry run'))
+          .then(SidecarExpect.tree(dryRun))
+          .then(SidecarExpect.toolbarText({ type: 'info', text: 'Previewing', exact: false }))
+          .then(_ => clickApplyButton(_, waitForApply))
           .catch(Common.oops(this, true)))
     }
 
-    doGet(`${ROOT}/data/k8s/crashy.yaml`, crashy, undefined, true, 'kui-crashy')
-    doGet(`${ROOT}/data/k8s/crashy.yaml`, crashy, crashy)
-    doGet(`${ROOT}/data/k8s/bunch`, bunch, undefined, true)
-    doGet(`${ROOT}/data/k8s/bunch`, bunch, bunch)
+    const getLiveFile = (
+      file: string,
+      source: SidecarExpect.ExpectedTree[],
+      deploy: SidecarExpect.ExpectedTree[],
+      diff?: string,
+      clickApply?: boolean,
+      waitForApply?: string
+    ) => {
+      it(`should get -f online file, expect events ${diff ? 'and diff' : ''} ${process.env.MOCHA_RUN_TARGET ||
+        ''}`, () =>
+        CLI.command(`${command} get -f ${file} ${inNamespace}`, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.mode('deployed resources'))
+          .then(hasEvents)
+          .then(_ => (diff ? hasDiff(_, diff) : _))
+          .then(SidecarExpect.tree(deploy))
+          .then(Util.switchToTab('sources'))
+          .then(SidecarExpect.toolbarText({ type: 'info', text: 'Live', exact: false }))
+          .then(SidecarExpect.tree(source))
+          .then(Util.switchToTab('deployed resources'))
+          .then(SidecarExpect.tree(deploy))
+          .then(_ => (clickApply ? clickApplyButton(_, waitForApply) : _))
+          .catch(Common.oops(this, true)))
+    }
+
+    getOfflineFile(`${ROOT}/data/k8s/crashy.yaml`, crashy, crashy, 'kui-crashy')
+    getLiveFile(`${ROOT}/data/k8s/crashy.yaml`, crashy, crashy)
+    getOfflineFile(`${ROOT}/data/k8s/bunch`, bunch, bunch)
+    getLiveFile(`${ROOT}/data/k8s/bunch`, bunch, bunch)
+
+    getLiveFile(
+      `${ROOT}/data/k8s/diff/modified-crashy.yaml`,
+      modifiedCrashySource,
+      modifiedCrashyDryRun,
+      'foo',
+      true,
+      'kui-crashy'
+    )
 
     deleteNS(this, ns)
   })

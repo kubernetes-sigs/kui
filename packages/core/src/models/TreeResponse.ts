@@ -16,6 +16,8 @@
 
 import { Entity } from './entity'
 import { SupportedStringContent } from './mmr/content-types'
+import { Button } from './mmr/types'
+import { ToolbarText } from '../webapp/views/toolbar-text'
 
 export type TreeItem = {
   /** unique string to distinguish a tree item */
@@ -26,6 +28,15 @@ export type TreeItem = {
 
   /** content of a tree item */
   content: string
+
+  /** modifed content of a tree item */
+  modifiedContent?: string
+
+  /** diff: will this item be added by later operations? */
+  willBeAdded?: boolean
+
+  /** diff: will this item be deleted by later operations ? */
+  willBeDeleted?: boolean
 
   /** type of the tree item content */
   contentType: SupportedStringContent
@@ -76,6 +87,10 @@ export interface TreeResponse {
 
   /** data of a `TreeResponse` */
   data: TreeItem[]
+  /** update the toolbar text */
+  toolbarText?: ToolbarText
+  /** update the toolbar button */
+  toolbarButtons?: Button[]
 }
 
 export function isTreeResponse(entity: Entity): entity is TreeResponse {
