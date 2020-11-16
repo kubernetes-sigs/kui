@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { Arguments, i18n, TreeItem, TreeResponse } from '@kui-shell/core'
+import { Arguments, Button, i18n, TreeItem, TreeResponse } from '@kui-shell/core'
 
 import { KubeOptions, withKubeconfigFrom } from '../../controller/kubectl/options'
 import { fetchRawFiles } from './fetch-file'
-import { KubeResource, isKubeResource, isKubeItems, hasEvents } from '../model/resource'
+import { KubeResource, isKubeItems, hasEvents, isKubeResource } from '../model/resource'
 import { getCommandFromArgs } from './util'
+
+export const deployedMode = 'deployed resources'
+export const sourceMode = 'sources'
+export const dryRunMode = 'dry run'
 
 const strings = i18n('plugin-kubectl')
 const KEYSEPARATER = '---'
@@ -30,6 +34,9 @@ function joinKey(keys: string[]) {
 
 interface BucketValue {
   raw: TreeItem['content']
+  modifiedRaw?: TreeItem['content']
+  willBeAdded?: boolean
+  willBeDeleted?: boolean
   name: string
   extends: TreeItem['extends']
   eventArgs?: TreeItem['eventArgs']
@@ -72,7 +79,12 @@ function getArgsThatProducesEvents(args: Arguments<KubeOptions>, namespace: stri
  * This function categorizes `resources` into buckets
  *
  */
-async function categorizeResources(args: Arguments<KubeOptions>, namespace: string, resources: KubeResource[]) {
+async function categorizeResources(
+  args: Arguments<KubeOptions>,
+  namespace: string,
+  resources: KubeResource[],
+  doEvents?: boolean
+) {
   const { safeDump } = await import('js-yaml')
 
   const buckets: Buckets = {
@@ -91,7 +103,7 @@ async function categorizeResources(args: Arguments<KubeOptions>, namespace: stri
       const name = resource.metadata.name
       const raw = resource.kuiRawData ? resource.kuiRawData : await safeDump(resource)
 
-      const eventArgs = hasEvents(resource) ? getArgsThatProducesEvents(args, namespace) : undefined
+      const eventArgs = doEvents && hasEvents(resource) ? getArgsThatProducesEvents(args, namespace) : undefined
 
       const append = (bucket: Bucket, label: string, key?: string) => {
         if (!key) {
@@ -180,13 +192,16 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
     return !nextBucket || nextBucket.length === 0
       ? undefined
       : nextBucket.map(([key, value]) => {
-          const { name, raw, eventArgs } = value as BucketValue
+          const { name, raw, eventArgs, modifiedRaw, willBeAdded, willBeDeleted } = value as BucketValue
           return {
             name,
             id: key,
             extends: value['extends'],
             content: raw,
             contentType: 'yaml' as const,
+            modifiedContent: modifiedRaw,
+            willBeAdded,
+            willBeDeleted,
             eventArgs,
             children: next(buckets, idx + 1, key)
           }
@@ -200,6 +215,7 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
       extends: buckets.all.all.extends,
       content: buckets.all.all.raw,
       contentType: 'yaml' as const,
+      modifiedContent: buckets.all.all.modifiedRaw,
       eventArgs: buckets.all.all.eventArgs,
       defaultExpanded: true,
       children: next(buckets, 1)
@@ -216,7 +232,12 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
  * 3. it transforms the buckets into `TreeResponse` and returns a `MultiModalMode`
  *
  */
-export async function getSources(args: Arguments<KubeOptions>, namesapce: string, filepath: string) {
+export async function getSources(
+  args: Arguments<KubeOptions>,
+  namesapce: string,
+  filepath: string,
+  isDeployed?: boolean
+) {
   const raw = await fetchRawFiles(args, filepath)
 
   const { safeLoadAll } = await import('js-yaml')
@@ -224,14 +245,53 @@ export async function getSources(args: Arguments<KubeOptions>, namesapce: string
   const buckets = await categorizeResources(args, namesapce, resources)
 
   return {
-    mode: 'sources',
+    mode: sourceMode,
     label: strings('sources'),
     content: {
       apiVersion: 'kui-shell/v1' as const,
       kind: 'TreeResponse' as const,
-      data: transformBucketsToTree(buckets)
+      data: transformBucketsToTree(buckets),
+      toolbarText: {
+        type: 'info',
+        text: strings('showSource', isDeployed ? 'Live' : 'Offline')
+      }
     }
   }
+}
+
+async function getBuckets(args: Arguments<KubeOptions>, namespace: string, resource: KubeResource, doEvents: boolean) {
+  if (isKubeResource(resource)) {
+    if (isKubeItems(resource) && resource.items.length !== 0) {
+      return categorizeResources(args, namespace, resource.items, doEvents)
+    } else {
+      return categorizeResources(args, namespace, [resource], doEvents)
+    }
+  }
+}
+
+/** join the modifed buckets into the original one */
+function joinBuckets(original: Buckets, modified: Buckets) {
+  Object.keys(original).forEach(bucket => {
+    Object.keys(original[bucket]).forEach(key => {
+      if (modified[bucket][key]) {
+        original[bucket][key].modifiedRaw = modified[bucket][key].raw
+      } else {
+        original[bucket][key].modifiedRaw = ''
+        original[bucket][key].willBeDeleted = true
+      }
+    })
+  })
+
+  Object.keys(modified).forEach(bucket => {
+    Object.keys(modified[bucket]).forEach(key => {
+      if (!original[bucket][key]) {
+        original[bucket][key] = modified[bucket][key]
+        original[bucket][key].willBeAdded = true
+        original[bucket][key].modifiedRaw = modified[bucket][key].raw
+        original[bucket][key].raw = ''
+      }
+    })
+  })
 }
 
 /**
@@ -240,19 +300,50 @@ export async function getSources(args: Arguments<KubeOptions>, namesapce: string
  * 3. it transforms the buckets into `TreeResponse` and returns a `MultiModalMode`
  *
  */
-export async function getDeployedResources(args: Arguments<KubeOptions>, namespace: string, resource: KubeResource) {
-  if (isKubeResource(resource)) {
-    const raw = isKubeItems(resource) ? resource.items : [resource]
-    if (raw && raw.length !== 0) {
-      const buckets = await categorizeResources(args, namespace, raw)
+export async function doDeployedMode(
+  args: Arguments<KubeOptions>,
+  namespace: string,
+  deployedResource: KubeResource,
+  dryRun?: KubeResource,
+  applyButton?: Button
+) {
+  const dryRunBuckets = dryRun ? await getBuckets(args, namespace, dryRun, false) : undefined
+  const deployedBuckets = deployedResource ? await getBuckets(args, namespace, deployedResource, true) : undefined
+
+  if (dryRunBuckets) {
+    if (deployedBuckets) {
+      // join the `dryRunBuckets` as modifed to `deployedBucket`
+      joinBuckets(deployedBuckets, dryRunBuckets)
+      const deployedData = transformBucketsToTree(deployedBuckets)
 
       return {
-        mode: 'deployed resources',
+        mode: deployedMode,
         label: strings('deployed resources'),
         content: {
           apiVersion: 'kui-shell/v1' as const,
           kind: 'TreeResponse' as const,
-          data: transformBucketsToTree(buckets)
+          data: deployedData,
+          toolbarText: {
+            type: 'info',
+            text: strings(`Showing deployed resources`)
+          },
+          toolbarButtons: [applyButton]
+        }
+      }
+    } else {
+      const dryRunData = transformBucketsToTree(dryRunBuckets)
+      return {
+        mode: dryRunMode,
+        defaultMode: true,
+        label: strings('dry run'),
+        content: {
+          apiVersion: 'kui-shell/v1' as const,
+          kind: 'TreeResponse' as const,
+          data: dryRunData,
+          toolbarText: {
+            type: 'info',
+            text: strings('showDryRun', 'Offline')
+          }
         }
       }
     }

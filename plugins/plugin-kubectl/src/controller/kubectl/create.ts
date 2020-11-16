@@ -17,13 +17,16 @@
 import { Registrar, Arguments, WithSourceReferences, Table, isTable } from '@kui-shell/core'
 
 import defaultFlags from './flags'
-import { KubeOptions } from './options'
-import { doExecWithStatus } from './exec'
+import { fileOfWithDetail, getNamespace, isDryRun, isEntityFormat, KubeOptions, fileOf, formatOf } from './options'
+import { KubeResource } from '../../lib/model/resource'
+import { doExecWithStatus, exec } from './exec'
 import commandPrefix from '../command-prefix'
 
 import { FinalState } from '../../lib/model/states'
 import { isUsage, doHelp } from '../../lib/util/help'
+import { formDashFileCommandFromArgs } from '../../lib/util/util'
 import getSourceRefs from './source'
+import { doGetAsEntity, doTreeMMR } from './get'
 
 const verbs = ['create', 'apply']
 
@@ -33,21 +36,43 @@ export const doCreate = (verb: string, command = 'kubectl') => async (args: Argu
   if (isUsage(args)) {
     return doHelp(command, args)
   } else {
-    const kuiSourceRef = getSourceRefs(args)
-    const table = await doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
-    if (isTable(table)) {
-      const response: Table & WithSourceReferences = Object.assign({}, table, { kuiSourceRef: await kuiSourceRef })
-      return response
+    if (isDryRun(args)) {
+      if (!isEntityFormat(formatOf(args))) {
+        args.argv.push('-o', 'yaml')
+        args.command = `${args.command} -o yaml`
+      }
+      const raw = await exec(args, undefined, command)
+      return doGetAsEntity(args, raw)
     } else {
-      return table
+      const kuiSourceRef = getSourceRefs(args)
+      const table = await doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
+      if (isTable(table)) {
+        const response: Table & WithSourceReferences = Object.assign({}, table, { kuiSourceRef: await kuiSourceRef })
+        return response
+      } else {
+        return table
+      }
     }
   }
 }
 
+/** KubeResource -> MultiModalResponse view transformer for `kubectl apply` */
+async function viewTransformerForApply(args: Arguments<KubeOptions>, response: KubeResource) {
+  if (isDryRun(args)) {
+    const namespace = await getNamespace(args)
+    const resource = await args.REPL.qexec<KubeResource>(
+      `${formDashFileCommandFromArgs(args, namespace, fileOfWithDetail(args).filepath, 'get')} -o yaml`
+    )
+    return doTreeMMR(args, namespace, fileOf(args), resource, response)
+  }
+}
+
+export const applyFlag = Object.assign({}, defaultFlags, { viewTransformer: viewTransformerForApply })
+
 export default (registrar: Registrar) => {
   verbs.forEach(verb => {
     const handler = doCreate(verb)
-    registrar.listen(`/${commandPrefix}/kubectl/${verb}`, handler, defaultFlags)
-    registrar.listen(`/${commandPrefix}/k/${verb}`, handler, defaultFlags)
+    registrar.listen(`/${commandPrefix}/kubectl/${verb}`, handler, applyFlag)
+    registrar.listen(`/${commandPrefix}/k/${verb}`, handler, applyFlag)
   })
 }

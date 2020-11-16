@@ -136,6 +136,8 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
             tab={this.props.tab}
             data={mode.content.data}
             response={this.props.response}
+            toolbarText={mode.content.toolbarText}
+            toolbarButtons={mode.content.toolbarButtons}
             willUpdateToolbar={willUpdateToolbar}
           />
         )

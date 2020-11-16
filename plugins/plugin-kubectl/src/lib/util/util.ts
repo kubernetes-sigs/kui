@@ -18,7 +18,7 @@
 import { Arguments } from '@kui-shell/core'
 
 import commandPrefix from '../../controller/command-prefix'
-import { KubeOptions } from '../../controller/kubectl/options'
+import { isRecursive, KubeOptions } from '../../controller/kubectl/options'
 
 export interface TypedEntityName {
   type: string
@@ -130,4 +130,18 @@ export const commandWithoutResource = (args: Arguments<KubeOptions>) => {
   } else {
     return args.argvNoOptions.length === 2
   }
+}
+/**
+ * formulate a `apply -f` or `get -f` command based on args
+ *
+ */
+export function formDashFileCommandFromArgs(
+  args: Arguments<KubeOptions>,
+  namespace: string,
+  filepath: string,
+  verb: string
+) {
+  const cmd = getCommandFromArgs(args)
+  const recursive = isRecursive(args) ? '-r' : undefined
+  return [cmd === 'k' ? 'kubectl' : cmd, verb, '-n', namespace, '-f', recursive, filepath].filter(_ => _).join(' ')
 }
