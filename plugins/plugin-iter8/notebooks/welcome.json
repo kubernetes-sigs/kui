@@ -91,10 +91,10 @@
             "response": true,
             "historyIdx": 252,
             "cwd": "~/Workspace7/kui",
-            "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
+            "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0/install/install.sh \\",
             "startEvent": {
               "route": "*",
-              "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
+              "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0/install/install.sh \\",
               "evaluatorOptions": {},
               "execType": 1,
               "execUUID": "8020c215-49c0-49fc-9b60-23df7aa12297",
@@ -102,12 +102,12 @@
             },
             "completeEvent": {
               "execType": 1,
-              "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh \\",
+              "command": "curl -L -s https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0/install/install.sh \\",
               "argvNoOptions": ["curl"],
               "parsedOptions": {
                 "_": ["curl"],
                 "L": true,
-                "s": "https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0-rc1/install/install.sh"
+                "s": "https://raw.githubusercontent.com/iter8-tools/iter8/v1.0.0/install/install.sh"
               },
               "execUUID": "8020c215-49c0-49fc-9b60-23df7aa12297",
               "cancelled": false,
