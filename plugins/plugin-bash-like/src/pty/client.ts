@@ -631,7 +631,8 @@ async function initOnMessage(
           respondToRepl({
             apiVersion: 'kui-shell/v1',
             kind: 'XtermResponse',
-            rows: copy(terminal)
+            rows: copy(terminal),
+            code: 0 // to be over-written in the case of an error response
           })
         })
       }
