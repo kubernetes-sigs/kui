@@ -19,6 +19,7 @@ import { Registrar } from '@kui-shell/core'
 import bind, { bindGet } from './bind'
 
 import * as Job from './controller/job'
+import * as JobRun from './controller/jobrun'
 import * as JobDef from './controller/jobdef'
 import * as Secret from './controller/secret'
 import * as ConfigMap from './controller/configmap'
@@ -37,6 +38,7 @@ export default async (registrar: Registrar) => {
 
   Bind(Application, 'app', 'application')
   Bind(Job, 'job')
+  Bind(JobRun, 'jobrun')
   Bind(JobDef, 'jd', 'jobdef')
   Bind(ConfigMap, 'cm', 'configmap')
   Bind(Secret, 'secret')
