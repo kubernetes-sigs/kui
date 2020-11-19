@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
+import ssc from '.'
 import { Registrar } from '@kui-shell/core'
 
-import ssc from './ssc/controller'
-import forwarder from './vfs/forwarder'
-
-export default async function(registrar: Registrar) {
-  await Promise.all([ssc(registrar), forwarder(registrar)])
+export default function(registrar: Registrar) {
+  registrar.listen('/ssc', ssc, { requiresLocal: true })
 }

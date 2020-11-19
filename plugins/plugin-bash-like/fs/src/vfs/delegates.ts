@@ -51,7 +51,7 @@ export async function cp(
       .map((_, idx) => (!_.isLocal ? { filepath: srcFilepaths[idx], mount: _ } : undefined))
       .filter(_ => _)
 
-    const tasks: Promise<string | true>[] =
+    const tasks =
       localSrc.length === 0
         ? []
         : [
@@ -60,7 +60,9 @@ export async function cp(
               localSrc,
               dstFilepath,
               localSrc.map(() => true),
-              true
+              true,
+              mount1,
+              mount2
             )
           ]
 
@@ -73,7 +75,9 @@ export async function cp(
           nonLocalSrc.map(_ => _.filepath),
           dstFilepath,
           nonLocalSrc.map(_ => _.mount === mountThatManagesTheCopy),
-          dstIsSelf
+          dstIsSelf,
+          mount1,
+          mount2
         )
       )
     }
@@ -87,7 +91,7 @@ export async function cp(
     const mountThatManagesTheCopy = mount2
     const srcIsSelf = mount1.map(mount => mount === mountThatManagesTheCopy)
     const dstIsSelf = mount2 === mountThatManagesTheCopy
-    return mountThatManagesTheCopy.cp(opts, srcFilepaths, dstFilepath, srcIsSelf, dstIsSelf)
+    return mountThatManagesTheCopy.cp(opts, srcFilepaths, dstFilepath, srcIsSelf, dstIsSelf, mount1, mount2)
   }
 }
 

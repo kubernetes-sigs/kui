@@ -26,13 +26,15 @@ export interface Job {
 export type JobEnv = Record<string, string[] | string | boolean | number>
 
 export type JobParameters = {
-  OPERATION: ParallelOperation
+  OPERATION?: ParallelOperation
   SRC_BUCKET?: string
   SRC_OBJECT?: string
   SRC_BUCKETS?: string[]
   SRC_OBJECTS?: string[]
   nTasks: number
   nShards: number
+
+  cmdline?: string
 }
 
 interface JobProvider<JobName extends number | string = string> {

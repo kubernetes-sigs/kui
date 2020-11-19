@@ -18,13 +18,16 @@ import Debug from 'debug'
 import { REPL } from '@kui-shell/core'
 
 import Provider from './model'
+
+import aws from './aws'
 import ibmcloud from './ibmcloud'
 import localMinio from './local-minio'
 
 export { Provider }
+export { default as MinioConfig } from './MinioConfig'
 
 const debug = Debug('plugin/s3/providers')
-const providers = [ibmcloud, localMinio]
+const providers = [aws, ibmcloud, localMinio]
 
 export default async function findAvailableProviders(repl: REPL, reinit: () => void): Promise<Provider[]> {
   const candidates = await Promise.all(

@@ -17,14 +17,14 @@
 import { v4 } from 'uuid'
 import { REPL, Table } from '@kui-shell/core'
 
-import JobProvider, { JobParameters, JobEnv } from '../'
-import { Provider as S3Provider } from '../../providers'
+import { JobParameters, JobEnv } from '../'
+import { MinioConfig } from '../../providers'
 
 type JobName = string
 
-export default class CodeEngine implements JobProvider<JobName> {
+export default class CodeEngine /* implements JobProvider<JobName> */ {
   // eslint-disable-next-line no-useless-constructor
-  public constructor(private readonly repl: REPL, private readonly s3: S3Provider) {}
+  public constructor(private readonly repl: REPL, private readonly minioConfig: MinioConfig) {}
 
   /** @return the details of the given Job */
   /* public get(jobName: JobName) {
@@ -39,47 +39,30 @@ export default class CodeEngine implements JobProvider<JobName> {
   /** Block until the given job completes */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async wait(jobName: JobName, nTasks: number) {
-    /* while (true) {
-      const json = await this.repl.qexec<string>(`ibmcloud ce jobrun get --name ${jobName} -o json`).catch(err => {
-        console.error(err)
-        return undefined
-      })
-      if (json && json.status && json.status.succeeded === nTasks) {
-        return
-      } else {
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      }
-      } */
-    return this.repl.qexec<Table>(`ibmcloud ce job list ${jobName} --watch`)
+    return this.repl.qexec<Table>(`ibmcloud ce jobrun list ${jobName} --watch`)
   }
 
   /** -e key=value */
   private dashE(env: JobEnv): string {
     return Object.keys(env)
-      .map(key => `-e ${key}=${env[key]}`)
+      .map(key => `-e ${key}=${Array.isArray(env[key]) ? `'${JSON.stringify(env[key])}'` : `"${env[key]}"`}`)
       .join(' ')
   }
 
   /** Schedule a Job execution */
-  public async run(image: string, params: JobParameters, env: JobEnv = {}) {
+  public async run(image: string, params: JobParameters & Required<{ cmdlines: string[] }>, env: JobEnv = {}) {
     const { nTasks, nShards } = params
 
     const parOpts = this.dashE(params)
     const envOpts = this.dashE(env)
     const keyOpts = this.dashE({
-      S3_ACCESS_KEY: this.s3.accessKey,
-      S3_SECRET_KEY: this.s3.secretKey,
-      S3_ENDPOINT: this.s3.endPoint
+      minioConfig: Buffer.from(JSON.stringify(this.minioConfig))
+        .toString('base64')
+        .replace(/=$/, '') // bug in codeengine cli with =
     })
 
-    /* const cmdline = `ibmcloud ce job create --image ${image} --name ${jobName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
-    await this.repl.qexec<string>(cmdline).catch(err => {
-      console.error(err)
-      throw new Error(err.message)
-    }) */
-
     const jobrunName = `kui-jobrun-${v4()}`
-    const cmdline = `ibmcloud --check-version=false ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
+    const cmdline = `ibmcloud ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
     await this.repl.qexec<string>(cmdline).catch(err => {
       console.error(err)
       throw new Error(err.message)

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { basename, join } from 'path'
 import * as micromatch from 'micromatch'
 import { Client, CopyConditions } from 'minio'
@@ -21,26 +22,34 @@ import { DirEntry, FStat, GlobStats, ParallelismOptions, VFS, mount } from '@kui
 import { Arguments, CodedError, REPL, encodeComponent, flatten, inBrowser, i18n } from '@kui-shell/core'
 
 import { username, uid, gid } from './username'
-import findAvailableProviders, { Provider } from '../providers'
+import findAvailableProviders, { Provider, MinioConfig } from '../providers'
 
+import { scaleOut } from '../ssc'
 import JobProvider, { JobEnv } from '../jobs'
 import ParallelOperation from './parallel/operations'
 import CodeEngine from '../jobs/providers/CodeEngine'
 
 const strings = i18n('plugin-s3')
+const debug = Debug('plugin-s3/vfs')
 
+const S3_TAG = 's3'
 const baseMountPath = '/s3'
 
 export abstract class S3VFS {
   public readonly mountPath: string
   public readonly isLocal = false
   public readonly isVirtual = false
+  public readonly tags = [S3_TAG]
   protected readonly s3Prefix: RegExp
 
   public constructor(mountName: string) {
     this.mountPath = join(baseMountPath, mountName)
     this.s3Prefix = new RegExp(`^${this.mountPath}\\/?`)
   }
+}
+
+function isS3Provider(vfs: VFS): vfs is S3VFSResponder {
+  return !!vfs && !!vfs.tags && vfs.tags.includes(S3_TAG)
 }
 
 class S3VFSResponder extends S3VFS implements VFS {
@@ -178,7 +187,11 @@ class S3VFSResponder extends S3VFS implements VFS {
           throw new Error(err.message)
         })
       } else {
-        return this.listObjects(filepath, dashD)
+        const start = Date.now()
+        const res = await this.listObjects(filepath, dashD)
+        const end = Date.now()
+        debug('dirstat latency', end - start)
+        return res
       }
     } catch (err) {
       console.error('Error in S3VFS.ls', err)
@@ -186,7 +199,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     }
   }
 
-  private split(filepath: string): { bucketName: string; fileName: string } {
+  public split(filepath: string): { bucketName: string; fileName: string } {
     const [, bucketName, fileName] = filepath.replace(this.s3Prefix, '').match(/([^/]+)\/?(.*)\*?/)
     return { bucketName, fileName }
   }
@@ -286,12 +299,21 @@ class S3VFSResponder extends S3VFS implements VFS {
       .join(N === 2 ? ' and ' : ', and ')} to ${dstFilepath}`
   }
 
-  private async fCopyObject(
-    { REPL }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+  private async intraCopyObject(
+    { REPL, parsedOptions }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
     srcFilepaths: string[],
     dstFilepath: string
   ) {
     const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+
+    if (parsedOptions.s) {
+      const srcs = (await sources).content
+      debug('scale-out intra-copy-object sources', srcs)
+      return scaleOut(
+        srcs.map(src => `cp ${encodeComponent(src.path)} ${encodeComponent(dstFilepath)}`),
+        REPL
+      )
+    }
 
     const etags = await Promise.all(
       (await sources).content
@@ -299,6 +321,8 @@ class S3VFSResponder extends S3VFS implements VFS {
         .map(async srcFilepath => {
           const { bucketName: srcBucket, fileName: srcFile } = this.split(srcFilepath)
           const { bucketName: dstBucket, fileName: dstFile } = this.split(dstFilepath)
+          debug('intra-client copy src', srcFilepath, srcBucket, srcFile)
+          debug('intra-client copy dst', dstFilepath, dstBucket, dstFile)
 
           const { etag } = await this.client.copyObject(
             dstBucket,
@@ -316,26 +340,84 @@ class S3VFSResponder extends S3VFS implements VFS {
       : `Copied to ${N === 1 ? 'object' : 'objects'} with ${N === 1 ? 'etag' : 'etags'} ${etags.join(', ')}`
   }
 
+  private async interCopyObject(
+    { REPL, parsedOptions }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+    srcs: { srcFilepath: string; provider: S3VFSResponder }[],
+    dstFilepath: string
+  ) {
+    const sources = REPL.rexec<GlobStats[]>(
+      `vfs ls ${srcs
+        .map(_ => _.srcFilepath)
+        .map(_ => REPL.encodeComponent(_))
+        .join(' ')}`
+    )
+
+    if ((await sources).content.length === 0) {
+      throw new Error('Nothing to copy')
+    }
+
+    if (parsedOptions.s) {
+      const srcs = (await sources).content
+      debug('scale-out inter-copy-object sources', srcs)
+      return scaleOut(
+        srcs.map(src => `cp ${encodeComponent(src.path)} ${encodeComponent(dstFilepath)}`),
+        REPL
+      )
+    }
+
+    debug('inter-copy-object sources', (await sources).content)
+    const etags = await Promise.all(
+      (await sources).content
+        .map(_ => _.path)
+        .map(async (srcFilepath, idx) => {
+          const { provider: srcProvider } = srcs[idx]
+          const { bucketName: srcBucket, fileName: srcFile } = srcProvider.split(srcFilepath)
+          const { bucketName: dstBucket, fileName: dstFile } = this.split(dstFilepath)
+          debug('inter-client copy src', srcFilepath, srcBucket, srcFile)
+          debug('inter-client copy dst', dstFilepath, dstBucket, dstFile)
+
+          const stream = await srcProvider.client.getObject(srcBucket, srcFile)
+          const etag = await this.client.putObject(dstBucket, dstFile || srcFile, stream)
+          return etag
+        })
+    )
+
+    const N = etags.length
+    return N === 0
+      ? 'Source files not found'
+      : `Copied to ${N === 1 ? 'object' : 'objects'} with ${N === 1 ? 'etag' : 'etags'} ${etags.join(', ')}`
+  }
+
   /** Insert filepath into directory */
   public async cp(
     args: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcFilepaths: string[],
     dstFilepath: string,
     srcIsSelf: boolean[],
-    dstIsSelf: boolean
-  ): Promise<string> {
+    dstIsSelf: boolean,
+    srcProvider: VFS[]
+    /* , dstProvider: VFS */
+  ) {
     try {
       const selfSrc = srcFilepaths.filter((_, idx) => srcIsSelf[idx])
-      const otherSrc = srcFilepaths.filter((_, idx) => !srcIsSelf[idx])
+      const otherNonS3Src = srcFilepaths.filter((_, idx) => !srcIsSelf[idx] && !isS3Provider(srcProvider[idx]))
+      const otherS3Src = srcFilepaths
+        .map((srcFilepath, idx) => {
+          const provider = srcProvider[idx]
+          if (!srcIsSelf[idx] && isS3Provider(provider)) {
+            return { srcFilepath, provider }
+          }
+        })
+        .filter(_ => _)
 
       if (dstIsSelf) {
         // copying into or between s3 buckets
-        const responses = await Promise.all(
-          (otherSrc.length === 0 ? [] : [this.fPutObject(args, otherSrc, dstFilepath)]).concat(
-            selfSrc.length === 0 ? [] : [this.fCopyObject(args, selfSrc, dstFilepath)]
-          )
-        )
-        return responses.join('; ')
+        const copyInTasks = otherNonS3Src.length === 0 ? [] : [this.fPutObject(args, otherNonS3Src, dstFilepath)]
+        const intraClientCopyTasks = selfSrc.length === 0 ? [] : [this.intraCopyObject(args, selfSrc, dstFilepath)]
+        const interClientCopyTasks =
+          otherS3Src.length === 0 ? [] : [this.interCopyObject(args, otherS3Src, dstFilepath)]
+
+        return await Promise.all([...copyInTasks, ...intraClientCopyTasks, ...interClientCopyTasks])
       } else {
         // copying out of an s3 bucket
         return this.fGetObject(args, srcFilepaths, dstFilepath)
@@ -614,12 +696,16 @@ class S3VFSForwarder extends S3VFS implements VFS {
     srcFilepaths: string[],
     dstFilepath: string,
     srcIsSelf: boolean[],
-    dstIsSelf: boolean
+    dstIsSelf: boolean,
+    srcProvider: VFS[],
+    dstProvider: VFS
   ): Promise<string> {
     return opts.REPL.qexec<string>(
       `vfs-s3 cp ${this.mountPath} ${srcFilepaths
         .map(_ => opts.REPL.encodeComponent(_))
-        .join(' ')} ${opts.REPL.encodeComponent(dstFilepath)} ${srcIsSelf.join(',')} ${dstIsSelf.toString()}`
+        .join(' ')} ${opts.REPL.encodeComponent(dstFilepath)} ${srcIsSelf.join(
+        ','
+      )} ${dstIsSelf.toString()} ${srcProvider.map(_ => _.mountPath).join(',')} ${dstProvider.mountPath}`
     )
   }
 
@@ -686,17 +772,38 @@ class S3VFSForwarder extends S3VFS implements VFS {
 }
 
 let responders: VFS[]
+let providers: Provider[]
 
 export function responderFor({ argvNoOptions }: Pick<Arguments, 'argvNoOptions'>) {
   const mountPath = argvNoOptions[2]
   return responders.find(_ => _.mountPath === mountPath)
 }
 
+export function vfsFor(mountPath: string): VFS {
+  return responders.find(_ => _.mountPath === mountPath)
+}
+
+export function minioConfig(): MinioConfig {
+  return {
+    version: '10',
+    aliases: providers.reduce((M, _, idx) => {
+      M[responders[idx].mountPath] = {
+        url: /^http/.test(_.endPoint) ? _.endPoint : `https://${_.endPoint}`,
+        accessKey: _.accessKey,
+        secretKey: _.secretKey,
+        api: 's3v4',
+        path: 'auto'
+      }
+      return M
+    }, {} as MinioConfig['aliases'])
+  }
+}
+
 export default async () => {
   const init = () => {
     mount(async (repl: REPL) => {
       try {
-        const providers = await findAvailableProviders(repl, init)
+        providers = await findAvailableProviders(repl, init)
 
         if (inBrowser()) {
           return providers.map(provider => new S3VFSForwarder(provider.mountName))
