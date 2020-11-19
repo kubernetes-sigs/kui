@@ -111,7 +111,7 @@ export default function(registrar: Registrar) {
       const dst = args.argvNoOptions[N - 1]
       return cp(args, srcs, dst)
     },
-    'acfHiLnPpRvX'
+    'acfHiLnPpRvXs'
   )
 
   on(

@@ -28,6 +28,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
+    "ini": "^1.3.5",
     "minio": "7.0.16"
   },
   "krew": {

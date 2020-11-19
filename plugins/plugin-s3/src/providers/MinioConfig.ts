@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
-
-import ssc from './ssc/controller'
-import forwarder from './vfs/forwarder'
-
-export default async function(registrar: Registrar) {
-  await Promise.all([ssc(registrar), forwarder(registrar)])
+interface MinioConfig {
+  version: string
+  aliases: {
+    url: string
+    accessKey: string
+    secretKey: string
+    api: string
+    path: 'auto' | 'dns'
+  }[]
 }
+
+export default MinioConfig

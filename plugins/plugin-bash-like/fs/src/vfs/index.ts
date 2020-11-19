@@ -45,6 +45,9 @@ export interface VFS {
   /** Is this a virtual mount? i.e. one that works in a browser without server-side proxy support */
   isVirtual: boolean
 
+  /** Any tags that the provider might want to associate with their VFS */
+  tags?: string[]
+
   /** Directory listing */
   ls(
     opts: Pick<Arguments<KuiGlobOptions>, 'tab' | 'REPL' | 'parsedOptions'>,
@@ -57,8 +60,10 @@ export interface VFS {
     srcFilepaths: string[],
     dstFilepath: string,
     srcIsSelf: boolean[],
-    dstIsSelf: boolean
-  ): Promise<string | true>
+    dstIsSelf: boolean,
+    srcProvider: VFS[],
+    dstProvider: VFS
+  ): Promise<string | Table | true | (string | Table)[]>
 
   /** Remove filepath */
   rm(
