@@ -17,7 +17,7 @@
 import { Registrar } from '@kui-shell/core'
 import { VFS } from '@kui-shell/plugin-bash-like/fs'
 
-import { responderFor } from '.'
+import { responderFor, vfsFor } from '.'
 
 export default function(registrar: Registrar) {
   registrar.listen(
@@ -27,10 +27,12 @@ export default function(registrar: Registrar) {
 
       return responderFor(args).cp(
         args,
-        args.argvNoOptions.slice(3, N - 3),
-        args.argvNoOptions[N - 3],
-        args.argvNoOptions[N - 2].split(/,/).map(_ => _ === 'true'),
-        args.argvNoOptions[N - 1] === 'true'
+        args.argvNoOptions.slice(3, N - 5),
+        args.argvNoOptions[N - 5],
+        args.argvNoOptions[N - 4].split(/,/).map(_ => _ === 'true'),
+        args.argvNoOptions[N - 3] === 'true',
+        args.argvNoOptions[N - 2].split(/,/).map(vfsFor),
+        vfsFor(args.argvNoOptions[N - 1])
       )
     },
     {
