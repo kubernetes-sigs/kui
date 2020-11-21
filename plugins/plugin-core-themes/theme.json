@@ -4,30 +4,34 @@
       "name": "Light",
       "css": "light.scss",
       "description": "Default Light",
+      "lightweight": true,
       "style": "light"
     },
     {
       "name": "Dark",
       "css": "dark.scss",
       "description": "Default Dark",
+      "lightweight": true,
       "style": "dark"
     },
-    { "name": "Atelier", "css": "atelier-seaside.scss", "style": "dark" },
-    { "name": "Dracula", "css": "dracula.scss", "style": "dark" },
+    { "name": "Atelier", "css": "atelier-seaside.scss", "lightweight": true, "style": "dark" },
+    { "name": "Dracula", "css": "dracula.scss", "lightweight": true, "style": "dark" },
     {
       "name": "Gruvbox",
       "css": "gruvbox-dark-medium.scss",
+      "lightweight": true,
       "style": "dark"
     },
-    { "name": "Lucario", "css": "lucario.scss", "style": "dark" },
-    { "name": "Monokai", "css": "monokai.scss", "style": "dark" },
-    { "name": "Nord", "css": "nord.scss", "style": "dark" },
-    { "name": "Paraiso", "css": "paraiso.scss", "style": "dark" },
-    { "name": "Solarized", "css": "solarized-dark.scss", "style": "dark" },
+    { "name": "Lucario", "css": "lucario.scss", "lightweight": true, "style": "dark" },
+    { "name": "Monokai", "css": "monokai.scss", "lightweight": true, "style": "dark" },
+    { "name": "Nord", "css": "nord.scss", "lightweight": true, "style": "dark" },
+    { "name": "Paraiso", "css": "paraiso.scss", "lightweight": true, "style": "dark" },
+    { "name": "Solarized", "css": "solarized-dark.scss", "lightweight": true, "style": "dark" },
     {
       "name": "tomorrow-night",
       "css": "tomorrow-night.scss",
       "description": "Tomorrow Night",
+      "lightweight": true,
       "style": "dark"
     }
   ]

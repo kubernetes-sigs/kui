@@ -1108,6 +1108,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   (scrollback.inverseColors ? ' kui--inverted-color-context' : ''),
                 'data-is-minisplit': isMiniSplit,
                 'data-is-width-constrained': isWidthConstrained || undefined,
+                'data-is-focused': sbidx === this.state.focusedIdx || undefined,
                 key: tab.uuid,
                 'data-scrollback-id': tab.uuid,
                 ref: ref => this.tabRefFor(scrollback, ref),

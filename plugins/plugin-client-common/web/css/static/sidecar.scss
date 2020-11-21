@@ -36,7 +36,7 @@ $focus-color: var(--color-brand-03);
   }
 
   .kui--sidecar-header-and-body {
-    font-size: 0.875rem;
+    font-size: inherit;
   }
 
   .sidecar-bottom-stripe {
@@ -90,7 +90,9 @@ $focus-color: var(--color-brand-03);
 .kui--sidecar-header-and-body {
   .bx--tabs--scrollable {
     display: flex;
+    font-size: inherit;
     background-color: var(--color-sidecar-header);
+
     .bx--tab-content {
       padding: 0;
     }
@@ -151,7 +153,7 @@ $focus-color: var(--color-brand-03);
       background: var(--color-sidecar-background-02);
       border-color: transparent;
       color: var(--color-text-01);
-      min-width: 20rem;
+      min-width: 20em;
       font-family: var(--font-monospace);
     }
 

@@ -23,7 +23,7 @@ import DefaultColoring from './Coloring'
 import trafficLight from './css-for-status'
 import { /* renderCell, */ onClickForCell, CellOnClickHandler } from './TableCell'
 
-import '../../../../web/scss/components/Table/SequenceDiagram.scss'
+import '../../../../web/scss/components/Table/SequenceDiagram/_index.scss'
 
 const strings = i18n('plugin-client-common')
 

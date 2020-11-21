@@ -15,11 +15,11 @@
  */
 
 .kui--repl-block-spinner {
-  --sk-size: 0.75rem;
+  --sk-size: 0.75em;
   --sk-color: var(--active-tab-color);
 }
 .repl-context .kui--repl-block-spinner {
-  --sk-size: 0.625rem;
+  --sk-size: 0.625em;
 }
 
 /** Some overrides for the Plane spinner */

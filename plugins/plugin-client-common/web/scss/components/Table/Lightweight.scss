@@ -14,7 +14,48 @@
  * limitations under the License.
  */
 
-/**
- * For TableStyle.Light
- *
- */
+@import 'mixins';
+@import '../Table/mixins';
+@import '../Terminal/mixins';
+@import '../common/Lightweight';
+@import 'SequenceDiagram/mixins';
+
+@include LightweightUI {
+  font-size: 0.8125rem; /* 13px */
+  --kui--font-factor: 0.8125/0.875;
+
+  @include TableCard {
+    background: none;
+  }
+
+  @include SequenceDiagramGapRow {
+    height: 1.5rem;
+    background-color: transparent;
+  }
+
+  @include SequenceDiagramGapCell {
+    background-color: transparent;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  @include FinishedBlock {
+    @include InputWrapper {
+      padding: 0;
+      border: none;
+      background-color: transparent;
+    }
+  }
+
+  @include BlockTimestamp {
+    color: var(--color-base0A);
+  }
+
+  @include NotFocusedSplit {
+    filter: opacity(87.5%);
+  }
+
+  @include TableHeadCell {
+    background-color: transparent;
+  }
+}

@@ -30,9 +30,18 @@ type Theme = ThemeProperties & {
   apiVersion?: ThemeApiVersion
   name: string
   description?: string
+
+  /** Source files */
   css: string | string[]
+
+  /** Body attributes */
   attrs?: string[]
-  style: string
+
+  /** Is this theme a light (e.g. black text on white background), or the inverse? */
+  style: 'light' | 'dark'
+
+  /** Present in a more terminal-like way (versus a more console-like way)? */
+  lightweight?: boolean
 }
 
 export default Theme

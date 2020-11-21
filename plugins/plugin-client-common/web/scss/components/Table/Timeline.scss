@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-@import 'Bar';
-@import './_mixins';
-@import '../Terminal/_mixins';
+@import 'mixins';
+@import '../Terminal/mixins';
+@import 'SequenceDiagram/Bar';
 
 @include PlainTerminal {
   @include TableContainer {

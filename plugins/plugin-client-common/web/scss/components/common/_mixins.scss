@@ -14,36 +14,8 @@
  * limitations under the License.
  */
 
-$bgcolor: transparent;
-$border-radius: 2px 4px;
-
-$bar-height-small: 1rem; /* e.g. 16px */
-$bar-height-medium: 0.6875rem; /* e.g. 11px */
-$bar-height-large: 0.5625rem; /* e.g. 9px */
-$bar-height-huge: 0.5rem; /* e.g. 8px */
-
-$grid-cell-hover-filter: saturate(2) brightness(1.25);
-
-@mixin TableContainer {
-  .kui--data-table-container {
-    @content;
-  }
-}
-
-@mixin LightweightTableContainer {
-  .kui--data-table-wrapper-lightweight {
-    @content;
-  }
-}
-
-@mixin TableCard {
-  .kui--data-table-wrapper .kui--card {
-    @content;
-  }
-}
-
-@mixin TableHeadCell {
-  .kui--header-cell {
+@mixin Body {
+  html.kui body {
     @content;
   }
 }

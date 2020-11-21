@@ -63,7 +63,7 @@ body[kui-theme-style] .kui--repl-block-right-element {
 .repl-result-like,
 .repl-input .repl-input-element,
 .repl-input-like {
-  font-size: 0.875rem;
+  font-size: inherit;
 }
 .repl-block:not(.processing) .repl-result-like:last-child {
   margin-bottom: 0.375rem;

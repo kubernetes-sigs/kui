@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@import 'mixins';
 
 body {
   --color-repl-background-02: var(--color-base02);
@@ -29,8 +29,8 @@ body {
   .kui--repl-block-experimental-tag {
     margin: 0;
     .kui--tag {
-      height: 1.25rem;
-      font-size: 0.625rem;
+      height: 1.25em;
+      font-size: 0.625em;
     }
   }
 
@@ -43,7 +43,7 @@ body {
   }
 
   .repl-prompt {
-    padding-right: 0.25rem;
+    padding-right: 0.25em;
   }
 
   /** Do not wrap input in minisplit (we don't have a lot of space) */
@@ -63,7 +63,7 @@ body {
     }
     .repl-output {
       flex: 1;
-      padding-right: calc(1rem - 6px);
+      padding-right: $input-padding-right;
 
       .repl-result:not(:empty),
       [data-table-watching] {
@@ -72,7 +72,7 @@ body {
       }
       .kui--data-table-as-grid {
         /* grids should wrap, rather than be rectilinear */
-        grid-template-columns: repeat(auto-fill, minmax(1.25rem, auto)) !important;
+        grid-template-columns: repeat(auto-fill, minmax(1.25em, auto)) !important;
       }
 
       .kui--card {
@@ -92,9 +92,9 @@ body {
 
         .kui--data-table-as-grid {
           position: absolute;
-          padding-right: 1rem;
-          width: calc(100% - 1rem);
-          max-height: calc(100% - 2rem);
+          padding-right: 1em;
+          width: calc(100% - 1em);
+          max-height: calc(100% - 2em);
           overflow: auto;
         }
         .kui--table-like {
@@ -107,7 +107,7 @@ body {
           width: 100%;
 
           .slightly-deemphasize {
-            font-size: 0.75rem;
+            font-size: 0.75em;
           }
         }
       }
