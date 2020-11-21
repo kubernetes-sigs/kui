@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@import 'mixins';
 
 @include PlainTerminal {
   .kui--repl-message {
-    padding-top: 0.5rem;
+    padding-top: 0.5em;
     background-color: var(--color-repl-background);
   }
 }

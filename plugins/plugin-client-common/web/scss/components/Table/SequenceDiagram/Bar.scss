@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-@import 'mixins';
-@import 'colors';
-@import '../Sidecar/_mixins';
-@import '../common/stippling';
-@import '../common/_narrow-window';
+@import '../mixins';
+@import '../colors';
+@import '../../Sidecar/_mixins';
+@import '../../common/stippling';
+@import '../../common/_narrow-window';
 
 .kui--bar-wrapper {
   display: flex;

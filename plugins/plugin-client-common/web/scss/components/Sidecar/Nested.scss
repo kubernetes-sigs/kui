@@ -21,7 +21,7 @@
 @include NestedSidecar {
   min-width: 0;
   max-width: 100%;
-  min-height: 20rem;
+  min-height: 20em;
 
   resize: both;
   overflow: auto;
@@ -32,8 +32,8 @@
     position: absolute;
     right: 0;
     bottom: 0;
-    width: 0.5rem;
-    height: 0.5rem;
+    width: 0.5em;
+    height: 0.5em;
   }
   &:hover:after {
     cursor: nw-resize;
@@ -43,7 +43,7 @@
 @include PlainTerminal {
   @include NestedSidecar {
     @include NotMaximized {
-      min-height: 20rem;
+      min-height: 20em;
     }
   }
 }
@@ -54,11 +54,11 @@
     position: absolute;
     left: calc(#{$input-padding-left} + #{$repl-context-min-width} + #{$repl-context-margin-right});
     right: $input-padding-right;
-    top: 3rem;
+    top: 3em;
     bottom: 0;
 
     /* !important needed to override drag-resize which sets element styles */
-    height: calc(100% - 3rem) !important;
+    height: calc(100% - 3em) !important;
     width: auto !important;
 
     @include EditorContainer {
