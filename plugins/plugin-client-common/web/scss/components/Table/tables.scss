@@ -83,7 +83,18 @@ body .bx--data-table-container {
     td,
     th,
     .bx--table-sort {
+      font-size: $font-size;
       color: var(--color-text-01);
+    }
+
+    td,
+    th,
+    tr,
+    .bx--table-sort__flex {
+      height: 2em;
+    }
+    th .bx--table-sort__flex {
+      min-height: 2em;
     }
 
     .bx--table-sort__icon {
@@ -103,6 +114,11 @@ body .bx--data-table {
   th,
   .bx--table-sort {
     background-color: var(--color-base03);
+  }
+
+  thead,
+  tbody {
+    font-size: $font-size;
   }
 
   thead {

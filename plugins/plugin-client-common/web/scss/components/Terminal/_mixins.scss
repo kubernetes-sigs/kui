@@ -20,10 +20,10 @@ $input-bg-minisplit: var(--color-base01);
 $input-border: rgba(100, 100, 100, 0.05);
 $input-border-editing: var(--color-brand-03);
 
-$input-padding-right: calc(1rem - 6px);
-$input-padding-left: 1rem;
-$repl-context-min-width: 3rem;
-$repl-context-margin-right: 0.5rem;
+$input-padding-right: calc(1em - 6px);
+$input-padding-left: 1em;
+$repl-context-min-width: 3em;
+$repl-context-margin-right: 0.5em;
 
 /** Hover hysteresis for showing action buttons */
 $action-hover-delay: 210ms;
@@ -31,6 +31,14 @@ $action-hover-delay: 210ms;
 @mixin Scrollback {
   .kui--scrollback {
     @content;
+  }
+}
+
+@mixin NotFocusedSplit {
+  @include Scrollback {
+    &:not([data-is-focused]) {
+      @content;
+    }
   }
 }
 
@@ -115,5 +123,19 @@ $action-hover-delay: 210ms;
     .repl-context {
       display: none;
     }
+  }
+}
+
+/** The wrapper around the <input> element. This contains the <input> and the timestamp, duration, and block buttons. */
+@mixin InputWrapper {
+  .repl-input-element-wrapper {
+    @content;
+  }
+}
+
+/** Timestamp of block */
+@mixin BlockTimestamp {
+  .kui--repl-block-timestamp {
+    @content;
   }
 }

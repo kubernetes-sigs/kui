@@ -18,7 +18,7 @@
 @import '../Sidecar/_mixins';
 
 /** Inset of the <input> element w.r.t. the bordered/backgrounded region */
-$inset: 0.375rem;
+$inset: 0.375em;
 
 /** Padding for action buttons */
 $action-padding: 3px;
@@ -44,13 +44,13 @@ $focus-color: var(--color-brand-01);
 }
 
 @include BlockHoverOrFocus {
-  .kui--repl-block-timestamp {
+  @include BlockTimestamp {
     @include DisappearOnHover;
   }
 }
 
-.repl-block:not(.repl-active) {
-  .repl-input-element-wrapper {
+@include FinishedBlock {
+  @include InputWrapper {
     border-color: $input-border;
     border-radius: 1px;
     &[data-is-reedit] {
@@ -60,14 +60,14 @@ $focus-color: var(--color-brand-01);
 }
 body[kui-theme-style='light'] {
   .repl-block:not(.repl-active) {
-    .repl-input-element-wrapper {
+    @include InputWrapper {
       background-color: $input-bg-light;
     }
   }
 }
 body[kui-theme-style='dark'] {
   .repl-block:not(.repl-active) {
-    .repl-input-element-wrapper {
+    @include InputWrapper {
       background-color: $input-bg-dark;
     }
   }
@@ -86,7 +86,7 @@ body[kui-theme-style='dark'] {
 
   @include Block {
     position: relative;
-    margin: 0.1875rem 0;
+    margin: 0.1875em 0;
 
     &:before {
       background-color: var(--color-table-border2);
@@ -102,9 +102,6 @@ body[kui-theme-style='dark'] {
       width: 4px;
       border-top-right-radius: 1px;
       border-bottom-right-radius: 1px;
-    }
-    &:not([data-is-output-only]) .repl-output.repl-result-has-content {
-      margin-top: 0.5rem;
     }
     &.error:before {
       opacity: 1;
@@ -163,10 +160,10 @@ body[kui-theme-style='dark'] {
   & > li.repl-block {
     display: flex;
     flex-direction: column;
-    padding: 0.5rem 0;
+    padding: 0.5em 0;
 
     &.repl-active {
-      padding: 0.875rem 0;
+      padding: 0.875em 0;
     }
 
     /* special bg color for Actions inside of output-only versus input blocks, to occlude repl-input-element */
@@ -174,8 +171,8 @@ body[kui-theme-style='dark'] {
       background-color: var(--color-base03);
     }
     .repl-output .kui--block-actions-buttons {
-      top: -0.25rem;
-      bottom: calc(100% - 1.5rem);
+      top: -0.25em;
+      bottom: calc(100% - 1.5em);
     }
     .kui--block-actions-buttons {
       align-items: center;
@@ -188,7 +185,7 @@ body[kui-theme-style='dark'] {
       bottom: 0;
       right: 0;
 
-      padding-left: 0.5rem;
+      padding-left: 0.5em;
       transition-property: opacity;
       transition-delay: $action-hover-delay;
       transition-duration: 140ms;
@@ -204,7 +201,7 @@ body[kui-theme-style='dark'] {
       /* This is a bit of a hack for TwoFaceIcon, to work around the Checkmark being narrower than other icons in Carbon */
       svg {
         fill: currentColor;
-        min-width: 1rem;
+        min-width: 1em;
       }
 
       .green-text {
@@ -236,14 +233,14 @@ body[kui-theme-style='dark'] {
     }
     .repl-input .kui--toolbar-button-with-icon {
       /* have buttons fit inside the input region */
-      height: 1.125rem;
+      height: 1.125em;
     }
     .repl-context {
       color: var(--color-text-02);
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      flex-basis: 3rem;
+      flex-basis: 3em;
       min-width: $repl-context-min-width;
       text-align: end;
       margin-right: $repl-context-margin-right;
@@ -252,14 +249,14 @@ body[kui-theme-style='dark'] {
     }
 
     .repl-input .repl-context:before {
-      left: -1rem !important;
+      left: -1em !important;
     }
 
     &:not(.repl-active) {
-      .repl-input-element-wrapper {
+      @include InputWrapper {
         border: 1px solid hsla(0, 0%, 39.2%, 0.1);
         align-items: stretch;
-        padding-left: 0.5rem;
+        padding-left: 0.5em;
         position: relative; /* for repl-block-actions' position: absolute */
         .repl-input-element,
         .kui--repl-input-element-nbsp {
@@ -285,13 +282,13 @@ body[kui-theme-style='dark'] {
       /* repl right-hand decorations */
       .repl-output .repl-prompt-right-elements {
         position: absolute;
-        right: 0.25rem;
-        top: -0.25rem;
+        right: 0.25em;
+        top: -0.25em;
       }
     }
 
     .kui--repl-result-else {
-      font-size: 0.75rem;
+      font-size: 0.75em;
       font-family: var(--font-sans-serif);
       &,
       a {
@@ -303,7 +300,7 @@ body[kui-theme-style='dark'] {
     }
   }
   .kui--repl-block-right-element {
-    font-size: 0.6875rem;
+    font-size: 0.6875em;
   }
 }
 
@@ -315,7 +312,7 @@ body[kui-theme-style='dark'] {
 }
 
 @mixin timestamp-like {
-  margin-right: 0.5rem;
+  margin-right: 0.5em;
   display: flex;
   align-items: center;
   transition-delay: $action-hover-delay;
@@ -323,7 +320,7 @@ body[kui-theme-style='dark'] {
 
 /* timestamp */
 .repl-block {
-  .kui--repl-block-timestamp {
+  @include BlockTimestamp {
     @include timestamp-like();
   }
   .kui--repl-block-re-editing {

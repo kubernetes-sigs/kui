@@ -94,6 +94,10 @@ export const switchTo = async (theme: string, saveNotNeeded = false): Promise<vo
       if (previousThemeModel.attrs) {
         previousThemeModel.attrs.forEach(attr => document.body.classList.remove(attr))
       }
+
+      if (previousThemeModel.lightweight) {
+        document.body.classList.remove('kui--lightweight-ui')
+      }
     }
   }
 
@@ -128,6 +132,10 @@ export const switchTo = async (theme: string, saveNotNeeded = false): Promise<vo
 
   if (themeModel.attrs) {
     themeModel.attrs.forEach(attr => document.body.classList.add(attr))
+  }
+
+  if (themeModel.lightweight) {
+    document.body.classList.add('kui--lightweight-ui')
   }
 
   // let others know that the theme has changed

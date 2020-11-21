@@ -1,7 +1,9 @@
-$kui-font-factor: 1;
+$kui-font-factor: var(--kui--font-factor);
 
 /* attribution: @patternfly/react-core/dist/styles/base.css version 4.18.5; license MIT */
 body {
+  --kui--font-factor: 1;
+
   --pf-global--BoxShadow--sm: 0 0.0625rem 0.125rem 0 rgba(3, 3, 3, 0.12), 0 0 0.125rem 0 rgba(3, 3, 3, 0.06);
   --pf-global--BoxShadow--sm-top: 0 -0.125rem 0.25rem -0.0625rem rgba(3, 3, 3, 0.16);
   --pf-global--BoxShadow--sm-right: 0.125rem 0 0.25rem -0.0625rem rgba(3, 3, 3, 0.16);
