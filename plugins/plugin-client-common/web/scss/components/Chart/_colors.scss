@@ -1,0 +1,42 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/** citation: https://colorbrewer2.org/ */
+@mixin colorbrewer-green-purple-diverging {
+  --color-latency-0: #00441b;
+  --color-latency-1: #1b7837;
+  --color-latency-2: #a6dba0;
+  --color-latency-3: #9970ab;
+  --color-latency-4: #762a83;
+  --color-latency-5: #40004b;
+}
+
+@mixin colorbrewer-blue-red-diverging {
+  --color-latency-0: #2166ac;
+  --color-latency-1: #67a9cf;
+  --color-latency-2: hsla(201, 51%, 78%, 1); /* #d1e5f0 with lightness reduced from 88% to 78% */
+  --color-latency-3: #fddbc7;
+  --color-latency-4: #ef8a62;
+  --color-latency-5: #b2182b;
+}
+
+@mixin charts-light {
+  @include colorbrewer-green-purple-diverging;
+}
+
+@mixin charts-dark {
+  @include colorbrewer-green-purple-diverging;
+}
