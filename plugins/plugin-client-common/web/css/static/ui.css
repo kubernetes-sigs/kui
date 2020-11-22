@@ -1,5 +1,6 @@
 @import "ansi_up";
 @import "master-font-size";
+@import "../../scss/components/Chart/colors";
 
 * {
   box-sizing: border-box;
@@ -1024,6 +1025,14 @@ body[kui-theme-style="dark"] .legend-icon.is-waitTime {
   color: var(--color-base0E);
 }
 
+body[kui-theme-style="light"] {
+  @include charts-light;
+}
+
+body[kui-theme-style="dark"] {
+  @include charts-dark;
+}
+
 body {
   /* define theme bindings; mapping color names to the base16 scheme */
   --color-black: var(--color-ui-01);
@@ -1095,14 +1104,6 @@ body {
   --color-tag-beta-text: var(--color-base01);
   --color-tag-ibm-fill: var(--color-base0D);
   --color-tag-ibm-text: var(--color-base01);
-
-  /* default latency color spectrum */
-  --color-latency-0: #2166ac;
-  --color-latency-1: #67a9cf;
-  --color-latency-2: hsla(201, 51%, 78%, 1); /* #d1e5f0 with lightness reduced from 88% to 78% */
-  --color-latency-3: #fddbc7;
-  --color-latency-4: #ef8a62;
-  --color-latency-5: #b2182b;
 
   /* two-color charts; yellow versus cyan should be a pretty good default */
   --color-chart-0: var(--color-yellow);
