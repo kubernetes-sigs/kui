@@ -21,7 +21,7 @@
 @import '../common/Lightweight';
 @import 'SequenceDiagram/mixins';
 
-$block-padding: 0.25em 0;
+$block-padding: 0.25em;
 
 @mixin NoPadding {
   padding: 0;
@@ -66,23 +66,42 @@ $block-padding: 0.25em 0;
   }
 
   @include Block {
-    padding: $block-padding;
+    padding: $block-padding 0;
   }
 
   @include BlockOutput {
-    margin-top: 0.25em;
+    margin-top: $block-padding;
+  }
+  @include FinishedBlockWithInputAndOutput {
+    margin-top: $block-padding;
   }
 
   @include NestedSidecar {
-    height: auto;
-    margin-top: 0.25em; /* a bit extra, on top of the 0.25 for BlockOutput */
+    margin-top: $block-padding; /* a bit extra, on top of the $block-padding for BlockOutput */
+    background-color: transparent;
+  }
+
+  @include SidecarTitleBar {
+    background-color: transparent;
+  }
+
+  /** Hide the sidecar buttons until hover */
+  @include SidecarTitleBarButtons {
+    opacity: 0;
+  }
+  @include NestedSidecar {
+    &:hover {
+      @include SidecarTitleBarButtons {
+        opacity: 1;
+      }
+    }
   }
 
   @include ActiveBlock {
-    padding: $block-padding;
+    padding: $block-padding 0;
   }
   @include ProcessingBlock {
-    padding: $block-padding;
+    padding: $block-padding 0;
   }
 
   @include BlockTimestamp {

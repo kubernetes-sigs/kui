@@ -112,6 +112,10 @@ body[kui-theme-style='dark'] {
     }
   }
 
+  @include FinishedBlockWithInputAndOutput {
+    margin-top: 0.5em;
+  }
+
   /** focus */
   & > li:focus {
     outline: none;
