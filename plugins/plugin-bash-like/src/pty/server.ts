@@ -522,7 +522,7 @@ export default (commandTree: Registrar) => {
         try {
           await new StdioChannelKuiSide().init(() => {
             console.error('done with stdiochannel')
-            resolve()
+            resolve(true)
           })
         } catch (err) {
           reject(err)

@@ -28,7 +28,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "debug": "4.2.0",
+    "debug": "4.3.1",
     "js-yaml": "3.14.0",
     "pretty-ms": "7.0.1"
   },

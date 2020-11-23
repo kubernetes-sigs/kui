@@ -24,8 +24,8 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "adm-zip": "0.4.16",
-    "debug": "4.2.0",
+    "adm-zip": "0.5.0",
+    "debug": "4.3.1",
     "htmlparser2": "5.0.1",
     "indefinite": "^2.4.1",
     "js-yaml": "3.14.0",
