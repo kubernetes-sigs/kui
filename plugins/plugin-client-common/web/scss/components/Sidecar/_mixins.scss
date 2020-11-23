@@ -59,3 +59,15 @@
     @content;
   }
 }
+
+@mixin SidecarTitleBar {
+  .sidecar-bottom-stripe {
+    @content;
+  }
+}
+
+@mixin SidecarTitleBarButtons {
+  .sidecar-window-buttons {
+    @content;
+  }
+}
