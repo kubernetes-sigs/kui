@@ -33,7 +33,7 @@ $focus-color: var(--color-brand-01);
 }
 
 @mixin show-block-action-buttons {
-  .kui--block-actions-buttons {
+  @include BlockActions {
     opacity: 1;
   }
 }

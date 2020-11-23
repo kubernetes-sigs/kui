@@ -36,7 +36,7 @@ $action-hover-delay: 210ms;
 
 @mixin NotFocusedSplit {
   @include Scrollback {
-    &:not([data-is-focused]) {
+    &:not([data-is-focused]):not([data-is-minisplit]) {
       @content;
     }
   }
@@ -158,6 +158,13 @@ $action-hover-delay: 210ms;
 /** Block action buttons, e.g. remove block, re-run command, ... */
 @mixin BlockActions {
   .kui--block-actions-buttons {
+    @content;
+  }
+}
+
+/** Input portion of a Block */
+@mixin BlockInput {
+  .repl-input {
     @content;
   }
 }

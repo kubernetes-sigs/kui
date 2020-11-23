@@ -89,8 +89,11 @@ $block-padding: 0.25em 0;
     color: var(--color-base0A);
   }
 
-  @include BlockActions {
-    background: none;
+  @include BlockInput {
+    @include BlockActions {
+      top: -3px;
+      bottom: -3px;
+    }
   }
 
   @include NotFocusedSplit {
