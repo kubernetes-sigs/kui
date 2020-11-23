@@ -18,10 +18,17 @@
 @import '../Editor/_mixins';
 @import '../Terminal/_mixins';
 
+@include WidthConstrained {
+  @include NestedSidecar {
+    min-width: unset;
+  }
+}
+
 @include NestedSidecar {
   min-width: 70rem;
   max-width: 100%;
   min-height: 20em;
+  height: auto;
 
   resize: both;
   overflow: auto;
