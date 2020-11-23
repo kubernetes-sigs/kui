@@ -157,28 +157,28 @@ body[kui-theme-style='dark'] {
     }
   }
 
-  & > li.repl-block {
+  @include ActiveBlock {
+    padding: 0.875em 0;
+  }
+
+  @include Block {
     display: flex;
     flex-direction: column;
     padding: 0.5em 0;
 
-    &.repl-active {
-      padding: 0.875em 0;
+    /* special positioning for Actions inside of output-only versus input blocks */
+    @include BlockOutput {
+      @include BlockActions {
+        top: -0.25em;
+        bottom: calc(100% - 1.5em);
+      }
     }
-
-    /* special bg color for Actions inside of output-only versus input blocks, to occlude repl-input-element */
-    .kui--block-actions-buttons {
-      background-color: var(--color-base03);
-    }
-    .repl-output .kui--block-actions-buttons {
-      top: -0.25em;
-      bottom: calc(100% - 1.5em);
-    }
-    .kui--block-actions-buttons {
+    @include BlockActions {
       align-items: center;
       display: flex;
       opacity: 0;
       border-radius: 1px;
+      background-color: var(--color-base03);
 
       position: absolute;
       top: 0; /* this with bottom:0 gives 1) vertical center; 2) occluding of repl-input-element content */
