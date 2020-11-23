@@ -20,7 +20,12 @@ import { Button } from './mmr/types'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 
 export type TreeItem = {
-  /** unique string to distinguish a tree item */
+  /**
+   * Unique string to distinguish a tree item.
+   * Note: failing to provide this will result in
+   * PatternFly TreeView error in finding active item
+   *
+   */
   id: string
 
   /** label of a tree item */
@@ -46,6 +51,9 @@ export type TreeItem = {
 
   /** Flag indicating if node is expanded by default */
   defaultExpanded?: boolean
+
+  /** Flag indicating if a tree view item has a badge */
+  hasBadge?: boolean
 
   /** The extensions of this tree item */
   extends?: {

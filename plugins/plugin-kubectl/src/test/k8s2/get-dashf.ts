@@ -18,21 +18,20 @@ import { CLI, ReplExpect, SidecarExpect, Common, Selectors, Util } from '@kui-sh
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
-import { AppAndCount } from '@kui-shell/test/mdist/api/repl-expect'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 
 const crashy: SidecarExpect.ExpectedTree[] = [
   {
-    id: 'all',
+    id: 'All Resources',
     children: [
       {
-        id: 'unlabeled',
+        id: 'Unlabeled Resources',
         children: [
           {
-            id: 'unlabeled---Pod',
+            id: 'Pod',
             children: [
               {
-                id: 'unlabeled---Pod---kui-crashy'
+                id: 'kui-crashy'
               }
             ]
           }
@@ -44,16 +43,21 @@ const crashy: SidecarExpect.ExpectedTree[] = [
 
 const modifiedCrashySource: SidecarExpect.ExpectedTree[] = [
   {
-    id: 'all',
+    id: 'All Resources',
     children: [
       {
-        id: 'foo',
+        id: 'Apps',
         children: [
           {
-            id: 'foo---Pod',
+            id: 'foo',
             children: [
               {
-                id: 'foo---Pod---kui-crashy'
+                id: 'Pod',
+                children: [
+                  {
+                    id: 'kui-crashy'
+                  }
+                ]
               }
             ]
           }
@@ -65,16 +69,16 @@ const modifiedCrashySource: SidecarExpect.ExpectedTree[] = [
 
 const modifiedCrashyDryRun: SidecarExpect.ExpectedTree[] = [
   {
-    id: 'all',
+    id: 'All Resources',
     children: [
       {
-        id: 'unlabeled',
+        id: 'Unlabeled Resources',
         children: [
           {
-            id: 'unlabeled---Pod',
+            id: 'Pod',
             children: [
               {
-                id: 'unlabeled---Pod---kui-crashy'
+                id: 'kui-crashy'
               }
             ]
           }
@@ -84,10 +88,10 @@ const modifiedCrashyDryRun: SidecarExpect.ExpectedTree[] = [
         id: 'foo',
         children: [
           {
-            id: 'foo---Pod',
+            id: 'Pod2',
             children: [
               {
-                id: 'foo---Pod---kui-crashy'
+                id: 'kui-crashy2'
               }
             ]
           }
@@ -99,40 +103,115 @@ const modifiedCrashyDryRun: SidecarExpect.ExpectedTree[] = [
 
 const bunch = [
   {
-    id: 'all',
+    id: 'All Resources',
     children: [
       {
-        id: 'travelapp',
+        id: 'Apps',
         children: [
           {
-            id: 'travelapp---Deployment',
+            id: 'travelapp',
             children: [
               {
-                id: 'travelapp---Deployment---travelapp'
-              }
-            ]
-          },
-          {
-            id: 'travelapp---HorizontalPodAutoscaler',
-            children: [
+                id: 'Deployment',
+                children: [
+                  {
+                    id: 'travelapp'
+                  }
+                ]
+              },
               {
-                id: 'travelapp---HorizontalPodAutoscaler---travelapp-hpa'
+                id: 'HorizontalPodAutoscaler',
+                children: [
+                  {
+                    id: 'travelapp-hpa'
+                  }
+                ]
               }
             ]
           }
         ]
       },
       {
-        id: 'unlabeled',
+        id: 'Unlabeled Resources',
         children: [
           {
-            id: 'unlabeled---Pod',
+            id: 'Pod',
             children: [
               {
-                id: 'unlabeled---Pod---eventgen'
+                id: 'eventgen'
               },
               {
-                id: 'unlabeled---Pod---nginx'
+                id: 'nginx'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
+const guestbook = [
+  {
+    id: 'All Resources',
+    children: [
+      {
+        id: 'Tiers',
+        children: [
+          {
+            id: 'Frontend',
+            children: [
+              {
+                id: 'Apps',
+                children: [
+                  {
+                    id: 'Guestbook',
+                    children: [
+                      {
+                        id: 'Deployment',
+                        children: [
+                          {
+                            id: 'Frontend2'
+                          }
+                        ]
+                      },
+                      {
+                        id: 'Service',
+                        children: [
+                          {
+                            id: 'Frontend3'
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            id: 'Backend',
+            children: [
+              {
+                id: 'Apps2',
+                children: [
+                  {
+                    id: 'Redis',
+                    children: [
+                      {
+                        id: 'Deployment2',
+                        children: [
+                          {
+                            id: 'Redis-Master'
+                          },
+                          {
+                            id: 'Redis-Slave'
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           }
@@ -147,7 +226,7 @@ const currentEventCount = async (res: ReplExpect.AppAndCount): Promise<number> =
   return !events ? 0 : events.length
 }
 
-const clickApplyButton = async (res: AppAndCount, waitForResourceName: string) => {
+const clickApplyButton = async (res: ReplExpect.AppAndCount, waitForResourceName: string) => {
   const button = await res.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'apply'))
   await button.waitForDisplayed()
   await button.click()
@@ -161,7 +240,7 @@ const clickApplyButton = async (res: AppAndCount, waitForResourceName: string) =
   return res
 }
 
-const hasEvents = async (res: AppAndCount) => {
+const hasEvents = async (res: ReplExpect.AppAndCount) => {
   let idx = 0
   await res.app.client.waitUntil(
     async () => {
@@ -176,7 +255,7 @@ const hasEvents = async (res: AppAndCount) => {
   return res
 }
 
-const hasDiff = async (res: AppAndCount, diffText: string) => {
+const hasDiff = async (res: ReplExpect.AppAndCount, diffText: string) => {
   let idx = 0
   await res.app.client.waitUntil(async () => {
     const text = await Util.getValueFromMonaco(res)
@@ -260,6 +339,9 @@ commands.forEach(command => {
       true,
       'kui-crashy'
     )
+
+    getOfflineFile(`${ROOT}/data/k8s/application/guestbook`, guestbook, guestbook)
+    getLiveFile(`${ROOT}/data/k8s/application/guestbook`, guestbook, guestbook)
 
     deleteNS(this, ns)
   })

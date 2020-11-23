@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: kui-crashy
   labels:
-    foo: bar
+    app.kubernetes.io/name: foo
 spec:
   containers:
   - name: crashy

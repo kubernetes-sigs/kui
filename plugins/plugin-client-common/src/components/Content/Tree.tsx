@@ -119,7 +119,6 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
             activeItem: treeViewItem as TreeItem
           })
         }}
-        hasBadges
       />
     )
   }

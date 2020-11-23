@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Button, i18n, TreeItem, TreeResponse } from '@kui-shell/core'
+import { Arguments, i18n, TreeItem, TreeResponse } from '@kui-shell/core'
 
 import { KubeOptions, withKubeconfigFrom } from '../../controller/kubectl/options'
 import { fetchRawFiles } from './fetch-file'
@@ -34,9 +34,11 @@ function joinKey(keys: string[]) {
 
 interface BucketValue {
   raw: TreeItem['content']
+  isIntermediate?: boolean
   modifiedRaw?: TreeItem['content']
   willBeAdded?: boolean
   willBeDeleted?: boolean
+  id: string
   name: string
   extends: TreeItem['extends']
   eventArgs?: TreeItem['eventArgs']
@@ -48,10 +50,13 @@ interface Bucket {
 
 interface Buckets {
   all: Bucket
-  labels: Bucket
-  labeledResources: Bucket
+  tiers: Bucket
+  tier: Bucket
+  apps: Bucket
+  app: Bucket
   kind: Bucket
   name: Bucket
+  unlabeled: Bucket
 }
 
 function getArgsThatProducesEvents(args: Arguments<KubeOptions>, namespace: string): BucketValue['eventArgs'] {
@@ -76,6 +81,40 @@ function getArgsThatProducesEvents(args: Arguments<KubeOptions>, namespace: stri
 }
 
 /**
+ * 1. delete empty key
+ * 2. merge unlabeled bucket to the top level for tree processing
+ * 3. add id to the value in each bucket, e.g. app0,app1,app2
+ *
+ */
+const postProcessBucket = (buckets: Buckets) => {
+  const ids = {}
+  Object.keys(buckets).forEach(key => {
+    if (!buckets[key] || Object.keys(buckets[key]).length === 0) {
+      delete buckets[key]
+    } else {
+      Object.entries(buckets[key]).forEach(([_key, _value]) => {
+        const { name } = _value as BucketValue
+        if (!ids[name]) {
+          ids[name] = 1
+        } else {
+          ids[name] = ids[name] + 1
+        }
+
+        buckets[key][_key].id = `${name}${ids[name] > 1 ? ids[name] : ''}`
+      })
+    }
+  })
+
+  if (buckets.unlabeled && (buckets.tiers || buckets.apps)) {
+    const topLevelBucketKey = Object.keys(buckets)[1]
+    const newTopLevelBucket = Object.assign({}, buckets[topLevelBucketKey], buckets.unlabeled)
+    Object.assign(buckets, { [topLevelBucketKey]: newTopLevelBucket })
+    delete buckets.unlabeled
+  }
+
+  return buckets
+}
+/**
  * This function categorizes `resources` into buckets
  *
  */
@@ -89,13 +128,14 @@ async function categorizeResources(
 
   const buckets: Buckets = {
     all: {},
-    labels: {},
-    labeledResources: {},
+    tiers: {},
+    tier: {},
+    apps: {},
+    app: {},
+    unlabeled: {},
     kind: {},
     name: {}
   }
-
-  const unlabeled = {}
 
   await Promise.all(
     resources.map(async resource => {
@@ -105,7 +145,7 @@ async function categorizeResources(
 
       const eventArgs = doEvents && hasEvents(resource) ? getArgsThatProducesEvents(args, namespace) : undefined
 
-      const append = (bucket: Bucket, label: string, key?: string) => {
+      const append = (bucket: Bucket, label: string, key?: string, isIntermediate?: boolean) => {
         if (!key) {
           return Object.assign(bucket, {
             raw,
@@ -114,6 +154,7 @@ async function categorizeResources(
               kind: [kind],
               name: [name]
             },
+            isIntermediate,
             eventArgs
           })
         } else if (!bucket[key]) {
@@ -125,6 +166,7 @@ async function categorizeResources(
                 kind: [kind],
                 name: [name]
               },
+              isIntermediate,
               eventArgs
             }
           })
@@ -136,37 +178,56 @@ async function categorizeResources(
       }
 
       append(buckets.all, strings('All Resources'), 'all')
-      if (resource.metadata.labels) {
-        Object.entries(resource.metadata.labels).map(([labelKey, labelValue]) => {
-          let label = labelKey
-          if (labelKey === 'app') {
-            label = labelValue
-            append(buckets.labels, label, label)
-          } else if (labelKey === 'name') {
-            label = 'unlabeled'
-            append(unlabeled, strings('unlabeled'))
-          } else {
-            append(buckets.labels, label, label)
-            append(buckets.labeledResources, labelValue, joinKey([labelKey, labelValue]))
-          }
 
-          append(buckets.kind, kind, joinKey([label, kind]))
-          append(buckets.name, name, joinKey([label, kind, name]))
-        })
-      } else {
-        append(unlabeled, strings('unlabeled'))
-        append(buckets.kind, kind, joinKey(['unlabeled', kind]))
-        append(buckets.name, name, joinKey(['unlabeled', kind, name]))
+      const allLabels: { app?: string; tier?: string } = {}
+      const hasMatchLabels = resource.spec && resource.spec.selector && resource.spec.selector.matchLabels
+      const hasLabels = resource.metadata.labels
+
+      if (hasMatchLabels) {
+        Object.assign(allLabels, resource.spec.selector.matchLabels)
       }
+      if (hasLabels) {
+        Object.assign(allLabels, resource.metadata.labels)
+      }
+
+      const supportedLabels = Object.entries(allLabels)
+        .map(([key, value]) => {
+          return key === 'app.kubernetes.io/name'
+            ? ['app', value]
+            : key === 'app.kubernetes.io/component'
+            ? ['tier', value]
+            : [key, value]
+        })
+        .filter(([key]) => key === 'app' || key === 'tier')
+      const sortedLabels = supportedLabels.sort(([a]) => (a === 'tier' ? -1 : a === 'unlabel' ? 1 : 0))
+      const tierIdx = sortedLabels.findIndex(([a]) => a === 'tier')
+      const appIdx = sortedLabels.findIndex(([a]) => a === 'app')
+
+      if (appIdx !== -1) {
+        sortedLabels.splice(appIdx, 0, ['apps', strings('Apps')])
+      }
+
+      if (tierIdx !== -1) {
+        sortedLabels.splice(tierIdx, 0, ['tiers', strings('Tiers')])
+      }
+
+      if (supportedLabels.length === 0) {
+        sortedLabels.push(['unlabeled', strings('unlabeled')]) // use the tiers buckets for unlabeled resources
+      }
+
+      sortedLabels.push(['kind', resource.kind], ['name', resource.metadata.name])
+
+      sortedLabels.forEach(([key, value], idx) => {
+        let commonPrefix = 'all'
+        commonPrefix = joinKey(['all', sortedLabels.slice(0, idx + 1).join(KEYSEPARATER)])
+
+        const isIntermediate = key === 'kind' || key === 'tiers' || key === 'apps' || key === 'unlabeled'
+        append(buckets[key], strings(value), commonPrefix, isIntermediate)
+      })
     })
   )
 
-  // Lastly, add unlabeled to bucket, to make sure it shows up at the end of the labels
-  if (Object.keys(unlabeled).length !== 0) {
-    Object.assign(buckets.labels, { unlabeled })
-  }
-
-  return buckets
+  return postProcessBucket(buckets)
 }
 
 /**
@@ -181,8 +242,13 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
       if (levels[idx]) {
         if (!filterKey) {
           return Object.entries(buckets[levels[idx]])
-        } else if (levels[idx + 1]) {
-          return Object.entries(buckets[levels[idx + 1]]).filter(([key]) => key.includes(`${filterKey}${KEYSEPARATER}`))
+        } else {
+          const found = Object.entries(buckets[levels[idx]]).filter(([key]) => {
+            const splits = key.split(`${filterKey}${KEYSEPARATER}`)
+            return splits.length > 1 && !splits[1].includes(KEYSEPARATER)
+          })
+
+          return found.length !== 0 ? found : findNextBucket(idx + 1, filterKey)
         }
       }
     }
@@ -191,11 +257,22 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
 
     return !nextBucket || nextBucket.length === 0
       ? undefined
-      : nextBucket.map(([key, value]) => {
-          const { name, raw, eventArgs, modifiedRaw, willBeAdded, willBeDeleted } = value as BucketValue
-          return {
+      : nextBucket.map(([key, value], idx) => {
+          const {
             name,
-            id: key,
+            raw,
+            eventArgs,
+            modifiedRaw,
+            willBeAdded,
+            willBeDeleted,
+            isIntermediate,
+            id
+          } = value as BucketValue
+          return {
+            id,
+            name,
+            hasBadge: isIntermediate,
+            defaultExpanded: isIntermediate,
             extends: value['extends'],
             content: raw,
             contentType: 'yaml' as const,
@@ -211,7 +288,7 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
   const data = [
     {
       name: buckets.all.all.name,
-      id: 'all',
+      id: buckets.all.all.id,
       extends: buckets.all.all.extends,
       content: buckets.all.all.raw,
       contentType: 'yaml' as const,
@@ -222,6 +299,7 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
     }
   ]
 
+  console.error('data', data)
   return data
 }
 
@@ -273,7 +351,7 @@ async function getBuckets(args: Arguments<KubeOptions>, namespace: string, resou
 function joinBuckets(original: Buckets, modified: Buckets) {
   Object.keys(original).forEach(bucket => {
     Object.keys(original[bucket]).forEach(key => {
-      if (modified[bucket][key]) {
+      if (modified[bucket] && modified[bucket][key]) {
         original[bucket][key].modifiedRaw = modified[bucket][key].raw
       } else {
         original[bucket][key].modifiedRaw = ''
@@ -284,6 +362,9 @@ function joinBuckets(original: Buckets, modified: Buckets) {
 
   Object.keys(modified).forEach(bucket => {
     Object.keys(modified[bucket]).forEach(key => {
+      if (!original[bucket]) {
+        original[bucket] = {}
+      }
       if (!original[bucket][key]) {
         original[bucket][key] = modified[bucket][key]
         original[bucket][key].willBeAdded = true
@@ -292,6 +373,19 @@ function joinBuckets(original: Buckets, modified: Buckets) {
       }
     })
   })
+
+  const sortedBuckets = {
+    all: original.all,
+    tiers: original.tiers,
+    tier: original.tier,
+    apps: original.apps,
+    app: original.app,
+    unlabeled: original.unlabeled,
+    kind: original.kind,
+    name: original.name
+  }
+
+  return postProcessBucket(sortedBuckets)
 }
 
 /**
@@ -304,17 +398,23 @@ export async function doDeployedMode(
   args: Arguments<KubeOptions>,
   namespace: string,
   deployedResource: KubeResource,
-  dryRun?: KubeResource,
-  applyButton?: Button
+  applyCommand: string,
+  dryRun?: KubeResource
 ) {
   const dryRunBuckets = dryRun ? await getBuckets(args, namespace, dryRun, false) : undefined
   const deployedBuckets = deployedResource ? await getBuckets(args, namespace, deployedResource, true) : undefined
+  const applyButton = {
+    mode: 'apply',
+    label: strings('Apply Changes'),
+    kind: 'drilldown' as const,
+    command: applyCommand
+  }
 
   if (dryRunBuckets) {
     if (deployedBuckets) {
       // join the `dryRunBuckets` as modifed to `deployedBucket`
-      joinBuckets(deployedBuckets, dryRunBuckets)
-      const deployedData = transformBucketsToTree(deployedBuckets)
+      const joinedBuckets = joinBuckets(deployedBuckets, dryRunBuckets)
+      const joinedData = transformBucketsToTree(joinedBuckets)
 
       return {
         mode: deployedMode,
@@ -322,7 +422,7 @@ export async function doDeployedMode(
         content: {
           apiVersion: 'kui-shell/v1' as const,
           kind: 'TreeResponse' as const,
-          data: deployedData,
+          data: joinedData,
           toolbarText: {
             type: 'info',
             text: strings(`Showing deployed resources`)
