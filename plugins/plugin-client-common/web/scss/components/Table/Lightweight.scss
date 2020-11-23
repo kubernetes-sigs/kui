@@ -19,6 +19,7 @@
 @import '../Sidecar/mixins';
 @import '../Terminal/mixins';
 @import '../common/Lightweight';
+@import '../TopTabStripe/mixins';
 @import 'SequenceDiagram/mixins';
 
 $block-padding: 0.25em;
@@ -121,5 +122,10 @@ $block-padding: 0.25em;
 
   @include TableHeadCell {
     background-color: transparent;
+  }
+
+  @include TopTabStripe {
+    height: 3em;
+    --tab-shadow: inset 0 -2px 0 0;
   }
 }

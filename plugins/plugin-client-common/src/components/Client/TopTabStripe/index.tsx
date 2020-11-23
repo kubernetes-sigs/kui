@@ -24,7 +24,7 @@ import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
 import SplitTerminalButton from './SplitTerminalButton'
 
-import '../../../../web/css/static/TopTabStripe.scss'
+import '../../../../web/scss/components/TopTabStripe/_index.scss'
 
 /**
  *
@@ -155,7 +155,11 @@ export default class TopTabStripe extends React.PureComponent<Props> {
   private headerName() {
     return (
       <KuiContext.Consumer>
-        {config => <HeaderName prefix="">{config.productName || 'Kui'}</HeaderName>}
+        {config => (
+          <HeaderName prefix="" className="kui--header--name">
+            {config.productName || 'Kui'}
+          </HeaderName>
+        )}
       </KuiContext.Consumer>
     )
   }
