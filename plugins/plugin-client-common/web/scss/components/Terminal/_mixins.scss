@@ -109,6 +109,14 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin ProcessingBlock {
+  @include Block {
+    &.processing {
+      @content;
+    }
+  }
+}
+
 @mixin FinishedBlock {
   @include Block {
     &:not(.repl-active) {
@@ -133,9 +141,30 @@ $action-hover-delay: 210ms;
   }
 }
 
+/** The input element itself */
+@mixin Input {
+  .repl-input-element {
+    @content;
+  }
+}
+
 /** Timestamp of block */
 @mixin BlockTimestamp {
   .kui--repl-block-timestamp {
+    @content;
+  }
+}
+
+/** Block action buttons, e.g. remove block, re-run command, ... */
+@mixin BlockActions {
+  .kui--block-actions-buttons {
+    @content;
+  }
+}
+
+/** Output portion of a Block */
+@mixin BlockOutput {
+  .repl-output {
     @content;
   }
 }
