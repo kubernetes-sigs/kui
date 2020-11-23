@@ -76,7 +76,8 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
           label: 'Kubernetes',
           submenu: [
             notebook('CRUD Operations', '/kui/kubernetes/crud-operations.json'),
-            notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json')
+            notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json'),
+            notebook('Deploying Applications', '/kui/kubernetes/deploy-applications.json')
           ]
         },
         {

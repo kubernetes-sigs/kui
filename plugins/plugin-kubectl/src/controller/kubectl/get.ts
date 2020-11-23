@@ -223,11 +223,12 @@ export async function doTreeMMR(
   dryRun: KubeResource
 ) {
   try {
+    const applyCommand = formDashFileCommandFromArgs(args, namespace, filepath, 'apply')
     const applyButton = {
       mode: 'apply',
-      label: 'Apply Changes',
+      label: strings('Apply'),
       kind: 'drilldown' as const,
-      command: formDashFileCommandFromArgs(args, namespace, filepath, 'apply')
+      command: applyCommand
     }
 
     const isDeployed =
@@ -247,7 +248,7 @@ export async function doTreeMMR(
       defaultMode: isDeployed ? deployedMode : sourceMode,
       modes: [
         await getSources(args, namespace, filepath, isDeployed),
-        await doDeployedMode(args, namespace, isDeployed ? resource : undefined, dryRun, applyButton),
+        await doDeployedMode(args, namespace, isDeployed ? resource : undefined, applyCommand, dryRun),
         !isDeployed ? applyButton : undefined // if it's deployed, let the mode to decide if it wants to have the apply button according to diff
       ].filter(_ => _)
     }
