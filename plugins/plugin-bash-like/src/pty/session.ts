@@ -53,7 +53,7 @@ export async function getSessionForTab(tab: Tab): Promise<Channel> {
  *
  */
 export function pollUntilOnline(tab: Tab) {
-  return new Promise(resolve => {
+  return new Promise<void>(resolve => {
     let isOnline = false
     const initialSetOffline = setTimeout(() => {
       if (!isOnline) {

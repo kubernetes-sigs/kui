@@ -28,7 +28,7 @@ const runTheTests = process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KU
 const pit = runTheTests ? it : xit
 
 function gitInit(tmpdir: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     exec(`git init --bare ${testRepo}`, { cwd: tmpdir }, (error, stdout, stderr) => {
       if (error) {
         if (stderr) {
@@ -43,7 +43,7 @@ function gitInit(tmpdir: string) {
 }
 
 function gitClone(tmpdir: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     exec(
       `git clone ${testRepo} ${testClone} && cd ${testClone} && touch foo && git add foo && git commit -m foo . && git push origin master`,
       { cwd: tmpdir },
@@ -62,7 +62,7 @@ function gitClone(tmpdir: string) {
 }
 
 function checkout(branchName: string, tmpdir: string, options = '') {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     exec(`git checkout ${options} ${branchName}`, { cwd: join(tmpdir, testClone) }, (error, stdout, stderr) => {
       if (error) {
         if (stderr) {
@@ -129,7 +129,7 @@ describe(suiteName, function(this: Common.ISuite) {
   pit(
     'should create temporary directory',
     () =>
-      new Promise((resolve, reject) => {
+      new Promise<void>((resolve, reject) => {
         createTemporaryDirectory((err, path) => {
           if (err) {
             reject(err)

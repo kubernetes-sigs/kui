@@ -102,7 +102,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
    */
   private captureRegion(element: Element) {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       try {
         const { ipcRenderer, nativeImage, remote } = await import('electron')
         const { app } = remote
