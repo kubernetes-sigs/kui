@@ -26,7 +26,7 @@ import * as propertiesParser from 'properties-parser'
  */
 function prefetchEnv() {
   // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     if (process.env.TERM || process.platform === 'win32') {
       debug('skipping prefetchEnv')
       return resolve()
@@ -69,7 +69,7 @@ function prefetchEnv() {
  */
 function prefetchHome() {
   // eslint-disable-next-line no-async-promise-executor
-  return new Promise(async (resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     if (process.env.HOME) {
       debug('skipping prefetchHome')
       return resolve()

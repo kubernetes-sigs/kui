@@ -112,7 +112,7 @@ describe('wipe command', function(this: Common.ISuite) {
       }),
 
       // start up a wipe on our side, with a bit of a delay, 200ms
-      new Promise((resolve, reject) =>
+      new Promise<void>((resolve, reject) =>
         setTimeout(async () => {
           try {
             await openwhisk.cleanAll(process.env.AUTH)

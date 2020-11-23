@@ -129,7 +129,7 @@ export const main = async (argv: string[]) => {
   await writeFile('package.json', JSON.stringify(pjson, undefined, 2))
 
   creating('npm install', 'running')
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     exec('npm install', (err, stdout, stderr) => {
       if (err) {
         console.error(err)
