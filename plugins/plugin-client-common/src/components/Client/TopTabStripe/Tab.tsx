@@ -67,7 +67,7 @@ export default class Tab extends React.PureComponent<Props, State> {
       title: props.title || strings('Tab'),
       processing: false,
       isFreshlyCreated: true,
-      topTabNames: props.topTabNames || 'command'
+      topTabNames: props.topTabNames || 'fixed'
     }
 
     if (!props.topTabNames) {
