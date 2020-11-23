@@ -14,22 +14,47 @@
  * limitations under the License.
  */
 
-@import '~carbon-components/scss/components/accordion/_accordion.scss';
-@import '~carbon-components/scss/components/accordion/_keyframes.scss';
+@import '~carbon-components/scss/components/accordion/accordion.scss';
+@import '~carbon-components/scss/components/accordion/keyframes.scss';
 
-@import '_mixins';
+@import 'mixins';
 
 @include Accordion {
-  margin: 0.5rem 0 0;
+  margin: 0.5em 0 0;
   width: unset;
 }
 
 @include AccordionItem {
+  color: var(--color-text-01);
+  border-color: var(--color-base02);
   background-color: var(--color-base00);
+
+  &:last-child {
+    border-color: var(--color-base02);
+  }
+
+  .bx--accordion__heading {
+    color: inherit;
+    min-height: 2em;
+    padding: 0.625em 0;
+
+    &:hover::before {
+      background-color: var(--color-base03);
+    }
+  }
+
+  .bx--accordion__title {
+    color: inherit;
+    margin: 0 1em;
+  }
+
+  .bx--accordion__arrow {
+    fill: currentColor;
+  }
 }
 
 @include AccordionToggle {
-  font-size: 0.825rem;
+  font-size: 0.825em;
   font-family: var(--font-sans-serif);
 }
 
