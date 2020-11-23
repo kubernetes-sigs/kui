@@ -152,9 +152,7 @@ function attrs(
   const uid = wide && hasUid ? [{ value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
   const gid = wide && hasGid ? [{ value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
   const size =
-    wide && hasSize
-      ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: `${outerCSSSecondary} text-right` }]
-      : []
+    wide && hasSize ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: 'text-right' }] : []
   const lastMod =
     wide && hasMtime
       ? [
