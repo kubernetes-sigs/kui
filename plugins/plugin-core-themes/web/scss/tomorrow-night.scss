@@ -30,4 +30,9 @@ body[kui-theme='tomorrow-night'] {
 
   --color-black: var(--color-base05); /* e.g. husky's "No partially staged files found" */
   --color-name: var(--color-base0D);
+
+  --color-base08-rgb: 204, 102, 102;
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base0B-rgb: 181, 189, 104;
+  --color-green-rgb: var(--color-base0B-rgb);
 }

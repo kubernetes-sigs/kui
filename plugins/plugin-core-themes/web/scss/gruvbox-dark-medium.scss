@@ -25,6 +25,11 @@ body[kui-theme='Gruvbox'] {
   --color-base0E: #d3869b;
   --color-base0F: #d65d0e;
 
+  --color-base08-rgb: 251, 73, 52;
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base0B-rgb: 184, 187, 38;
+  --color-green-rgb: var(--color-base0B-rgb);
+
   --color-latency-0: #1b7837;
   --color-latency-1: #7fbf7b;
   --color-latency-2: #d9f0d3;

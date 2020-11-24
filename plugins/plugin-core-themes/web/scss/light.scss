@@ -95,6 +95,11 @@ body[kui-theme='Light'] {
   --color-base0E: #d12764;
   --color-base0F: #8a3ffc;
 
+  --color-base0B-rgb: 29, 189, 90;
+  --color-green-rgb: var(--color-base0B-rgb);
+  --color-base08-rgb: 231, 29, 50;
+  --color-red-rgb: var(--color-base08-rgb);
+
   --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);
 

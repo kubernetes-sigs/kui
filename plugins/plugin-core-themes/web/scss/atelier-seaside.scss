@@ -25,6 +25,12 @@ body[kui-theme='Atelier'] {
   --color-base0E: #ad2bee;
   --color-base0F: #e619c3;
 
+  --color-base0B-rgb: 41, 163, 41;
+  --color-base08-rgb: 230, 25, 60;
+
+  --color-green-rgb: var(--color-base0B-rgb);
+  --color-red-rgb: var(--color-base08-rgb);
+
   --color-ui-06: hsla(120, 8%, 14%, 1);
 
   --color-yellow: var(--color-base09);

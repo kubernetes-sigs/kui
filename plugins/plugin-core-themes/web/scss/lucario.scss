@@ -27,6 +27,11 @@ body[kui-theme='Lucario'] {
   --color-base0E: #ff73fd;
   --color-base0F: #e6b5ff;
 
+  --color-base08-rgb: 255, 108, 96;
+  --color-green-rgb: var(--color-base0B-rgb);
+  --color-base0B-rgb: 142, 228, 120;
+  --color-red-rgb: var(--color-base08-rgb);
+
   --color-ui-06: hsla(209, 25%, 22%, 1);
 
   --color-latency-0: #1b7837;
