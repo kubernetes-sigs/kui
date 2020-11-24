@@ -250,6 +250,12 @@ body[kui-theme-style='dark'] {
       margin-right: $repl-context-margin-right;
       position: relative;
       opacity: 0.75;
+
+      .kui--block-action {
+        /* This is e.g. the Edit icon that is displayed while editing a command line */
+        padding: 0;
+        color: var(--color-base0C);
+      }
     }
 
     .repl-input .repl-context:before {

@@ -23,6 +23,7 @@
 @import 'SequenceDiagram/mixins';
 
 $block-padding: 0.25em;
+$row-height: 1.5em;
 
 @mixin NoPadding {
   padding: 0;
@@ -121,7 +122,20 @@ $block-padding: 0.25em;
   }
 
   @include TableHeadCell {
-    background-color: transparent;
+    --table-head-background-color: transparent;
+    height: $row-height;
+    border-bottom: 1px solid var(--color-table-border1);
+  }
+
+  @include TableCell {
+    border: none;
+    height: $row-height;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  @include TableRow {
+    height: $row-height;
   }
 
   @include TopTabStripe {
