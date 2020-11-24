@@ -132,7 +132,7 @@ export default class Tab extends React.PureComponent<Props, State> {
 
     this.onThemeChange = ({ themeModel }: { themeModel: Theme }) => {
       this.setState({
-        topTabNames: themeModel.topTabNames || 'command'
+        topTabNames: themeModel.topTabNames || 'fixed'
       })
     }
 
