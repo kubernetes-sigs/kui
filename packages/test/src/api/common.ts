@@ -319,6 +319,24 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
       ctx.timeout(process.env.TIMEOUT || 60000)
       await start()
 
+      // add an isActive command; isFocused is not what we want
+      if (ctx.app && ctx.app.client) {
+        // ref: https://github.com/webdriverio/webdriverio/issues/1362#issuecomment-224042781
+        ctx.app.client.addCommand('isActive', selector => {
+          return ctx.app.client.execute(selector => {
+            const focused = document.activeElement
+
+            if (!focused || focused === document.body) {
+              return false
+            } else if (document.querySelector) {
+              return document.querySelector(selector) === focused
+            }
+
+            return false
+          }, selector)
+        })
+      }
+
       // see https://github.com/electron-userland/spectron/issues/763
       // and https://github.com/webdriverio/webdriverio/issues/6092
       // in short: with webdriverio v5+, the implicit timeout has to be 0

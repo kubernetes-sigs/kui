@@ -28,6 +28,6 @@
   },
   "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32",
   "dependencies": {
-    "@patternfly/react-core": "4.50.2"
+    "@patternfly/react-core": "4.79.2"
   }
 }
