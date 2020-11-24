@@ -167,6 +167,15 @@ $action-hover-delay: 210ms;
   }
 }
 
+/** Duration of block */
+@mixin BlockDuration {
+  @include BlockTimestamp {
+    .sub-text {
+      @content;
+    }
+  }
+}
+
 /** Block action buttons, e.g. remove block, re-run command, ... */
 @mixin BlockActions {
   .kui--block-actions-buttons {
