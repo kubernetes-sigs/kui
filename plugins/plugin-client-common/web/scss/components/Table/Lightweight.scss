@@ -106,6 +106,12 @@ $row-height: 1.5em;
     padding: $block-padding 0;
   }
 
+  @include WidthConstrained {
+    @include BlockDuration {
+      opacity: 1;
+    }
+  }
+
   @include BlockTimestamp {
     color: var(--color-base0A);
 

@@ -88,14 +88,12 @@ body[kui-theme='Light'] {
   --color-base07: #fff;
   --color-base08: #e71d32;
   --color-base09: #bf5b17;
-  --color-base0A: #fdd13a;
+  --color-base0A: hsl(46, 87%, 37%); /* #fdd13a; */
   --color-base0B: #1dbd5a;
   --color-base0C: #399cd6;
   --color-base0D: #0072c3;
   --color-base0E: #d12764;
   --color-base0F: #8a3ffc;
-
-  --color-yellow-text: hsl(46, 87%, 37%);
 
   --color-name: var(--color-base0D);
   --color-map-key: var(--color-base0D);
