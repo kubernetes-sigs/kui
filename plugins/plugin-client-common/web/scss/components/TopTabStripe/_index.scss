@@ -21,7 +21,7 @@
 @include TopTabStripe {
   --tab-shadow: inset 0 -3px 0 0;
 
-  height: 2.75em;
+  height: 2.75rem;
   background-color: var(--color-stripe-01);
   border-bottom: none;
   transition-property: background-color;
