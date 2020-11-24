@@ -33,7 +33,7 @@ describe('xterm focus', function(this: Common.ISuite) {
     return this.app.client.waitUntil(
       async () => {
         try {
-          return await this.app.client.$(selector).then(_ => _.isFocused())
+          return await this.app.client['isActive'](selector)
         } catch (err) {
           console.error(err)
           throw err
