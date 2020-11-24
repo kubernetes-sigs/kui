@@ -43,7 +43,19 @@ $grid-cell-hover-filter: saturate(2) brightness(1.25);
 }
 
 @mixin TableHeadCell {
-  .kui--header-cell {
+  th.kui--header-cell {
+    @content;
+  }
+}
+
+@mixin TableRow {
+  tr {
+    @content;
+  }
+}
+
+@mixin TableCell {
+  td {
     @content;
   }
 }
