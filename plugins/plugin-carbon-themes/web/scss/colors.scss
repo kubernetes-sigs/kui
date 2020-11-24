@@ -36,6 +36,12 @@
   --color-base0E: #fa75a6;
   --color-base0F: #d4bbff;
 
+  --color-base0B-rgb: 36, 161, 72;
+  --color-base08-rgb: 255, 131, 137;
+
+  --color-green-rgb: var(--color-base0B-rgb);
+  --color-red-rgb: var(--color-base08-rgb);
+
   --color-confirm-background: var(--color-sidecar-header);
   --color-confirm-foreground: var(--color-base06);
 
@@ -92,6 +98,12 @@
   --color-base0D: #054ada;
   --color-base0E: #d12765;
   --color-base0F: #8a3ffc;
+
+  --color-base0B-rgb: 25, 128, 56;
+  --color-base08-rgb: 218, 30, 40;
+
+  --color-green-rgb: var(--color-base0B-rgb);
+  --color-red-rgb: var(--color-base08-rgb);
 
   --color-red-sidecar: #fb4b53;
   --color-yellow-sidecar: #fdd13a;
