@@ -73,6 +73,10 @@ body[kui-theme-style] .kui--sidecar {
     background-color: transparent;
   }
 
+  .bx--tabs--scrollable .bx--tabs--scrollable__nav-link {
+    font-size: inherit;
+  }
+
   .bx--tabs--scrollable__nav-item--selected .bx--tabs--scrollable__nav-link {
     color: var(--color-text-01);
     font-weight: 600;
