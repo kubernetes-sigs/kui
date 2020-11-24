@@ -108,6 +108,11 @@ $row-height: 1.5em;
 
   @include BlockTimestamp {
     color: var(--color-base0A);
+
+    .sub-text {
+      color: inherit;
+      opacity: 0.85;
+    }
   }
 
   @include BlockInput {
