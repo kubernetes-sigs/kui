@@ -26,6 +26,11 @@ body[kui-theme='Solarized'] {
   --color-base0E: #6c71c4;
   --color-base0F: #d33682;
 
+  --color-base08-rgb: 220, 50, 47;
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base0B-rgb: 133, 153, 0;
+  --color-green-rgb: var(--color-base0B-rgb);
+
   --color-ui-06: hsla(194, 20%, 20%, 0.8);
 
   --color-sidecar-border: var(--color-ui-03);

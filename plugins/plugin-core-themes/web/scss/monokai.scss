@@ -24,4 +24,9 @@ body[kui-theme='Monokai'] {
   --color-base0D: #66d9ef;
   --color-base0E: #ae81ff;
   --color-base0F: #cc6633;
+
+  --color-base08-rgb: 249, 38, 114;
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base0B-rgb: 166, 226, 46;
+  --color-green-rgb: var(--color-base0B-rgb);
 }

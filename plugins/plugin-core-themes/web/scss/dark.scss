@@ -25,6 +25,12 @@ body[kui-theme='Dark'] {
   --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
   --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
+  --color-base0B-rgb: 61, 187, 97;
+  --color-base08-rgb: 251, 75, 83;
+
+  --color-green-rgb: var(--color-base0B-rgb);
+  --color-red-rgb: var(--color-base08-rgb);
+
   --color-table-border1: #616466;
   --color-table-border2: #4d5358;
   --color-table-border3: #565151;

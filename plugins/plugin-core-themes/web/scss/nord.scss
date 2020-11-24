@@ -32,6 +32,11 @@ body[kui-theme='Nord'] {
   --color-green: var(--color-base0E);
   --color-yellow: var(--color-base0D);
 
+  --color-base0E-rgb: 163, 190, 140;
+  --color-green-rgb: var(--color-base0E-rgb);
+  --color-base0B-rgb: 191, 97, 106;
+  --color-red-rgb: var(--color-base0B-rgb);
+
   --color-latency-0: #4575b4;
   --color-latency-1: #91bfdb;
   --color-latency-2: #e0f3f8;

@@ -299,7 +299,6 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
     }
   ]
 
-  console.error('data', data)
   return data
 }
 
