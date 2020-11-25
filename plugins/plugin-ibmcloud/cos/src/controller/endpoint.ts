@@ -47,7 +47,7 @@ async function doGetCurrentEndpoint({ REPL }: Pick<Arguments, 'REPL'>): Promise<
 /** Talk to `ibmcloud` to set the COS endpoint to the given `endpoint` */
 async function doSetEndpoint({ REPL }: Pick<Arguments, 'REPL'>, endpoint: string) {
   const config = await readConfig({ REPL })
-  config.endpointForKui = endpoint
+  config.endpointForKui = shorthands[endpoint] || endpoint
 
   await REPL.rexec<{ data: string }>(`fwrite ${encodeComponent(filepath())}`, {
     data: JSON.stringify(config, undefined, 2)
@@ -85,7 +85,7 @@ async function radiotable({ REPL }: Pick<Arguments, 'REPL'>): Promise<RadioTable
 export async function setEndpointIfPossible({ REPL }: Pick<Arguments, 'REPL'>): Promise<boolean> {
   const current = await doGetCurrentEndpoint({ REPL })
   if (current) {
-    await doSetEndpoint({ REPL }, current)
+    await doSetEndpoint({ REPL }, shorthands[current] || current)
     return true
   } else {
     return false
