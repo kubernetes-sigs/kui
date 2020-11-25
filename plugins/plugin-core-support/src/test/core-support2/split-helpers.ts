@@ -22,10 +22,9 @@ export async function doSplitViaButton(ctx: Common.ISuite, splitCount: number) {
   await ctx.app.client.$(Selectors.NEW_SPLIT_BUTTON).then(_ => _.click())
   await ReplExpect.splitCount(splitCount)(ctx.app)
 
-  await ctx.app.client.waitUntil(
-    () => ctx.app.client.$(Selectors.CURRENT_PROMPT_FOR_SPLIT(splitCount)).then(_ => _.isFocused()),
-    { timeout: CLI.waitTimeout }
-  )
+  await ctx.app.client.waitUntil(() => ctx.app.client['isActive'](Selectors.CURRENT_PROMPT_FOR_SPLIT(splitCount)), {
+    timeout: CLI.waitTimeout
+  })
 }
 
 /** Split the terminal in the current tab by using the split button */
