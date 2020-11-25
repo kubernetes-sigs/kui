@@ -312,7 +312,7 @@ export default class Input extends InputProvider {
 
   /** Owner wants us to focus on the current prompt */
   public doFocus() {
-    if (this.props.isFocused && this.state.prompt) {
+    if (this.props.isFocused && this.state.prompt && document.activeElement !== this.state.prompt) {
       this.state.prompt.focus()
     }
   }
