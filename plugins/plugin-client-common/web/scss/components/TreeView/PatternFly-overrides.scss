@@ -1,0 +1,46 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * NOTE: This file is overriding the bogus tree indentation introduced by patternfly 2012.14 (at least)
+ * See upstream bug: https://github.com/patternfly/patternfly-react/issues/5165
+ * See Kui isssue: https://github.com/IBM/kui/issues/6224
+ * We should delete this file once the upstream bug is fixed and merged
+ *
+ */
+
+// override padding-left of the tree root
+.pf-c-tree-view {
+  --pf-c-tree-view__node--PaddingLeft: var(--pf-global--spacer--sm);
+}
+
+// override padding-left of each nested tree node
+$pf-c-tree-view--MaxNesting: 10;
+.pf-c-tree-view__list-item {
+  $root: &;
+  $nested-item: &;
+
+  @for $i from 1 through $pf-c-tree-view--MaxNesting {
+    #{$nested-item} {
+      --pf-c-tree-view__node--PaddingLeft: calc(
+        var(--pf-c-tree-view__node--indent--base) + (var(--pf-c-tree-view__node--nested-indent--base) * calc(#{$i} - 1))
+      );
+      --pf-c-tree-view__list-item__list-item__node-toggle--Left: var(--pf-c-tree-view__node--PaddingLeft);
+    }
+
+    $nested-item: $nested-item + ' ' + $root;
+  }
+}
