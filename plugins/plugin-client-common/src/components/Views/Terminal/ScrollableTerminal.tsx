@@ -754,6 +754,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   public doFocusIfNeeded() {
     if (this.state.focusedIdx < 0) {
       this.doFocus(this.current)
+    } else {
+      this.doFocus(this.state.splits[this.state.focusedIdx])
     }
   }
 
