@@ -17,6 +17,8 @@
 import React from 'react'
 import { TreeView, TreeViewProps } from '@patternfly/react-core'
 
+import '../../../../web/scss/components/TreeView/PatternFly-overrides.scss'
+
 export default function KuiTreeView(props: TreeViewProps): React.ReactElement {
   return <TreeView {...props} />
 }
