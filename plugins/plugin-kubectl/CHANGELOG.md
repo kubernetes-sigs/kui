@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.1](https://github.com/IBM/kui/compare/v9.2.0...v9.2.1) (2020-11-25)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** unlabeled resources shouldn’t have badge for children's count ([057a1ab](https://github.com/IBM/kui/commit/057a1ab)), closes [#6243](https://github.com/IBM/kui/issues/6243)
+
 # [9.2.0](https://github.com/IBM/kui/compare/v4.5.0...v9.2.0) (2020-11-25)
 
 ### Bug Fixes

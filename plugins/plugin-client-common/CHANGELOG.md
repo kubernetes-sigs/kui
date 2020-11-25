@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.1](https://github.com/IBM/kui/compare/v9.2.0...v9.2.1) (2020-11-25)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** in lightweight ui themes, markdown content has odd font spacing ([1b9e45a](https://github.com/IBM/kui/commit/1b9e45a)), closes [#6249](https://github.com/IBM/kui/issues/6249)
+- **plugins/plugin-client-common:** input element is not distinct enough in lightweight ui themes with splits ([a24e0bd](https://github.com/IBM/kui/commit/a24e0bd)), closes [#6247](https://github.com/IBM/kui/issues/6247)
+- Tree view badges can have low contrast ([ac23a51](https://github.com/IBM/kui/commit/ac23a51)), closes [#6245](https://github.com/IBM/kui/issues/6245)
+- **plugins/plugin-kubectl:** unlabeled resources shouldn’t have badge for children's count ([057a1ab](https://github.com/IBM/kui/commit/057a1ab)), closes [#6243](https://github.com/IBM/kui/issues/6243)
+- PatternFly 2012.14 breaks the indentation of TreeView ([37cba50](https://github.com/IBM/kui/commit/37cba50)), closes [#6224](https://github.com/IBM/kui/issues/6224)
+- **plugins/plugin-client-common:** prompt focus may not be restored when switching tabs ([87bf0bf](https://github.com/IBM/kui/commit/87bf0bf)), closes [#6239](https://github.com/IBM/kui/issues/6239)
+
 # [9.2.0](https://github.com/IBM/kui/compare/v4.5.0...v9.2.0) (2020-11-25)
 
 ### Bug Fixes
