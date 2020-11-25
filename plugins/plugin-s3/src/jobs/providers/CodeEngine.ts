@@ -79,7 +79,7 @@ export default class CodeEngine implements JobProvider<JobName> {
     }) */
 
     const jobrunName = `kui-jobrun-${v4()}`
-    const cmdline = `ibmcloud --check-version=false ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
+    const cmdline = `ibmcloud ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
     await this.repl.qexec<string>(cmdline).catch(err => {
       console.error(err)
       throw new Error(err.message)
