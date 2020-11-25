@@ -130,11 +130,11 @@
   --pf-global--FontWeight--bold: 600;
   --pf-global--FontWeight--redhatfont--bold: 700;
 
-  --pf-global--link--Color: #06c;
+  --pf-global--link--Color: var(--color-brand-01);
   --pf-global--link--Color--hover: #004080;
-  --pf-global--link--Color--light: #73bcf7;
+  --pf-global--link--Color--light: var(--color-brand-01);
   --pf-global--link--Color--light--hover: #2b9af3;
-  --pf-global--link--Color--dark: #06c;
+  --pf-global--link--Color--dark: var(--color-brand-01);
   --pf-global--link--Color--dark--hover: #004080;
 
   --pf-global--BorderColor--100: #d2d2d2;
@@ -203,4 +203,6 @@
   --pf-global--link--Color: var(--pf-global--link--Color--light);
   --pf-global--link--Color--hover: var(--pf-global--link--Color--light);
   --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--dark-100);
+  --pf-global--BackgroundColor--200: var(--pf-global--BackgroundColor--dark-200);
+  --pf-global--BackgroundColor--300: var(--pf-global--BackgroundColor--dark-300);
 }
