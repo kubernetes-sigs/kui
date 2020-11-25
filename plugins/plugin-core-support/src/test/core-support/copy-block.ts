@@ -47,11 +47,21 @@ describe('block copy paste command', function(this: Common.ISuite) {
     return N
   }
 
+  /**
+   * @param N the block index to cut
+   *
+   */
   const cut = async (N: number) => {
     await focusBlock(N)
     await this.app.client.execute(() => document.execCommand('cut'))
   }
 
+  /**
+   * @param N the block index in which we expect to find the pasted block
+   * @param idx index into the `outputs[]` variable; i.e. a pointer to the expected string
+   * @param splitIndex the split index in which we expect to find the pasted block
+   *
+   */
   const pasteAndVerify = async (N: number, idx = 0, splitIndex = 1) => {
     await this.app.client.execute(() => document.execCommand('paste'))
     await ReplExpect.okWithString(outputs[idx])({ app: this.app, count: N, splitIndex })
@@ -112,7 +122,7 @@ describe('block copy paste command', function(this: Common.ISuite) {
     }
   })
 
-  it('should create a new split via button click', async () => {
+  it('should create a new split via button click and paste the block in that new split', async () => {
     try {
       const splitIndex = 2
       await doSplitViaButton(this, splitIndex)
