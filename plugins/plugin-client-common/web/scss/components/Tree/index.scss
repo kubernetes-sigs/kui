@@ -33,7 +33,7 @@
     }
 
     @include TeeViewItem {
-      background-color: var(--color-sidecar-header);
+      background-color: transparent;
       font-size: inherit;
     }
   }

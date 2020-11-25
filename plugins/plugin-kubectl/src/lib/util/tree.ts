@@ -221,7 +221,7 @@ async function categorizeResources(
         let commonPrefix = 'all'
         commonPrefix = joinKey(['all', sortedLabels.slice(0, idx + 1).join(KEYSEPARATER)])
 
-        const isIntermediate = key === 'kind' || key === 'tiers' || key === 'apps' || key === 'unlabeled'
+        const isIntermediate = key === 'kind' || key === 'tiers' || key === 'apps'
         append(buckets[key], strings(value), commonPrefix, isIntermediate)
       })
     })
