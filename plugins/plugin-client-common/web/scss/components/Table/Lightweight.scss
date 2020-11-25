@@ -110,6 +110,17 @@ $row-height: 1.5em;
     @include BlockDuration {
       opacity: 1;
     }
+
+    @include FinishedBlock {
+      @include Input {
+        &:before {
+          content: '$';
+          color: var(--color-base0A);
+          font-size: 0.875rem;
+          margin-right: 0.375rem;
+        }
+      }
+    }
   }
 
   @include BlockTimestamp {
