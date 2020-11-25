@@ -674,21 +674,21 @@ body.oops-total-catastrophe #restart-needed-warning {
   flex: 1;
 }
 .page-content hr {
-  margin: 2rem 0;
+  margin: 2.25em 0;
   border: 0.5px solid var(--color-content-divider);
 }
 .page-content img {
   max-width: 100%;
 }
 .page-content blockquote {
-  border-left: 0.25rem solid var(--color-table-border1);
-  padding: 0 1rem;
-  margin-bottom: 0.375rem;
+  border-left: 0.25em solid var(--color-table-border1);
+  padding: 0 1em;
+  margin-bottom: 0.375em;
 
   &,
   p,
   code {
-    font-size: 0.75rem;
+    font-size: calc(13em / 16);
   }
 
   &:empty {
@@ -700,9 +700,9 @@ body.oops-total-catastrophe #restart-needed-warning {
   padding-left: 20px;
 }
 .page-content p {
-  font-size: 0.875rem;
+  font-size: inherit;
   font-weight: 400;
-  line-height: 1.25rem;
+  line-height: 1.25em;
 }
 .page-content li > p {
   padding: 0;
@@ -727,8 +727,8 @@ body.oops-total-catastrophe #restart-needed-warning {
 
   /* mimic github styling here */
   background-color: rgba(27, 31, 35, 0.05);
-  padding: 0.2rem 0.4rem;
-  font-size: 0.75rem;
+  padding: 0.2em 0.4em;
+  font-size: calc(13em / 16);
   border-radius: 6px;
 }
 body[kui-theme-style="dark"] {
@@ -748,8 +748,8 @@ body[kui-theme-style="dark"] {
 .clickable:not(:hover) .page-content p > code {
   color: var(--color-base0F);
 }
-$kui--page-content-h4-padding: 0.5rem;
-$kui--page-content-paragraph-padding: 0.375rem;
+$kui--page-content-h4-padding: 0.5em;
+$kui--page-content-paragraph-padding: 0.375em;
 .page-content p,
 .page-content .paragraph {
   padding: $kui--page-content-paragraph-padding 0;
@@ -758,8 +758,8 @@ $kui--page-content-paragraph-padding: 0.375rem;
 .page-content h1 {
   &,
   & a {
-    margin-bottom: 1rem;
-    font-size: 2.375rem;
+    margin-bottom: 1em;
+    font-size: 2.75em;
     letter-spacing: 0;
     line-height: 1.25;
     padding: 0;
@@ -770,7 +770,7 @@ $kui--page-content-paragraph-padding: 0.375rem;
 }
 .page-content h2,
 .page-h2 {
-  font-size: 1.75rem;
+  font-size: 2em;
   font-weight: 300;
   margin: 1em 0;
   position: relative;
@@ -797,11 +797,11 @@ $kui--page-content-paragraph-padding: 0.375rem;
 .page-content h3,
 .page-h3 {
   color: var(--color-text-01);
-  font-size: 1rem;
+  font-size: 1.375em;
   font-weight: 600;
   letter-spacing: 0;
-  padding: 1em 0 0.5rem;
-  line-height: 1.625rem;
+  padding: 1em 0 0.5em;
+  line-height: 1.625em;
 }
 .page-content h4 {
   color: var(--color-brand-01);
@@ -811,17 +811,18 @@ $kui--page-content-paragraph-padding: 0.375rem;
   line-height: unset;
 
   &:not([data-is-href]) + p {
-    padding-top: calc(0.5rem + #{$kui--page-content-paragraph-padding});
+    padding-top: calc(0.5em + #{$kui--page-content-paragraph-padding});
   }
 }
 .page-content h5 {
-  font-size: 1.125rem;
-  line-height: 2rem;
+  font-size: 1.25em;
+  line-height: 2em;
 }
 .page-content ol,
 .page-content ul {
-  margin-left: 2rem;
-  line-height: 1.125rem;
+  font-size: inherit;
+  margin-left: 2em;
+  line-height: 1.125em;
   letter-spacing: 0.16px;
 }
 .page-content li {
@@ -829,25 +830,13 @@ $kui--page-content-paragraph-padding: 0.375rem;
   list-style-type: none;
   position: relative;
   &:not(:first-child) {
-    margin-top: 0.5rem;
+    margin-top: 0.5em;
   }
 }
 .page-content li:before {
   content: "\002013";
-  left: -1rem;
+  left: -1em;
   position: absolute;
-}
-
-.icon-container,
-.icon-container > i {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.icon-container .deemphasize {
-  white-space: nowrap;
-  font-size: 0.5rem;
-  margin-top: 0.375rem;
 }
 
 body[kui-theme-style] {
