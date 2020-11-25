@@ -130,6 +130,8 @@ export const switchTo = async (theme: string, saveNotNeeded = false): Promise<vo
   document.body.setAttribute('kui-theme-key', themeKey)
   document.body.setAttribute('kui-theme-style', themeModel.style) // dark versus light
 
+  document.body.classList.add(themeModel.style === 'dark' ? 'pf-t-dark' : 'pf-t-light')
+
   if (themeModel.attrs) {
     themeModel.attrs.forEach(attr => document.body.classList.add(attr))
   }
