@@ -30,6 +30,7 @@ interface Props {
 }
 
 interface State {
+  tab: KuiTab
   model: TabModel
   promptPlaceholder: string
 }
@@ -57,12 +58,14 @@ export default class Popup extends React.PureComponent<Props, State> {
     })
 
     this.state = {
+      tab: undefined,
       model: tabModel,
       promptPlaceholder: ''
     }
   }
 
   private onTabReady(tab: KuiTab) {
+    this.setState({ tab })
     tab.REPL.pexec(this.props.commandLine.join(' '), { tab })
   }
 
@@ -78,7 +81,13 @@ export default class Popup extends React.PureComponent<Props, State> {
         ></TabContent>
         <StatusStripe>
           <ContextWidgets className="kui--input-stripe-in-status-stripe">
-            <InputStripe promptPlaceholder={this.state.promptPlaceholder} uuid={this.state.model.uuid} />
+            {this.state.tab && (
+              <InputStripe
+                promptPlaceholder={this.state.promptPlaceholder}
+                uuid={this.state.model.uuid}
+                tab={this.state.tab}
+              />
+            )}
           </ContextWidgets>
           {this.props.children}
         </StatusStripe>

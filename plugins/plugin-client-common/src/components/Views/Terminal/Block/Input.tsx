@@ -413,21 +413,27 @@ export default class Input extends InputProvider {
 
   private readonly _onRef = this.onRef.bind(this)
 
+  private willFocusBlock(evt: React.SyntheticEvent<HTMLInputElement>) {
+    if (this.props.willFocusBlock) {
+      this.props.willFocusBlock(evt)
+    }
+  }
+
   /** This is the onFocus property of the active prompt */
   private readonly _onFocus = (evt: React.FocusEvent<HTMLInputElement>) => {
     this.props.onInputFocus && this.props.onInputFocus(evt)
-    this.props.willFocusBlock(evt)
+    this.willFocusBlock(evt)
   }
 
   /** This is the onClick property of the prompt for Active blocks */
   private readonly _onClickActive = (evt: React.MouseEvent<HTMLInputElement>) => {
     this.props.onInputClick && this.props.onInputClick(evt)
-    this.props.willFocusBlock(evt)
+    this.willFocusBlock(evt)
   }
 
   /** This is the onClick property of the prompt for Finished blocks */
   private readonly _onClickFinished = whenNothingIsSelected((evt: React.MouseEvent<HTMLInputElement>) => {
-    this.props.willFocusBlock(evt)
+    this.willFocusBlock(evt)
     this.setState(curState => {
       if (!curState.isReEdit) {
         return {
