@@ -36,6 +36,8 @@ interface State {
 }
 
 export default class Popup extends React.PureComponent<Props, State> {
+  private _inputStripeRef = React.createRef<InputStripe>()
+
   public constructor(props: Props) {
     super(props)
 
@@ -55,6 +57,7 @@ export default class Popup extends React.PureComponent<Props, State> {
       }
 
       this.setState({ promptPlaceholder: command })
+      this.doFocusInput()
     })
 
     this.state = {
@@ -67,6 +70,13 @@ export default class Popup extends React.PureComponent<Props, State> {
   private onTabReady(tab: KuiTab) {
     this.setState({ tab })
     tab.REPL.pexec(this.props.commandLine.join(' '), { tab })
+    this.doFocusInput()
+  }
+
+  private doFocusInput() {
+    if (this._inputStripeRef.current) {
+      setTimeout(() => this._inputStripeRef.current.doFocus())
+    }
   }
 
   public render() {
@@ -83,6 +93,7 @@ export default class Popup extends React.PureComponent<Props, State> {
           <ContextWidgets className="kui--input-stripe-in-status-stripe">
             {this.state.tab && (
               <InputStripe
+                ref={this._inputStripeRef}
                 promptPlaceholder={this.state.promptPlaceholder}
                 uuid={this.state.model.uuid}
                 tab={this.state.tab}
