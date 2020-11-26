@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.2](https://github.com/IBM/kui/compare/v9.2.1...v9.2.2) (2020-11-26)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** the Deploy Applications notebook has some typos ([5cde0bd](https://github.com/IBM/kui/commit/5cde0bd)), closes [#6256](https://github.com/IBM/kui/issues/6256)
+
 ## [9.2.1](https://github.com/IBM/kui/compare/v9.2.0...v9.2.1) (2020-11-25)
 
 ### Bug Fixes

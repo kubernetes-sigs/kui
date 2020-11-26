@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.2](https://github.com/kui-shell/plugin-kubeui/compare/v9.2.1...v9.2.2) (2020-11-26)
+
+### Bug Fixes
+
+- **plugins/plugin-ibmcloud:** ibmcloud cos bind fails to resolve endpoint aliases ([e7d7ea9](https://github.com/kui-shell/plugin-kubeui/commit/e7d7ea9)), closes [#6253](https://github.com/kui-shell/plugin-kubeui/issues/6253)
+
 ## [9.2.1](https://github.com/kui-shell/plugin-kubeui/compare/v9.2.0...v9.2.1) (2020-11-25)
 
 **Note:** Version bump only for package @kui-shell/plugin-ibmcloud
