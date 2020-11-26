@@ -42,6 +42,7 @@ interface App extends EventEmitter {
   quit(): void
   exit(exitCode?: number): void
   requestSingleInstanceLock(): boolean
+  allowRendererProcessReuse: boolean
 }
 
 /**
@@ -528,7 +529,9 @@ export async function initElectron(
     debug('loading electron')
     const Electron = await import('electron')
     app = Electron.app
-    Electron.app.allowRendererProcessReuse = false
+    if (app) {
+      app.allowRendererProcessReuse = false
+    }
 
     if (!app) {
       // then we're still in pure headless mode; we'll need to fork ourselves to spawn electron
