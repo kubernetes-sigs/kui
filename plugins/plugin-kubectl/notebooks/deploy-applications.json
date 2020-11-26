@@ -8,23 +8,23 @@
   "spec": {
     "splits": [
       {
-        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Example: Deploying PHP Guestbook Application with Redis\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Docker. \n"
+                "children": "# Deploying PHP Guestbook Application with Redis\n\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Kui. You will learn how to **explore the structure** of this application. Once you are confident in your understanding of the implications of its deployment, this notebook can help you with taking that next step.\n\nThe guestbook application uses **Redis** to store its data. It writes its data to a Redis **master** instance and reads data from multiple Redis **slave** instances.\n\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\n\nThe guestbook application has a **web frontend** serving the HTTP requests written in PHP. It is configured to connect to the redis-master `Service` for write requests and the redis-slave service for Read requests.\n\n\n\n"
               }
             },
             "historyIdx": 250,
             "cwd": "~/Workspace8/kui",
-            "command": "# # Example: Deploying PHP Guestbook Application with Redis\\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Docker. \\n",
+            "command": "# # Deploying PHP Guestbook Application with Redis\\n\\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Kui. You will learn how to **explore the structure** of this application. Once you are confident in your understanding of the implications of its deployment, this notebook can help you with taking that next step.\\n\\nThe guestbook application uses **Redis** to store its data. It writes its data to a Redis **master** instance and reads data from multiple Redis **slave** instances.\\n\\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\\n\\nThe guestbook application has a **web frontend** serving the HTTP requests written in PHP. It is configured to connect to the redis-master `Service` for write requests and the redis-slave service for Read requests.\\n\\n\\n\\n",
             "startEvent": {
               "route": "/#",
               "startTime": 1606140829023,
-              "command": "# # Example: Deploying PHP Guestbook Application with Redis\\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Docker. \\n",
+              "command": "# # Deploying PHP Guestbook Application with Redis\\n\\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Kui. You will learn how to **explore the structure** of this application. Once you are confident in your understanding of the implications of its deployment, this notebook can help you with taking that next step.\\n\\nThe guestbook application uses **Redis** to store its data. It writes its data to a Redis **master** instance and reads data from multiple Redis **slave** instances.\\n\\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\\n\\nThe guestbook application has a **web frontend** serving the HTTP requests written in PHP. It is configured to connect to the redis-master `Service` for write requests and the redis-slave service for Read requests.\\n\\n\\n\\n",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -60,7 +60,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1606140829056,
-              "command": "# # Example: Deploying PHP Guestbook Application with Redis\\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Docker. \\n",
+              "command": "# # Deploying PHP Guestbook Application with Redis\\n\\nThis tutorial shows you how to build and deploy a simple, multi-tier web application using Kubernetes and Kui. You will learn how to **explore the structure** of this application. Once you are confident in your understanding of the implications of its deployment, this notebook can help you with taking that next step.\\n\\nThe guestbook application uses **Redis** to store its data. It writes its data to a Redis **master** instance and reads data from multiple Redis **slave** instances.\\n\\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\\n\\nThe guestbook application has a **web frontend** serving the HTTP requests written in PHP. It is configured to connect to the redis-master `Service` for write requests and the redis-slave service for Read requests.\\n\\n\\n\\n",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -100,101 +100,16 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Objectives\nIn this notebook, you will:\n\n### Start up the Redis Master \nThe guestbook application uses Redis to store its data. It writes its data to a Redis master instance and reads data from multiple Redis slave instances.\n\n### Start up the Redis Slaves\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\n\n\n### Set up and Expose the Guestbook Frontend\nThe guestbook application has a web frontend serving the HTTP requests written in PHP. It is configured to connect to the redis-master Service for write requests and the redis-slave service for Read requests.\n\n\n\n"
-              }
-            },
-            "historyIdx": 251,
-            "cwd": "~/Workspace8/kui",
-            "command": "# # Objectives\\nIn this notebook, you will:\\n\\n### Start up the Redis Master \\nThe guestbook application uses Redis to store its data. It writes its data to a Redis master instance and reads data from multiple Redis slave instances.\\n\\n### Start up the Redis Slaves\\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\\n\\n\\n### Set up and Expose the Guestbook Frontend\\nThe guestbook application has a web frontend serving the HTTP requests written in PHP. It is configured to connect to the redis-master Service for write requests and the redis-slave service for Read requests.\\n\\n\\n\\n",
-            "startEvent": {
-              "route": "/#",
-              "startTime": 1606174197598,
-              "command": "# # Objectives\\nIn this notebook, you will:\\n\\n### Start up the Redis Master \\nThe guestbook application uses Redis to store its data. It writes its data to a Redis master instance and reads data from multiple Redis slave instances.\\n\\n### Start up the Redis Slaves\\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\\n\\n\\n### Set up and Expose the Guestbook Frontend\\nThe guestbook application has a web frontend serving the HTTP requests written in PHP. It is configured to connect to the redis-master Service for write requests and the redis-slave service for Read requests.\\n\\n\\n\\n",
-              "evaluatorOptions": {
-                "usage": {
-                  "command": "commentary",
-                  "strict": "commentary",
-                  "example": "commentary -f [<markdown file path>]",
-                  "docs": "Commentary",
-                  "optional": [
-                    {
-                      "name": "--title",
-                      "alias": "-t",
-                      "docs": "Title for the commentary"
-                    },
-                    {
-                      "name": "--file",
-                      "alias": "-f",
-                      "docs": "File that contains the texts"
-                    }
-                  ]
-                },
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execType": 0,
-              "execUUID": "8ff9a436-9742-4ba8-ba34-8292766c22a4",
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "24be82cd-775e-4993-9230-f4996d83ab1a",
-                "history": 251,
-                "env": {}
-              }
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1606174197611,
-              "command": "# # Objectives\\nIn this notebook, you will:\\n\\n### Start up the Redis Master \\nThe guestbook application uses Redis to store its data. It writes its data to a Redis master instance and reads data from multiple Redis slave instances.\\n\\n### Start up the Redis Slaves\\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\\n\\n\\n### Set up and Expose the Guestbook Frontend\\nThe guestbook application has a web frontend serving the HTTP requests written in PHP. It is configured to connect to the redis-master Service for write requests and the redis-slave service for Read requests.\\n\\n\\n\\n",
-              "argvNoOptions": ["#"],
-              "parsedOptions": {
-                "_": ["#"]
-              },
-              "execUUID": "8ff9a436-9742-4ba8-ba34-8292766c22a4",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "24be82cd-775e-4993-9230-f4996d83ab1a",
-                "history": 251,
-                "env": {}
-              },
-              "response": {
-                "apiVersion": "kui-shell/v1",
-                "kind": "CommentaryResponse",
-                "props": {
-                  "children": "# Objectives\nIn this notebook, you will:\n\n### Start up the Redis Master \nThe guestbook application uses Redis to store its data. It writes its data to a Redis master instance and reads data from multiple Redis slave instances.\n\n### Start up the Redis Slaves\nAlthough the Redis master is a single pod, you can make it highly available to meet traffic demands by adding replica Redis slaves.\n\n\n### Set up and Expose the Guestbook Frontend\nThe guestbook application has a web frontend serving the HTTP requests written in PHP. It is configured to connect to the redis-master Service for write requests and the redis-slave service for Read requests.\n\n\n\n"
-                }
-              },
-              "responseType": "ScalarResponse",
-              "historyIdx": 251
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "8ff9a436-9742-4ba8-ba34-8292766c22a4",
-            "startTime": 1606174197598,
-            "outputOnly": true,
-            "state": "valid-response"
-          },
-          {
-            "response": {
-              "apiVersion": "kui-shell/v1",
-              "kind": "CommentaryResponse",
-              "props": {
-                "children": "First, let's create a namespace to keep our work isolated:"
+                "children": "#### First, let's create a namespace to keep our work isolated:"
               }
             },
             "historyIdx": 250,
             "cwd": "~/Workspace8/kui",
-            "command": "# First, let's create a namespace to keep our work isolated:",
+            "command": "# #### First, let's create a namespace to keep our work isolated:",
             "startEvent": {
               "route": "/#",
               "startTime": 1606172990349,
-              "command": "# First, let's create a namespace to keep our work isolated:",
+              "command": "# #### First, let's create a namespace to keep our work isolated:",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -230,7 +145,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1606172990586,
-              "command": "# First, let's create a namespace to keep our work isolated:",
+              "command": "# #### First, let's create a namespace to keep our work isolated:",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -766,23 +681,23 @@
         ]
       },
       {
-        "uuid": "1_8205f6b8-87bf-5679-ac83-e3519c17d89c",
+        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# About the Application:\n\n### This application consists of the following components:\n\n- A single-instance Redis master to store guestbook entries\n- Multiple replicated Redis instances to serve reads\n- Multiple web frontend instances\n\n### By executing the following command, you can\n- view the source code in the sources tab\n- preview the deployment in the dry run tab\n- apply the deployement by clicking the `Apply` button"
+                "children": "## Learning the Application's Structure\n\nThis application consists of the following components:\n\n- A single-instance Redis master to store guestbook entries\n- Multiple replicated Redis instances to serve reads\n- Multiple web frontend instances\n\nBy executing `kubectl get -f <dir>`, where `<dir>` is the directory that contains the application's resource definitions, you can view a visual summary of this application structure. This summary lets you choose between  **viewing the source** code in the Sources tab, and **previewing the deployment** in the Dry Run tab.\n\n#### Here, we make sure to indicate that we want to target this application to the namespace we created on the left."
               }
             },
             "historyIdx": 26,
             "cwd": "~/Workspace8/kui",
-            "command": "# # About the Application:\\n\\n### This application consists of the following components:\\n\\n- A single-instance Redis master to store guestbook entries\\n- Multiple replicated Redis instances to serve reads\\n- Multiple web frontend instances\\n\\n### By executing the following command, you can\\n- view the source code in the sources tab\\n- preview the deployment in the dry run tab\\n- apply the deployement by clicking the `Apply` button",
+            "command": "# ## Learning the Application's Structure\\n\\nThis application consists of the following components:\\n\\n- A single-instance Redis master to store guestbook entries\\n- Multiple replicated Redis instances to serve reads\\n- Multiple web frontend instances\\n\\nBy executing `kubectl get -f <dir>`, where `<dir>` is the directory that contains the application's resource definitions, you can view a visual summary of this application structure. This summary lets you choose between  **viewing the source** code in the Sources tab, and **previewing the deployment** in the Dry Run tab.\\n\\n#### Here, we make sure to indicate that we want to target this application to the namespace we created on the left.",
             "startEvent": {
               "route": "/#",
               "startTime": 1606173914327,
-              "command": "# # About the Application:\\n\\n### This application consists of the following components:\\n\\n- A single-instance Redis master to store guestbook entries\\n- Multiple replicated Redis instances to serve reads\\n- Multiple web frontend instances\\n\\n### By executing the following command, you can\\n- view the source code in the sources tab\\n- preview the deployment in the dry run tab\\n- apply the deployement by clicking the `Apply` button",
+              "command": "# ## Learning the Application's Structure\\n\\nThis application consists of the following components:\\n\\n- A single-instance Redis master to store guestbook entries\\n- Multiple replicated Redis instances to serve reads\\n- Multiple web frontend instances\\n\\nBy executing `kubectl get -f <dir>`, where `<dir>` is the directory that contains the application's resource definitions, you can view a visual summary of this application structure. This summary lets you choose between  **viewing the source** code in the Sources tab, and **previewing the deployment** in the Dry Run tab.\\n\\n#### Here, we make sure to indicate that we want to target this application to the namespace we created on the left.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -818,7 +733,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1606173914337,
-              "command": "# # About the Application:\\n\\n### This application consists of the following components:\\n\\n- A single-instance Redis master to store guestbook entries\\n- Multiple replicated Redis instances to serve reads\\n- Multiple web frontend instances\\n\\n### By executing the following command, you can\\n- view the source code in the sources tab\\n- preview the deployment in the dry run tab\\n- apply the deployement by clicking the `Apply` button",
+              "command": "# ## Learning the Application's Structure\\n\\nThis application consists of the following components:\\n\\n- A single-instance Redis master to store guestbook entries\\n- Multiple replicated Redis instances to serve reads\\n- Multiple web frontend instances\\n\\nBy executing `kubectl get -f <dir>`, where `<dir>` is the directory that contains the application's resource definitions, you can view a visual summary of this application structure. This summary lets you choose between  **viewing the source** code in the Sources tab, and **previewing the deployment** in the Dry Run tab.\\n\\n#### Here, we make sure to indicate that we want to target this application to the namespace we created on the left.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -2041,16 +1956,16 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Deploy the Application\n\nClick the `Apply Button` in the view above to apply this application."
+                "children": "## Deploying the Application\n\nBy clicking the `Apply` button in the above view, you can initiate the deployment of this application to your cluster. When you click the button, Kui will execute the following command for you:"
               }
             },
             "historyIdx": 251,
             "cwd": "~/Workspace8/kui",
-            "command": "# # Deploy the Application\\n\\nClick the `Apply Button` in the view above to apply this application.",
+            "command": "# ## Deploying the Application\\n\\nBy clicking the `Apply` button in the above view, you can initiate the deployment of this application to your cluster. When you click the button, Kui will execute the following command for you:",
             "startEvent": {
               "route": "/#",
               "startTime": 1606173596668,
-              "command": "# # Deploy the Application\\n\\nClick the `Apply Button` in the view above to apply this application.",
+              "command": "# ## Deploying the Application\\n\\nBy clicking the `Apply` button in the above view, you can initiate the deployment of this application to your cluster. When you click the button, Kui will execute the following command for you:",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -2086,7 +2001,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1606173596701,
-              "command": "# # Deploy the Application\\n\\nClick the `Apply Button` in the view above to apply this application.",
+              "command": "# ## Deploying the Application\\n\\nBy clicking the `Apply` button in the above view, you can initiate the deployment of this application to your cluster. When you click the button, Kui will execute the following command for you:",
               "argvNoOptions": ["#", "  #Deploy the application"],
               "parsedOptions": {
                 "_": ["#", "  #Deploy the application"]
@@ -2214,16 +2129,16 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# Inspect the Deployement\n\nBy re-executing the `get -f` command, you can inspect the deployment result with events recorded."
+                "children": "## Inspecting the Running Application\n\nBy re-executing the `get -f` command, you can inspect the status of the running deployment, along with a live stream of events pertaining to the application."
               }
             },
             "historyIdx": 253,
             "cwd": "~/Workspace8/kui",
-            "command": "# # Inspect the Deployement\\n\\nBy re-executing the `get -f` command, you can inspect the deployment result with events recorded.",
+            "command": "# ## Inspecting the Running Application\\n\\nBy re-executing the `get -f` command, you can inspect the status of the running deployment, along with a live stream of events pertaining to the application.",
             "startEvent": {
               "route": "/#",
               "startTime": 1606173680149,
-              "command": "# # Inspect the Deployement\\n\\nBy re-executing the `get -f` command, you can inspect the deployment result with events recorded.",
+              "command": "# ## Inspecting the Running Application\\n\\nBy re-executing the `get -f` command, you can inspect the status of the running deployment, along with a live stream of events pertaining to the application.",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -2259,7 +2174,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1606173680162,
-              "command": "# # Inspect the Deployement\\n\\nBy re-executing the `get -f` command, you can inspect the deployment result with events recorded.",
+              "command": "# ## Inspecting the Running Application\\n\\nBy re-executing the `get -f` command, you can inspect the status of the running deployment, along with a live stream of events pertaining to the application.",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
