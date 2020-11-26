@@ -156,7 +156,8 @@ if (process.env.NEEDS_MINIO) {
       ls(README, bucketName, '*') // ls /s3/minio/bucketName/*, expect README
       ls(README, bucketName, 'R*') // ls /s3/minio/bucketName/R*, expect README
       ls(README, bucketName, '*EADME.md') // ls /s3/minio/bucketName/*EADME.md, expect README
-      ls(README, bucketName, '*EADME*') // ls /s3/minio/bucketName/*EADME*, expect README
+      ls(README, bucketName, 'README{,}.md') // ls /s3/minio/bucketName/README{,}.md, expect README <-- brace expansion
+      ls(README, bucketName, 'README{,}.m*') // ls /s3/minio/bucketName/README{,}.m*, expect README <-- brace expansion
       copyToS3(bucketName, README2)
       ls(README2, bucketName) // ls /s3/minio/bucketName, expect README2
       copyFromS3(bucketName, README2.replace(/.md$/, '*'), tmpdir()) // wildcard in source

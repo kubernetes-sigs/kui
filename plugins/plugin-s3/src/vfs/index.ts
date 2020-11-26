@@ -100,7 +100,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Enumerate matching objects */
   private async listObjects(filepath: string, dashD = false): Promise<DirEntry[]> {
-    const [, bucketName, bucketNameSlash, prefix, wildcardSuffix] = filepath.match(/([^/*]+)(\/?)([^*]*)(.*)/)
+    const [, bucketName, bucketNameSlash, prefix, wildcardSuffix] = filepath.match(/([^/*{]+)(\/?)([^*{]*)(.*)/)
 
     const pattern =
       prefix.length === 0 && (wildcardSuffix.length === 0 || wildcardSuffix === '*')
@@ -146,7 +146,7 @@ class S3VFSResponder extends S3VFS implements VFS {
         })
 
         objectStream.on('data', ({ name, size, lastModified }) => {
-          if ((!pattern && name === prefix) || (pattern && micromatch.isMatch(name, pattern))) {
+          if ((!pattern && name === prefix) || (pattern && micromatch.isMatch(name, prefix + pattern))) {
             const path = join(this.mountPath, bucketName, name)
 
             objects.push({
