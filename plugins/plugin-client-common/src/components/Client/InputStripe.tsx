@@ -39,6 +39,8 @@ interface State {
 }
 
 export default class InputStripe extends React.PureComponent<Props, State> {
+  private _blockRef = React.createRef<Block>()
+
   public constructor(props: Props) {
     super(props)
 
@@ -55,17 +57,25 @@ export default class InputStripe extends React.PureComponent<Props, State> {
     this.setState(curState => ({ idx: curState.idx + 1, model: Active() }))
   }
 
+  public doFocus() {
+    if (this._blockRef.current) {
+      this._blockRef.current.doFocus()
+    }
+  }
+
   public render() {
     return (
       <KuiContext.Provider value={{ prompt: this.props.prompt || '\u276f' }}>
         <div className="kui--input-stripe repl">
           <Block
+            ref={this._blockRef}
             idx={this.state.idx}
             uuid={this.props.uuid}
             tab={this.props.tab}
             model={this.state.model}
             noOutput
             noPromptContext
+            isFocused
             promptPlaceholder={this.props.promptPlaceholder}
           >
             {this.props.children}
