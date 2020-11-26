@@ -55,7 +55,8 @@ export default function renderMain(props: KuiProps) {
       {...props}
       toplevel={!inBrowser() && <Search />}
       commandLine={
-        props.commandLine || [
+        props.commandLine ||
+        (!isPopup() && [
           'tab',
           'new',
           '-s',
@@ -72,7 +73,7 @@ export default function renderMain(props: KuiProps) {
           `kuiconfig not set ${welcomeBit}`,
           '--onClose',
           `kuiconfig set ${welcomeBit}`
-        ]
+        ])
       }
     >
       <ContextWidgets>
