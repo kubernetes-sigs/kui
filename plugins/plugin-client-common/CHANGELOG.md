@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.3](https://github.com/IBM/kui/compare/v9.2.2...v9.2.3) (2020-11-27)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Popup mode input stripe does not have reliable auto-focus behavior ([7ae573d](https://github.com/IBM/kui/commit/7ae573d)), closes [#6266](https://github.com/IBM/kui/issues/6266)
+- keyboard history navigation does not work in Popup clients ([f759d42](https://github.com/IBM/kui/commit/f759d42)), closes [#6262](https://github.com/IBM/kui/issues/6262)
+
 ## [9.2.2](https://github.com/IBM/kui/compare/v9.2.1...v9.2.2) (2020-11-26)
 
 ### Bug Fixes

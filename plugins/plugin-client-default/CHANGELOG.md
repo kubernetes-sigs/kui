@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.3](https://github.com/IBM/kui/compare/v9.2.2...v9.2.3) (2020-11-27)
+
+### Bug Fixes
+
+- **plugins/plugin-client-default:** Don't use OpenWhisk status stripe widget in popup mode ([4d89bc1](https://github.com/IBM/kui/commit/4d89bc1)), closes [#6268](https://github.com/IBM/kui/issues/6268)
+- keyboard history navigation does not work in Popup clients ([f759d42](https://github.com/IBM/kui/commit/f759d42)), closes [#6262](https://github.com/IBM/kui/issues/6262)
+
 ## [9.2.2](https://github.com/IBM/kui/compare/v9.2.1...v9.2.2) (2020-11-26)
 
 **Note:** Version bump only for package @kui-shell/plugin-client

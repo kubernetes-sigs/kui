@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.3](https://github.com/IBM/kui/compare/v9.2.2...v9.2.3) (2020-11-27)
+
+### Bug Fixes
+
+- **packages/core:** kubectl-kui popup can fail when setting allowRendererProcessReuse ([6f6dcb9](https://github.com/IBM/kui/commit/6f6dcb9)), closes [#6260](https://github.com/IBM/kui/issues/6260)
+- **plugins/plugin-client-common:** Popup mode input stripe does not have reliable auto-focus behavior ([7ae573d](https://github.com/IBM/kui/commit/7ae573d)), closes [#6266](https://github.com/IBM/kui/issues/6266)
+- **plugins/plugin-client-default:** Don't use OpenWhisk status stripe widget in popup mode ([4d89bc1](https://github.com/IBM/kui/commit/4d89bc1)), closes [#6268](https://github.com/IBM/kui/issues/6268)
+- **plugins/plugin-s3:** ls against s3 vfs does not properly handle brace expansion ([3cfa4dd](https://github.com/IBM/kui/commit/3cfa4dd)), closes [#6258](https://github.com/IBM/kui/issues/6258)
+- keyboard history navigation does not work in Popup clients ([f759d42](https://github.com/IBM/kui/commit/f759d42)), closes [#6262](https://github.com/IBM/kui/issues/6262)
+
 ## [9.2.2](https://github.com/IBM/kui/compare/v9.2.1...v9.2.2) (2020-11-26)
 
 ### Bug Fixes
