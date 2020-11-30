@@ -91,10 +91,10 @@ export default async (
   const duration = startTime && endTime && endTime.getTime() - startTime.getTime()
 
   return {
-    type: 'custom',
-    isEntity: true,
     isFromFlowCommand: true,
-    name: filepath ? basename(filepath) : jsons[0].metadata.name,
+    metadata: {
+      name: filepath ? basename(filepath) : jsons[0].metadata.name
+    },
     packageName: filepath && dirname(filepath),
     prettyType: run ? 'PipelineRun' : 'Pipeline',
     duration,
