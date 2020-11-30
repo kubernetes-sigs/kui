@@ -16,7 +16,7 @@
 
 import { ok } from 'assert'
 import { Application } from 'spectron'
-import { promiseEach, BadgeSpec, TreeResponse, TreeItem } from '@kui-shell/core'
+import { promiseEach, BadgeSpec, TreeResponse } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -423,40 +423,7 @@ export class TestMMR {
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.mode(mode))
-          .then(async ({ count }) => {
-            const testTree = async (nodes: TreeItem[]) => {
-              await promiseEach(nodes, async node => {
-                const treeList = await this.app.client.$(Selectors.TREE_LIST(count, node.id))
-                await treeList.waitForDisplayed()
-                await treeList.click()
-
-                if (node.contentType === 'text/plain') {
-                  await SidecarExpect.textPlainContentFromMonaco(node.content)({ app: this.app, count })
-                } else if (node.contentType === 'yaml') {
-                  await this.app.client.waitUntil(
-                    async () => {
-                      const actualText = await this.app.client
-                        .$(`${Selectors.SIDECAR(count)} .monaco-editor .view-lines`)
-                        .then(_ => _.getText())
-                      return actualText.replace(/\s+$/, '') === node.content
-                    },
-                    { timeout: 20000 }
-                  )
-                }
-
-                if (node.children) {
-                  await this.app.client.$(Selectors.TREE_LIST_EXPANDED(count, node.id)).then(_ => _.waitForDisplayed())
-                  return testTree(node.children)
-                } else {
-                  await this.app.client
-                    .$(Selectors.TREE_LIST_AS_BUTTON_SELECTED(count, node.id))
-                    .then(_ => _.waitForDisplayed())
-                }
-              })
-            }
-
-            return testTree(expectTree.data)
-          })
+          .then(SidecarExpect.tree(expectTree.data))
           .catch(Common.oops(this, true)))
     })
   }
