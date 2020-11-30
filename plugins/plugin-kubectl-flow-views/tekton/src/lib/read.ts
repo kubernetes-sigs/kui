@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { Tab } from '@kui-shell/core'
-import { KubeResource } from '@kui-shell/plugin-kubectl'
+import { KubeResource, fetchFileString } from '@kui-shell/plugin-kubectl'
 import { Task } from '../model/resource'
 
 const debug = Debug('plugins/tekton/lib/read')
@@ -37,10 +37,12 @@ export const parse = async (raw: string | PromiseLike<string>): Promise<KubeReso
  *
  */
 export const read = async (tab: Tab, filepath: string): Promise<string> => {
-  const stats = (await tab.REPL.rexec<{ data: string }>(`vfs fstat ${tab.REPL.encodeComponent(filepath)} --with-data`))
-    .content
-
-  return stats.data
+  const data = await fetchFileString(tab.REPL, filepath)
+  if (data.length === 1) {
+    return data[0]
+  } else {
+    throw new Error(`Failed to fetch ${filepath}`)
+  }
 }
 
 /**
