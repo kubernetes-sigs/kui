@@ -19,6 +19,7 @@
   "createdOn": "Created on **{0}**",
   "showSource": "Showing source code. Status: **{0}**",
   "showDryRun": "Previewing the changes that will be applied. Status: **{0}**",
+  "showDeployedResources": "Showing deployed resources. Status: **{0}**",
   "createdOn=X resourceVersion=Y": "Created on **{0}**. Version **{1}**.",
   "resourceVersion=Y": "Version **{0}**",
   "readonly": "You are in read-only view mode",

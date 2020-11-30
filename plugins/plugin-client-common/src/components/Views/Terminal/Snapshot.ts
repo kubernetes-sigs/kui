@@ -24,7 +24,13 @@ import {
   isWatchable,
   eventBus,
   Tab,
-  isTable
+  Table,
+  TreeResponse,
+  isTable,
+  isScalarContent,
+  TreeItem,
+  isTreeResponse,
+  isMultiModalResponse
 } from '@kui-shell/core'
 
 import { CompleteBlock, isAnnouncement, isOk, isOops } from './Block/BlockModel'
@@ -109,15 +115,46 @@ export function allocateTab(target: CommandStartEvent | CommandCompleteEvent, ta
 
 /** assign tab to the block */
 export function tabAlignment(block: CompleteBlock, tab: Tab): CompleteBlock {
-  if (isTable(block.completeEvent.response)) {
-    block.completeEvent.response.body.forEach(row => {
+  const allocateTabForTable = (table: Table) => {
+    table.body.forEach(row => {
       const onclickHome = row.onclick ? row : row.attributes.find(_ => _.onclick && _.key === 'NAME')
       if (onclickHome && onclickHome.onclick && onclickHome.onclick.startEvent && onclickHome.onclick.completeEvent) {
         allocateTab(onclickHome.onclick.startEvent, tab)
         allocateTab(onclickHome.onclick.completeEvent, tab)
       }
     })
+  }
 
+  if (isMultiModalResponse(block.completeEvent.response)) {
+    block.completeEvent.response.modes.forEach(mode => {
+      if (isScalarContent(mode)) {
+        if (isTreeResponse(mode.content)) {
+          const allocateNode = (node: TreeItem) => {
+            if (node.onclickEvents) {
+              allocateTab(node.onclickEvents.startEvent, tab)
+              allocateTab(node.onclickEvents.completeEvent, tab)
+            }
+          }
+
+          const allocateTree = async (nodes: TreeItem[]) => {
+            nodes.map(node => {
+              allocateNode(node)
+              if (node.children) {
+                return allocateTree(node.children)
+              }
+            })
+          }
+
+          allocateTree(mode.content.data)
+        } else if (isTable(mode.content)) {
+          allocateTabForTable(mode.content)
+        }
+      }
+    })
+
+    block.response = block.completeEvent.response
+  } else if (isTable(block.completeEvent.response)) {
+    allocateTabForTable(block.completeEvent.response)
     block.response = block.completeEvent.response
   }
 
@@ -131,6 +168,88 @@ export class FlightRecorder {
   // eslint-disable-next-line no-useless-constructor
   public constructor(private readonly tab: Tab, private readonly splits: Split[]) {}
 
+  private async recordTable(table: Table) {
+    await Promise.all(
+      table.body.map(async row => {
+        if (row.onclickIdempotent) {
+          // look for onclicks in either the row, or a cell NAME
+          const onclickHome =
+            typeof row.onclick === 'string' ? row : row.attributes.find(_ => _.onclick && _.key === 'NAME')
+          if (onclickHome) {
+            const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
+            const command = onclickHome.onclick
+            onclickHome.onclick = {}
+
+            const onCommandStart = (startEvent: CommandStartEvent) => {
+              Object.assign(onclickHome.onclick, { startEvent })
+            }
+            const onCommandComplete = (completeEvent: CommandCompleteEvent) => {
+              Object.assign(onclickHome.onclick, { completeEvent })
+            }
+
+            eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
+            eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
+
+            try {
+              await fakeTab.REPL.pexec(command, { tab: fakeTab })
+            } finally {
+              eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
+              eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+            }
+          }
+        }
+      })
+    )
+  }
+
+  private async recordTree(tree: TreeResponse) {
+    const clickTreeNode = async (node: TreeItem) => {
+      if (node.onclick && typeof node.onclick === 'string') {
+        const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
+        const command = node.onclick
+
+        const onCommandStart = (startEvent: CommandStartEvent) => {
+          if (node.onclickEvents) {
+            Object.assign(node.onclickEvents, { startEvent })
+          } else {
+            Object.assign(node, { onclickEvents: { startEvent } })
+          }
+        }
+
+        const onCommandComplete = (completeEvent: CommandCompleteEvent) => {
+          if (node.onclickEvents) {
+            Object.assign(node.onclickEvents, { completeEvent })
+          } else {
+            Object.assign(node, { onclickEvents: { completeEvent } })
+          }
+        }
+
+        eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
+        eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
+
+        try {
+          await fakeTab.REPL.pexec(command, { tab: fakeTab })
+        } finally {
+          eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
+          eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+        }
+      }
+    }
+
+    const clickTree = async (nodes: TreeItem[]) => {
+      await Promise.all(
+        nodes.map(async node => {
+          await clickTreeNode(node)
+          if (node.children) {
+            return clickTree(node.children)
+          }
+        })
+      )
+    }
+
+    await clickTree(tree.data)
+  }
+
   /**
    * Run through the rows of a Table response, issue the onclick
    * handler, and store the (start,complete) event pairs, indexed by
@@ -142,38 +261,20 @@ export class FlightRecorder {
       this.splits.map(split =>
         Promise.all(
           split.blocks.map(async _ => {
-            if (isTable(_.completeEvent.response)) {
+            if (isMultiModalResponse(_.completeEvent.response)) {
               await Promise.all(
-                _.completeEvent.response.body.map(async row => {
-                  if (row.onclickIdempotent) {
-                    // look for onclicks in either the row, or a cell NAME
-                    const onclickHome =
-                      typeof row.onclick === 'string' ? row : row.attributes.find(_ => _.onclick && _.key === 'NAME')
-                    if (onclickHome) {
-                      const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
-                      const command = onclickHome.onclick
-                      onclickHome.onclick = {}
-
-                      const onCommandStart = (startEvent: CommandStartEvent) => {
-                        Object.assign(onclickHome.onclick, { startEvent })
-                      }
-                      const onCommandComplete = (completeEvent: CommandCompleteEvent) => {
-                        Object.assign(onclickHome.onclick, { completeEvent })
-                      }
-
-                      eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
-                      eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
-
-                      try {
-                        await fakeTab.REPL.pexec(command, { tab: fakeTab })
-                      } finally {
-                        eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
-                        eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
-                      }
+                _.completeEvent.response.modes.map(async mode => {
+                  if (isScalarContent(mode)) {
+                    if (isTreeResponse(mode.content)) {
+                      await this.recordTree(mode.content)
+                    } else if (isTable(mode.content)) {
+                      await this.recordTable(mode.content)
                     }
                   }
                 })
               )
+            } else if (isTable(_.completeEvent.response)) {
+              await this.recordTable(_.completeEvent.response)
             }
           })
         )

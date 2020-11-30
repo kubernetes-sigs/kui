@@ -18,6 +18,7 @@ import { Entity } from './entity'
 import { SupportedStringContent } from './mmr/content-types'
 import { Button } from './mmr/types'
 import { ToolbarText } from '../webapp/views/toolbar-text'
+import { CommandCompleteEvent, CommandStartEvent } from '../repl/events'
 
 export type TreeItem = {
   /**
@@ -31,6 +32,15 @@ export type TreeItem = {
   /** label of a tree item */
   name: string
 
+  /** emit pre-recorded events when clicking the tree item  */
+  onclickEvents?: {
+    startEvent: CommandStartEvent
+    completeEvent: CommandCompleteEvent
+  }
+
+  /** execute the command when clicking the tree item  */
+  onclick?: string
+
   /** content of a tree item */
   content: string
 
@@ -42,6 +52,9 @@ export type TreeItem = {
 
   /** diff: will this item be deleted by later operations ? */
   willBeDeleted?: boolean
+
+  /** diff: will this item be modified by later operations ? */
+  willBeModified?: boolean
 
   /** type of the tree item content */
   contentType: SupportedStringContent
