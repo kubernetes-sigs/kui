@@ -14,16 +14,35 @@
  * limitations under the License.
  */
 
-import { Arguments, i18n, TreeItem, TreeResponse } from '@kui-shell/core'
+import { Arguments, i18n, TreeItem, TreeResponse, Table } from '@kui-shell/core'
 
 import { KubeOptions, withKubeconfigFrom } from '../../controller/kubectl/options'
-import { fetchRawFiles } from './fetch-file'
-import { KubeResource, isKubeItems, hasEvents, isKubeResource } from '../model/resource'
+import { KubeResource, hasEvents } from '../model/resource'
 import { getCommandFromArgs } from './util'
 
 export const deployedMode = 'deployed resources'
 export const sourceMode = 'sources'
 export const dryRunMode = 'dry run'
+
+export interface KubeResourcesWithDiffState {
+  originalResponse: KubeResource
+  state?: DryRrunState
+  changedResponse?: KubeResource
+}
+
+export enum DryRrunState {
+  ADDED,
+  DELETED,
+  CHANGED,
+  UNCHANGED
+}
+
+export interface DryRun {
+  name: string
+  kind: string
+  state: DryRrunState
+  response?: KubeResource
+}
 
 const strings = i18n('plugin-kubectl')
 const KEYSEPARATER = '---'
@@ -33,15 +52,18 @@ function joinKey(keys: string[]) {
 }
 
 interface BucketValue {
-  raw: TreeItem['content']
+  raw: string
   isIntermediate?: boolean
-  modifiedRaw?: TreeItem['content']
+  modifiedRaw?: string
   willBeAdded?: boolean
   willBeDeleted?: boolean
+  willBeModified?: boolean
   id: string
   name: string
   extends: TreeItem['extends']
   eventArgs?: TreeItem['eventArgs']
+  onclick?: string
+  defaultExpanded?: boolean
 }
 
 interface Bucket {
@@ -59,8 +81,11 @@ interface Buckets {
   unlabeled: Bucket
 }
 
-function getArgsThatProducesEvents(args: Arguments<KubeOptions>, namespace: string): BucketValue['eventArgs'] {
-  const cmd = getCommandFromArgs(args)
+function getArgsThatProducesEvents(
+  cmd: string,
+  args: Arguments<KubeOptions>,
+  namespace: string
+): BucketValue['eventArgs'] {
   const output = `--no-headers -o jsonpath='{.lastTimestamp}{"|"}{.involvedObject.name}{"|"}{.message}{"|"}{.involvedObject.apiVersion}{"|"}{.involvedObject.kind}{"|\\n"}'`
   const command = withKubeconfigFrom(
     args,
@@ -114,6 +139,7 @@ const postProcessBucket = (buckets: Buckets) => {
 
   return buckets
 }
+
 /**
  * This function categorizes `resources` into buckets
  *
@@ -121,9 +147,10 @@ const postProcessBucket = (buckets: Buckets) => {
 async function categorizeResources(
   args: Arguments<KubeOptions>,
   namespace: string,
-  resources: KubeResource[],
+  resourcesWithState: KubeResourcesWithDiffState[],
   doEvents?: boolean
 ) {
+  const cmd = getCommandFromArgs(args)
   const { safeDump } = await import('js-yaml')
 
   const buckets: Buckets = {
@@ -138,23 +165,41 @@ async function categorizeResources(
   }
 
   await Promise.all(
-    resources.map(async resource => {
+    resourcesWithState.map(async ({ originalResponse, state, changedResponse }) => {
+      const resource = originalResponse || changedResponse
       const kind = resource.kind
       const name = resource.metadata.name
-      const raw = resource.kuiRawData ? resource.kuiRawData : await safeDump(resource)
+      const raw = originalResponse ? originalResponse.kuiRawData || (await safeDump(originalResponse)) : ''
+      const willBeDeleted = state && state === DryRrunState.DELETED
+      const willBeModified = state && state === DryRrunState.CHANGED
+      const willBeAdded = state === DryRrunState.ADDED
+      const modifiedRaw = changedResponse && (changedResponse.kuiRawData || (await safeDump(changedResponse)))
 
-      const eventArgs = doEvents && hasEvents(resource) ? getArgsThatProducesEvents(args, namespace) : undefined
+      const eventArgs = doEvents && hasEvents(resource) ? getArgsThatProducesEvents(cmd, args, namespace) : undefined
 
-      const append = (bucket: Bucket, label: string, key?: string, isIntermediate?: boolean) => {
+      const append = (
+        bucket: Bucket,
+        label: string,
+        key?: string,
+        isIntermediate?: boolean,
+        defaultExpanded?: boolean,
+        onclick?: string
+      ) => {
         if (!key) {
           return Object.assign(bucket, {
             raw,
             name: label,
+            onclick,
             extends: {
               kind: [kind],
               name: [name]
             },
             isIntermediate,
+            willBeDeleted,
+            willBeModified,
+            willBeAdded,
+            modifiedRaw,
+            defaultExpanded,
             eventArgs
           })
         } else if (!bucket[key]) {
@@ -162,16 +207,25 @@ async function categorizeResources(
             [key]: {
               raw,
               name: label,
+              onclick,
               extends: {
                 kind: [kind],
                 name: [name]
               },
               isIntermediate,
+              defaultExpanded,
+              modifiedRaw,
+              willBeDeleted,
+              willBeAdded,
+              willBeModified,
               eventArgs
             }
           })
         } else {
           bucket[key].raw = !bucket[key].raw ? raw : `${bucket[key].raw}---\n${raw}`
+          bucket[key].modifiedRaw = !bucket[key].modifiedRaw
+            ? modifiedRaw
+            : `${bucket[key].modifiedRaw}---\n${modifiedRaw}`
           bucket[key].extends.kind.push(kind)
           bucket[key].extends.name.push(name)
         }
@@ -218,11 +272,12 @@ async function categorizeResources(
       sortedLabels.push(['kind', resource.kind], ['name', resource.metadata.name])
 
       sortedLabels.forEach(([key, value], idx) => {
-        let commonPrefix = 'all'
-        commonPrefix = joinKey(['all', sortedLabels.slice(0, idx + 1).join(KEYSEPARATER)])
+        const bucketId = joinKey(['all', sortedLabels.slice(0, idx + 1).join(KEYSEPARATER)])
 
-        const isIntermediate = key === 'kind' || key === 'tiers' || key === 'apps'
-        append(buckets[key], strings(value), commonPrefix, isIntermediate)
+        const isIntermediate = key === 'kind' || key === 'tiers' || key === 'apps' || key === 'unlabeled'
+        const onclick = key === 'name' && withKubeconfigFrom(args, `${cmd} get ${kind} ${name} -n ${namespace} -o yaml`)
+        const defaultExpanded = isIntermediate || key === 'tier'
+        append(buckets[key], strings(value), bucketId, isIntermediate, defaultExpanded, onclick)
       })
     })
   )
@@ -258,48 +313,48 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
     return !nextBucket || nextBucket.length === 0
       ? undefined
       : nextBucket.map(([key, value], idx) => {
-          const {
-            name,
-            raw,
-            eventArgs,
-            modifiedRaw,
-            willBeAdded,
-            willBeDeleted,
-            isIntermediate,
-            id
-          } = value as BucketValue
           return {
-            id,
-            name,
-            hasBadge: isIntermediate,
-            defaultExpanded: isIntermediate,
+            id: value.id,
+            name: value.name,
+            hasBadge: value.isIntermediate,
+            defaultExpanded: value.defaultExpanded,
+            onclick: value.onclick,
             extends: value['extends'],
-            content: raw,
+            content: value.raw,
             contentType: 'yaml' as const,
-            modifiedContent: modifiedRaw,
-            willBeAdded,
-            willBeDeleted,
-            eventArgs,
+            modifiedContent: value.modifiedRaw,
+            willBeAdded: value.willBeAdded,
+            willBeDeleted: value.willBeDeleted,
+            willBeModified: value.willBeModified,
+            eventArgs: value.eventArgs,
             children: next(buckets, idx + 1, key)
           }
         })
   }
 
-  const data = [
-    {
-      name: buckets.all.all.name,
-      id: buckets.all.all.id,
-      extends: buckets.all.all.extends,
-      content: buckets.all.all.raw,
-      contentType: 'yaml' as const,
-      modifiedContent: buckets.all.all.modifiedRaw,
-      eventArgs: buckets.all.all.eventArgs,
-      defaultExpanded: true,
-      children: next(buckets, 1)
-    }
-  ]
+  if (buckets.tiers) {
+    return next(buckets, 1)
+  } else {
+    const data = [
+      {
+        name: buckets.all.all.name,
+        id: buckets.all.all.id,
+        onclick: buckets.all.all.onclick,
+        willBeAdded: buckets.all.all.willBeAdded,
+        willBeDeleted: buckets.all.all.willBeDeleted,
+        willBeModified: buckets.all.all.willBeModified,
+        extends: buckets.all.all.extends,
+        content: buckets.all.all.raw,
+        contentType: 'yaml' as const,
+        modifiedContent: buckets.all.all.modifiedRaw,
+        eventArgs: buckets.all.all.eventArgs,
+        defaultExpanded: true,
+        children: next(buckets, 1)
+      }
+    ]
 
-  return data
+    return data
+  }
 }
 
 /**
@@ -309,82 +364,47 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
  * 3. it transforms the buckets into `TreeResponse` and returns a `MultiModalMode`
  *
  */
-export async function getSources(
-  args: Arguments<KubeOptions>,
-  namesapce: string,
-  filepath: string,
-  isDeployed?: boolean
-) {
-  const raw = await fetchRawFiles(args, filepath)
-
-  const { safeLoadAll } = await import('js-yaml')
-  const resources: KubeResource[] = await safeLoadAll(raw)
-  const buckets = await categorizeResources(args, namesapce, resources)
-
+export async function getSources(args: Arguments<KubeOptions>, filepath: string) {
+  const table = await args.tab.REPL.qexec<Table>(`ls -l ${filepath}`)
+  table.body.forEach(row => (row.onclickIdempotent = true))
   return {
     mode: sourceMode,
     label: strings('sources'),
+    content: table
+  }
+}
+
+export async function doDryRunMode(
+  args: Arguments<KubeOptions>,
+  namespace: string,
+  resourcesWithState: KubeResourcesWithDiffState[],
+  applyCommand: string
+) {
+  const dryRunBuckets = await categorizeResources(args, namespace, resourcesWithState, false)
+  const data = transformBucketsToTree(dryRunBuckets)
+
+  const applyButton = {
+    mode: 'apply',
+    label: strings('Apply'),
+    kind: 'drilldown' as const,
+    command: applyCommand
+  }
+
+  return {
+    mode: dryRunMode,
+    defaultMode: true,
+    label: strings('dry run'),
+    toolbarButtons: [applyButton],
     content: {
       apiVersion: 'kui-shell/v1' as const,
       kind: 'TreeResponse' as const,
-      data: transformBucketsToTree(buckets),
+      data,
       toolbarText: {
         type: 'info',
-        text: strings('showSource', isDeployed ? 'Live' : 'Offline')
+        text: strings('showDryRun', 'Offline')
       }
     }
   }
-}
-
-async function getBuckets(args: Arguments<KubeOptions>, namespace: string, resource: KubeResource, doEvents: boolean) {
-  if (isKubeResource(resource)) {
-    if (isKubeItems(resource) && resource.items.length !== 0) {
-      return categorizeResources(args, namespace, resource.items, doEvents)
-    } else {
-      return categorizeResources(args, namespace, [resource], doEvents)
-    }
-  }
-}
-
-/** join the modifed buckets into the original one */
-function joinBuckets(original: Buckets, modified: Buckets) {
-  Object.keys(original).forEach(bucket => {
-    Object.keys(original[bucket]).forEach(key => {
-      if (modified[bucket] && modified[bucket][key]) {
-        original[bucket][key].modifiedRaw = modified[bucket][key].raw
-      } else {
-        original[bucket][key].modifiedRaw = ''
-        original[bucket][key].willBeDeleted = true
-      }
-    })
-  })
-
-  Object.keys(modified).forEach(bucket => {
-    Object.keys(modified[bucket]).forEach(key => {
-      if (!original[bucket]) {
-        original[bucket] = {}
-      }
-      if (!original[bucket][key]) {
-        original[bucket][key] = modified[bucket][key]
-        original[bucket][key].willBeAdded = true
-        original[bucket][key].modifiedRaw = modified[bucket][key].raw
-        original[bucket][key].raw = ''
-      }
-    })
-  })
-
-  const sortedBuckets = {
-    all: original.all,
-    tiers: original.tiers,
-    tier: original.tier,
-    apps: original.apps,
-    app: original.app,
-    unlabeled: original.unlabeled,
-    kind: original.kind,
-    name: original.name
-  }
-
-  return postProcessBucket(sortedBuckets)
 }
 
 /**
@@ -396,12 +416,12 @@ function joinBuckets(original: Buckets, modified: Buckets) {
 export async function doDeployedMode(
   args: Arguments<KubeOptions>,
   namespace: string,
-  deployedResource: KubeResource,
+  resourcesWithState: KubeResourcesWithDiffState[],
   applyCommand: string,
-  dryRun?: KubeResource
+  hasChanges?: boolean
 ) {
-  const dryRunBuckets = dryRun ? await getBuckets(args, namespace, dryRun, false) : undefined
-  const deployedBuckets = deployedResource ? await getBuckets(args, namespace, deployedResource, true) : undefined
+  const deployedBuckets = await categorizeResources(args, namespace, resourcesWithState, true)
+  const data = transformBucketsToTree(deployedBuckets)
   const applyButton = {
     mode: 'apply',
     label: strings('Apply Changes'),
@@ -409,42 +429,18 @@ export async function doDeployedMode(
     command: applyCommand
   }
 
-  if (dryRunBuckets) {
-    if (deployedBuckets) {
-      // join the `dryRunBuckets` as modifed to `deployedBucket`
-      const joinedBuckets = joinBuckets(deployedBuckets, dryRunBuckets)
-      const joinedData = transformBucketsToTree(joinedBuckets)
-
-      return {
-        mode: deployedMode,
-        label: strings('deployed resources'),
-        content: {
-          apiVersion: 'kui-shell/v1' as const,
-          kind: 'TreeResponse' as const,
-          data: joinedData,
-          toolbarText: {
-            type: 'info',
-            text: strings(`Showing deployed resources`)
-          },
-          toolbarButtons: [applyButton]
-        }
-      }
-    } else {
-      const dryRunData = transformBucketsToTree(dryRunBuckets)
-      return {
-        mode: dryRunMode,
-        defaultMode: true,
-        label: strings('dry run'),
-        content: {
-          apiVersion: 'kui-shell/v1' as const,
-          kind: 'TreeResponse' as const,
-          data: dryRunData,
-          toolbarText: {
-            type: 'info',
-            text: strings('showDryRun', 'Offline')
-          }
-        }
-      }
+  return {
+    mode: deployedMode,
+    label: strings('deployed resources'),
+    content: {
+      apiVersion: 'kui-shell/v1' as const,
+      kind: 'TreeResponse' as const,
+      data,
+      toolbarText: {
+        type: 'info',
+        text: strings(`showDeployedResources`, hasChanges ? 'pending changes' : 'no pending change')
+      },
+      toolbarButtons: [applyButton]
     }
   }
 }

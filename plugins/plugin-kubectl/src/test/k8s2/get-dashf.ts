@@ -41,32 +41,6 @@ const crashy: SidecarExpect.ExpectedTree[] = [
   }
 ]
 
-const modifiedCrashySource: SidecarExpect.ExpectedTree[] = [
-  {
-    id: 'All Resources',
-    children: [
-      {
-        id: 'Apps',
-        children: [
-          {
-            id: 'foo',
-            children: [
-              {
-                id: 'Pod',
-                children: [
-                  {
-                    id: 'kui-crashy'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-]
-
 const modifiedCrashyDryRun: SidecarExpect.ExpectedTree[] = [
   {
     id: 'All Resources',
@@ -83,69 +57,6 @@ const modifiedCrashyDryRun: SidecarExpect.ExpectedTree[] = [
             ]
           }
         ]
-      },
-      {
-        id: 'foo',
-        children: [
-          {
-            id: 'Pod2',
-            children: [
-              {
-                id: 'kui-crashy2'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-]
-
-const bunch = [
-  {
-    id: 'All Resources',
-    children: [
-      {
-        id: 'Apps',
-        children: [
-          {
-            id: 'travelapp',
-            children: [
-              {
-                id: 'Deployment',
-                children: [
-                  {
-                    id: 'travelapp'
-                  }
-                ]
-              },
-              {
-                id: 'HorizontalPodAutoscaler',
-                children: [
-                  {
-                    id: 'travelapp-hpa'
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'Unlabeled Resources',
-        children: [
-          {
-            id: 'Pod',
-            children: [
-              {
-                id: 'eventgen'
-              },
-              {
-                id: 'nginx'
-              }
-            ]
-          }
-        ]
       }
     ]
   }
@@ -153,65 +64,29 @@ const bunch = [
 
 const guestbook = [
   {
-    id: 'All Resources',
+    id: 'Tiers',
     children: [
       {
-        id: 'Tiers',
+        id: 'Frontend',
         children: [
           {
-            id: 'Frontend',
+            id: 'Apps',
             children: [
               {
-                id: 'Apps',
-                children: [
-                  {
-                    id: 'Guestbook',
-                    children: [
-                      {
-                        id: 'Deployment',
-                        children: [
-                          {
-                            id: 'Frontend2'
-                          }
-                        ]
-                      },
-                      {
-                        id: 'Service',
-                        children: [
-                          {
-                            id: 'Frontend3'
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                id: 'Guestbook'
               }
             ]
-          },
+          }
+        ]
+      },
+      {
+        id: 'Backend',
+        children: [
           {
-            id: 'Backend',
+            id: 'Apps2',
             children: [
               {
-                id: 'Apps2',
-                children: [
-                  {
-                    id: 'Redis',
-                    children: [
-                      {
-                        id: 'Deployment2',
-                        children: [
-                          {
-                            id: 'Redis-Master'
-                          },
-                          {
-                            id: 'Redis-Slave'
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                id: 'Redis'
               }
             ]
           }
@@ -255,19 +130,6 @@ const hasEvents = async (res: ReplExpect.AppAndCount) => {
   return res
 }
 
-const hasDiff = async (res: ReplExpect.AppAndCount, diffText: string) => {
-  let idx = 0
-  await res.app.client.waitUntil(async () => {
-    const text = await Util.getValueFromMonaco(res)
-    if (++idx > 5) {
-      console.error(`still waiting for ${diffText}, actual=`, text)
-    }
-    return text.includes(diffText)
-  })
-
-  return res
-}
-
 const commands = ['kubectl']
 
 commands.forEach(command => {
@@ -280,19 +142,13 @@ commands.forEach(command => {
 
     allocateNS(this, ns)
 
-    const getOfflineFile = (
-      file: string,
-      source: SidecarExpect.ExpectedTree[],
-      dryRun: SidecarExpect.ExpectedTree[],
-      waitForApply?: string
-    ) => {
+    const getOfflineFile = (file: string, dryRun: SidecarExpect.ExpectedTree[], waitForApply?: string) => {
       it(`should get -f offline file and apply ${process.env.MOCHA_RUN_TARGET || ''}`, () =>
         CLI.command(`${command} get -f ${file} ${inNamespace}`, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.mode('sources'))
           .then(SidecarExpect.toolbarText({ type: 'info', text: 'Offline', exact: false }))
-          .then(SidecarExpect.tree(source))
           .then(Util.switchToTab('dry run'))
           .then(SidecarExpect.tree(dryRun))
           .then(SidecarExpect.toolbarText({ type: 'info', text: 'Previewing', exact: false }))
@@ -302,46 +158,31 @@ commands.forEach(command => {
 
     const getLiveFile = (
       file: string,
-      source: SidecarExpect.ExpectedTree[],
       deploy: SidecarExpect.ExpectedTree[],
-      diff?: string,
       clickApply?: boolean,
       waitForApply?: string
     ) => {
-      it(`should get -f online file, expect events ${diff ? 'and diff' : ''} ${process.env.MOCHA_RUN_TARGET ||
-        ''}`, () =>
+      it(`should get -f online file, expect events ${process.env.MOCHA_RUN_TARGET || ''}`, () =>
         CLI.command(`${command} get -f ${file} ${inNamespace}`, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
           .then(SidecarExpect.mode('deployed resources'))
           .then(hasEvents)
-          .then(_ => (diff ? hasDiff(_, diff) : _))
           .then(SidecarExpect.tree(deploy))
           .then(Util.switchToTab('sources'))
           .then(SidecarExpect.toolbarText({ type: 'info', text: 'Live', exact: false }))
-          .then(SidecarExpect.tree(source))
           .then(Util.switchToTab('deployed resources'))
           .then(SidecarExpect.tree(deploy))
           .then(_ => (clickApply ? clickApplyButton(_, waitForApply) : _))
           .catch(Common.oops(this, true)))
     }
 
-    getOfflineFile(`${ROOT}/data/k8s/crashy.yaml`, crashy, crashy, 'kui-crashy')
-    getLiveFile(`${ROOT}/data/k8s/crashy.yaml`, crashy, crashy)
-    getOfflineFile(`${ROOT}/data/k8s/bunch`, bunch, bunch)
-    getLiveFile(`${ROOT}/data/k8s/bunch`, bunch, bunch)
+    getOfflineFile(`${ROOT}/data/k8s/crashy.yaml`, crashy, 'kui-crashy')
+    getLiveFile(`${ROOT}/data/k8s/crashy.yaml`, crashy)
+    getLiveFile(`${ROOT}/data/k8s/diff/modified-crashy.yaml`, modifiedCrashyDryRun, true, 'kui-crashy')
 
-    getLiveFile(
-      `${ROOT}/data/k8s/diff/modified-crashy.yaml`,
-      modifiedCrashySource,
-      modifiedCrashyDryRun,
-      'foo',
-      true,
-      'kui-crashy'
-    )
-
-    getOfflineFile(`${ROOT}/data/k8s/application/guestbook`, guestbook, guestbook)
-    getLiveFile(`${ROOT}/data/k8s/application/guestbook`, guestbook, guestbook)
+    getOfflineFile(`${ROOT}/data/k8s/application/guestbook`, guestbook)
+    getLiveFile(`${ROOT}/data/k8s/application/guestbook`, guestbook)
 
     deleteNS(this, ns)
   })

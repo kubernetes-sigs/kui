@@ -209,13 +209,12 @@ export const tree = (expected: ExpectedTree[]) => async (res: AppAndCount) => {
     await promiseEach(nodes, async node => {
       const tree = await res.app.client.$(Selectors.TREE_LIST(count, node.id))
       await tree.waitForDisplayed()
-      await tree.click()
 
       if (node.children) {
         await res.app.client.$(Selectors.TREE_LIST_EXPANDED(count, node.id)).then(_ => _.waitForDisplayed())
         return testTree(node.children)
       } else {
-        await res.app.client.$(Selectors.TREE_LIST_AS_BUTTON_SELECTED(count, node.id)).then(_ => _.waitForDisplayed())
+        await res.app.client.$(Selectors.TREE_LIST_AS_BUTTON(count, node.id)).then(_ => _.waitForDisplayed())
       }
     })
   }
