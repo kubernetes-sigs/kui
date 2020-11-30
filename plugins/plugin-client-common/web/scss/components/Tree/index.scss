@@ -18,52 +18,46 @@
 @import '../Table/Events';
 @import '../TreeView/mixins';
 
-@include Tree {
-  @include TreeNavAndBody {
-    display: flex;
-    flex-direction: row;
-  }
+body[kui-theme-style] {
+  @include Tree {
+    @include TreeViewNav {
+      @include TreeViewItemNotSelected {
+        color: var(--color-text-01);
+      }
 
-  @include TreeViewNav {
-    width: 19em;
-    background-color: var(--color-sidecar-header);
-
-    @include TreeViewItemNotSelected {
-      color: var(--color-text-01);
-    }
-
-    @include TeeViewItem {
-      background-color: transparent;
-      font-size: inherit;
-    }
-  }
-
-  @include TreeEvents {
-    background-color: var(--color-base00);
-    border-top: 1px inset var(--color-sidecar-header);
-    overflow-y: auto;
-    height: 5em;
-
-    .kui--tree-event-messages:first-child {
-      .kui--tree-event-message {
-        @include bottom-events-first-child-padding;
+      @include TeeViewItem {
+        background-color: transparent;
+        font-size: inherit;
       }
     }
 
-    .kui--tree-event-messages {
-      .kui--tree-event-message {
-        @include bottom-events-padding;
-        @include bottom-events-message;
+    @include TreeEvents {
+      background-color: var(--color-base00);
+      border-top: 1px inset var(--color-sidecar-header);
+      overflow-y: auto;
+      height: 5em;
+
+      .kui--tree-event-messages:first-child {
+        .kui--tree-event-message {
+          @include bottom-events-first-child-padding;
+        }
       }
 
-      .padding-content {
-        padding: 0;
-      }
-    }
+      .kui--tree-event-messages {
+        .kui--tree-event-message {
+          @include bottom-events-padding;
+          @include bottom-events-message;
+        }
 
-    .kui--tree-event-messages:last-child {
-      .kui--tree-event-message {
-        @include bottom-events-last-child-padding;
+        .padding-content {
+          padding: 0;
+        }
+      }
+
+      .kui--tree-event-messages:last-child {
+        .kui--tree-event-message {
+          @include bottom-events-last-child-padding;
+        }
       }
     }
   }

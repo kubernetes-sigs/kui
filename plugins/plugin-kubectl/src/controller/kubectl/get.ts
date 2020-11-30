@@ -25,7 +25,15 @@ import { kindAndNamespaceOf } from './fqn'
 import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
-import { sourceMode, deployedMode, getSources, doDeployedMode } from '../../lib/util/tree'
+import {
+  deployedMode,
+  getSources,
+  doDeployedMode,
+  doDryRunMode,
+  DryRrunState,
+  dryRunMode,
+  KubeResourcesWithDiffState
+} from '../../lib/util/tree'
 import { isUsage, doHelp } from '../../lib/util/help'
 import {
   KubeOptions,
@@ -219,8 +227,7 @@ export async function doTreeMMR(
   args: Arguments<KubeOptions>,
   namespace: string,
   filepath: string,
-  resource: KubeResource,
-  dryRun: KubeResource
+  resourcesWithState: KubeResourcesWithDiffState[]
 ) {
   try {
     const applyCommand = formDashFileCommandFromArgs(args, namespace, filepath, 'apply')
@@ -231,8 +238,14 @@ export async function doTreeMMR(
       command: applyCommand
     }
 
-    const isDeployed =
-      isKubeResource(resource) && (!isKubeItems(resource) || (isKubeItems(resource) && resource.items.length !== 0))
+    const isDeployed = resourcesWithState.every(({ originalResponse }) => {
+      return (
+        isKubeResource(originalResponse) &&
+        (!isKubeItems(originalResponse) || (isKubeItems(originalResponse) && originalResponse.items.length !== 0))
+      )
+    })
+
+    const hasChanges = resourcesWithState.findIndex(({ state }) => state === DryRrunState.CHANGED) !== -1
 
     return {
       kind: 'Resources',
@@ -245,11 +258,17 @@ export async function doTreeMMR(
         name: `open ${filepath}`,
         namespace: `kubectl get ns ${namespace} -o yaml`
       },
-      defaultMode: isDeployed ? deployedMode : sourceMode,
+      defaultMode: isDeployed ? deployedMode : dryRunMode,
+      toolbarText: {
+        type: 'info',
+        text: strings('showSource', isDeployed ? 'Live' : 'Offline')
+      },
       modes: [
-        await getSources(args, namespace, filepath, isDeployed),
-        await doDeployedMode(args, namespace, isDeployed ? resource : undefined, applyCommand, dryRun),
-        !isDeployed ? applyButton : undefined // if it's deployed, let the mode to decide if it wants to have the apply button according to diff
+        await getSources(args, filepath),
+        isDeployed
+          ? await doDeployedMode(args, namespace, resourcesWithState, applyCommand, hasChanges)
+          : await doDryRunMode(args, namespace, resourcesWithState, applyCommand),
+        (!isDeployed || hasChanges) && applyButton // if it's deployed, let the mode to decide if it wants to have the apply button according to diff
       ].filter(_ => _)
     }
   } catch (err) {
@@ -268,10 +287,68 @@ export async function doTreeMMR(
 export async function doGetAsMMRTree(args: Arguments<KubeOptions>, filepath: string, resource: KubeResource) {
   try {
     const namespace = await getNamespace(args)
-    const dryRunResponse = await args.REPL.qexec<KubeResource>(
-      `${formDashFileCommandFromArgs(args, namespace, filepath, 'apply')} -o yaml --dry-run=server`
-    )
-    return doTreeMMR(args, namespace, filepath, resource, dryRunResponse)
+    const dryRunCommand = `${formDashFileCommandFromArgs(args, namespace, filepath, 'apply')} --dry-run=server`
+    const [dryRunRaw, dryRunResponse] = await Promise.all([
+      args.REPL.qexec<string>(dryRunCommand),
+      args.REPL.qexec<KubeResource>(`${dryRunCommand} -o yaml`)
+    ])
+
+    const findInKubeResource = (kind: string, name: string, resource: KubeResource) => {
+      if (isKubeResource(resource)) {
+        if (isKubeItems(resource)) {
+          return resource.items.find(_ => _.kind.toLowerCase() === kind && _.metadata.name === name)
+        } else if (resource.metadata.name === name && resource.kind.toLowerCase() === kind) {
+          return resource
+        }
+      }
+    }
+
+    let resourcesWithState: KubeResourcesWithDiffState[] =
+      dryRunRaw.trim().length > 0 &&
+      dryRunRaw
+        .trim()
+        .split(/\n/)
+        .map(line => {
+          const cells = line.replace(' (server dry run)', '').split(' ')
+          if (cells.length >= 1) {
+            const kind = cells[0].split('/')[0].split('.')[0] // e.g. deployment.apps/frontend; service/frontend created
+            const name = cells[0].split('/')[1]
+
+            const state = cells[1].includes('unchanged')
+              ? DryRrunState.UNCHANGED
+              : cells[1].includes('created')
+              ? DryRrunState.ADDED
+              : DryRrunState.CHANGED
+
+            return {
+              state,
+              originalResponse: findInKubeResource(kind, name, resource),
+              changedResponse: findInKubeResource(kind, name, dryRunResponse)
+            }
+          }
+        })
+
+    if (isKubeResource(resource)) {
+      if (isKubeItems(resource) && resource.items.length !== 0) {
+        resourcesWithState = resourcesWithState.concat(
+          resource.items
+            .filter(_ => !findInKubeResource(_.kind, _.metadata.name, dryRunResponse))
+            .map(_ => {
+              return {
+                state: DryRrunState.DELETED,
+                originalResponse: _
+              }
+            })
+        )
+      } else if (!findInKubeResource(resource.kind, resource.metadata.name, dryRunResponse)) {
+        resourcesWithState.push({
+          state: DryRrunState.DELETED,
+          originalResponse: resource
+        })
+      }
+    }
+
+    return doTreeMMR(args, namespace, filepath, resourcesWithState)
   } catch (err) {
     console.error('error getting tree as MMR', err)
     throw err

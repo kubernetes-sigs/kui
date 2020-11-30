@@ -23,12 +23,14 @@ const tree: TreeResponse = {
     {
       id: 'without children',
       name: 'without children',
+      defaultExpanded: true,
       content: 'without children',
       contentType: 'text/plain'
     },
     {
       name: 'with children',
       id: 'with children',
+      defaultExpanded: true,
       content: 'with children',
       contentType: 'text/plain',
       children: [
@@ -37,16 +39,19 @@ const tree: TreeResponse = {
           id: 'Foo',
           content: 'Foo',
           contentType: 'text/plain',
+          defaultExpanded: true,
           children: [
             {
               name: 'a',
               id: 'a',
+              defaultExpanded: true,
               content: 'a',
               contentType: 'text/plain'
             },
             {
               name: 'b',
               id: 'b',
+              defaultExpanded: true,
               content: `data: b`,
               contentType: 'yaml',
               children: [
@@ -64,6 +69,7 @@ const tree: TreeResponse = {
           name: 'Bar',
           id: 'Bar',
           content: 'Bar',
+          defaultExpanded: true,
           contentType: 'text/plain'
         }
       ]
