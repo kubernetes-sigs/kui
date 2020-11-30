@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.4](https://github.com/IBM/kui/compare/v9.2.3...v9.2.4) (2020-11-30)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** inline sidecar should not have a min-width ([ccb96e5](https://github.com/IBM/kui/commit/ccb96e5)), closes [#6270](https://github.com/IBM/kui/issues/6270)
+
 ## [9.2.3](https://github.com/IBM/kui/compare/v9.2.2...v9.2.3) (2020-11-27)
 
 ### Bug Fixes

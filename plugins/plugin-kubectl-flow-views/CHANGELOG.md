@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.4](https://github.com/IBM/kui/compare/v9.2.3...v9.2.4) (2020-11-30)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl-flow-views:** `tekton flow` command does not support previewing a remote url ([59a53d8](https://github.com/IBM/kui/commit/59a53d8)), closes [#6274](https://github.com/IBM/kui/issues/6274)
+- **plugins/plugin-kubectl-flow-views:** `tekton flow` command fails ([2866c8c](https://github.com/IBM/kui/commit/2866c8c)), closes [#6272](https://github.com/IBM/kui/issues/6272)
+
 ## [9.2.3](https://github.com/IBM/kui/compare/v9.2.2...v9.2.3) (2020-11-27)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl-flow-views
