@@ -18,7 +18,7 @@ import React from 'react'
 
 import {
   Button,
-  i18n,
+  eventBus,
   MultiModalResponse,
   Tab,
   ToolbarProps,
@@ -26,14 +26,10 @@ import {
   TreeResponse,
   ToolbarText
 } from '@kui-shell/core'
-import TreeView from '../spi/TreeView'
-import Editor from './Editor'
-import DiffEditor from './Editor/DiffEditor'
+import TreeView, { TreeViewDataItem } from '../spi/TreeView'
 import Events from './Events'
 
 import '../../../web/scss/components/Tree/index.scss'
-
-const strings = i18n('plugin-client-common')
 
 type Props = {
   response: MultiModalResponse
@@ -74,50 +70,46 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
     }
   }
 
-  /** render tree item content in `Editor` */
-  private editor() {
-    return (
-      <React.Suspense fallback={<div />}>
-        {!this.state.activeItem.modifiedContent ? (
-          <Editor
-            key={this.state.activeItem.id}
-            content={{ content: this.state.activeItem.content, contentType: this.state.activeItem.contentType }}
-            readOnly={false}
-            sizeToFit
-            response={this.props.response}
-            repl={this.props.tab.REPL}
-            tabUUID={this.props.tab.uuid}
-          />
-        ) : (
-          <DiffEditor
-            key={this.state.activeItem.id}
-            tabUUID={this.props.tab.uuid}
-            originalContent={this.state.activeItem.content}
-            modifiedContent={this.state.activeItem.modifiedContent}
-            hasPendingChanges={this.updateToolbar.bind(
-              this,
-              strings('with pending changes'),
-              this.props.toolbarButtons
-            )}
-            noPendingChange={this.updateToolbar.bind(this, strings('with no pending changes'))}
-            contentType={this.state.activeItem.contentType}
-            sizeToFit
-            renderSideBySide={false}
-          />
-        )}
-      </React.Suspense>
-    )
+  /**
+   * transform kui TreeItem[] to TreeViewDataItem[]
+   * 1. remove content & modifiedContent from each TreeItem for memory in TreeView
+   * 2. we used to render the content of each tree node in an editor (or diffEditor)
+   *    but this feature is replaced by item.onclick command
+   *    NOTE: maybe we can remove the content & modifiedContent from the TreeItem
+   *
+   */
+  private kuiTreeItemsToView(kuiTreeItems: TreeItem[]) {
+    const kuiTreeItemToView = (item: TreeItem): TreeViewDataItem => {
+      return Object.assign({}, item, {
+        content: undefined,
+        modifiedContent: undefined
+      })
+    }
+
+    return kuiTreeItems.map(kuiTreeItem => {
+      const treeViewDataItem = kuiTreeItemToView(kuiTreeItem)
+      if (kuiTreeItem.children) {
+        treeViewDataItem.children = this.kuiTreeItemsToView(kuiTreeItem.children)
+      }
+      return treeViewDataItem
+    })
   }
 
   private tree() {
+    const data = this.kuiTreeItemsToView(this.props.data)
     return (
       <TreeView
-        data={this.props.data}
+        data={data}
         activeItems={[this.state.activeItem]}
         onSelect={(_, treeViewItem) => {
-          this.setState({
-            activeItem: treeViewItem as TreeItem
-          })
+          const item = treeViewItem as TreeItem
+          if (item.onclickEvents) {
+            eventBus.emitCommandStart(item.onclickEvents.startEvent)
+            eventBus.emitCommandComplete(item.onclickEvents.completeEvent)
+          } else if (item.onclick) {
+            this.props.tab.REPL.pexec(item.onclick)
+          }
+          this.setState({ activeItem: item })
         }}
       />
     )
@@ -139,12 +131,10 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
   }
 
   public render() {
+    // NOTE: we could bring Tree and TreeView together, once events and editor are separated out
     return (
       <div className="kui--tree kui--full-height">
-        <div className="kui--tree-nav-and-body kui--full-height">
-          {this.tree()}
-          {this.editor()}
-        </div>
+        <div className="kui--tree-nav-and-body kui--full-height kui--rows">{this.tree()}</div>
         {this.events()}
       </div>
     )
