@@ -19,12 +19,12 @@ import { basename, join } from 'path'
 import * as micromatch from 'micromatch'
 import { Client, CopyConditions } from 'minio'
 import { DirEntry, FStat, GlobStats, ParallelismOptions, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, REPL, encodeComponent, flatten, inBrowser, i18n } from '@kui-shell/core'
+import { Arguments, CodedError, REPL, Table, encodeComponent, flatten, inBrowser, i18n } from '@kui-shell/core'
 
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider, MinioConfig } from '../providers'
 
-import { scaleOut } from '../ssc'
+import scaleOut from '../ssc/scaleOut'
 import JobProvider, { JobEnv } from '../jobs'
 import ParallelOperation from './parallel/operations'
 import CodeEngine from '../jobs/providers/CodeEngine'
@@ -634,45 +634,34 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** zip a set of files */
   public async gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
-    const { REPL } = parameters[0]
+    const { REPL, parsedOptions } = parameters[0]
     const srcFilepaths = parameters[1]
-    const sources = (
-      await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
-    ).content.map(_ => _.path)
+    const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`))
+      .content
 
-    const nTasks = sources.length
-    const jobProvider = this.runner(REPL)
-
-    const srcs = sources.map(_ => this.split(_))
-
-    const jobname = await jobProvider.run('starpit/vfs', {
-      nTasks,
-      nShards: 1,
-      OPERATION: 'gzip',
-      SRC_BUCKETS: srcs.map(_ => _.bucketName),
-      SRC_OBJECTS: srcs.map(_ => _.fileName)
-    })
-
-    return jobProvider.wait(jobname, nTasks)
+    debug('scale-out gzip sources', srcs, parsedOptions)
+    return scaleOut(
+      srcs.map(src => `gzip ${encodeComponent(src.path)}`),
+      REPL,
+      parsedOptions
+    )
   }
 
   /** unzip a set of files */
   public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
-    const filepaths = parameters[1]
-    const nTasks = filepaths.length
-    const jobProvider = this.runner(parameters[0].REPL)
+    const { REPL, parsedOptions } = parameters[0]
+    const srcFilepaths = parameters[1]
+    const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`))
+      .content
 
-    const srcs = filepaths.map(_ => this.split(_))
-
-    const jobname = await jobProvider.run('starpit/vfs', {
-      nTasks,
-      nShards: 1,
-      OPERATION: 'gunzip',
-      SRC_BUCKETS: srcs.map(_ => _.bucketName),
-      SRC_OBJECTS: srcs.map(_ => _.fileName)
-    })
-
-    await jobProvider.wait(jobname, nTasks)
+    debug('scale-out gunzip sources', srcs, parsedOptions)
+    return scaleOut(
+      srcs.map(
+        src => `cat ${encodeComponent(src.path)} | gunzip -c - | pipe ${encodeComponent(src.path.replace(/.gz$/, ''))}`
+      ),
+      REPL,
+      parsedOptions
+    )
   }
 
   private runner(repl: REPL) {
@@ -757,15 +746,15 @@ class S3VFSForwarder extends S3VFS implements VFS {
   }
 
   /** zip a set of files */
-  public async gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
-    await parameters[0].REPL.qexec(
+  public gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
+    return parameters[0].REPL.qexec<Table>(
       `vfs-s3 gzip ${this.mountPath} ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`
     )
   }
 
   /** unzip a set of files */
-  public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
-    await parameters[0].REPL.qexec(
+  public gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
+    return parameters[0].REPL.qexec<Table>(
       `vfs-s3 gunzip ${this.mountPath} ${parameters[1].map(_ => encodeComponent(_)).join(' ')}`
     )
   }
