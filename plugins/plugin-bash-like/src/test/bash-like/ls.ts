@@ -28,6 +28,11 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .catch(Common.oops(this, true))
   )
 
+  it('should fail with 404 to ls a non-existing file', () =>
+    CLI.command('ls fjdsioafjdsaioffsdaiofjdsaiofjdsaiofjdsaiofjdsaifjdsaiofsa', this.app)
+      .then(ReplExpect.error(404))
+      .catch(Common.oops(this, true)))
+
   it('should use ls ../../', () =>
     CLI.command(`ls ../../`, this.app)
       .then(ReplExpect.okWithString('package.json'))

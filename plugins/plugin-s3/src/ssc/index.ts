@@ -14,40 +14,8 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-import { Arguments, REPL } from '@kui-shell/core'
-
-import { minioConfig } from '../vfs'
-import { MinioConfig } from '../providers'
-import JobProvider from '../jobs/providers/CodeEngine2'
-
-const debug = Debug('plugin-s3/forwarder')
-
-export async function scaleOut(commands: string[], repl: REPL) {
-  const mc = minioConfig()
-
-  const start = Date.now()
-  //  const commands = rawCommands.map(
-  const cmdlines = commands.map(command =>
-    Object.keys(mc.aliases).reduce(
-      (cmdline, alias) => cmdline.replace(new RegExp(alias.replace(/\\/, '\\\\'), 'g'), alias.replace(/\//g, '_')),
-      command.replace(/^(\s*ssc)?(\s+)/, '$1').replace(/(\s*)(ls|cp|mv|rm|cat)(\s)/g, '$1mc $2$3')
-    )
-  )
-  debug('cmdlines', commands, cmdlines)
-
-  mc.aliases = Object.keys(mc.aliases).reduce((aliases, alias) => {
-    aliases[alias.replace(/\//g, '_')] = mc.aliases[alias]
-    return aliases
-  }, {} as MinioConfig['aliases'])
-
-  const nTasks = cmdlines.length
-  const runner = new JobProvider(repl, mc)
-  const jobName = await runner.run('starpit/sh', { cmdlines, nTasks, nShards: nTasks })
-  const end = Date.now()
-  debug('job scheduling latency', require('pretty-ms')(end - start), jobName)
-  return runner.wait(jobName, nTasks)
-}
+import scaleOut from './scaleOut'
+import { Arguments } from '@kui-shell/core'
 
 export default async function ssc({ command, REPL }: Pick<Arguments, 'command' | 'REPL'>) {
   return scaleOut([command], REPL)
