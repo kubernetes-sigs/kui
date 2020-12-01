@@ -27,6 +27,10 @@ export { DirEntry }
 export interface ParallelismOptions extends ParsedOptions {
   /** Parallelism */
   P: number
+
+  /** Memory per task */
+  m: string
+  memory: string
 }
 
 /**
