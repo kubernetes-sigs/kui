@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { v4 } from 'uuid'
 import { REPL, Table } from '@kui-shell/core'
+import { ParallelismOptions } from '@kui-shell/plugin-bash-like/fs'
 
 import { JobParameters, JobEnv } from '../'
 import { MinioConfig } from '../../providers'
 
+const debug = Debug('plugins/s3/jobs/providers/CodeEngine')
+
 type JobName = string
+
+export type JobOptions = ParallelismOptions
 
 export default class CodeEngine /* implements JobProvider<JobName> */ {
   // eslint-disable-next-line no-useless-constructor
@@ -50,7 +56,11 @@ export default class CodeEngine /* implements JobProvider<JobName> */ {
   }
 
   /** Schedule a Job execution */
-  public async run(image: string, params: JobParameters & Required<{ cmdlines: string[] }>, env: JobEnv = {}) {
+  public async run(
+    image: string,
+    params: JobParameters & Required<{ cmdlines: string[] }> & Partial<JobOptions>,
+    env: JobEnv = {}
+  ) {
     const { nTasks, nShards } = params
 
     const parOpts = this.dashE(params)
@@ -61,12 +71,16 @@ export default class CodeEngine /* implements JobProvider<JobName> */ {
         .replace(/=$/, '') // bug in codeengine cli with =
     })
 
+    const memOpts = params.m || params.memory ? `--memory ${params.m || params.memory}` : ''
+    debug('memOpts', memOpts, params)
+
     const jobrunName = `kui-jobrun-${v4()}`
-    const cmdline = `ibmcloud ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts}`
+    const cmdline = `ibmcloud ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts} ${memOpts}`
     await this.repl.qexec<string>(cmdline).catch(err => {
       console.error(err)
       throw new Error(err.message)
     })
+    debug('cmdline', cmdline)
 
     return jobrunName
   }

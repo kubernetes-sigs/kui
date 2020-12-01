@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018-20 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,19 @@
  */
 
 import { UTC as speedDate } from 'speed-date'
-import { i18n, Arguments, ParsedOptions, MixedResponse, Registrar, Table, TableStyle } from '@kui-shell/core'
+import {
+  i18n,
+  encodeComponent,
+  Arguments,
+  CodedError,
+  ParsedOptions,
+  MixedResponse,
+  Registrar,
+  Table,
+  TableStyle
+} from '@kui-shell/core'
 
-import { GlobStats } from './glob'
+import { FStat, GlobStats } from '..'
 import { localFilepath } from './usage-helpers'
 
 const dateFormatter = speedDate('MMM DD HH:mm')
@@ -189,9 +199,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
     name: nameOf(_, args.parsedOptions.l),
     css: cssOf(_),
     onclickExec: 'pexec' as const,
-    onclick: `${_.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : 'open'} ${args.REPL.encodeComponent(
-      _.path
-    )}`,
+    onclick: `${_.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : 'open'} ${encodeComponent(_.path)}`,
     attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))
 
@@ -235,17 +243,33 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
     return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
   }
 
+  const srcs = opts.argvNoOptions.slice(opts.argv.indexOf(cmd) + 1)
+
   const cmdline =
-    `vfs ls ${opts.argv
-      .slice(opts.argv.indexOf(cmd) + 1)
-      .map(_ => opts.REPL.encodeComponent(_))
-      .join(' ')}` + (cmd === 'lls' && !opts.parsedOptions.l ? ' -l' : '')
+    `vfs ls ${srcs.map(_ => encodeComponent(_)).join(' ')}` + (cmd === 'lls' && !opts.parsedOptions.l ? ' -l' : '')
 
   if (cmd === 'lls') {
     opts.parsedOptions.l = true
   }
 
   const entries = (await opts.REPL.rexec<GlobStats[]>(cmdline)).content
+
+  if (entries.length === 0) {
+    const isDirs = await Promise.all(
+      srcs.map(_ => opts.REPL.rexec<FStat>(`vfs fstat ${encodeComponent(_)}`).then(_ => _.content.isDirectory))
+    )
+    if (isDirs.some(_ => !_)) {
+      // ls on at least one non-directory yielded no entries (converseley: it is not an error if an ls on only-directories yielded no entries)
+      const error: CodedError = new Error(
+        srcs
+          .map((_, idx) => (isDirs[idx] ? undefined : `ls: ${_}: No such file or directory`))
+          .filter(_ => _)
+          .join('\n')
+      )
+      error.code = 404
+      throw error
+    }
+  }
 
   return toTable(entries, opts)
 }
