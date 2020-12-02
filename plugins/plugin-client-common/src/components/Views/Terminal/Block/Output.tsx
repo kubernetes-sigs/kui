@@ -249,7 +249,8 @@ export default class Output extends React.PureComponent<Props, State> {
         (typeof response === 'string' && response.length > 0) ||
         isTable(response) ||
         isMixedResponse(response) ||
-        (isXtermResponse(response) && response.rows && response.rows.length !== 0)
+        (isXtermResponse(response) && response.rows && response.rows.length !== 0) ||
+        this.hasStreamingOutput()
       )
     } else {
       return false
