@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.5](https://github.com/IBM/kui/compare/v9.2.4...v9.2.5) (2020-12-02)
+
+### Features
+
+- port experimental scale-out grep to use new job controller ([2695799](https://github.com/IBM/kui/commit/2695799)), closes [#6280](https://github.com/IBM/kui/issues/6280)
+
 ## [9.2.4](https://github.com/IBM/kui/compare/v9.2.3...v9.2.4) (2020-11-30)
 
 ### Bug Fixes

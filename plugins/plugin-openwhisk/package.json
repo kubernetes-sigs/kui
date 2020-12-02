@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-openwhisk",
-  "version": "9.2.4",
+  "version": "9.2.5",
   "description": "Kui plugin for OpenWhisk",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
