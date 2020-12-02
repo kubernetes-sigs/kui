@@ -49,6 +49,10 @@ $focus-color: var(--color-brand-01);
   }
 }
 
+@include FinishedBlockWithNoOutput {
+  display: none;
+}
+
 @include FinishedBlock {
   @include InputWrapper {
     border-color: $input-border;
