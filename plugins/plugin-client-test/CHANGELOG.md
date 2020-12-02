@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.6](https://github.com/IBM/kui/compare/v9.2.5...v9.2.6) (2020-12-02)
+
+### Bug Fixes
+
+- tree should support leaf node drilling down ([df15fde](https://github.com/IBM/kui/commit/df15fde)), closes [#6293](https://github.com/IBM/kui/issues/6293)
+
 ## [9.2.5](https://github.com/IBM/kui/compare/v9.2.4...v9.2.5) (2020-12-02)
 
 **Note:** Version bump only for package @kui-shell/plugin-test-client

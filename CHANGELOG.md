@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.6](https://github.com/IBM/kui/compare/v9.2.5...v9.2.6) (2020-12-02)
+
+### Bug Fixes
+
+- tree should support leaf node drilling down ([df15fde](https://github.com/IBM/kui/commit/df15fde)), closes [#6293](https://github.com/IBM/kui/issues/6293)
+- **plugins/plugin-bash-like:** ls -l does not show stat data ([a0881e9](https://github.com/IBM/kui/commit/a0881e9)), closes [#6287](https://github.com/IBM/kui/issues/6287)
+- **plugins/plugin-bash-like:** Size column in ls output has odd text alignment ([82f82a4](https://github.com/IBM/kui/commit/82f82a4)), closes [#6294](https://github.com/IBM/kui/issues/6294)
+- **plugins/plugin-client-common:** `ls` in minisplit has tall rows ([d0d5c6d](https://github.com/IBM/kui/commit/d0d5c6d)), closes [#6289](https://github.com/IBM/kui/issues/6289)
+- **plugins/plugin-client-common:** double whitespace may be removed from completed inputs ([3c79609](https://github.com/IBM/kui/commit/3c79609)), closes [#6279](https://github.com/IBM/kui/issues/6279)
+- **plugins/plugin-client-common:** Experimental badge too tall for lightweight UI themes. ([5cc364b](https://github.com/IBM/kui/commit/5cc364b)), closes [#6284](https://github.com/IBM/kui/issues/6284)
+- **plugins/plugin-client-common:** ls ; ls has excessive vertical whitespace ([aaac96b](https://github.com/IBM/kui/commit/aaac96b)), closes [#6291](https://github.com/IBM/kui/issues/6291)
+- **plugins/plugin-client-common:** refine input UI for lightweight ui themes ([77e047a](https://github.com/IBM/kui/commit/77e047a)), closes [#6296](https://github.com/IBM/kui/issues/6296)
+- **plugins/plugin-s3:** scale-out gzip not quite right ([65dbcc0](https://github.com/IBM/kui/commit/65dbcc0)), closes [#6298](https://github.com/IBM/kui/issues/6298)
+
 ## [9.2.5](https://github.com/IBM/kui/compare/v9.2.4...v9.2.5) (2020-12-02)
 
 ### Bug Fixes

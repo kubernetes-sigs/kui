@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.6](https://github.com/IBM/kui/compare/v9.2.5...v9.2.6) (2020-12-02)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** ls -l does not show stat data ([a0881e9](https://github.com/IBM/kui/commit/a0881e9)), closes [#6287](https://github.com/IBM/kui/issues/6287)
+- **plugins/plugin-bash-like:** Size column in ls output has odd text alignment ([82f82a4](https://github.com/IBM/kui/commit/82f82a4)), closes [#6294](https://github.com/IBM/kui/issues/6294)
+
 ## [9.2.5](https://github.com/IBM/kui/compare/v9.2.4...v9.2.5) (2020-12-02)
 
 ### Bug Fixes

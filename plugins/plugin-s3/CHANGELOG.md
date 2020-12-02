@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.6](https://github.com/IBM/kui/compare/v9.2.5...v9.2.6) (2020-12-02)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** scale-out gzip not quite right ([65dbcc0](https://github.com/IBM/kui/commit/65dbcc0)), closes [#6298](https://github.com/IBM/kui/issues/6298)
+
 ## [9.2.5](https://github.com/IBM/kui/compare/v9.2.4...v9.2.5) (2020-12-02)
 
 ### Bug Fixes
