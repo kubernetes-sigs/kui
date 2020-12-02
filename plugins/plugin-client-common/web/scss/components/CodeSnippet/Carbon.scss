@@ -19,4 +19,14 @@
 
 body[kui-theme-style] .bx--snippet {
   font-family: var(--font-monospace);
+  color: var(--color-text-01);
+  background-color: var(--color-base02);
+
+  .bx--snippet__icon {
+    fill: var(--color-text-01);
+  }
+}
+
+body[kui-theme-style='dark'] .bx--snippet--multi .bx--snippet-container pre::after {
+  background-image: none;
 }
