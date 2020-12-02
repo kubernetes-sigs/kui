@@ -246,7 +246,7 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
   const srcs = opts.argvNoOptions.slice(opts.argv.indexOf(cmd) + 1)
 
   const cmdline =
-    `vfs ls ${srcs.map(_ => encodeComponent(_)).join(' ')}` + (cmd === 'lls' && !opts.parsedOptions.l ? ' -l' : '')
+    'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + srcs.map(_ => encodeComponent(_)).join(' ')
 
   if (cmd === 'lls') {
     opts.parsedOptions.l = true
