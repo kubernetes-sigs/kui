@@ -17,6 +17,6 @@
 import scaleOut from './scaleOut'
 import { Arguments } from '@kui-shell/core'
 
-export default async function ssc({ command, REPL }: Pick<Arguments, 'command' | 'REPL'>) {
-  return scaleOut([command], REPL)
+export default async function ssc(args: Pick<Arguments, 'command' | 'REPL' | 'execOptions'>) {
+  return scaleOut([args.command], args)
 }
