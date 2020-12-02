@@ -29,7 +29,8 @@
     background-color: var(--color-base05);
     font-family: var(--font-sans-serif);
     color: var(--color-base00);
-    font-size: 0.625rem;
+    font-size: 0.5625rem;
+    min-height: 1.5em;
     height: 1.125rem;
     margin: 0 0.5rem 0 0;
     transition-delay: $action-hover-delay;
