@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { REPL } from '@kui-shell/core'
+import { Arguments } from '@kui-shell/core'
 
 import { minioConfig } from '../vfs'
 import { MinioConfig } from '../providers'
@@ -23,7 +23,40 @@ import JobProvider, { JobOptions } from '../jobs/providers/CodeEngine2'
 
 const debug = Debug('plugin-s3/forwarder')
 
-export default async function scaleOut(commands: string[], repl: REPL, options: Partial<JobOptions> = {}) {
+class Job {
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(
+    private readonly runner: JobProvider,
+    private readonly jobName: string,
+    private readonly nTasks: number
+  ) {}
+
+  public show() {
+    return this.runner.show(this.jobName)
+  }
+
+  public wait() {
+    return this.runner.wait(this.jobName, this.nTasks)
+  }
+
+  private async getLogsForTask(taskIdx: number): Promise<string> {
+    const response = (await this.runner.logs(this.jobName, taskIdx)).replace(/\n+$/, '')
+    const idx = response.lastIndexOf('\n')
+    const lastLine = response.slice(idx + 1)
+
+    return Buffer.from(JSON.parse(lastLine).result, 'base64').toString()
+  }
+
+  public async getLogs(): Promise<string[]> {
+    return Promise.all(
+      Array(this.nTasks)
+        .fill(0)
+        .map((_, idx) => this.getLogsForTask(idx + 1))
+    )
+  }
+}
+
+export async function run(commands: string[], repl: Arguments['REPL'], options: Partial<JobOptions> = {}) {
   const mc = minioConfig()
 
   const start = Date.now()
@@ -46,5 +79,26 @@ export default async function scaleOut(commands: string[], repl: REPL, options: 
   const jobName = await runner.run('starpit/sh', Object.assign({ cmdlines, nTasks, nShards: nTasks }, options))
   const end = Date.now()
   debug('job scheduling latency', require('pretty-ms')(end - start), jobName)
-  return runner.wait(jobName, nTasks)
+
+  return new Job(runner, jobName, nTasks)
+}
+
+export default async function runWithProgress(
+  commands: string[],
+  { REPL }: Pick<Arguments, 'REPL'>,
+  options: Partial<JobOptions> = {}
+) {
+  const job = await run(commands, REPL, options)
+  return job.show()
+}
+
+export async function runWithLogs(
+  commands: string[],
+  { REPL }: Pick<Arguments, 'REPL'>,
+  options: Partial<JobOptions> = {}
+) {
+  const job = await run(commands, REPL, options)
+  await job.wait()
+
+  return job.getLogs()
 }

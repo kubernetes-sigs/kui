@@ -24,7 +24,7 @@ import { Arguments, CodedError, REPL, Table, encodeComponent, flatten, inBrowser
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider, MinioConfig } from '../providers'
 
-import scaleOut from '../ssc/scaleOut'
+import runWithProgress, { runWithLogs } from '../ssc/scaleOut'
 import JobProvider, { JobEnv } from '../jobs'
 import ParallelOperation from './parallel/operations'
 import CodeEngine from '../jobs/providers/CodeEngine'
@@ -215,7 +215,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     srcFilepaths: string[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
     const { bucketName, fileName } = this.split(dstFilepath)
 
     // make public?
@@ -255,7 +255,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     srcFilepaths: string[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
 
     // NOTE: intentionally not lstat; we want what is referenced by
     // the symlink
@@ -300,18 +300,18 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 
   private async intraCopyObject(
-    { REPL, parsedOptions }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+    args: Pick<Arguments, 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcFilepaths: string[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`)
+    const sources = args.REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
 
-    if (parsedOptions.s) {
+    if (args.parsedOptions.s) {
       const srcs = (await sources).content
       debug('scale-out intra-copy-object sources', srcs)
-      return scaleOut(
+      return runWithProgress(
         srcs.map(src => `cp ${encodeComponent(src.path)} ${encodeComponent(dstFilepath)}`),
-        REPL
+        args
       )
     }
 
@@ -341,14 +341,14 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 
   private async interCopyObject(
-    { REPL, parsedOptions }: Pick<Arguments, 'REPL' | 'parsedOptions'>,
+    args: Pick<Arguments, 'REPL' | 'parsedOptions' | 'execOptions'>,
     srcs: { srcFilepath: string; provider: S3VFSResponder }[],
     dstFilepath: string
   ) {
-    const sources = REPL.rexec<GlobStats[]>(
+    const sources = args.REPL.rexec<GlobStats[]>(
       `vfs ls ${srcs
         .map(_ => _.srcFilepath)
-        .map(_ => REPL.encodeComponent(_))
+        .map(_ => encodeComponent(_))
         .join(' ')}`
     )
 
@@ -356,12 +356,12 @@ class S3VFSResponder extends S3VFS implements VFS {
       throw new Error('Nothing to copy')
     }
 
-    if (parsedOptions.s) {
+    if (args.parsedOptions.s) {
       const srcs = (await sources).content
       debug('scale-out inter-copy-object sources', srcs)
-      return scaleOut(
+      return runWithProgress(
         srcs.map(src => `cp ${encodeComponent(src.path)} ${encodeComponent(dstFilepath)}`),
-        REPL
+        args
       )
     }
 
@@ -611,13 +611,16 @@ class S3VFSResponder extends S3VFS implements VFS {
     pattern: string,
     filepaths: string[]
   ): Promise<number | string[]> {
-    const perFileResults = await this.doPar(opts, 'grep', filepaths, true, {
-      PATTERN: pattern
-    })
+    const srcs = (await opts.REPL.rexec<GlobStats[]>(`vfs ls ${filepaths.map(_ => encodeComponent(_)).join(' ')}`))
+      .content
+    const perFileResults = await runWithLogs(
+      srcs.map(_ => `cat ${encodeComponent(_.path)} | grep ${encodeComponent(pattern)}`),
+      opts
+    )
 
     if (opts.parsedOptions.c) {
       // user asked for a count; so we need a reduction post-processing pass
-      return perFileResults.map(_ => _.length).reduce((sum, count) => sum + count, 0)
+      return perFileResults.map(_ => _.split(/\n/).filter(_ => _).length).reduce((sum, count) => sum + count, 0)
     } else if (opts.parsedOptions.l) {
       // user asked for a list of matching files; so again we need to post-process
       return perFileResults.reduce((matchingFiles, matches, idx) => {
@@ -628,7 +631,11 @@ class S3VFSResponder extends S3VFS implements VFS {
       }, [])
     } else {
       // otherwise, return the list of matches
-      return flatten(perFileResults)
+      if (perFileResults.every(_ => _.length === 0)) {
+        throw new Error('')
+      } else {
+        return perFileResults
+      }
     }
   }
 
@@ -636,13 +643,13 @@ class S3VFSResponder extends S3VFS implements VFS {
   public async gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
     const { REPL, parsedOptions } = parameters[0]
     const srcFilepaths = parameters[1]
-    const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`))
+    const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`))
       .content
 
     debug('scale-out gzip sources', srcs, parsedOptions)
-    return scaleOut(
+    return runWithProgress(
       srcs.map(src => `gzip ${encodeComponent(src.path)}`),
-      REPL,
+      parameters[0],
       parsedOptions
     )
   }
@@ -651,15 +658,15 @@ class S3VFSResponder extends S3VFS implements VFS {
   public async gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
     const { REPL, parsedOptions } = parameters[0]
     const srcFilepaths = parameters[1]
-    const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => REPL.encodeComponent(_)).join(' ')}`))
+    const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`))
       .content
 
     debug('scale-out gunzip sources', srcs, parsedOptions)
-    return scaleOut(
+    return runWithProgress(
       srcs.map(
         src => `cat ${encodeComponent(src.path)} | gunzip -c - | pipe ${encodeComponent(src.path.replace(/.gz$/, ''))}`
       ),
-      REPL,
+      parameters[0],
       parsedOptions
     )
   }
@@ -674,7 +681,7 @@ class S3VFSForwarder extends S3VFS implements VFS {
   public async ls(opts: Pick<Arguments, 'tab' | 'REPL' | 'parsedOptions'>, filepaths: string[]): Promise<DirEntry[]> {
     return (
       await opts.REPL.rexec<DirEntry[]>(
-        `vfs-s3 ls ${this.mountPath} ${filepaths.map(_ => opts.REPL.encodeComponent(_)).join(' ')}`
+        `vfs-s3 ls ${this.mountPath} ${filepaths.map(_ => encodeComponent(_)).join(' ')}`
       )
     ).content
   }
@@ -690,11 +697,11 @@ class S3VFSForwarder extends S3VFS implements VFS {
     dstProvider: VFS
   ): Promise<string> {
     return opts.REPL.qexec<string>(
-      `vfs-s3 cp ${this.mountPath} ${srcFilepaths
-        .map(_ => opts.REPL.encodeComponent(_))
-        .join(' ')} ${opts.REPL.encodeComponent(dstFilepath)} ${srcIsSelf.join(
-        ','
-      )} ${dstIsSelf.toString()} ${srcProvider.map(_ => _.mountPath).join(',')} ${dstProvider.mountPath}`
+      `vfs-s3 cp ${this.mountPath} ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')} ${encodeComponent(
+        dstFilepath
+      )} ${srcIsSelf.join(',')} ${dstIsSelf.toString()} ${srcProvider.map(_ => _.mountPath).join(',')} ${
+        dstProvider.mountPath
+      }`
     )
   }
 
@@ -704,7 +711,7 @@ class S3VFSForwarder extends S3VFS implements VFS {
     filepath: string,
     recursive?: boolean
   ): ReturnType<VFS['rm']> {
-    return opts.REPL.qexec(`vfs-s3 rm ${this.mountPath} ${opts.REPL.encodeComponent(filepath)} ${!!recursive}`)
+    return opts.REPL.qexec(`vfs-s3 rm ${this.mountPath} ${encodeComponent(filepath)} ${!!recursive}`)
   }
 
   /** Fetch contents */
@@ -716,7 +723,7 @@ class S3VFSForwarder extends S3VFS implements VFS {
   ): Promise<FStat> {
     return (
       await opts.REPL.rexec<FStat>(
-        `vfs-s3 fstat ${this.mountPath} ${opts.REPL.encodeComponent(filepath)} ${!!withData} ${!!enoentOk}`
+        `vfs-s3 fstat ${this.mountPath} ${encodeComponent(filepath)} ${!!withData} ${!!enoentOk}`
       )
     ).content
   }
@@ -726,7 +733,7 @@ class S3VFSForwarder extends S3VFS implements VFS {
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     filepath: string
   ): Promise<void> {
-    await opts.REPL.qexec(`vfs-s3 mkdir ${this.mountPath} ${opts.REPL.encodeComponent(filepath)}`)
+    await opts.REPL.qexec(`vfs-s3 mkdir ${this.mountPath} ${encodeComponent(filepath)}`)
   }
 
   /** remove a directory/bucket */
@@ -734,14 +741,12 @@ class S3VFSForwarder extends S3VFS implements VFS {
     opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     filepath: string
   ): Promise<void> {
-    await opts.REPL.qexec(`vfs-s3 rmdir ${this.mountPath} ${opts.REPL.encodeComponent(filepath)}`)
+    await opts.REPL.qexec(`vfs-s3 rmdir ${this.mountPath} ${encodeComponent(filepath)}`)
   }
 
   public async grep(opts: Arguments, pattern: string, filepaths: string[]): Promise<string[]> {
     return opts.REPL.qexec(
-      `vfs-s3 grep ${this.mountPath} ${opts.REPL.encodeComponent(pattern)} ${filepaths
-        .map(_ => opts.REPL.encodeComponent(_))
-        .join(' ')}`
+      `vfs-s3 grep ${this.mountPath} ${encodeComponent(pattern)} ${filepaths.map(_ => encodeComponent(_)).join(' ')}`
     )
   }
 
