@@ -38,13 +38,27 @@ export default class CodeEngine /* implements JobProvider<JobName> */ {
   } */
 
   /** @return the logs of the give Task of the given Job */
-  public logs(jobName: JobName, taskIdx: number) {
-    return this.repl.qexec<string>(`ibmcloud ce kubectl logs ${jobName}-${taskIdx}-0`)
+  public async logs(jobName: JobName, taskIdx: number) {
+    return (await this.repl.rexec<string>(`ibmcloud ce kubectl logs ${jobName}-${taskIdx}-0`)).content
   }
 
   /** Block until the given job completes */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async wait(jobName: JobName, nTasks: number) {
+    while (true) {
+      const json = await this.repl.qexec<string>(`ibmcloud ce jobrun get --name ${jobName} -o json`).catch(err => {
+        console.error(err)
+        return undefined
+      })
+      if (json && json.status && json.status.succeeded === nTasks) {
+        return
+      } else {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    }
+  }
+
+  /** Show the progress of the job */
+  public async show(jobName: JobName) {
     return this.repl.qexec<Table>(`ibmcloud ce jobrun list ${jobName} --watch`)
   }
 
