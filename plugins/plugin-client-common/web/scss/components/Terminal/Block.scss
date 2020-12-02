@@ -57,6 +57,9 @@ $focus-color: var(--color-brand-01);
       border-color: $input-border-editing;
     }
   }
+  @include Input {
+    white-space: pre-wrap;
+  }
 }
 body[kui-theme-style='light'] {
   .repl-block:not(.repl-active) {
