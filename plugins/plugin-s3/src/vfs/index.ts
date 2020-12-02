@@ -648,7 +648,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
     debug('scale-out gzip sources', srcs, parsedOptions)
     return runWithProgress(
-      srcs.map(src => `gzip ${encodeComponent(src.path)}`),
+      srcs.map(src => `cat ${encodeComponent(src.path)} | gzip -c - | pipe ${encodeComponent(src.path + '.gz')}`),
       parameters[0],
       parsedOptions
     )
