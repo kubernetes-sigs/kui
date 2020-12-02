@@ -113,13 +113,20 @@ $row-height: 1.5em;
     }
 
     @include FinishedBlock {
-      @include Input {
+      @include InputWrapper {
         &:before {
-          content: '$';
-          color: var(--color-base0A);
-          font-size: 0.875rem;
-          margin-right: 0.375rem;
+          content: '';
+          left: -1em;
+          top: -$block-padding;
+          bottom: -$block-padding;
+          width: 4px;
+          position: absolute;
+          filter: opacity(0.375) grayscale(0.25);
+          background-color: var(--color-base0A);
         }
+      }
+      @include Input {
+        color: var(--color-base0A);
       }
     }
   }

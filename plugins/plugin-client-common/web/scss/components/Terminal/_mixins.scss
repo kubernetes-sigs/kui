@@ -137,6 +137,18 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin FinishedBlockWithNoOutput {
+  @include FinishedBlock {
+    &:not([data-is-output-only]) {
+      @include BlockOutput {
+        &:not(.repl-result-has-content) {
+          @content;
+        }
+      }
+    }
+  }
+}
+
 /** Hide the In[1] bits */
 @mixin HideIn {
   @include Block {
