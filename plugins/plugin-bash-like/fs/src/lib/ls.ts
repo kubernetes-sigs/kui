@@ -161,8 +161,7 @@ function attrs(
   const perms = wide && hasPermissions ? [{ value: formatPermissions(entry), outerCSS: outerCSSSecondary }] : []
   const uid = wide && hasUid ? [{ value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
   const gid = wide && hasGid ? [{ value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
-  const size =
-    wide && hasSize ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: 'text-right' }] : []
+  const size = wide && hasSize ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: '' }] : []
   const lastMod =
     wide && hasMtime
       ? [
@@ -207,7 +206,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
   const perms = wide && hasPermissions ? [{ value: 'Permissions', outerCSS: outerCSSSecondary }] : []
   const uid = wide && hasUid ? [{ value: 'User', outerCSS: outerCSSSecondary }] : []
   const gid = wide && hasGid ? [{ value: 'Group', outerCSS: outerCSSSecondary }] : []
-  const size = wide && hasSize ? [{ value: 'Size', outerCSS: `${outerCSSSecondary} text-right` }] : []
+  const size = wide && hasSize ? [{ value: 'Size', outerCSS: '' }] : []
   const lastMod = wide && hasMtime ? [{ value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }] : []
 
   const header = {
