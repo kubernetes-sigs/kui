@@ -1,6 +1,7 @@
 {
   "percentFree": "{0} Free",
   "Apply Changes": "Apply Changes",
+  "Deploy Application": "Deploy Application",
   "All Resources": "All Resources",
   "Successfully Applied": "Successfully Applied",
   "This API Resource is deprecated": "This API Resource is deprecated.",
@@ -20,6 +21,10 @@
   "showSource": "Showing source code. Status: **{0}**",
   "showDryRun": "Previewing the changes that will be applied. Status: **{0}**",
   "showDeployedResources": "Showing deployed resources. Status: **{0}**",
+  "pending changes": "Pending Changes",
+  "no pending changes": "No Pending Changes",
+  "offline": "Offline",
+  "live": "Live",
   "createdOn=X resourceVersion=Y": "Created on **{0}**. Version **{1}**.",
   "resourceVersion=Y": "Version **{0}**",
   "readonly": "You are in read-only view mode",

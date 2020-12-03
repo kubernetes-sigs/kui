@@ -377,24 +377,15 @@ export async function getSources(args: Arguments<KubeOptions>, filepath: string)
 export async function doDryRunMode(
   args: Arguments<KubeOptions>,
   namespace: string,
-  resourcesWithState: KubeResourcesWithDiffState[],
-  applyCommand: string
+  resourcesWithState: KubeResourcesWithDiffState[]
 ) {
   const dryRunBuckets = await categorizeResources(args, namespace, resourcesWithState, false)
   const data = transformBucketsToTree(dryRunBuckets)
-
-  const applyButton = {
-    mode: 'apply',
-    label: strings('Apply'),
-    kind: 'drilldown' as const,
-    command: applyCommand
-  }
 
   return {
     mode: dryRunMode,
     defaultMode: true,
     label: strings('dry run'),
-    toolbarButtons: [applyButton],
     content: {
       apiVersion: 'kui-shell/v1' as const,
       kind: 'TreeResponse' as const,
@@ -417,17 +408,10 @@ export async function doDeployedMode(
   args: Arguments<KubeOptions>,
   namespace: string,
   resourcesWithState: KubeResourcesWithDiffState[],
-  applyCommand: string,
   hasChanges?: boolean
 ) {
   const deployedBuckets = await categorizeResources(args, namespace, resourcesWithState, true)
   const data = transformBucketsToTree(deployedBuckets)
-  const applyButton = {
-    mode: 'apply',
-    label: strings('Apply Changes'),
-    kind: 'drilldown' as const,
-    command: applyCommand
-  }
 
   return {
     mode: deployedMode,
@@ -438,9 +422,8 @@ export async function doDeployedMode(
       data,
       toolbarText: {
         type: 'info',
-        text: strings(`showDeployedResources`, hasChanges ? 'pending changes' : 'no pending change')
-      },
-      toolbarButtons: [applyButton]
+        text: strings(`showDeployedResources`, hasChanges ? strings('pending changes') : strings('no pending changes'))
+      }
     }
   }
 }
