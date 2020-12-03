@@ -1125,6 +1125,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                 if (isMiniSplit) {
                   const isVisibleInMiniSplit =
                     isActive(_) ||
+                    isProcessing(_) ||
                     (scrollback.showThisIdxInMiniSplit >= 0
                       ? idx === scrollback.showThisIdxInMiniSplit
                       : idx === scrollback.showThisIdxInMiniSplit + nBlocks)
