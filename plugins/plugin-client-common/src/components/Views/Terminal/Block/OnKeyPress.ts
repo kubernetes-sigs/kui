@@ -29,6 +29,9 @@ export default async function onKeyPress(this: Input, event: KeyboardEvent) {
     // execUUID. See https://github.com/IBM/kui/issues/5814
     const execUUID = hasUUID(this.props.model) ? this.props.model.execUUID : undefined
 
+    // see https://github.com/IBM/kui/issues/6311
+    this.setState({ isReEdit: false })
+
     doEval(this.props.tab, this.props._block, this.state.prompt.value.trim(), execUUID)
     //                                                                        ^^^^ reusing execUUID
   }
