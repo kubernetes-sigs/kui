@@ -15,3 +15,12 @@
  */
 
 $nav-width: auto;
+$nav-link-max-width: 20rem;
+
+@mixin NavItemMaxWidth {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: $nav-link-max-width;
+}
