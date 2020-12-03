@@ -16,6 +16,7 @@
 
 body {
   --color-sidecar-header: var(--color-base03);
+  --color-sidecar-background: var(--color-base01);
   --color-sidecar-background-01: var(--color-base01);
   --color-sidecar-background-02: var(--color-base03);
 }
