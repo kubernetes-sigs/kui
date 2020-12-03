@@ -14,17 +14,36 @@
  * limitations under the License.
  */
 
-.kui--repl-block-spinner {
+@import '_mixins';
+
+@mixin Spinner {
+  .kui--repl-block-spinner {
+    @content;
+  }
+}
+
+/** When in a minisplit, there is no timestamp/timer, so we need to add a margin-right */
+@include MiniSplit {
+  @include Spinner {
+    margin-right: $repl-context-margin-right;
+  }
+}
+
+@include Spinner {
   --sk-size: 0.75em;
   --sk-color: var(--active-tab-color);
 }
-.repl-context .kui--repl-block-spinner {
-  --sk-size: 0.625em;
+.repl-context {
+  @include Spinner {
+    --sk-size: 0.625em;
+  }
 }
 
 /** Some overrides for the Plane spinner */
-.kui--repl-block-spinner .sk-plane {
-  animation: sk-plane2 1.5s infinite ease-in-out;
+@include Spinner {
+  .sk-plane {
+    animation: sk-plane2 1.5s infinite ease-in-out;
+  }
 }
 @keyframes sk-plane2 {
   0% {
