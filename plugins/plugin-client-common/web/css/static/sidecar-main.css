@@ -16,6 +16,8 @@
 
 @import "SidecarCommon.css";
 
+$toolbar-height: 1.5rem;
+
 .kui--sidecar {
   height: 100%;
   max-height: 100%;
@@ -94,17 +96,28 @@
   display: flex;
   overflow: visible; /* for tooltip visibility */
 
-  .sidecar-toolbar-text p {
-    font-size: inherit;
-    line-height: unset;
+  .sidecar-toolbar-text {
+    p {
+      font-size: inherit;
+    }
+    em {
+      padding: 0.125em 1em;
+      margin: 0 1.25em;
+      font-style: normal;
+      display: inline-block;
+      color: var(--color-sidecar-toolbar-background);
+      background-color: var(--color-sidecar-toolbar-foreground);
+      border-radius: 0.9375em;
+      mix-blend-mode: difference;
+    }
   }
 
   .sidecar-toolbar-text,
   .sidecar-bottom-stripe-mode-bits {
     background-color: var(--color-sidecar-toolbar-background);
     color: var(--color-sidecar-toolbar-foreground);
-    height: 1.5em;
-    line-height: 1.5em;
+    height: $toolbar-height;
+    line-height: $toolbar-height;
     display: flex;
     align-items: center;
     flex: 1;
@@ -138,10 +151,6 @@
     + .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container:not(:empty) {
     flex: 1;
   }
-  .sidecar-toolbar-text-icon,
-  .sidecar-toolbar-text-content {
-    opacity: 0.875;
-  }
   .sidecar-toolbar-text-icon {
     margin-right: 0.375em;
     padding-left: 1em;
@@ -174,6 +183,7 @@
       color: inherit;
       background-color: transparent;
       border: none;
+      font-size: inherit;
       &:hover {
         cursor: pointer;
         [role="tab"] {
@@ -190,7 +200,7 @@
     fill: var(--color-sidecar-toolbar-foreground);
   }
   .sidecar-bottom-stripe-mode-bits.sidecar-bottom-stripe-button-container {
-    padding: 0 0.375em;
+    padding: 0 0.375em 0 1em;
     display: flex;
     flex: initial;
   }
