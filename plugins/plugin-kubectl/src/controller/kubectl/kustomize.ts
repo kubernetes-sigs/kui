@@ -15,7 +15,7 @@
  */
 
 import { resolve, basename } from 'path'
-import { Arguments, Menu, Registrar, i18n } from '@kui-shell/core'
+import { Arguments, Menu, Registrar, expandHomeDir, i18n } from '@kui-shell/core'
 
 import flags from './flags'
 import { kindPartOf } from './fqn'
@@ -27,6 +27,16 @@ import { KubeResource } from '../../lib/model/resource'
 import { isUsage, doHelp } from '../../lib/util/help'
 
 const strings = i18n('plugin-kubectl', 'kustomize')
+
+/**
+ * Tilde expansion of the positional filepath parameter.
+ *
+ */
+function prepare(args: Arguments<KubeOptions>): string {
+  const idx = args.argvNoOptions.indexOf('kustomize')
+  const filepath = args.argvNoOptions[idx + 1]
+  return args.command.replace(new RegExp(filepath, 'g'), expandHomeDir(filepath))
+}
 
 function groupByKind(resources: KubeResource[], rawFull: string): Menu[] {
   const rawSplit = rawFull.split(/---/)
@@ -67,7 +77,7 @@ export const doKustomize = (command = 'kubectl') => async (args: Arguments<KubeO
   if (isUsage(args)) {
     return doHelp(command, args)
   } else {
-    const [yaml, { safeLoadAll }] = await Promise.all([doExecWithStdout(args, undefined, command), import('js-yaml')])
+    const [yaml, { safeLoadAll }] = await Promise.all([doExecWithStdout(args, prepare, command), import('js-yaml')])
     try {
       const resources = safeLoadAll(yaml)
       const inputFile = resolve(args.argvNoOptions[args.argvNoOptions.indexOf('kustomize') + 1])
