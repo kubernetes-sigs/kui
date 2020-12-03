@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.7](https://github.com/IBM/kui/compare/v9.2.6...v9.2.7) (2020-12-03)
+
+### Bug Fixes
+
+- **plugins/plugin-core-themes:** Sidecar header and body may lack contrast ([5c3f6e2](https://github.com/IBM/kui/commit/5c3f6e2)), closes [#6306](https://github.com/IBM/kui/issues/6306)
+
 ## [9.2.6](https://github.com/IBM/kui/compare/v9.2.5...v9.2.6) (2020-12-02)
 
 **Note:** Version bump only for package @kui-shell/plugin-core-themes

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.7](https://github.com/IBM/kui/compare/v9.2.6...v9.2.7) (2020-12-03)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl kustomize does not handle ~ home directory expansion ([35c32a2](https://github.com/IBM/kui/commit/35c32a2)), closes [#6115](https://github.com/IBM/kui/issues/6115)
+- tweak the toolbar text and button label of `k get -f` tree ([25b59f1](https://github.com/IBM/kui/commit/25b59f1)), closes [#6303](https://github.com/IBM/kui/issues/6303)
+
 ## [9.2.6](https://github.com/IBM/kui/compare/v9.2.5...v9.2.6) (2020-12-02)
 
 ### Bug Fixes
