@@ -370,7 +370,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     if (!this.state) {
       return <div className="oops">Internal Error</div>
     } else {
-      const lightweightTables = this.props.response.style === TableStyle.Light && !this.props.isPartOfMiniSplit
+      const lightweightTables = this.props.response.style === TableStyle.Light
       const className =
         'kui--data-table-wrapper' +
         (this.state.asGrid ? ' kui--data-table-as-grid' : '') +
