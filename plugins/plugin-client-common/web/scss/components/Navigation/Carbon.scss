@@ -34,6 +34,7 @@ body[kui-theme-style] {
         a.bx--side-nav__link {
           &:not(.bx--side-nav__link--current) {
             .bx--side-nav__link-text {
+              @include NavItemMaxWidth;
               color: var(--color-text-02);
             }
           }
