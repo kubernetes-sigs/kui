@@ -231,21 +231,19 @@ export async function doTreeMMR(
 ) {
   try {
     const applyCommand = formDashFileCommandFromArgs(args, namespace, filepath, 'apply')
-    const applyButton = {
-      mode: 'apply',
-      label: strings('Apply'),
-      kind: 'drilldown' as const,
-      command: applyCommand
-    }
-
     const isDeployed = resourcesWithState.every(({ originalResponse }) => {
       return (
         isKubeResource(originalResponse) &&
         (!isKubeItems(originalResponse) || (isKubeItems(originalResponse) && originalResponse.items.length !== 0))
       )
     })
-
     const hasChanges = resourcesWithState.findIndex(({ state }) => state === DryRrunState.CHANGED) !== -1
+    const applyButton = (!isDeployed || hasChanges) && {
+      mode: 'apply',
+      label: hasChanges ? strings('Apply Changes') : strings('Deploy Application'),
+      kind: 'drilldown' as const,
+      command: applyCommand
+    }
 
     return {
       kind: 'Resources',
@@ -261,14 +259,14 @@ export async function doTreeMMR(
       defaultMode: isDeployed ? deployedMode : dryRunMode,
       toolbarText: {
         type: 'info',
-        text: strings('showSource', isDeployed ? 'Live' : 'Offline')
+        text: strings('showSource', isDeployed ? strings('live') : strings('offline'))
       },
       modes: [
         await getSources(args, filepath),
         isDeployed
-          ? await doDeployedMode(args, namespace, resourcesWithState, applyCommand, hasChanges)
-          : await doDryRunMode(args, namespace, resourcesWithState, applyCommand),
-        (!isDeployed || hasChanges) && applyButton // if it's deployed, let the mode to decide if it wants to have the apply button according to diff
+          ? await doDeployedMode(args, namespace, resourcesWithState, hasChanges)
+          : await doDryRunMode(args, namespace, resourcesWithState),
+        applyButton
       ].filter(_ => _)
     }
   } catch (err) {
