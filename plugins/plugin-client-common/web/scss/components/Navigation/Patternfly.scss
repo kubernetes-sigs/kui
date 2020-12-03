@@ -32,9 +32,7 @@ body[kui-theme-style] .pf-c-nav {
     }
 
     .pf-c-nav__item .pf-c-nav__list .pf-c-nav__link {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      @include NavItemMaxWidth;
     }
 
     .pf-c-nav__link {
