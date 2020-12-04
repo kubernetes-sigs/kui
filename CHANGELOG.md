@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.8](https://github.com/IBM/kui/compare/v9.2.7...v9.2.8) (2020-12-04)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** ls on s3 vfs directory can fail ([1f31095](https://github.com/IBM/kui/commit/1f31095)), closes [#6316](https://github.com/IBM/kui/issues/6316)
+
 ## [9.2.7](https://github.com/IBM/kui/compare/v9.2.6...v9.2.7) (2020-12-03)
 
 ### Bug Fixes
