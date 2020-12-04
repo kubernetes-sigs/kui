@@ -16,7 +16,7 @@
 
 @import 'mixins.scss';
 @import '../Table/Events';
-@import '../TreeView/mixins';
+@import 'PatternFly-overrides.scss';
 
 body[kui-theme-style] {
   @include Tree {

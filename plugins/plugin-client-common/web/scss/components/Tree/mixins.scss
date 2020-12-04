@@ -14,13 +14,50 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { TreeView, TreeViewProps, TreeViewDataItem as _TreeViewDataItem } from '@patternfly/react-core'
+@mixin Tree {
+  .kui--tree {
+    @content;
+  }
+}
 
-import '../../../../web/scss/components/TreeView/PatternFly-overrides.scss'
+@mixin TreeNavAndBody {
+  .kui--tree-nav-and-body {
+    @content;
+  }
+}
 
-export type TreeViewDataItem = _TreeViewDataItem
+@mixin TreeEvents {
+  .kui--tree-events {
+    @content;
+  }
+}
 
-export default function KuiTreeView(props: TreeViewProps): React.ReactElement {
-  return <TreeView {...props} />
+@mixin TreeViewNav {
+  .pf-c-tree-view {
+    @content;
+  }
+}
+
+@mixin TreeViewBadge {
+  .pf-c-badge {
+    @content;
+  }
+}
+
+@mixin TeeViewItem {
+  .pf-c-tree-view__node {
+    @content;
+  }
+}
+
+@mixin TreeViewItemNotSelected {
+  .pf-c-tree-view__node:not(.pf-m-current) {
+    @content;
+  }
+}
+
+@mixin TreeViewAction {
+  .pf-c-tree-view__action {
+    @content;
+  }
 }

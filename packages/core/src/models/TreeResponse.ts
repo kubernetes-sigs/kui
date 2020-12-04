@@ -15,10 +15,16 @@
  */
 
 import { Entity } from './entity'
-import { SupportedStringContent } from './mmr/content-types'
 import { Button } from './mmr/types'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { CommandCompleteEvent, CommandStartEvent } from '../repl/events'
+
+export enum DiffState {
+  ADDED,
+  DELETED,
+  CHANGED,
+  UNCHANGED
+}
 
 export type TreeItem = {
   /**
@@ -41,23 +47,11 @@ export type TreeItem = {
   /** execute the command when clicking the tree item  */
   onclick?: string
 
-  /** content of a tree item */
-  content: string
+  /** customized badge string */
+  diffBadge?: string
 
-  /** modifed content of a tree item */
-  modifiedContent?: string
-
-  /** diff: will this item be added by later operations? */
-  willBeAdded?: boolean
-
-  /** diff: will this item be deleted by later operations ? */
-  willBeDeleted?: boolean
-
-  /** diff: will this item be modified by later operations ? */
-  willBeModified?: boolean
-
-  /** type of the tree item content */
-  contentType: SupportedStringContent
+  /** diff of the tree node */
+  diff?: DiffState
 
   /** Child nodes of a tree item */
   children?: TreeItem[]

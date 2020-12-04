@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-@mixin Tree {
-  .kui--tree {
-    @content;
-  }
-}
+import { Button, MultiModalResponse, Tab, ToolbarProps, TreeResponse, ToolbarText } from '@kui-shell/core'
 
-@mixin TreeNavAndBody {
-  .kui--tree-nav-and-body {
-    @content;
-  }
-}
+type Props = {
+  response: MultiModalResponse
+  tab: Tab
+  data: TreeResponse['data']
+  toolbarText: ToolbarText
+  toolbarButtons: Button[]
+  execUUID: string // NOTE: we could remove this once this issue is fixed: https://github.com/IBM/kui/issues/6328
+} & ToolbarProps
 
-@mixin TreeEvents {
-  .kui--tree-events {
-    @content;
-  }
-}
+export default Props

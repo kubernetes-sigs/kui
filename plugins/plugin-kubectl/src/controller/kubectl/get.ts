@@ -15,7 +15,16 @@
  */
 
 import { basename } from 'path'
-import { Arguments, CodedError, KResponse, MultiModalResponse, Registrar, isHeadless, i18n } from '@kui-shell/core'
+import {
+  Arguments,
+  CodedError,
+  KResponse,
+  DiffState,
+  MultiModalResponse,
+  Registrar,
+  isHeadless,
+  i18n
+} from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
@@ -30,7 +39,6 @@ import {
   getSources,
   doDeployedMode,
   doDryRunMode,
-  DryRrunState,
   dryRunMode,
   KubeResourcesWithDiffState
 } from '../../lib/util/tree'
@@ -237,7 +245,7 @@ export async function doTreeMMR(
         (!isKubeItems(originalResponse) || (isKubeItems(originalResponse) && originalResponse.items.length !== 0))
       )
     })
-    const hasChanges = resourcesWithState.findIndex(({ state }) => state === DryRrunState.CHANGED) !== -1
+    const hasChanges = resourcesWithState.findIndex(({ state }) => state === DiffState.CHANGED) !== -1
     const applyButton = (!isDeployed || hasChanges) && {
       mode: 'apply',
       label: hasChanges ? strings('Apply Changes') : strings('Deploy Application'),
@@ -313,10 +321,10 @@ export async function doGetAsMMRTree(args: Arguments<KubeOptions>, filepath: str
             const name = cells[0].split('/')[1]
 
             const state = cells[1].includes('unchanged')
-              ? DryRrunState.UNCHANGED
+              ? DiffState.UNCHANGED
               : cells[1].includes('created')
-              ? DryRrunState.ADDED
-              : DryRrunState.CHANGED
+              ? DiffState.ADDED
+              : DiffState.CHANGED
 
             return {
               state,
@@ -333,14 +341,14 @@ export async function doGetAsMMRTree(args: Arguments<KubeOptions>, filepath: str
             .filter(_ => !findInKubeResource(_.kind, _.metadata.name, dryRunResponse))
             .map(_ => {
               return {
-                state: DryRrunState.DELETED,
+                state: DiffState.DELETED,
                 originalResponse: _
               }
             })
         )
       } else if (!findInKubeResource(resource.kind, resource.metadata.name, dryRunResponse)) {
         resourcesWithState.push({
-          state: DryRrunState.DELETED,
+          state: DiffState.DELETED,
           originalResponse: resource
         })
       }
