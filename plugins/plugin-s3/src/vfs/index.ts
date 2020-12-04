@@ -114,7 +114,7 @@ class S3VFSResponder extends S3VFS implements VFS {
       // ls /s3/myBuck*
       const buckets = await this.listBucketsMatching(filepath)
       return flatten(
-        await Promise.all(buckets.map(bucketEntry => this.listObjectsMatching(bucketEntry.name, prefix, pattern, true)))
+        await Promise.all(buckets.map(bucketEntry => this.listObjectsMatching(bucketEntry.name, prefix, pattern)))
       )
     } else {
       // ls /s3/myBucket/myObj*
