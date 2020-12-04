@@ -17,6 +17,8 @@
 import React from 'react'
 import { pexecInCurrentTab } from '@kui-shell/core'
 
+import Popover, { Props as PopoverProps } from '../../spi/Popover'
+
 /** variants of how the information should be presented */
 export type ViewLevel = 'removed' | 'hidden' | 'normal' | 'obscured' | 'ok' | 'warn' | 'error'
 
@@ -30,10 +32,13 @@ interface Props {
   iconOnclick?: string | (() => void)
   textOnclick?: string | (() => void)
   id?: string
+
+  popover?: Pick<PopoverProps, 'bodyContent' | 'headerContent'> & Partial<PopoverProps>
 }
 
 export default class TextWithIconWidget extends React.PureComponent<Props> {
-  public render() {
+  /** Render the content (excluding any popover/tooltip wrappers) part */
+  private content() {
     const iconClassName =
       'kui--status-stripe-icon ' +
       (this.props.iconIsNarrow ? 'tiny-right-pad' : 'small-right-pad') +
@@ -91,5 +96,22 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
         {textPart}
       </div>
     )
+  }
+
+  public render() {
+    if (this.props.popover) {
+      return (
+        <Popover
+          maxWidth="40rem"
+          position="top"
+          triggerClassName="kui--status-stripe-element-wrapper"
+          {...this.props.popover}
+        >
+          {this.content()}
+        </Popover>
+      )
+    } else {
+      return this.content()
+    }
   }
 }

@@ -27,6 +27,7 @@ $bg-type-yellow: var(--color-yellow);
 $bg-type-red: var(--color-red);
 
 $element-border: 1px solid var(--color-table-border2);
+$element-padding: 1rem;
 
 .kui--status-stripe {
   display: flex;
@@ -121,15 +122,19 @@ $element-border: 1px solid var(--color-table-border2);
     font-size: $font-size;
 
     .kui--status-stripe-element {
-      padding-left: calc(1rem * 0.875 / 0.75);
-      padding-right: 1rem;
+      padding-left: calc(#{$element-padding} * 0.875 / 0.75);
+      padding-right: $element-padding;
     }
     .kui--status-stripe-element-wrapper:not(:first-child),
     .kui--status-stripe-element:not(:first-child) {
       border-left: $element-border;
     }
+    .kui--status-stripe-element-wrapper:last-child,
+    .kui--status-stripe-element:last-child {
+      border-right: $element-border;
+    }
     .kui--status-stripe-element:not(:first-child) {
-      padding-left: 1rem;
+      padding-left: $element-padding;
     }
   }
   .kui--status-stripe-button {
@@ -137,10 +142,10 @@ $element-border: 1px solid var(--color-table-border2);
   }
   .kui--status-stripe-meter {
     font-size: $font-size;
-    padding-left: 1rem;
+    padding-left: $element-padding;
     .kui--status-stripe-element {
-      padding-right: 1rem;
-      padding-left: 1rem;
+      padding-right: $element-padding;
+      padding-left: $element-padding;
       border-left: $element-border;
       border-right: $element-border;
 
@@ -184,10 +189,11 @@ $element-border: 1px solid var(--color-table-border2);
   }
 
   .kui--status-stripe-button .kui--status-stripe-element {
-    padding: 0 1rem;
+    padding: 0 $element-padding;
   }
 
   .kui--status-stripe-icon {
+    display: flex;
     opacity: 0.875;
   }
 
