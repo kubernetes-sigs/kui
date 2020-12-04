@@ -1,3 +1,6 @@
 {
-  "Your current git branch": "Your current git branch. Click to view your branches."
+  "Git Branch": "Git Branch",
+  "Your current git branch": "Your current git branch.",
+  "You have made no changes to this branch.": "You have made no changes to this branch.",
+  "You have made the following changes to this branch.": "You have made the following changes to this branch."
 }

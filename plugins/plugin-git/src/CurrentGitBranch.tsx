@@ -15,9 +15,18 @@
  */
 
 import React from 'react'
+import { basename, dirname, join } from 'path'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { wireToStandardEvents, unwireToStandardEvents, getCurrentTab, i18n, CodedError } from '@kui-shell/core'
+import {
+  wireToStandardEvents,
+  unwireToStandardEvents,
+  getCurrentTab,
+  i18n,
+  encodeComponent,
+  pexecInCurrentTab,
+  CodedError
+} from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
 const strings2 = i18n('plugin-git')
@@ -28,6 +37,7 @@ interface Props {
 
 interface State {
   text: string
+  status: string
   viewLevel: ViewLevel
 }
 
@@ -39,6 +49,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
 
     this.state = {
       text: '',
+      status: '',
       viewLevel: 'hidden'
     }
   }
@@ -76,6 +87,10 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
         tab.REPL.qexec<string>('git rev-parse --abbrev-ref HEAD')
       ])
 
+      tab.REPL.qexec<true | string>('git status -s').then(status =>
+        this.setState({ status: status === true ? '' : status })
+      )
+
       // is the branch dirty?
       this.setState({
         text: branch,
@@ -112,6 +127,98 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
     unwireToStandardEvents(this.handler)
   }
 
+  /** @return the header for the Popover component */
+  private popoverHeader() {
+    return (
+      <div>
+        {strings('Git Branch')}: <strong>{this.state.text}</strong>{' '}
+        <span className="sub-text even-smaller-text">{this.changeBranch()}</span>
+      </div>
+    )
+  }
+
+  /** @return the body for the Popover component */
+  private popoverBody() {
+    const statusModel = this.statusModel()
+
+    return (
+      <React.Fragment>
+        {this.summary(statusModel)}
+        {this.changes(statusModel)}
+      </React.Fragment>
+    )
+  }
+
+  /** @return a model of `git status -s` */
+  private statusModel() {
+    return !this.state.status
+      ? []
+      : this.state.status
+          .split(/\n/)
+          .map(line => {
+            const match = line.match(/(.+)\s+(.+)/)
+            if (match) {
+              return { M: match[1], file: match[2] }
+            }
+          })
+          .filter(_ => _)
+  }
+
+  /** @return UI that summarizes the `statusModel` changes */
+  private summary(statusModel: ReturnType<CurrentGitBranch['statusModel']>) {
+    return (
+      <span className="sub-text">
+        {statusModel.length > 0
+          ? strings('You have made the following changes to this branch.')
+          : strings('You have made no changes to this branch.')}
+      </span>
+    )
+  }
+
+  /** @return UI for changes represented by `statusModel` */
+  private changes(statusModel: ReturnType<CurrentGitBranch['statusModel']>) {
+    return (
+      <div className="small-top-pad monospace even-smaller-text pre-wrap">
+        {statusModel.map(({ M, file }) => (
+          <div key={`${M}-${file}`} className="tiny-top-pad">
+            {[...M].map(m => (
+              <strong
+                key={m}
+                className={/M/.test(m) ? 'red-text' : /D/.test(m) ? 'red-text' : /A/.test(m) ? 'cyan-text' : ''}
+              >
+                {m}
+              </strong>
+            ))}
+            <span
+              title={file}
+              className="small-left-pad clickable"
+              onClick={() => pexecInCurrentTab(`git diff ${encodeComponent(file)}`)}
+            >
+              {join(basename(dirname(file)), basename(file))}
+            </span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  /** @return desired Popover model */
+  private popover() {
+    return {
+      bodyContent: this.popoverBody(),
+      headerContent: this.popoverHeader()
+    }
+  }
+
+  /** @return UI for changing branches */
+  private changeBranch() {
+    return (
+      <a href="#" onClick={() => pexecInCurrentTab('git branch')}>
+        change
+      </a>
+    )
+  }
+
   public render() {
     return (
       <TextWithIconWidget
@@ -120,8 +227,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
         viewLevel={this.state.viewLevel}
         id="kui--plugin-git--current-git-branch"
         title={strings2('Your current git branch')}
-        iconOnclick="git status"
-        textOnclick="git branch"
+        popover={this.popover()}
       >
         <Icons icon="CodeBranch" />
       </TextWithIconWidget>
