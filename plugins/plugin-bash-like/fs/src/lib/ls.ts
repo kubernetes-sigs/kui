@@ -27,7 +27,7 @@ import {
   TableStyle
 } from '@kui-shell/core'
 
-import { FStat, GlobStats } from '..'
+import { GlobStats } from '..'
 import { localFilepath } from './usage-helpers'
 
 const dateFormatter = speedDate('MMM DD HH:mm')
@@ -161,14 +161,17 @@ function attrs(
   const perms = wide && hasPermissions ? [{ value: formatPermissions(entry), outerCSS: outerCSSSecondary }] : []
   const uid = wide && hasUid ? [{ value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
   const gid = wide && hasGid ? [{ value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
-  const size = wide && hasSize ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: '' }] : []
+  const size =
+    wide && hasSize
+      ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: '', css: 'yellow-text' }]
+      : []
   const lastMod =
     wide && hasMtime
       ? [
           {
             value: prettyTime(entry.stats.mtimeMs),
             outerCSS: outerCSSLesser,
-            css: `${cssLesser} ${cssSecondary} pre-wrap`
+            css: `${cssLesser} ${cssSecondary} pre-wrap sub-text`
           }
         ]
       : []
@@ -254,9 +257,7 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
   const entries = (await opts.REPL.rexec<GlobStats[]>(cmdline)).content
 
   if (entries.length === 0) {
-    const isDirs = await Promise.all(
-      srcs.map(_ => opts.REPL.rexec<FStat>(`vfs fstat ${encodeComponent(_)}`).then(_ => _.content.isDirectory))
-    )
+    const isDirs = entries.map(_ => _.dirent.isDirectory)
     if (isDirs.some(_ => !_)) {
       // ls on at least one non-directory yielded no entries (converseley: it is not an error if an ls on only-directories yielded no entries)
       const error: CodedError = new Error(
