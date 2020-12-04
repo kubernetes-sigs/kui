@@ -49,9 +49,10 @@ export { default as TopNavSidecar } from './components/Views/Sidecar/TopNavSidec
 export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSidecarV2'
 
 // SPI
-export { default as Card } from './components/spi/Card'
-export { default as Tag } from './components/spi/Tag'
 export { default as Alert } from './components/spi/Alert'
+export { default as Card } from './components/spi/Card'
+export { default as Popover } from './components/spi/Popover'
+export { default as Tag } from './components/spi/Tag'
 
 // Input components
 export {
