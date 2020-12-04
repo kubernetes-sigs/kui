@@ -38,7 +38,7 @@ import {
 import Eval from './Eval'
 import Editor from './Editor'
 import renderTable from './Table'
-import Tree from './Tree'
+import Tree from '../spi/Tree'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
@@ -55,6 +55,7 @@ export type KuiMMRProps = ToolbarProps & {
     argvNoOptions: string[]
     parsedOptions: ParsedOptions
   }
+  execUUID: string // NOTE: we could remove this once this issue is fixed: https://github.com/IBM/kui/issues/6328
 }
 
 interface State {
@@ -139,6 +140,7 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
             toolbarText={mode.content.toolbarText}
             toolbarButtons={mode.content.toolbarButtons}
             willUpdateToolbar={willUpdateToolbar}
+            execUUID={this.props.execUUID}
           />
         )
       } else {

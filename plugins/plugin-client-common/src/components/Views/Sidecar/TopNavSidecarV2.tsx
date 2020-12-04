@@ -223,6 +223,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
           parsedOptions: this.props.parsedOptions
         }}
         response={this.props.response}
+        execUUID={this.props.execUUID}
       />
     )
   }

@@ -25,6 +25,10 @@
 // override padding-left of the tree root
 .pf-c-tree-view {
   --pf-c-tree-view__node--PaddingLeft: var(--pf-global--spacer--sm);
+
+  .pf-c-tree-view__action {
+    padding-right: var(--pf-global--spacer--sm);
+  }
 }
 
 // override padding-left of each nested tree node
