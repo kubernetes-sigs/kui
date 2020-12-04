@@ -57,12 +57,9 @@ import {
   PlayCircleIcon as Play
 } from '@patternfly/react-icons'
 
-// we cannot find a good split icon from fontawesome
-import { SplitScreen20 as Split } from '@carbon/icons-react'
-
 import { Props } from '..'
 
-const size20 = { fontSize: '0.875em' }
+const size20 = { fontSize: '1rem' }
 const size32 = { fontSize: '32px', padding: '3px' }
 const Sidecar = { fontSize: '1.125em' }
 const StatusStripe = Sidecar
@@ -101,7 +98,7 @@ export default function PatternFly4Icons(props: Props) {
     case 'Github':
       return <Github {...props} />
     case 'Help':
-      return <Help {...props} />
+      return <Help style={size20} {...props} />
     case 'Info':
       return <Info {...props} />
     case 'List':
@@ -129,7 +126,7 @@ export default function PatternFly4Icons(props: Props) {
     case 'Server':
       return <Server {...props} />
     case 'Settings':
-      return <Settings {...props} />
+      return <Settings style={size20} {...props} />
     case 'Sequence':
       return <Sequence {...props} />
     case 'Screenshot':
@@ -137,7 +134,7 @@ export default function PatternFly4Icons(props: Props) {
     case 'ScreenshotInProgress':
       return <ScreenshotInProgress {...props} />
     case 'Split':
-      return <Split {...props} />
+      return <TerminalPlusSidecar style={size20} {...props} />
     case 'Trash':
       return <Trash {...props} />
     case 'TerminalOnly':
