@@ -18,4 +18,22 @@
     background-color: var(--color-yellow-sidecar);
     color: var(--color-base00);
   }
+  &.pf-c-badge {
+    &.yellow-background {
+      background-color: var(--color-yellow-sidecar);
+      color: var(--color-base00);
+    }
+    &.red-background {
+      background-color: var(--color-red);
+      color: var(--color-base07);
+    }
+    &.green-background {
+      background-color: var(--color-green);
+      color: var(--color-base00);
+    }
+    &.bx--tag--warm-gray {
+      background-color: var(--color-yellow-sidecar);
+      color: var(--color-base00);
+    }
+  }
 }

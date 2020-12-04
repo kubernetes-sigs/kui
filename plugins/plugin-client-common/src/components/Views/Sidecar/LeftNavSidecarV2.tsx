@@ -104,6 +104,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, NavigationM
             parsedOptions: this.props.parsedOptions
           }}
           response={{ modes: this.current.response.menus[menuIdx].items }}
+          execUUID={this.props.execUUID}
         />
       </React.Suspense>
     )

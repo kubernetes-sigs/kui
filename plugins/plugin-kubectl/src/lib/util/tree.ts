@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, i18n, TreeItem, TreeResponse, Table } from '@kui-shell/core'
+import { Arguments, DiffState, i18n, TreeItem, TreeResponse, Table } from '@kui-shell/core'
 
 import { KubeOptions, withKubeconfigFrom } from '../../controller/kubectl/options'
 import { KubeResource, hasEvents } from '../model/resource'
@@ -26,21 +26,14 @@ export const dryRunMode = 'dry run'
 
 export interface KubeResourcesWithDiffState {
   originalResponse: KubeResource
-  state?: DryRrunState
+  state?: DiffState
   changedResponse?: KubeResource
-}
-
-export enum DryRrunState {
-  ADDED,
-  DELETED,
-  CHANGED,
-  UNCHANGED
 }
 
 export interface DryRun {
   name: string
   kind: string
-  state: DryRrunState
+  state: DiffState
   response?: KubeResource
 }
 
@@ -55,9 +48,7 @@ interface BucketValue {
   raw: string
   isIntermediate?: boolean
   modifiedRaw?: string
-  willBeAdded?: boolean
-  willBeDeleted?: boolean
-  willBeModified?: boolean
+  diff: TreeItem['diff']
   id: string
   name: string
   extends: TreeItem['extends']
@@ -170,9 +161,6 @@ async function categorizeResources(
       const kind = resource.kind
       const name = resource.metadata.name
       const raw = originalResponse ? originalResponse.kuiRawData || (await safeDump(originalResponse)) : ''
-      const willBeDeleted = state && state === DryRrunState.DELETED
-      const willBeModified = state && state === DryRrunState.CHANGED
-      const willBeAdded = state === DryRrunState.ADDED
       const modifiedRaw = changedResponse && (changedResponse.kuiRawData || (await safeDump(changedResponse)))
 
       const eventArgs = doEvents && hasEvents(resource) ? getArgsThatProducesEvents(cmd, args, namespace) : undefined
@@ -180,29 +168,13 @@ async function categorizeResources(
       const append = (
         bucket: Bucket,
         label: string,
-        key?: string,
+        key: string,
         isIntermediate?: boolean,
         defaultExpanded?: boolean,
-        onclick?: string
+        onclick?: string,
+        diff?: DiffState
       ) => {
-        if (!key) {
-          return Object.assign(bucket, {
-            raw,
-            name: label,
-            onclick,
-            extends: {
-              kind: [kind],
-              name: [name]
-            },
-            isIntermediate,
-            willBeDeleted,
-            willBeModified,
-            willBeAdded,
-            modifiedRaw,
-            defaultExpanded,
-            eventArgs
-          })
-        } else if (!bucket[key]) {
+        if (!bucket[key]) {
           return Object.assign(bucket, {
             [key]: {
               raw,
@@ -212,12 +184,10 @@ async function categorizeResources(
                 kind: [kind],
                 name: [name]
               },
+              diff,
               isIntermediate,
               defaultExpanded,
               modifiedRaw,
-              willBeDeleted,
-              willBeAdded,
-              willBeModified,
               eventArgs
             }
           })
@@ -277,7 +247,15 @@ async function categorizeResources(
         const isIntermediate = key === 'kind' || key === 'tiers' || key === 'apps' || key === 'unlabeled'
         const onclick = key === 'name' && withKubeconfigFrom(args, `${cmd} get ${kind} ${name} -n ${namespace} -o yaml`)
         const defaultExpanded = isIntermediate || key === 'tier'
-        append(buckets[key], strings(value), bucketId, isIntermediate, defaultExpanded, onclick)
+        append(
+          buckets[key],
+          strings(value),
+          bucketId,
+          isIntermediate,
+          defaultExpanded,
+          onclick,
+          key === 'name' ? state : undefined
+        )
       })
     })
   )
@@ -292,7 +270,7 @@ async function categorizeResources(
 function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
   const levels = Object.keys(buckets)
 
-  const next = (buckets: Buckets, idx: number, findNextBucketByKey?: string) => {
+  const next = (buckets: Buckets, idx: number, findNextBucketByKey?: string): TreeItem[] => {
     const findNextBucket = (idx: number, filterKey: string) => {
       if (levels[idx]) {
         if (!filterKey) {
@@ -312,7 +290,9 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
 
     return !nextBucket || nextBucket.length === 0
       ? undefined
-      : nextBucket.map(([key, value], idx) => {
+      : nextBucket.map(([key, _value], idx) => {
+          const value = _value as BucketValue
+          const children = next(buckets, idx + 1, key)
           return {
             id: value.id,
             name: value.name,
@@ -320,14 +300,9 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
             defaultExpanded: value.defaultExpanded,
             onclick: value.onclick,
             extends: value['extends'],
-            content: value.raw,
-            contentType: 'yaml' as const,
-            modifiedContent: value.modifiedRaw,
-            willBeAdded: value.willBeAdded,
-            willBeDeleted: value.willBeDeleted,
-            willBeModified: value.willBeModified,
+            diff: value.diff,
             eventArgs: value.eventArgs,
-            children: next(buckets, idx + 1, key)
+            children
           }
         })
   }
@@ -335,21 +310,17 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
   if (buckets.tiers) {
     return next(buckets, 1)
   } else {
+    const children = next(buckets, 1)
     const data = [
       {
         name: buckets.all.all.name,
         id: buckets.all.all.id,
         onclick: buckets.all.all.onclick,
-        willBeAdded: buckets.all.all.willBeAdded,
-        willBeDeleted: buckets.all.all.willBeDeleted,
-        willBeModified: buckets.all.all.willBeModified,
         extends: buckets.all.all.extends,
-        content: buckets.all.all.raw,
-        contentType: 'yaml' as const,
-        modifiedContent: buckets.all.all.modifiedRaw,
+        diff: buckets.all.all.diff,
         eventArgs: buckets.all.all.eventArgs,
         defaultExpanded: true,
-        children: next(buckets, 1)
+        children
       }
     ]
 

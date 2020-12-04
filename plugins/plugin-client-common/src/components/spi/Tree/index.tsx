@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-@mixin TreeViewNav {
-  .pf-c-tree-view {
-    @content;
-  }
-}
+import React from 'react'
 
-@mixin TreeViewBadge {
-  .pf-c-badge {
-    @content;
-  }
-}
+import KuiContext from '../../Client/context'
+import Props from './model'
+import PatternFly4 from './impl/PatternFly'
 
-@mixin TeeViewItem {
-  .pf-c-tree-view__node {
-    @content;
-  }
-}
+export { Props }
 
-@mixin TreeViewItemNotSelected {
-  .pf-c-tree-view__node:not(.pf-m-current) {
-    @content;
-  }
+export default function TreeSpi(props: Props): React.ReactElement {
+  return <KuiContext.Consumer>{() => <PatternFly4 {...props} />}</KuiContext.Consumer>
 }
