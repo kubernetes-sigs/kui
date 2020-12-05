@@ -26,7 +26,8 @@ body {
   display: flex;
   flex-direction: column;
 
-  .kui--repl-block-experimental-tag {
+  /** Pack the experimental tag a bit more tightly */
+  @include ExperimentalTag {
     margin: 0;
     .kui--tag {
       height: 1.25em;
@@ -34,12 +35,17 @@ body {
     }
   }
 
-  .kui--repl-block-timestamp {
+  /** Do not show the block timestamp */
+  @include BlockTimestamp {
     display: none;
   }
 
-  .repl-block {
+  /** Pack the blocks more tightly */
+  @include FinishedBlock {
     margin: 0;
+  }
+  @include ActiveBlock {
+    margin-bottom: 0;
   }
 
   .repl-prompt {
@@ -47,12 +53,17 @@ body {
   }
 
   /** Do not wrap input in minisplit (we don't have a lot of space) */
-  .repl-input {
+  @include BlockInput {
     flex-wrap: nowrap;
   }
-  .repl-block:not(.repl-active) .repl-input-element-wrapper {
-    background-color: $input-bg-minisplit;
+
+  /** Special background for the input wrapper of finished blocks */
+  @include FinishedBlock {
+    @include InputWrapper {
+      background-color: $input-bg-minisplit;
+    }
   }
+
   .repl-block.kui--maximize-candidate {
     &:not(.repl-active):not(.processing) {
       flex: 1;
@@ -113,8 +124,4 @@ body {
       }
     }
   }
-  /*.repl-block + .repl-block.repl-active {
-    flex: 1;
-    justify-content: flex-end;
-  }*/
 }

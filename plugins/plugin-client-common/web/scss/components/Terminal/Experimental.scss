@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-@import '_mixins';
-
-@mixin ExperimentalTag {
-  /** Notes: Tag Carbon impl is the former; PatternFly impl is the latter */
-  .kui--repl-block-experimental-tag .kui--tag,
-  .kui--repl-block-experimental-tag.kui--tag {
-    @content;
-  }
-}
+@import 'mixins';
 
 @include Scrollback {
   @include ExperimentalTag {
