@@ -15,6 +15,9 @@
  */
 
 @import 'mixins';
+@import '../Table/lightweight_mixins';
+
+$block-padding: 0.25em;
 
 body {
   --color-repl-background-02: var(--color-base02);
@@ -26,6 +29,8 @@ body {
   display: flex;
   flex-direction: column;
 
+  @include LightweightBlocks;
+
   /** Pack the experimental tag a bit more tightly */
   @include ExperimentalTag {
     margin: 0;
@@ -35,17 +40,18 @@ body {
     }
   }
 
-  /** Do not show the block timestamp */
-  @include BlockTimestamp {
-    display: none;
-  }
-
   /** Pack the blocks more tightly */
   @include FinishedBlock {
     margin: 0;
   }
   @include ActiveBlock {
     margin-bottom: 0;
+  }
+
+  @include BlockTimestamp {
+    .sub-text {
+      opacity: 1;
+    }
   }
 
   .repl-prompt {
@@ -58,11 +64,11 @@ body {
   }
 
   /** Special background for the input wrapper of finished blocks */
-  @include FinishedBlock {
+  /* @include FinishedBlock {
     @include InputWrapper {
       background-color: $input-bg-minisplit;
     }
-  }
+  } */
 
   .repl-block.kui--maximize-candidate {
     &:not(.repl-active):not(.processing) {
