@@ -208,3 +208,12 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+/** Special designation for the output of experimental commands */
+@mixin ExperimentalTag {
+  /** Notes: Tag Carbon impl is the former; PatternFly impl is the latter */
+  .kui--repl-block-experimental-tag .kui--tag,
+  .kui--repl-block-experimental-tag.kui--tag {
+    @content;
+  }
+}
