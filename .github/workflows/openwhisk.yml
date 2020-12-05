@@ -1,0 +1,30 @@
+name: openwhisk
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        TRAVIS_HOME: $GITHUB_WORKSPACE
+        TRAVIS_BUILD_DIR: $GITHUB_WORKSPACE
+        TRAVIS_JOB_ID: $GITHUB_RUN_ID
+        TRAVIS_OS_NAME: linux
+        TRAVIS_CPU_ARCH: amd64
+        NEEDS_OPENWHISK: true
+        LOCAL_OPENWHISK: true
+        LAYERS: "openwhisk0"
+      run: ./tools/travis/install.sh && npm run testv2 $LAYERS

@@ -1,0 +1,36 @@
+name: Browser k8s2, k8s3, k8s4
+
+on: [push, pull_request]
+#on:
+#  push:
+#    branches: [ master ]
+#  pull_request:
+#    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        TRAVIS_HOME: $GITHUB_WORKSPACE
+        TRAVIS_BUILD_DIR: $GITHUB_WORKSPACE
+        TRAVIS_JOB_ID: $GITHUB_RUN_ID
+        TRAVIS_OS_NAME: linux
+        TRAVIS_CPU_ARCH: amd64
+        NEEDS_K8S: true
+        NEEDS_OC: true
+        NEEDS_TOP: true
+        MOCHA_RUN_TARGET: webpack
+      run: ./tools/travis/install.sh && concurrently -n K8S3,K8S4 'npm run test1 k8s3' 'npm run test2 k8s4' && concurrently -n K8S2 'npm run test1 k8s2'
