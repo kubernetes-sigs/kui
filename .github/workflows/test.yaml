@@ -1,0 +1,183 @@
+name: test
+
+on: [push, pull_request]
+
+env:
+  BUILD_ENV: production
+  CSP_ALLOWED_HOSTS: "http://localhost:8081 ws://localhost:8081 http://localhost:9953 ws://localhost:9080 http://localhost:9080 ws://localhost:9081 http://localhost:9081 ws://localhost:9082 http://localhost:9082 ws://localhost:9084 http://localhost:9084"
+  NO_OPT: true
+  NO_INSTALLER: true
+  TRAVIS_OS_NAME: linux
+  TRAVIS_HOME: ${{ github.workspace }}
+  TRAVIS_BUILD_DIR: ${{ github.workspace }}
+  TRAVIS_JOB_ID: ${{ github.run_id }}
+  TRAVIS_CPU_ARCH: amd64
+  TRAVIS_KUBE_SERVER_VERSION: 17
+  TRAVIS_KUBE_VERSION: 1.18.3
+  TRAVIS_HELM_VERSION: 3.3.4
+  TRAVIS_OC_VERISON: 4.3.3
+  WEBPACK_CLIENT_URL: "http://localhost:9080/"
+  WINDOW_WIDTH: 1400
+  WINDOW_HEIGHT: 1050
+  RUNNING_KUI_TEST: true
+  KUI_USE_PROXY: true
+
+jobs:
+  api-browser:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: test
+        MOCHA_RUN_TARGET: webpack
+      run: ./tools/travis/install.sh && TEST_ROOT=packages/test TEST_SUITE_ROOT=node_modules/@kui-shell NYC_INSTRUMENTATION_DONE=true npm run compile && npx concurrently -n API1,API2 'npm run test1 api1' 'npm run test2 api2' && ./bin/switch-client.sh alternate >& /tmp/alt-switch.out && npm run kill || true; npm run kill:proxy || true && npm run watch:$MOCHA_RUN_TARGET >& /tmp/alt-watch.out && BOTTOM_INPUT_MODE=true npx concurrently -n BOTTOM 'npm run testv2 bottom-input'
+  
+  api-electron:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: test
+        MOCHA_RUN_TARGET: electron
+      run: ./tools/travis/install.sh && npm run testv2 api-popup && npx concurrently -n API1,API2 'npm run test1 api1' 'npm run test2 api2'
+
+  bash-core-browser:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: webpack
+        NEEDS_BASH_PREP: true
+        NEEDS_GIT: true
+      run: ./tools/travis/install.sh && npx concurrently -n CORE,SUP1,EDIT,SUP2,BASH 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2' 'npm run test5 bash-like'
+
+  bash-electron:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: electron
+        NEEDS_BASH_PREP: true
+        NEEDS_GIT: true
+        TEST_FROM_BUILD: ${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui
+      run: ./tools/travis/install.sh && npm run test1 bash-like-wait && npm run test1 bash-like
+
+  k8s-browser:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: webpack
+        NEEDS_K8S: true
+        NEEDS_OC: true
+        NEEDS_TOP: true
+      run: ./tools/travis/install.sh && npx concurrently -n K8S3,K8S4 'npm run test1 k8s3' 'npm run test2 k8s4' && npx concurrently -n K8S2 'npm run test1 k8s2'
+
+  k8s-chaos:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: webpack
+        NEEDS_K8S: true
+        NEEDS_OC: true
+        NEEDS_TOP: true
+        TRAVIS_CHAOS_TESTING: true
+      run: ./tools/travis/install.sh && npx concurrently -n K8S2 'npm run test1 k8s2'
+
+  k8s-electron:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: electron
+        NEEDS_K8S: true
+        NEEDS_OC: true
+        NEEDS_TOP: true
+        NEEDS_HELM: true
+        TEST_FROM_BUILD: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
+        KUI_DIST_PATH: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
+      run: ./tools/travis/install.sh && npx concurrently -n K8S 'npm run test1 k8s k8s-popup' && npx concurrently -n K8S1,LOGS,HELM 'npm run test1 k8s1' 'npm run test2 logs' 'npm run test3 helm' 
+
+  osx:
+    runs-on: macos-10.15
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: electron
+        NEEDS_GIT: true
+        HOMEBREW_NO_AUTO_UPDATE: 1
+        HOMEBREW_NO_INSTALL_CLEANUP: 1
+        TRAVIS_OS_NAME: osx
+        TEST_FROM_BUILD: ${{ github.workspace }}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui
+      run: ./tools/travis/install.sh && (which jq || brew install jq) && npx concurrently -n COPY 'npm run test1 core-standalone' && npx concurrently -n CORE,EDIT,SUP1,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
