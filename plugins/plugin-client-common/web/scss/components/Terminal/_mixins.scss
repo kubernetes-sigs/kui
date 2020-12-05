@@ -82,9 +82,21 @@ $action-hover-delay: 210ms;
 
 @mixin BlockHoverOrFocus {
   @include Scrollback {
-    li:focus,
-    .repl-input:hover {
-      @content;
+    @include Block {
+      &:focus {
+        @include Input {
+          &:hover {
+            @content;
+          }
+        }
+      }
+    }
+    @include FinishedBlock {
+      @include Input {
+        &:hover {
+          @content;
+        }
+      }
     }
   }
 }
