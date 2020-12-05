@@ -85,12 +85,7 @@ commands.forEach(command => {
 
     it(`should fail with suggestion for invalid command syntax via ${command} describe`, () => {
       return CLI.command(`${command} describe`, this.app)
-        .then(
-          ReplExpect.error(
-            500,
-            `error: You must specify the type of resource to describe. Use "${execCommand} api-resources" for a complete list of supported resources`
-          )
-        )
+        .then(ReplExpect.error(500, `error: You must specify the type of resource to describe.`))
         .catch(Common.oops(this, true))
     })
 

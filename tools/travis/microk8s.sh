@@ -26,12 +26,6 @@ mkdir -p ~/.kube
 
 # Download and install misc packages and utilities
 pushd /tmp
-  # Download and install kubectl
-  echo "Downloading this kubectl: https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl"
-  curl --retry 5 -LO https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl && \
-       sudo cp kubectl /usr/local/bin/kubectl && \
-       sudo chmod a+rx /usr/local/bin/kubectl
-
   # Download and install helm
   #  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh
   if [ -n "$NEEDS_HELM" ]; then
@@ -74,6 +68,13 @@ echo "smashing microk8s kubeconfig into .kube/config [SUCCESS]"
 # Pods running in kube-system namespace should have cluster-admin role
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 
-kubectl version -o json
-
 echo "microk8s setup script done"
+
+# Download and install kubectl (microk8s has its own kubectl, make sure we override it with the version we want)
+echo "Downloading this kubectl: https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl"
+  curl --retry 5 -LO https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl && \
+       sudo cp kubectl /usr/local/bin/kubectl && \
+       sudo chmod a+rx /usr/local/bin/kubectl
+
+kubectl version -o json
+which kubectl
