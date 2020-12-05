@@ -15,6 +15,7 @@
  */
 
 @import 'mixins';
+@import 'lightweight_mixins';
 @import '../Table/mixins';
 @import '../Sidecar/mixins';
 @import '../Terminal/mixins';
@@ -25,15 +26,13 @@
 $block-padding: 0.25em;
 $row-height: 1.5em;
 
-@mixin NoPadding {
-  padding: 0;
-  border: none;
-  background-color: transparent;
-}
-
 @include LightweightUI {
   font-size: 0.8125rem; /* 13px */
   --kui--font-factor: 0.8125/0.875;
+
+  @include SideBySide {
+    @include LightweightBlocks;
+  }
 
   @include TableCard {
     background: none;
@@ -49,34 +48,6 @@ $row-height: 1.5em;
     padding-top: 0;
     padding-bottom: 0;
     border: none;
-  }
-
-  @include FinishedBlock {
-    @include InputWrapper {
-      @include NoPadding;
-    }
-    @include Input {
-      @include NoPadding;
-    }
-  }
-  @include ProcessingBlock {
-    @include InputWrapper {
-      @include NoPadding;
-    }
-    @include Input {
-      @include NoPadding;
-    }
-  }
-
-  @include Block {
-    padding: $block-padding 0;
-  }
-
-  @include BlockOutput {
-    margin-top: $block-padding;
-  }
-  @include FinishedBlockWithInputAndOutput {
-    margin-top: $block-padding;
   }
 
   @include NestedSidecar {
@@ -97,53 +68,6 @@ $row-height: 1.5em;
       @include SidecarTitleBarButtons {
         opacity: 1;
       }
-    }
-  }
-
-  @include ActiveBlock {
-    padding: $block-padding 0;
-  }
-  @include ProcessingBlock {
-    padding: $block-padding 0;
-  }
-
-  @include WidthConstrained {
-    @include BlockDuration {
-      opacity: 1;
-    }
-
-    @include FinishedBlock {
-      @include InputWrapper {
-        &:before {
-          content: '';
-          left: -1em;
-          top: -$block-padding;
-          bottom: -$block-padding;
-          width: 4px;
-          position: absolute;
-          filter: opacity(0.375) grayscale(0.25);
-          background-color: var(--color-base0A);
-        }
-      }
-      @include Input {
-        color: var(--color-base0A);
-      }
-    }
-  }
-
-  @include BlockTimestamp {
-    color: var(--color-base0A);
-
-    .sub-text {
-      color: inherit;
-      opacity: 0.85;
-    }
-  }
-
-  @include BlockInput {
-    @include BlockActions {
-      top: -3px;
-      bottom: -3px;
     }
   }
 
