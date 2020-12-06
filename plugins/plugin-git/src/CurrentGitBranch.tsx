@@ -130,10 +130,13 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
   /** @return the header for the Popover component */
   private popoverHeader() {
     return (
-      <div>
-        {strings('Git Branch')}: <strong>{this.state.text}</strong>{' '}
-        <span className="sub-text even-smaller-text">{this.changeBranch()}</span>
-      </div>
+      <React.Fragment>
+        <div>{strings('Git Branch')}</div>
+        <div>
+          <strong>{this.state.text}</strong>
+        </div>
+        <div className="sub-text even-smaller-text">{this.changeBranch()}</div>
+      </React.Fragment>
     )
   }
 
@@ -181,9 +184,9 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
       <div className="small-top-pad monospace even-smaller-text pre-wrap">
         {statusModel.map(({ M, file }) => (
           <div key={`${M}-${file}`} className="tiny-top-pad">
-            {[...M].map(m => (
+            {[...M].map((m, idx) => (
               <strong
-                key={m}
+                key={`${m}-${idx}`}
                 className={/M/.test(m) ? 'red-text' : /D/.test(m) ? 'red-text' : /A/.test(m) ? 'cyan-text' : ''}
               >
                 {m}
@@ -214,7 +217,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
   private changeBranch() {
     return (
       <a href="#" onClick={() => pexecInCurrentTab('git branch')}>
-        change
+        {strings2('Switch branch')}
       </a>
     )
   }

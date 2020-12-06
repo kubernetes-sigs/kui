@@ -42,6 +42,7 @@ export { default as KuiContext } from './components/Client/context'
 
 // Content components
 export { default as Loading } from './components/spi/Loading'
+export { default as Markdown } from './components/Content/Markdown'
 export { default as HTMLDom } from './components/Content/Scalar/HTMLDom'
 
 // sidecar components

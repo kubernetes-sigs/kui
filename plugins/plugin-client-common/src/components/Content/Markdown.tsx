@@ -16,9 +16,11 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { dirname, join, relative } from 'path'
+import TurndownService from 'turndown'
 import ReactMarkdown from 'react-markdown'
+import { dirname, join, relative } from 'path'
 import { REPL, Tab as KuiTab } from '@kui-shell/core'
+
 import {
   Link,
   StructuredListWrapper,
@@ -39,6 +41,7 @@ import '../../../web/scss/components/StructuredList/Carbon.scss'
 
 interface Props {
   source: string
+  contentType?: 'text/html' | 'application/markdown'
 
   tab?: KuiTab
   repl?: REPL
@@ -67,10 +70,19 @@ export default class Markdown extends React.PureComponent<Props> {
     return `${this._uuid}-${txt}`
   }
 
+  /** @return markdown source, as string in application/markdown format */
+  private source() {
+    if (this.props.contentType === 'text/html') {
+      return new TurndownService().turndown(this.props.source)
+    } else {
+      return this.props.source
+    }
+  }
+
   public render() {
     return (
       <ReactMarkdown
-        source={this.props.source}
+        source={this.source()}
         className={
           this.props.className ||
           'padding-content marked-content page-content' +

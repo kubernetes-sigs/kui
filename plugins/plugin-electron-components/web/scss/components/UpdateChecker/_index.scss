@@ -14,11 +14,17 @@
  * limitations under the License.
  */
 
-body[kui-theme-style] .kui--popover {
-  min-width: 5rem;
-}
-
-.kui--status-stripe-element-wrapper:hover,
-.kui--status-stripe-element:hover {
-  cursor: pointer;
+.kui--update-checker--popover {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-size: 1em;
+    margin-bottom: 0.5em;
+  }
+  ul,
+  ol {
+    font-size: 0.875em;
+  }
 }

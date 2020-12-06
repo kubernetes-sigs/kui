@@ -25,7 +25,9 @@ import React from 'react'
 import needle from 'needle'
 
 import { eventChannelUnsafe, getCurrentTab, i18n } from '@kui-shell/core'
-import { TagWidget } from '@kui-shell/plugin-client-common'
+import { TextWithIconWidget as Widget, Markdown } from '@kui-shell/plugin-client-common'
+
+import '../../web/scss/components/UpdateChecker/_index.scss'
 
 const strings = i18n('plugin-core-support')
 
@@ -64,6 +66,14 @@ interface State {
 
   /** user has acknowledged the given version */
   dulyNoted: string
+
+  /** Full atom entry for the latest version */
+  entryForLatestVersion?: {
+    title: string
+    updated: string
+    version: string
+    content: string
+  }
 }
 
 /**
@@ -97,11 +107,29 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
     }, this.props.interval || DEFAULT_INTERVAL)
   }
 
+  /** Extract the `value` field from an atom `entry` */
+  private atomValueFor(name: string, entry: { children: { name: string; value: string }[] }) {
+    const pair = entry.children.find(_ => _.name === name)
+    if (pair) {
+      return pair.value
+    }
+  }
+
   /** Ping the release feed to check for the latest release */
   private checkForUpdates() {
     needle('get', FEED, { json: true })
       .then(res => {
-        return res.body.children.filter(_ => _.name === 'entry')[0].children.find(_ => _.name === 'title').value
+        const entryForLatestVersion = res.body.children.filter(_ => _.name === 'entry')[0]
+        this.setState({
+          entryForLatestVersion: {
+            title: this.atomValueFor('title', res.body),
+            updated: this.atomValueFor('updated', res.body),
+            version: this.atomValueFor('title', entryForLatestVersion),
+            content: this.atomValueFor('content', entryForLatestVersion)
+          }
+        })
+
+        return entryForLatestVersion.children.find(_ => _.name === 'title').value
       })
       .then(stripOffPrefixV) // see https://github.com/IBM/kui/issues/4918
       .then(latestVersion =>
@@ -171,8 +199,6 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
   private async dulyNoted() {
     try {
       localStorage.setItem(DULY_NOTED_KEY, this.state.latestVersion)
-      const { shell } = await import(/* webpackMode: "lazy" */ 'electron')
-      shell.openExternal(RELEASE(this.state.latestVersion))
     } catch (err) {
       console.error('Error opening releases page')
     }
@@ -185,16 +211,39 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
   public render() {
     if (this.isUpdateAvailable()) {
       return (
-        <TagWidget
+        <Widget
           id="kui--plugin-core-support--update-checker"
+          viewLevel="info"
+          text={this.text()}
           title={strings(
             'Version X is available. Click to see the changelog and download the new release.',
             this.state.latestVersion
           )}
-          onClick={() => this.dulyNoted()}
-        >
-          {this.text()}
-        </TagWidget>
+          popover={
+            this.state.entryForLatestVersion && {
+              maxWidth: '18rem',
+              className: 'kui--update-checker--popover',
+              onHide: () => this.dulyNoted(),
+
+              bodyContent: (
+                <React.Fragment>
+                  <Markdown source={this.state.entryForLatestVersion.content} contentType="text/html" />
+                </React.Fragment>
+              ),
+              headerContent: (
+                <React.Fragment>
+                  <div>{this.state.entryForLatestVersion.title}</div>
+                  <div>
+                    <strong>{this.state.entryForLatestVersion.version}</strong>
+                  </div>
+                  <div className="sub-text even-smaller-text">
+                    <a href={RELEASE(this.state.latestVersion)}>Download</a>
+                  </div>
+                </React.Fragment>
+              )
+            }
+          }
+        />
       )
     } else {
       return <React.Fragment />

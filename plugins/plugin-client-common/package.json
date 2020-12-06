@@ -29,7 +29,8 @@
     "monaco-editor-webpack-plugin": "2.0.0",
     "react-markdown": "5.0.3",
     "spinkit": "2.0.1",
-    "tmp": "0.2.1"
+    "tmp": "0.2.1",
+    "turndown": "7.0.0"
   },
   "kui": {
     "webpack": {
