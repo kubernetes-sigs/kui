@@ -20,7 +20,7 @@ import { pexecInCurrentTab } from '@kui-shell/core'
 import Popover, { Props as PopoverProps } from '../../spi/Popover'
 
 /** variants of how the information should be presented */
-export type ViewLevel = 'removed' | 'hidden' | 'normal' | 'obscured' | 'ok' | 'warn' | 'error'
+export type ViewLevel = 'removed' | 'hidden' | 'normal' | 'obscured' | 'ok' | 'warn' | 'error' | 'info'
 
 interface Props {
   text: string
