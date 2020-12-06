@@ -77,7 +77,7 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
     cells: [
       strings('Theme'),
       { value: strings('Style'), hints: CellShould.HideWhenNarrow },
-      { value: strings('Provider'), hints: CellShould.HideWithSidecar }
+      { value: strings('Provider'), hints: CellShould.BeHidden }
     ]
   }
 
@@ -96,20 +96,20 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
       themes.map((theme: Theme) => ({
         nameIdx: 0,
         cells: [
-          theme.name,
+          { value: theme.name },
           { value: strings(theme.style), hints: CellShould.HideWhenNarrow },
-          { value: plugin, hints: [CellShould.HideWithSidecar, CellShould.BeGrayish] }
+          { value: plugin, hints: [CellShould.BeHidden] }
         ],
 
         onSelectExec: 'qexec' as const,
         onSelect: `theme set ${REPL.encodeComponent(theme.name)}`
       }))
     )
-  )
+  ).sort((a, b) => (a.cells[2].value === 'plugin-core-themes' ? 1 : b.cells[2].value === 'plugin-core-themes' ? -1 : 0))
 
   const getSelectedIdx = async () => {
     const current = await currentTheme()
-    return body.findIndex(_ => _.cells[0] === current)
+    return body.findIndex(_ => _.cells[0].value === current)
   }
 
   const defaultSelectedIdx = await getSelectedIdx()
