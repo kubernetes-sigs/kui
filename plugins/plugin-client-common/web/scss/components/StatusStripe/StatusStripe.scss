@@ -80,16 +80,27 @@ $element-padding: 1rem;
   .kui--status-stripe-element[data-view='ok'] svg {
     fill: var(--color-green);
   }
-  .kui--status-stripe-element:not(.kui--status-stripe-tag-element)[data-view='warn'] {
-    filter: grayscale(0.15) brightness(0.9);
+  .kui--status-stripe-element:not(.kui--status-stripe-tag-element) {
+    &[data-view='warn'],
+    &[data-view='info'] {
+      filter: grayscale(0.15) brightness(0.9);
+      &:hover {
+        filter: none;
+      }
 
-    &,
-    &.kui--status-stripe-element-clickable:hover {
-      background-color: var(--color-yellow);
-      color: var(--color-base00);
-    }
-    &.kui--status-stripe-element-clickable:hover {
-      filter: none;
+      &,
+      &.kui--status-stripe-element-clickable:hover {
+        &[data-view='warn'] {
+          background-color: var(--color-yellow);
+        }
+        &[data-view='info'] {
+          background-color: var(--color-brand-01);
+        }
+        color: var(--color-base00);
+      }
+      &.kui--status-stripe-element-clickable:hover {
+        filter: none;
+      }
     }
   }
   .kui--status-stripe-element[data-view='error'] svg {
@@ -147,7 +158,9 @@ $element-padding: 1rem;
       padding-right: $element-padding;
       padding-left: $element-padding;
       border-left: $element-border;
-      border-right: $element-border;
+      &:not(:only-child) {
+        border-right: $element-border;
+      }
 
       &.kui--status-stripe-tag-element {
         padding-left: 0;

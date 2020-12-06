@@ -26,6 +26,9 @@ type Props = {
   headerContent: ReactNode
   bodyContent: ReactNode
   children: ReactElement
+
+  onShow?: () => void
+  onHide?: () => void
 }
 
 export default Props

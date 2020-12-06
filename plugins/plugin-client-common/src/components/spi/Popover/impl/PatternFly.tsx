@@ -30,6 +30,8 @@ export default function PatternFlyPopover(props: Props) {
       position={props.position}
       bodyContent={props.bodyContent}
       headerContent={props.headerContent}
+      onHide={props.onHide}
+      onShow={props.onShow}
     >
       {props.children}
     </Popover>

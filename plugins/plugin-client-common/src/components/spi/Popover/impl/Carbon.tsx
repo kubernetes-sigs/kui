@@ -27,11 +27,21 @@ export default function CarbonPopover(props: Props) {
     <Tooltip
       {...hack}
       tabIndex={-1}
-      direction={props.position === 'auto' ? 'bottom' : props.position}
-      triggerClassName={props.triggerClassName}
-      className={'kui--popover kui--inverted-color-context ' + (props.className || '')}
       showIcon={false}
+      direction={props.position === 'auto' ? 'bottom' : props.position}
+      className={'kui--popover kui--inverted-color-context ' + (props.className || '')}
       triggerText={props.children}
+      triggerClassName={props.triggerClassName}
+      onChange={
+        (props.onHide || props.onShow) &&
+        ((_, { open }) => {
+          if (open && props.onShow) {
+            props.onShow()
+          } else if (!open && props.onHide) {
+            props.onHide()
+          }
+        })
+      }
     >
       <h6>{props.headerContent}</h6>
       <div className="top-pad">{props.bodyContent}</div>
