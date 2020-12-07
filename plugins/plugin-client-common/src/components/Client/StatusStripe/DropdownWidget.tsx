@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-import { ReactElement, ReactNode } from 'react'
+import React from 'react'
+import { DropDown, DropDownAction } from '../../..'
 
-type Props = {
-  className?: string
-  maxWidth?: string
-  minWidth?: string
-  distance?: number
-  hasAutoWidth?: boolean
-  triggerClassName?: string
-  position: 'top' | 'bottom' | 'left' | 'right' | 'auto'
-
-  headerContent: ReactNode
-  bodyContent: ReactNode
-  children: ReactElement
-
-  onShow?: () => void
-  onHide?: () => void
+export interface Props {
+  id?: string
+  position?: 'left' | 'right'
+  actions: DropDownAction[]
 }
 
-export default Props
+export default function DropdownWidget(props: Props) {
+  return (
+    <div className="kui--status-stripe-element" data-padding="none" id={props.id}>
+      <DropDown isPlain direction="up" toggle="caret" position={props.position} actions={props.actions} />
+    </div>
+  )
+}

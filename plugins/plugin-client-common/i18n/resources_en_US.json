@@ -52,6 +52,8 @@
   "Click to view configuration options": "Click to view configuration options",
   "Click for help": "Click for help",
   "Try getting started": "Try getting started",
+  "Settings": "Settings",
+  "Switch theme": "Switch theme",
   "Show as table in terminal": "Show as table in terminal",
   "Close watcher": "Close and terminate this watcher"
 }

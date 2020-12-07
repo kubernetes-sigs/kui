@@ -46,6 +46,7 @@ import {
   BombIcon as Oops,
   ListIcon as List,
   ThIcon as Grid,
+  PaletteIcon as Theme,
   GithubIcon as Github,
   CaretLeftIcon as PreviousPage,
   CaretRightIcon as NextPage,
@@ -141,6 +142,8 @@ export default function PatternFly4Icons(props: Props) {
       return <TerminalOnly style={size32} {...props} />
     case 'TerminalPlusSidecar':
       return <TerminalPlusSidecar style={size32} {...props} />
+    case 'Theme':
+      return <Theme {...props} />
     case 'Warning':
       return <Warning {...props} />
     case 'Up':

@@ -19,6 +19,7 @@ import React from 'react'
 import {
   CarbonIconType,
   Add20 as Add,
+  ColorPalette20 as Theme,
   Terminal32 as TerminalOnly,
   Notebook32 as TerminalPlusSidecar,
   Thumbnail_132 as TerminalPlusWatcher,
@@ -101,6 +102,7 @@ const icons: Record<Exclude<SupportedIcon, 'Up'>, CarbonIconType> = {
   TerminalPlusSidecar,
   TerminalPlusWatcher,
   TerminalSidecarWatcher,
+  Theme,
   Warning,
   WindowMaximize,
   WindowMinimize,
