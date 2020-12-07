@@ -15,9 +15,11 @@
  */
 
 import React from 'react'
+import { extname } from 'path'
 import { editor as Monaco } from 'monaco-editor'
 
-import { eventChannelUnsafe, eventBus } from '@kui-shell/core'
+import { eventChannelUnsafe, eventBus, MultiModalResponse } from '@kui-shell/core'
+import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import getKuiFontSize from './lib/fonts'
 import { language } from './lib/file-types'
@@ -26,6 +28,7 @@ import defaultMonacoOptions, { Options as MonacoOptions } from './lib/defaults'
 import '../../../../web/scss/components/Editor/Editor.scss'
 
 type Props = MonacoOptions & {
+  response: MultiModalResponse
   tabUUID: string
   originalContent: string
   modifiedContent: string
@@ -39,8 +42,6 @@ type Props = MonacoOptions & {
 
   // Render the diff side by side or inline
   renderSideBySide?: boolean
-  hasPendingChanges: () => void
-  noPendingChange: () => void
 }
 
 interface State {
@@ -109,7 +110,12 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
       )
 
       const contentType =
-        props.contentType === 'text/plain' ? language(props.contentType, undefined) : props.contentType || undefined
+        props.contentType === 'text/plain'
+          ? language(
+              props.contentType,
+              isFile(props.response) ? extname(props.response.spec.filepath).slice(1) : undefined
+            )
+          : props.contentType || undefined
 
       const editor = Monaco.createDiffEditor(state.wrapper, options)
       editor.setModel({
@@ -121,9 +127,6 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
         const lineChanges = editor.getLineChanges()
         if (lineChanges && lineChanges.length !== 0) {
           editor.revealLineInCenterIfOutsideViewport(lineChanges[0].originalStartLineNumber)
-          props.hasPendingChanges()
-        } else {
-          props.noPendingChange()
         }
       })
 
@@ -135,9 +138,13 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
 
       if (props.sizeToFit) {
         const sizeToFit = (
-          width?: number,
+          _width?: number,
           height = Math.min(0.4 * window.innerHeight, Math.max(250, editor.getModifiedEditor().getContentHeight()))
         ) => {
+          const widthA = editor.getOriginalEditor().getContentWidth()
+          const widthB = editor.getModifiedEditor().getContentWidth()
+          const width = _width || Math.min(0.9 * window.innerWidth, widthA + widthB)
+          state.wrapper.style.width = width + 'px'
           // if we know 1) the height of the content won't change, and
           // 2) we are running in "simple" mode (this is mostly the case
           // for inline editor components, as opposed to editor

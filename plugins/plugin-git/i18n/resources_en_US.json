@@ -3,5 +3,7 @@
   "Switch branch": "Switch branch",
   "Your current git branch": "Your current git branch.",
   "You have made no changes to this branch.": "You have made no changes to this branch.",
-  "You have made the following changes to this branch.": "You have made the following changes to this branch."
+  "You have made the following changes to this branch.": "You have made the following changes to this branch.",
+  "Git Diff": "Git Diff",
+  "Showing changes between the working tree and previous commit.": "Showing changes between the working tree and previous commit."
 }

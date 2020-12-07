@@ -116,6 +116,12 @@ const testTree = new TestMMR({
   command: 'test mmr tree'
 })
 
+const testDiff = new TestMMR({
+  metadata,
+  testName: 'test mmr diff',
+  command: 'test mmr diff'
+})
+
 const testOrder = new TestMMR({
   testName: 'change order',
   metadata,
@@ -156,6 +162,7 @@ testReact.toolbarText({
   exact: false
 })
 testTree.tree(tree, 'tree')
+testDiff.diffPlainText('diff', 'barrrrrrrrr')
 testDefault.name({ heroName: true })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })
 testDefault2.modes(expectModes2, expectModes2[0])

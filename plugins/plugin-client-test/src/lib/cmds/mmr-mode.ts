@@ -108,6 +108,21 @@ async function doTree() {
   })
 }
 
+async function doDiff() {
+  return Object.assign(metadata, {
+    modes: [
+      {
+        mode: 'diff',
+        content: {
+          a: 'foooooooooo',
+          b: 'barrrrrrrrr'
+        },
+        contentType: 'text/plain'
+      }
+    ]
+  })
+}
+
 export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/mode', doModes(0), {
     usage: {
@@ -124,6 +139,12 @@ export default (commandTree: Registrar) => {
   commandTree.listen('/test/mmr/tree', doTree, {
     usage: {
       docs: 'A test of MultiModalResponse mode that presents a TreeResponse'
+    }
+  })
+
+  commandTree.listen('/test/mmr/diff', doDiff, {
+    usage: {
+      docs: 'A test of MultiModalResponse mode that presents a StringDiffResponse'
     }
   })
 

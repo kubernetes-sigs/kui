@@ -428,6 +428,23 @@ export class TestMMR {
     })
   }
 
+  public diffPlainText(mode: string, textB: string) {
+    const { command, testName } = this.param
+
+    describe(`diff ${testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
+
+      it('should should open sidecar with tree view', () =>
+        CLI.command(command, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(SidecarExpect.mode(mode))
+          .then(SidecarExpect.textPlainContentFromMonaco(textB))
+          .catch(Common.oops(this, true)))
+    })
+  }
+
   /**
    * toolbarButtons() starts a Mocha Test Suite
    * toolbarButtons() executes `command` and expects the `buttons` shown in Sidecar having correct labels and drildown handlers
