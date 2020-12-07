@@ -58,6 +58,7 @@ export type SupportedIcon =
   | 'TerminalPlusSidecar'
   | 'TerminalPlusWatcher'
   | 'TerminalSidecarWatcher'
+  | 'Theme'
   | 'Up'
   | 'Warning'
   | 'WindowMaximize'

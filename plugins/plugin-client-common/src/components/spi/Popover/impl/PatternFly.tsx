@@ -26,6 +26,8 @@ export default function PatternFlyPopover(props: Props) {
       enableFlip={false}
       className={'kui--popover ' + (props.className || '')}
       maxWidth={props.maxWidth}
+      minWidth={props.minWidth}
+      distance={props.distance}
       hasAutoWidth={props.hasAutoWidth}
       position={props.position}
       bodyContent={props.bodyContent}

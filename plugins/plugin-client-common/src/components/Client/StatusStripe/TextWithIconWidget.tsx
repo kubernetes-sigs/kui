@@ -103,6 +103,7 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
       return (
         <Popover
           maxWidth="40rem"
+          minWidth="5rem"
           position="top"
           triggerClassName="kui--status-stripe-element-wrapper"
           {...this.props.popover}

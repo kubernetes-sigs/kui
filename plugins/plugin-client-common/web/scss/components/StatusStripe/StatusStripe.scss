@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+@import 'mixins';
+@import '../DropDown/mixins';
+
 $font-size: 0.75rem;
 
 /** StatusStripeChangeEvent.type */
@@ -29,7 +32,7 @@ $bg-type-red: var(--color-red);
 $element-border: 1px solid var(--color-table-border2);
 $element-padding: 1rem;
 
-.kui--status-stripe {
+@include StatusStripe {
   display: flex;
   flex-basis: 2.25rem;
   background-color: $bg-type-default;
@@ -65,49 +68,51 @@ $element-padding: 1rem;
     align-items: center;
   }
 
-  .kui--status-stripe-element {
+  @include StatusStripeElement {
     color: currentColor;
-  }
-  .kui--status-stripe-element svg {
-    fill: currentColor;
-  }
-  .kui--status-stripe-element[data-view='obscured'] {
-    color: var(--color-text-02);
-  }
-  .kui--status-stripe-element[data-view='obscured'] svg {
-    fill: var(--color-text-02);
-  }
-  .kui--status-stripe-element[data-view='ok'] svg {
-    fill: var(--color-green);
-  }
-  .kui--status-stripe-element:not(.kui--status-stripe-tag-element) {
-    &[data-view='warn'],
-    &[data-view='info'] {
-      filter: grayscale(0.15) brightness(0.9);
-      &:hover {
-        filter: none;
-      }
+    font-size: $font-size;
+    svg {
+      fill: currentColor;
+    }
 
-      &,
-      &.kui--status-stripe-element-clickable:hover {
-        &[data-view='warn'] {
-          background-color: var(--color-yellow);
+    &[data-view='obscured'] {
+      color: var(--color-text-02);
+    }
+    &[data-view='obscured'] svg {
+      fill: var(--color-text-02);
+    }
+    &[data-view='ok'] svg {
+      fill: var(--color-green);
+    }
+    &:not(.kui--status-stripe-tag-element) {
+      &[data-view='warn'],
+      &[data-view='info'] {
+        filter: grayscale(0.15) brightness(0.9);
+        &:hover {
+          filter: none;
         }
-        &[data-view='info'] {
-          background-color: var(--color-brand-01);
+
+        &,
+        &.kui--status-stripe-element-clickable:hover {
+          &[data-view='warn'] {
+            background-color: var(--color-yellow);
+          }
+          &[data-view='info'] {
+            background-color: var(--color-brand-01);
+          }
+          color: var(--color-base00);
         }
-        color: var(--color-base00);
-      }
-      &.kui--status-stripe-element-clickable:hover {
-        filter: none;
+        &.kui--status-stripe-element-clickable:hover {
+          filter: none;
+        }
       }
     }
-  }
-  .kui--status-stripe-element[data-view='error'] svg {
-    fill: var(--color-error);
-  }
-  .kui--status-stripe-element[data-view='hidden'] {
-    display: none;
+    &[data-view='error'] svg {
+      fill: var(--color-error);
+    }
+    &[data-view='hidden'] {
+      display: none;
+    }
   }
 
   & > div {
@@ -118,7 +123,7 @@ $element-padding: 1rem;
   .kui--status-stripe-button .kui--status-stripe-element:hover {
     &:not(.kui--status-stripe-tag-element) {
       cursor: pointer;
-      color: var(--color-text-01);
+      color: $fg-type-default;
       background-color: var(--color-table-border3);
     }
   }
@@ -151,6 +156,9 @@ $element-padding: 1rem;
   .kui--status-stripe-button {
     border-left: $element-border;
   }
+  .kui--status-stripe-meter + .kui--status-stripe-meter {
+    padding-left: 0;
+  }
   .kui--status-stripe-meter {
     font-size: $font-size;
     padding-left: $element-padding;
@@ -176,15 +184,29 @@ $element-padding: 1rem;
     justify-content: flex-end;
   }
 
-  .kui--status-stripe-element {
+  @include StatusStripeElement {
     display: flex;
     align-items: center;
+
+    @include Dropdown {
+      border: none;
+      color: $fg-type-default;
+      background-color: transparent;
+    }
+    @include DropdownToggle {
+      font-size: inherit;
+    }
+    @include DropdownItem {
+      font-size: inherit;
+    }
   }
 
-  .kui--status-stripe-element > a {
-    /* see https://github.com/IBM/kui/issues/3489 */
-    display: flex;
-    align-items: center;
+  @include StatusStripeElement {
+    & > a {
+      /* see https://github.com/IBM/kui/issues/3489 */
+      display: flex;
+      align-items: center;
+    }
   }
 
   .clickable {
@@ -201,8 +223,14 @@ $element-padding: 1rem;
     }
   }
 
-  .kui--status-stripe-button .kui--status-stripe-element {
+  .kui--status-stripe-button .kui--status-stripe-element,
+  .kui--status-stripe-button.kui--status-stripe-element {
     padding: 0 $element-padding;
+  }
+  @include StatusStripeElement {
+    &[data-padding='none'] {
+      padding: 0;
+    }
   }
 
   .kui--status-stripe-icon {

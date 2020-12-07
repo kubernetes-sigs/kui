@@ -149,7 +149,7 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
             ]
       )
 
-    return <DropDown actions={actions} className="kui--repl-block-right-element" />
+    return <DropDown isPlain actions={actions} className="kui--repl-block-right-element" />
   }
 
   /** Are we focusing on all containers? */
