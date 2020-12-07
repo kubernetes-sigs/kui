@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-@import 'common';
-@import 'mixins';
-
-@include Popover {
-  .pf-c-button {
-    padding: 0;
+@mixin Popover {
+  .kui--popover {
+    @content;
   }
 }

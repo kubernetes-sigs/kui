@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-body[kui-theme-style] .kui--popover {
-  min-width: 5rem;
+@import 'mixins';
+
+body[kui-theme-style] {
+  @include Popover {
+    min-width: 5rem;
+  }
 }
 
 .kui--status-stripe-element-wrapper:hover,
