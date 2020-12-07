@@ -16,21 +16,7 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-const defaultTheme = 'Carbon Gray10'
-
-const resetTheme = (ctx: Common.ISuite) => {
-  it('should reset theme preference', () =>
-    CLI.command('theme reset', ctx.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(ctx, true)))
-
-  it(`should show that we are using the default theme: ${defaultTheme}`, () =>
-    CLI.command('theme current', ctx.app)
-      .then(ReplExpect.okWithString(defaultTheme))
-      .then(() => ctx.app.client.$(`body[kui-theme="${defaultTheme}"]`)) // Dark being the default
-      .then(_ => _.waitForExist())
-      .catch(Common.oops(ctx, true)))
-}
+import { defaultTheme, resetTheme } from './theme-common'
 
 interface Theme {
   name: string

@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-import { ReactElement, ReactNode } from 'react'
-
-type Props = {
-  className?: string
-  maxWidth?: string
-  minWidth?: string
-  distance?: number
-  hasAutoWidth?: boolean
-  triggerClassName?: string
-  position: 'top' | 'bottom' | 'left' | 'right' | 'auto'
-
-  headerContent: ReactNode
-  bodyContent: ReactNode
-  children: ReactElement
-
-  onShow?: () => void
-  onHide?: () => void
+@mixin Dropdown {
+  .kui--dropdown {
+    @content;
+  }
 }
 
-export default Props
+@mixin DropdownToggle {
+  .kui--dropdown__toggle {
+    @content;
+  }
+}
+
+@mixin DropdownItem {
+  .kui--dropdown__menu-item {
+    @content;
+  }
+}

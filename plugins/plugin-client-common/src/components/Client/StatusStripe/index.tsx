@@ -20,7 +20,9 @@
 import React from 'react'
 import { eventBus, pexecInCurrentTab, i18n, StatusStripeChangeEvent } from '@kui-shell/core'
 
+import Settings from './Settings'
 import Icons from '../../spi/Icons'
+import MeterWidgets from './MeterWidgets'
 import Markdown from '../../Content/Markdown'
 import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 
@@ -111,25 +113,9 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
         {this.message()}
         {this.widgets()}
 
-        <div className="kui--status-stripe-button">
-          <a
-            href="#"
-            className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
-            id="kui--settings-button"
-            aria-label="Settings"
-            tabIndex={0}
-            title={strings('Click to view configuration options')}
-            onClick={() =>
-              pexecInCurrentTab(
-                `tab new -s "/kui/settings.json" --title "${strings(
-                  'Kui Settings'
-                )}" --status-stripe-type blue --status-stripe-message "${strings('Kui Settings')}"`
-              )
-            }
-          >
-            <Icons icon="Settings" />
-          </a>
-        </div>
+        <MeterWidgets>
+          <Settings />
+        </MeterWidgets>
         <div className="kui--status-stripe-button">
           <a
             href="#"

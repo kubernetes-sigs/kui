@@ -22,6 +22,18 @@ export interface Action {
 }
 
 interface Props {
+  /** Render more plain/inline style? */
+  isPlain?: boolean
+
+  /** Should the Dropdown roll up or down? Default is down */
+  direction?: 'up' | 'down'
+
+  /** Should the Dropdown "pointer" be positioned on the left or on the right? Default is left */
+  position?: 'left' | 'right'
+
+  /** Use kebab or regular caret-style dropdown toggler? Default is kebab */
+  toggle?: 'kebab' | 'caret'
+
   /** Actions to be rendered in an overflow menu associated with the Card */
   actions: Action[]
 

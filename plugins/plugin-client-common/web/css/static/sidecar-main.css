@@ -174,7 +174,7 @@ $toolbar-height: 1.5rem;
     line-height: 1.5em;
     padding: 0 0.5em;
 
-    button {
+    & > button {
       padding: 0;
     }
 
@@ -186,6 +186,7 @@ $toolbar-height: 1.5rem;
       font-size: inherit;
       &:hover {
         cursor: pointer;
+        background: none;
         [role="tab"] {
           color: var(--color-base03);
         }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@import '../StatusStripe/mixins';
+@import 'carbon-components/scss/components/dropdown/_dropdown.scss';
 @import 'carbon-components/scss/components/overflow-menu/_overflow-menu.scss';
 
 $color: var(--color-text-01);
@@ -21,6 +23,26 @@ $bg-color: var(--color-base01);
 $bg-open-color: var(--color-dropdown);
 $button-hover-color: var(--color-table-border3);
 $option-hover-color: var(--color-base02);
+
+@include StatusStripeElement {
+  .bx--dropdown__wrapper--inline {
+    display: flex;
+  }
+  .bx--dropdown--inline .bx--list-box__menu {
+    min-width: 12rem;
+    max-width: 12rem;
+  }
+  .bx--list-box__menu-item {
+    font-size: inherit;
+  }
+  .bx--list-box__field {
+    color: inherit;
+  }
+  .bx--list-box__label {
+    color: inherit;
+    font-size: inherit;
+  }
+}
 
 body[kui-theme-style] {
   .sidecar-bottom-stripe-button .bx--overflow-menu.bx--overflow-menu--open svg,
