@@ -108,6 +108,31 @@ export function isStringWithOptionalContentType<T extends MetadataBearing>(
 }
 
 /**
+ * Compare 2 `StringContent`
+ *
+ */
+export type StringDiffContent<ContentType = SupportedStringContent> = {
+  content: {
+    a: string
+    b: string
+  }
+  contentType: ContentType
+}
+
+export function isStringDiffContent<T extends MetadataBearing>(
+  entity: Entity | Content<T> | MetadataBearing | ModeOrButton<T>
+): entity is StringDiffContent {
+  const str = entity as StringDiffContent
+  return !!(
+    str &&
+    str.content &&
+    typeof str.content.a === 'string' &&
+    typeof str.content.b === 'string' &&
+    isSupportedContentType(str.contentType)
+  )
+}
+
+/**
  * `Content` as `FunctionThatProducesContent<T>` is a function that
  * takes a `T` and produces either a resource or some { content,
  * contentType } wrapper.
@@ -171,6 +196,7 @@ export function isCommandStringContent<T extends MetadataBearing>(
 export type Content<T extends MetadataBearing = MetadataBearing> =
   | ScalarContent
   | StringContent
+  | StringDiffContent
   | FunctionContent<T>
   | CommandStringContent
   | ReactProvider

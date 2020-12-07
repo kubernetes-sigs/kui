@@ -206,6 +206,8 @@ export {
   isStringWithOptionalContentType,
   isSupportedContentType,
   SupportedStringContent,
+  StringDiffContent,
+  isStringDiffContent,
   isFunctionContent,
   FunctionThatProducesContent
 } from './models/mmr/content-types'

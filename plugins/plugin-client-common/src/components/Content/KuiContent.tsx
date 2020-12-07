@@ -31,12 +31,14 @@ import {
   isCommandStringContent,
   isFunctionContent,
   isScalarContent,
+  isStringDiffContent,
   MultiModalResponse,
   ToolbarProps
 } from '@kui-shell/core'
 
 import Eval from './Eval'
 import Editor from './Editor'
+import DiffEditor from './Editor/DiffEditor'
 import renderTable from './Table'
 import Tree from '../spi/Tree'
 import Markdown from './Markdown'
@@ -81,7 +83,6 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
     }
 
     const { tab, mode, response, willUpdateToolbar } = this.props
-
     if (isStringWithOptionalContentType(mode)) {
       if (mode.contentType === 'text/html') {
         return <HTMLString content={mode.content} />
@@ -107,6 +108,18 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
           />
         )
       }
+    } else if (isStringDiffContent(mode)) {
+      return (
+        <DiffEditor
+          contentType={mode.contentType}
+          originalContent={mode.content.a}
+          modifiedContent={mode.content.b}
+          sizeToFit
+          response={response}
+          renderSideBySide
+          tabUUID={tab.uuid}
+        />
+      )
     } else if (isCommandStringContent(mode)) {
       return <Eval {...this.props} command={mode.contentFrom} contentType={mode.contentType} />
     } else if (isFunctionContent(mode)) {
