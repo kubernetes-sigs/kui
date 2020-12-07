@@ -15,6 +15,7 @@
  */
 
 @import 'common';
+@import 'mixins';
 @import '~carbon-components/scss/components/tooltip/_tooltip.scss';
 
 .kui--status-stripe-element-wrapper.bx--tooltip__label {
@@ -22,12 +23,14 @@
   color: var(--color-text-01);
 }
 
-.kui--popover.bx--tooltip {
-  max-width: 40rem; /* hmm, Carbon doesn't make this easy */
-  color: var(--color-text-01);
-  background: var(--color-base02);
+@include Popover {
+  &.bx--tooltip {
+    max-width: 40rem; /* hmm, Carbon doesn't make this easy */
+    color: var(--color-text-01);
+    background: var(--color-base02);
 
-  a {
-    color: var(--color-base0C);
+    a {
+      color: var(--color-base0C);
+    }
   }
 }
