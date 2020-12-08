@@ -96,7 +96,7 @@ export default class CarbonDropDown extends React.PureComponent<Props> {
     return (
       <Dropdown
         id=""
-        titleText=""
+        titleText={this.props.title}
         ariaLabel="dropdown"
         {...typeHacks}
         type={this.props.isPlain ? 'inline' : 'default'}
@@ -116,6 +116,7 @@ export default class CarbonDropDown extends React.PureComponent<Props> {
       <OverflowMenu
         flipped
         menuOptionsClass={this.props.className}
+        title={this.props.title}
         className={this.className()}
         onOpen={this._onOpen}
         onClose={this._onClose}
