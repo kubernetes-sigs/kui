@@ -239,7 +239,11 @@ export function Finished(
   const { startEvent } = block
 
   if (event.cancelled) {
-    return Cancelled(block)
+    if (!event.command) {
+      return Empty(block)
+    } else {
+      return Cancelled(block, event.command)
+    }
   } else if (isError(response)) {
     return {
       response,

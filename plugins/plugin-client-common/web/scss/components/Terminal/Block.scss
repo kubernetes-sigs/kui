@@ -53,9 +53,17 @@ $focus-color: var(--color-brand-01);
   display: none;
 }
 
+@mixin NoInputColorBlocking {
+  border: none;
+  background-color: transparent;
+}
+@include InputWrapperForEmptyBlock {
+  @include NoInputColorBlocking;
+}
+
 @include FinishedBlock {
   @include InputWrapper {
-    border-color: $input-border;
+    border: $input-border;
     border-radius: 1px;
     &[data-is-reedit] {
       border-color: $input-border-editing;
@@ -65,18 +73,9 @@ $focus-color: var(--color-brand-01);
     white-space: pre-wrap;
   }
 }
-body[kui-theme-style='light'] {
-  .repl-block:not(.repl-active) {
-    @include InputWrapper {
-      background-color: $input-bg-light;
-    }
-  }
-}
-body[kui-theme-style='dark'] {
-  .repl-block:not(.repl-active) {
-    @include InputWrapper {
-      background-color: $input-bg-dark;
-    }
+@include FinishedBlock {
+  @include InputWrapper {
+    background-color: $input-bg;
   }
 }
 
@@ -226,7 +225,7 @@ body[kui-theme-style='dark'] {
       }
     }
 
-    .kui-block-actions-others {
+    .kui-block-actions-others:not(:empty) {
       padding-right: $action-padding;
       margin-right: $action-padding;
       display: flex;
@@ -271,7 +270,6 @@ body[kui-theme-style='dark'] {
 
     &:not(.repl-active) {
       @include InputWrapper {
-        border: 1px solid hsla(0, 0%, 39.2%, 0.1);
         align-items: stretch;
         padding-left: 0.5em;
         position: relative; /* for repl-block-actions' position: absolute */

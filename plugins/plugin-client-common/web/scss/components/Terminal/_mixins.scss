@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-$input-bg-light: rgba(27, 31, 35, 0.05);
-$input-bg-dark: var(--color-base02);
-$input-bg-minisplit: var(--color-base01);
-$input-border: rgba(100, 100, 100, 0.05);
+$input-bg: rgba(150, 150, 150, 0.1);
+$input-border: 1px solid hsla(0, 0%, 39.2%, 0.1);
 $input-border-editing: var(--color-brand-03);
 
 $input-padding-right: calc(1em - 6px);
@@ -181,6 +179,17 @@ $action-hover-delay: 210ms;
 @mixin InputWrapper {
   .repl-input-element-wrapper {
     @content;
+  }
+}
+
+/** The InputWrapper for blocks that have no output */
+@mixin InputWrapperForEmptyBlock {
+  @include FinishedBlock {
+    &[data-is-empty] {
+      @include InputWrapper {
+        @content;
+      }
+    }
   }
 }
 
