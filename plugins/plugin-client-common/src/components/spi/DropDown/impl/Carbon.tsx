@@ -96,7 +96,7 @@ export default class CarbonDropDown extends React.PureComponent<Props> {
     return (
       <Dropdown
         id=""
-        titleText={this.props.title}
+        titleText=""
         ariaLabel="dropdown"
         {...typeHacks}
         type={this.props.isPlain ? 'inline' : 'default'}
