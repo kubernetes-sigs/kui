@@ -170,6 +170,13 @@ $action-hover-delay: 210ms;
   }
 }
 
+/** The element that encloses Context and InputWrapper */
+@mixin ContextAndInput {
+  .kui--input-and-context {
+    @content;
+  }
+}
+
 /** The wrapper around the <input> element. This contains the <input> and the timestamp, duration, and block buttons. */
 @mixin InputWrapper {
   .repl-input-element-wrapper {

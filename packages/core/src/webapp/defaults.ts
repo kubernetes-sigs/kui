@@ -24,6 +24,6 @@ export default {
 }
 
 export const popupWindowDefaults = {
-  width: 625,
-  height: 625
+  width: 900,
+  height: 675
 }

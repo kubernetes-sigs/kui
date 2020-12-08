@@ -116,6 +116,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
         <MeterWidgets>
           <Settings />
         </MeterWidgets>
+
         <div className="kui--status-stripe-button">
           <a
             href="#"
