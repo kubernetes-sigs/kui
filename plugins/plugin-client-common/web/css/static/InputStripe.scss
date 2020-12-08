@@ -1,3 +1,21 @@
+/*
+ * Copyright 2017-2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '../../scss/components/Terminal/mixins';
+
 .kui--input-stripe {
   display: flex;
   flex-grow: 0;
@@ -5,30 +23,36 @@
   background-color: var(--color-stripe-01);
   box-shadow: 0 -3px 10px 0 rgba(60, 60, 60, 0.1);
 
-  .repl-block {
+  @include Block {
     position: unset;
+    display: flex;
     flex: 1;
     padding: 0;
     margin: 0;
 
-    .repl-input {
-      padding: 0;
+    .repl-context {
+      display: flex;
     }
-    .repl-input .kui--input-and-context {
-      font-size: 0.875rem;
-      flex: 1;
-      background-color: var(--color-base03);
-      padding: 0.5rem 0.375rem;
 
-      input {
-        background-color: transparent;
+    @include BlockInput {
+      flex: 1;
+      padding: 0;
+
+      @include ContextAndInput {
+        font-size: 0.875rem;
+        flex: 1;
+        padding: 0.5rem 0.375rem;
+        align-items: unset;
+
+        @include Input {
+          background-color: transparent;
+        }
       }
     }
 
     .repl-prompt {
       border: none;
       padding: 0.5rem 0.375rem;
-      background-color: var(--color-base03);
     }
 
     .kui--tab-completions {

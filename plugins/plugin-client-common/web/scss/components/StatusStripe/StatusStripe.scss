@@ -29,7 +29,6 @@ $bg-type-blue: var(--color-base0C);
 $bg-type-yellow: var(--color-yellow);
 $bg-type-red: var(--color-red);
 
-$element-border: 1px solid var(--color-table-border2);
 $element-padding: 1rem;
 
 @include StatusStripe {
@@ -156,12 +155,16 @@ $element-padding: 1rem;
   .kui--status-stripe-button {
     border-left: $element-border;
   }
-  .kui--status-stripe-meter + .kui--status-stripe-meter {
-    padding-left: 0;
-  }
   .kui--status-stripe-meter {
     font-size: $font-size;
-    padding-left: $element-padding;
+
+    &:not(:empty) {
+      padding-left: $element-padding;
+    }
+    & + .kui--status-stripe-meter {
+      padding-left: 0;
+    }
+
     .kui--status-stripe-element {
       padding-right: $element-padding;
       padding-left: $element-padding;
