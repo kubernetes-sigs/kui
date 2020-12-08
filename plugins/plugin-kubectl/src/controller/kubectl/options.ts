@@ -64,6 +64,18 @@ export function getFileForArgv(args: Arguments<KubeOptions>, addSpace = false): 
   return ''
 }
 
+export function getFileFromArgv(args: Arguments<KubeOptions>): string {
+  const file = fileOf(args)
+  if (file) {
+    return file
+  } else {
+    const kusto = kustomizeOf(args)
+    if (kusto) {
+      return kusto
+    }
+  }
+}
+
 export function formatOf(args: Arguments<KubeOptions>): OutputFormat {
   return args.parsedOptions.o || args.parsedOptions.output
 }

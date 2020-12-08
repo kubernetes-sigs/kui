@@ -435,7 +435,7 @@ export class TestMMR {
       before(Common.before(this))
       after(Common.after(this))
 
-      it('should should open sidecar with tree view', () =>
+      it('should should open sidecar with diff view', () =>
         CLI.command(command, this.app)
           .then(ReplExpect.ok)
           .then(SidecarExpect.open)
