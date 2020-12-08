@@ -21,7 +21,7 @@ export interface Action {
   hasDivider?: boolean
 }
 
-interface Props {
+export interface Props {
   /** Render more plain/inline style? */
   isPlain?: boolean
 
@@ -30,6 +30,9 @@ interface Props {
 
   /** Should the Dropdown "pointer" be positioned on the left or on the right? Default is left */
   position?: 'left' | 'right'
+
+  /** Icon to include in the dropdown toggler */
+  icon?: React.ReactNode
 
   /** Use kebab or regular caret-style dropdown toggler? Default is kebab */
   toggle?: 'kebab' | 'caret'

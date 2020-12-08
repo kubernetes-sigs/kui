@@ -97,7 +97,12 @@ export default class PatternFlyDropDown extends React.PureComponent<Props, State
           !this.props.toggle || this.props.toggle === 'kebab' ? (
             <KebabToggle className="kui--dropdown__toggle" onToggle={this._onToggle} />
           ) : (
-            <DropdownToggle className="kui--dropdown__toggle" onToggle={this._onToggle} toggleIndicator={CaretUpIcon}>
+            <DropdownToggle
+              className="kui--dropdown__toggle"
+              onToggle={this._onToggle}
+              toggleIndicator={CaretUpIcon}
+              icon={this.props.icon}
+            >
               {this.currentLabel()}
             </DropdownToggle>
           )

@@ -16,17 +16,17 @@
 
 import React from 'react'
 
-import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { Icons, ViewLevel, DropdownWidget } from '@kui-shell/plugin-client-common'
 import {
   eventChannelUnsafe,
   getTab,
   Tab,
+  pexecInCurrentTab,
   wireToTabEvents,
   wireToStandardEvents,
   unwireToTabEvents,
   unwireToStandardEvents,
-  inBrowser,
-  i18n
+  inBrowser
 } from '@kui-shell/core'
 import {
   KubeContext,
@@ -36,11 +36,10 @@ import {
 } from '@kui-shell/plugin-kubectl'
 
 interface State {
-  text: string
+  currentNamespace: string
+  allNamespaces: string[]
   viewLevel: ViewLevel
 }
-
-const strings = i18n('plugin-kubectl')
 
 export default class CurrentNamespace extends React.PureComponent<{}, State> {
   private readonly handler = this.reportCurrentNamespace.bind(this)
@@ -49,7 +48,8 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     super(props)
 
     this.state = {
-      text: '',
+      currentNamespace: '',
+      allNamespaces: [],
       viewLevel: 'hidden'
     }
   }
@@ -81,11 +81,17 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     }
 
     try {
-      const ns = await getCurrentDefaultNamespace(tab)
+      const [currentNamespace, allNamespaces] = await Promise.all([
+        getCurrentDefaultNamespace(tab),
+        tab.REPL.qexec<string>('kubectl get ns -o name').then(_ =>
+          _.split(/\n/).map(_ => _.replace(/^namespace\//, ''))
+        )
+      ])
 
-      if (ns) {
+      if (currentNamespace) {
         this.setState({
-          text: ns,
+          currentNamespace,
+          allNamespaces: allNamespaces.sort((a, b) => (a === currentNamespace ? 1 : b === currentNamespace ? -1 : 0)),
           viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
         })
       }
@@ -94,7 +100,8 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
       this.last = undefined
 
       this.setState({
-        text: '',
+        currentNamespace: '',
+        allNamespaces: [],
         viewLevel: 'hidden' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
       })
     }
@@ -127,20 +134,28 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     }
   }
 
+  /** @return the dropdown items */
+  private items() {
+    return this.state.allNamespaces.map(ns => ({
+      label: ns,
+      isSelected: ns === this.state.currentNamespace,
+      handler: () => pexecInCurrentTab(`kubectl config set-context --current --namespace=${ns}`)
+    }))
+  }
+
   public render() {
     // FIXME disable the on-hover effect with the icon
+    if (this.state.allNamespaces.length === 0) {
+      return <React.Fragment />
+    }
+
     return (
-      <TextWithIconWidget
-        text={this.state.text}
-        viewLevel={this.state.viewLevel}
+      <DropdownWidget
+        position="left"
+        icon={<Icons icon="At" />}
         id="kui--plugin-kubeui--current-namespace"
-        textOnclick="kubectl get namespaces"
-        title={strings('Kubernetes namespace')}
-      >
-        <div className="current-namesapce-button" onClick={() => false}>
-          <Icons icon="At" />
-        </div>
-      </TextWithIconWidget>
+        actions={this.items()}
+      />
     )
   }
 }
