@@ -578,6 +578,7 @@ export interface KubeContext extends KubeResource {
   spec: {
     user: string
     cluster: string
+    isCurrent: boolean
   }
 }
 

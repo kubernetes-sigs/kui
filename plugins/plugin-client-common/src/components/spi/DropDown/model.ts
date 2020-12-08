@@ -22,6 +22,9 @@ export interface Action {
 }
 
 export interface Props {
+  /** Tooltip */
+  title?: string
+
   /** Render more plain/inline style? */
   isPlain?: boolean
 

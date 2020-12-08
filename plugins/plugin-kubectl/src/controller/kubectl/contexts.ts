@@ -127,7 +127,8 @@ const asRadioTable = (args: Arguments, { header, body }: Table): RadioTable => {
   }
 }
 
-function valueOf(key: 'NAME' | 'NAMESPACE' | 'AUTHINFO' | 'CLUSTER', row: Row) {
+/** Extract the cell value for the given column name (`key`) in the given `row` */
+function valueOf(key: 'NAME' | 'NAMESPACE' | 'AUTHINFO' | 'CLUSTER', row: Row): string {
   const cell = row.attributes.find(_ => _.key === key)
   return cell ? cell.value : ''
 }
@@ -145,6 +146,11 @@ export async function getCurrentContext({ REPL }: { REPL: REPLType }): Promise<K
 
   // the KubeContext object matching the current context name
   return contexts.find(_ => _.metadata.name === currentContextName)
+}
+
+/** @return a list of `KubeContext` for all known contexts */
+export async function getAllContexts({ REPL }: { REPL: REPLType }): Promise<KubeContext[]> {
+  return (await REPL.rexec<KubeContext[]>('contexts')).content
 }
 
 export async function getCurrentContextName({ REPL }: { REPL: REPLType }) {
@@ -192,7 +198,8 @@ const listContexts = async (args: Arguments): Promise<RawResponse<KubeContext[]>
         },
         spec: {
           user: valueOf('AUTHINFO', _),
-          cluster: valueOf('CLUSTER', _)
+          cluster: valueOf('CLUSTER', _),
+          isCurrent: _.rowCSS === 'selected-row' || (Array.isArray(_.rowCSS) && _.rowCSS.indexOf('selected-row') >= 0)
         }
       }))
     }

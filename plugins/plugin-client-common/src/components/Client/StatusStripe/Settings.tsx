@@ -111,6 +111,7 @@ export default class Settings extends React.PureComponent<Props, State> {
     return (
       <DropdownWidget
         id="kui--settings-widget"
+        title={strings('Switch theme')}
         actions={this.state.themes.map(_ => ({
           label: _.name,
           isSelected: _.name === this.state.currentTheme,
