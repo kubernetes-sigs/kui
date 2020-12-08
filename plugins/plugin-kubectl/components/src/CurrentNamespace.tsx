@@ -18,6 +18,7 @@ import React from 'react'
 
 import { Icons, ViewLevel, DropdownWidget } from '@kui-shell/plugin-client-common'
 import {
+  i18n,
   eventChannelUnsafe,
   getTab,
   Tab,
@@ -40,6 +41,8 @@ interface State {
   allNamespaces: string[]
   viewLevel: ViewLevel
 }
+
+const strings = i18n('plugin-kubectl')
 
 export default class CurrentNamespace extends React.PureComponent<{}, State> {
   private readonly handler = this.reportCurrentNamespace.bind(this)
@@ -154,6 +157,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
         position="left"
         icon={<Icons icon="At" />}
         id="kui--plugin-kubeui--current-namespace"
+        title={strings('Kubernetes namespace')}
         actions={this.items()}
       />
     )

@@ -61,7 +61,12 @@ export { default as commandPrefix } from './controller/command-prefix'
 
 export { default as defaultFlags, flags } from './controller/kubectl/flags'
 
-export { getCurrentContext, getCurrentContextName, getCurrentDefaultNamespace } from './controller/kubectl/contexts'
+export {
+  getAllContexts,
+  getCurrentContext,
+  getCurrentContextName,
+  getCurrentDefaultNamespace
+} from './controller/kubectl/contexts'
 
 export {
   KubeOptions,

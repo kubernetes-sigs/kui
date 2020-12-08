@@ -90,6 +90,7 @@ export default class PatternFlyDropDown extends React.PureComponent<Props, State
 
     return (
       <Dropdown
+        title={this.props.title}
         className={'kui--dropdown ' + (this.props.className || '')}
         onSelect={this._onSelect}
         isPlain={this.props.isPlain}

@@ -21,20 +21,14 @@ import { DropDownProps } from '../../spi/DropDown'
 export type Props = Pick<DropDownProps, 'position'> & {
   id?: string
   icon?: React.ReactNode
+  title?: string
   actions: DropDownAction[]
 }
 
 export default function DropdownWidget(props: Props) {
   return (
     <div className="kui--status-stripe-element" id={props.id}>
-      <DropDown
-        isPlain
-        direction="up"
-        toggle="caret"
-        position={props.position}
-        actions={props.actions}
-        icon={props.icon}
-      />
+      <DropDown isPlain direction="up" toggle="caret" {...props} />
     </div>
   )
 }
