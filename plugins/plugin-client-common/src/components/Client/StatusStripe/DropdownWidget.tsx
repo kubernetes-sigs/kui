@@ -27,7 +27,7 @@ export type Props = Pick<DropDownProps, 'position'> & {
 
 export default function DropdownWidget(props: Props) {
   return (
-    <div className="kui--status-stripe-element" id={props.id}>
+    <div className="kui--status-stripe-element kui--status-stripe-element-clickable" id={props.id}>
       <DropDown isPlain direction="up" toggle="caret" {...props} />
     </div>
   )
