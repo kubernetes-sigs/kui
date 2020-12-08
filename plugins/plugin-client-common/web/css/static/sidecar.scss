@@ -20,12 +20,6 @@
 
 $focus-color: var(--color-brand-03);
 
-@include WidthConstrained {
-  @include Sidecar {
-    flex: 1;
-  }
-}
-
 .kui--sidecar.visible.kui--nav-view {
   .kui--sidecar-content {
     width: 70%;
