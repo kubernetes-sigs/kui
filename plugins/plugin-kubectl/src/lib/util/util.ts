@@ -145,3 +145,22 @@ export function formDashFileCommandFromArgs(
   const recursive = isRecursive(args) ? '-r' : undefined
   return [cmd === 'k' ? 'kubectl' : cmd, verb, '-n', namespace, '-f', recursive, filepath].filter(_ => _).join(' ')
 }
+
+/**
+ * Remove the last applied config informaiton for diff
+ *
+ */
+export function removeLastAppliedConfig(yaml: string) {
+  const lines = yaml.split('\n')
+  const lastAppliedConfigLineIdx = lines
+    .map((_, idx) => {
+      if (_.includes('last-applied-configuration')) {
+        return idx
+      }
+    })
+    .filter(_ => _)
+
+  return lines
+    .filter((_, idx) => !lastAppliedConfigLineIdx.includes(idx) && !lastAppliedConfigLineIdx.includes(idx - 1))
+    .join('\n')
+}
