@@ -27,10 +27,13 @@ $option-hover-color: var(--color-base02);
 @include StatusStripeElement {
   .bx--dropdown .bx--list-box__field {
     padding-left: 0;
-    padding-right: 2rem;
+    padding-right: 1.5rem;
     max-width: 13rem;
   }
   .bx--list-box__menu-icon {
+    /** Dial down icon sizes a bit */
+    --kui--master-font-scale: 0.875;
+
     right: 0;
   }
   .bx--dropdown__wrapper--inline {
