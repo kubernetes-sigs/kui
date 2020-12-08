@@ -22,13 +22,13 @@ body[kui-theme-style] {
   .monaco-diff-editor .char-insert,
   .monaco-editor .line-insert,
   .monaco-editor .char-insert {
-    background-color: rgba(var(--color-green-rgb), 0.2);
+    background-color: rgba(var(--color-green-rgb), 0.375);
   }
 
   .monaco-editor .inline-deleted-margin-view-zone,
   .monaco-diff-editor .line-delete,
   .monaco-diff-editor .char-delete {
-    background-color: rgba(var(--color-red-rgb), 0.2);
+    background-color: rgba(var(--color-red-rgb), 0.375);
   }
 
   canvas.modified.diffOverviewRuler {
