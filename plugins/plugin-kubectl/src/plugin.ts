@@ -21,6 +21,7 @@ import contexts from './controller/kubectl/contexts'
 import create from './controller/kubectl/create'
 import deployment from './controller/kubectl/deployment'
 import describe from './controller/kubectl/describe'
+import diff from './controller/kubectl/diff'
 import edit from './controller/kubectl/edit'
 import explain from './controller/kubectl/explain'
 import kdelete from './controller/kubectl/delete'
@@ -43,6 +44,7 @@ export default async (registrar: Registrar) => {
   contexts(registrar)
   create(registrar)
   describe(registrar)
+  diff(registrar)
   explain(registrar)
   edit(registrar)
   kdelete(registrar)
