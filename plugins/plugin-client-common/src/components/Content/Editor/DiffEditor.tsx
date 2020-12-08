@@ -141,10 +141,6 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
           _width?: number,
           height = Math.min(0.4 * window.innerHeight, Math.max(250, editor.getModifiedEditor().getContentHeight()))
         ) => {
-          const widthA = editor.getOriginalEditor().getContentWidth()
-          const widthB = editor.getModifiedEditor().getContentWidth()
-          const width = _width || Math.min(0.9 * window.innerWidth, widthA + widthB)
-          state.wrapper.style.width = width + 'px'
           // if we know 1) the height of the content won't change, and
           // 2) we are running in "simple" mode (this is mostly the case
           // for inline editor components, as opposed to editor
