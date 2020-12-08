@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+@import '../StatusStripe/mixins';
+
+@include StatusStripeElement {
+  .kui--dropdown__toggle {
+    padding: 0;
+  }
+  .pf-c-dropdown__toggle-icon {
+    margin-right: 0;
+  }
+}
+
 body[kui-theme-style] {
   .pf-c-dropdown__toggle {
     /* see https://github.com/IBM/kui/issues/4649 */

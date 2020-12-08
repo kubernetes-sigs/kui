@@ -149,7 +149,7 @@ $element-padding: 1rem;
     .kui--status-stripe-element:last-child {
       border-right: $element-border;
     }
-    .kui--status-stripe-element:not(:first-child) {
+    .kui--status-stripe-element:not(:first-child):not([data-padding='none']) {
       padding-left: $element-padding;
     }
   }
