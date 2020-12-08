@@ -25,6 +25,14 @@ $button-hover-color: var(--color-table-border3);
 $option-hover-color: var(--color-base02);
 
 @include StatusStripeElement {
+  .bx--dropdown .bx--list-box__field {
+    padding-left: 0;
+    padding-right: 2rem;
+    max-width: 13rem;
+  }
+  .bx--list-box__menu-icon {
+    right: 0;
+  }
   .bx--dropdown__wrapper--inline {
     display: flex;
   }

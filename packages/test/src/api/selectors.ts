@@ -278,10 +278,12 @@ export const NOSPLIT_ALT_BUFFER_N = (N: number) => `${CURRENT_TAB}.xterm-alt-buf
 const STATUS_STRIPE = '#kui--status-stripe'
 export const STATUS_STRIPE_TYPE = (type: 'default' | 'blue') => `${STATUS_STRIPE}[data-type="${type}"]`
 export const STATUS_STRIPE_MESSAGE = `${STATUS_STRIPE} .kui--status-stripe-message-element`
-export const STATUS_STRIPE_WIDGET = (which: string) => `${STATUS_STRIPE} .${which}`
+export const STATUS_STRIPE_WIDGET = (which: string, dot: '.' | '#' = '.') => `${STATUS_STRIPE} ${dot}${which}`
 export const STATUS_STRIPE_WIDGET_WITH_ATTR = (which: string, key: string, value: string) =>
   `${STATUS_STRIPE_WIDGET(which)}[data-${key}="${value}"]`
 export const STATUS_STRIPE_WIDGET_LABEL = (which: string) => `${STATUS_STRIPE_WIDGET(which)} .kui--status-stripe-text`
+export const STATUS_STRIPE_DROPDOWN_LABEL = (which: string) =>
+  `${STATUS_STRIPE_WIDGET(which, '#')} .bx--list-box__label`
 export const STATUS_STRIPE_WIDGET_ICON_WITH_ATTR = (which: string, key: string, value: string) =>
   `${STATUS_STRIPE_WIDGET_WITH_ATTR(which, key, value)} .kui--status-stripe-icon`
 export const STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR = (which: string, key: string, value: string) =>

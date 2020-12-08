@@ -39,6 +39,7 @@ export { default as ContextWidgets } from './components/Client/StatusStripe/Cont
 export { ViewLevel, default as TextWithIconWidget } from './components/Client/StatusStripe/TextWithIconWidget'
 export { default as Settings } from './components/Client/StatusStripe/Settings'
 export { default as TagWidget } from './components/Client/StatusStripe/TagWidget'
+export { default as DropdownWidget } from './components/Client/StatusStripe/DropdownWidget'
 export { default as KuiContext } from './components/Client/context'
 
 // Content components

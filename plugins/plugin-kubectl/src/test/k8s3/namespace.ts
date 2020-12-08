@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { strictEqual } from 'assert'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -109,9 +108,9 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
             this.app.client.waitUntil(async () => {
               console.error('1', selector)
               await this.app.client.$(selector).then(_ => _.click())
-              console.error('2')
+              console.error('2', Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
               const actualNamespace = await this.app.client
-                .$(Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-kubeui--current-namespace'))
+                .$(Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
                 .then(_ => _.getText())
               console.error('3', actualNamespace)
               await this.app.client.$(selector.replace(radioButton, radioButtonSelected)).then(_ => _.waitForExist())
@@ -134,21 +133,15 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     /** click on status stripe namespace widget */
     const listItViaStatusStripe = () => {
       it('should list namespaces by clicking on status stripe widget', async () => {
-        const res = await CLI.command('echo hi', this.app)
-        await ReplExpect.okWithPtyOutput('hi')(res)
+        try {
+          const widget = await this.app.client.$('#kui--plugin-kubeui--current-namespace button')
+          await widget.click()
 
-        await this.app.client
-          .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
-          .then(_ => _.click())
-
-        // await ReplExpect.okWith('default')({ app: this.app, count: res.count + 1 })
-        await this.app.client
-          .$(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
-          .then(_ => _.waitForExist())
-        const title = await this.app.client
-          .$(`${Selectors.OUTPUT_N(res.count + 1)} .kui--data-table-title`)
-          .then(_ => _.getText())
-        strictEqual(title, 'Namespaces')
+          const menuItem = await this.app.client.$(`.bx--list-box__menu-item[title="default"]`)
+          await menuItem.waitForDisplayed()
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
       })
     }
 

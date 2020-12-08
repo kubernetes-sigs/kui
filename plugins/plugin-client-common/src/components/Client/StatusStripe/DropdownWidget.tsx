@@ -16,17 +16,25 @@
 
 import React from 'react'
 import { DropDown, DropDownAction } from '../../..'
+import { DropDownProps } from '../../spi/DropDown'
 
-export interface Props {
+export type Props = Pick<DropDownProps, 'position'> & {
   id?: string
-  position?: 'left' | 'right'
+  icon?: React.ReactNode
   actions: DropDownAction[]
 }
 
 export default function DropdownWidget(props: Props) {
   return (
-    <div className="kui--status-stripe-element" data-padding="none" id={props.id}>
-      <DropDown isPlain direction="up" toggle="caret" position={props.position} actions={props.actions} />
+    <div className="kui--status-stripe-element" id={props.id}>
+      <DropDown
+        isPlain
+        direction="up"
+        toggle="caret"
+        position={props.position}
+        actions={props.actions}
+        icon={props.icon}
+      />
     </div>
   )
 }
