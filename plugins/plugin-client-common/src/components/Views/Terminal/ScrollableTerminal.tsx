@@ -693,7 +693,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     else uuid = this.redirectToPlainSplitIfNeeded(uuid, event)
 
     if (isTabLayoutModificationResponse(event.response)) {
-      const updatedResponse = this.onTabLayoutModificationRequest(event.response)
+      const updatedResponse = this.onTabLayoutModificationRequest(event.response, uuid)
       if (updatedResponse) {
         event.response = updatedResponse
       }
@@ -858,14 +858,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** A controller has requested a tab layout modification */
-  private onTabLayoutModificationRequest(request: TabLayoutModificationResponse) {
+  private onTabLayoutModificationRequest(request: TabLayoutModificationResponse, sbuuid: string) {
     if (isNewSplitRequest(request)) {
-      return this.onSplit(request)
+      return this.onSplit(request, sbuuid)
     }
   }
 
   /** Split the view */
-  private onSplit(request: TabLayoutModificationResponse<NewSplitRequest>) {
+  private onSplit(request: TabLayoutModificationResponse<NewSplitRequest>, sbuuid: string) {
     const nTerminals = this.state.splits.length
 
     if (nTerminals === MAX_TERMINALS) {
@@ -885,7 +885,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           .concat(newScrollback)
           .concat(splits.slice(insertIdx))
 
-        eventBus.emitTabLayoutChange(this.props.tab.uuid)
+        eventBus.emitTabLayoutChange(sbuuid, { isSidecarNowHidden: false, isWidthConstrained: true })
 
         return {
           focusedIdx: newFocusedIdx,
@@ -945,7 +945,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private removeSplit(sbuuid: string) {
     this.setState(curState => {
-      eventBus.emitTabLayoutChange(this.props.tab.uuid)
+      eventBus.emitTabLayoutChange(sbuuid)
 
       const idx = this.findSplit(this.state, sbuuid)
       if (idx >= 0) {
@@ -973,7 +973,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           eventBus.emitWithTabId('/tab/close/request', parent.uuid, parent)
         }
 
-        return { splits, focusedIdx: idx === 0 ? 0 : idx - 1 }
+        const focusedIdx = idx === 0 ? 0 : idx - 1
+
+        if (splits.length === 1) {
+          eventBus.emitTabLayoutChange(splits[focusedIdx].uuid, {
+            isSidecarNowHidden: false,
+            isWidthConstrained: false
+          })
+        }
+
+        return { splits, focusedIdx }
       }
     })
   }

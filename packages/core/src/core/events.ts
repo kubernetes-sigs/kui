@@ -46,7 +46,7 @@ export type SnapshotRequestEvent = {
   }
 }
 
-export type TabLayoutChangeEvent = { isSidecarNowHidden: boolean }
+export type TabLayoutChangeEvent = { isSidecarNowHidden: boolean; isWidthConstrained?: boolean }
 type TabLayoutChangeHandler = (evt: TabLayoutChangeEvent) => void
 
 class EventBusBase {
@@ -96,7 +96,10 @@ class WriteEventBus extends EventBusBase {
     this.eventBus.emit('/tab/switch/split', tab)
   }
 
-  public emitTabLayoutChange(tabUUID: string, evt: TabLayoutChangeEvent = { isSidecarNowHidden: false }): void {
+  public emitTabLayoutChange(
+    tabUUID: string,
+    evt: TabLayoutChangeEvent = { isSidecarNowHidden: false, isWidthConstrained: false }
+  ): void {
     setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`, evt))
   }
 
