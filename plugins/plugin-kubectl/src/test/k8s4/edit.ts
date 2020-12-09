@@ -89,29 +89,39 @@ commands.forEach(command => {
           // we'll inject some garbage that we expect to fail validation
           const garbage = 'zzzzzz'
 
+          console.error('1')
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.keys(`${where}${garbage}`) // <-- injecting garbage
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save')).then(_ => _.click())
+          console.error('2')
 
           // an error state and the garbage text had better appear in the toolbar text
           await SidecarExpect.toolbarAlert({ type: 'error', text: expectedError || garbage, exact: false })(res)
+          console.error('3')
 
           // expect line number to be highlighted, and for that line to be visible
           await this.app.client
             .$(`${Selectors.SIDECAR_TAB_CONTENT(res.count)} .kui--editor-line-highlight`)
             .then(_ => _.waitForDisplayed())
+          console.error('4')
 
           if (revert) {
             await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Revert')).then(_ => _.click())
+            console.error('5')
+            let idx = 0
             await this.app.client.waitUntil(
               async () => {
                 const revertedText = await Util.getValueFromMonaco(res)
+                if (++idx > 5) {
+                  console.error(`still waiting for revertedText=${revertedText} actualText=${actualText}`)
+                }
                 return revertedText === actualText
               },
               { timeout: CLI.waitTimeout }
             )
           }
+          console.error('6')
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -142,12 +152,12 @@ commands.forEach(command => {
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.keys(`${Keys.End}${Keys.ENTER}${key}: ${value}${Keys.ENTER}`)
           await new Promise(resolve => setTimeout(resolve, 2000))
-          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save')).then(_ => _.click())
+
+          const saveButton = await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+          await saveButton.click()
           // await SidecarExpect.toolbarAlert({ type: 'success', text: 'Successfully Applied', exact: false })(res)
           console.error('1')
-          await this.app.client
-            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
-            .then(_ => _.waitForDisplayed({ timeout: 10000, reverse: true }))
+          await saveButton.waitForExist({ timeout: 10000, reverse: true })
           console.error('2')
         } catch (err) {
           await Common.oops(this, true)(err)
@@ -192,7 +202,7 @@ commands.forEach(command => {
           // edit button should not exist
           await this.app.client
             .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
-            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
+            .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
 
           // should still be showing pod {name}, but now with the yaml tab selected
           console.error('2')
@@ -204,11 +214,11 @@ commands.forEach(command => {
           console.error('4')
           await this.app.client
             .$(Selectors.SIDECAR_BACK_BUTTON(res.count))
-            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
+            .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
           console.error('5')
           await this.app.client
             .$(Selectors.SIDECAR_FORWARD_BUTTON(res.count))
-            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
+            .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
           console.error('6')
         } catch (err) {
           await Common.oops(this, true)(err)
@@ -238,7 +248,7 @@ commands.forEach(command => {
           // edit button should not exist
           await this.app.client
             .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
-            .then(_ => _.waitForDisplayed({ timeout: 5000, reverse: true }))
+            .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
 
           // try editing the summary mode
           const actualText = await Util.getValueFromMonaco(res)
@@ -259,7 +269,7 @@ commands.forEach(command => {
 
           await this.app.client
             .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
-            .then(_ => _.waitForDisplayed({ timeout: 10000, reverse: true })) // should not have apply button
+            .then(_ => _.waitForExist({ timeout: 10000, reverse: true })) // should not have apply button
         } catch (err) {
           await Common.oops(this, true)(err)
         }

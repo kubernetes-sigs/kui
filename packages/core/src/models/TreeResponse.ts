@@ -15,8 +15,6 @@
  */
 
 import { Entity } from './entity'
-import { Button } from './mmr/types'
-import { ToolbarText } from '../webapp/views/toolbar-text'
 import { CommandCompleteEvent, CommandStartEvent } from '../repl/events'
 import ExecOptions from './execOptions'
 
@@ -106,10 +104,6 @@ export interface TreeResponse {
 
   /** data of a `TreeResponse` */
   data: TreeItem[]
-  /** update the toolbar text */
-  toolbarText?: ToolbarText
-  /** update the toolbar button */
-  toolbarButtons?: Button[]
 }
 
 export function isTreeResponse(entity: Entity): entity is TreeResponse {

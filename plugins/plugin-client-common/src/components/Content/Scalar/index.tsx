@@ -16,6 +16,7 @@
 
 import React from 'react'
 import {
+  isAbortableResponse,
   isMessageWithUsageModel,
   isMessageWithCode,
   CommandCompleteEvent,
@@ -94,138 +95,144 @@ export default class Scalar extends React.PureComponent<Props, State> {
     console.error('catastrophic error in Scalar', error, errorInfo)
   }
 
+  private renderResponse(response: Props['response']) {
+    const { tab } = this.props
+
+    if (typeof response === 'boolean') {
+      return <React.Fragment />
+    } else if (typeof response === 'number') {
+      return <pre>{response}</pre>
+    } else if (isUsageError(response)) {
+      // hopefully we can do away with this shortly
+      if (typeof response.raw === 'string') {
+        return <pre>{response.raw}</pre>
+      } else if (isMessageWithUsageModel(response.raw) || isMessageWithCode(response.raw)) {
+        return <pre>{response.raw.message}</pre>
+      } else {
+        return <HTMLDom content={response.raw} />
+      }
+    } else if (isXtermResponse(response)) {
+      return <XtermDom response={response} />
+    } else if (typeof response === 'string' || isError(response)) {
+      const message = isError(response) ? response.message : response
+
+      // Markdown interprets escapes, so we need to double-escape
+      return (
+        <pre>
+          <Markdown tab={tab} repl={tab.REPL} source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')} />
+        </pre>
+      )
+    } else if (isCommentaryResponse(response)) {
+      return (
+        <span className="flex-fill flex-layout flex-align-stretch">
+          <Commentary
+            {...response.props}
+            repl={tab.REPL}
+            tabUUID={getPrimaryTabId(tab)}
+            isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+            willRemove={this.props.willRemove}
+            willUpdateCommand={this.props.willUpdateCommand}
+            willUpdateResponse={(text: string) => {
+              response.props.children = text
+            }}
+          />
+        </span>
+      )
+    } else if (isRadioTable(response)) {
+      return (
+        <KuiContext.Consumer>
+          {config => <RadioTableSpi table={response} title={!config.disableTableTitle} repl={tab.REPL} />}
+        </KuiContext.Consumer>
+      )
+    } else if (isTable(response)) {
+      const renderBottomToolbar = true
+      const isLargeTable = response.body.length >= 50
+      const isLargeMiniTable = this.props.isPartOfMiniSplit && response.body.length > 5
+      const renderGrid =
+        (isLargeTable || isLargeMiniTable) &&
+        (response.allowedPresentations === undefined || response.allowedPresentations.indexOf('grid') >= 0)
+      return renderTable(
+        tab,
+        tab.REPL,
+        response,
+        undefined,
+        renderBottomToolbar,
+        renderGrid,
+        this.props.onRender,
+        this.props.isPartOfMiniSplit,
+        this.props.isWidthConstrained
+      )
+      // ^^^ Notes: typescript doesn't like this, and i don't know why:
+      // "is not assignable to type IntrinsicAttributes..."
+      // <PaginatedTable {...props} />
+    } else if (isMixedResponse(response)) {
+      return (
+        <React.Fragment>
+          {response.map((part, idx) => (
+            <Scalar {...this.props} key={idx} response={part} />
+          ))}
+        </React.Fragment>
+      )
+    } else if (isReactResponse(response)) {
+      return response.react
+    } else if (isHTML(response)) {
+      // ^^^ intentionally using an "else" so that typescript double
+      // checks that we've covered every case of ScalarResponse
+      return <HTMLDom content={response} />
+    } else if (isMarkdownResponse(response)) {
+      return <Markdown tab={tab} repl={tab.REPL} source={response.content} />
+    } else if (isRandomErrorResponse1(response)) {
+      // maybe this is an error response from some random API?
+      return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError1', response.code)} />
+    } else if (isRandomErrorResponse2(response)) {
+      // maybe this is an error response from some random API?
+      return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError2', response.errno)} />
+    } else if (isMultiModalResponse(response)) {
+      return (
+        <TopNavSidecar
+          uuid={tab.uuid}
+          tab={tab}
+          execUUID={this.props.execUUID}
+          active
+          response={response}
+          onRender={this.props.onRender}
+          willChangeSize={this.props.willChangeSize}
+          argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
+          parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
+        />
+      )
+    } else if (isNavResponse(response)) {
+      return (
+        <LeftNavSidecar
+          uuid={tab.uuid}
+          tab={tab}
+          execUUID={this.props.execUUID}
+          active
+          response={response}
+          onRender={this.props.onRender}
+          willChangeSize={this.props.willChangeSize}
+          argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
+          parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
+        />
+      )
+    } else if (isAbortableResponse(response)) {
+      return this.renderResponse(response.response)
+    }
+
+    console.error('unexpected null return from Scalar:', this.props.response)
+    return <pre className="oops">Internal Error in command execution</pre>
+  }
+
   public render() {
     if (this.state.catastrophicError) {
       return <div className="oops">{this.state.catastrophicError.toString()}</div>
     }
 
-    const { tab, response } = this.props
-
     try {
-      if (typeof response === 'boolean') {
-        return <React.Fragment />
-      } else if (typeof response === 'number') {
-        return <pre>{response}</pre>
-      } else if (isUsageError(response)) {
-        // hopefully we can do away with this shortly
-        if (typeof response.raw === 'string') {
-          return <pre>{response.raw}</pre>
-        } else if (isMessageWithUsageModel(response.raw) || isMessageWithCode(response.raw)) {
-          return <pre>{response.raw.message}</pre>
-        } else {
-          return <HTMLDom content={response.raw} />
-        }
-      } else if (isXtermResponse(response)) {
-        return <XtermDom response={response} />
-      } else if (typeof response === 'string' || isError(response)) {
-        const message = isError(response) ? response.message : response
-
-        // Markdown interprets escapes, so we need to double-escape
-        return (
-          <pre>
-            <Markdown tab={tab} repl={tab.REPL} source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')} />
-          </pre>
-        )
-      } else if (isCommentaryResponse(response)) {
-        return (
-          <span className="flex-fill flex-layout flex-align-stretch">
-            <Commentary
-              {...response.props}
-              repl={tab.REPL}
-              tabUUID={getPrimaryTabId(tab)}
-              isPartOfMiniSplit={this.props.isPartOfMiniSplit}
-              willRemove={this.props.willRemove}
-              willUpdateCommand={this.props.willUpdateCommand}
-              willUpdateResponse={(text: string) => {
-                response.props.children = text
-              }}
-            />
-          </span>
-        )
-      } else if (isRadioTable(response)) {
-        return (
-          <KuiContext.Consumer>
-            {config => <RadioTableSpi table={response} title={!config.disableTableTitle} repl={tab.REPL} />}
-          </KuiContext.Consumer>
-        )
-      } else if (isTable(response)) {
-        const renderBottomToolbar = true
-        const isLargeTable = response.body.length >= 50
-        const isLargeMiniTable = this.props.isPartOfMiniSplit && response.body.length > 5
-        const renderGrid =
-          (isLargeTable || isLargeMiniTable) &&
-          (response.allowedPresentations === undefined || response.allowedPresentations.indexOf('grid') >= 0)
-        return renderTable(
-          tab,
-          tab.REPL,
-          response,
-          undefined,
-          renderBottomToolbar,
-          renderGrid,
-          this.props.onRender,
-          this.props.isPartOfMiniSplit,
-          this.props.isWidthConstrained
-        )
-        // ^^^ Notes: typescript doesn't like this, and i don't know why:
-        // "is not assignable to type IntrinsicAttributes..."
-        // <PaginatedTable {...props} />
-      } else if (isMixedResponse(response)) {
-        return (
-          <React.Fragment>
-            {response.map((part, idx) => (
-              <Scalar {...this.props} key={idx} response={part} />
-            ))}
-          </React.Fragment>
-        )
-      } else if (isReactResponse(response)) {
-        return response.react
-      } else if (isHTML(response)) {
-        // ^^^ intentionally using an "else" so that typescript double
-        // checks that we've covered every case of ScalarResponse
-        return <HTMLDom content={response} />
-      } else if (isMarkdownResponse(response)) {
-        return <Markdown tab={tab} repl={tab.REPL} source={response.content} />
-      } else if (isRandomErrorResponse1(response)) {
-        // maybe this is an error response from some random API?
-        return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError1', response.code)} />
-      } else if (isRandomErrorResponse2(response)) {
-        // maybe this is an error response from some random API?
-        return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError2', response.errno)} />
-      } else if (isMultiModalResponse(response)) {
-        return (
-          <TopNavSidecar
-            uuid={tab.uuid}
-            tab={tab}
-            execUUID={this.props.execUUID}
-            active
-            response={response}
-            onRender={this.props.onRender}
-            willChangeSize={this.props.willChangeSize}
-            argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
-            parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
-          />
-        )
-      } else if (isNavResponse(response)) {
-        return (
-          <LeftNavSidecar
-            uuid={tab.uuid}
-            tab={tab}
-            execUUID={this.props.execUUID}
-            active
-            response={response}
-            onRender={this.props.onRender}
-            willChangeSize={this.props.willChangeSize}
-            argvNoOptions={this.props.completeEvent ? this.props.completeEvent.argvNoOptions : undefined}
-            parsedOptions={this.props.completeEvent ? this.props.completeEvent.parsedOptions : undefined}
-          />
-        )
-      }
+      return this.renderResponse(this.props.response)
     } catch (err) {
       console.error('catastrophic error rendering Scalar', err)
       return <pre>{err.toString()}</pre>
     }
-
-    console.error('unexpected null return from Scalar:', response)
-    return <pre className="oops">Internal Error in command execution</pre>
   }
 }

@@ -59,6 +59,7 @@ type Props = MonacoOptions &
   }
 
 interface State {
+  content: StringContent
   editor: Monaco.ICodeEditor
   wrapper: HTMLDivElement
   subscription?: IDisposable
@@ -73,6 +74,7 @@ export default class Editor extends React.PureComponent<Props, State> {
 
     // created below in render() via ref={...} -> initMonaco()
     this.state = {
+      content: props.content,
       cleaners: [],
       editor: undefined,
       wrapper: undefined,
@@ -116,6 +118,11 @@ export default class Editor extends React.PureComponent<Props, State> {
     if (!state.editor && state.wrapper) {
       // then we are ready to render monaco into the wrapper
       return Editor.initMonaco(props, state)
+    } else if (props.content !== state.content) {
+      return {
+        content: props.content,
+        subscription: Editor.reinitMonaco(props, state)
+      }
     } else {
       return state
     }
@@ -131,14 +138,14 @@ export default class Editor extends React.PureComponent<Props, State> {
     this.state.cleaners.forEach(cleaner => cleaner())
   }
 
-  private static isClearable(props: Props) {
+  private static isClearable(props: Props, content: State['content']) {
     return (
       (isFile(props.response) && !props.readOnly) ||
-      (!isFile(props.response) && props.content.spec && props.content.spec.clearable !== false)
+      (!isFile(props.response) && content.spec && content.spec.clearable !== false)
     )
   }
 
-  private static onChange(props: Props, editor: Monaco.ICodeEditor) {
+  private static onChange(props: Props, content: State['content'], editor: Monaco.ICodeEditor) {
     let currentDecorations: string[]
 
     return () => {
@@ -147,7 +154,7 @@ export default class Editor extends React.PureComponent<Props, State> {
         currentDecorations = undefined
       }
 
-      const clearable = Editor.isClearable(props)
+      const clearable = Editor.isClearable(props, content)
 
       const buttons: Button[] = []
 
@@ -161,11 +168,11 @@ export default class Editor extends React.PureComponent<Props, State> {
           }
         })
         buttons.push(save)
-      } else if (props.content.spec && props.content.spec.save) {
-        const { onSave } = props.content.spec.save
+      } else if (content.spec && content.spec.save) {
+        const { onSave } = content.spec.save
         buttons.push({
           mode: 'Save',
-          label: props.content.spec.save.label || strings('saveLocalFile'),
+          label: content.spec.save.label || strings('saveLocalFile'),
           kind: 'drilldown' as const,
           inPlace: true,
           command: async () => {
@@ -228,11 +235,11 @@ export default class Editor extends React.PureComponent<Props, State> {
           }
         })
         buttons.push(revert)
-      } else if (props.content.spec && props.content.spec.revert) {
-        const { onRevert } = props.content.spec.revert
+      } else if (content.spec && content.spec.revert) {
+        const { onRevert } = content.spec.revert
         buttons.push({
           mode: 'Revert',
-          label: props.content.spec.revert.label || strings('revert'),
+          label: content.spec.revert.label || strings('revert'),
           kind: 'view' as const,
           command: async () => {
             try {
@@ -263,17 +270,48 @@ export default class Editor extends React.PureComponent<Props, State> {
   }
 
   /** Handle Toolbar registrations */
-  private static subscribeToChanges(props: Props, editor: Monaco.ICodeEditor, readOnly: boolean) {
+  private static subscribeToChanges(
+    props: Props,
+    content: State['content'],
+    editor: Monaco.ICodeEditor,
+    readOnly: boolean
+  ) {
     if (props.willUpdateToolbar) {
       // send an initial update; note how the initial toolbarText may
       // be governed by the response
       const msg = (readOnly && props.response.toolbarText) || (!readOnly && this.allClean(props)) // <-- always use allClean if !readOnly
-      const buttons = props.response.toolbarText ? [] : !Editor.isClearable(props) ? undefined : [ClearButton(editor)]
+      const buttons = props.response.toolbarText
+        ? []
+        : !Editor.isClearable(props, content)
+        ? undefined
+        : [ClearButton(editor)]
       props.willUpdateToolbar(msg, buttons)
 
       // then subscribe to future model change events
-      return editor.onDidChangeModelContent(Editor.onChange(props, editor))
+      return editor.onDidChangeModelContent(Editor.onChange(props, content, editor))
     }
+  }
+
+  private static reinitMonaco(props: Props, state: State): IDisposable {
+    state.editor.setValue(props.content.content)
+    props.willUpdateToolbar(
+      Editor.allClean(props),
+      !Editor.isClearable(props, props.content) ? undefined : [ClearButton(state.editor)]
+    )
+
+    if (state.subscription) {
+      state.subscription.dispose()
+    }
+
+    return Editor.subscribeToChanges(props, props.content, state.editor, Editor.isReadOnly(props, state))
+  }
+
+  private static isReadOnly(props: Props, state: State): boolean {
+    return (
+      !isFile(props.response) &&
+      (!state.content.spec || state.content.spec.readOnly !== false) &&
+      (props.readOnly || !isFile(props.response) || false)
+    )
   }
 
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
@@ -283,18 +321,15 @@ export default class Editor extends React.PureComponent<Props, State> {
     try {
       // here we instantiate an editor widget
       const providedOptions = {
-        value: props.content.content,
-        readOnly:
-          !isFile(props.response) &&
-          (!props.content.spec || props.content.spec.readOnly !== false) &&
-          (props.readOnly || !isFile(props.response) || false),
+        value: state.content.content,
+        readOnly: Editor.isReadOnly(props, state),
         language:
-          props.content.contentType === 'text/plain'
+          state.content.contentType === 'text/plain'
             ? language(
-                props.content.contentType,
+                state.content.contentType,
                 isFile(props.response) ? extname(props.response.spec.filepath).slice(1) : undefined
               )
-            : props.content.contentType || undefined
+            : state.content.contentType || undefined
       }
       const overrides: Monaco.IStandaloneEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
       const options: Monaco.IStandaloneEditorConstructionOptions = Object.assign(
@@ -356,7 +391,7 @@ export default class Editor extends React.PureComponent<Props, State> {
         setTimeout(() => editor.focus())
       }
 
-      const subscription = Editor.subscribeToChanges(props, editor, options.readOnly)
+      const subscription = Editor.subscribeToChanges(props, props.content, editor, options.readOnly)
       if (subscription) {
         cleaners.push(() => subscription.dispose())
       }
@@ -371,7 +406,8 @@ export default class Editor extends React.PureComponent<Props, State> {
 
       return {
         editor,
-        cleaners
+        cleaners,
+        subscription
       }
     } catch (err) {
       console.error('Error initing Monaco: ', err)

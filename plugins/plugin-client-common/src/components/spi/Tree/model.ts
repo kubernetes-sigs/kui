@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import { Button, MultiModalResponse, Tab, ToolbarProps, TreeResponse, ToolbarText } from '@kui-shell/core'
+import { MultiModalResponse, Tab, TreeResponse } from '@kui-shell/core'
 
 type Props = {
   response: MultiModalResponse
   tab: Tab
   data: TreeResponse['data']
-  toolbarText: ToolbarText
-  toolbarButtons: Button[]
   execUUID: string // NOTE: we could remove this once this issue is fixed: https://github.com/IBM/kui/issues/6328
-} & ToolbarProps
+}
 
 export default Props

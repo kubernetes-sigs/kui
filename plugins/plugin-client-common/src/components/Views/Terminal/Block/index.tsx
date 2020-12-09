@@ -23,6 +23,7 @@ import Output from './Output'
 import {
   BlockModel,
   isActive,
+  isBeingRerun,
   isEmpty,
   isFinished,
   isOutputOnly,
@@ -58,6 +59,9 @@ type Props = InputOptions & {
 
   /** block model */
   model: BlockModel
+
+  /** Are we in the middle of a re-run? */
+  isBeingRerun?: boolean
 
   /** tab UUID */
   uuid: string
@@ -132,6 +136,7 @@ export default class Block extends React.PureComponent<Props, State> {
           tab={this.props.tab}
           idx={this.props.idx}
           model={this.props.model}
+          isBeingRerun={isBeingRerun(this.props.model)}
           willRemove={this.props.willRemove}
           willChangeSize={this._willChangeSize}
           onRender={this.props.onOutputRender}

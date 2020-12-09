@@ -325,7 +325,10 @@ export default class Input extends InputProvider {
 
   private static newCountup(startTime: number, durationDom: HTMLSpanElement) {
     return setInterval(() => {
-      durationDom.innerText = prettyPrintDuration((~~(Date.now() - startTime) / 1000) * 1000)
+      const millisSinceStart = (~~(Date.now() - startTime) / 1000) * 1000
+      if (millisSinceStart > 0) {
+        durationDom.innerText = prettyPrintDuration(millisSinceStart)
+      }
     }, 1000)
   }
 
