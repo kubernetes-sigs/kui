@@ -28,6 +28,6 @@
     format('woff2');
 } */
 
-body.kui--patternfly4[kui-theme-style] {
+@mixin PatternFlyMonospace {
   --font-monospace: Liberation Mono, consolas, SFMono-Regular, menlo, monaco, Courier New, monospace;
 }

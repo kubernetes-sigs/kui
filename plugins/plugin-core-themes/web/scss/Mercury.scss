@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-@import 'fonts';
-@import '~@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
+/**
+ * scheme: "Mercury"
+ * author: @starpit
+ */
+
+@import '~@kui-shell/plugin-patternfly4-themes/web/scss/fonts';
 @import '~@kui-shell/plugin-client-common/web/scss/Themes/mixins';
+@import '~@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
+@import '~@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
+@import '~@kui-shell/plugin-client-common/web/scss/components/TopTabStripe/mixins';
 
 $base00: #e8eddf;
 $base01: #929d8c;
-$base02: #928f80;
+$base02: #cacfc4;
 $base03_l: #94a08f;
 $base03_d: #495a4b;
 $base04: #193d1a;
@@ -29,7 +36,7 @@ $base06: #0d1710;
 $base07: #ffffff;
 $base08: #99433a;
 $base09: #ec824f;
-$base0A_l: #d07e3a;
+$base0A_l: #5d4535;
 $base0A_d: #fdf66c;
 $base0B: #9fb077;
 $base0C_l: #526c81;
@@ -84,17 +91,21 @@ $base0F: #a3685a;
   --color-base0F: #{$base0F}; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 }
 
-/**
- * scheme: "Mercury"
- * author: @starpit
- */
 body[kui-theme='Mercury'] {
   @include kui-patternfly-alignment-light;
+  @include PatternFlyFonts;
   @include MercuryLight;
+
+  @include StatusStripe {
+    &.kui--inverted-color-context {
+      --color-sidecar-header: var(--color-base02);
+    }
+  }
 }
 
 body[kui-theme='Mercury'] .kui--inverted-color-context {
   @include kui-patternfly-alignment-dark;
+  @include PatternFlyFonts;
   @include MercuryDark;
   @include Reset;
 
