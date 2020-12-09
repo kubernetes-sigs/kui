@@ -338,4 +338,8 @@ export function isDryRun(args: Arguments<KubeOptions>): boolean {
   return typeof opt === 'boolean' || opt === 'client' || opt === 'server'
 }
 
+export function isDiffRequest(args: Arguments<KubeOptions>): boolean {
+  return args.execOptions.data && args.execOptions.data['diff']
+}
+
 export default KubeOptions
