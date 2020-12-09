@@ -17,7 +17,7 @@
 @import '../../PatternFly/common';
 
 body[kui-theme-style] .pf-c-clipboard-copy__expandable-content {
-  color: var(--pf-global--Color--100);
+  color: var(--color-text-01);
 }
 
 body[kui-theme-style='dark'] .pf-c-clipboard-copy__expandable-content {
@@ -26,4 +26,8 @@ body[kui-theme-style='dark'] .pf-c-clipboard-copy__expandable-content {
 
 body[kui-theme-style='light'] .kui--inverted-color-context .pf-c-clipboard-copy__expandable-content {
   color: var(--pf-global--Color--300);
+}
+
+.pf-c-clipboard-copy .pf-c-button.pf-m-control {
+  color: var(--color-text-01);
 }

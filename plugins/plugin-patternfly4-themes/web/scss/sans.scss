@@ -22,6 +22,6 @@
   text-rendering: optimizeLegibility;
 }
 
-body.kui--patternfly4[kui-theme-style] {
+@mixin PatternFlySansSerif {
   --font-sans-serif: 'RedHatText';
 }
