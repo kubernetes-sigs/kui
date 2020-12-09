@@ -18,6 +18,7 @@ import { Entity } from './entity'
 import { Button } from './mmr/types'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { CommandCompleteEvent, CommandStartEvent } from '../repl/events'
+import ExecOptions from './execOptions'
 
 export enum DiffState {
   ADDED,
@@ -46,6 +47,9 @@ export type TreeItem = {
 
   /** execute the command when clicking the tree item  */
   onclick?: string
+
+  /** execoptions for executing the onclick command  */
+  onclickOptions?: ExecOptions
 
   /** customized badge string */
   diffBadge?: string

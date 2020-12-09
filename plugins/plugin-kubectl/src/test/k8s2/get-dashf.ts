@@ -101,18 +101,32 @@ const currentEventCount = async (res: ReplExpect.AppAndCount): Promise<number> =
   return !events ? 0 : events.length
 }
 
-const clickApplyButton = async (res: ReplExpect.AppAndCount, waitForResourceName: string) => {
-  const button = await res.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'apply'))
+const drilldown = async (res: ReplExpect.AppAndCount, id: string, expectText?: string) => {
+  const node = await res.app.client.$(Selectors.TREE_LIST_AS_BUTTON(res.count, id))
+  await node.waitForDisplayed()
+  await node.click()
+
+  return SidecarExpect.openInBlockAfter(res)
+    .then(SidecarExpect.mode('diff'))
+    .then(res => (expectText ? SidecarExpect.textPlainContentFromMonaco(expectText, false)(res) : res))
+}
+
+const clickApplyButton = async (
+  getRes: ReplExpect.AppAndCount,
+  prevRes: ReplExpect.AppAndCount,
+  waitForResourceName: string
+) => {
+  const button = await getRes.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(getRes.count, 'apply'))
   await button.waitForDisplayed()
   await button.click()
   if (waitForResourceName) {
-    const tableRes = ReplExpect.blockAfter(res)
+    const tableRes = ReplExpect.blockAfter(prevRes)
     const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(waitForResourceName) })(
       tableRes
     )
-    await waitForGreen(res.app, selector)
+    return waitForGreen(prevRes.app, selector)
   }
-  return res
+  return prevRes
 }
 
 const hasEvents = async (res: ReplExpect.AppAndCount) => {
@@ -142,7 +156,13 @@ commands.forEach(command => {
 
     allocateNS(this, ns)
 
-    const getOfflineFile = (file: string, dryRun: SidecarExpect.ExpectedTree[], waitForApply?: string) => {
+    const getOfflineFile = (
+      file: string,
+      dryRun: SidecarExpect.ExpectedTree[],
+      waitForApply?: string,
+      drilldownId?: string,
+      expectDiffText?: string
+    ) => {
       it(`should get -f offline file and apply ${process.env.MOCHA_RUN_TARGET || ''}`, () =>
         CLI.command(`${command} get -f ${file} ${inNamespace}`, this.app)
           .then(ReplExpect.ok)
@@ -152,7 +172,14 @@ commands.forEach(command => {
           .then(Util.switchToTab('dry run'))
           .then(SidecarExpect.tree(dryRun))
           .then(SidecarExpect.toolbarText({ type: 'info', text: 'Previewing', exact: false }))
-          .then(_ => clickApplyButton(_, waitForApply))
+          .then(async sidecar1Res => {
+            if (drilldownId) {
+              const sidecar2Res = await drilldown(sidecar1Res, drilldownId, expectDiffText)
+              return clickApplyButton(sidecar1Res, sidecar2Res, waitForApply)
+            } else {
+              return clickApplyButton(sidecar1Res, sidecar1Res, waitForApply)
+            }
+          })
           .catch(Common.oops(this, true)))
     }
 
@@ -160,7 +187,9 @@ commands.forEach(command => {
       file: string,
       deploy: SidecarExpect.ExpectedTree[],
       clickApply?: boolean,
-      waitForApply?: string
+      waitForApply?: string,
+      drilldownId?: string,
+      expectDiffText?: string
     ) => {
       it(`should get -f online file, expect events ${process.env.MOCHA_RUN_TARGET || ''}`, () =>
         CLI.command(`${command} get -f ${file} ${inNamespace}`, this.app)
@@ -173,13 +202,27 @@ commands.forEach(command => {
           .then(SidecarExpect.toolbarText({ type: 'info', text: 'Live', exact: false }))
           .then(Util.switchToTab('deployed resources'))
           .then(SidecarExpect.tree(deploy))
-          .then(_ => (clickApply ? clickApplyButton(_, waitForApply) : _))
+          .then(async sidecar1Res => {
+            if (drilldownId) {
+              const sidecar2Res = await drilldown(sidecar1Res, drilldownId, expectDiffText)
+              return clickApply ? clickApplyButton(sidecar1Res, sidecar2Res, waitForApply) : sidecar2Res
+            } else {
+              return clickApply ? clickApplyButton(sidecar1Res, sidecar1Res, waitForApply) : sidecar1Res
+            }
+          })
           .catch(Common.oops(this, true)))
     }
 
-    getOfflineFile(`${ROOT}/data/k8s/crashy.yaml`, crashy, 'kui-crashy')
+    getOfflineFile(`${ROOT}/data/k8s/crashy.yaml`, crashy, 'kui-crashy', 'kui-crashy')
     getLiveFile(`${ROOT}/data/k8s/crashy.yaml`, crashy)
-    getLiveFile(`${ROOT}/data/k8s/diff/modified-crashy.yaml`, modifiedCrashyDryRun, true, 'kui-crashy')
+    getLiveFile(
+      `${ROOT}/data/k8s/diff/modified-crashy.yaml`,
+      modifiedCrashyDryRun,
+      true,
+      'kui-crashy',
+      'kui-crashy',
+      'foo'
+    )
 
     getOfflineFile(`${ROOT}/data/k8s/application/guestbook`, guestbook)
     getLiveFile(`${ROOT}/data/k8s/application/guestbook`, guestbook)

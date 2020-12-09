@@ -187,7 +187,7 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
             eventBus.emitCommandComplete(item.onclickEvents.completeEvent)
           } else if (item.onclick) {
             console.error('executing command', item)
-            this.props.tab.REPL.pexec(item.onclick)
+            this.props.tab.REPL.pexec(item.onclick, item.onclickOptions)
           }
           this.setState({ activeItem: item })
         }}
