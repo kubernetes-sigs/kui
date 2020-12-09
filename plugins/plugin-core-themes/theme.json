@@ -23,6 +23,7 @@
       "style": "dark"
     },
     { "name": "Lucario", "css": "lucario.scss", "lightweight": true, "style": "dark" },
+    { "name": "Mercury", "css": "Mercury.scss", "lightweight": true, "style": "light", "components": "patternfly" },
     { "name": "Monokai", "css": "monokai.scss", "lightweight": true, "style": "dark" },
     { "name": "Nord", "css": "nord.scss", "lightweight": true, "style": "dark" },
     { "name": "Paraiso", "css": "paraiso.scss", "lightweight": true, "style": "dark" },

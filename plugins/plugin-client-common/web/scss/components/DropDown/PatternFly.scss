@@ -20,6 +20,13 @@
   .kui--dropdown__toggle {
     padding: 0;
   }
+  .pf-c-dropdown__toggle.pf-m-plain,
+  .pf-c-dropdown__toggle-text {
+    color: var(--color-text-01);
+  }
+  .pf-c-dropdown__menu {
+    background-color: var(--color-base05);
+  }
   .pf-c-dropdown__toggle-icon {
     margin-left: 0.5rem;
     margin-right: 0;
