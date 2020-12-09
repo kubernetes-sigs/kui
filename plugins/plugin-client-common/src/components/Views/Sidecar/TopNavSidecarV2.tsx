@@ -21,6 +21,7 @@ import { Tabs, Tab } from 'carbon-components-react'
 import {
   eventChannelUnsafe,
   Tab as KuiTab,
+  ToolbarText,
   MultiModalMode,
   MultiModalResponse,
   isResourceWithMetadata,
@@ -54,6 +55,7 @@ interface HistoryEntry {
 
   buttons: Button[]
   tabs: Readonly<MultiModalMode[]>
+  toolbarText: ToolbarText
   defaultMode: number
 }
 
@@ -89,13 +91,24 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Hist
   const buttonsFromResponse = response.buttons || []
   const buttons = buttonsFromResponse.concat(buttonsFromRegistrar)
 
+  // toolbarText: if the default mode specified one, then use it;
+  // otherwise, use the one specified by response
+  const toolbarText = tabs[defaultMode] ? tabs[defaultMode].toolbarText : response.toolbarText
+
   return {
     currentTabIndex: defaultMode,
     defaultMode,
     tabs,
+    toolbarText,
     buttons
   }
 }
+
+type TopNavState = HistoryEntry &
+  State & {
+    response: MultiModalResponse
+    toolbarText: MultiModalResponse['toolbarText']
+  }
 
 /**
  *
@@ -115,17 +128,24 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Hist
  * -----------------------
  *
  */
-export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, HistoryEntry & State> {
+export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNavState> {
   public static contextType = KuiContext
 
   public constructor(props: Props<MultiModalResponse>) {
     super(props)
-    this.state = this.getState(props.tab, props.response)
+    this.state = TopNavSidecar.getDerivedStateFromProps(props)
   }
 
   /** @return a `HistoryEntry` for the given `Response` */
-  protected getState(tab: KuiTab, response: MultiModalResponse): HistoryEntry {
-    return getStateFromMMR(tab, response)
+  protected static getDerivedStateFromProps(
+    { tab, response }: Props<MultiModalResponse>,
+    state?: TopNavState
+  ): TopNavState {
+    if (!state || state.response !== response) {
+      return Object.assign(state || {}, { response }, getStateFromMMR(tab, response))
+    } else {
+      return state
+    }
   }
 
   protected headerBodyStyle() {
@@ -135,8 +155,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   /** return the pretty name or unadulterated name from the response */
   private prettyName(): string {
     return (
-      this.props.response &&
-      (this.props.response.prettyName || (this.props.response.metadata ? this.props.response.metadata.name : undefined))
+      this.state.response &&
+      (this.state.response.prettyName || (this.state.response.metadata ? this.state.response.metadata.name : undefined))
     )
   }
 
@@ -144,14 +164,14 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   private namePart() {
     return (
       this.context.sidecarName === 'heroText' &&
-      this.props.response &&
-      this.props.response.metadata &&
-      this.props.response.metadata.name && (
+      this.state.response &&
+      this.state.response.metadata &&
+      this.state.response.metadata.name && (
         <div className="header-left-bits">
           <div className="sidecar-header-text">
             <div className="sidecar-header-name" data-base-class="sidecar-header-name">
               <div className="sidecar-header-name-content" data-base-class="sidecar-header-name-content">
-                {this.props.response.metadata.name}
+                {this.state.response.metadata.name}
               </div>
             </div>
           </div>
@@ -159,6 +179,13 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
       )
     )
   }
+
+  /** ToolbarContainer updated the toolbar */
+  private didUpdateToolbar(toolbarText: MultiModalResponse['toolbarText']) {
+    this.setState({ toolbarText })
+  }
+
+  private readonly _didUpdateToolbar = this.didUpdateToolbar.bind(this)
 
   /** Special case with no hero name, but badges... we need a filler element */
   private fillerNamePart() {
@@ -188,7 +215,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
             this.broadcastFocusChange(idx)
 
             this.setState(curState => {
-              return Object.assign({}, curState, { currentTabIndex: idx })
+              const toolbarText = curState.tabs[idx].toolbarText || curState.toolbarText
+              return Object.assign({}, curState, { currentTabIndex: idx, toolbarText })
             })
           }}
         >
@@ -218,28 +246,27 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
         mode={mode}
         isActive={idx === this.current.currentTabIndex}
         args={{
-          argsForMode: this.props.response.argsForMode,
+          argsForMode: this.state.response.argsForMode,
           argvNoOptions: this.props.argvNoOptions,
           parsedOptions: this.props.parsedOptions
         }}
-        response={this.props.response}
+        response={this.state.response}
         execUUID={this.props.execUUID}
       />
     )
   }
 
   private tabContent(idx: number) {
-    const { toolbarText } = this.props.response
-
     return (
       <div className="sidecar-content-container kui--tab-content">
         <div className="custom-content">
           <ToolbarContainer
             tab={this.props.tab}
             execUUID={this.props.execUUID}
-            response={this.props.response}
+            response={this.state.response}
             args={{ argvNoOptions: this.props.argvNoOptions, parsedOptions: this.props.parsedOptions }}
-            toolbarText={toolbarText}
+            didUpdateToolbar={this._didUpdateToolbar}
+            toolbarText={this.state.toolbarText}
             noAlerts={this.current.currentTabIndex !== this.current.defaultMode}
             buttons={this.current.buttons}
           >
@@ -255,7 +282,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     const badges = badgeRegistrar.filter(({ when }) => {
       // filter out any irrelevant badges (for this resource)
       try {
-        return when(this.props.response)
+        return when(this.state.response)
       } catch (err) {
         debug('warning: registered badge threw an exception during filter', err)
         return false
@@ -267,7 +294,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
       badges.length > 0 && (
         <div className="badges">
           {badges.map(({ badge }, idx) => (
-            <Badge key={idx} spec={badge} tab={this.props.tab} response={this.props.response} />
+            <Badge key={idx} spec={badge} tab={this.props.tab} response={this.state.response} />
           ))}
         </div>
       )
@@ -298,13 +325,13 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   }
 
   private kindBreadcrumb(): BreadcrumbView {
-    const { kind, onclick } = this.props.response
+    const { kind, onclick } = this.state.response
     return { label: kind, command: onclick && onclick.kind, className: 'kui--sidecar-kind' }
   }
 
   /** show name as breadcrumb when not showing context as hero text in sidecar header  */
   private nameBreadcrumb(): BreadcrumbView {
-    const { onclick } = this.props.response
+    const { onclick } = this.state.response
 
     return {
       label: this.prettyName(),
@@ -315,15 +342,15 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   }
 
   private versionBreadcrumb(): BreadcrumbView {
-    return this.props.response.version
-      ? { label: this.props.response.version, className: 'kui--version-breadcrumb' }
+    return this.state.response.version
+      ? { label: this.state.response.version, className: 'kui--version-breadcrumb' }
       : undefined
   }
 
   private nameHashBreadcrumb(): BreadcrumbView {
-    const { onclick } = this.props.response
+    const { onclick } = this.state.response
     return {
-      label: this.props.response && this.props.response.nameHash,
+      label: this.state.response && this.state.response.nameHash,
       command: onclick && onclick.nameHash,
       deemphasize: true,
       className: 'kui--sidecar-entity-name-hash'
@@ -334,7 +361,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
     const {
       metadata: { namespace },
       onclick
-    } = this.props.response
+    } = this.state.response
     return {
       label: namespace,
       command: onclick && onclick.namespace,
@@ -344,7 +371,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, Histo
   }
 
   public render() {
-    if (!this.current || !this.props.response) {
+    if (!this.current || !this.state.response) {
       if (this.props.onRender) {
         this.props.onRender(false)
       }

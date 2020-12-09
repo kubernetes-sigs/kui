@@ -21,6 +21,7 @@ import {
   i18n,
   eventBus,
   eventChannelUnsafe,
+  isAbortableResponse,
   ScalarResponse,
   Tab as KuiTab,
   ExecOptions,
@@ -52,6 +53,9 @@ import {
   Finished,
   Announcement,
   Cancelled,
+  Rerun,
+  isRerunable,
+  isBeingRerun,
   Processing,
   isActive,
   isAnnouncement,
@@ -617,8 +621,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       return
     }
 
-    const processing = (block: BlockModel, asRerun = false) => {
-      return [Processing(block, event, event.evaluatorOptions.isExperimental, asRerun, asReplay)]
+    const processing = (block: BlockModel) => {
+      return [Processing(block, event, event.evaluatorOptions.isExperimental, asReplay)]
     }
 
     // uuid might be undefined if the split is going away
@@ -651,6 +655,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             : -1
 
         if (rerunIdx >= 0) {
+          const block = curState.blocks[rerunIdx]
           // The use case here is that the user clicked the Rerun
           // button in the UI or clicked on an Input and hit Enter. In
           // either case, the command execution will reuse the
@@ -660,7 +665,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           return {
             blocks: curState.blocks
               .slice(0, rerunIdx) // everything before
-              .concat(processing(curState.blocks[rerunIdx], true))
+              .concat(isRerunable(block) ? [Rerun(block, event)] : [])
               .concat(curState.blocks.slice(rerunIdx + 1)) // everything after
           }
         } else {
@@ -702,11 +707,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (event.execOptions && event.execOptions.echo === false) return
 
     this.splice(uuid, curState => {
-      const inProcessIdx = curState.blocks.findIndex(_ => isProcessing(_) && _.execUUID === event.execUUID)
+      const inProcessIdx = curState.blocks.findIndex(
+        _ => (isProcessing(_) || isBeingRerun(_)) && _.execUUID === event.execUUID
+      )
 
       if (inProcessIdx >= 0) {
         const inProcess = curState.blocks[inProcessIdx]
-        if (isProcessing(inProcess)) {
+        if (isProcessing(inProcess) || isBeingRerun(inProcess)) {
           try {
             // note: even if the command registration asked for
             // `outputOnly`, we ignore that if the response is a plain
@@ -718,7 +725,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .slice(0, inProcessIdx) // everything before
               .concat([Finished(inProcess, event, outputOnly, asReplay)]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
-              .concat(!inProcess.isRerun && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
+              .concat(!isBeingRerun(inProcess) && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
             return {
               focusedBlockIdx: insertIdx === undefined ? blocks.length - 1 : insertIdx,
@@ -934,8 +941,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   // If the block has watchable response, abort the job
   private removeWatchableBlock(block: BlockModel) {
-    if (isOk(block) && isWatchable(block.response)) {
-      block.response.watch.abort()
+    if (isOk(block)) {
+      if (isWatchable(block.response)) {
+        block.response.watch.abort()
+      } else if (isAbortableResponse(block.response)) {
+        block.response.abort()
+      }
     }
   }
 
@@ -1150,6 +1161,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     idx={idx}
                     displayedIdx={displayedIdx}
                     model={_}
+                    isBeingRerun={isBeingRerun(_)}
                     uuid={scrollback.uuid}
                     tab={tab}
                     noActiveInput={this.props.noActiveInput || isOfflineClient()}

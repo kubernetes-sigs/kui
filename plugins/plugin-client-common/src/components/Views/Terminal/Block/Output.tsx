@@ -18,6 +18,7 @@ import React from 'react'
 
 import {
   i18n,
+  isAbortableResponse,
   isCodedError,
   isCommentaryResponse,
   isTabLayoutModificationResponse,
@@ -43,6 +44,7 @@ import {
   FinishedBlock,
   hasUUID,
   hasCommand,
+  isBeingRerun,
   isFinished,
   isProcessing,
   isOk,
@@ -72,6 +74,9 @@ type Props = {
 
   /** Block ordinal to be displayed to user */
   displayedIdx?: number
+
+  /** Are we in the middle of a re-run? */
+  isBeingRerun: boolean
 
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
@@ -118,7 +123,7 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if (isProcessing(props.model) && !state.alreadyListen) {
+    if ((isProcessing(props.model) || isBeingRerun(props.model)) && !state.alreadyListen) {
       const tabUUID = props.uuid
       eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
       return {
@@ -239,6 +244,7 @@ export default class Output extends React.PureComponent<Props, State> {
       const { response } = block
       return (
         isOops(block) ||
+        isAbortableResponse(response) ||
         isMultiModalResponse(response) ||
         isNavResponse(response) ||
         isCommentaryResponse(response) ||

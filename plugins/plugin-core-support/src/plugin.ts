@@ -21,6 +21,7 @@ import echo from './lib/cmds/echo'
 import quit from './lib/cmds/quit'
 import clear from './lib/cmds/clear'
 import dopar from './lib/cmds/dopar'
+import watch from './lib/cmds/watch'
 import base64 from './lib/cmds/base64'
 import prompt from './lib/cmds/prompt'
 import replay from './lib/cmds/replay'
@@ -42,6 +43,7 @@ export default async (commandTree: Registrar) => {
     quit(commandTree),
     clear(commandTree),
     commandTree.listen('/dopar', dopar),
+    watch(commandTree),
     base64(commandTree),
     prompt(commandTree),
     replay(commandTree),

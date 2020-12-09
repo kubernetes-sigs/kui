@@ -23,7 +23,7 @@ import * as colors from 'colors/safe'
 
 import ElementMimic from '../util/element-mimic'
 import { isTable, Row } from '../webapp/models/table'
-import { isMixedResponse, isMessageBearingEntity, Entity } from '../models/entity'
+import { isMixedResponse, isMessageBearingEntity, isAbortableResponse, Entity } from '../models/entity'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { isNavResponse } from '../models/NavResponse'
 import { isHTML, isPromise } from '../util/types'
@@ -441,6 +441,8 @@ export const print = (
         } else {
           logger(msg.message)
         }
+      } else if (isAbortableResponse(msg)) {
+        logger(msg.response)
       } else if (typeof msg === 'object') {
         prettyJSON(msg, logger)
       } else {

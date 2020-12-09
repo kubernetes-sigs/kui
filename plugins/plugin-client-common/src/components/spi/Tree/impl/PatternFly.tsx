@@ -39,13 +39,6 @@ export default class KuiTreeView extends React.PureComponent<Props, State> {
     }
   }
 
-  public static getDerivedStateFromProps(props: Props, state: State) {
-    if (props.toolbarText) {
-      props.willUpdateToolbar(props.toolbarText)
-    }
-    return state
-  }
-
   private diffTag(item: TreeItem) {
     if (!item.children && item.diff !== undefined && item.diff !== DiffState.UNCHANGED && item.diffBadge) {
       const getCss = (state: DiffState) => {

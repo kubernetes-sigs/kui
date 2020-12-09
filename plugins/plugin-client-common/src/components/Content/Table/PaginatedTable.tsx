@@ -79,7 +79,8 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 }
 
 /** state of PaginatedTable component */
-export type State = ToolbarProps & {
+export type State<T extends KuiTable = KuiTable> = ToolbarProps & {
+  response: T
   headers: DataTableHeader[]
   rows: NamedDataTableRow[]
   footer: string[]
@@ -135,7 +136,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     this.state = PaginatedTable.getDerivedStateFromProps(props) as S
   }
 
-  public static getDerivedStateFromProps(props: Props, state?: State) {
+  public static getDerivedStateFromProps(props: Props, currentState?: State) {
     try {
       // assemble the data model
       const { headers, rows, footer } = kui2carbon(props.response)
@@ -150,21 +151,31 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         (!asGrid && PaginatedTable.hasSequenceButton(props) && props.response.body.length > 1) ||
         defaultPresentation === 'sequence-diagram'
 
-      const initialState = {
-        headers,
-        rows,
-        footer,
-        asGrid,
-        asSequence,
-        asTimeline: false,
+      const defaults = {
         page: 1,
-        pageSize: props.pageSize || 10
+        pageSize: 10,
+        asTimeline: false
       }
 
-      if (!state) {
-        return initialState
+      const newState = {
+        rows,
+        asGrid,
+        footer,
+        headers,
+        asSequence,
+        response: props.response,
+        pageSize: props.pageSize || defaults.pageSize
+      }
+
+      if (!currentState) {
+        // new instance of this component
+        return Object.assign(defaults, newState)
+      } else if (newState.response !== currentState.response) {
+        // user made changes to the existing props instance
+        return Object.assign(defaults, currentState, newState)
       } else {
-        return Object.assign(initialState, state)
+        // different props
+        return Object.assign(defaults, newState, currentState)
       }
     } catch (err) {
       console.error('Internal error preparing PaginatedTable', err)
