@@ -25,20 +25,22 @@ import mmrKind from './lib/cmds/mmr-kind'
 import mmrMode from './lib/cmds/mmr-mode'
 import mmrModeViaRegistration from './lib/cmds/mmr-mode-via-registration'
 import nav from './lib/cmds/NavResponse'
+import noSemi from './lib/cmds/semicolon'
 import table from './lib/cmds/table'
 
-export default async (commandTree: Registrar) => {
+export default async (registrar: Registrar) => {
   // commands
   await Promise.all([
-    sayHello(commandTree),
-    streamHello(commandTree),
-    style(commandTree),
-    mmrName(commandTree),
-    mmrNamespace(commandTree),
-    mmrKind(commandTree),
-    mmrMode(commandTree),
-    mmrModeViaRegistration(commandTree),
-    nav(commandTree),
-    table(commandTree)
+    sayHello(registrar),
+    streamHello(registrar),
+    style(registrar),
+    mmrName(registrar),
+    mmrNamespace(registrar),
+    mmrKind(registrar),
+    mmrMode(registrar),
+    mmrModeViaRegistration(registrar),
+    nav(registrar),
+    noSemi(registrar),
+    table(registrar)
   ])
 }
