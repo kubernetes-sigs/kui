@@ -18,7 +18,7 @@ import React from 'react'
 import { extname } from 'path'
 import { editor as Monaco } from 'monaco-editor'
 
-import { eventChannelUnsafe, eventBus, MultiModalResponse } from '@kui-shell/core'
+import { eventChannelUnsafe, eventBus, MultiModalResponse, TabLayoutChangeEvent } from '@kui-shell/core'
 import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import getKuiFontSize from './lib/fonts'
@@ -157,12 +157,24 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
         observer.observe(state.wrapper)
         cleaners.push(() => observer.disconnect())
 
-        const onTabLayoutChange = () => sizeToFit()
+        const onTabLayoutChange = (evt: TabLayoutChangeEvent) => {
+          sizeToFit()
+          if (evt.isWidthConstrained) {
+            editor.updateOptions({ renderSideBySide: false })
+          } else {
+            editor.updateOptions({ renderSideBySide: props.renderSideBySide })
+          }
+        }
         eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
         cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
       } else {
-        const onTabLayoutChange = () => {
+        const onTabLayoutChange = (evt: TabLayoutChangeEvent) => {
           editor.layout()
+          if (evt.isWidthConstrained) {
+            editor.updateOptions({ renderSideBySide: false })
+          } else {
+            editor.updateOptions({ renderSideBySide: props.renderSideBySide })
+          }
         }
         eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
         cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
