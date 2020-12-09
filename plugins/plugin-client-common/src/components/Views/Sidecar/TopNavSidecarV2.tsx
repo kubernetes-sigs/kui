@@ -142,7 +142,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     state?: TopNavState
   ): TopNavState {
     if (!state || state.response !== response) {
-      return Object.assign(state || {}, { response }, getStateFromMMR(tab, response))
+      return Object.assign(state || {}, { response, toolbarText: response.toolbarText }, getStateFromMMR(tab, response))
     } else {
       return state
     }
