@@ -1,0 +1,65 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * When switching from light to dark within a page, you must include
+ * this mixin.
+ */
+@mixin Reset {
+  --color-text-01: var(--color-base06);
+  --color-text-02: var(--color-base04);
+
+  --color-stripe-01: var(--color-base01);
+  --color-stripe-02: var(--color-base03);
+
+  --color-map-key: var(--color-base0C);
+  --color-map-value: var(--color-text-01);
+  --color-name: var(--color-base0C);
+
+  --color-brand-01: var(--color-blue);
+  --color-brand-02: var(--color-magenta);
+  --color-brand-03: var(--color-cyan);
+
+  --color-processing: var(--color-ui-05);
+
+  --color-sidecar-header: var(--color-base03);
+  --color-sidecar-background: var(--color-base01);
+  --color-sidecar-background-01: var(--color-base01);
+  --color-sidecar-background-02: var(--color-base03);
+  --color-sidecar-toolbar-foreground: var(--color-base01);
+  --color-sidecar-background: var(--color-ui-02);
+  --color-sidecar-border: var(--color-ui-04);
+
+  --color-black: var(--color-ui-01);
+  --color-red: var(--color-base08);
+  --color-green: var(--color-base0B);
+  --color-yellow: var(--color-base0A);
+  --color-cyan: var(--color-base0C);
+  --color-blue: var(--color-base0D);
+  --color-magenta: var(--color-base0E);
+  --color-white: var(--color-base07);
+  --color-light-gray: var(--color-base04);
+  --color-dark-gray: var(--color-base03);
+  --color-ui-01: var(--color-base00);
+  --color-ui-02: var(--color-base01);
+  --color-ui-03: var(--color-base03);
+  --color-ui-04: var(--color-base02);
+  --color-ui-05: var(--color-base04);
+  --color-ui-06: var(--color-base02);
+
+  --color-yellow-sidecar: var(--color-yellow);
+  color: var(--color-text-01);
+}

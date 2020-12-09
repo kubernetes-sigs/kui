@@ -1,0 +1,110 @@
+/*
+ * Copyright 2020 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'fonts';
+@import '~@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
+@import '~@kui-shell/plugin-client-common/web/scss/Themes/mixins';
+
+$base00: #e8eddf;
+$base01: #929d8c;
+$base02: #928f80;
+$base03_l: #94a08f;
+$base03_d: #495a4b;
+$base04: #193d1a;
+$base05: #111e11;
+$base06: #0d1710;
+$base07: #ffffff;
+$base08: #99433a;
+$base09: #ec824f;
+$base0A_l: #d07e3a;
+$base0A_d: #fdf66c;
+$base0B: #9fb077;
+$base0C_l: #526c81;
+$base0C_d: #94dbe3;
+$base0D_l: #283d56;
+$base0D_d: #9aadb6;
+$base0E: #b294bb;
+$base0F: #a3685a;
+
+@mixin MercuryLight {
+  --color-base00: #{$base00}; /* Default Background */
+  --color-base01: #{$base01}; /* Lighter Background (Used for status bars) */
+  --color-base02: #{$base02}; /* Selection Background */
+  --color-base03: #{$base03_l}; /* dialed down opacity #969896 to 30% */ /* Comments, Invisibles, Line Highlighting */
+  --color-base04: #{$base04}; /* Dark Foreground (Used for status bars) */
+  --color-base05: #{$base05}; /* Default Foreground, Caret, Delimiters, Operators */
+  --color-base06: #{$base06}; /* Light Foreground (Not often used) */
+  --color-base07: #{$base07}; /* Light Background (Not often used) */
+  --color-base08: #{$base08}; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+  --color-base09: #{$base09}; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+  --color-base0A: #{$base0A_l}; /* YELLOW: Classes, Markup Bold, Search Text Background */
+  --color-base0B: #{$base0B}; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+  --color-base0C: #{$base0C_l}; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+  --color-base0D: #{$base0D_l}; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+  --color-base0E: #{$base0E}; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+  --color-base0F: #{$base0F}; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+
+  --color-base08-rgb: 204, 102, 102;
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base0B-rgb: 181, 189, 104;
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-table-border1: #82857b;
+}
+
+@mixin MercuryDark {
+  --color-base00: #{$base06}; /* Default Background */
+  --color-base01: #{$base05}; /* Lighter Background (Used for status bars) */
+  --color-base02: #{$base04}; /* Selection Background */
+  --color-base03: #{$base03_d}; /* dialed down opacity #969896 to 30% */ /* Comments, Invisibles, Line Highlighting */
+  --color-base04: #{$base02}; /* Dark Foreground (Used for status bars) */
+  --color-base05: #{$base01}; /* Default Foreground, Caret, Delimiters, Operators */
+  --color-base06: #{$base00}; /* Light Foreground (Not often used) */
+  --color-base07: #{$base07}; /* Light Background (Not often used) */
+  --color-base08: #{$base08}; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+  --color-base09: #{$base09}; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+  --color-base0A: #{$base0A_d}; /* YELLOW: Classes, Markup Bold, Search Text Background */
+  --color-base0B: #{$base0B}; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+  --color-base0C: #{$base0C_d}; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+  --color-base0D: #{$base0D_d}; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+  --color-base0E: #{$base0E}; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+  --color-base0F: #{$base0F}; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+}
+
+/**
+ * scheme: "Mercury"
+ * author: @starpit
+ */
+body[kui-theme='Mercury'] {
+  @include kui-patternfly-alignment-light;
+  @include MercuryLight;
+}
+
+body[kui-theme='Mercury'] .kui--inverted-color-context {
+  @include kui-patternfly-alignment-dark;
+  @include MercuryDark;
+  @include Reset;
+
+  --color-base08-rgb: 204, 102, 102;
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base0B-rgb: 181, 189, 104;
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  .sidecar-bottom-stripe {
+    @include MercuryLight;
+    @include Reset;
+  }
+}
