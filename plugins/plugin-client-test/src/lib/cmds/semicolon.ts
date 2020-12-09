@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import ssc, { Options } from '.'
-import { KResponse, Registrar } from '@kui-shell/core'
+import { Registrar } from '@kui-shell/core'
 
 export default function(registrar: Registrar) {
-  registrar.listen<KResponse, Options>('/ssc', ssc, { requiresLocal: true, semiExpand: false })
+  registrar.listen('/nosemi', ({ command }) => (/;/.test(command) ? 'yes ' + command.slice('nosemi '.length) : 'no'), {
+    semiExpand: false
+  })
 }

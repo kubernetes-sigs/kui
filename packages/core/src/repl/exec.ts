@@ -418,7 +418,7 @@ class InProcessExecutor implements Executor {
 
       let response: T | Promise<T> | MixedResponse
 
-      const commands = semiSplit(command)
+      const commands = evaluatorOptions.semiExpand === false ? [] : semiSplit(command)
       if (commands.length > 1) {
         response = await semicolonInvoke(commands, execOptions)
       } else {
