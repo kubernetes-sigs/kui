@@ -20,6 +20,7 @@ import { Tab } from '../../webapp/tab'
 import { Content } from './content-types'
 import { MetadataBearing } from '../entity'
 import { EvaluatorArgs as Arguments, ParsedOptions } from '../command'
+import { ToolbarText } from '../../webapp/views/toolbar-text'
 // import { SelectionController } from '../../webapp/bottom-stripe'
 
 /**
@@ -95,6 +96,9 @@ export interface ModeTraits {
   /** registration tie-breaker: if more than one plugin offers the
    * same mode, the one with the highest numeric priority wins */
   priority?: number
+
+  /** Optional toolbar text for a mode */
+  toolbarText?: ToolbarText
 }
 
 /**

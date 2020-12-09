@@ -345,12 +345,16 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
  * 3. it transforms the buckets into `TreeResponse` and returns a `MultiModalMode`
  *
  */
-export async function getSources(args: Arguments<KubeOptions>, filepath: string) {
+export async function getSources(args: Arguments<KubeOptions>, filepath: string, isDeployed?: boolean) {
   const table = await args.tab.REPL.qexec<Table>(`ls -l ${filepath}`)
   table.body.forEach(row => (row.onclickIdempotent = true))
   return {
     mode: sourceMode,
     label: strings('sources'),
+    toolbarText: {
+      type: 'info',
+      text: strings('showSource', isDeployed ? strings('live') : strings('offline'))
+    },
     content: table
   }
 }
@@ -367,14 +371,14 @@ export async function doDryRunMode(
     mode: dryRunMode,
     defaultMode: true,
     label: strings('dry run'),
+    toolbarText: {
+      type: 'info',
+      text: strings('showDryRun', 'Offline')
+    },
     content: {
       apiVersion: 'kui-shell/v1' as const,
       kind: 'TreeResponse' as const,
-      data,
-      toolbarText: {
-        type: 'info',
-        text: strings('showDryRun', 'Offline')
-      }
+      data
     }
   }
 }
@@ -397,14 +401,14 @@ export async function doDeployedMode(
   return {
     mode: deployedMode,
     label: strings('deployed resources'),
+    toolbarText: {
+      type: 'info',
+      text: strings(`showDeployedResources`, hasChanges ? strings('pending changes') : strings('no pending changes'))
+    },
     content: {
       apiVersion: 'kui-shell/v1' as const,
       kind: 'TreeResponse' as const,
-      data,
-      toolbarText: {
-        type: 'info',
-        text: strings(`showDeployedResources`, hasChanges ? strings('pending changes') : strings('no pending changes'))
-      }
+      data
     }
   }
 }

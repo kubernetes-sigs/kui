@@ -21,10 +21,13 @@ import Alert from '../../spi/Alert'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
 export { Props as ToolbarContainerProps }
 
-export type Props = React.PropsWithChildren<ToolbarProps>
+export type Props = React.PropsWithChildren<
+  ToolbarProps & {
+    didUpdateToolbar: (toolbarText: ToolbarText) => void
+  }
+>
 
 interface State {
-  toolbarText: ToolbarText
   extraButtons?: Button[]
   extraButtonsOverride?: boolean
   alerts?: ToolbarAlert[]
@@ -34,14 +37,21 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
   public constructor(props: Props) {
     super(props)
 
-    this.state = {
-      toolbarText: props.toolbarText
-    }
+    this.state = {}
   }
 
   /** Called by children if they desire an update to the Toolbar */
   private onToolbarUpdate(toolbarText: ToolbarText, extraButtons?: Button[], extraButtonsOverride?: boolean) {
-    this.setState({ toolbarText, extraButtons, extraButtonsOverride })
+    this.setState({ extraButtons, extraButtonsOverride })
+    if (
+      toolbarText &&
+      (!this.props.toolbarText ||
+        toolbarText.type !== this.props.toolbarText.type ||
+        toolbarText.text !== this.props.toolbarText.text ||
+        toolbarText.alerts !== this.props.toolbarText.alerts)
+    ) {
+      this.props.didUpdateToolbar(toolbarText)
+    }
   }
 
   private readonly _willUpdateToolbar = this.onToolbarUpdate.bind(this)
@@ -61,12 +71,12 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
       this.state.extraButtonsOverride && Array.isArray(this.state.extraButtons)
         ? this.state.extraButtons
         : this.props.buttons.concat(this.state.extraButtons || [])
-    const toolbarHasContent = this.state.toolbarText || toolbarButtons.length !== 0
+    const toolbarHasContent = this.props.toolbarText || toolbarButtons.length !== 0
     const toolbarHasAlerts =
       !this.props.noAlerts &&
-      this.state.toolbarText &&
-      this.state.toolbarText.alerts &&
-      this.state.toolbarText.alerts.length !== 0
+      this.props.toolbarText &&
+      this.props.toolbarText.alerts &&
+      this.props.toolbarText.alerts.length !== 0
 
     return (
       <div className="full-height">
@@ -76,11 +86,11 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
             execUUID={this.props.execUUID}
             response={this.props.response}
             args={this.props.args}
-            toolbarText={this.state.toolbarText}
+            toolbarText={this.props.toolbarText}
             buttons={toolbarButtons}
           />
         )}
-        {toolbarHasAlerts && this.state.toolbarText.alerts.map((alert, id) => <Alert key={id} alert={alert} />)}
+        {toolbarHasAlerts && this.props.toolbarText.alerts.map((alert, id) => <Alert key={id} alert={alert} />)}
         <React.Suspense fallback={<div />}>{this.children()}</React.Suspense>
       </div>
     )

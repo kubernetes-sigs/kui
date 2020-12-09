@@ -254,7 +254,7 @@ export async function editable(
 
   const baseView = await getView(args, response)
 
-  const view = Object.assign(baseView, {
+  const view = Object.assign({}, baseView, {
     modes: [editMode(spec, response, yamlMode, yamlModeLabel, yamlModeOrder, 100)], // overwrite the pre-registered yaml tab
     toolbarText: formatToolbarText(args, response)
   })

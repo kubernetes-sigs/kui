@@ -61,10 +61,28 @@ export type KuiMMRProps = ToolbarProps & {
 }
 
 interface State {
+  mode: Content
   isRendered: boolean
 }
 
-export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
+export default class KuiContent extends React.Component<KuiMMRProps, State> {
+  public constructor(props: KuiMMRProps) {
+    super(props)
+
+    this.state = {
+      mode: props.mode,
+      isRendered: false
+    }
+  }
+
+  public static getDerivedStateFromProps(props: KuiMMRProps, state: State) {
+    if (state && state.isRendered && state.mode === props.mode) {
+      return state
+    } else {
+      return Object.assign(state || {}, { isRendered: false, mode: props.mode })
+    }
+  }
+
   public shouldComponentUpdate(nextProps: KuiMMRProps) {
     return nextProps.isActive && (!this.state || !this.state.isRendered)
   }
@@ -82,7 +100,8 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
       return <React.Fragment />
     }
 
-    const { tab, mode, response, willUpdateToolbar } = this.props
+    const { mode } = this.state
+    const { tab, response, willUpdateToolbar } = this.props
     if (isStringWithOptionalContentType(mode)) {
       if (mode.contentType === 'text/html') {
         return <HTMLString content={mode.content} />
@@ -150,9 +169,6 @@ export default class KuiMMRContent extends React.Component<KuiMMRProps, State> {
             tab={this.props.tab}
             data={mode.content.data}
             response={this.props.response}
-            toolbarText={mode.content.toolbarText}
-            toolbarButtons={mode.content.toolbarButtons}
-            willUpdateToolbar={willUpdateToolbar}
             execUUID={this.props.execUUID}
           />
         )

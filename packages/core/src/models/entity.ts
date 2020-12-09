@@ -15,6 +15,7 @@
  */
 
 import { isHTML } from '../util/types'
+import { Abortable } from '../core/jobs/job'
 import { Table, Row, isTable } from '../webapp/models/table'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
@@ -233,6 +234,11 @@ export function hasSourceReferences(
   return trait && trait.kuiSourceRef !== undefined
 }
 
+type AbortableResponse<T extends ScalarResponse = ScalarResponse> = Abortable & { response: T }
+export function isAbortableResponse(entity: Entity): entity is AbortableResponse {
+  return typeof (entity as AbortableResponse).abort === 'function'
+}
+
 /**
  * A potentially more complex entity with a "spec"
  *
@@ -241,4 +247,4 @@ export type Entity<
   Content = void,
   RowType extends Row = Row,
   SomeSortOfResource extends MetadataBearing<Content> = MetadataBearing<Content>
-> = ScalarResponse | StructuredResponse<Content, SomeSortOfResource>
+> = ScalarResponse | AbortableResponse | StructuredResponse<Content, SomeSortOfResource>

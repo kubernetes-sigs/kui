@@ -45,7 +45,7 @@ type WithAnnouncement = { isAnnouncement: boolean }
 type WithPreferences = { outputOnly?: boolean }
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
-type WithRerun = { isRerun: boolean }
+type WithRerun = { isRerun: true }
 type WithReplay = { isReplay: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
@@ -61,6 +61,7 @@ type ErrorBlock = WithState<BlockState.Error> &
   WithUUID &
   WithHistoryIndex &
   WithCommandStart &
+  Partial<WithRerun> &
   WithReplay &
   WithCommandComplete
 type OkBlock = WithState<BlockState.ValidResponse> &
@@ -70,13 +71,13 @@ type OkBlock = WithState<BlockState.ValidResponse> &
   WithHistoryIndex &
   WithCommandStart &
   WithCommandComplete &
+  Partial<WithRerun> &
   WithReplay &
   WithPreferences
 export type ProcessingBlock = WithState<BlockState.Processing> &
   WithCommand &
   WithUUID &
   WithStartTime &
-  WithRerun &
   WithReplay &
   WithCommandStart
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
@@ -187,7 +188,6 @@ export function Processing(
   block: BlockModel,
   startEvent: CommandStartEvent,
   isExperimental = false,
-  isRerun = false,
   isReplay = false
 ): ProcessingBlock {
   return {
@@ -196,7 +196,6 @@ export function Processing(
     cwd: block.cwd,
     execUUID: startEvent.execUUID,
     isReplay,
-    isRerun,
     startEvent,
     startTime: startEvent.startTime,
     state: BlockState.Processing
@@ -229,7 +228,7 @@ export function Cancelled(block: BlockModel, typedSoFar?: string): CancelledBloc
 
 /** Transform to Finished */
 export function Finished(
-  block: ProcessingBlock,
+  block: ProcessingBlock | BlockBeingRerun,
   event: CommandCompleteEvent,
   outputOnly = false,
   isReplay = false
@@ -301,4 +300,31 @@ export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
 /** @return whether the block is from replay */
 export function isReplay(block: BlockModel): boolean {
   return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
+}
+
+/** A Block may be Rerunable. If so, then it can be transitioned to the BlockBeingRerun state. */
+type RerunableBlock = CompleteBlock
+type BlockBeingRerun = RerunableBlock & WithRerun
+
+/** Transform a RerunableBlock to one in the BlockBeingRerun state */
+export function Rerun(
+  block: RerunableBlock,
+  newStartEvent = block.startEvent,
+  newCommand = newStartEvent.command,
+  newStartTime = newStartEvent.startTime
+): RerunableBlock & Required<WithRerun> {
+  return Object.assign(block, {
+    isRerun: true as const,
+    startEvent: newStartEvent,
+    command: newCommand,
+    startTime: newStartTime
+  })
+}
+
+export function isRerunable(block: BlockModel): block is RerunableBlock {
+  return isOk(block) || isOops(block)
+}
+
+export function isBeingRerun(block: BlockModel): block is BlockBeingRerun {
+  return (block as WithRerun).isRerun === true
 }
