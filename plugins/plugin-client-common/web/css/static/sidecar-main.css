@@ -429,7 +429,7 @@ $toolbar-height: 1.5rem;
       button {
         background-color: var(--color-table-border1);
         svg {
-          fill: var(--color-text-01);
+          fill: currentColor;
         }
       }
     }
