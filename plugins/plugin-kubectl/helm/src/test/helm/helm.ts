@@ -26,7 +26,7 @@ describe(`helm commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
 
   const ns: string = createNS()
   const inNamespace = `--namespace ${ns}`
-  const name = `test-release-${ns}`
+  const name = `test-release-${ns}`.slice(0, 63 - '-mysql-headless'.length)
 
   it('should show 500 error for helm help --tls', () => {
     return CLI.command('helm help --tls', this.app)
