@@ -14,9 +14,29 @@
  * limitations under the License.
  */
 
-import scaleOut from './scaleOut'
-import { Arguments } from '@kui-shell/core'
+import runWithProgress from './scaleOut'
+import { Arguments, ParsedOptions } from '@kui-shell/core'
 
-export default async function ssc(args: Pick<Arguments, 'command' | 'REPL' | 'execOptions'>) {
-  return scaleOut([args.command], args)
+function unfoldTensor(cmdline: string, nTasks: number): string[] {
+  return Array(nTasks)
+    .fill(0)
+    .map((_, idx) => cmdline.replace(/\$j/g, idx.toString()))
+}
+
+export interface Options extends ParsedOptions {
+  p: number
+  parallelism: number
+}
+
+/**
+ * Interprets args.command as a command template of the form:
+ *     dd if=/dev/zero bs=1024 count=1024 of=tmp.txt; do cp tmp.txt /s3/aws/myBucket/tmp-$j-$k.txt
+ */
+export default async function ssc(args: Arguments<Options>) {
+  const cmdline = args.command
+    .slice(args.argvNoOptions[0].length)
+    .trim()
+    .replace(/(-p|--parallelism)(=|\s+)\d+/g, '')
+  const nTasks = args.parsedOptions.p || args.parsedOptions.parallelism || 10
+  return runWithProgress(unfoldTensor(cmdline, nTasks), args)
 }

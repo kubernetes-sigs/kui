@@ -54,6 +54,9 @@ export interface CommandOptions extends CapabilityRequirements {
   /** does this command accept no arguments of any sort (neither positional nor optional)? */
   noArgs?: boolean
 
+  /** Semicolon-expand the command line? Default: true */
+  semiExpand?: boolean
+
   // explicitly provided usage model?
   usage?: UsageModel
 
