@@ -47,12 +47,15 @@ import {
   KubeOptions,
   isEntityRequest,
   isTableRequest,
+  isDiffRequest,
   fileOf,
   formatOf,
   isWatchRequest,
   getNamespace,
   isTreeReq,
-  fileOfWithDetail
+  fileOfWithDetail,
+  getNamespaceAsExpressed,
+  getResourceNamesForArgv
 } from './options'
 import { stringToTable, KubeTableResponse, isKubeTableResponse, computeDurations } from '../../lib/view/formatTable'
 import {
@@ -62,7 +65,7 @@ import {
   sameResourceVersion,
   hasResourceVersion
 } from '../../lib/model/resource'
-import { formDashFileCommandFromArgs } from '../../lib/util/util'
+import { formDashFileCommandFromArgs, removeLastAppliedConfig } from '../../lib/util/util'
 
 const strings = i18n('plugin-kubectl')
 
@@ -210,6 +213,24 @@ export async function doGetAsMMR(
       }
     }
 
+    const doDiffMode = async () => {
+      if (isDiffRequest(args)) {
+        // NOTE: strings in the diff model could've been processed by js-yaml safedump.
+        // To avoid redherring when comparing a raw yaml string and strings like the above,
+        // we do safeload and safedump for both of them before sending to diff editor
+        const { safeLoad, safeDump } = await import('js-yaml')
+        const [_a, _b] = await Promise.all([safeLoad(resource.kuiRawData), safeLoad(args.execOptions.data['diff'])])
+        const [a, b] = await Promise.all([safeDump(_a), safeDump(_b)])
+
+        return {
+          mode: 'diff',
+          label: strings('sidecarLabelNewDiff'),
+          content: { a: removeLastAppliedConfig(a), b: removeLastAppliedConfig(b) },
+          contentType: 'yaml' as const
+        }
+      }
+    }
+
     return Object.assign(resource, {
       prettyName,
       nameHash,
@@ -222,7 +243,8 @@ export async function doGetAsMMR(
         name: `kubectl get ${kindAndNamespaceOf(resource)} ${resource.metadata.name}`,
         namespace: resource.metadata.namespace ? `kubectl get ns ${resource.metadata.namespace} -o yaml` : undefined
       },
-      modes: [], // this tells Kui that we want the response to be interpreted as a MultiModalResponse
+      defaultMode: isDiffRequest && 'diff',
+      modes: [await doDiffMode()].filter(_ => _),
       kuiRawData: resource.kuiRawData // also include the raw, uninterpreted data string we got back
     })
   } catch (err) {
@@ -269,13 +291,13 @@ export async function doTreeMMR(
         type: 'info',
         text: strings('showSource', isDeployed ? strings('live') : strings('offline'))
       },
-      modes: [
-        await getSources(args, filepath),
+      modes: await Promise.all([
+        getSources(args, filepath),
         isDeployed
-          ? await doDeployedMode(args, namespace, resourcesWithState, hasChanges)
-          : await doDryRunMode(args, namespace, resourcesWithState),
+          ? doDeployedMode(args, namespace, resourcesWithState, hasChanges)
+          : doDryRunMode(args, namespace, resourcesWithState),
         applyButton
-      ].filter(_ => _)
+      ]).then(_ => _.filter(x => x))
     }
   } catch (err) {
     console.error(err)
@@ -486,6 +508,31 @@ export function viewTransformer(args: Arguments<KubeOptions>, response: KubeReso
   }
 }
 
+/** return the data in the execOptions as a diff mode */
+function doGetAsMMRDiff(args: Arguments<KubeOptions>) {
+  const kind = args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1]
+  const mode = {
+    mode: 'diff',
+    label: strings('sidecarLabelNewDiff'),
+    content: args.execOptions.data['diff'],
+    contentType: 'yaml' as const
+  }
+
+  return {
+    apiVersion: 'kui-shell/v1',
+    kind,
+    metadata: {
+      name: getResourceNamesForArgv(kind, args),
+      namespace: getNamespaceAsExpressed(args)
+    },
+    toolbarText: {
+      type: 'info',
+      text: strings('drilldownNewDiff')
+    },
+    modes: [mode]
+  }
+}
+
 /** KubeResource -> MultiModalResponse view transformer for `kubectl get` */
 function viewTransformerForGet(args: Arguments<KubeOptions>, response: KubeResource) {
   // tranform getFile response to MMR with tree response
@@ -493,7 +540,11 @@ function viewTransformerForGet(args: Arguments<KubeOptions>, response: KubeResou
   if (fileOf.filepath) {
     return doGetAsMMRTree(args, fileOf.filepath, response)
   } else {
-    return viewTransformer(args, response)
+    if (!isKubeResource(response) && isDiffRequest(args) && typeof args.execOptions.data['diff'] === 'string') {
+      return doGetAsMMRDiff(args)
+    } else {
+      return viewTransformer(args, response)
+    }
   }
 }
 

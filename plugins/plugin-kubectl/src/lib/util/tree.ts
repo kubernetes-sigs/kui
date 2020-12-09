@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, DiffState, i18n, TreeItem, TreeResponse, Table } from '@kui-shell/core'
+import { Arguments, DiffState, i18n, TreeItem, TreeResponse, Table, ExecOptions } from '@kui-shell/core'
 
 import { KubeOptions, withKubeconfigFrom } from '../../controller/kubectl/options'
 import { KubeResource, hasEvents } from '../model/resource'
@@ -54,6 +54,7 @@ interface BucketValue {
   extends: TreeItem['extends']
   eventArgs?: TreeItem['eventArgs']
   onclick?: string
+  onclickOptions?: ExecOptions
   defaultExpanded?: boolean
 }
 
@@ -161,7 +162,10 @@ async function categorizeResources(
       const kind = resource.kind
       const name = resource.metadata.name
       const raw = originalResponse ? originalResponse.kuiRawData || (await safeDump(originalResponse)) : ''
-      const modifiedRaw = changedResponse && (changedResponse.kuiRawData || (await safeDump(changedResponse)))
+      const modifiedRaw =
+        (state === DiffState.CHANGED || state === DiffState.ADDED) &&
+        changedResponse &&
+        (changedResponse.kuiRawData || (await safeDump(changedResponse)))
 
       const eventArgs = doEvents && hasEvents(resource) ? getArgsThatProducesEvents(cmd, args, namespace) : undefined
 
@@ -172,6 +176,7 @@ async function categorizeResources(
         isIntermediate?: boolean,
         defaultExpanded?: boolean,
         onclick?: string,
+        onclickOptions?: ExecOptions,
         diff?: DiffState
       ) => {
         if (!bucket[key]) {
@@ -180,6 +185,7 @@ async function categorizeResources(
               raw,
               name: label,
               onclick,
+              onclickOptions,
               extends: {
                 kind: [kind],
                 name: [name]
@@ -246,6 +252,7 @@ async function categorizeResources(
 
         const isIntermediate = key === 'kind' || key === 'tiers' || key === 'apps' || key === 'unlabeled'
         const onclick = key === 'name' && withKubeconfigFrom(args, `${cmd} get ${kind} ${name} -n ${namespace} -o yaml`)
+        const onclickOptions = key === 'name' && modifiedRaw && { data: { diff: modifiedRaw }, noHistory: true }
         const defaultExpanded = isIntermediate || key === 'tier'
         append(
           buckets[key],
@@ -254,6 +261,7 @@ async function categorizeResources(
           isIntermediate,
           defaultExpanded,
           onclick,
+          onclickOptions,
           key === 'name' ? state : undefined
         )
       })
@@ -299,6 +307,7 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
             hasBadge: value.isIntermediate,
             defaultExpanded: value.defaultExpanded,
             onclick: value.onclick,
+            onclickOptions: value.onclickOptions,
             extends: value['extends'],
             diff: value.diff,
             eventArgs: value.eventArgs,
@@ -316,6 +325,7 @@ function transformBucketsToTree(buckets: Buckets): TreeResponse['data'] {
         name: buckets.all.all.name,
         id: buckets.all.all.id,
         onclick: buckets.all.all.onclick,
+        onclickOptions: buckets.all.all.onclickOptions,
         extends: buckets.all.all.extends,
         diff: buckets.all.all.diff,
         eventArgs: buckets.all.all.eventArgs,
