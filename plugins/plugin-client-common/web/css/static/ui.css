@@ -1114,6 +1114,7 @@ body {
 
   /* repl background */
   --color-repl-background: var(--color-ui-01);
+  --color-repl-background-02: var(--color-base02);
 
   /* background of third view */
   --color-background-03: var(--color-ui-03);

@@ -19,10 +19,6 @@
 
 $block-padding: 0.25em;
 
-body {
-  --color-repl-background-02: var(--color-base02);
-}
-
 /** distinguish the mini splits */
 @include MiniSplit {
   background-color: var(--color-repl-background-02);
