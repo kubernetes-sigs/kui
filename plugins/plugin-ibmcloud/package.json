@@ -29,7 +29,7 @@
   "types": "mdist/index.d.ts",
   "dependencies": {
     "debug": "4.3.1",
-    "js-yaml": "3.14.0",
+    "js-yaml": "3.14.1",
     "pretty-ms": "7.0.1"
   },
   "krew": {
