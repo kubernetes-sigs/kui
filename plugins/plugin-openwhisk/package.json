@@ -24,11 +24,11 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "adm-zip": "0.5.0",
+    "adm-zip": "0.5.1",
     "debug": "4.3.1",
     "htmlparser2": "5.0.1",
     "indefinite": "^2.4.1",
-    "js-yaml": "3.14.0",
+    "js-yaml": "3.14.1",
     "needle": "2.5.2",
     "openwhisk": "3.21.3",
     "parse-duration": "0.4.4",

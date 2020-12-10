@@ -15,7 +15,7 @@
  */
 
 import { Table } from '@kui-shell/core'
-import * as bytes from 'bytes-iec'
+import bytes from 'bytes-iec'
 
 export function cpuFraction(str: string): number {
   return parseInt(str.replace(/%$/, ''), 10)
@@ -99,7 +99,7 @@ export function parseAsTime(str: string): string {
 }
 
 export function fromSize(str: string): number {
-  return bytes(
+  return bytes.parse(
     str
       .replace(/m/g, 'MB')
       .replace(/Ki/g, 'KiB')
