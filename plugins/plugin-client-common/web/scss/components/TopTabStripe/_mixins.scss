@@ -20,8 +20,27 @@
   }
 }
 
+@mixin TopTabStripe_ProductName {
+  .kui--header--name {
+    @content;
+  }
+}
+
 @mixin Tab {
   .kui--tab {
+    @content;
+  }
+}
+@mixin TopTabStripe_Tab_Active {
+  @include Tab {
+    &.kui--tab--active {
+      @content;
+    }
+  }
+}
+
+@mixin TopTabStripe_Tab_Label {
+  a {
     @content;
   }
 }
