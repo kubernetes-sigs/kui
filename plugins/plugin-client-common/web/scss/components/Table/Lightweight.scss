@@ -93,7 +93,18 @@ $row-height: 1.5em;
   }
 
   @include TopTabStripe {
-    height: 3em;
+    height: 2.75em;
     --tab-shadow: inset 0 -2px 0 0;
+
+    @include TopTabStripe_Tab_Active {
+      @include TopTabStripe_Tab_Label {
+        font-weight: 500;
+      }
+    }
+  }
+  @include TopTabStripe_ProductName {
+    opacity: 0;
+    padding: 0;
+    width: 0.5em;
   }
 }
