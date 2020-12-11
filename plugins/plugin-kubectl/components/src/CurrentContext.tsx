@@ -169,7 +169,10 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
   }
 
   public render() {
-    // FIXME disable the on-hover effect with the icon
+    if (this.state.allContexts.length === 0) {
+      return <React.Fragment />
+    }
+
     return (
       <DropdownWidget
         position="left"
