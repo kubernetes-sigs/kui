@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.1](https://github.com/IBM/kui/compare/v9.3.0...v9.3.1) (2020-12-12)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** DropdownWidget does not obey `title` property ([5939948](https://github.com/IBM/kui/commit/5939948)), closes [#6393](https://github.com/IBM/kui/issues/6393)
+- **plugins/plugin-client-common:** TopTabStripe for Lightweight UI themes could be a bit lighter-weight ([fbded9c](https://github.com/IBM/kui/commit/fbded9c)), closes [#6398](https://github.com/IBM/kui/issues/6398)
+
+### Features
+
+- Allow command registrants to specify no semicolon expansion ([2151fc7](https://github.com/IBM/kui/commit/2151fc7)), closes [#6396](https://github.com/IBM/kui/issues/6396)
+
 # [9.3.0](https://github.com/IBM/kui/compare/v4.5.0...v9.3.0) (2020-12-11)
 
 ### Bug Fixes

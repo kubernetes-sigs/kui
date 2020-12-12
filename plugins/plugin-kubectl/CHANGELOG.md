@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.1](https://github.com/IBM/kui/compare/v9.3.0...v9.3.1) (2020-12-12)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubernetes CurrentContext widget may display as empty ([5a346e3](https://github.com/IBM/kui/commit/5a346e3)), closes [#6392](https://github.com/IBM/kui/issues/6392)
+
 # [9.3.0](https://github.com/IBM/kui/compare/v4.5.0...v9.3.0) (2020-12-11)
 
 ### Bug Fixes

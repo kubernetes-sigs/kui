@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.1](https://github.com/IBM/kui/compare/v9.3.0...v9.3.1) (2020-12-12)
+
+### Features
+
+- Allow command registrants to specify no semicolon expansion ([2151fc7](https://github.com/IBM/kui/commit/2151fc7)), closes [#6396](https://github.com/IBM/kui/issues/6396)
+
 # [9.3.0](https://github.com/IBM/kui/compare/v4.5.0...v9.3.0) (2020-12-11)
 
 ### Bug Fixes
