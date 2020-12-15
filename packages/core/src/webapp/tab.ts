@@ -35,6 +35,8 @@ export interface Tab extends HTMLDivElement {
   scrollToTop(): void
   scrollToBottom(): void
   getSize(): { width: number; height: number }
+
+  splitCount(): number
 }
 
 export function isTab(node: Element | Tab): node is Tab {
@@ -104,7 +106,7 @@ export function pexecInCurrentTab(command: string, topLevelTab?: Tab, isInternal
     const { facade: tab } = scrollback
     return isInternalCallpath
       ? tab.REPL.qexec(command, undefined, undefined, { tab })
-      : tab.REPL.pexec(command, { tab, echo: !incognito })
+      : tab.REPL.pexec(command, { tab, echo: !incognito, noHistory: true })
   } else {
     return Promise.reject(
       new Error(

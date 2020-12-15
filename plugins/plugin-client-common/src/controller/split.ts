@@ -32,7 +32,10 @@ export function debug(args: Arguments) {
  */
 export default function split(args?: Arguments<CommandLineOptions>): TabLayoutModificationResponse<NewSplitRequest> {
   const options: Options = {
+    if: args.parsedOptions.if,
+    ifnot: args.parsedOptions.ifnot,
     index: args.parsedOptions.index,
+    cmdline: args.parsedOptions.cmdline,
     inverseColors: args.parsedOptions.inverse
   }
 
