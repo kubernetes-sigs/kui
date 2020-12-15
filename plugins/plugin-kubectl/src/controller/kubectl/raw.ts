@@ -99,7 +99,7 @@ export const doNativeExec = (args: Args): Promise<RawResponse> =>
         const message = stderr
         const fileNotFound = /error: the path/.test(message)
         const codeForREPL =
-          noResources || /not found/i.test(message) || /doesn't have/i.test(message)
+          noResources || /not found/i.test(message) || /doesn't have/i.test(message) || /couldn't find/.test(message)
             ? 404
             : /already exists/i.test(message)
             ? 409

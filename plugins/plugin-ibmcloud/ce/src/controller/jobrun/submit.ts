@@ -23,11 +23,18 @@ interface WithName {
 
 type Options = Arguments['parsedOptions'] & WithName
 
+function show(REPL: Arguments['REPL'], jobName: string) {
+  return REPL.qexec(`ibmcloud ce jobrun list ${jobName} --watch`).catch(async () => {
+    await new Promise(resolve => setTimeout(resolve, 200))
+    return show(REPL, jobName)
+  })
+}
+
 export default async function JobRunSubmit(args: Arguments<Options>) {
   const res = await doExecWithPty(args)
   if (res.code > 0) {
     return res
   } else {
-    return args.REPL.qexec(`ibmcloud ce jobrun list ${args.parsedOptions.name} --watch`)
+    return show(args.REPL, args.parsedOptions.name)
   }
 }
