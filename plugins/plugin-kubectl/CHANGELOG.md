@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.2](https://github.com/IBM/kui/compare/v9.3.1...v9.3.2) (2020-12-15)
+
+**Note:** Version bump only for package @kui-shell/plugin-kubectl
+
 ## [9.3.1](https://github.com/IBM/kui/compare/v9.3.0...v9.3.1) (2020-12-12)
 
 ### Bug Fixes

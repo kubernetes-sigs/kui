@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.2](https://github.com/kui-shell/plugin-kubeui/compare/v9.3.1...v9.3.2) (2020-12-15)
+
+### Bug Fixes
+
+- SequenceDiagram bar widths are pretty buggy ([4b5d288](https://github.com/kui-shell/plugin-kubeui/commit/4b5d288)), closes [#6408](https://github.com/kui-shell/plugin-kubeui/issues/6408)
+
 ## [9.3.1](https://github.com/kui-shell/plugin-kubeui/compare/v9.3.0...v9.3.1) (2020-12-12)
 
 **Note:** Version bump only for package @kui-shell/plugin-ibmcloud

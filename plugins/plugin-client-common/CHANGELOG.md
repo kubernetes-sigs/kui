@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.2](https://github.com/IBM/kui/compare/v9.3.1...v9.3.2) (2020-12-15)
+
+### Bug Fixes
+
+- SequenceDiagram bar widths are pretty buggy ([4b5d288](https://github.com/IBM/kui/commit/4b5d288)), closes [#6408](https://github.com/IBM/kui/issues/6408)
+
+### Features
+
+- **plugins/plugin-client-common:** Allow users to opt in to default meta-click behavior ([ea69020](https://github.com/IBM/kui/commit/ea69020)), closes [#6406](https://github.com/IBM/kui/issues/6406)
+- Meta-click on table entries should open the drilldown in a different split ([962068f](https://github.com/IBM/kui/commit/962068f)), closes [#6403](https://github.com/IBM/kui/issues/6403)
+
 ## [9.3.1](https://github.com/IBM/kui/compare/v9.3.0...v9.3.1) (2020-12-12)
 
 ### Bug Fixes

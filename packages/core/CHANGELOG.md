@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.2](https://github.com/IBM/kui/compare/v9.3.1...v9.3.2) (2020-12-15)
+
+### Features
+
+- Meta-click on table entries should open the drilldown in a different split ([962068f](https://github.com/IBM/kui/commit/962068f)), closes [#6403](https://github.com/IBM/kui/issues/6403)
+
 ## [9.3.1](https://github.com/IBM/kui/compare/v9.3.0...v9.3.1) (2020-12-12)
 
 ### Features
