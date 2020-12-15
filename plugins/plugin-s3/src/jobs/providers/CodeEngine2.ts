@@ -86,10 +86,12 @@ export default class CodeEngine /* implements JobProvider<JobName> */ {
     })
 
     const memOpts = params.m || params.memory ? `--memory ${params.m || params.memory}` : ''
-    debug('memOpts', memOpts, params)
+
+    const cpuOpts = `--cpu ${params.cpu || '8.0'}`
+    debug('resource options', memOpts, cpuOpts, params)
 
     const jobrunName = `kui-jobrun-${v4()}`
-    const cmdline = `ibmcloud ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts} ${memOpts}`
+    const cmdline = `ibmcloud ce jobrun submit --image ${image} --name ${jobrunName} --array-indices 1-${nTasks} -e NSHARDS=${nShards} ${parOpts} ${envOpts} ${keyOpts} ${memOpts} ${cpuOpts}`
     await this.repl.qexec<string>(cmdline).catch(err => {
       console.error(err)
       throw new Error(err.message)

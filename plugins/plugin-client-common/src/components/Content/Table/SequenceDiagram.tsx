@@ -38,6 +38,9 @@ interface Props {
    *
    */
   denseThreshold?: number
+
+  /** whether the table is currently "live", and responding to updates from the controller */
+  isWatching: boolean
 }
 
 /**
@@ -65,6 +68,9 @@ interface State {
    * completion time, we can at least use the maximum completion time
    * across the tasks that *have* completed */
   maxEndMillis: number
+
+  /** force a refresh, for the poller */
+  iter: number
 }
 
 function prettyPrintDuration(duration: number): string {
@@ -76,6 +82,30 @@ function prettyPrintDuration(duration: number): string {
   }
 }
 
+function prettyPrintDateDelta(row: Row, idx1: number, idx2: number): string {
+  const cell1 = row.attributes[idx1]
+  const cell2 = row.attributes[idx2]
+
+  try {
+    const startMillis = new Date(cell1.value).getTime()
+
+    if (cell2.value === '<none>') {
+      if (cell1.value === '<none>') {
+        return ''
+      } else {
+        // then print delta versus now
+        return prettyMillis(Date.now() - startMillis, { compact: true })
+      }
+    } else {
+      const endMillis = new Date(cell2.value).getTime()
+      return prettyMillis(endMillis - startMillis)
+    }
+  } catch (err) {
+    console.error('error formatting delta', cell1, cell2, err)
+    return ''
+  }
+}
+
 export default class SequenceDiagram extends React.PureComponent<Props, State> {
   /**
    * @see Props.denseThreshold
@@ -83,13 +113,33 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
    */
   private static readonly DEFAULT_DENSE_THRESHOLD = 120 * 1000
 
+  /** If state.isWatching, we may have pollers to refresh the durations */
+  private poller: ReturnType<typeof setInterval>
+
   public constructor(props: Props) {
     super(props)
-    this.state = SequenceDiagram.computeGapModel(props.response, props.denseThreshold)
+    this.state = SequenceDiagram.getDerivedStateFromProps(props)
   }
 
-  public static getDerivedStateFromProps(props: Props) {
-    return SequenceDiagram.computeGapModel(props.response, props.denseThreshold)
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(error, errorInfo)
+  }
+
+  public static getDerivedStateFromProps(props: Props, state?: State) {
+    return Object.assign(
+      { iter: state ? state.iter : 0 },
+      SequenceDiagram.computeGapModel(props.response, props.denseThreshold)
+    )
+  }
+
+  public componentDidUpdate() {
+    if (this.props.isWatching && !this.poller) {
+      this.poller = setInterval(() => {
+        this.setState(curState => ({ iter: curState.iter + 1 }))
+      }, 1000)
+    } else if (!this.props.isWatching && this.poller) {
+      clearInterval(this.poller)
+    }
   }
 
   /** @return numerator/interval formatted */
@@ -105,30 +155,15 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     }
   }
 
-  /**
-   * This computes the `State` for this component from the given
-   * `response` Table model.
-   *
-   */
-  private static computeGapModel(
-    response: Table,
-    denseThreshold = response.colorBy === 'status' ? Number.MAX_SAFE_INTEGER : SequenceDiagram.DEFAULT_DENSE_THRESHOLD
-  ): State {
-    // indices of start and complete attributes
-    const idx1 = response.startColumnIdx
-    const idx2 = response.completeColumnIdx
+  private static sorter(response: Props['response']) {
+    if (response.noSort) {
+      return () => 0
+    } else {
+      const idx1 = response.startColumnIdx
+      const idx2 = response.completeColumnIdx
 
-    // 1) [SLICE]: need to slice so as not to permute the original table model
-    // 2) [SORT]: by startTime, then by delta from start of current gap
-    // 3) [INTERVALS]: populate a tuple of intervals, where each interval consists of tasks a) from the same job; and b) not too distant in time from the start of the current interval
-    const intervals = response.body
-      .slice(0) // [SLICE]
-      .sort((a, b) => {
+      return (a: Row, b: Row) => {
         // [SORT]
-        if (response.noSort) {
-          return 0
-        }
-
         const jobNameComparo = a.name.localeCompare(b.name)
         if (jobNameComparo === 0) {
           // same job name; then compare by startTime
@@ -155,7 +190,29 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
           // different job names
           return jobNameComparo
         }
-      })
+      }
+    }
+  }
+
+  /**
+   * This computes the `State` for this component from the given
+   * `response` Table model.
+   *
+   */
+  private static computeGapModel(
+    response: Table,
+    denseThreshold = response.colorBy === 'status' ? Number.MAX_SAFE_INTEGER : SequenceDiagram.DEFAULT_DENSE_THRESHOLD
+  ): Omit<State, 'iter'> {
+    // indices of start and complete attributes
+    const idx1 = response.startColumnIdx
+    const idx2 = response.completeColumnIdx
+
+    // 1) [SLICE]: need to slice so as not to permute the original table model
+    // 2) [SORT]: by startTime, then by delta from start of current gap
+    // 3) [INTERVALS]: populate a tuple of intervals, where each interval consists of tasks a) from the same job; and b) not too distant in time from the start of the current interval
+    const intervals = response.body
+      .slice(0) // [SLICE]
+      .sort(SequenceDiagram.sorter(response))
       .reduce((intervals, row) => {
         // [INTERVALS]
         const jobName = row.name
@@ -364,7 +421,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             let widthB = coldStart ? this.getFraction(coldStart, interval) : undefined
             const title = strings('Duration', prettyPrintDuration(duration))
             const titleB = coldStart ? strings('Cold Start', prettyPrintDuration(coldStart), title) : undefined
-            const className = colorByStatus ? '' /* trafficLight(row.attributes[idx4]) */ : durationColor(duration, false)
+            const className = colorByStatus
+              ? '' /* trafficLight(row.attributes[idx4]) */
+              : durationColor(duration, false)
             if (left + widthB > 1) {
               /* console.error(
                 'oopsB',
@@ -433,10 +492,15 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 </td>
                 <td className="kui--tertiary-text">{gapText}</td>
                 {colorByStatus && (
-                  <td className="kui--secondary-text">
+                  <td className="kui--secondary-text pretty-narrow">
                     <span className={'cell-inner ' + trafficLight(row.attributes[idx4])}>
                       {!isOverheadRow && row.attributes[idx4].value}
                     </span>
+                  </td>
+                )}
+                {colorByStatus && (
+                  <td className="kui--tertiary-text pretty-narrow">
+                    <span className="cell-inner">{!isOverheadRow && prettyPrintDateDelta(row, idx1, idx2)}</span>
                   </td>
                 )}
                 {/* this.props.response.statusColumnIdx >= 0
