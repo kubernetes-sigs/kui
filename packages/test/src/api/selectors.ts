@@ -34,19 +34,24 @@ export const STATUS_STRIPE_BLOCK = '.kui--status-stripe .kui--input-stripe .repl
 export const STATUS_STRIPE_PROMPT = `${STATUS_STRIPE_BLOCK} input`
 export const OOPS = `${CURRENT_TAB} .repl .repl-block .oops`
 export const _SIDECAR = '.kui--sidecar'
-export const SIDECAR_BASE = (N: number) => `${PROMPT_BLOCK_N(N)} ${_SIDECAR}`
-export const SIDECAR = (N: number) => `${SIDECAR_BASE(N)}.visible:not(.minimized)`
-export const SIDECAR_FULLSCREEN = (N: number) => `${SIDECAR(N)}.maximized`
-export const SIDECAR_WITH_FAILURE = (N: number) => `${SIDECAR_BASE(N)}.visible.activation-success-false`
-export const SIDECAR_ACTIVATION_TITLE = (N: number) => `${SIDECAR(N)} .kui--sidecar-entity-name-hash .bx--link`
-export const SIDECAR_TITLE = (N: number) => `${SIDECAR(N)} .kui--sidecar-entity-name .bx--link`
+// eslint-disable-next-line @typescript-eslint/no-use-before-define
+export const SIDECAR_BASE = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_SIDECAR}`
+export const SIDECAR = (N: number, splitIndex = 1) => `${SIDECAR_BASE(N, splitIndex)}.visible:not(.minimized)`
+export const SIDECAR_FULLSCREEN = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)}.maximized`
+export const SIDECAR_WITH_FAILURE = (N: number, splitIndex = 1) =>
+  `${SIDECAR_BASE(N, splitIndex)}.visible.activation-success-false`
+export const SIDECAR_ACTIVATION_TITLE = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name-hash .bx--link`
+export const SIDECAR_TITLE = (N: number, splitIndex = 1, clickable = true) =>
+  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name` + (clickable ? ' .bx--link' : '')
 export const SIDECAR_HERO_TITLE = (N: number) => `${SIDECAR(N)} .sidecar-header .sidecar-header-name`
-export const SIDECAR_LEFTNAV_TITLE = (N: number) =>
-  `${SIDECAR(N)} .sidecar-header-name-content .bx--side-nav__submenu-title`
+export const SIDECAR_LEFTNAV_TITLE = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .sidecar-header-name-content .bx--side-nav__submenu-title`
 export const SIDECAR_HEADER_NAVIGATION = (N: number) => `${SIDECAR(N)} .kui--sidecar--titlebar-navigation`
 export const SIDECAR_BREADCRUMBS = (N: number) =>
   `${SIDECAR_HEADER_NAVIGATION(N)} .bx--breadcrumb .bx--breadcrumb-item .bx--link`
-export const SIDECAR_PACKAGE_NAME_TITLE = (N: number) => `${SIDECAR(N)} .kui--sidecar-entity-namespace .bx--link`
+export const SIDECAR_PACKAGE_NAME_TITLE = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-namespace .bx--link`
 export const SIDECAR_POPUP_TITLE = SIDECAR_TITLE
 export const SIDECAR_POPUP_HERO_TITLE = SIDECAR_HERO_TITLE
 export const SIDECAR_KIND = (N: number) => `${SIDECAR(N)} .kui--sidecar-kind .bx--link`
