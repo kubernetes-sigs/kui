@@ -93,7 +93,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
   }
 
   /** @return numerator/interval formatted */
-  private getFraction(numerator: number, interval?: DenseInterval): number {
+  private getFraction(numerator: number, interval: DenseInterval): number {
     if (interval && (!interval.startMillis || !interval.endMillis)) {
       return 0
     } else {
@@ -179,7 +179,8 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             // case 2: the gap is small relative to the start of the
             // current interval and for the same job as the current
             // interval, in which case we add to current interval
-            currentInterval.endMillis = endMillis
+            currentInterval.endMillis = Math.max(endMillis, currentInterval.endMillis)
+            currentInterval.startMillis = Math.min(startMillis, currentInterval.startMillis)
             currentInterval.rows.push(row)
           } else {
             // case 3: gap too long, or new job -- create new interval
@@ -341,7 +342,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const duration = durationCol || (!endMillis ? 0 : endMillis - startMillis)
 
             const left = this.getFraction(startMillis - interval.startMillis, interval)
-            let width = !duration ? undefined : this.getFraction(duration)
+            let width = !duration ? undefined : this.getFraction(duration, interval)
             if (left + width > 1) {
               /* console.error(
                 'oops',
@@ -360,10 +361,10 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
               this.props.response.coldStartColumnIdx >= 0 && row.attributes[this.props.response.coldStartColumnIdx]
                 ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
                 : undefined
-            let widthB = coldStart ? this.getFraction(coldStart) : undefined
+            let widthB = coldStart ? this.getFraction(coldStart, interval) : undefined
             const title = strings('Duration', prettyPrintDuration(duration))
             const titleB = coldStart ? strings('Cold Start', prettyPrintDuration(coldStart), title) : undefined
-            const className = colorByStatus ? trafficLight(row.attributes[idx4]) : durationColor(duration, false)
+            const className = colorByStatus ? '' /* trafficLight(row.attributes[idx4]) */ : durationColor(duration, false)
             if (left + widthB > 1) {
               /* console.error(
                 'oopsB',
@@ -407,7 +408,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   (rowIdx === interval.rows.length - 1 ? ' kui--sequence-diagram-last-row-in-interval' : '')
                 }
               >
-                {colorByStatus && (
+                {false && colorByStatus && (
                   <td className="kui--secondary-text">
                     <span
                       className={
@@ -416,13 +417,6 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                       onClick={onClick}
                     >
                       {row.name}
-                    </span>
-                  </td>
-                )}
-                {colorByStatus && (
-                  <td className="kui--secondary-text">
-                    <span className={'cell-inner ' + trafficLight(row.attributes[idx4])}>
-                      {!isOverheadRow && row.attributes[idx4].value}
                     </span>
                   </td>
                 )}
@@ -438,6 +432,13 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   />
                 </td>
                 <td className="kui--tertiary-text">{gapText}</td>
+                {colorByStatus && (
+                  <td className="kui--secondary-text">
+                    <span className={'cell-inner ' + trafficLight(row.attributes[idx4])}>
+                      {!isOverheadRow && row.attributes[idx4].value}
+                    </span>
+                  </td>
+                )}
                 {/* this.props.response.statusColumnIdx >= 0
                   ? renderCell(
                       this.props.response,
@@ -481,7 +482,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
         <table
           className="bx--data-table bx--data-table--compact kui--sequence-diagram"
           data-size={this.size()}
-          data-color-by={this.props.response.colorBy || 'duration'}
+          data-color-by="duration"
         >
           {/* this.header() */}
           <tbody>{this.rows()}</tbody>
