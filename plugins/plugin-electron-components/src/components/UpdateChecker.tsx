@@ -221,7 +221,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
           )}
           popover={
             this.state.entryForLatestVersion && {
-              maxWidth: '18rem',
+              maxWidth: '23rem',
               className: 'kui--update-checker--popover',
               onHide: () => this.dulyNoted(),
 
