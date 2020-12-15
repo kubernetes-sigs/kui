@@ -61,6 +61,7 @@ export default async function KubectlGetJob(args: Arguments<KubeOptions>) {
       hideWithSidecar.forEach(idx => (table.header.attributes[idx].outerCSS = 'hide-with-sidecar'))
 
       // we want to use a sequence diagram
+      table.colorBy = 'status'
       table.defaultPresentation = 'sequence-diagram'
 
       table.body.forEach(_ => {
