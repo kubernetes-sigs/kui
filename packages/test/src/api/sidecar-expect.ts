@@ -24,7 +24,9 @@ import { expectArray, expectText, getValueFromMonaco, expectYAMLSubset } from '.
 import { AppAndCount, blockAfter } from './repl-expect'
 
 export const open = async (res: AppAndCount) => {
-  await res.app.client.$(Selectors.SIDECAR(res.count)).then(_ => _.waitForDisplayed({ timeout: waitTimeout }))
+  await res.app.client
+    .$(Selectors.SIDECAR(res.count, res.splitIndex))
+    .then(_ => _.waitForDisplayed({ timeout: waitTimeout }))
   return res
 }
 
@@ -35,14 +37,14 @@ export function openInBlockAfter(res: AppAndCount, delta = 1) {
 
 export const notOpen = async (res: AppAndCount) => {
   await res.app.client
-    .$(Selectors.SIDECAR(res.count))
+    .$(Selectors.SIDECAR(res.count, res.splitIndex))
     .then(_ => _.waitForDisplayed({ timeout: waitTimeout, reverse: true }))
   return res
 }
 
 export const openWithFailure = async (res: AppAndCount) => {
   return res.app.client
-    .$(Selectors.SIDECAR_WITH_FAILURE(res.count))
+    .$(Selectors.SIDECAR_WITH_FAILURE(res.count, res.splitIndex))
     .then(_ => _.waitForDisplayed({ timeout: waitTimeout }))
     .then(() => res)
 }
@@ -308,12 +310,15 @@ export const showing = (
   expectedPackageName?: string,
   expectType?: string,
   waitThisLong?: number,
-  which?: 'leftnav' | 'topnav'
+  which?: 'leftnav' | 'topnav',
+  clickable?: boolean
 ) => async (res: AppAndCount): Promise<AppAndCount> => {
   await res.app.client.waitUntil(
     async () => {
       // check selected name in sidecar
-      const sidecarSelector = `${Selectors.SIDECAR(res.count)}${!expectType ? '' : '.entity-is-' + expectType}`
+      const sidecarSelector = `${Selectors.SIDECAR(res.count, res.splitIndex)}${
+        !expectType ? '' : '.entity-is-' + expectType
+      }`
       await res.app.client.$(sidecarSelector).then(_ => _.waitForDisplayed())
 
       // either 'leftnav' or 'topnav'
@@ -321,7 +326,9 @@ export const showing = (
         which = (await res.app.client.$(sidecarSelector).then(_ => _.getAttribute('data-view'))) as 'leftnav' | 'topnav'
       }
       const titleSelector =
-        which === 'topnav' ? Selectors.SIDECAR_TITLE(res.count) : Selectors.SIDECAR_LEFTNAV_TITLE(res.count)
+        which === 'topnav'
+          ? Selectors.SIDECAR_TITLE(res.count, res.splitIndex, clickable)
+          : Selectors.SIDECAR_LEFTNAV_TITLE(res.count, res.splitIndex)
 
       return res.app.client
         .$(titleSelector)
@@ -333,7 +340,7 @@ export const showing = (
           if (nameMatches) {
             if (expectedPackageName) {
               return res.app.client
-                .$(Selectors.SIDECAR_PACKAGE_NAME_TITLE(res.count))
+                .$(Selectors.SIDECAR_PACKAGE_NAME_TITLE(res.count, res.splitIndex))
                 .then(_ => _.getText())
                 .then(name =>
                   expectSubstringMatchOnName
@@ -356,7 +363,9 @@ export const showing = (
     await res.app.client.waitUntil(
       async () => {
         try {
-          const actualId = await res.app.client.$(Selectors.SIDECAR_ACTIVATION_TITLE(res.count)).then(_ => _.getText())
+          const actualId = await res.app.client
+            .$(Selectors.SIDECAR_ACTIVATION_TITLE(res.count, res.splitIndex))
+            .then(_ => _.getText())
           if (actualId === expectedActivationId) {
             return true
           } else {

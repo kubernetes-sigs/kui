@@ -37,6 +37,15 @@ export type NewSplitRequest = {
 
     /** Use an inverted color scheme for the new split? */
     inverseColors?: boolean
+
+    /** Execute this command line in the new split */
+    cmdline?: string
+
+    /** Only perform the split if the given command returns true */
+    if?: string
+
+    /** Only perform the split if the given command returns false */
+    ifnot?: string
   }
 }
 

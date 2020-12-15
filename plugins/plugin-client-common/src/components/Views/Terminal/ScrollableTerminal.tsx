@@ -552,6 +552,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     eventBus.onceWithTabId('/tab/close/request', sbuuid, onTabCloseRequest)
     state.cleaners.push(() => eventBus.offWithTabId('/tab/close/request', sbuuid, onTabCloseRequest))
 
+    if (opts.cmdline) {
+      setTimeout(() => {
+        state.facade.REPL.pexec(opts.cmdline)
+      })
+    }
+
     return this.initEvents(state)
   }
 
@@ -601,7 +607,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (execType === ExecType.ClickHandler) {
       // <-- this is a click handler event
       const idx = this.findSplit(this.state, sbuuid)
-      if (this.isMiniSplit(this.state.splits[idx], idx)) {
+      // note: idx may be < 0 if we are executing a command in-flight,
+      // e.g. executing a command in another split
+      if (idx >= 0 && this.isMiniSplit(this.state.splits[idx], idx)) {
         // <-- this is a minisplit
         const plainSplit = this.state.splits.find((split, idx) => !this.isMiniSplit(split, idx))
         if (plainSplit) {
@@ -688,7 +696,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL finished executing a command */
-  public onExecEnd(
+  public async onExecEnd(
     uuid = this.currentUUID,
     asReplay: boolean,
     event: CommandCompleteEvent<ScalarResponse>,
@@ -698,7 +706,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     else uuid = this.redirectToPlainSplitIfNeeded(uuid, event)
 
     if (isTabLayoutModificationResponse(event.response)) {
-      const updatedResponse = this.onTabLayoutModificationRequest(event.response, uuid)
+      const updatedResponse = await this.onTabLayoutModificationRequest(event.response, uuid)
       if (updatedResponse) {
         event.response = updatedResponse
       }
@@ -872,12 +880,31 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** Split the view */
-  private onSplit(request: TabLayoutModificationResponse<NewSplitRequest>, sbuuid: string) {
+  private async onSplit(request: TabLayoutModificationResponse<NewSplitRequest>, sbuuid: string) {
     const nTerminals = this.state.splits.length
 
     if (nTerminals === MAX_TERMINALS) {
       return new Error(strings('No more splits allowed'))
     } else {
+      if (request.spec.options.cmdline && (request.spec.options.if || request.spec.options.ifnot)) {
+        const thisSplitIdx = this.findSplit(this.state, sbuuid)
+        const thisSplit = this.state.splits[thisSplitIdx]
+        const respIf = !request.spec.options.if
+          ? true
+          : await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.if).catch(() => false)
+        const respIfNot = !request.spec.options.ifnot
+          ? true
+          : !(await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.ifnot).catch(() => true))
+        if (!respIf || !respIfNot) {
+          const { cmdline } = request.spec.options
+          const mainSplit =
+            this.state.splits.find((split, idx) => !this.isMiniSplit(split, idx) && idx !== thisSplitIdx) || thisSplit
+          request.spec.options.cmdline = undefined // null this out, since we got it!
+          mainSplit.facade.REPL.pexec(cmdline)
+          return
+        }
+      }
+
       const newScrollback = this.scrollback(undefined, request.spec.options)
 
       this.setState(({ splits }) => {
@@ -1038,6 +1065,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (ref) {
       ref['facade'] = scrollback.facade
       scrollback.facade.getSize = getSize.bind(ref)
+
+      scrollback.facade.splitCount = () => this.state.splits.length
 
       scrollback.facade.scrollToBottom = () => {
         ref.scrollTop = ref.scrollHeight
