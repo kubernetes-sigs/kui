@@ -44,9 +44,14 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     this.initWatch()
   }
 
+  /** @return whether the table is currently "live", and responding to updates from the controller */
+  protected isWatching(): boolean {
+    return this.state.isWatching
+  }
+
   protected dataAttrs() {
     return {
-      'data-table-watching': this.state.isWatching,
+      'data-table-watching': this.isWatching(),
       'data-table-as-grid': this.state.asGrid
     }
   }

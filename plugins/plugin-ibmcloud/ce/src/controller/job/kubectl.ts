@@ -65,9 +65,13 @@ export default async function KubectlGetJob(args: Arguments<KubeOptions>) {
       table.defaultPresentation = 'sequence-diagram'
 
       table.body.forEach(_ => {
-        hide.forEach(idx => (_.attributes[idx].outerCSS = 'hide'))
-        hideWithSidecar.forEach(idx => (_.attributes[idx].outerCSS = 'hide-with-sidecar'))
-        _.onclick = `ibmcloud ce kubectl get pod ${_.attributes[0].value} -o yaml`
+        try {
+          hide.forEach(idx => (_.attributes[idx].outerCSS = 'hide'))
+          hideWithSidecar.forEach(idx => (_.attributes[idx].outerCSS = 'hide-with-sidecar'))
+          _.onclick = `ibmcloud ce kubectl get pod ${_.attributes[0].value} -o yaml`
+        } catch (err) {
+          console.error(err)
+        }
       })
     }
     return computeDurations(table)
