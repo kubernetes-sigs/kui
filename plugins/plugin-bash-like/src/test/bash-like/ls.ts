@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Keys } from '@kui-shell/test'
 
 const echoString = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
@@ -42,6 +42,45 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     CLI.command(`ls -l ../../`, this.app)
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this)))
+
+  const doListAndClick = async () => {
+    const holdDown = Keys.holdDownKey.bind(this)
+    const release = Keys.releaseKey.bind(this)
+
+    const res = await CLI.command(`ls -l ../../`, this.app)
+    await ReplExpect.okWith('package.json')
+
+    const selector = Selectors.LIST_RESULT_BY_N_FOR_NAME(res.count, 'package.json')
+    await holdDown(Keys.META)
+    await this.app.client.$(selector).then(_ => _.click())
+    await release(Keys.META)
+
+    return res
+  }
+  it('list and click, and drilldown should be in a new split', async () => {
+    try {
+      await ReplExpect.splitCount(1)
+      await doListAndClick()
+      await ReplExpect.splitCount(2)
+      await SidecarExpect.open({ app: this.app, count: 0, splitIndex: 2 }).then(
+        SidecarExpect.showing('package.json', undefined, undefined, undefined, undefined, undefined, undefined, false)
+      )
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+  it('list and click again, and drilldown should be in that same new split', async () => {
+    try {
+      await ReplExpect.splitCount(2)
+      await doListAndClick()
+      await ReplExpect.splitCount(2)
+      await SidecarExpect.open({ app: this.app, count: 1, splitIndex: 2 }).then(
+        SidecarExpect.showing('package.json', undefined, undefined, undefined, undefined, undefined, undefined, false)
+      )
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 
   it('should ls with semicolons 1', () =>
     CLI.command(`ls -l ../../ ; echo ${echoString}`, this.app)

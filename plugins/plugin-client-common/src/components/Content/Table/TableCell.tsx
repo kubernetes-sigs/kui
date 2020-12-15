@@ -17,7 +17,15 @@
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
 import { TableCell, DataTableCell } from 'carbon-components-react'
-import { Table as KuiTable, Cell as KuiCell, Row as KuiRow, Tab, REPL, eventBus } from '@kui-shell/core'
+import {
+  Table as KuiTable,
+  Cell as KuiCell,
+  Row as KuiRow,
+  Tab,
+  REPL,
+  eventBus,
+  pexecInCurrentTab
+} from '@kui-shell/core'
 
 import Markdown from '../Markdown'
 import ErrorCell from './ErrorCell'
@@ -59,7 +67,7 @@ export function onClickForCell(
         evt.stopPropagation()
         selectRow()
         if (evt.metaKey) {
-          repl.pexec(`split --cmdline "${handler}"`)
+          pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
         } else {
           repl.pexec(handler, opts)
         }
