@@ -350,11 +350,16 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private sequence() {
-    return <SequenceDiagram {...this.props} />
+    return <SequenceDiagram {...this.props} isWatching={this.isWatching()} />
   }
 
   private timeline() {
     return <Timeline {...this.props} />
+  }
+
+  /** @return whether the table is currently "live", and responding to updates from the controller */
+  protected isWatching(): boolean {
+    return false
   }
 
   private content(includeToolbars = false, lightweightTables = false) {
