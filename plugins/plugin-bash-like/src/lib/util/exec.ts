@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { asSidecarEntity } from '../util/sidecar-support'
-
 /** does the given strong span a large number of lines? */
 export const reallyLong = str => str.split(/[\n\r]/).length > 20
 
@@ -38,13 +36,7 @@ export const handleNonZeroExitCode = (
     throw error
   } else {
     const error = new Error(stderr)
-
-    if ((!execOptions || !execOptions.raw) && reallyLong(stderr)) {
-      // a lot of output? render in sidecar
-      return asSidecarEntity(command, parentNode || stderr)
-    } else {
-      error['html'] = parentNode
-    }
+    error['html'] = parentNode
 
     if (execOptions.stderr) error['code'] = parentNode
     else if (stderr.match(/File exists/i)) error['code'] = 409
