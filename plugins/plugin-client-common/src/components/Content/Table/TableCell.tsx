@@ -33,6 +33,10 @@ import whenNothingIsSelected from '../../../util/selection'
 
 export type CellOnClickHandler = (evt: React.MouseEvent) => void
 
+function XOR(a: boolean, b: boolean) {
+  return (a || b) && !(a && b)
+}
+
 /**
  * Generate an onclick handler for a cell
  *
@@ -66,7 +70,7 @@ export function onClickForCell(
       return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
-        if (evt.metaKey) {
+        if (XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
           pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
         } else {
           repl.pexec(handler, opts)
