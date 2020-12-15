@@ -646,6 +646,10 @@ class S3VFSResponder extends S3VFS implements VFS {
     const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`))
       .content
 
+    if (!parsedOptions.memory) {
+      parsedOptions.memory = '1024Mi'
+    }
+
     debug('scale-out gzip sources', srcs, parsedOptions)
     return runWithProgress(
       srcs.map(src => `cat ${encodeComponent(src.path)} | gzip -c - | pipe ${encodeComponent(src.path + '.gz')}`),
@@ -660,6 +664,10 @@ class S3VFSResponder extends S3VFS implements VFS {
     const srcFilepaths = parameters[1]
     const srcs = (await REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`))
       .content
+
+    if (!parsedOptions.memory) {
+      parsedOptions.memory = '1024Mi'
+    }
 
     debug('scale-out gunzip sources', srcs, parsedOptions)
     return runWithProgress(
