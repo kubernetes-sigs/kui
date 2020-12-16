@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.3](https://github.com/IBM/kui/compare/v9.3.2...v9.3.3) (2020-12-16)
+
+### Bug Fixes
+
+- s3 job watcher sometimes fails due to startup issues ([0e2ae82](https://github.com/IBM/kui/commit/0e2ae82)), closes [#6411](https://github.com/IBM/kui/issues/6411)
+- UpdateChecker popover can be too height ([801f227](https://github.com/IBM/kui/commit/801f227)), closes [#6413](https://github.com/IBM/kui/issues/6413)
+
 ## [9.3.2](https://github.com/IBM/kui/compare/v9.3.1...v9.3.2) (2020-12-15)
 
 ### Bug Fixes

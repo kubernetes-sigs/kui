@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.3](https://github.com/IBM/kui/compare/v9.3.2...v9.3.3) (2020-12-16)
+
+**Note:** Version bump only for package @kui-shell/react
+
 ## [9.3.2](https://github.com/IBM/kui/compare/v9.3.1...v9.3.2) (2020-12-15)
 
 **Note:** Version bump only for package @kui-shell/react
