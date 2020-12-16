@@ -32,7 +32,7 @@ class Job {
   ) {}
 
   public show() {
-    return this.runner.show(this.jobName)
+    return this.runner.show(this.jobName, this.nTasks)
   }
 
   public wait() {
