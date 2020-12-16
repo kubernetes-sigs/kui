@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import slash from 'slash'
 import { isAbsolute, join } from 'path'
 import { Arguments, ParsedOptions, REPL, Table, eventBus, getCurrentTab, inBrowser } from '@kui-shell/core'
@@ -23,6 +24,8 @@ import { KuiGlobOptions, GlobStats } from '../lib/glob'
 
 type DirEntry = GlobStats
 export { DirEntry }
+
+const debug = Debug('plugin-bash-like/fs/vfs')
 
 export interface ParallelismOptions extends ParsedOptions {
   /** Parallelism */
@@ -192,11 +195,13 @@ function absolute(filepath: string): string {
 export function findMount(filepath: string, checkClient = false): VFS {
   const isClient = inBrowser()
   filepath = absolute(filepath)
-  return (
+  const mount =
     _currentMounts.find(
       mount => filepath.startsWith(mount.mountPath) && (!checkClient || !isClient || mount.isVirtual)
-    ) || _currentMounts.find(mount => mount.isLocal)
-  ) // local fallback; see https://github.com/IBM/kui/issues/5898
+    ) || _currentMounts.find(mount => mount.isLocal) // local fallback; see https://github.com/IBM/kui/issues/5898
+
+  debug(`findMount ${filepath}->${mount.mountPath}`)
+  return mount
 }
 
 /** Lookup compatible mounts */

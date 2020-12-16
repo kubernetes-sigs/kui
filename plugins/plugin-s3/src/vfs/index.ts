@@ -58,6 +58,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   public constructor(private readonly options: Provider) {
     super(options.mountName)
     this.client = new Client(options)
+    debug('new s3 vfs responder', options.mountName, options.endPoint)
   }
 
   public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
@@ -812,6 +813,10 @@ export default async () => {
     mount(async (repl: REPL) => {
       try {
         providers = await findAvailableProviders(repl, init)
+        debug(
+          'available s3 providers',
+          providers.map(_ => _.mountName)
+        )
 
         if (inBrowser()) {
           return providers.map(provider => new S3VFSForwarder(provider.mountName))
