@@ -649,6 +649,9 @@ class S3VFSResponder extends S3VFS implements VFS {
     if (!parsedOptions.memory) {
       parsedOptions.memory = '1024Mi'
     }
+    if (!parsedOptions.cpu) {
+      parsedOptions.cpu = 8
+    }
 
     debug('scale-out gzip sources', srcs, parsedOptions)
     return runWithProgress(
@@ -667,6 +670,9 @@ class S3VFSResponder extends S3VFS implements VFS {
 
     if (!parsedOptions.memory) {
       parsedOptions.memory = '1024Mi'
+    }
+    if (!parsedOptions.cpu) {
+      parsedOptions.cpu = 8
     }
 
     debug('scale-out gunzip sources', srcs, parsedOptions)
