@@ -18,6 +18,7 @@ import Debug from 'debug'
 import prettyPrintDuration from 'pretty-ms'
 
 import {
+  Row,
   Table,
   Arguments,
   CodedError,
@@ -50,6 +51,8 @@ import {
   preprocessTable as preFormatTables,
   formatTable
 } from '../../../lib/view/formatTable'
+
+import TrafficLight from '../../../lib/model/traffic-light'
 
 const strings = i18n('plugin-kubectl', 'events')
 const debug = Debug('plugin-kubectl/controller/watch/watcher')
@@ -125,6 +128,10 @@ export class EventWatcher implements Abortable, Watcher {
   ) {}
 
   public abort() {
+    // A condition variable to guard for the case we were asked to
+    // abort very early on, before the PTY has even called us back
+    // ("abort-before-init"). See `onPTYInitDone` for the matching
+    // check on this variable:
     this.shouldAbort = true
 
     if (this.ptyJob) {
@@ -244,14 +251,31 @@ class KubectlWatcher implements Abortable, Watcher {
   private pusher: WatchPusher
 
   /**
+   * We may have been given a "limit" argument, which tells us how
+   * many Completed/Succeeded/Done rows to expect. We will
+   * auto-terminate the push notification channel upon reaching this
+   * limit.
+   *
+   */
+  private readonly limit: number
+
+  /**
    * @param output This is the output format that the user desired. Below, we
    * formulate a watch query to the apiserver with a different
    * schema. We will need sufficient discriminants to index a row
    * update into an existing table. We cannot be certain that the
    * schema the *user* requested satisfies this requirement.
    */
-  // eslint-disable-next-line no-useless-constructor
-  public constructor(private readonly args: Arguments<KubeOptions>, private readonly output = formatOf(args)) {}
+  public constructor(private readonly args: Arguments<KubeOptions>, private readonly output = formatOf(args)) {
+    this.limit =
+      args.parsedOptions.limit ||
+      (args.execOptions.data &&
+      typeof args.execOptions.data === 'object' &&
+      !Buffer.isBuffer(args.execOptions.data) &&
+      typeof args.execOptions.data.limit === 'number'
+        ? args.execOptions.data.limit
+        : undefined)
+  }
 
   /**
    * Our impl of `Abortable` for use by the table view
@@ -366,6 +390,12 @@ class KubectlWatcher implements Abortable, Watcher {
     }
   }
 
+  /** Does this row signify a completed state? */
+  private isDone(row: Row) {
+    const statusAttr = row.attributes.find(_ => /STATUS/i.test(_.key))
+    return statusAttr && statusAttr.css && statusAttr.css === TrafficLight.Blue
+  }
+
   /**
    * Our impl of the `onInit` streaming PTY API: the PTY calls us with
    * the PTY job (so that we can abort it, if we want). In return, we
@@ -377,6 +407,10 @@ class KubectlWatcher implements Abortable, Watcher {
     // handle string data types in this case
     debug('onPTYInit')
     this.ptyJob.push(ptyJob)
+
+    // These help us with managing the countdown latch. See the comments for this.limit.
+    let remaining = this.limit
+    const markedAsDone: Record<string, boolean> = {}
 
     return async (_: Streamable) => {
       if (typeof _ === 'string') {
@@ -426,11 +460,24 @@ class KubectlWatcher implements Abortable, Watcher {
               this.pusher.offline(row.name)
             } else {
               this.pusher.update(row, true, !isEvent)
+
+              const nameAttr = row.attributes.find(_ => /NAME/i.test(_.key))
+              const name = nameAttr ? nameAttr.value : row.name
+              if (this.limit && !markedAsDone[name] && this.isDone(row)) {
+                // we were asked to look for this.limit completions; we just saw one, so count down the latch
+                markedAsDone[name] = true
+                remaining--
+              }
             }
           })
 
           // batch update done!
           this.pusher.batchUpdateDone()
+
+          if (this.limit && remaining <= 0) {
+            debug('Aborting PTY channel, due to having observed the expected number of completions')
+            this.abort()
+          }
         }
       } else {
         console.error('unknown streamable type', _)
