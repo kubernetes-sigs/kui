@@ -329,19 +329,21 @@ export const formatTable = async <O extends KubeOptions>(
               key,
               tag: idx > 0 && tagForKey[key],
               onclick: colIdx + 1 === nameColumnIdx && onclick, // see the onclick comment: above ^^^; +1 because of slice(1)
-              outerCSS:
+              outerCSS: (
                 header +
                 ' ' +
                 (outerCSSForKey[key] || '') +
                 (colIdx <= 1 || colIdx === nameColumnIdx - 1 || columnVisibleWithSidecar.test(key)
                   ? ''
-                  : ' hide-with-sidecar'), // nameColumnIndex - 1 beacuse of rows.slice(1)
-              css:
+                  : ' hide-with-sidecar')
+              ).trim(), // nameColumnIndex - 1 beacuse of rows.slice(1)
+              css: (
                 css +
                 ' ' +
                 ((idx > 0 && cssForKey[key]) || '') +
                 ' ' +
-                (cssForValue[column] || (key === 'READY' && cssForReadyCount(column)) || maybeRed(column)),
+                (cssForValue[column] || (key === 'READY' && cssForReadyCount(column)) || maybeRed(column))
+              ).trim(),
               value: key === 'STATUS' && idx > 0 ? column || strings('Unknown') : column
             })
           )

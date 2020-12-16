@@ -58,8 +58,8 @@ export default class CodeEngine /* implements JobProvider<JobName> */ {
   }
 
   /** Show the progress of the job */
-  public async show(jobName: JobName) {
-    return this.repl.qexec<Table>(`ibmcloud ce jobrun list ${jobName} --watch`)
+  public async show(jobName: JobName, nTasks: number) {
+    return this.repl.qexec<Table>(`ibmcloud ce jobrun list ${jobName} --watch --limit ${nTasks}`)
   }
 
   /** -e key=value */
@@ -87,7 +87,7 @@ export default class CodeEngine /* implements JobProvider<JobName> */ {
 
     const memOpts = params.m || params.memory ? `--memory ${params.m || params.memory}` : ''
 
-    const cpuOpts = `--cpu ${params.cpu || '8.0'}`
+    const cpuOpts = params.cpu ? `--cpu ${params.cpu}` : ''
     debug('resource options', memOpts, cpuOpts, params)
 
     const jobrunName = `kui-jobrun-${v4()}`
