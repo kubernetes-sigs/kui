@@ -22,6 +22,7 @@ import { KubeOptions } from './options'
 import commandPrefix from '../command-prefix'
 
 const kubectlConfigChangeChannel = '/kubectl/config/change'
+type Change = 'NewContext' | 'AlteredContext'
 type Handler = (args: Arguments<KubeOptions>) => void
 
 const mutators = [
@@ -55,7 +56,20 @@ export function offKubectlConfigChangeEvents(handler: Handler) {
  */
 async function doConfig(args: Arguments<KubeOptions>) {
   const response = await doExecWithPty(args)
-  emitKubectlConfigChangeEvent(args)
+
+  const idx = args.argvNoOptions.indexOf('config')
+  const verb = args.argvNoOptions[idx + 1]
+  const change =
+    verb === 'set' || verb === 'use-context' || (verb === 'set-context' && !args.parsedOptions.current)
+      ? 'NewContext'
+      : verb === 'set-context' || verb === 'set-cluster' || verb === 'set-credentials' || verb === 'rename-context'
+      ? 'AlteredContext'
+      : undefined
+
+  if (change) {
+    emitKubectlConfigChangeEvent(args)
+  }
+
   return response
 }
 

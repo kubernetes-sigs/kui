@@ -100,7 +100,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
       // change the status badge to `offline`
       const kuiRow = this.props.response.body[foundIndex]
       kuiRow.attributes.forEach(attr => {
-        if (attr.key === 'STATUS') {
+        if (/STATUS/i.test(attr.key)) {
           attr.value = 'Offline'
           attr.css = 'red-background'
         }

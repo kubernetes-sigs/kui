@@ -18,10 +18,11 @@ import Debug from 'debug'
 import { Arguments, Breadcrumb, Registrar, i18n } from '@kui-shell/core'
 
 import flags from './flags'
-import { KubeOptions, withKubeconfigFrom } from './options'
+import { split } from './fqn'
 import { doExecWithStdout } from './exec'
 import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
+import { KubeOptions, withKubeconfigFrom } from './options'
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/controller/kubectl/explain')
@@ -161,11 +162,156 @@ ${isDeprecated ? `### Warnings\n${strings('This API Resource is deprecated')}` :
     return response
   }
 
+export interface Explained {
+  /** e.g. Deployment */
+  kind: string
+
+  /** e.g. apps/v1 */
+  version: string
+
+  /** Is this resource kind cluster-scoped (versus namespace-scoped)? */
+  isClusterScoped: boolean
+}
+
 /**
  * Cache of the getKind() lookup
  *
  */
-const cache: Record<string, Promise<string>> = {}
+const cache: Record<string, Promise<Explained>> = {}
+
+const isClusterScoped = {
+  cs: true,
+  'ComponentStatus.v1': true,
+  componentstatus: true,
+  componentstatuses: true,
+
+  ns: true,
+  namespace: true,
+  'Namespace.v1': true,
+  namespaces: true,
+
+  no: true,
+  'Node.v1': true,
+  node: true,
+  nodes: true,
+
+  pv: true,
+  'PersistentVolume.v1': true,
+  persistentvolume: true,
+  persistentvolumes: true,
+
+  crd: true,
+  crds: true,
+  'CustomResourceDefinition.apiextensions.k8s.io/v1': true,
+  'customresourcedefinitions.apiextensions.k8s.io': true,
+
+  csr: true,
+  'CertificateSigningRequest.certificates.k8s.io/v1': true,
+  'certificatesigningrequests.certificates.k8s.io': true,
+
+  psp: true,
+  'PodSecurityPolicy.policy/v1': true,
+  'podsecuritypolicies.policy': true,
+
+  pc: true,
+  'PriorityClass.scheduling.k8s.io/v1': true,
+  'priorityclasses.scheduling.k8s.io': true,
+
+  sc: true,
+  'StorageClass.storage.k8s.io/v1': true,
+  'storageclasses.storage.k8s.io': true,
+
+  'MutatingWebhookConfiguration.admissionregistration.k8s.io/v1': true,
+  'mutatingwebhookconfigurations.admissionregistration.k8s.io': true,
+
+  'ValidatingWebhookConfiguration.admissionregistration.k8s.io/v1': true,
+  'validatingwebhookconfigurations.admissionregistration.k8s.io': true,
+
+  'APIService.apiregistration.k8s.io/v1': true,
+  'apiservices.apiregistration.k8s.io': true,
+
+  'TokenReview.authentication.k8s.io/v1': true,
+  'tokenreviews.authentication.k8s.io': true,
+
+  'SelfSubjectAccessReview.authorization.k8s.io/v1': true,
+  'selfsubjectaccessreviews.authorization.k8s.io': true,
+
+  'SelfSubjectRulesReview.authorization.k8s.io/v1': true,
+  'selfsubjectrulesreviews.authorization.k8s.io': true,
+
+  'SubjectAccessReview.authorization.k8s.io/v1': true,
+  'subjectaccessreviews.authorization.k8s.io': true,
+
+  'Node.metrics.k8s.io/v1': true,
+  'nodes.metrics.k8s.io': true,
+
+  'ClusterRoleBinding.rbac.authorization.k8s.io/v1': true,
+  'clusterrolebindings.rbac.authorization.k8s.io': true,
+
+  'ClusterRole.rbac.authorization.k8s.io/v1': true,
+  'clusterroles.rbac.authorization.k8s.io': true,
+
+  'ClusterRbacConfig.rbac.istio.io/v1': true,
+  'clusterrbacconfigs.rbac.istio.io': true,
+
+  'CSIDriver.storage.k8s.io/v1': true,
+  'csidrivers.storage.k8s.io': true,
+
+  'CSINode.storage.k8s.io/v1': true,
+  'csinodes.storage.k8s.io': true,
+
+  'VolumeAttachment.storage.k8s.io/v1': true,
+  'volumeattachments.storage.k8s.io': true
+}
+
+/** Handle cache miss */
+async function fetch(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<Explained> {
+  try {
+    const ourArgs = Object.assign({}, args, {
+      // Note: explain does not seem to like a FQN such as HorizontalPodAutoscaler.v1.autoscaling
+      // hence we split and extract just the kind
+      command: withKubeconfigFrom(args, `${command} explain ${split(kindAsProvidedByUser).kind}`)
+    })
+    const explained = await doExecWithStdout(ourArgs, undefined, command).catch(err => {
+      // e.g. trying to explain CustomResourceDefinition.v1beta1.apiextensions.k8s.io
+      // or a resource kind that does not exist
+      debug(err)
+      return `KIND: ${kindAsProvidedByUser}\nVERSION: v1`
+    })
+
+    const match = explained.match(/^KIND:\s+(.*)\nVERSION:\s+(.*)/)
+    if (match) {
+      const kind = match[1]
+      const version = match[2]
+
+      return {
+        kind,
+        version,
+        isClusterScoped: isClusterScoped[`${kind}.${version}`] || false
+      }
+    } else {
+      return {
+        kind: kindAsProvidedByUser,
+        version: 'v1',
+        isClusterScoped: isClusterScoped[kindAsProvidedByUser] || false
+      }
+    }
+  } catch (err) {
+    if (!/does not exist/i.test(err.message)) {
+      console.error(`error explaining kind ${kindAsProvidedByUser}`, err)
+      throw err
+    }
+  }
+}
+
+export function getKindAndVersion(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<Explained> {
+  if (!cache[kindAsProvidedByUser]) {
+    // otherwise, we need to do a more expensive call to `kubectl`
+    cache[kindAsProvidedByUser] = fetch(command, args, kindAsProvidedByUser)
+  }
+
+  return cache[kindAsProvidedByUser]
+}
 
 /**
  * @param kindAsProvidedByUser e.g. pod or po
@@ -173,33 +319,7 @@ const cache: Record<string, Promise<string>> = {}
  *
  */
 export async function getKind(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<string> {
-  if (!cache[kindAsProvidedByUser]) {
-    // otherwise, we need to do a more expensive call to `kubectl`
-    // eslint-disable-next-line no-async-promise-executor
-    cache[kindAsProvidedByUser] = new Promise<string>(async (resolve, reject) => {
-      try {
-        const ourArgs = Object.assign({}, args, {
-          command: withKubeconfigFrom(args, `${command} explain ${kindAsProvidedByUser}`)
-        })
-        const explained = await doExecWithStdout(ourArgs, undefined, command).catch(err => {
-          // e.g. trying to explain CustomResourceDefinition.v1beta1.apiextensions.k8s.io
-          // or a resource kind that does not exist
-          debug(err)
-          return `KIND: ${kindAsProvidedByUser}`
-        })
-
-        const kindFromServer = explained.match(/^KIND:\s+(.*)/)[1]
-        resolve(kindFromServer)
-      } catch (err) {
-        if (!/does not exist/i.test(err.message)) {
-          console.error(`error explaining kind ${kindAsProvidedByUser}`, err)
-          reject(err)
-        }
-      }
-    })
-  }
-
-  return cache[kindAsProvidedByUser]
+  return (await getKindAndVersion(command, args, kindAsProvidedByUser)).kind
 }
 
 export default (registrar: Registrar) => {

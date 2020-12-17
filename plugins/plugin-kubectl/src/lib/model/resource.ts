@@ -503,8 +503,20 @@ export interface KubeItems<Item extends KubeResource = KubeResource> extends Kub
   items: Item[]
 }
 
+export type KubePartial<R extends KubeResource = KubeResource> = Omit<R, 'apiVersion' | 'kind'>
+
+export interface PodList extends KubeResource {
+  apiVersion: 'v1'
+  kind: 'PodList'
+  items: KubePartial<Pod>[]
+}
+
 export function isKubeItems(resource: KubeResource): resource is KubeItems {
-  return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'List'
+  return isKubeResource(resource) && resource.apiVersion === 'v1' && /List$/.test(resource.kind)
+}
+
+export function isPodList(resource: KubeResource): resource is PodList {
+  return isKubeResource(resource) && resource.apiVersion === 'v1' && resource.kind === 'PodList'
 }
 
 export function isKubeItemsOfKind<Item extends KubeResource = KubeResource>(
@@ -645,3 +657,56 @@ export function hasEvents(resource: KubeResource): boolean {
   return isCrudableKubeResource(resource) && !isEvent(resource) && isNamespaced(resource)
 }
 export default KubeResource
+
+interface PartialObjectMetadata extends KubeResource {
+  apiVersion: 'meta.k8s.io/v1'
+  kind: 'PartialObjectMetadata'
+}
+
+export interface MetaTable extends KubeResource {
+  apiVersion: 'meta.k8s.io/v1'
+  kind: 'Table'
+  columnDefinitions: {
+    name: string
+    priority: number
+    type:
+      | 'integer'
+      | 'long'
+      | 'float'
+      | 'double'
+      | 'string'
+      | 'byte'
+      | 'binary'
+      | 'boolean'
+      | 'date'
+      | 'dateTime'
+      | 'password'
+  }[]
+  rows: {
+    cells: (string | number)[]
+    object: PartialObjectMetadata
+  }[]
+}
+export function isMetaTable(response: KubeResource): response is MetaTable {
+  const table = response as MetaTable
+  return table.apiVersion === 'meta.k8s.io/v1' && table.kind === 'Table'
+}
+
+/** When calling the API directly, it may respond with a Status, e.g. for 404s */
+export interface Status extends KubeResource {
+  apiVersion: 'v1'
+  kind: 'Status'
+  code: number
+  reason: string
+  status: string
+  message: string
+}
+
+export function isStatus(resource: string | Buffer | object | KubeResource): resource is Status {
+  if (Buffer.isBuffer(resource) || typeof resource === 'string') {
+    return false
+  } else {
+    const status = resource as Status
+    return status.apiVersion === 'v1' && status.kind === 'Status'
+  }
+}

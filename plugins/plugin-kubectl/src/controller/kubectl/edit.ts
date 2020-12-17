@@ -28,7 +28,7 @@ import {
 import flags from './flags'
 import { doExecWithStdout } from './exec'
 import commandPrefix from '../command-prefix'
-import { viewTransformer as getView } from './get'
+import { doGetAsMMR as getView } from './get'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, getNamespace } from './options'
 import { KubeResource, isKubeResource, KubeItems, isKubeItems } from '../../lib/model/resource'

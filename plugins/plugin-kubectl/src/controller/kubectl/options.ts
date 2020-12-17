@@ -149,9 +149,11 @@ export function getLabel(args: Arguments<KubeOptions>) {
     // yargs-parser doesn't handle -lname=nginx without the space
     // after -l; or least not the way we've configured it
     for (const key in args.parsedOptions) {
-      if (/^l/.test(key)) {
+      if (/^l.+/.test(key) && key !== 'limit') {
         const value = args.parsedOptions[key]
-        return `${key.slice(1)}=${value}`
+        if (value) {
+          return `${key.slice(1)}=${value}`
+        }
       }
     }
   }
@@ -303,7 +305,7 @@ export function isForAllNamespaces(parsedOptions: KubeOptions) {
 }
 
 /** Copy over any kubeconfig/context/cluster/namespace specifications from the given args */
-export function withKubeconfigFrom(args: { parsedOptions: KubeOptions }, cmdline: string): string {
+export function withKubeconfigFrom(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>, cmdline: string): string {
   let extras = ' '
 
   if (args.parsedOptions.kubeconfig && !/--kubeconfig/.test(cmdline)) {
@@ -318,7 +320,12 @@ export function withKubeconfigFrom(args: { parsedOptions: KubeOptions }, cmdline
     extras += ` --cluster ${args.parsedOptions.cluster}`
   }
 
-  if (!/\s(-n|--namespace)/.test(cmdline)) {
+  if (
+    !/\s(-n|--namespace)/.test(cmdline) &&
+    !/(get|apply|create|delete|explain)\s+(ns|namespace|namespaces|Namespace|Namespaces)\b/.test(cmdline)
+  ) {
+    // only add namespace option if 1) not already specified; and 2)
+    // we aren't fetching a namespace
     extras += ` ${getNamespaceForArgv(args)} `
   }
 

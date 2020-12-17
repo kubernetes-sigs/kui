@@ -26,7 +26,7 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
   const testResourceNotFound = (watchCmd: string, resourceType: string, resourceName: string) => {
     const errorMessage = `Error from server (NotFound): ${resourceType} "${resourceName}" not found`
 
-    it(`should error out when watching a non-existent ${resourceType}`, () => {
+    it(`should error out when watching a non-existent ${resourceType} via command=${watchCmd}`, () => {
       return CLI.command(watchCmd, this.app)
         .then(ReplExpect.error(404, errorMessage))
         .catch(Common.oops(this, true))

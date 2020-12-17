@@ -38,6 +38,7 @@ import { doExecWithTable } from './exec'
 import commandPrefix from '../command-prefix'
 import { KubeContext } from '../../lib/model/resource'
 import { isUsage, doHelp } from '../../lib/util/help'
+import { onKubectlConfigChangeEvents } from './config'
 
 const strings = i18n('plugin-kubectl')
 
@@ -159,13 +160,30 @@ export async function getCurrentContextName({ REPL }: { REPL: REPLType }) {
 }
 
 /** Extract the namespace from the current context */
+let currentDefaultNamespaceCache: string
+onKubectlConfigChangeEvents(({ command, parsedOptions }: Pick<Arguments<KubeOptions>, 'command' | 'parsedOptions'>) => {
+  if (/k(ubectl?)\s+config\s+set-context/.test(command) && parsedOptions.namespace) {
+    currentDefaultNamespaceCache = parsedOptions.namespace
+  } else {
+    currentDefaultNamespaceCache = undefined
+  }
+})
 export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }) {
-  const ns = await REPL.qexec<string>(`kubectl config view --minify --output "jsonpath={..namespace}"`).catch(err => {
-    if (err.code !== 404 && !/command not found/.test(err.message)) {
-      console.error('error determining default namespace', err)
-    }
-    return 'default'
-  })
+  if (currentDefaultNamespaceCache) {
+    return currentDefaultNamespaceCache
+  }
+
+  const ns = await REPL.qexec<string>(`kubectl config view --minify --output "jsonpath={..namespace}"`)
+    .then(ns => {
+      currentDefaultNamespaceCache = ns
+      return ns
+    })
+    .catch(err => {
+      if (err.code !== 404 && !/command not found/.test(err.message)) {
+        console.error('error determining default namespace', err)
+      }
+      return 'default'
+    })
 
   if (typeof ns !== 'string') {
     // e.g. microk8s

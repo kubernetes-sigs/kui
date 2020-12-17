@@ -50,6 +50,7 @@
     "node-loader": "1.0.2",
     "os-browserify": "0.3.0",
     "path-browserify": "1.0.1",
+    "process": "^0.11.10",
     "raw-loader": "4.0.2",
     "require-all": "3.0.0",
     "sass": "1.30.0",
@@ -65,7 +66,7 @@
     "to-string-loader": "1.1.6",
     "url-loader": "4.1.1",
     "util": "0.12.3",
-    "webpack": "5.11.0",
+    "webpack": "5.11.1",
     "webpack-cli": "4.3.0",
     "webpack-dev-server": "3.11.0"
   },

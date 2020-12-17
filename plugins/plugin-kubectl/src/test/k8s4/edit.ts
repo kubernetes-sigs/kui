@@ -56,7 +56,7 @@ commands.forEach(command => {
       })
     }
 
-    const edit = (name: string, kind = 'Pod', nameAsShown = name, mode = 'raw') => {
+    const edit = (name: string, kind: string | RegExp = 'Pod', nameAsShown = name, mode = 'raw') => {
       it(`should edit it via ${command} edit with name=${name || 'no-name'}`, async () => {
         try {
           res = await CLI.command(`${command} edit pod ${name || ''} ${inNamespace}`, this.app)
@@ -286,7 +286,7 @@ commands.forEach(command => {
 
     const name2 = 'nginx2'
     create(name2, 'pod2.yaml')
-    edit('', 'List', '2 items', 'edit')
+    edit('', /List$/, '2 items', 'edit')
 
     edit(nginx)
     modify(nginx)

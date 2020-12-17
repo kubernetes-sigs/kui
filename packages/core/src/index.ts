@@ -265,7 +265,6 @@ export { default as boot, bootIntoSandbox } from './webapp/bootstrap/boot'
 export { initializeSession } from './session/init'
 
 // Tab Completion
-
 export {
   registerEnumerator as registerTabCompletionEnumerator,
   TabCompletionSpec,
@@ -278,3 +277,5 @@ export { default as teeToFile } from './util/tee'
 
 // Client API
 export { isOfflineClient } from './api/client'
+
+export * from './api/window-events'

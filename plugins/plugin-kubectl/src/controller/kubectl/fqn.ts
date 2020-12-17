@@ -48,6 +48,16 @@ export function versionOf(apiVersion: string): { group: string; version: string 
   }
 }
 
+/**
+ * e.g. HorizontalPodAutoscaler.v1.autoscaling
+ *      -> { kind: 'HorizontalPodAutoscaler', version: 'v1', group: 'autoscaling' }
+ *
+ */
+export function split(fqn: string): Pick<Required<ResourceRef>, 'kind' | 'group' | 'version'> {
+  const [kind, group, version] = fqn.split(/\./)
+  return { kind, group, version }
+}
+
 function versionString(apiVersion: string): string {
   const { group, version } = versionOf(apiVersion)
   return group.length > 0 ? `.${version}.${group}` : ''
