@@ -51,6 +51,11 @@ const sameStruct = (struct1: Record<string, any>, struct2: Record<string, any>, 
     if (!(key in struct2)) {
       console.log(`!(${key} in struct2)`)
       return false
+    } else if (struct1[key].constructor === RegExp) {
+      // then we have a validator regular expression
+      if (!struct1[key].test(struct2[key])) {
+        return false
+      }
     } else if (typeof struct1[key] === 'function') {
       // then we have a validator function
       if (!struct1[key](struct2[key])) {

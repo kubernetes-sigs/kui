@@ -229,13 +229,13 @@ async function getResourcesReferencedByCommandLine(
  *
  */
 function isResourceReady(row: Row, finalState: FinalState) {
-  const status = row.attributes.find(_ => _.key === 'STATUS')
+  const status = row.attributes.find(_ => /STATUS/i.test(_.key))
   if (status !== undefined) {
     // primary plan: use the STATUS column
     return isDone(status.value, finalState)
   } else {
     // backup plan: use the READY column, of the form nReady/nTotal
-    const ready = row.attributes.find(_ => _.key === 'READY')
+    const ready = row.attributes.find(_ => /READY/i.test(_.key))
     if (ready !== undefined) {
       const [nReady, nTotal] = ready.value.split(/\//)
       return nReady && nTotal && nReady === nTotal
@@ -289,10 +289,10 @@ class StatusPoller implements Abortable {
         const isReady = isResourceReady(row, this.finalState)
 
         const newStatusAttr =
-          row.attributes.find(_ => _.key === 'STATUS') || row.attributes.find(_ => _.key === 'READY')
+          row.attributes.find(_ => /STATUS/i.test(_.key)) || row.attributes.find(_ => /READY/i.test(_.key))
 
         const rowForUpdate = clone(this.row)
-        const statusAttr = rowForUpdate.attributes.find(({ key }) => key === 'STATUS')
+        const statusAttr = rowForUpdate.attributes.find(({ key }) => /STATUS/i.test(key))
         statusAttr.value = newStatusAttr ? newStatusAttr.value : 'Ready'
 
         if (isReady) {

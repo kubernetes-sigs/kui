@@ -370,6 +370,7 @@ const fallback = !inBrowser
       https: require.resolve('https-browserify'),
       os: require.resolve('os-browserify/browser'),
       path: require.resolve('path-browserify'),
+      process: require.resolve('process/browser'),
       stream: require.resolve('stream-browserify'),
       timers: require.resolve('timers-browserify'),
       util: require.resolve('util'),

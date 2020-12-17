@@ -15,7 +15,7 @@
  */
 
 import { Arguments } from '@kui-shell/core'
-import { KubeOptions, getTransformer as viewTransformer } from '@kui-shell/plugin-kubectl'
+import { KubeOptions, getAsMMRTransformer as viewTransformer } from '@kui-shell/plugin-kubectl'
 
 import getConfig from '../config'
 

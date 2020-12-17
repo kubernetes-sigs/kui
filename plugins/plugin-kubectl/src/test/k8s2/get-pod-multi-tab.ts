@@ -111,7 +111,6 @@ commands.forEach(command => {
     switchToTab(2)
     expectShowing(() => res2, ns2)
 
-    deleteNS(this, ns1)
-    deleteNS(this, ns2)
+    deleteNS(this, [ns1, ns2])
   })
 })

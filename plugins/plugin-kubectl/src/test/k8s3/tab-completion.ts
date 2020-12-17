@@ -51,7 +51,7 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
       return tabbyWithOptions(this, `k get pods -n ${commonPrefix}`, [ns, ns2], `k get pods -n ${ns}`, {
         click: 0,
         expectOK: false, // it's ok to have an error, as we don't have any pods, yet
-        expectedPromptAfterTab: `k get pods -n ${commonPrefix}`
+        expectedPromptAfterTab: `k get pods -n ${commonPrefix}-`
       })
     })
 
@@ -106,8 +106,6 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
       )
     })
 
-    deleteNS(this, ns)
-    deleteNS(this, ns2)
-    deleteNS(this, ns3)
+    deleteNS(this, [ns, ns2, ns3])
   })
 })

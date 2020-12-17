@@ -24,12 +24,14 @@ import {
   defaultFlags,
   flags,
   getLabel,
-  getTransformer,
+  getAsMMRTransformer as getTransformer,
   getCommandFromArgs,
   getContainer,
   KubeItems,
   isKubeItems,
   isKubeItemsOfKind,
+  KubePartial,
+  isPodList,
   KubeResource,
   withKubeconfigFrom,
   Pod,
@@ -87,7 +89,6 @@ function getOrPty(verb: string) {
       }
 
       const label = getLabel(args)
-
       if (!label) {
         const idx = args.argvNoOptions.indexOf(verb)
         const name = args.argvNoOptions[idx + 1]
@@ -109,15 +110,18 @@ function getOrPty(verb: string) {
 async function transformSingle(
   defaultMode: string,
   args: Arguments<KubeOptions>,
-  response: Pod
+  response: KubePartial<Pod>
 ): Promise<MultiModalResponse> {
-  return Object.assign({}, await getTransformer(args, response), { defaultMode, argsForMode: args })
+  return Object.assign({}, await getTransformer(args, Object.assign({ apiVersion: 'v1', kind: 'Pod' }, response)), {
+    defaultMode,
+    argsForMode: args
+  })
 }
 
 /** Multiple-resource response. We've already assured that we have >= 1 item via isKubeItemsOfKind(). */
-async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>, response: KubeItems<Pod>) {
+async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>, items: KubePartial<Pod>[]) {
   const containers = flatten(
-    response.items.map(pod => {
+    items.map(pod => {
       return pod.spec.containers.map(container =>
         Object.assign({}, container, { name: `${pod.metadata.name}:${container.name}` })
       )
@@ -125,16 +129,16 @@ async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>,
   )
 
   const container = getContainer(args, 'logs')
-  const owningPod = container && response.items.find(pod => pod.spec.containers.find(_ => _.name === container))
+  const owningPod = container && items.find(pod => pod.spec.containers.find(_ => _.name === container))
   const owningPodName = owningPod ? owningPod.metadata.name : undefined
 
-  response.items[0].isSimulacrum = true
-  response.items[0].spec.containers = containers
+  items[0].isSimulacrum = true
+  items[0].spec.containers = containers
 
-  const names = response.items.map(_ => _.metadata.name).join(', ')
-  response.items[0].metadata.name = names
+  const names = items.map(_ => _.metadata.name).join(', ')
+  items[0].metadata.name = names
 
-  const multi = await transformSingle(defaultMode, args, response.items[0])
+  const multi = await transformSingle(defaultMode, args, items[0])
 
   if (owningPodName) {
     const encoded = `${owningPodName}:${container}`
@@ -152,8 +156,8 @@ async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>,
 /** Pod -> MultiModalResponse view transformer */
 function viewTransformer(defaultMode: string) {
   return async (args: Arguments<KubeOptions>, response: KubeResource | KubeItems<Pod>) => {
-    if (isKubeItemsOfKind(response, isPod)) {
-      return transformMulti(defaultMode, args, response)
+    if (isKubeItemsOfKind(response, isPod) || isPodList(response)) {
+      return transformMulti(defaultMode, args, response.items)
     } else if (isKubeItems(response)) {
       // otherwise, we have an empty list of items
       const error: CodedError = new Error(strings('No matching pods'))

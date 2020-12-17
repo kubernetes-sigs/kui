@@ -101,6 +101,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
         {this.props.response.body.map(_ => (
           <div
             key={_.name}
+            data-name={_.name}
             className={(_.css || '') + (_.onclick ? ' clickable' : '')}
             onClick={() => this.props.repl.pexec(_.onclick)}
           >

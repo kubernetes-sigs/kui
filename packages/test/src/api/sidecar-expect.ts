@@ -319,7 +319,7 @@ export const showing = (
       const sidecarSelector = `${Selectors.SIDECAR(res.count, res.splitIndex)}${
         !expectType ? '' : '.entity-is-' + expectType
       }`
-      await res.app.client.$(sidecarSelector).then(_ => _.waitForDisplayed())
+      await res.app.client.$(sidecarSelector).then(_ => _.waitForDisplayed({ timeout: waitThisLong || waitTimeout }))
 
       // either 'leftnav' or 'topnav'
       if (!which) {

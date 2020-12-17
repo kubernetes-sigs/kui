@@ -78,6 +78,13 @@ export function kuiRow2carbonRow(headers: DataTableHeader[], justUpdated = false
       rowData[kkey] = value
     })
 
+    if (!rowData.NAME) {
+      const nameColumnIdx = headers.findIndex(_ => /Name/i.test(_.key))
+      if (nameColumnIdx >= 0) {
+        rowData.NAME = nameColumnIdx === 0 ? row.name : row.attributes[nameColumnIdx - 1].value
+      }
+    }
+
     return rowData
   }
 }

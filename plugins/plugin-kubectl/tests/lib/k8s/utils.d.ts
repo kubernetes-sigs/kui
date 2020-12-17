@@ -48,7 +48,7 @@ declare function allocateNS (ctx: Common.ISuite, ns: string, command?: string, t
  * Install a mocha test to delete the given namespace `ns`
  *
  */
-declare function deleteNS (ctx: Common.ISuite, ns: string, command?: string, theCli?: headless): void
+declare function deleteNS (ctx: Common.ISuite, ns: string | string[], command?: string, theCli?: headless): void
 
 /**
  * Install a mocha test to delete the given pod by name `pod`
