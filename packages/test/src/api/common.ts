@@ -377,6 +377,7 @@ export const after = (ctx: ISuite, f?: () => void): HookFunction => async () => 
         .map(log => log as { level: string; message: string })
         .filter(log => !/SFMono/.test(log.message))
         .filter(log => !/fonts.gstatic/.test(log.message))
+        .filter(log => !/webpack-dev-server/.test(log.message))
         .forEach(log => {
           if (
             log.level === 'SEVERE' && // only console.error messages
@@ -459,6 +460,7 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
             logs
               .filter(log => !/SFMono/.test(log.message))
               .filter(log => !/fonts.gstatic/.test(log.message))
+              .filter(log => !/webpack-dev-server/.test(log.message))
               .forEach(log => {
                 if (log.message.indexOf('%c') === -1) {
                   console.log('RENDER'.yellow.bold, log.message.red)

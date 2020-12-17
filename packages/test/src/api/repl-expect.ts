@@ -152,11 +152,14 @@ function expectOK<T extends number | string | boolean | ElementArray | Applicati
           }
         } else if (opt && opt.expectJustOK === true) {
           // ensure that there is nothing other than "ok"
-          await app.client.waitUntil(async () => {
-            const txt = await app.client.$(Selectors.OUTPUT_N(N - 1, splitIndex)).then(_ => _.getText())
-            const justOK = process.env.OK || 'ok'
-            return txt.length === 0 || txt === justOK
-          })
+          await app.client.waitUntil(
+            async () => {
+              const txt = await app.client.$(Selectors.OUTPUT_N(N - 1, splitIndex)).then(_ => _.getText())
+              const justOK = process.env.OK || 'ok'
+              return txt.length === 0 || txt === justOK
+            },
+            { timeout: waitTimeout }
+          )
         } else {
           // nothing to validate with the "console" results of the command
           // return the index of the last executed command

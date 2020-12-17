@@ -17,7 +17,7 @@
 import { Arguments, ParsedOptions, Registrar, REPL } from '@kui-shell/core'
 
 import commandPrefix from './command-prefix'
-import { fetchFileString } from '../lib/util/fetch-file'
+import { fetchFile, fetchFileString } from '../lib/util/fetch-file'
 
 interface Options extends ParsedOptions {
   kustomize?: boolean
@@ -70,11 +70,15 @@ async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: st
 export default (registrar: Registrar) => {
   registrar.listen(
     `/${commandPrefix}/_fetchfile`,
-    async ({ argvNoOptions, parsedOptions, REPL }: Arguments<Options>) => {
+    async ({ argvNoOptions, parsedOptions, REPL, execOptions }: Arguments<Options>) => {
       const uri = argvNoOptions[argvNoOptions.indexOf('_fetchfile') + 1]
+      const headers =
+        typeof execOptions.data === 'object' && !Buffer.isBuffer(execOptions.data)
+          ? execOptions.data.headers
+          : undefined
 
       if (!parsedOptions.kustomize) {
-        return fetchFileString(REPL, uri)
+        return { mode: 'raw', content: await fetchFile(REPL, uri, headers) }
       } else {
         return { mode: 'raw', content: await fetchKustomizeString(REPL, uri) }
       }

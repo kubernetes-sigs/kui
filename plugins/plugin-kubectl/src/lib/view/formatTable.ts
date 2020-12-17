@@ -30,10 +30,12 @@ import {
 } from '@kui-shell/core'
 
 import TrafficLight from '../model/traffic-light'
-import { isClusterScoped } from '../model/resource'
+import { isClusterScoped, MetaTable } from '../model/resource'
 import { getCurrentDefaultNamespace } from '../../'
 import { RawResponse } from '../../controller/kubectl/response'
+import { getCommandFromArgs } from '../util/util'
 import KubeOptions, {
+  formatOf,
   isForAllNamespaces,
   getNamespaceAsExpressed,
   withKubeconfigFrom
@@ -102,7 +104,9 @@ const cssForKey = {
 const tagForKey = {
   // READY: 'badge', // e.g. deployments
   REASON: 'badge', // k get events
-  STATUS: 'badge'
+  Reason: 'badge', // k get events
+  STATUS: 'badge',
+  Status: 'badge'
 }
 
 /**
@@ -377,7 +381,7 @@ export function isKubeTableResponse(response: KubeTableResponse | RawResponse): 
   )
 }
 
-function withNotFound(table: Table, stderr: string) {
+export function withNotFound(table: Table, stderr: string) {
   const notFounds = stderr
     .split(/\n/)
     .filter(_ => /NotFound/.test(_))
@@ -569,8 +573,10 @@ export function showAlways(attr: number | string, table: Table) {
 
   if (idx >= 0) {
     const header = table.header.attributes[idx]
-    header.outerCSS = header.outerCSS.replace(/kui--hide-in-narrower-windows/, '')
-    header.outerCSS = header.outerCSS.replace(/hide-with-sidecar/, '')
+    if (header && header.outerCSS) {
+      header.outerCSS = header.outerCSS.replace(/kui--hide-in-narrower-windows/, '')
+      header.outerCSS = header.outerCSS.replace(/hide-with-sidecar/, '')
+    }
 
     table.body.forEach(row => {
       const attr = row.attributes[idx]
@@ -597,5 +603,89 @@ export function hideWithSidecar(attr: number | string, table: Table) {
         attr.outerCSS += 'kui--hide-in-narrower-windows'
       }
     })
+  }
+}
+
+export async function toKuiTable(
+  table: MetaTable,
+  kind: string | Promise<string>,
+  args: Arguments<KubeOptions>
+): Promise<Table> {
+  const format = formatOf(args)
+  const forAllNamespaces = isForAllNamespaces(args.parsedOptions)
+  const includedColumns = table.columnDefinitions.map(_ => format === 'wide' || _.priority === 0)
+  const columnDefinitions = table.columnDefinitions.filter(_ => format === 'wide' || _.priority === 0)
+
+  const drilldownCommand = getCommandFromArgs(args)
+  const drilldownVerb = 'get'
+  const drilldownKind = await kind
+  const drilldownFormat = '-o yaml'
+
+  const onclickFor = (row: MetaTable['rows'][0], name: string) => {
+    const drilldownNamespace = `-n ${row.object.metadata.namespace}`
+    return withKubeconfigFrom(
+      args,
+      `${drilldownCommand} ${drilldownVerb} ${drilldownKind} ${encodeComponent(
+        name
+      )} ${drilldownFormat} ${drilldownNamespace}`
+    )
+  }
+
+  const header = {
+    name: forAllNamespaces ? 'Namespace' : columnDefinitions[0].name,
+    attributes: columnDefinitions.slice(forAllNamespaces ? 0 : 1).map(_ => ({
+      key: _.name,
+      value: _.name,
+      outerCSS: outerCSSForKey[_.name]
+    }))
+  }
+
+  const nameColumnIdx = /Name/i.test(header.name) ? 0 : header.attributes.findIndex(_ => /Name/i.test(_.key)) + 1
+
+  const body = table.rows.map((row, idx) => {
+    const cells = row.cells.filter((cell, idx) => includedColumns[idx])
+    const name = cells[nameColumnIdx].toString()
+
+    /**
+     * rowKey is the unique string that distinguishes each row
+     * option 1. name
+     * option 2. `first column`-`name`, e.g. --all-namespaces
+     * option 3. `first column`-`idx` when there's no name column, e.g. k get events
+     *
+     */
+    const rowKey = name
+      ? forAllNamespaces
+        ? `${forAllNamespaces ? row.object.metadata.namespace : cells[0]}-${name}`
+        : name
+      : `${cells[0]}-${idx}`
+
+    const onclick = onclickFor(row, name)
+
+    return {
+      key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name,
+      rowKey,
+      name: forAllNamespaces ? row.object.metadata.namespace : name,
+      onclick: forAllNamespaces ? false : onclick,
+      attributes: cells.slice(forAllNamespaces ? 0 : 1).map((cell, idx) => {
+        const key = columnDefinitions[forAllNamespaces ? idx : idx + 1].name.toUpperCase()
+        const value = cell.toString()
+
+        return {
+          key,
+          value,
+          tag: tagForKey[key],
+          onclick: !forAllNamespaces || idx > 0 ? false : onclick,
+          outerCSS: outerCSSForKey[key],
+          css: [cssForKey[key], cssForValue[value], /Ready/i.test(key) ? cssForReadyCount(value) : ''].join(' ')
+        }
+      })
+    }
+  })
+
+  return {
+    header,
+    body,
+    title: await kind,
+    breadcrumbs: await getNamespaceBreadcrumbs(await kind, args)
   }
 }

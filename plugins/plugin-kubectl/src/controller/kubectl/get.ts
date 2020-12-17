@@ -22,18 +22,21 @@ import {
   DiffState,
   MultiModalResponse,
   Registrar,
+  Table,
+  TableStyle,
   isHeadless,
   i18n
 } from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
-import { getKind } from './explain'
-import { RawResponse } from './response'
-import { kindAndNamespaceOf } from './fqn'
+import RawResponse from './response'
 import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
+import { kindAndNamespaceOf, kindPart } from './fqn'
+import { Explained, getKindAndVersion } from './explain'
+import { getCommandFromArgs, formDashFileCommandFromArgs, removeLastAppliedConfig } from '../../lib/util/util'
 import {
   deployedMode,
   getSources,
@@ -54,6 +57,7 @@ import {
   getNamespace,
   isTreeReq,
   fileOfWithDetail,
+  withKubeconfigFrom,
   getNamespaceAsExpressed,
   getResourceNamesForArgv
 } from './options'
@@ -65,7 +69,8 @@ import {
   sameResourceVersion,
   hasResourceVersion
 } from '../../lib/model/resource'
-import { formDashFileCommandFromArgs, removeLastAppliedConfig } from '../../lib/util/util'
+
+import getDirect from '../client/direct/get'
 
 const strings = i18n('plugin-kubectl')
 
@@ -383,12 +388,29 @@ export async function doGetAsMMRTree(args: Arguments<KubeOptions>, filepath: str
  * kubectl get as custom response
  *
  */
-async function doGetCustom(args: Arguments<KubeOptions>, response: RawResponse): Promise<string> {
+function doGetCustom(args: Arguments<KubeOptions>, response: RawResponse): string {
   return response.content.stdout.trim()
 }
 
-export function rawGet(args: Arguments<KubeOptions>, _command = 'kubectl') {
+async function rawGet(
+  args: Arguments<KubeOptions>,
+  _command: string,
+  _kind: Promise<Explained> = fileOf(args)
+    ? undefined
+    : getKindAndVersion(_command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
+) {
   const command = _command === 'k' ? 'kubectl' : _command
+
+  if (command === 'kubectl' && !fileOf(args) && !args.argvNoOptions.includes('|')) {
+    // try talking to the apiServer directly
+    const response = await getDirect(args, _kind)
+    if (response) {
+      // that worked!
+      return response
+    }
+  }
+
+  // otherwise, use the kubectl CLI
   return exec(args, prepareArgsForGet, command).catch((err: CodedError) => {
     // Notes: we are using statusCode internally to this plugin;
     // delete it before rethrowing the error, because the core would
@@ -437,7 +459,7 @@ export const doGet = (command: string) =>
     const isTableReq = isTableRequest(args)
     const fullKind =
       isTableReq && !fileOf(args) // <-- don't call getKind for `get -f`
-        ? getKind(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
+        ? getKindAndVersion(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
         : undefined
 
     if (!isHeadless() && isWatchRequest(args)) {
@@ -447,9 +469,9 @@ export const doGet = (command: string) =>
       // though we could handle it, we have decided to keep parity
       // with kubectl's errors here
       if (!/^k(ubectl)?\s+-/.test(args.command)) {
-        const output = args.parsedOptions.o || args.parsedOptions.output
+        const output = formatOf(args)
 
-        if ((await fullKind) === 'Event' && output !== 'wide') {
+        if (fullKind && (await fullKind).kind === 'Event' && output !== 'wide') {
           return overrideEventCommand(args, output)
         } else {
           return doGetWatchTable(args)
@@ -474,7 +496,7 @@ export const doGet = (command: string) =>
       args.parsedOptions.o = 'yaml'
     }
 
-    const response = await rawGet(args, command)
+    const response = await rawGet(args, command, fullKind)
 
     if (isKubeTableResponse(response)) {
       return response
@@ -490,17 +512,36 @@ export const doGet = (command: string) =>
       return doGetAsEntity(args, response)
     } else if (isTableReq) {
       // case 2: get-as-table
-      return doGetAsTable(command, args, response, undefined, await fullKind)
+      return doGetAsTable(command, args, response, undefined, (await fullKind).kind)
     } else {
-      // case 3: get-as-custom
       return doGetCustom(args, response)
     }
   }
 
 /** KubeResource -> MultiModalResponse view transformer */
-export function viewTransformer(args: Arguments<KubeOptions>, response: KubeResource) {
+export async function viewTransformer(
+  args: Arguments<KubeOptions>,
+  response: KResponse
+): Promise<ReturnType<typeof doGetAsMMR> | Table> {
   if (isKubeResource(response)) {
+    // -o yaml or -o json
     return doGetAsMMR(args, response)
+  } else if (typeof response === 'string' && formatOf(args) === 'name') {
+    // -o name
+    const { version, kind } = await getKindAndVersion(
+      getCommandFromArgs(args),
+      args,
+      args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1]
+    )
+    return {
+      style: TableStyle.Light,
+      defaultPresentation: 'grid',
+      allowedPresentations: ['grid'],
+      body: response.split(/\n/).map(name => ({
+        name,
+        onclick: withKubeconfigFrom(args, `kubectl get ${kindPart(version, kind)} ${name} -o yaml`)
+      }))
+    }
   }
 }
 

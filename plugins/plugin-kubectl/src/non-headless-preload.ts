@@ -40,7 +40,7 @@ import { notebookVFS } from '@kui-shell/plugin-core-support'
 
 export default async (registrar: PreloadRegistrar) => {
   // register modes
-  await registrar.registerModes(
+  const p1 = registrar.registerModes(
     podMode,
     yamlMode,
     summaryMode,
@@ -60,7 +60,7 @@ export default async (registrar: PreloadRegistrar) => {
   )
 
   // register badges
-  await registrar.registerBadges(eventsBadge)
+  const p2 = registrar.registerBadges(eventsBadge)
 
   // mount notebooks
   notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/kubernetes'] })
@@ -83,4 +83,6 @@ export default async (registrar: PreloadRegistrar) => {
     const debug = Debug('plugins/kubeui/preload')
     debug('error installing kubeui tab-completion extensions', err)
   }
+
+  await Promise.all([p1, p2])
 }

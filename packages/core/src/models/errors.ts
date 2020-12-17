@@ -25,7 +25,7 @@ export interface CodedError<Code = number> extends Error {
   body?: string | Record<string, any>
 }
 
-export function isCodedError<Code = number>(err: Error): err is CodedError<Code> {
+export function isCodedError<Code = number>(err: string | object | Error): err is CodedError<Code> {
   const error = err as CodedError<Code>
-  return !!(UsageError.isUsageError(err) || error.code || error.statusCode)
+  return !!(UsageError.isUsageError(err) || error.code !== undefined || error.statusCode !== undefined)
 }
