@@ -72,6 +72,8 @@ async function _needle({ qexec }: REPL, method: 'get', url: string): Promise<{ s
         redirect: 'follow'
       })
 
+      request.on('error', reject)
+
       request.on('response', response => {
         const statusCode = response.statusCode
         debug('got response', statusCode)
@@ -103,7 +105,7 @@ async function _needle({ qexec }: REPL, method: 'get', url: string): Promise<{ s
   }
 }
 
-async function fetchRemote (repl: REPL, url: string) {
+async function fetchRemote(repl: REPL, url: string) {
   const fetchOnce = () => _needle(repl, 'get', url).then(_ => _.body)
 
   const retry = (delay: number) => async (err: Error) => {
@@ -172,7 +174,7 @@ export async function fetchRawFiles(args: Arguments<KubeOptions>, filepath: stri
       await args.REPL.rexec<{ data?: string; isDirectory?: boolean }>(`vfs fstat ${path} --with-data`)
     ).content
 
-      if (resourceStats.isDirectory) {
+    if (resourceStats.isDirectory) {
       return args.REPL.rexec<{ path: string }[]>(
         `vfs ls ${join(path, isRecursive(args) ? '/**/*.yaml' : '/*.yaml')} --with-data`
       )
