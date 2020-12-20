@@ -810,6 +810,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   padding-top: $kui--page-content-h4-padding;
   font-size: unset;
   line-height: unset;
+  white-space: normal;
 
   &:not([data-is-href]) + p {
     padding-top: calc(0.5em + #{$kui--page-content-paragraph-padding});
