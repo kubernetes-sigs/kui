@@ -273,14 +273,17 @@ export default class Output extends React.PureComponent<Props, State> {
     }
   }
 
-  private ctx(insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1) {
+  private ctx(/* insideBrackets: React.ReactNode = this.props.displayedIdx || this.props.idx + 1 */) {
     return (
       <KuiContext.Consumer>
         {config =>
           !config.noPromptContext && (
-            <span className="repl-context" onClick={this.props.willFocusBlock} data-input-count={this.props.idx}>
-              Out[{insideBrackets}]
-            </span>
+            <span
+              className="repl-context"
+              onClick={this.props.willFocusBlock}
+              data-input-count={this.props.idx}
+              data-custom-prompt={!!config.prompt || undefined}
+            />
           )
         }
       </KuiContext.Consumer>

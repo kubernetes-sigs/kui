@@ -250,12 +250,20 @@ $focus-color: var(--color-brand-01);
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      flex-basis: 3em;
-      min-width: $repl-context-min-width;
       text-align: end;
-      margin-right: $repl-context-margin-right;
       position: relative;
       opacity: 0.75;
+
+      /** For In[N], i.e. Notebook style, we want to reserve a fixed amount of space, so that everything lines up */
+      &:not([data-custom-prompt]) {
+        flex-basis: 3em;
+        min-width: $repl-context-min-width;
+      }
+
+      /** E.g. Output with custom prompt */
+      &:not(:empty) {
+        margin-right: $repl-context-margin-right;
+      }
 
       .kui--block-action {
         /* This is e.g. the Edit icon that is displayed while editing a command line */
