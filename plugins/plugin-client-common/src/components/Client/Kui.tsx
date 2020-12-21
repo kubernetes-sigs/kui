@@ -38,6 +38,7 @@ import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
 import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
 import { InputStripe, TabContainer, Loading, Alert } from '../..'
+import loadUserSettings, { on as onUserSettingsChange } from './UserSettings'
 
 import KuiIcon from '../../../icons/png/WelcomeLight.png'
 
@@ -74,6 +75,7 @@ export type Props = Partial<KuiConfiguration> & {
 }
 
 type State = KuiConfiguration & {
+  userOverrides?: KuiConfiguration
   isBootstrapped: boolean
   commandLine?: string[]
   quietExecCommand?: boolean
@@ -98,6 +100,21 @@ type State = KuiConfiguration & {
 export class Kui extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
+
+    // refresh the UI after user changes settings overrides
+    onUserSettingsChange(evt => {
+      this.setState(curState => {
+        // a bit of care is needed to handle removing keys
+        if (evt !== 'set') {
+          for (const key in curState.userOverrides) {
+            delete curState[key]
+          }
+        }
+
+        const newUserOverrides = loadUserSettings()
+        return Object.assign(newUserOverrides, { userOverrides: newUserOverrides })
+      })
+    })
 
     eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
     setTimeout(async () => {
@@ -136,7 +153,9 @@ export class Kui extends React.PureComponent<Props, State> {
     }
 
     try {
-      this.state = Object.assign({}, this.defaultSessionBehavior(), this.defaultFeatureFlag(), props, {
+      const userOverrides = loadUserSettings()
+      this.state = Object.assign({}, this.defaultSessionBehavior(), this.defaultFeatureFlag(), props, userOverrides, {
+        userOverrides,
         isBootstrapped: !!props.noBootstrap,
         commandLine,
         quietExecCommand
