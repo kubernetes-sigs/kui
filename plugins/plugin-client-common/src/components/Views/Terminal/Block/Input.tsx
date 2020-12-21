@@ -192,10 +192,21 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
   protected promptRight() {
     // &#x2771; "heavy right-pointing angle bracket ornament"
     // another option: &#x276f; "heavy right-pointing angle quotation mark ornament"
+    const active = this.props.model && isActive(this.props.model)
     return (
       <KuiContext.Consumer>
         {config => (
-          <span className="repl-prompt-righty">{config.prompt || (this.props.isPartOfMiniSplit ? '\u276f' : '/')}</span>
+          <span className="repl-prompt-righty">
+            {config.prompt === 'CWD' ? (
+              <span className="clickable" onClick={() => this.props.tab.REPL.pexec(`ls ${this.props.model.cwd}`)}>
+                {active && '['}
+                {this.props.model.cwd}
+                {active && ']'}
+              </span>
+            ) : (
+              config.prompt || (this.props.isPartOfMiniSplit ? '\u276f' : '/')
+            )}
+          </span>
         )}
       </KuiContext.Consumer>
     )
@@ -207,11 +218,18 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   protected normalPrompt() {
     return (
-      <div className="repl-context" onClick={this.props.willFocusBlock} data-input-count={this.props.idx}>
-        <KuiContext.Consumer>
-          {config => (config.prompt ? <div className="repl-prompt">{this.promptRight()}</div> : this.contextContent())}
-        </KuiContext.Consumer>
-      </div>
+      <KuiContext.Consumer>
+        {config => (
+          <div
+            className="repl-context"
+            data-custom-prompt={!!config.prompt || undefined}
+            onClick={this.props.willFocusBlock}
+            data-input-count={this.props.idx}
+          >
+            {config.prompt ? <div className="repl-prompt">{this.promptRight()}</div> : this.contextContent()}
+          </div>
+        )}
+      </KuiContext.Consumer>
     )
   }
 

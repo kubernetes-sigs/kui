@@ -705,7 +705,8 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-weight: 400;
   line-height: 1.25em;
 }
-.page-content li > p {
+.page-content li > p,
+.page-content p:only-child {
   padding: 0;
 }
 .page-content code {
