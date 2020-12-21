@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.4](https://github.com/IBM/kui/compare/v9.3.3...v9.3.4) (2020-12-21)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** kubectl help sometimes does not line wrap properly ([d0ed2d1](https://github.com/IBM/kui/commit/d0ed2d1)), closes [#6425](https://github.com/IBM/kui/issues/6425)
+- **plugins/plugin-kubectl:** plugin-kubectl's fetch-file, when using electron, does not have error handling ([c6e5f0f](https://github.com/IBM/kui/commit/c6e5f0f)), closes [#6426](https://github.com/IBM/kui/issues/6426)
+- Improve debuggability of s3 vfs mounting ([12c9794](https://github.com/IBM/kui/commit/12c9794)), closes [#6423](https://github.com/IBM/kui/issues/6423)
+- s3 job watcher sometimes fails due to startup issues ([739a08c](https://github.com/IBM/kui/commit/739a08c)), closes [#6411](https://github.com/IBM/kui/issues/6411)
+- **plugins/plugin-client-common:** as sequence diagram nRows grows, rows shrink, but fonts do not ([cae1fb0](https://github.com/IBM/kui/commit/cae1fb0)), closes [#6420](https://github.com/IBM/kui/issues/6420)
+- kubectl watcher should auto-terminate, if given a bound up front ([26aa6be](https://github.com/IBM/kui/commit/26aa6be)), closes [#6417](https://github.com/IBM/kui/issues/6417)
+
+### Features
+
+- **plugins/plugin-client-common:** Allow user to specify CWD as prompt ([44f7458](https://github.com/IBM/kui/commit/44f7458)), closes [#6405](https://github.com/IBM/kui/issues/6405)
+
 ## [9.3.3](https://github.com/IBM/kui/compare/v9.3.2...v9.3.3) (2020-12-16)
 
 ### Bug Fixes

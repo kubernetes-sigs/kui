@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.4](https://github.com/IBM/kui/compare/v9.3.3...v9.3.4) (2020-12-21)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** plugin-kubectl's fetch-file, when using electron, does not have error handling ([c6e5f0f](https://github.com/IBM/kui/commit/c6e5f0f)), closes [#6426](https://github.com/IBM/kui/issues/6426)
+- kubectl watcher should auto-terminate, if given a bound up front ([26aa6be](https://github.com/IBM/kui/commit/26aa6be)), closes [#6417](https://github.com/IBM/kui/issues/6417)
+
 ## [9.3.3](https://github.com/IBM/kui/compare/v9.3.2...v9.3.3) (2020-12-16)
 
 ### Bug Fixes

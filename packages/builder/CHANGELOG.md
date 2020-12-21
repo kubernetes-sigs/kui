@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.4](https://github.com/IBM/kui/compare/v9.3.3...v9.3.4) (2020-12-21)
+
+**Note:** Version bump only for package @kui-shell/builder
+
 ## [9.3.3](https://github.com/IBM/kui/compare/v9.3.2...v9.3.3) (2020-12-16)
 
 **Note:** Version bump only for package @kui-shell/builder

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.4](https://github.com/IBM/kui/compare/v9.3.3...v9.3.4) (2020-12-21)
+
+### Bug Fixes
+
+- Improve debuggability of s3 vfs mounting ([12c9794](https://github.com/IBM/kui/commit/12c9794)), closes [#6423](https://github.com/IBM/kui/issues/6423)
+- kubectl watcher should auto-terminate, if given a bound up front ([26aa6be](https://github.com/IBM/kui/commit/26aa6be)), closes [#6417](https://github.com/IBM/kui/issues/6417)
+
 ## [9.3.3](https://github.com/IBM/kui/compare/v9.3.2...v9.3.3) (2020-12-16)
 
 ### Bug Fixes

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.4](https://github.com/IBM/kui/compare/v9.3.3...v9.3.4) (2020-12-21)
+
+### Bug Fixes
+
+- Improve debuggability of s3 vfs mounting ([12c9794](https://github.com/IBM/kui/commit/12c9794)), closes [#6423](https://github.com/IBM/kui/issues/6423)
+- s3 job watcher sometimes fails due to startup issues ([739a08c](https://github.com/IBM/kui/commit/739a08c)), closes [#6411](https://github.com/IBM/kui/issues/6411)
+
 ## [9.3.3](https://github.com/IBM/kui/compare/v9.3.2...v9.3.3) (2020-12-16)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like
