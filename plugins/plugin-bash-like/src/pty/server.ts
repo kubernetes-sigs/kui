@@ -21,6 +21,7 @@ import { join } from 'path'
 import { exec } from 'child_process'
 import { createServer, Server } from 'https'
 import { parse as parseCookie } from 'cookie'
+import { Server as WebSocketServer } from 'ws'
 
 // for types
 import { Socket } from 'net'
@@ -431,7 +432,7 @@ const createDefaultServer = (): Server => {
  * Spawn the shell
  * vague origins: http://krasimirtsonev.com/blog/article/meet-evala-your-terminal-in-the-browser-extension
  */
-let cachedWss: Server
+let cachedWss: WebSocketServer
 let cachedPort: number
 export const main = async (
   N: string,
@@ -474,7 +475,7 @@ export const main = async (
           const yourN = match && match[1] // do we own this upgrade?
           if (yourN === N) {
             server.removeListener('upgrade', doUpgrade)
-            wss.handleUpgrade(request, socket, head, function done(ws: WebSocket) {
+            wss.handleUpgrade(request, socket, head, function done(ws) {
               wss.emit('connection', ws, request)
             })
           }
@@ -486,7 +487,7 @@ export const main = async (
         cachedPort = await getPort()
         const server = createDefaultServer()
         server.listen(cachedPort, async () => {
-          const wss: Server = (cachedWss = new WebSocket.Server({ server }))
+          const wss = (cachedWss = new WebSocket.Server({ server }))
           servers.push({ wss: cachedWss, server })
           resolve({ wss, port: cachedPort, exitNow })
         })
