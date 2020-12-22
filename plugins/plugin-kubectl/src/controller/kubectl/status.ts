@@ -128,7 +128,7 @@ async function getResourcesReferencedByFile(file: string, args: Arguments<FinalS
 
   const namespaceFromCommandLine = await getNamespace(args)
 
-  const models: KubeResource[] = safeLoadAll(raw)
+  const models: KubeResource[] = safeLoadAll(raw[0])
   return models
     .filter(_ => _.metadata)
     .map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {
@@ -160,7 +160,7 @@ async function getResourcesReferencedByKustomize(
     fetchFileKustomize(args.REPL, kusto)
   ])
 
-  const kustomization: Kustomization = safeLoad(raw.data)
+  const kustomization = safeLoad(raw.data) as Kustomization
   if (kustomization.resources) {
     const files = await Promise.all(
       kustomization.resources.map(resource => {
@@ -171,7 +171,7 @@ async function getResourcesReferencedByKustomize(
     return await Promise.all(
       files
         .map(raw => safeLoad(raw[0]))
-        .map(async resource => {
+        .map(async (resource: KubeResource) => {
           const { apiVersion, kind, metadata } = resource
           const { group, version } = versionOf(apiVersion)
           return {
