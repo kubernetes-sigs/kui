@@ -15,7 +15,7 @@
  */
 import { safeDump, safeLoad } from 'js-yaml'
 import { kubectlApplyRule } from './traffic-split'
-import { CounterMetric, RatioMetric } from './metric-config-types'
+import { CounterMetric, CounterMetrics, RatioMetric, RatioMetrics } from './metric-config-types'
 import { MetricTypes } from '../modes/get-metrics'
 import { Arguments } from '@kui-shell/core'
 import { removeExtraneousMetaData } from './metric-config'
@@ -28,8 +28,8 @@ export default function restoreMetric(
 ): boolean {
   try {
     // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
-    const counterMetrics = safeLoad(configMap.data['counter_metrics.yaml'])
-    const ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml'])
+    const counterMetrics = safeLoad(configMap.data['counter_metrics.yaml']) as CounterMetrics
+    const ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml']) as RatioMetrics
 
     const newConfigMap = removeExtraneousMetaData(configMap)
 
