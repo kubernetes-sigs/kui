@@ -15,7 +15,7 @@
  */
 import { safeLoad } from 'js-yaml'
 
-import { MetricConfigMap } from './metric-config-types'
+import { MetricConfigMap, CounterMetrics, RatioMetrics } from './metric-config-types'
 
 import { Arguments } from '@kui-shell/core'
 
@@ -61,12 +61,12 @@ export class GetMetricConfig {
   public async getCounterMetrics(args: Arguments) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['counter_metrics.yaml']
-    return safeLoad(res)
+    return safeLoad(res) as CounterMetrics
   }
 
   public async getRatioMetrics(args: Arguments) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['ratio_metrics.yaml']
-    return safeLoad(res)
+    return safeLoad(res) as RatioMetrics
   }
 }

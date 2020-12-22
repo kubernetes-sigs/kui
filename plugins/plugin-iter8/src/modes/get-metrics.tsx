@@ -372,8 +372,8 @@ class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   private constructorHelper = () => {
     try {
       // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
-      const counterMetrics = safeLoad(this.state.rawConfigMap.data['counter_metrics.yaml'])
-      const ratioMetrics = safeLoad(this.state.rawConfigMap.data['ratio_metrics.yaml'])
+      const counterMetrics = safeLoad(this.state.rawConfigMap.data['counter_metrics.yaml']) as CounterMetrics
+      const ratioMetrics = safeLoad(this.state.rawConfigMap.data['ratio_metrics.yaml']) as RatioMetrics
       const cleanConfigMap = removeExtraneousMetaData(this.state.rawConfigMap)
 
       // TODO: Add proper error handling

@@ -18,12 +18,13 @@ import { kubectlApplyRule } from './traffic-split'
 import { MetricTypes } from '../modes/get-metrics'
 import { Arguments } from '@kui-shell/core'
 import { removeExtraneousMetaData } from './metric-config'
+import { CounterMetrics, RatioMetrics } from './metric-config-types'
 
 export default function deleteMetric(configMap: any, metricName: string, type: MetricTypes, args: Arguments): boolean {
   try {
     // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig(args)
-    const counterMetrics = safeLoad(configMap.data['counter_metrics.yaml'])
-    const ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml'])
+    const counterMetrics = safeLoad(configMap.data['counter_metrics.yaml']) as CounterMetrics
+    const ratioMetrics = safeLoad(configMap.data['ratio_metrics.yaml']) as RatioMetrics
     const newConfigMap = removeExtraneousMetaData(configMap)
     console.log(`Deleting metric: ${metricName} Type: ${type}`)
     newConfigMap.data['counter_metrics.yaml'] = safeDump(
