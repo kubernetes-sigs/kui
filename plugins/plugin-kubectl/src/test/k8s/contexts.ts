@@ -124,8 +124,8 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           const kconfig = parseYAML(getKUBECONFIG().toString())
           const newOnesFilepath = path.join(path.dirname(getKUBECONFIGFilepath()), 'forTesting.yml')
 
-          kconfig.contexts[0].context.namespace = ns
-          kconfig.contexts[0].name = contextName
+          kconfig['contexts'][0].context.namespace = ns
+          kconfig['contexts'][0].name = contextName
           writeFileSync(newOnesFilepath, safeDump(kconfig))
 
           await this.app.client.execute(
