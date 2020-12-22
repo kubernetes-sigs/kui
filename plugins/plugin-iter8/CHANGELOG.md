@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.5](https://github.com/IBM/kui/compare/v9.3.4...v9.3.5) (2020-12-22)
+
+### Bug Fixes
+
+- **plugins/plugin-iter8:** fix for typing errors in plugin-iter8 ([046d826](https://github.com/IBM/kui/commit/046d826)), closes [#6432](https://github.com/IBM/kui/issues/6432)
+
 ## [9.3.4](https://github.com/IBM/kui/compare/v9.3.3...v9.3.4) (2020-12-21)
 
 **Note:** Version bump only for package @kui-shell/plugin-iter8
