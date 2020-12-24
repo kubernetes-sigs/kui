@@ -296,7 +296,7 @@ class StatusPoller implements Abortable {
         statusAttr.value = newStatusAttr ? newStatusAttr.value : 'Ready'
 
         if (isReady) {
-          statusAttr.css = TrafficLight.Green
+          statusAttr.css = this.finalState === FinalState.OnlineLike ? TrafficLight.Green : TrafficLight.Red
         }
 
         this.pusher.update(rowForUpdate)
