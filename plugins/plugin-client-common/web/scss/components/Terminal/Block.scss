@@ -258,6 +258,7 @@ $focus-color: var(--color-brand-01);
       &:not([data-custom-prompt]) {
         flex-basis: 3em;
         min-width: $repl-context-min-width;
+        margin-right: $repl-context-margin-right;
       }
 
       /** E.g. Output with custom prompt */
