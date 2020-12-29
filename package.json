@@ -46,7 +46,7 @@
     "pty:nodejs": "npm run pty:rebuild node",
     "link": "bash -c \"if [ $OSTYPE != msys ]; then CLIENT=${CLIENT-default}; CLIENT_HOME=$(cd ./node_modules/@kui-shell/client && pwd) ./packages/builder/bin/seticon.js; fi\"",
     "update": "ncu -u -x \"@types/yargs-parser,husky,electron,spectron,@types/webdriverio\" && for i in plugins/*; do (cd $i && ncu -u -x electron,spectron,@types/webdriverio,chokidar,d3,elkjs,xtermjs,strip-ansi && rm -rf node_modules); done && rm -rf node_modules/ package-lock.json  && npm install",
-    "postinstall": "echo fuckyou; npm rebuild node-sass && npm run compile; echo fuckyou2",
+    "postinstall": "npm rebuild node-sass && npm run compile",
     "open": "electron . shell",
     "start": "WATCH_ARGS='open' npm run watch"
   },
