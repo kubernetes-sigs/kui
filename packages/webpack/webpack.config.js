@@ -150,7 +150,7 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * Note: these are _webpack plugins_ not Kui plugins; we will assemble
  * this list of webpack plugins as we go.
  */
-const fontConfigOptions = contextRoot ? { name: `${contextRoot}/[name].[hash].[ext]` } : undefined
+const fontConfigOptions = contextRoot ? { name: `${contextRoot}/[name].[contenthash].[ext]` } : undefined
 console.log('fontConfig', fontConfigOptions || 'using the default settings')
 const plugins = [new FontConfigWebpackPlugin(fontConfigOptions)]
 
@@ -528,7 +528,7 @@ module.exports = {
   plugins,
   output: {
     globalObject: 'self', // for monaco
-    filename: mode === 'production' ? '[name].[hash].bundle.js' : '[name].bundle.js',
+    filename: mode === 'production' ? '[name].[contenthash].bundle.js' : '[name].bundle.js',
     publicPath: contextRoot || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
     path: outputPath
   }
