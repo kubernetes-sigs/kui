@@ -17,3 +17,6 @@
 // this file defines the external API
 
 export { default as notebookVFS } from './notebooks/vfs'
+
+// mostly useful for tests
+export { tabButtonSelector } from './lib/cmds/tab-management'

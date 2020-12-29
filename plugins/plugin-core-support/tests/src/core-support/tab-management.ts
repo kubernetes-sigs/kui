@@ -16,7 +16,7 @@
 
 import { Common, CLI, ReplExpect, Selectors, Keys, Util } from '@kui-shell/test'
 
-import { tabButtonSelector } from '../../lib/cmds/tab-management'
+import { tabButtonSelector } from '@kui-shell/plugin-core-support'
 
 describe('core new tab switch tabs', function(this: Common.ISuite) {
   before(Common.before(this))

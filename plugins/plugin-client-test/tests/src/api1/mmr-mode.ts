@@ -24,9 +24,9 @@
 import { Tab } from '@kui-shell/core'
 import { TestMMR, MMRExpectMode } from '@kui-shell/test'
 
-import { MyResource } from '../../lib/models'
-import { metadata as _meta } from '../../lib/cmds/mmr-mode'
-import tree from '../../lib/cmds/content/tree'
+import { MyResource } from '../../../dist/lib/models'
+import { metadata as _meta } from '../../../dist/lib/cmds/mmr-mode'
+import tree from '../../../dist/lib/cmds/content/tree'
 
 const { metadata } = _meta
 

@@ -23,7 +23,7 @@
  */
 import { TestMMR, MMRExpectMode } from '@kui-shell/test'
 
-import { metadata as _meta } from '../../lib/cmds/mmr-mode-via-registration'
+import { metadata as _meta } from '../../../dist/lib/cmds/mmr-mode-via-registration'
 
 const { metadata } = _meta
 

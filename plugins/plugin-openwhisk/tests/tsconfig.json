@@ -1,0 +1,10 @@
+{
+  "extends": "../../../node_modules/@kui-shell/test/tsconfig-base.json",
+  "include": ["src/**/*"],
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "baseUrl": "."
+  }
+}

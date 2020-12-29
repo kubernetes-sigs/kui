@@ -18,7 +18,7 @@ import * as assert from 'assert'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util, Keys } from '@kui-shell/test'
 import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-import { mode as lastAppliedMode } from '../../lib/view/modes/last-applied'
+import { mode as lastAppliedMode } from '../../../dist/lib/view/modes/last-applied'
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {

@@ -1,0 +1,38 @@
+{
+  "extends": "./packages/test/tsconfig-base.json",
+  "references": [
+    {
+      "path": "plugins/plugin-bash-like/tests"
+    },
+    {
+      "path": "plugins/plugin-client-common/tests"
+    },
+    {
+      "path": "plugins/plugin-core-support/tests"
+    },
+    {
+      "path": "plugins/plugin-git/tests"
+    },
+    {
+      "path": "plugins/plugin-kubectl/tests"
+    },
+    {
+      "path": "plugins/plugin-openwhisk/tests"
+    },
+    {
+      "path": "plugins/plugin-client-default/tests"
+    },
+    {
+      "path": "plugins/plugin-client-test/tests"
+    },
+    {
+      "path": "plugins/plugin-client-alternate/tests"
+    },
+    {
+      "path": "plugins/plugin-s3/tests"
+    },
+    {
+      "path": "plugins/plugin-iter8/tests"
+    }
+  ]
+}

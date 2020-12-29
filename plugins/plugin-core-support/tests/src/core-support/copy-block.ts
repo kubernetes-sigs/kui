@@ -20,7 +20,7 @@ const outputs = ['smurf', 'dragon']
 const inputs = outputs.map(_ => Buffer.from(_).toString('base64'))
 
 import { doSplitViaButton } from '../core-support2/split-helpers'
-import { tabButtonSelector } from '../../lib/cmds/tab-management'
+import { tabButtonSelector } from '@kui-shell/plugin-core-support'
 
 describe('block copy paste command', function(this: Common.ISuite) {
   before(Common.before(this))

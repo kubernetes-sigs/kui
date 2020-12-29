@@ -23,7 +23,7 @@
 
 import * as assert from 'assert'
 import { TestTable } from '@kui-shell/test'
-import { firstSeen } from '../../lib/cmds/content/table-with-drilldown'
+import { firstSeen } from '../../../dist/lib/cmds/content/table-with-drilldown'
 
 const expectHeaderText = { name: 'NAME', attributes: [{ value: 'FOO' }, { value: firstSeen.toUpperCase() }] }
 

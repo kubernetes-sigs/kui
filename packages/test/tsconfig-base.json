@@ -1,0 +1,17 @@
+{
+  "extends": "../builder/tsconfig-base.json",
+  "compilerOptions": {
+    "removeComments": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "esModuleInterop": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "sourceMap": false,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "lib": ["dom", "esnext", "es6", "dom.iterable", "scripthost"]
+  }
+}
