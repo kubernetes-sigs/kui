@@ -69,19 +69,23 @@ function expectOK<T extends number | string | boolean | ElementArray | Applicati
 
   return app.client
     .$(nextPrompt)
-    .then(_ => _.waitForDisplayed({ timeout: waitTimeout })) // wait for the next prompt to appear
-    .then(() => app.client.$(nextPrompt)) // it should have a placeholder text
-    .then(_ => _.getAttribute('placeholder'))
+    .then(_ => _.waitForExist({ timeout: waitTimeout })) // wait for the next prompt to appear
     .then(() => app.client.$(nextPrompt)) // it should have an empty value
     .then(_ => _.getValue())
     .then(promptValue => {
-      if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk) && promptValue.length !== 0) {
+      if (
+        !process.env.BOTTOM_INPUT_MODE &&
+        (!opt || !opt.nonBlankPromptOk) &&
+        promptValue &&
+        promptValue.length !== 0
+      ) {
         console.error(`Expected prompt value to be empty: ${promptValue}`)
       }
       return promptValue
     })
     .then(promptValue => {
-      if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk)) assert.strictEqual(promptValue.length, 0)
+      if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk))
+        assert.strictEqual(!promptValue || promptValue.length, 0)
     }) //      ... verify that
     .then(async () => {
       if (opt && opt.expectError) return false
