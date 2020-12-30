@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { Arguments, ParsedOptions, Registrar, REPL } from '@kui-shell/core'
 
 import commandPrefix from './command-prefix'
-import { fetchFile, fetchFileString } from '../lib/util/fetch-file'
+import { openStream, fetchFile, fetchFileString } from '../lib/util/fetch-file'
+
+const debug = Debug('plugin-kubectl/controller/fetch-file')
 
 interface Options extends ParsedOptions {
   kustomize?: boolean
@@ -68,6 +71,47 @@ async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: st
  *
  */
 export default (registrar: Registrar) => {
+  registrar.listen(
+    `/${commandPrefix}/_fetchstream`,
+    async (args: Arguments<Options>) => {
+      const uri = args.argvNoOptions[args.argvNoOptions.indexOf('_fetchstream') + 1]
+      const headers =
+        typeof args.execOptions.data === 'object' && !Buffer.isBuffer(args.execOptions.data)
+          ? args.execOptions.data.headers
+          : undefined
+      debug('fetchstream', uri)
+
+      if (!args.execOptions.onInit) {
+        throw new Error('Internal Error: onInit required')
+      }
+
+      // eslint-disable-next-line no-async-promise-executor
+      return new Promise(async (resolve, reject) => {
+        try {
+          await openStream(
+            args,
+            uri,
+            {
+              onInit: args.execOptions.onInit,
+              onReady: args.execOptions.onReady,
+              onExit: exitCode => {
+                debug('got exit from stream', exitCode)
+                if (args.execOptions.onExit) {
+                  args.execOptions.onExit(exitCode)
+                }
+                resolve(true)
+              }
+            },
+            headers
+          )
+        } catch (err) {
+          reject(err)
+        }
+      })
+    },
+    { requiresLocal: true }
+  )
+
   registrar.listen(
     `/${commandPrefix}/_fetchfile`,
     async ({ argvNoOptions, parsedOptions, REPL, execOptions }: Arguments<Options>) => {

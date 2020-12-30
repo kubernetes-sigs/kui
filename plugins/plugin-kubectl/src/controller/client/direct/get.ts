@@ -16,6 +16,7 @@
 
 import { Arguments, CodedError, ExecType } from '@kui-shell/core'
 
+import makeWatchable from './watch'
 import { Explained } from '../../kubectl/explain'
 import { fetchFile } from '../../../lib/util/fetch-file'
 import { toKuiTable, withNotFound } from '../../../lib/view/formatTable'
@@ -33,12 +34,14 @@ import {
 import handleErrors from './errors'
 import { isStatus, KubeItems, MetaTable } from '../../../lib/model/resource'
 
-export default async function getDirect(args: Arguments<KubeOptions>, _kind: Promise<Explained>) {
-  const format = formatOf(args)
-  const kindIdx = args.argvNoOptions.indexOf('get') + 1
-  const { kind, version, isClusterScoped } = _kind
-    ? await _kind
-    : { kind: undefined, version: undefined, isClusterScoped: false }
+export type URLFormatter = (includeKind?: boolean, includeQueries?: boolean, name?: string) => string
+
+export const headersForTableRequest = { accept: 'application/json;as=Table;g=meta.k8s.io;v=v1' }
+
+export async function urlFormatterFor(
+  args: Arguments<KubeOptions>,
+  { kind, version, isClusterScoped }: Explained
+): Promise<URLFormatter> {
   const namespace = await getNamespace(args)
 
   const kindOnPath = `/${encodeURIComponent(kind.toLowerCase() + (/s$/.test(kind) ? '' : 's'))}`
@@ -76,24 +79,27 @@ export default async function getDirect(args: Arguments<KubeOptions>, _kind: Pro
   }
 
   // format a url
-  const formatUrl = (includeKind = false, includeQueries = false, name?: string) =>
+  return (includeKind = false, includeQueries = false, name?: string) =>
     `kubernetes:///${apiOnPath}${namespaceOnPath}${!includeKind ? '' : kindOnPath}${
       !name ? '' : `/${encodeURIComponent(name)}`
     }${!includeQueries || queries.length === 0 ? '' : '?' + queries.join('&')}`
+}
 
+export default async function getDirect(args: Arguments<KubeOptions>, _kind: Promise<Explained>) {
+  const explainedKind = _kind ? await _kind : { kind: undefined, version: undefined, isClusterScoped: false }
+  const { kind } = explainedKind
+  const formatUrl = await urlFormatterFor(args, explainedKind)
+
+  const format = formatOf(args)
+  const kindIdx = args.argvNoOptions.indexOf('get') + 1
   const names = args.argvNoOptions.slice(kindIdx + 1)
   const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
-  if (isTableRequest(args) && !isWatchRequest(args)) {
+  if (isTableRequest(args)) {
     const fmt = format || 'default'
     if (fmt === 'wide' || fmt === 'default') {
       // first, fetch the data
-      const responses = await fetchFile(
-        args.REPL,
-        urls,
-        { accept: 'application/json;as=Table;g=meta.k8s.io;v=v1' },
-        true
-      )
+      const responses = await fetchFile(args.REPL, urls, headersForTableRequest, true)
 
       // then dissect it into errors and non-errors
       const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
@@ -116,12 +122,12 @@ export default async function getDirect(args: Arguments<KubeOptions>, _kind: Pro
       }, undefined)
 
       if (args.execOptions.type === ExecType.TopLevel && metaTable.rows.length === 0 && !isWatchRequest(args)) {
-        return `No resources found in **${namespace}** namespace.`
+        return `No resources found in **${await getNamespace(args)}** namespace.`
       } else {
         try {
           // withNotFound will add error rows to the table for each error
           const table = withNotFound(await toKuiTable(metaTable, kind, args), errors.map(_ => _.message).join('\n'))
-          return table
+          return !isWatchRequest(args) ? table : makeWatchable(args, kind, table, formatUrl)
         } catch (err) {
           console.error('error formatting table', err)
           throw new Error('Internal Error')

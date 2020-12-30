@@ -401,7 +401,7 @@ async function rawGet(
 ) {
   const command = _command === 'k' ? 'kubectl' : _command
 
-  if (command === 'kubectl' && !fileOf(args) && !args.argvNoOptions.includes('|')) {
+  if ((command === 'oc' || command === 'kubectl') && !fileOf(args) && !args.argvNoOptions.includes('|')) {
     // try talking to the apiServer directly
     const response = await getDirect(args, _kind)
     if (response) {
@@ -462,7 +462,7 @@ export const doGet = (command: string) =>
         ? getKindAndVersion(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
         : undefined
 
-    if (!isHeadless() && isWatchRequest(args)) {
+    if (!isHeadless() && isWatchRequest(args) && /custom-columns|jsonpath|go-template/.test(formatOf(args))) {
       // special case: get --watch/watch-only
 
       // special case of special case: kubectl -w get fails; even

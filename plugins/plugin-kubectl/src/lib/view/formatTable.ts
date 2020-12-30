@@ -686,6 +686,7 @@ export async function toKuiTable(
     header,
     body,
     title: await kind,
+    resourceVersion: table.metadata.resourceVersion,
     breadcrumbs: await getNamespaceBreadcrumbs(await kind, args)
   }
 }

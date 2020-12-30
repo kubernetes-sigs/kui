@@ -135,6 +135,9 @@ export class Table<RowType extends Row = Row> {
   /** Markdown cells? */
   markdown?: boolean
 
+  /** This field helps with watching/paginating */
+  resourceVersion?: number | string
+
   /** Default presentation? */
   defaultPresentation?: PresentationStyle
 
