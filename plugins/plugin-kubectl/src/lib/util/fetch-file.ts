@@ -15,10 +15,11 @@
  */
 
 import Debug from 'debug'
-import needle from 'needle'
 import { join } from 'path'
-import { Arguments, REPL, inBrowser, hasProxy, encodeComponent, i18n } from '@kui-shell/core'
+import needle from 'needle'
+import { Arguments, ExecOptions, REPL, inBrowser, hasProxy, encodeComponent, i18n } from '@kui-shell/core'
 
+import JSONStream from './json'
 import getProxyState from '../../controller/client/proxy'
 import { KubeOptions, isRecursive } from '../../controller/kubectl/options'
 
@@ -38,7 +39,56 @@ async function rescheme(url: string): Promise<string> {
   }
 }
 
-async function _needle(
+export interface ObjectStream<T extends object> {
+  on(evt: 'data', cb: (obj: T) => void)
+  on(evt: 'done', cb: () => void)
+}
+
+export async function openStream<T extends object>(
+  args: Pick<Arguments, 'REPL'>,
+  url: string,
+  mgmt: Pick<ExecOptions, 'onInit' | 'onReady' | 'onExit'>,
+  headers?: Record<string, string>
+) {
+  if (inBrowser() && hasProxy()) {
+    debug('routing openStream request to proxy', url)
+    await args.REPL.rexec(
+      `_fetchstream ${encodeComponent(url)}`,
+      Object.assign(
+        {},
+        {
+          onInit: mgmt.onInit,
+          onReady: mgmt.onReady,
+          onExit: mgmt.onExit,
+          data: { headers }
+        }
+      )
+    )
+  } else {
+    // we need to set JSON to false to disable needle's parsing, which
+    // seems not to be compatible with streaming
+    const uri = await rescheme(url)
+    debug('routing openStream request to endpoint', uri)
+    const stream = needle.get(uri, { headers, parse: false })
+    const onData = mgmt.onInit({
+      abort: () => {
+        debug('abort requested', typeof stream['destroy'])
+        if (typeof stream['destroy'] === 'function') {
+          stream['destroy']()
+        }
+      },
+      xon: () => stream.resume(),
+      xoff: () => stream.pause(),
+      write: () => {
+        console.error('Unsupported Operation: write')
+      }
+    })
+
+    JSONStream(stream, await onData, mgmt.onExit)
+  }
+}
+
+export async function _needle(
   { rexec }: REPL,
   method: 'get',
   url: string,

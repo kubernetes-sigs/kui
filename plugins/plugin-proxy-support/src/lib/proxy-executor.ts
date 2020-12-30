@@ -124,14 +124,34 @@ class ProxyEvaluator implements ReplEval {
           debug('delegating to proxy websocket', command, uuid)
 
           const channel = await getSessionForTab(args.tab)
+          const isStreamingConsumer = execOptions.onInit !== undefined
 
           const msg = {
             type: 'request',
             cmdline: command,
             uuid,
+            stream: isStreamingConsumer,
             cwd: process.env.PWD,
             execOptions: execOptionsForInvoke
           }
+
+          const stdout = execOptions.onInit
+            ? await execOptions.onInit({
+                write: (data: string) => channel.send(JSON.stringify({ type: 'data', data, uuid })),
+                xon: () => {
+                  debug('xon requested')
+                  channel.send(JSON.stringify({ type: 'xon', uuid }))
+                },
+                xoff: () => {
+                  debug('xoff requested')
+                  channel.send(JSON.stringify({ type: 'xoff', uuid }))
+                },
+                abort: () => {
+                  debug('abort requested')
+                  channel.send(JSON.stringify({ type: 'kill', uuid }))
+                }
+              })
+            : undefined
 
           channel.send(JSON.stringify(msg))
 
@@ -149,17 +169,26 @@ class ProxyEvaluator implements ReplEval {
                   .split(MARKER)
                   .filter(_ => _)
                   .forEach(_ => {
-                    const response: {
-                      uuid: string
-                      response: {
-                        code?: number
-                        statusCode?: number
-                        message?: string
-                        stack?: string
-                        content: string | HTMLElement | ElementMimic
-                      }
-                    } = JSON.parse(_)
+                    const response:
+                      | { type: 'chunk'; uuid: string; chunk: string }
+                      | {
+                          type: 'object'
+                          uuid: string
+                          response: {
+                            code?: number
+                            statusCode?: number
+                            message?: string
+                            stack?: string
+                            content: string | HTMLElement | ElementMimic
+                          }
+                        } = JSON.parse(_)
                     if (response.uuid === uuid) {
+                      if (response.type === 'chunk') {
+                        // we got a streaming chunk back
+                        stdout(response.chunk)
+                        return
+                      }
+
                       channel.removeEventListener('message', onMessage)
                       const code = response.response.code || response.response.statusCode
                       if (code !== undefined && code !== 200) {
