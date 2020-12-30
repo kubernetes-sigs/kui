@@ -30,7 +30,7 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import { CodedError, ExecOptions, Registrar, expandHomeDir } from '@kui-shell/core'
+import { Abortable, CodedError, ExecOptions, FlowControllable, Registrar, expandHomeDir } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/pty/server')
 
@@ -237,6 +237,9 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
   // @see https://github.com/microsoft/TypeScript/issues/22445
   const shells: Record<string, Promise<import('node-pty-prebuilt-multiarch').IPty>> = {}
 
+  /** Active streaming jobs */
+  const jobs: Record<string, Abortable & FlowControllable> = {}
+
   // For all websocket data send it to the shell
   ws.on('message', async (data: string) => {
     try {
@@ -251,6 +254,9 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         rows?: number
         cols?: number
 
+        /** for type:request, execute a command, and stream back the output; the default behavior is request/respo;nse */
+        stream?: boolean
+
         uuid?: string // for request-response
         execOptions?: ExecOptions
       } = JSON.parse(data)
@@ -262,6 +268,11 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             const RESUME = '\x11' // this is XON
             shell.write(RESUME)
           }
+
+          const job = msg.uuid && jobs[msg.uuid]
+          if (job) {
+            job.xon()
+          }
           break
         }
 
@@ -271,6 +282,11 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             const PAUSE = '\x13' // this is XOFF
             shell.write(PAUSE)
           }
+
+          const job = msg.uuid && jobs[msg.uuid]
+          if (job) {
+            job.xoff()
+          }
           break
         }
 
@@ -279,6 +295,12 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           if (shell) {
             shell.kill(msg.signal || 'SIGHUP')
             return exitNow(msg.exitCode || 0)
+          }
+
+          const job = msg.uuid && jobs[msg.uuid]
+          debug(`kill requested. hasShell=${shell !== undefined} hasJob=${job !== undefined}`)
+          if (job) {
+            job.abort()
           }
           break
         }
@@ -297,8 +319,25 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             // ws.send(`___kui_exit___ ${msg.uuid}`)
           }
 
+          const execOptions = Object.assign({}, msg.execOptions, { rethrowErrors: true })
+          if (msg.stream) {
+            // then we will stream back the output; otherwise, we will use a request/response style of execution
+            debug('initializing streaming exec')
+            execOptions.onInit = (job: Abortable & FlowControllable) => {
+              jobs[msg.uuid] = job
+              return chunk =>
+                ws.send(
+                  JSON.stringify({
+                    type: 'chunk',
+                    uuid: msg.uuid,
+                    chunk
+                  })
+                )
+            }
+          }
+
           try {
-            const response = await exec(msg.cmdline, Object.assign({}, msg.execOptions, { rethrowErrors: true }))
+            const response = await exec(msg.cmdline, execOptions)
             debug('got response')
             terminate(
               JSON.stringify({

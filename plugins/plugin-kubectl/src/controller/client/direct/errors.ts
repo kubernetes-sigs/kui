@@ -16,10 +16,10 @@
 
 import { CodedError, isCodedError, REPL } from '@kui-shell/core'
 
+import { URLFormatter } from './get'
 import { Status, isStatus } from '../../../lib/model/resource'
 import { fetchFile, FetchedFile, isReturnedError } from '../../../lib/util/fetch-file'
 
-type URL = (includeKind: boolean) => string
 type WithErrors = { errors: CodedError[]; ok: (string | Buffer | object)[] }
 
 /** See if the given error message is a Kubernetes Status object */
@@ -38,7 +38,7 @@ function tryParseAsStatus(message: string): string | Status {
 
 export default async function handleErrors(
   responses: FetchedFile[],
-  formatUrl: URL,
+  formatUrl: URLFormatter,
   kind: string,
   repl: REPL
 ): Promise<WithErrors> {
