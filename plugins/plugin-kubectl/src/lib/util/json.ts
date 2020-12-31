@@ -59,9 +59,13 @@ export default function mkGenerator<T extends Streamable>(
             let obj: T
             try {
               obj = JSON.parse(bundle) as T
-              onData(obj)
             } catch (err) {
               console.error('Error parsing bundle', bundle, err)
+            }
+            try {
+              onData(obj)
+            } catch (err) {
+              console.error('Error processing bundle', obj, err)
             }
             bundle = ''
           }
