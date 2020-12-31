@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/* eslint-disable no-async-promise-executor */
 
 import Debug from 'debug'
 
@@ -93,20 +95,28 @@ export function pollUntilOnline(tab: Tab) {
  * given tab
  *
  */
+let _singleChannel: Promise<Channel> // share session across tabs see https://github.com/IBM/kui/issues/6453
 async function newSessionForTab(tab: Tab) {
-  // eslint-disable-next-line no-async-promise-executor
-  tab['_kui_session'] = new Promise(async (resolve, reject) => {
-    try {
-      await pollUntilOnline(tab)
-      tab.classList.add('kui--session-init-done')
+  const thisSession =
+    _singleChannel ||
+    new Promise(async (resolve, reject) => {
+      try {
+        await pollUntilOnline(tab)
+        tab.classList.add('kui--session-init-done')
 
-      resolve(getChannelForTab(tab))
-    } catch (err) {
-      reject(err)
-    }
-  })
+        resolve(getChannelForTab(tab))
+      } catch (err) {
+        reject(err)
+      }
+    })
 
-  await tab['_kui_session']
+  if (!_singleChannel) {
+    _singleChannel = thisSession
+  }
+  tab['_kui_session'] = thisSession
+
+  await thisSession
+  tab.classList.add('kui--session-init-done')
 }
 
 /**
