@@ -39,7 +39,13 @@ class DirectWatcher implements Abortable, Watcher {
   private jobs: (Abortable & FlowControllable)[] = []
 
   /** We only seem to get these once */
-  private columnDefinitions: MetaTable['columnDefinitions']
+  private bodyColumnDefinitions: MetaTable['columnDefinitions']
+  private footerColumnDefinitions: {
+    lastSeenColumnIdx: number
+    objectColumnIdx: number
+    messageColumnIdx: number
+    nameColumnIdx: number
+  }
 
   // eslint-disable-next-line no-useless-constructor
   public constructor(
@@ -104,20 +110,11 @@ class DirectWatcher implements Abortable, Watcher {
 
   /** Format a MetaTable of events into a string[] */
   private formatFooter(table: MetaTable): string[] {
-    const lastSeenColumnIdx = table.columnDefinitions.findIndex(_ => /Last Seen/i.test(_.name))
-    const objectColumnIdx = table.columnDefinitions.findIndex(_ => /Object/i.test(_.name))
-    const messageColumnIdx = table.columnDefinitions.findIndex(_ => /Message/i.test(_.name))
-    const nameColumnIdx = table.columnDefinitions.findIndex(_ => /Name/i.test(_.name))
-
-    if (lastSeenColumnIdx < 0) {
-      console.error('Unable to format event footer, due to missing Last Seen column', table)
-    } else if (objectColumnIdx < 0) {
-      console.error('Unable to format event footer, due to missing Object column', table)
-    } else if (messageColumnIdx < 0) {
-      console.error('Unable to format event footer, due to missing Message column', table)
-    } else if (nameColumnIdx < 0) {
-      console.error('Unable to format event footer, due to missing Name column', table)
+    if (!this.footerColumnDefinitions) {
+      console.error('Dropping footer update, due to missing column definitions')
     } else {
+      const { lastSeenColumnIdx, objectColumnIdx, messageColumnIdx, nameColumnIdx } = this.footerColumnDefinitions
+
       return this.filterFooterRows(table, nameColumnIdx).map(_ => {
         const lastSeen = _.cells[lastSeenColumnIdx]
         const involvedObjectName = _.cells[objectColumnIdx]
@@ -132,8 +129,44 @@ class DirectWatcher implements Abortable, Watcher {
     }
   }
 
+  /** We pre-process the columnDefinitions for the events, to pick out the column indices of interest. */
+  private initFooterColumnDefinitions(columnDefinitions: MetaTable['columnDefinitions']) {
+    const indices = columnDefinitions.reduce(
+      (indices, _, idx) => {
+        if (_.name === 'Last Seen') {
+          indices.lastSeenColumnIdx = idx
+        } else if (_.name === 'Object') {
+          indices.objectColumnIdx = idx
+        } else if (_.name === 'Message') {
+          indices.messageColumnIdx = idx
+        } else if (_.name === 'Name') {
+          indices.nameColumnIdx = idx
+        }
+        return indices
+      },
+      { lastSeenColumnIdx: -1, objectColumnIdx: -1, messageColumnIdx: -1, nameColumnIdx: -1 }
+    )
+
+    const { lastSeenColumnIdx, objectColumnIdx, messageColumnIdx, nameColumnIdx } = indices
+    if (lastSeenColumnIdx < 0) {
+      console.error('Unable to process footer column definitions, due to missing Last Seen column', columnDefinitions)
+    } else if (objectColumnIdx < 0) {
+      console.error('Unable to process footer column definitions, due to missing Object column', columnDefinitions)
+    } else if (messageColumnIdx < 0) {
+      console.error('Unable to process footer column definitions, due to missing Message column', columnDefinitions)
+    } else if (nameColumnIdx < 0) {
+      console.error('Unable to process footer column definitions, due to missing Name column', columnDefinitions)
+    } else {
+      this.footerColumnDefinitions = indices
+    }
+  }
+
   /** This will be called by the event streamer when it has new data */
-  private onEventData(update: WatchUpdate) {
+  private onEventData(update: Pick<WatchUpdate, 'object'>) {
+    if (!this.footerColumnDefinitions && update.object.columnDefinitions) {
+      this.initFooterColumnDefinitions(update.object.columnDefinitions)
+    }
+
     this.pusher.footer(this.formatFooter(update.object))
   }
 
@@ -142,7 +175,7 @@ class DirectWatcher implements Abortable, Watcher {
     // first: we need to fetch the initial table (so that we have a resourceVersion)
     const events = (await fetchFile(this.args.REPL, this.formatEventUrl(), headersForTableRequest))[0] as MetaTable
     if (isMetaTable(events)) {
-      this.pusher.footer(this.formatFooter(events))
+      this.onEventData({ object: events })
 
       // second: now we can start the streamer against that resourceVersion
       const watchUrl = this.formatEventUrl({ resourceVersion: events.metadata.resourceVersion })
@@ -162,6 +195,7 @@ class DirectWatcher implements Abortable, Watcher {
     }
   }
 
+  /** This is the stream management bits for the body */
   private mgmt(onInit: Arguments['execOptions']['onInit']) {
     return {
       onInit,
@@ -190,8 +224,8 @@ class DirectWatcher implements Abortable, Watcher {
 
   /** This will be called whenever the streamer has data for us. */
   private onData(update: WatchUpdate) {
-    if (!update.object.columnDefinitions && this.columnDefinitions) {
-      update.object.columnDefinitions = this.columnDefinitions
+    if (!update.object.columnDefinitions && this.bodyColumnDefinitions) {
+      update.object.columnDefinitions = this.bodyColumnDefinitions
     }
 
     if (!update.object.columnDefinitions) {
@@ -200,9 +234,9 @@ class DirectWatcher implements Abortable, Watcher {
     }
 
     let sendHeaders = false
-    if (!this.columnDefinitions) {
+    if (!this.bodyColumnDefinitions) {
       sendHeaders = true
-      this.columnDefinitions = update.object.columnDefinitions
+      this.bodyColumnDefinitions = update.object.columnDefinitions
     }
 
     setTimeout(async () => {
@@ -225,6 +259,12 @@ class DirectWatcher implements Abortable, Watcher {
   }
 }
 
+/**
+ * If possible, turn a table into a Table & Watchable. If the given
+ * `table` does not have a `resourceVersion` attribute, this mapping
+ * will not be possible.
+ *
+ */
 export default async function makeWatchable(
   args: Arguments<KubeOptions>,
   kind: string | Promise<string>,
