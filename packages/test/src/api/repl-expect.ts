@@ -52,7 +52,7 @@ interface Options {
   streaming?: boolean
 }
 
-function expectOK<T extends number | string | boolean | ElementArray | Application = boolean>(
+async function expectOK<T extends number | string | boolean | ElementArray | Application = boolean>(
   appAndCount: AppAndCount,
   opt?: Options
 ): Promise<T> {
@@ -67,28 +67,22 @@ function expectOK<T extends number | string | boolean | ElementArray | Applicati
     ? Selectors.PROMPT_N_FOR_SPLIT(N, splitIndex)
     : Selectors.BOTTOM_PROMPT
 
-  return app.client
-    .$(nextPrompt)
-    .then(_ => _.waitForDisplayed({ timeout: waitTimeout })) // wait for the next prompt to appear
-    .then(() => app.client.$(nextPrompt)) // it should have a placeholder text
-    .then(_ => _.getAttribute('placeholder'))
-    .then(() => app.client.$(nextPrompt)) // it should have an empty value
-    .then(_ => _.getValue())
-    .then(promptValue => {
-      if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk) && promptValue.length !== 0) {
-        console.error(`Expected prompt value to be empty: ${promptValue}`)
-      }
-      return promptValue
-    })
-    .then(promptValue => {
-      if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk)) assert.strictEqual(promptValue.length, 0)
-    }) //      ... verify that
-    .then(async () => {
-      if (opt && opt.expectError) return false
-      const html = await app.client.$(Selectors.OK_N(N - 1, splitIndex)).then(_ => _.getHTML())
-      const okReg = new RegExp(process.env.OK) || /ok/
-      assert.ok(okReg.test(html)) // make sure it says "ok" !
-    })
+  const nextPromptDom = await app.client.$(nextPrompt)
+  await nextPromptDom.waitForExist({ timeout: waitTimeout }) // wait for the next prompt to appear
+  const promptValue = await nextPromptDom.getValue()
+  if (!process.env.BOTTOM_INPUT_MODE && (!opt || !opt.nonBlankPromptOk) && promptValue && promptValue.length !== 0) {
+    console.error(`Expected prompt value to be empty: ${promptValue}`)
+    if (promptValue) {
+      assert.strictEqual(promptValue.length, 0)
+    }
+  }
+
+  if (opt && opt.expectError) return false as T
+  const html = await app.client.$(Selectors.OK_N(N - 1, splitIndex)).then(_ => _.getHTML())
+  const okReg = new RegExp(process.env.OK) || /ok/
+  assert.ok(okReg.test(html)) // make sure it says "ok" !
+
+  return Promise.resolve()
     .then(
       async (): Promise<T> => {
         // validate any expected list entry
