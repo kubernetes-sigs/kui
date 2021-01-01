@@ -65,7 +65,7 @@ const updateInputAndMoveCaretToEOL = (input: Input, entry: HistoryLine) => {
   }
 }
 
-export default async function onKeyDown(this: Input, event: KeyboardEvent) {
+export default function onKeyDown(this: Input, event: KeyboardEvent) {
   const tab = this.props.tab
   const block = this.props._block
   const prompt = this.state.prompt
@@ -81,11 +81,13 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
 
   if (char === KeyCodes.UP || (char === KeyCodes.P && event.ctrlKey)) {
     // go to previous command in history
-    const historyModel = await (await import('@kui-shell/core')).History(tab)
-    const entry = historyModel.previous()
-    if (entry) {
-      updateInputAndMoveCaretToEOL(this, entry)
-    }
+    setTimeout(async () => {
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
+      const entry = historyModel.previous()
+      if (entry) {
+        updateInputAndMoveCaretToEOL(this, entry)
+      }
+    })
   } else if (char === KeyCodes.D && event.ctrlKey) {
     if (prompt.value === '') {
       // <-- only if the line is blank
@@ -131,21 +133,27 @@ export default async function onKeyDown(this: Input, event: KeyboardEvent) {
     // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
   } else if (char === KeyCodes.HOME) {
     // go to first command in history
-    const historyModel = await (await import('@kui-shell/core')).History(tab)
-    const entry = historyModel.first()
-    if (entry) {
-      updateInputAndMoveCaretToEOL(this, entry)
-    }
+    setTimeout(async () => {
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
+      const entry = historyModel.first()
+      if (entry) {
+        updateInputAndMoveCaretToEOL(this, entry)
+      }
+    })
   } else if (char === KeyCodes.END) {
     // go to last command in history
-    const historyModel = await (await import('@kui-shell/core')).History(tab)
-    const entry = historyModel.last()
-    updateInputAndMoveCaretToEOL(this, entry)
+    setTimeout(async () => {
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
+      const entry = historyModel.last()
+      updateInputAndMoveCaretToEOL(this, entry)
+    })
   } else if (char === KeyCodes.DOWN || (char === KeyCodes.N && event.ctrlKey)) {
     // going DOWN past the last history item will result in '', i.e. a blank line
-    const historyModel = await (await import('@kui-shell/core')).History(tab)
-    const entry = historyModel.next()
-    updateInputAndMoveCaretToEOL(this, entry)
+    setTimeout(async () => {
+      const historyModel = await (await import('@kui-shell/core')).History(tab)
+      const entry = historyModel.next()
+      updateInputAndMoveCaretToEOL(this, entry)
+    })
   } else if (event.key === 'w' && event.ctrlKey) {
     const { prompt } = this.state
     const idx = prompt.value.lastIndexOf(

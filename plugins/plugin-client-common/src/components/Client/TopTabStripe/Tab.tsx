@@ -29,7 +29,7 @@ import {
 import { HeaderMenuItem } from 'carbon-components-react'
 
 import Icons from '../../spi/Icons'
-import Markdown from '../../Content/Markdown'
+const Markdown = React.lazy(() => import('../../Content/Markdown'))
 
 const strings = i18n('plugin-core-support')
 const strings2 = i18n('plugin-client-common')
@@ -172,7 +172,13 @@ export default class Tab extends React.PureComponent<Props, State> {
           {this.isUsingCommandName() && this.state.title}
           {!this.isUsingCommandName() && (
             <span className="kui--tab--label-text">
-              {this.props.title ? <Markdown nested source={this.props.title} /> : strings('Tab')}{' '}
+              {this.props.title ? (
+                <React.Suspense fallback={<div />}>
+                  <Markdown nested source={this.props.title} />
+                </React.Suspense>
+              ) : (
+                strings('Tab')
+              )}{' '}
             </span>
           )}
           {!this.isUsingCommandName() && <span className="kui--tab--label-index"></span>}

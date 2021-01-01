@@ -37,8 +37,10 @@ import Card from '../spi/Card'
 import KuiContext from './context'
 import KuiConfiguration from './KuiConfiguration'
 import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
-import { InputStripe, TabContainer, Loading, Alert } from '../..'
+import { TabContainer, Loading, Alert } from '../..'
 import loadUserSettings, { on as onUserSettingsChange } from './UserSettings'
+
+const InputStripe = React.lazy(() => import('./InputStripe'))
 
 import KuiIcon from '../../../icons/png/WelcomeLight.png'
 
@@ -311,16 +313,18 @@ export class Kui extends React.PureComponent<Props, State> {
       const bottom = !!this.props.bottomInput && <InputStripe>{this.props.bottomInput}</InputStripe>
       return (
         <KuiContext.Provider value={this.state}>
-          <div className="kui--full-height">
-            <TabContainer
-              noActiveInput={!!this.props.bottomInput}
-              bottom={bottom}
-              title={this.props.initialTabTitle}
-              onTabReady={this.state.commandLine && this._onTabReady}
-            ></TabContainer>
-            {this.props.toplevel}
-            <StatusStripe {...this.statusStripeProps()}>{this.props.children}</StatusStripe>
-          </div>
+          <React.Suspense fallback={<div />}>
+            <div className="kui--full-height">
+              <TabContainer
+                noActiveInput={!!this.props.bottomInput}
+                bottom={bottom}
+                title={this.props.initialTabTitle}
+                onTabReady={this.state.commandLine && this._onTabReady}
+              ></TabContainer>
+              {this.props.toplevel}
+              <StatusStripe {...this.statusStripeProps()}>{this.props.children}</StatusStripe>
+            </div>
+          </React.Suspense>
         </KuiContext.Provider>
       )
     }

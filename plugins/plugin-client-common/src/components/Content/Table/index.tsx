@@ -18,8 +18,8 @@ import React from 'react'
 import { Tab, REPL, Table, isWatchable } from '@kui-shell/core'
 import { KuiContext } from '../../../'
 
-import PaginatedTable from './PaginatedTable'
-import LivePaginatedTable from './LivePaginatedTable'
+const PaginatedTable = React.lazy(() => import('./PaginatedTable'))
+const LivePaginatedTable = React.lazy(() => import('./LivePaginatedTable'))
 
 export default function renderTable(
   tab: Tab,
@@ -34,29 +34,10 @@ export default function renderTable(
 ) {
   if (isWatchable(response)) {
     return (
-      <KuiContext.Consumer>
-        {config => (
-          <LivePaginatedTable
-            tab={tab}
-            repl={repl}
-            response={response}
-            paginate={paginate}
-            title={!config.disableTableTitle}
-            toolbars={toolbars}
-            asGrid={asGrid}
-            onRender={onRender}
-            isPartOfMiniSplit={isPartOfMiniSplit}
-            isWidthConstrained={isWidthConstrained}
-          />
-        )}
-      </KuiContext.Consumer>
-    )
-  } else {
-    return (
-      <KuiContext.Consumer>
-        {config => {
-          return (
-            <PaginatedTable
+      <React.Suspense fallback={<div />}>
+        <KuiContext.Consumer>
+          {config => (
+            <LivePaginatedTable
               tab={tab}
               repl={repl}
               response={response}
@@ -64,12 +45,35 @@ export default function renderTable(
               title={!config.disableTableTitle}
               toolbars={toolbars}
               asGrid={asGrid}
+              onRender={onRender}
               isPartOfMiniSplit={isPartOfMiniSplit}
               isWidthConstrained={isWidthConstrained}
             />
-          )
-        }}
-      </KuiContext.Consumer>
+          )}
+        </KuiContext.Consumer>
+      </React.Suspense>
+    )
+  } else {
+    return (
+      <React.Suspense fallback={<div />}>
+        <KuiContext.Consumer>
+          {config => {
+            return (
+              <PaginatedTable
+                tab={tab}
+                repl={repl}
+                response={response}
+                paginate={paginate}
+                title={!config.disableTableTitle}
+                toolbars={toolbars}
+                asGrid={asGrid}
+                isPartOfMiniSplit={isPartOfMiniSplit}
+                isWidthConstrained={isWidthConstrained}
+              />
+            )
+          }}
+        </KuiContext.Consumer>
+      </React.Suspense>
     )
   }
 }

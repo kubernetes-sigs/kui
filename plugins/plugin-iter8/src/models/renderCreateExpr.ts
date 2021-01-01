@@ -15,8 +15,8 @@
  */
 import { ModeRegistration } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
-import { renderForm } from '../modes/exprForm'
-import { renderDecisionTab } from '../modes/decisionForm'
+
+import { renderForm, renderDecisionTab } from '../modes/render'
 
 // Checks the correct command response
 function verifyResponse(resource: KubeResource): boolean {

@@ -24,7 +24,7 @@ import {
   inBrowser
 } from '@kui-shell/core'
 
-const enum BlockState {
+export const enum BlockState {
   Active = 'repl-active',
   Cancelled = 'cancelled',
   Empty = 'empty',

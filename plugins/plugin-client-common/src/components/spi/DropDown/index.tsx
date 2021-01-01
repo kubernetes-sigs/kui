@@ -15,12 +15,11 @@
  */
 
 import React from 'react'
-
+import Props from './model'
 import KuiContext from '../../Client/context'
 
-import Props from './model'
-import Carbon from './impl/Carbon'
-import PatternFly4 from './impl/PatternFly'
+const Carbon = React.lazy(() => import('./impl/Carbon'))
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 
 export { Action as DropDownAction, Props as DropDownProps } from './model'
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { PropsWithChildren } from 'react'
 import { Tab as KuiTab, eventBus } from '@kui-shell/core'
 
 import KuiContext from './context'
@@ -25,13 +25,15 @@ import BlockModel, { Active } from '../Views/Terminal/Block/BlockModel'
 
 import '../../../web/css/static/InputStripe.scss'
 
-type Props = Partial<KuiConfiguration> &
-  InputOptions & {
-    tab?: KuiTab
+type Props = PropsWithChildren<
+  Partial<KuiConfiguration> &
+    InputOptions & {
+      tab?: KuiTab
 
-    /** tab uuid; this is grafted in for you, by TabContent */
-    uuid?: string
-  }
+      /** tab uuid; this is grafted in for you, by TabContent */
+      uuid?: string
+    }
+>
 
 interface State {
   idx: number

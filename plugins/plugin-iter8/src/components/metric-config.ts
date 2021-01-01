@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { safeLoad } from 'js-yaml'
 
 import { MetricConfigMap, CounterMetrics, RatioMetrics } from './metric-config-types'
 
@@ -61,12 +60,14 @@ export class GetMetricConfig {
   public async getCounterMetrics(args: Arguments) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['counter_metrics.yaml']
+    const { safeLoad } = await import('js-yaml')
     return safeLoad(res) as CounterMetrics
   }
 
   public async getRatioMetrics(args: Arguments) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['ratio_metrics.yaml']
+    const { safeLoad } = await import('js-yaml')
     return safeLoad(res) as RatioMetrics
   }
 }

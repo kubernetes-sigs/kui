@@ -20,7 +20,8 @@
 import React from 'react'
 import { eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
 
-import { ContextWidgets, InputStripe, StatusStripe, TabContent, TabModel } from '../..'
+import InputStripe from '../Client/InputStripe'
+import { ContextWidgets, StatusStripe, TabContent, TabModel } from '../..'
 
 import '../../../web/css/static/Popup.scss'
 

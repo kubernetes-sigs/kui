@@ -27,7 +27,7 @@ import {
   pexecInCurrentTab
 } from '@kui-shell/core'
 
-import Markdown from '../Markdown'
+const Markdown = React.lazy(() => import('../Markdown'))
 import ErrorCell from './ErrorCell'
 import whenNothingIsSelected from '../../../util/selection'
 

@@ -56,7 +56,7 @@ import {
 } from './BlockModel'
 
 import Actions from './Actions'
-import Scalar from '../../../Content/Scalar/'
+const Scalar = React.lazy(() => import('../../../Content/Scalar/'))
 import KuiContext from '../../../Client/context'
 import { Maximizable } from '../../Sidecar/width'
 
@@ -165,17 +165,18 @@ export default class Output extends React.PureComponent<Props, State> {
       return (
         <div className="repl-result-like result-vertical" data-stream>
           {this.state.streamingOutput.map((part, idx) => (
-            <Scalar
-              key={idx}
-              tab={this.props.tab}
-              execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
-              response={part}
-              isPartOfMiniSplit={this.props.isPartOfMiniSplit}
-              isWidthConstrained={this.props.isWidthConstrained}
-              willChangeSize={this.props.willChangeSize}
-              willUpdateCommand={this._willUpdateCommand}
-              onRender={this._onRender}
-            />
+            <React.Suspense fallback={<div />} key={idx}>
+              <Scalar
+                tab={this.props.tab}
+                execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
+                response={part}
+                isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+                isWidthConstrained={this.props.isWidthConstrained}
+                willChangeSize={this.props.willChangeSize}
+                willUpdateCommand={this._willUpdateCommand}
+                onRender={this._onRender}
+              />
+            </React.Suspense>
           ))}
         </div>
       )
@@ -209,18 +210,20 @@ export default class Output extends React.PureComponent<Props, State> {
           {isCancelled(this.props.model) ? (
             <React.Fragment />
           ) : (
-            <Scalar
-              tab={this.props.tab}
-              execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
-              response={this.props.model.response}
-              completeEvent={this.props.model.completeEvent}
-              isPartOfMiniSplit={this.props.isPartOfMiniSplit}
-              isWidthConstrained={this.props.isWidthConstrained}
-              willChangeSize={this.props.willChangeSize}
-              willFocusBlock={this.props.willFocusBlock}
-              willRemove={this._willRemove}
-              willUpdateCommand={this._willUpdateCommand}
-            />
+            <React.Suspense fallback={<div />}>
+              <Scalar
+                tab={this.props.tab}
+                execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
+                response={this.props.model.response}
+                completeEvent={this.props.model.completeEvent}
+                isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+                isWidthConstrained={this.props.isWidthConstrained}
+                willChangeSize={this.props.willChangeSize}
+                willFocusBlock={this.props.willFocusBlock}
+                willRemove={this._willRemove}
+                willUpdateCommand={this._willUpdateCommand}
+              />
+            </React.Suspense>
           )}
         </div>
       )
