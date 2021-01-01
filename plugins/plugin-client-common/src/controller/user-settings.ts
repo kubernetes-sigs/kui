@@ -20,7 +20,7 @@ import KuiConfiguration from '../components/Client/KuiConfiguration'
 import { get, reset, set, unset } from '../components/Client/UserSettings'
 
 const strings = i18n('plugin-client-common/user-settings')
-const settings: (keyof KuiConfiguration)[] = ['prompt']
+const settings: (keyof KuiConfiguration)[] = ['prompt', '_for_testing_']
 
 /**
  * This plugin introduces the /card command
@@ -52,6 +52,18 @@ export default async (registrar: Registrar) => {
     registrar.listen(`/kuiconfig/set/${setting}`, async args => {
       await set(setting, args.argvNoOptions[3])
       return true
+    })
+
+    /** Does the given setting have a value? */
+    registrar.listen(`/kuiconfig/is/set/${setting}`, async () => {
+      const value = await get(setting)
+      return value !== undefined
+    })
+
+    /** Does the given setting not have a value? */
+    registrar.listen(`/kuiconfig/not/set/${setting}`, async () => {
+      const value = await get(setting)
+      return value === undefined
     })
 
     /** Remove a given user setting override */

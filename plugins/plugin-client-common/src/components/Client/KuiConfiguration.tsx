@@ -20,10 +20,15 @@ import BrandingProps from './props/Branding'
 import FeatureFlags from './props/FeatureFlags'
 import { ThemeProperties } from '@kui-shell/core'
 
+type TestingFlags = {
+  _for_testing_: number
+}
+
 type KuiConfiguration = Partial<ThemeProperties> &
   Partial<InputProps> &
   Partial<SessionProps> &
   Partial<BrandingProps> &
-  Partial<FeatureFlags>
+  Partial<FeatureFlags> &
+  Partial<TestingFlags>
 
 export default KuiConfiguration
