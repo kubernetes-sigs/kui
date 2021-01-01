@@ -17,7 +17,8 @@
 import React from 'react'
 import { pexecInCurrentTab } from '@kui-shell/core'
 
-import Popover, { Props as PopoverProps } from '../../spi/Popover'
+import { Props as PopoverProps } from '../../spi/Popover'
+const Popover = React.lazy(() => import('../../spi/Popover'))
 
 /** variants of how the information should be presented */
 export type ViewLevel = 'removed' | 'hidden' | 'normal' | 'obscured' | 'ok' | 'warn' | 'error' | 'info'

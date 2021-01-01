@@ -23,7 +23,7 @@ import { eventBus, pexecInCurrentTab, i18n, StatusStripeChangeEvent } from '@kui
 import Settings from './Settings'
 import Icons from '../../spi/Icons'
 import MeterWidgets from './MeterWidgets'
-import Markdown from '../../Content/Markdown'
+const Markdown = React.lazy(() => import('../../Content/Markdown'))
 import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 
 const strings = i18n('plugin-client-common')
@@ -109,28 +109,30 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <div className={this.className()} id="kui--status-stripe" data-type={this.state.type}>
-        {this.message()}
-        {this.widgets()}
+      <React.Suspense fallback={<div />}>
+        <div className={this.className()} id="kui--status-stripe" data-type={this.state.type}>
+          {this.message()}
+          {this.widgets()}
 
-        <MeterWidgets>
-          <Settings />
-        </MeterWidgets>
+          <MeterWidgets>
+            <Settings />
+          </MeterWidgets>
 
-        <div className="kui--status-stripe-button">
-          <a
-            href="#"
-            className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
-            id="help-button"
-            aria-label="Help"
-            tabIndex={0}
-            title={strings('Click for help')}
-            onClick={() => this.doAbout()}
-          >
-            <Icons icon="Help" />
-          </a>
+          <div className="kui--status-stripe-button">
+            <a
+              href="#"
+              className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
+              id="help-button"
+              aria-label="Help"
+              tabIndex={0}
+              title={strings('Click for help')}
+              onClick={() => this.doAbout()}
+            >
+              <Icons icon="Help" />
+            </a>
+          </div>
         </div>
-      </div>
+      </React.Suspense>
     )
   }
 }

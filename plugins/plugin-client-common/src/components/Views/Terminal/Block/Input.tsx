@@ -43,11 +43,11 @@ import {
 } from './BlockModel'
 import { BlockViewTraits, BlockOperationTraits } from './'
 
-import Tag from '../../../spi/Tag'
-import Icons from '../../../spi/Icons'
-import Accordion from '../../../spi/Accordion'
-
+const Tag = React.lazy(() => import('../../../spi/Tag'))
+const Icons = React.lazy(() => import('../../../spi/Icons'))
+const Accordion = React.lazy(() => import('../../../spi/Accordion'))
 const SimpleEditor = React.lazy(() => import('../../../Content/Editor/SimpleEditor'))
+
 const strings = i18n('plugin-client-common')
 
 export interface InputOptions extends BlockOperationTraits {
@@ -117,6 +117,9 @@ type InputProps = {
 export type Props = InputOptions & InputProps & BlockViewTraits
 
 export interface State {
+  /** Copy from props; to help with getDerivedStateFromProps */
+  model: BlockModel
+
   /** did user click to re-edit the input? */
   isReEdit?: boolean
 
@@ -287,7 +290,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   public render() {
     return (
-      <React.Fragment>
+      <React.Suspense fallback={<div />}>
         <div className={'repl-input' + (this.state && this.state.isearch ? ' kui--isearch-active' : '')}>
           {this.prompt()}
           <div className="kui--input-and-context">
@@ -298,7 +301,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
           {this.state && this.state.tabCompletion && this.state.tabCompletion.render()}
         </div>
         {this.sourceRef()}
-      </React.Fragment>
+      </React.Suspense>
     )
   }
 }
@@ -308,6 +311,7 @@ export default class Input extends InputProvider {
     super(props)
 
     this.state = {
+      model: props.model,
       isReEdit: false,
       execUUID: hasUUID(props.model) ? props.model.execUUID : undefined,
       prompt: undefined
@@ -320,12 +324,8 @@ export default class Input extends InputProvider {
   }
 
   /** @return the value to be added to the prompt */
-  protected valueToBeDisplayed() {
-    return hasValue(this.props.model)
-      ? this.props.model.value
-      : hasCommand(this.props.model)
-      ? this.props.model.command
-      : ''
+  protected static valueToBeDisplayed(props: Props) {
+    return hasValue(props.model) ? props.model.value : hasCommand(props.model) ? props.model.command : ''
   }
 
   /** Owner wants us to focus on the current prompt */
@@ -366,6 +366,7 @@ export default class Input extends InputProvider {
 
     if (hasUUID(props.model)) {
       return {
+        model: props.model,
         counter,
         execUUID: props.model.execUUID
       }
@@ -373,8 +374,16 @@ export default class Input extends InputProvider {
       // e.g. terminal has been cleared; we need to excise the current
       // <input/> because react aggressively caches these
       return {
+        model: props.model,
         counter,
         prompt: undefined,
+        execUUID: undefined
+      }
+    } else if (isActive(props.model) && state.model !== props.model) {
+      return {
+        model: props.model,
+        prompt: undefined,
+        counter: 0,
         execUUID: undefined
       }
     }
@@ -526,7 +535,7 @@ export default class Input extends InputProvider {
         </div>
       )
     } else {
-      const value = this.valueToBeDisplayed()
+      const value = Input.valueToBeDisplayed(this.props)
 
       if (isProcessing(this.props.model)) {
         // for processing blocks, we still need an input, albeit

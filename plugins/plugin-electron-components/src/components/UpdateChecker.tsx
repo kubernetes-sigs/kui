@@ -40,8 +40,8 @@ const FEED = 'https://github.com/IBM/kui/releases.atom'
 /** By default, check for updates once a day */
 const DEFAULT_INTERVAL = 24 * 60 * 60 * 1000
 
-/** By default, wait 5 minutes after statup for the first check */
-const DEFAULT_LAG = 0 // 5 * 60 * 1000
+/** By default, wait 1 minute after statup for the first check */
+const DEFAULT_LAG = 1 * 60 * 1000
 
 /** Remember that the version "duly noted" the availability of particular version in localStorage, using this key */
 const DULY_NOTED_KEY = 'kui-shell.org/UpdateChecker/DulyNoted'

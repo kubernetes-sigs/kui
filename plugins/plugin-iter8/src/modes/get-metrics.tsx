@@ -322,7 +322,7 @@ function createBasicStringDropdownOptions(values: string[]): DropdownOptions {
   return rs
 }
 
-class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
+export default class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
   private args
   public constructor(props) {
     super(props)
@@ -1375,14 +1375,6 @@ type MetricState = {
 
 // Outputs the metric config map as a YAML string
 
-export async function getMetricsYaml(args) {
-  const [res] = await Promise.all([getMetricConfig(args)])
-  delete res['originatingCommand']
-  delete res['kuiRawData']
-  delete res['isKubeResource']
-  return safeDump(res)
-}
-
 // Delete the specified metrics
 // export function deleteMetrics(metricNames: string[]) {
 //   try {
@@ -1424,11 +1416,3 @@ export async function getMetricsYaml(args) {
 //     return 'Could not obtain metric config map'
 //   }
 // }
-
-export function getMetricDetailsMode(tab) {
-  return {
-    react: function renderComponent() {
-      return <MetricDetailsMode {...tab} />
-    }
-  }
-}

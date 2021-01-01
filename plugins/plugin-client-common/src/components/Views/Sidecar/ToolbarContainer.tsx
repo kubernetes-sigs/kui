@@ -90,7 +90,13 @@ export default class ToolbarContainer extends React.PureComponent<Props, State> 
             buttons={toolbarButtons}
           />
         )}
-        {toolbarHasAlerts && this.props.toolbarText.alerts.map((alert, id) => <Alert key={id} alert={alert} />)}
+        {toolbarHasAlerts && (
+          <React.Suspense fallback={<div />}>
+            {this.props.toolbarText.alerts.map((alert, id) => (
+              <Alert key={id} alert={alert} />
+            ))}
+          </React.Suspense>
+        )}
         <React.Suspense fallback={<div />}>{this.children()}</React.Suspense>
       </div>
     )

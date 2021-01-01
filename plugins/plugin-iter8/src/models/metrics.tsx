@@ -13,9 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from 'react'
 import { ModeRegistration } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
-import { getMetricsYaml, getMetricDetailsMode } from '../modes/get-metrics'
+import { getMetricConfig } from '../components/metric-config'
+const MetricDetailsMode = React.lazy(() => import('../modes/get-metrics'))
+
+async function getMetricsYaml(args) {
+  const { safeDump } = await import('js-yaml')
+  const [res] = await Promise.all([getMetricConfig(args)])
+  delete res['originatingCommand']
+  delete res['kuiRawData']
+  delete res['isKubeResource']
+  return safeDump(res)
+}
+
+function getMetricDetailsMode(tab) {
+  return {
+    react: function renderComponent() {
+      return (
+        <React.Suspense fallback={<div />}>
+          <MetricDetailsMode {...tab} />
+        </React.Suspense>
+      )
+    }
+  }
+}
 
 function verifyMetricResponse(resource: KubeResource): boolean {
   return resource.kind === 'Command' && resource.metadata.name === 'Metric Command'

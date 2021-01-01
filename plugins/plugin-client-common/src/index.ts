@@ -28,7 +28,7 @@ import '../web/css/static/repl.scss'
 export { default as Kui, Props as KuiProps } from './components/Client/Kui'
 
 // Client components
-export { default as InputStripe } from './components/Client/InputStripe'
+// export { default as InputStripe } from './components/Client/InputStripe'
 export { default as TabContainer } from './components/Client/TabContainer'
 export { default as TabContent } from './components/Client/TabContent'
 export { default as TabModel, uuid as allocateTabUUID } from './components/Client/TabModel'
