@@ -15,12 +15,30 @@
  */
 
 import React from 'react'
-import Props from './model'
 
-const Carbon = React.lazy(() => import('./impl/Carbon'))
+const ExprBase = React.lazy(() => import('../modes/exprForm'))
+const DecisionBase = React.lazy(() => import('../modes/decisionForm'))
 
-export { Props }
+export function renderForm(tab) {
+  return {
+    react: function renderComponent() {
+      return (
+        <React.Suspense fallback={<div />}>
+          <ExprBase {...tab} />
+        </React.Suspense>
+      )
+    }
+  }
+}
 
-export default function AlertSpi(props: Props): React.ReactElement {
-  return <Carbon {...props} />
+export function renderDecisionTab(tab) {
+  return {
+    react: function renderComponent() {
+      return (
+        <React.Suspense fallback={<div />}>
+          <DecisionBase {...tab} />
+        </React.Suspense>
+      )
+    }
+  }
 }

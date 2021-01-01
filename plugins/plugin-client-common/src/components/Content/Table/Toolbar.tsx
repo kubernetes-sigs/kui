@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import Markdown from '../Markdown'
+const Markdown = React.lazy(() => import('../Markdown'))
 import Icons from '../../spi/Icons'
 import Breadcrumb, { Props as BreadcrumbProps } from '../../spi/Breadcrumb'
 

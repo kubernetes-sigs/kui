@@ -32,7 +32,7 @@ import {
   ComboBox
 } from 'carbon-components-react'
 import { Stop32, Undo32, Export32, ChartLineData32, Help16, FaceCool20, FaceNeutral20 } from '@carbon/icons-react'
-import Chart from 'react-apexcharts'
+const Chart = React.lazy(() => import('react-apexcharts'))
 // Styling imports
 import 'carbon-components/scss/components/loading/_loading.scss'
 import 'carbon-components/scss/components/form/_form.scss'
@@ -99,7 +99,7 @@ const renderTable = TableProps => (
   </TableContainer>
 )
 
-export class DecisionBase extends React.Component<{}, DecisionState> {
+export default class DecisionBase extends React.Component<{}, DecisionState> {
   private _isMounted = false
   private winner = ''
   // For displaying Traffic Suggestion Section
@@ -897,13 +897,5 @@ export class DecisionBase extends React.Component<{}, DecisionState> {
         ) : null}
       </Form>
     )
-  }
-}
-
-export function renderDecisionTab(tab) {
-  return {
-    react: function renderComponent() {
-      return <DecisionBase {...tab} />
-    }
   }
 }

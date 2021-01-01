@@ -38,19 +38,19 @@ import {
   isUsageError
 } from '@kui-shell/core'
 
-import Commentary from '../Commentary'
-import HTMLDom from './HTMLDom'
-import XtermDom from './XtermDom'
+const Commentary = React.lazy(() => import('../Commentary'))
+import HTMLDom from './HTMLDom' // !! DO NOT MAKE LAZY. plugin-bash-like/pty/client fails in dimensions.actualCellWidthxHeight
+const XtermDom = React.lazy(() => import('./XtermDom'))
 import renderTable from '../Table'
-import Markdown from '../Markdown'
+const Markdown = React.lazy(() => import('../Markdown'))
 import { KuiContext } from '../../../'
-import RadioTableSpi from '../../spi/RadioTable'
+const RadioTableSpi = React.lazy(() => import('../../spi/RadioTable'))
 import { Maximizable } from '../../Views/Sidecar/width'
 import LocationProps from '../../Views/Sidecar/Location'
 import { BlockViewTraits } from '../../Views/Terminal/Block'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
-import TopNavSidecar from '../../Views/Sidecar/TopNavSidecarV2'
-import LeftNavSidecar from '../../Views/Sidecar/LeftNavSidecarV2'
+const TopNavSidecar = React.lazy(() => import('../../Views/Sidecar/TopNavSidecarV2'))
+const LeftNavSidecar = React.lazy(() => import('../../Views/Sidecar/LeftNavSidecarV2'))
 
 const strings = i18n('plugin-client-common', 'errors')
 

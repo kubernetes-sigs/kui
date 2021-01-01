@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 /*eslint-disable */
-import { safeLoad, safeDump } from 'js-yaml'
 import _ from 'lodash'
 import { Arguments } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
@@ -23,6 +22,7 @@ export async function kubectlApplyRule(rule, args: Arguments) {
   delete rule['originatingCommand']
   delete rule['kuiRawData']
   delete rule['isKubeResource']
+  const { safeDump } = await import('js-yaml')
   const yamlRule = safeDump(rule)
 
   return await args.REPL.qexec(`cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`)

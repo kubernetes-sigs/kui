@@ -49,7 +49,7 @@ import { experimentTypes } from '../utility/variables'
  * Data models for the state object in ExprForm
  */
 
-class ExprBase extends React.Component<{}, Formstate> {
+export default class ExprBase extends React.Component<{}, Formstate> {
   // imported class of methods from /components
   private kubeMethods = new GetKubeInfo()
   private GetMetricConfig = new GetMetricConfig()
@@ -519,13 +519,5 @@ class ExprBase extends React.Component<{}, Formstate> {
         </div>
       </Form>
     )
-  }
-}
-
-export function renderForm(tab) {
-  return {
-    react: function renderComponent() {
-      return <ExprBase {...tab} />
-    }
   }
 }

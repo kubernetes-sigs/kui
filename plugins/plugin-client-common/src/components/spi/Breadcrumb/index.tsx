@@ -16,8 +16,8 @@
 
 import React from 'react'
 
-import Carbon from './impl/Carbon'
-import PatternFly4 from './impl/PatternFly'
+const Carbon = React.lazy(() => import('./impl/Carbon'))
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 import KuiContext from '../../Client/context'
 
 import Props, { BreadcrumbView } from './model'

@@ -15,12 +15,11 @@
  */
 
 import React from 'react'
-
-import Carbon from './impl/Carbon'
-import PatternFly4 from './impl/PatternFly'
+import Props from './model'
 import KuiContext from '../../Client/context'
 
-import Props from './model'
+const Carbon = React.lazy(() => import('./impl/Carbon'))
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 
 export default function LoadingSpi(props: Props): React.ReactElement {
   return (

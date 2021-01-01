@@ -137,7 +137,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
   }
 
   /** @return a `HistoryEntry` for the given `Response` */
-  protected static getDerivedStateFromProps(
+  public static getDerivedStateFromProps(
     { tab, response }: Props<MultiModalResponse>,
     state?: TopNavState
   ): TopNavState {

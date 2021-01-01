@@ -15,8 +15,8 @@
  */
 
 import Debug from 'debug'
-import { spawn } from 'child_process'
 import { onQuit, offQuit } from '@kui-shell/core'
+import { ChildProcess } from 'child_process'
 
 import { onKubectlConfigChangeEvents, offKubectlConfigChangeEvents } from '../../..'
 
@@ -31,7 +31,7 @@ type State = {
   port: number
 
   /** kubectl proxy process */
-  process: ReturnType<typeof spawn>
+  process: ChildProcess
 
   /** handler that will be invoked when the process exits */
   onQuitHandler: () => void
@@ -96,6 +96,7 @@ function registerOnQuit(state: Omit<State, 'onQuitHandler'>): State {
  *
  */
 async function startProxy(): Promise<State> {
+  const { spawn } = await import('child_process')
   return new Promise<State>((resolve, reject) => {
     const iter = (port = 8001, retryCount = 0) => {
       try {

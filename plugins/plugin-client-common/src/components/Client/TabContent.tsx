@@ -18,8 +18,8 @@ import React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession } from '@kui-shell/core'
 
 import KuiContext from './context'
-import Confirm from '../Views/Confirm'
 import { TopTabButton } from './TabModel'
+const Confirm = React.lazy(() => import('../Views/Confirm'))
 
 import getSize from '../Views/Terminal/getSize'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
@@ -326,7 +326,11 @@ export default class TabContent extends React.PureComponent<Props, State> {
             </div>
             {this.bottom()}
           </div>
-          {this.state.tab && <Confirm tab={this.state.tab} uuid={this.props.uuid} />}
+          {this.state.tab && (
+            <React.Suspense fallback={<div />}>
+              <Confirm tab={this.state.tab} uuid={this.props.uuid} />
+            </React.Suspense>
+          )}
         </div>
       </React.Fragment>
     )

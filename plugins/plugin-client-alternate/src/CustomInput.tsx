@@ -40,6 +40,7 @@ export default class CustomInput extends InputProvider<MyState> {
     super(props)
 
     this.state = Object.assign(this.state || {}, {
+      model: props.model,
       customCount: 0
     })
   }
