@@ -59,7 +59,7 @@ describe('core new tab conditional', function(this: Common.ISuite) {
 
   it('should NOT open a new tab with if on false condition', async () => {
     try {
-      await CLI.command('tab new --if "kuiconfig is set yoyoyo"', this.app)
+      await CLI.command('tab new --if "kuiconfig is set _for_testing_"', this.app)
       await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
@@ -69,7 +69,7 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   })
   it('should YES open a new tab with ifnot on false condition', async () => {
     try {
-      await CLI.command('tab new --ifnot "kuiconfig is set yoyoyo"', this.app)
+      await CLI.command('tab new --ifnot "kuiconfig is set _for_testing_"', this.app)
       await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist())
       await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
@@ -82,17 +82,17 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   Util.closeAllExceptFirstTab.bind(this)()
 
   it('should set condition', () =>
-    CLI.command('kuiconfig set yoyoyo 333', this.app)
+    CLI.command('kuiconfig set _for_testing_ 333', this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
   it('should validate set condition', () =>
-    CLI.command('kuiconfig get yoyoyo', this.app)
+    CLI.command('kuiconfig get _for_testing_', this.app)
       .then(ReplExpect.okWithString('333'))
       .catch(Common.oops(this, true)))
 
   it('should NOT open a new tab with ifnot on true condition', async () => {
     try {
-      await CLI.command('tab new --ifnot "kuiconfig is set yoyoyo"', this.app)
+      await CLI.command('tab new --ifnot "kuiconfig is set _for_testing_"', this.app)
       await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
@@ -102,7 +102,7 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   })
   it('should NOT open a new tab with if on false condition using config not yet', async () => {
     try {
-      await CLI.command('tab new --if "kuiconfig not set yoyoyo"', this.app)
+      await CLI.command('tab new --if "kuiconfig not set _for_testing_"', this.app)
       await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
@@ -112,7 +112,7 @@ describe('core new tab conditional', function(this: Common.ISuite) {
   })
   it('should YES open a new tab with if on true condition', async () => {
     try {
-      await CLI.command('tab new --if "kuiconfig is set yoyoyo"', this.app)
+      await CLI.command('tab new --if "kuiconfig is set _for_testing_"', this.app)
       await this.app.client.$(Selectors.TAB_N(2)).then(_ => _.waitForExist())
       await this.app.client.$(Selectors.TAB_N(3)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
       await this.app.client.$(Selectors.TAB_N(4)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
