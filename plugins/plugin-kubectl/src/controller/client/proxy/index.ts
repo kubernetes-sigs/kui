@@ -103,6 +103,9 @@ async function startProxy(): Promise<State> {
         const process = spawn('kubectl', ['proxy', '--keepalive=120s', '--port', port.toString()])
         let myState: State
 
+        // to make sure we don't smash the global variable on exit
+        let iGotRetried = false
+
         process.on('error', err => {
           console.error('Error spawning kubectl proxy', err)
           reject(err)
@@ -123,6 +126,7 @@ async function startProxy(): Promise<State> {
         process.stderr.on('data', data => {
           const msg = data.toString()
           if (/address already in use/.test(msg) && retryCount < maxRetries) {
+            iGotRetried = true // so we don't smash the global on exit
             iter(port + 1, retryCount + 1)
           } else {
             debug('stderr', msg)
@@ -143,7 +147,9 @@ async function startProxy(): Promise<State> {
             if (myState) {
               myState.process = undefined
             }
-            currentProxyState = undefined
+            if (!iGotRetried) {
+              currentProxyState = undefined
+            }
           }
         })
       } catch (err) {
