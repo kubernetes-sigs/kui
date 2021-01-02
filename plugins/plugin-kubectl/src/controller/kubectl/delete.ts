@@ -21,6 +21,7 @@ import { KubeOptions } from './options'
 import { doExecWithStatus } from './exec'
 import commandPrefix from '../command-prefix'
 
+import deleteDirect from '../client/direct/delete'
 import { FinalState } from '../../lib/model/states'
 import { isUsage, doHelp } from '../../lib/util/help'
 
@@ -42,6 +43,19 @@ export const doDelete = (command = 'kubectl') => async (args: Arguments<KubeOpti
   if (isUsage(args)) {
     return doHelp(command, args, prepareArgsForDelete)
   } else {
+    try {
+      const directResponse = await deleteDirect(args)
+      if (directResponse) {
+        return directResponse
+      }
+    } catch (err) {
+      if (err.code === 404) {
+        throw err
+      } else {
+        console.error('Error in direct delete. Falling back to CLI delete.', err.code, err)
+      }
+    }
+
     return doExecWithStatus('delete', FinalState.OfflineLike, command, prepareArgsForDelete)(args)
   }
 }

@@ -16,7 +16,7 @@
 
 import { CodedError, isCodedError, REPL } from '@kui-shell/core'
 
-import { URLFormatter } from './get'
+import URLFormatter from './url'
 import { Status, isStatus } from '../../../lib/model/resource'
 import { fetchFile, FetchedFile, isReturnedError } from '../../../lib/util/fetch-file'
 
@@ -55,11 +55,12 @@ export default async function handleErrors(
             const nsUrl = formatUrl(false)
             const kindUrl = formatUrl(true) + '?limit=1'
 
+            const opts = { headers: { accept: 'application/json' } }
             const [nsData, kindData] = await Promise.all([
-              fetchFile(repl, nsUrl, { accept: 'application/json' })
+              fetchFile(repl, nsUrl, opts)
                 .then(_ => _[0])
                 .catch(err => JSON.parse(err.message)),
-              fetchFile(repl, kindUrl, { accept: 'application/json' })
+              fetchFile(repl, kindUrl, opts)
                 .then(_ => _[0])
                 .catch(err => JSON.parse(err.message))
             ])

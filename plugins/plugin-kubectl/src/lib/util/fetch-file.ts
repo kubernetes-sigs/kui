@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { join } from 'path'
-import needle from 'needle'
+import needle, { BodyData } from 'needle'
 import { Arguments, ExecOptions, REPL, inBrowser, hasProxy, encodeComponent, i18n } from '@kui-shell/core'
 
 import JSONStream from './json'
@@ -88,17 +88,25 @@ export async function openStream<T extends object>(
   }
 }
 
+interface FetchOptions {
+  returnErrors?: boolean
+  data?: BodyData
+  headers?: Record<string, string>
+  method?: 'get' | 'put' | 'post' | 'delete'
+}
+
 export async function _needle(
   { rexec }: REPL,
-  method: 'get',
   url: string,
-  headers?: Record<string, string>
+  opts?: FetchOptions
 ): Promise<{ statusCode: number; body: string | object }> {
   if (!inBrowser()) {
-    debug('fetch via needle')
-    const { statusCode, body } = await needle(method, await rescheme(url), {
+    const method = (opts && opts.method) || 'get'
+    const headers = Object.assign({ connection: 'keep-alive' }, opts.headers)
+    debug('fetch via needle', method, headers)
+    const { statusCode, body } = await needle(method, await rescheme(url), opts.data, {
       follow_max: 10,
-      headers: Object.assign({ connection: 'keep-alive' }, headers)
+      headers
     })
     debug('fetch via needle done', statusCode)
     return { statusCode, body }
@@ -113,9 +121,7 @@ export async function _needle(
       throw new Error(strings('Unable to fetch remote file'))
     } else {
       debug('fetch via proxy')
-      const body = (
-        await rexec<(string | object)[]>(`_fetchfile ${encodeComponent(url)}`, { data: { method, headers } })
-      ).content[0]
+      const body = (await rexec<(string | object)[]>(`_fetchfile ${encodeComponent(url)}`, { data: opts })).content[0]
       return {
         statusCode: 200,
         body
@@ -124,8 +130,8 @@ export async function _needle(
   }
 }
 
-async function fetchRemote(repl: REPL, url: string, headers?: Record<string, string>) {
-  const fetchOnce = () => _needle(repl, 'get', url, headers).then(_ => _.body)
+async function fetchRemote(repl: REPL, url: string, opts?: FetchOptions) {
+  const fetchOnce = () => _needle(repl, url, opts).then(_ => _.body)
 
   const retry = (delay: number) => async (err: Error) => {
     if (/timeout/.test(err.message) || /hang up/.test(err.message) || /hangup/.test(err.message)) {
@@ -159,12 +165,7 @@ export function isReturnedError(file: FetchedFile): file is ReturnedError {
  * Either fetch a remote file or read a local one
  *
  */
-export async function fetchFile(
-  repl: REPL,
-  url: string,
-  headers?: Record<string, string>,
-  returnErrors = false
-): Promise<FetchedFile[]> {
+export async function fetchFile(repl: REPL, url: string, opts?: FetchOptions): Promise<FetchedFile[]> {
   const urls = url.split(/,/)
   debug('fetchFile', urls)
   const start = Date.now()
@@ -173,8 +174,8 @@ export async function fetchFile(
     urls.map(async url => {
       if (httpScheme.test(url) || kubernetesScheme.test(url)) {
         debug('fetch remote', url)
-        return fetchRemote(repl, url, headers).catch(err => {
-          if (returnErrors) {
+        return fetchRemote(repl, url, opts).catch(err => {
+          if (opts && opts.returnErrors) {
             return { error: err }
           } else throw err
         })
@@ -194,7 +195,7 @@ export async function fetchFile(
 
 /** same as fetchFile, but returning a string rather than a Buffer */
 export async function fetchFileString(repl: REPL, url: string, headers?: Record<string, string>): Promise<string[]> {
-  const files = await fetchFile(repl, url, headers)
+  const files = await fetchFile(repl, url, { headers })
   return files.map(_ => {
     try {
       return _.toString()
