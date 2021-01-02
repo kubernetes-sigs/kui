@@ -116,13 +116,11 @@ export default (registrar: Registrar) => {
     `/${commandPrefix}/_fetchfile`,
     async ({ argvNoOptions, parsedOptions, REPL, execOptions }: Arguments<Options>) => {
       const uri = argvNoOptions[argvNoOptions.indexOf('_fetchfile') + 1]
-      const headers =
-        typeof execOptions.data === 'object' && !Buffer.isBuffer(execOptions.data)
-          ? execOptions.data.headers
-          : undefined
+      const opts =
+        typeof execOptions.data === 'object' && !Buffer.isBuffer(execOptions.data) ? execOptions.data : undefined
 
       if (!parsedOptions.kustomize) {
-        return { mode: 'raw', content: await fetchFile(REPL, uri, headers) }
+        return { mode: 'raw', content: await fetchFile(REPL, uri, opts) }
       } else {
         return { mode: 'raw', content: await fetchKustomizeString(REPL, uri) }
       }
