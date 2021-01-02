@@ -18,9 +18,6 @@ pushd /tmp
   # Download and install helm
   #  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh
   if [ -n "$NEEDS_HELM" ]; then
-      # Need socat for helm to forward connections to tiller on ubuntu 16.04
-      (sudo apt-get update && sudo apt install -y socat) &
-
       PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
       echo "Downloading this helm: https://get.helm.sh/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz"
       curl -L "https://get.helm.sh/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz" | tar zxf -
@@ -43,7 +40,7 @@ pushd /tmp
       odo version
   fi
 
-  # wait for the kubectl download and socat installation
+  # wait for the kubectl download
   wait
 popd
 
