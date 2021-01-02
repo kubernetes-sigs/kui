@@ -21,7 +21,8 @@ import { toKuiTable } from '../../../lib/view/formatTable'
 import { fetchFile, openStream } from '../../../lib/util/fetch-file'
 import { KubeOptions, withKubeconfigFrom } from '../../kubectl/options'
 
-import { headersForTableRequest, URLFormatter } from './get'
+import URLFormatter from './url'
+import { headersForTableRequest } from './headers'
 import { MetaTable, isMetaTable } from '../../../lib/model/resource'
 
 const debug = Debug('plugin-kubectl/client/direct/watch')
@@ -173,7 +174,9 @@ class DirectWatcher implements Abortable, Watcher {
   /** Initialize the streamer for table footer updates */
   private async initFooterUpdates() {
     // first: we need to fetch the initial table (so that we have a resourceVersion)
-    const events = (await fetchFile(this.args.REPL, this.formatEventUrl(), headersForTableRequest))[0] as MetaTable
+    const events = (
+      await fetchFile(this.args.REPL, this.formatEventUrl(), { headers: headersForTableRequest })
+    )[0] as MetaTable
     if (isMetaTable(events)) {
       this.onEventData({ object: events })
 

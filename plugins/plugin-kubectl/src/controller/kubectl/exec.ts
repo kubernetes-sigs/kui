@@ -240,6 +240,35 @@ export async function doExecWithTable<O extends KubeOptions>(
   }
 }
 
+/** Configure a call to the Kui status command */
+export async function status<O extends KubeOptions>(
+  args: Arguments<O>,
+  verb: string,
+  command: string,
+  finalState: FinalState,
+  prepareForStatus: PrepareForStatus<O> = DefaultPrepareForStatus,
+  response?: RawResponse
+) {
+  const contextArgs = `-n ${await getNamespace(args)} ${getContextForArgv(args)}`
+  const watchArgs = `--final-state ${finalState} --watch`
+  const dryRunArgs = isDryRun(args)
+    ? `--dry-run ${typeof args.parsedOptions['dry-run'] === 'boolean' ? '' : args.parsedOptions['dry-run']}`
+    : ''
+
+  // this helps with error reporting: if something goes wrong with
+  // displaying "status", we can always report the initial response
+  // from the exec command
+  const errorReportingArgs = response ? `--response "${response.content.stdout}"` : ''
+
+  const statusArgs = await prepareForStatus(verb, args)
+
+  const commandArgs = `--command ${command}`
+
+  const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${dryRunArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs}`
+
+  return args.REPL.qexec<KubeTableResponse>(statusCmd, args.block)
+}
+
 /**
  * Execute a command, and then execute the status command which will
  * poll until the given FinalState is reached.
@@ -261,24 +290,7 @@ export const doExecWithStatus = <O extends KubeOptions>(
   } else if (isHeadless()) {
     return response.content.stdout
   } else {
-    const contextArgs = `-n ${await getNamespace(args)} ${getContextForArgv(args)}`
-    const watchArgs = `--final-state ${finalState} --watch`
-    const dryRunArgs = isDryRun(args)
-      ? `--dry-run ${typeof args.parsedOptions['dry-run'] === 'boolean' ? '' : args.parsedOptions['dry-run']}`
-      : ''
-
-    // this helps with error reporting: if something goes wrong with
-    // displaying "status", we can always report the initial response
-    // from the exec command
-    const errorReportingArgs = `--response "${response.content.stdout}"`
-
-    const statusArgs = await prepareForStatus(cmd, args)
-
-    const commandArgs = `--command ${command}`
-
-    const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${dryRunArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs}`
-
-    return args.REPL.qexec(statusCmd, args.block)
+    return status(args, cmd, command, finalState, prepareForStatus, response)
   }
 }
 
