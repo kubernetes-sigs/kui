@@ -20,17 +20,18 @@ import defaultFlags from './flags'
 import { isDryRun, isEntityFormat, KubeOptions, formatOf } from './options'
 import { doExecWithStatus, exec } from './exec'
 import commandPrefix from '../command-prefix'
+import createDirect from '../client/direct/create'
 
 import { FinalState } from '../../lib/model/states'
 import { isUsage, doHelp } from '../../lib/util/help'
 import getSourceRefs from './source'
 import { doGetAsEntity, viewTransformer } from './get'
 
-const verbs = ['create', 'apply']
+const verbs = ['create' as const, 'apply' as const]
 
 // export const doCreate = (verb: string, command = 'kubectl') => doExecWithStatus(verb, FinalState.OnlineLike, command)
 
-export const doCreate = (verb: string, command = 'kubectl') => async (args: Arguments<KubeOptions>) => {
+export const doCreate = (verb: 'create' | 'apply', command = 'kubectl') => async (args: Arguments<KubeOptions>) => {
   if (isUsage(args)) {
     return doHelp(command, args)
   } else {
@@ -43,6 +44,19 @@ export const doCreate = (verb: string, command = 'kubectl') => async (args: Argu
         return raw.content.stdout
       }
     } else {
+      try {
+        const response = await createDirect(args, verb)
+        if (response) {
+          return response
+        }
+      } catch (err) {
+        if (err.code === 404) {
+          throw err
+        } else {
+          console.error('Error in direct create. Falling back to CLI create.', err.code, err)
+        }
+      }
+
       const kuiSourceRef = getSourceRefs(args)
       const table = await doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
       if (isTable(table)) {

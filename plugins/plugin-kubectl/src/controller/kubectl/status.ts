@@ -101,6 +101,11 @@ const usage = (command: string) => ({
       docs: 'The initial command from the CRUD command'
     },
     {
+      name: '--verb',
+      string: true,
+      docs: 'The initial verb (e.g. create or delete) from the CRUD command'
+    },
+    {
       name: '--dry-run'
     },
     {
@@ -197,6 +202,7 @@ async function getResourcesReferencedByCommandLine(
   args: Arguments<FinalStateOptions>
 ): Promise<ResourceRef[]> {
   // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
+  const { verb } = args.parsedOptions
   const [kind, nameGroupVersion, nameAlt] = argvRest
   const namespace = await getNamespace(args)
 
@@ -207,6 +213,17 @@ async function getResourcesReferencedByCommandLine(
     //                    ^ slice(1)  ^
     return argvRest
       .slice(1)
+      .map(nameGroupVersion => nameGroupVersion.split(/\./))
+      .map(([name, group, version]) => ({
+        group,
+        version,
+        kind,
+        name,
+        namespace
+      }))
+  } else if (verb === 'create') {
+    return args.argvNoOptions
+      .slice(args.argvNoOptions.indexOf('status') + 2)
       .map(nameGroupVersion => nameGroupVersion.split(/\./))
       .map(([name, group, version]) => ({
         group,
@@ -505,6 +522,7 @@ class StatusWatcher implements Abortable, Watcher {
 }
 
 interface FinalStateOptions extends Options {
+  verb: string
   command: string
   response?: string
   'final-state'?: FinalState
