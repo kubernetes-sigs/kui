@@ -29,32 +29,47 @@ import { FinalState } from '../../../lib/model/states'
 import { getCommandFromArgs } from '../../../lib/util/util'
 import { headersForPlainRequest as headers } from './headers'
 
-const debug = Debug('plugin-kubectl/controller/client/direct/delete')
+const debug = Debug('plugin-kubectl/controller/client/direct/create')
 
-export default async function deleteDirect(
+export default async function createDirect(
   args: Arguments<KubeOptions>,
+  verb: 'create' | 'apply',
   _kind = getKindAndVersion(
     getCommandFromArgs(args),
     args,
-    args.argvNoOptions[args.argvNoOptions.indexOf('delete') + 1]
+    args.argvNoOptions[args.argvNoOptions.indexOf('create') + 1]
   )
 ) {
-  // For now, we only handle delete-by-name
+  // For now, we only handle create-by-name
   if (!fileOf(args) && !getLabel(args) && !args.parsedOptions['dry-run'] && !args.parsedOptions['field-selector']) {
     const explainedKind = await _kind
-    const { kind } = explainedKind
-    const formatUrl = (await urlFormatterFor(args, explainedKind)).bind(undefined, true, false)
+    const { kind, version } = explainedKind
 
-    // this tells the apiServer that we want the delete to return right away
-    const data = { propagationPolicy: 'Background' }
+    // the last undefined is needed: we don't want to include a name in the URL path
+    const formatUrl = (await urlFormatterFor(args, explainedKind)).bind(undefined, true, false, undefined)
 
-    const kindIdx = args.argvNoOptions.indexOf('delete') + 1
+    const kindIdx = args.argvNoOptions.indexOf('create') + 1
     const names = args.argvNoOptions.slice(kindIdx + 1)
-    if (names.length > 0) {
-      const urls = names.map(formatUrl).join(',')
-      debug('attempting delete direct', urls)
+    if (verb === 'create' && kind === 'Namespace' && version === 'v1' && names.length > 0) {
+      // WARNING: this is namespace-specific for now!
+      const data = names.map(name => ({
+        apiVersion: 'v1',
+        kind: 'Namespace',
+        metadata: {
+          creationTimestamp: null,
+          name
+        },
+        spec: {},
+        status: {}
+      }))
 
-      const responses = await fetchFile(args.REPL, urls, { method: 'delete', headers, returnErrors: true, data })
+      const urls = names
+        .map(formatUrl)
+        .map(url => `${url}?fieldManager=kubectl-create`)
+        .join(',')
+      debug('attempting create namespace direct', names, urls)
+
+      const responses = await fetchFile(args.REPL, urls, { method: 'post', headers, returnErrors: true, data })
 
       // then dissect it into errors and non-errors
       const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
@@ -67,7 +82,7 @@ export default async function deleteDirect(
         // kubectl CLI handle the errors for now
       } else {
         // success!
-        return status(args, 'delete', getCommandFromArgs(args), FinalState.OfflineLike)
+        return status(args, 'create', getCommandFromArgs(args), FinalState.OnlineLike)
       }
     }
   }

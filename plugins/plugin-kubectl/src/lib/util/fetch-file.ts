@@ -88,9 +88,9 @@ export async function openStream<T extends object>(
   }
 }
 
-interface FetchOptions {
+interface FetchOptions<Data extends BodyData | BodyData[]> {
   returnErrors?: boolean
-  data?: BodyData
+  data?: Data
   headers?: Record<string, string>
   method?: 'get' | 'put' | 'post' | 'delete'
 }
@@ -98,13 +98,14 @@ interface FetchOptions {
 export async function _needle(
   { rexec }: REPL,
   url: string,
-  opts?: FetchOptions
+  opts?: FetchOptions<BodyData>
 ): Promise<{ statusCode: number; body: string | object }> {
   if (!inBrowser()) {
     const method = (opts && opts.method) || 'get'
     const headers = Object.assign({ connection: 'keep-alive' }, opts.headers)
     debug('fetch via needle', method, headers)
     const { statusCode, body } = await needle(method, await rescheme(url), opts.data, {
+      json: true,
       follow_max: 10,
       headers
     })
@@ -130,7 +131,8 @@ export async function _needle(
   }
 }
 
-async function fetchRemote(repl: REPL, url: string, opts?: FetchOptions) {
+async function fetchRemote(repl: REPL, url: string, opts?: FetchOptions<BodyData>) {
+  debug('fetchRemote', url, opts)
   const fetchOnce = () => _needle(repl, url, opts).then(_ => _.body)
 
   const retry = (delay: number) => async (err: Error) => {
@@ -165,16 +167,24 @@ export function isReturnedError(file: FetchedFile): file is ReturnedError {
  * Either fetch a remote file or read a local one
  *
  */
-export async function fetchFile(repl: REPL, url: string, opts?: FetchOptions): Promise<FetchedFile[]> {
+export async function fetchFile(
+  repl: REPL,
+  url: string,
+  opts?: FetchOptions<BodyData | BodyData[]>
+): Promise<FetchedFile[]> {
   const urls = url.split(/,/)
   debug('fetchFile', urls)
   const start = Date.now()
 
   const responses = await Promise.all(
-    urls.map(async url => {
+    urls.map(async (url, idx) => {
       if (httpScheme.test(url) || kubernetesScheme.test(url)) {
         debug('fetch remote', url)
-        return fetchRemote(repl, url, opts).catch(err => {
+        return fetchRemote(
+          repl,
+          url,
+          Object.assign({}, opts, { data: Array.isArray(opts.data) ? opts.data[idx] : opts.data })
+        ).catch(err => {
           if (opts && opts.returnErrors) {
             return { error: err }
           } else throw err

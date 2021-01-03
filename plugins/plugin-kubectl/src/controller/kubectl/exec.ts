@@ -48,8 +48,8 @@ export const NoPrepare = <O extends KubeOptions>(args: Arguments<O>) => args.com
 export type PrepareForStatus<O extends KubeOptions> = (cmd: string, args: Arguments<O>) => string | Promise<string>
 
 /** Standard status preparation */
-function DefaultPrepareForStatus<O extends KubeOptions>(cmd: string, args: Arguments<O>) {
-  const rest = args.argvNoOptions.slice(args.argvNoOptions.indexOf(cmd) + 1).join(' ')
+function DefaultPrepareForStatus<O extends KubeOptions>(verb: string, args: Arguments<O>) {
+  const rest = args.argvNoOptions.slice(args.argvNoOptions.indexOf(verb) + 1).join(' ')
   return `${getFileForArgv(args, true)}${rest}`
 }
 
@@ -262,9 +262,10 @@ export async function status<O extends KubeOptions>(
 
   const statusArgs = await prepareForStatus(verb, args)
 
+  const verbArgs = `--verb ${verb}`
   const commandArgs = `--command ${command}`
 
-  const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${dryRunArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs}`
+  const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${dryRunArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs} ${verbArgs}`
 
   return args.REPL.qexec<KubeTableResponse>(statusCmd, args.block)
 }

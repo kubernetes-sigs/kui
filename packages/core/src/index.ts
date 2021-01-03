@@ -65,7 +65,7 @@ export { ExecOptions, ExecOptionsWithUUID, withLanguage } from './models/execOpt
 export { Streamable, Stream } from './models/streamable'
 
 // Errors
-export { isCodedError, CodedError } from './models/errors'
+export { isCodedError, is404, CodedError } from './models/errors'
 export { isUsageError, UsageError, UsageModel, UsageRow } from './core/usage-error'
 
 // TODO remove these soon; see plugin-client-common/src/components/Scalar/index.ts

@@ -29,3 +29,8 @@ export function isCodedError<Code = number>(err: string | object | Error): err i
   const error = err as CodedError<Code>
   return !!(UsageError.isUsageError(err) || error.code !== undefined || error.statusCode !== undefined)
 }
+
+export function is404<Code = number>(err: string | object | Error): err is CodedError<404> {
+  const error = err as CodedError<404>
+  return !!(error.code === 404 || error.statusCode === 404)
+}
