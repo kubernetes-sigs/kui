@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CodedError, isCodedError, REPL } from '@kui-shell/core'
+import { CodedError, isCodedError, is404, REPL } from '@kui-shell/core'
 
 import URLFormatter from './url'
 import { Status, isStatus } from '../../../lib/model/resource'
@@ -92,7 +92,7 @@ export default async function handleErrors(
     })
   )
 
-  if (withErrors.every(isCodedError)) {
+  if (withErrors.every(is404)) {
     // we didn't get a single good response back
     const error: CodedError = new Error(withErrors.map(_ => _.message).join('\n'))
     error.code = withErrors[0].code
