@@ -56,6 +56,11 @@ export async function urlFormatterFor(
     }
   }
 
+  // fieldSelector query; chained selectors are comma-separated
+  if (args.parsedOptions['field-selector'] && typeof args.parsedOptions['field-selector'] === 'string') {
+    queries.push(`fieldSelector=${encodeURIComponent(args.parsedOptions['field-selector'])}`)
+  }
+
   // limit query
   if (typeof args.parsedOptions.limit === 'number') {
     queries.push(`limit=${args.parsedOptions.limit}`)
