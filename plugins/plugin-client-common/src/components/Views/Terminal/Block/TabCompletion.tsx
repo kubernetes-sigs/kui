@@ -149,39 +149,66 @@ export abstract class TabCompletionState {
     }
   }
 
+  /** User has typed another key, while a tab completion is active */
   public key(event: KeyboardEvent) {
-    if (event.key === 'Tab') {
-      this.tabAgain()
-    } else if (event.key !== 'Control' && event.key !== 'Meta' && event.key !== 'Shift' && event.key !== 'Alt') {
+    const key = event.key
+    if (key === 'Escape' || key === 'Control' || key === 'Meta') {
       this.done()
+    } else {
+      if (
+        key === 'Tab' &&
+        this.input.state.prompt &&
+        this.input.state.prompt.value.length > 0 &&
+        !this.input.state.tabCompletion
+      ) {
+        // Swallow any Tab keys if we are currently presenting a set
+        // of completions. This is so we can redirect those keys
+        // instead to tab through the completions
+        event.stopPropagation()
+        event.preventDefault()
+      }
+      // async to make sure prompt updates occur
+      setTimeout(() => this.again(key === 'Tab'))
     }
   }
 
-  protected update(spec: Completions) {
+  /** Perform a state update to reflect the new set of Completions. */
+  protected update(spec: Completions, prefillPartialMatches: boolean) {
     const { completions } = spec
 
-    this.input.setState({
-      tabCompletion:
-        !completions || completions.length === 0
-          ? undefined
-          : completions.length === 1
-          ? new TabCompletionStateWithSingleSuggestion(this.input, completions[0], spec.shellEscapeNotNeeded)
-          : new TabCompletionStateWithMultipleSuggestions(this.input, spec)
-    })
+    if (!completions || completions.length === 0 || (!prefillPartialMatches && !spec.partial)) {
+      // if either (no completions) or (completions, but no partial matches)
+      this.done()
+    } else if (completions.length === 1 && prefillPartialMatches) {
+      new TabCompletionStateWithSingleSuggestion(this.input, completions[0], spec.shellEscapeNotNeeded).render()
+      this.done()
+    } else {
+      this.input.setState({
+        tabCompletion: new TabCompletionStateWithMultipleSuggestions(this.input, spec, prefillPartialMatches)
+      })
+    }
   }
 
-  protected willUpdate(completions: Completions): boolean {
+  /** Is the new set of Completions worth a re-render? */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected willUpdate(completions: Completions, prefillPartialMatches: boolean): boolean {
     return !!completions
   }
 
-  private async tabAgain() {
+  /**
+   * Respond to additional input.
+   *
+   * @param prefillPartialMatches Update the prompt with partial matches?
+   */
+  private async again(prefillPartialMatches: boolean) {
     const completions = await this.findCompletions()
-    if (this.willUpdate(completions)) {
+    if (this.willUpdate(completions, prefillPartialMatches)) {
       // avoid flicker; we are using a PureComponent, so need to manage this ourselves
-      this.update(completions)
+      this.update(completions, prefillPartialMatches)
     }
   }
 
+  /** Terminate this tab completion */
   public done() {
     this.input.setState({ tabCompletion: undefined })
   }
@@ -201,8 +228,8 @@ class TabCompletionInitialState extends TabCompletionState {
 
   private async init() {
     const completions = await this.findCompletions()
-    if (this.willUpdate(completions)) {
-      this.update(completions)
+    if (this.willUpdate(completions, true)) {
+      this.update(completions, true)
     }
   }
 
@@ -230,8 +257,6 @@ function setPromptValue(prompt: HTMLInputElement, newValue: string, selectionSta
  *
  */
 class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
-  private _rendered = false
-
   public constructor(
     input: Input,
     private readonly completion: CompletionResponse,
@@ -241,11 +266,6 @@ class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
   }
 
   public render() {
-    if (this._rendered) {
-      return false as const
-    }
-
-    this._rendered = true
     const lastIdx = this.lastIdx
     const prompt = this.input.state.prompt
 
@@ -274,11 +294,11 @@ class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
 class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
   private readonly completions: Completions
 
-  public constructor(input: Input, completions: Completions) {
+  public constructor(input: Input, completions: Completions, private readonly prefillPartialMatches: boolean) {
     super(input)
 
     const longestPrefix = TabCompletionStateWithMultipleSuggestions.findLongestPrefixMatch(completions)
-    if (longestPrefix) {
+    if (longestPrefix && prefillPartialMatches) {
       // update the prompt directly; is this dangerous? to sidestep react?
       const prompt = this.input.state.prompt
       const lastIdx = this.lastIdx
@@ -347,10 +367,13 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
   }
 
   /** Since we use a React.PureComponent, we will need to manage the `willUpdate` lifecycle. */
-  protected willUpdate(completions: Completions): boolean {
-    return !(
-      this.completions.completions.length === completions.completions.length &&
-      this.completions.completions.every((_, idx) => this.eq(_, completions.completions[idx]))
+  protected willUpdate(completions: Completions, prefillPartialMatches: boolean): boolean {
+    return (
+      this.prefillPartialMatches !== prefillPartialMatches ||
+      !(
+        this.completions.completions.length === completions.completions.length &&
+        this.completions.completions.every((_, idx) => this.eq(_, completions.completions[idx]))
+      )
     )
   }
 
