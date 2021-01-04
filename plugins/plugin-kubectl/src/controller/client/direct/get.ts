@@ -64,7 +64,12 @@ export default async function getDirect(args: Arguments<KubeOptions>, _kind: Pro
         }
       }, undefined)
 
-      if (args.execOptions.type === ExecType.TopLevel && metaTable.rows.length === 0 && !isWatchRequest(args)) {
+      if (
+        args.execOptions.type === ExecType.TopLevel &&
+        metaTable &&
+        metaTable.rows.length === 0 &&
+        !isWatchRequest(args)
+      ) {
         return `No resources found in **${await getNamespace(args)}** namespace.`
       } else {
         try {
