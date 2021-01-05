@@ -51,6 +51,21 @@ declare function allocateNS (ctx: Common.ISuite, ns: string, command?: string, t
 declare function deleteNS (ctx: Common.ISuite, ns: string | string[], command?: string, theCli?: headless): void
 
 /**
+ * Execute a `command` to show a table;
+ * wait for `name` to be green;
+ *
+ */
+declare function list (ctx: Common.ISuite, command: string, name: string, wait?: boolean): Promise<string>
+
+/**
+ * Execute a `command` to show a table;
+ * wait for `name` to be green;
+ * click the `name` to open a sdiecar
+ *
+ */
+declare function openSidecarByList (ctx: Common.ISuite, command: string, name: string, wait?: boolean, mode?: string): Promise<ReplExpect.AppAndCount>
+
+/**
  * Install a mocha test to delete the given pod by name `pod`
  *
  */

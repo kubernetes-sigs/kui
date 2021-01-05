@@ -17,11 +17,10 @@
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import {
   waitForRed,
-  waitForGreen,
-  defaultModeForGet,
   createNS,
   allocateNS,
-  deleteNS
+  deleteNS,
+  openSidecarByList
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
@@ -45,25 +44,14 @@ commands.forEach(command => {
     allocateNS(this, ns, command)
 
     let res: ReplExpect.AppAndCount
+
     it(`should create custom resource definition from file via "${command} apply -f"`, async () => {
       try {
-        console.error(`${command} apply crd 1`)
-        res = await CLI.command(`${command} apply -f ${ROOT}/data/k8s/crd.yaml ${inNamespace}`, this.app)
-
-        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(crdName) })(res)
-
-        // wait for the badge to become green
-        console.error(`${command} apply crd 2`)
-        await waitForGreen(this.app, selector)
-
-        // now click on the table row
-        console.error(`${command} apply crd 3`)
-        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-        res = ReplExpect.blockAfter(res)
-        await SidecarExpect.open(res)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing(crdName))
-          .then(SidecarExpect.yaml({ Kind: 'CronTab' }))
+        res = await openSidecarByList(
+          this,
+          `${command} apply -f ${ROOT}/data/k8s/crd.yaml ${inNamespace}`,
+          crdName
+        ).then(SidecarExpect.yaml({ Kind: 'CronTab' }))
       } catch (err) {
         return Common.oops(this, true)(err)
       }

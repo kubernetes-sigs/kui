@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import {
-  waitForGreen,
   waitForRed,
-  defaultModeForGet,
   createNS,
   allocateNS,
-  deleteNS
+  deleteNS,
+  openSidecarByList
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
@@ -49,23 +48,11 @@ xdescribe(`kubectl apply deployment against redirecting URL ${process.env.MOCHA_
 
     it(`should apply with a redirecting URL via ${kubectl}`, async () => {
       try {
-        const res = await CLI.command(
+        await openSidecarByList(
+          this,
           `${kubectl} apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml ${inNamespace}`,
-          this.app
+          'nginx-deployment'
         )
-
-        const selector: string = await ReplExpect.okWithCustom<string>({
-          selector: Selectors.BY_NAME('nginx-deployment')
-        })(res)
-
-        // wait for the badge to become green
-        await waitForGreen(this.app, selector)
-
-        // now click on the table row
-        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-        await SidecarExpect.open(res)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing('nginx-deployment'))
       } catch (err) {
         await Common.oops(this, true)(err)
       }

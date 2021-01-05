@@ -18,7 +18,7 @@ import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/te
 import {
   waitForGreen,
   waitForRed,
-  defaultModeForGet,
+  openSidecarByList,
   createNS,
   allocateNS,
   deleteNS
@@ -46,26 +46,16 @@ commands.forEach(command => {
 
       it(`should create sample pod from URL via ${command}`, async () => {
         try {
-          const res = await CLI.command(
+          const resAfter = await openSidecarByList(
+            this,
             `${command} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            this.app
-          )
-
-          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
-
-          // wait for the badge to become green
-          await waitForGreen(this.app, selector)
-
-          // now click on the table row
-          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-          const resAfter = ReplExpect.blockAfter(res)
-          await SidecarExpect.open(resAfter)
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .then(SidecarExpect.showing('nginx'))
-            .then(SidecarExpect.button({ mode: 'show-node', label: 'Show Node' }))
+            'nginx'
+          ).then(SidecarExpect.button({ mode: 'show-node', label: 'Show Node' }))
 
           // click on Show Node button
-          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'show-node')).then(_ => _.click())
+          await this.app.client
+            .$(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'show-node', resAfter.splitIndex))
+            .then(_ => _.click())
 
           await SidecarExpect.open(ReplExpect.blockAfter(resAfter)).then(SidecarExpect.kind('Node'))
         } catch (err) {

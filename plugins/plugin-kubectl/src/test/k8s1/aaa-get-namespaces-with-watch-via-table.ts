@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, Util, ReplExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
   waitForRed,
@@ -85,26 +85,6 @@ const deleteNS = function(this: Common.ISuite, kubectl: string) {
   })
 }
 
-/**
- * Drilldown to a given namespace from the watch table
- *
- */
-const testDrilldown = async (nsName: string, res: ReplExpect.AppAndCount) => {
-  const selector = await ReplExpect.okWithCustom<string>({
-    selector: Selectors.BY_NAME(nsName)
-  })(res)
-
-  await res.app.client.$(`${selector} .entity-name`).then(_ => _.click())
-
-  const sidecarRes = ReplExpect.blockAfter(res)
-  await SidecarExpect.open(sidecarRes)
-    .then(SidecarExpect.mode(defaultModeForGet))
-    .then(SidecarExpect.showing(nsName))
-
-  // await res.app.client.click(Selectors.SIDECAR_FULLY_CLOSE_BUTTON(sidecarRes.count))
-  // await SidecarExpect.fullyClosed(sidecarRes)
-}
-
 /** k get ns -w */
 const watchNS = function(this: Common.ISuite, kubectl: string) {
   const watchCmds = [
@@ -129,7 +109,12 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
         const testWatch = await CLI.command(watchCmd, this.app)
         const watchBadge = await waitForOnline(testWatch)
         const watchBadgeButOffline = watchBadge.replace(Status.Online, Status.Offline)
-        await testDrilldown(nsNameForIter, testWatch)
+
+        const selector = await ReplExpect.okWithCustom<string>({
+          selector: Selectors.BY_NAME(nsNameForIter)
+        })(testWatch)
+
+        await Util.openSidecarByClick(this, `${selector} .clickable`, nsNameForIter, defaultModeForGet)
 
         const deleteBadge = await waitForOffline(await CLI.command(`${kubectl} delete ns ${nsNameForIter}`, this.app))
 

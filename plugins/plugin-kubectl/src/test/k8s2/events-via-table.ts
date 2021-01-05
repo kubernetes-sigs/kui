@@ -87,21 +87,12 @@ commands.forEach(command => {
     it('should click on Show Involved Object', async () => {
       try {
         const res = await CLI.command(`k get events -o wide -n ${ns}`, this.app)
-
         const table = `${Selectors.OUTPUT_N(res.count)} .bx--data-table`
         const clickOn = `${table} tr:first-child .clickable`
-        await this.app.client.$(clickOn).then(async _ => {
-          await _.waitForDisplayed()
-          await _.click()
-        })
+        const resAfter = await Util.openSidecarByClick(this, clickOn, podName)
 
-        const resAfter = ReplExpect.blockAfter(res)
-        await SidecarExpect.open(resAfter).then(SidecarExpect.showing(podName))
-
-        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(resAfter.count, 'involvedObject')).then(async _ => {
-          await _.waitForDisplayed()
-          await _.click()
-        })
+        // click the involvedObject button
+        await Util.clickSidecarModeButton(this, resAfter, 'involvedObject')
 
         await SidecarExpect.openInBlockAfter(resAfter)
           .then(SidecarExpect.showing(podName))

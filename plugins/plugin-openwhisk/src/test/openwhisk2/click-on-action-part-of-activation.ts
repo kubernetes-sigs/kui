@@ -71,7 +71,7 @@ describe('Click on action part of activation sidecar', function(this: Common.ISu
 
   it('should click on name part of activation', () =>
     this.app.client
-      .$(Selectors.SIDECAR_TITLE(res.count))
+      .$(Selectors.SIDECAR_TITLE(res.count, res.splitIndex))
       .then(_ => _.click())
       .then(() => res)
       .then(SidecarExpect.showing('foo'))
@@ -96,7 +96,7 @@ describe('Click on action part of activation sidecar', function(this: Common.ISu
 
   it('should click on name part of activation', () =>
     this.app.client
-      .$(Selectors.SIDECAR_TITLE(res.count))
+      .$(Selectors.SIDECAR_TITLE(res.count, res.splitIndex))
       .then(_ => _.click())
       .then(() => res)
       .then(SidecarExpect.showing('foo', 'ppp'))

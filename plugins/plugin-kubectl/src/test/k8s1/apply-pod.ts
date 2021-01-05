@@ -16,16 +16,15 @@
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import {
+  openSidecarByList,
   waitForRed,
-  waitForGreen,
-  defaultModeForGet,
   createNS,
   allocateNS,
   deleteNS
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
-const synonyms = ['kubectl', 'k']
-const dashFs = ['-f', '--filename']
+const synonyms = ['kubectl']
+const dashFs = ['-f']
 
 describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -44,25 +43,11 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
       it(`should create sample pod from URL via "${kubectl} apply ${dashF}" for test: ${this.title}`, async () => {
         try {
-          console.log(`kubectl apply pod 1 ${this.title}`)
-          res = await CLI.command(
+          res = await openSidecarByList(
+            this,
             `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            this.app
-          )
-          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
-
-          // wait for the badge to become green
-          console.log(`kubectl apply pod 2 ${this.title}`)
-          await waitForGreen(this.app, selector)
-
-          // now click on the table row
-          console.log(`kubectl apply pod 3 ${this.title}`)
-          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-          res = ReplExpect.blockAfter(res)
-          await SidecarExpect.open(res)
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .then(SidecarExpect.showing('nginx'))
-            .then(SidecarExpect.yaml({ Status: 'Running' }))
+            'nginx'
+          ).then(SidecarExpect.yaml({ Status: 'Running' }))
         } catch (err) {
           return Common.oops(this, true)(err)
         }

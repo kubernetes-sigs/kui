@@ -19,7 +19,7 @@
  *
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
@@ -52,11 +52,7 @@ describe('wsk package list tests', function(this: Common.ISuite) {
 
   it(`should list ${pckage} with wsk package list then click`, async () => {
     try {
-      const res = await CLI.command(`wsk package list`, this.app)
-      const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(pckage) })(res)
-
-      await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-      await SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing(pckage))
+      await Util.listAndOpenSidecarNoWait(this, `wsk package list`, pckage)
     } catch (err) {
       return Common.oops(this, true)(err)
     }

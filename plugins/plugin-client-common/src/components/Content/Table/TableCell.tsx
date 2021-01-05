@@ -70,7 +70,7 @@ export function onClickForCell(
       return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
-        if (XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
+        if (!XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
           pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
         } else {
           repl.pexec(handler, opts)

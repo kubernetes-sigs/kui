@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
-  defaultModeForGet,
   createNS,
   allocateNS,
-  deleteNS
+  deleteNS,
+  openSidecarByList
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
@@ -43,21 +43,11 @@ xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
       it(`should create sample pod from URL via ${kubectl}`, async () => {
         try {
-          const res = await CLI.command(
+          await openSidecarByList(
+            this,
             `${kubectl} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            this.app
+            'nginx'
           )
-
-          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
-
-          // wait for the badge to become green
-          await waitForGreen(this.app, selector)
-
-          // now click on the table row
-          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-          await SidecarExpect.open(res)
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .then(SidecarExpect.showing('nginx'))
         } catch (err) {
           await Common.oops(this, true)(err)
         }

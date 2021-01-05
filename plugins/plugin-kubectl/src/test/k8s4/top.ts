@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import {
+  openSidecarByList,
   waitForGreen,
-  defaultModeForGet,
   createNS,
   allocateNS,
   deleteNS
@@ -63,13 +63,7 @@ describe(`kubectl top pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
 
     xit(`should click on top row and show pod in sidecar using ${top1}`, async () => {
       try {
-        const res = await CLI.command(top1, this.app)
-        const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') })(res)
-
-        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-        await SidecarExpect.open(res)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing('nginx'))
+        await openSidecarByList(this, top1, 'nginx')
       } catch (err) {
         return Common.oops(this, true)(err)
       }

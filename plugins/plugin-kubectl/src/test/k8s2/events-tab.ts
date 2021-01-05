@@ -15,13 +15,7 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
-import {
-  createNS,
-  allocateNS,
-  deleteNS,
-  waitForGreen,
-  defaultModeForGet
-} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { createNS, allocateNS, deleteNS, openSidecarByList } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
@@ -43,18 +37,7 @@ commands.forEach(command => {
     let res: ReplExpect.AppAndCount
     it('should create sample pod from URL', async () => {
       try {
-        const tableRes = await CLI.command(`${command} create -f ${file} ${inNamespace}`, this.app)
-        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(tableRes)
-
-        await waitForGreen(this.app, selector)
-        await this.app.client.$(`${selector} .clickable`).then(async _ => {
-          await _.waitForExist()
-          await _.click()
-        })
-        res = ReplExpect.blockAfter(tableRes)
-        await SidecarExpect.open(res)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing(name))
+        res = await openSidecarByList(this, `${command} create -f ${file} ${inNamespace}`, name)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -71,7 +54,9 @@ commands.forEach(command => {
     })
 
     const currentEventCount = async (): Promise<number> => {
-      const events = await this.app.client.$$(`${Selectors.SIDECAR(res.count)} .kui--kubectl-event-record`)
+      const events = await this.app.client.$$(
+        `${Selectors.SIDECAR(res.count, res.splitIndex)} .kui--kubectl-event-record`
+      )
       return !events ? 0 : events.length
     }
 

@@ -44,21 +44,25 @@ export const SIDECAR_ACTIVATION_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name-hash .bx--link`
 export const SIDECAR_TITLE = (N: number, splitIndex = 1, clickable = true) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name` + (clickable ? ' .bx--link' : '')
-export const SIDECAR_HERO_TITLE = (N: number) => `${SIDECAR(N)} .sidecar-header .sidecar-header-name`
+export const SIDECAR_HERO_TITLE = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .sidecar-header .sidecar-header-name`
 export const SIDECAR_LEFTNAV_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .sidecar-header-name-content .bx--side-nav__submenu-title`
-export const SIDECAR_HEADER_NAVIGATION = (N: number) => `${SIDECAR(N)} .kui--sidecar--titlebar-navigation`
-export const SIDECAR_BREADCRUMBS = (N: number) =>
-  `${SIDECAR_HEADER_NAVIGATION(N)} .bx--breadcrumb .bx--breadcrumb-item .bx--link`
+export const SIDECAR_HEADER_NAVIGATION = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .kui--sidecar--titlebar-navigation`
+export const SIDECAR_BREADCRUMBS = (N: number, splitIndex = 1) =>
+  `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .bx--breadcrumb .bx--breadcrumb-item .bx--link`
 export const SIDECAR_PACKAGE_NAME_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-namespace .bx--link`
 export const SIDECAR_POPUP_TITLE = SIDECAR_TITLE
 export const SIDECAR_POPUP_HERO_TITLE = SIDECAR_HERO_TITLE
-export const SIDECAR_KIND = (N: number) => `${SIDECAR(N)} .kui--sidecar-kind .bx--link`
-export const SIDECAR_CONTENT = (N: number) => `${SIDECAR(N)} .sidecar-content`
-export const SIDECAR_WEB_ACTION_URL = (N: number) => `${SIDECAR(N)} .sidecar-header .entity-web-export-url.has-url`
-export const SIDECAR_PACKAGE_PARAMETERS = (N: number) => `${SIDECAR_CONTENT(N)} .package-content .package-source`
-export const SIDECAR_BADGES = (N: number) => `${SIDECAR(N)} .sidecar-header .badges`
+export const SIDECAR_KIND = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .kui--sidecar-kind .bx--link`
+export const SIDECAR_CONTENT = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .sidecar-content`
+export const SIDECAR_WEB_ACTION_URL = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .sidecar-header .entity-web-export-url.has-url`
+export const SIDECAR_PACKAGE_PARAMETERS = (N: number, splitIndex = 1) =>
+  `${SIDECAR_CONTENT(N, splitIndex)} .package-content .package-source`
+export const SIDECAR_BADGES = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .sidecar-header .badges`
 
 // top tab stripe buttons
 const TOP_TAB_BUTTONS = `#kui--custom-top-tab-stripe-button-container`
@@ -68,58 +72,70 @@ export const TERMINAL_AND_WATCHER_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show 
 export const TERMINAL_SIDECAR_WATCHER_BUTTON = `${TOP_TAB_BUTTONS} [data-mode="show terminal sidecar and watcher"]`
 
 // sidecar toolbar
-export const SIDECAR_TOOLBAR = (N: number) =>
-  `${SIDECAR(N)} .bx--tab-content:not([hidden]) .sidecar-bottom-stripe-toolbar`
-export const SIDECAR_TOOLBAR_TEXT = (N: number, type: string) =>
-  `${SIDECAR_TOOLBAR(N)} .sidecar-toolbar-text[data-type="${type}"] .sidecar-toolbar-text-content`
-export const SIDECAR_TOOLBAR_BUTTON = (N: number, mode: string) =>
+export const SIDECAR_TOOLBAR = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .bx--tab-content:not([hidden]) .sidecar-bottom-stripe-toolbar`
+export const SIDECAR_TOOLBAR_TEXT = (N: number, type: string, splitIndex = 1) =>
+  `${SIDECAR_TOOLBAR(N, splitIndex)} .sidecar-toolbar-text[data-type="${type}"] .sidecar-toolbar-text-content`
+export const SIDECAR_TOOLBAR_BUTTON = (N: number, mode: string, splitIndex = 1) =>
   `${SIDECAR_TOOLBAR(
-    N
+    N,
+    splitIndex
   )} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button[data-mode="${mode}"] [role="tab"]`
 
 // sidecar alert
-export const SIDECAR_ALERT = (N: number, type: string) =>
-  `${SIDECAR(N)} .bx--tab-content:not([hidden]) .kui--toolbar-alert[data-type="${type}"]`
+export const SIDECAR_ALERT = (N: number, type: string, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .bx--tab-content:not([hidden]) .kui--toolbar-alert[data-type="${type}"]`
 
 // terminal alert
 export const TERMINAL_ALERT = (type: string) => `.kui--terminal-alert[data-type="${type}"]`
 
 // sidecar tab content, for visible tab
-export const SIDECAR_TAB_CONTENT = (N: number) => `${SIDECAR(N)} .bx--tab-content:not([hidden]) .custom-content`
-export const SIDECAR_CUSTOM_CONTENT = (N: number) => `${SIDECAR_TAB_CONTENT(N)} .code-highlighting`
+export const SIDECAR_TAB_CONTENT = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .bx--tab-content:not([hidden]) .custom-content`
+export const SIDECAR_CUSTOM_CONTENT = (N: number, splitIndex = 1) =>
+  `${SIDECAR_TAB_CONTENT(N, splitIndex)} .code-highlighting`
 
 // top nav sidecar
-export const SIDECAR_MODE_BUTTONS = (N: number) =>
-  `${SIDECAR(N)} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
-export const _SIDECAR_MODE_BUTTON = (N: number, mode: string) => `${SIDECAR_MODE_BUTTONS(N)}[data-mode="${mode}"]` // specific mode button in the bottom stripe
-export const SIDECAR_MODE_BUTTON = (N: number, mode: string) => `${_SIDECAR_MODE_BUTTON(N, mode)} > button` // clickable part of mode button
-export const SIDECAR_MODE_BUTTON_SELECTED = (N: number, mode: string) =>
-  `${_SIDECAR_MODE_BUTTON(N, mode)}.bx--tabs--scrollable__nav-item--selected`
+export const SIDECAR_MODE_BUTTONS = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
+export const _SIDECAR_MODE_BUTTON = (N: number, mode: string, splitIndex = 1) =>
+  `${SIDECAR_MODE_BUTTONS(N, splitIndex)}[data-mode="${mode}"]` // specific mode button in the bottom stripe
+export const SIDECAR_MODE_BUTTON = (N: number, mode: string, splitIndex = 1) =>
+  `${_SIDECAR_MODE_BUTTON(N, mode, splitIndex)} > button` // clickable part of mode button
+export const SIDECAR_MODE_BUTTON_SELECTED = (N: number, mode: string, splitIndex = 1) =>
+  `${_SIDECAR_MODE_BUTTON(N, mode, splitIndex)}.bx--tabs--scrollable__nav-item--selected`
 
 // left nav sidecar
-export const SIDECAR_NAV_COMMAND_LINKS = (N: number, link: string) =>
-  `${SIDECAR(N)} .bx--side-nav__item .bx--side-nav__link.kui--nav-command-link[data-link="${link}"]`
-export const SIDECAR_NAV_HREF_LINKS = (N: number, link: string) =>
-  `${SIDECAR(N)} .bx--side-nav__item .bx--side-nav__link.kui--nav-href-link[data-link="${link}"]`
-export const SIDECAR_MODE_BUTTONS_V2 = (N: number) => `${SIDECAR(N)} .bx--side-nav__menu .bx--side-nav__link` // all mode buttons in the left nav
-export const SIDECAR_MODE_BUTTON_V2 = (N: number, mode: string) => `${SIDECAR_MODE_BUTTONS_V2(N)}[data-mode="${mode}"]` // specific mode button in the left nav
-export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (N: number, mode: string) =>
-  `${SIDECAR_MODE_BUTTON_V2(N, mode)}.bx--side-nav__link--current`
+export const SIDECAR_NAV_COMMAND_LINKS = (N: number, link: string, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .bx--side-nav__item .bx--side-nav__link.kui--nav-command-link[data-link="${link}"]`
+export const SIDECAR_NAV_HREF_LINKS = (N: number, link: string, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .bx--side-nav__item .bx--side-nav__link.kui--nav-href-link[data-link="${link}"]`
+export const SIDECAR_MODE_BUTTONS_V2 = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .bx--side-nav__menu .bx--side-nav__link` // all mode buttons in the left nav
+export const SIDECAR_MODE_BUTTON_V2 = (N: number, mode: string, splitIndex = 1) =>
+  `${SIDECAR_MODE_BUTTONS_V2(N, splitIndex)}[data-mode="${mode}"]` // specific mode button in the left nav
+export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (N: number, mode: string, splitIndex = 1) =>
+  `${SIDECAR_MODE_BUTTON_V2(N, mode, splitIndex)}.bx--side-nav__link--current`
 
-export const SIDECAR_BACK_BUTTON = (N: number) =>
-  `${SIDECAR_HEADER_NAVIGATION(N)} .kui--sidecar--titlebar-navigation--back`
-export const SIDECAR_BACK_BUTTON_DISABLED = (N: number) =>
-  `${SIDECAR_HEADER_NAVIGATION(N)} .disabled .kui--sidecar--titlebar-navigation--back`
-export const SIDECAR_FORWARD_BUTTON = (N: number) =>
-  `${SIDECAR_HEADER_NAVIGATION(N)} .kui--sidecar--titlebar-navigation--forward`
-export const SIDECAR_FORWARD_BUTTON_DISABLED = (N: number) =>
-  `${SIDECAR_HEADER_NAVIGATION(N)} .disabled .kui--sidecar--titlebar-navigation--forward`
+export const SIDECAR_BACK_BUTTON = (N: number, splitIndex = 1) =>
+  `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .kui--sidecar--titlebar-navigation--back`
+export const SIDECAR_BACK_BUTTON_DISABLED = (N: number, splitIndex = 1) =>
+  `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .disabled .kui--sidecar--titlebar-navigation--back`
+export const SIDECAR_FORWARD_BUTTON = (N: number, splitIndex = 1) =>
+  `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .kui--sidecar--titlebar-navigation--forward`
+export const SIDECAR_FORWARD_BUTTON_DISABLED = (N: number, splitIndex = 1) =>
+  `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .disabled .kui--sidecar--titlebar-navigation--forward`
 
-export const SIDECAR_MAXIMIZE_BUTTON = (N: number) => `${SIDECAR(N)} .toggle-sidecar-maximization-button a` // maximize button in the bottom stripe
-export const SIDECAR_CLOSE_BUTTON = (N: number) => `${SIDECAR(N)} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
-export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = (N: number) => `${SIDECAR_BASE(N)} .sidecar-bottom-stripe-close a` // resume button in minimized mode
-export const SIDECAR_FULLY_CLOSE_BUTTON = (N: number) => `${SIDECAR(N)} .sidecar-bottom-stripe-quit a` // fully close button in the bottom stripe
-export const SIDECAR_FULLY_CLOSED = (N: number) => `${SIDECAR(N)} .kui--sidecar:not([data-visible])`
+export const SIDECAR_MAXIMIZE_BUTTON = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .toggle-sidecar-maximization-button a` // maximize button in the bottom stripe
+export const SIDECAR_CLOSE_BUTTON = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
+export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = (N: number, splitIndex = 1) =>
+  `${SIDECAR_BASE(N, splitIndex)} .sidecar-bottom-stripe-close a` // resume button in minimized mode
+export const SIDECAR_FULLY_CLOSE_BUTTON = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .sidecar-bottom-stripe-quit a` // fully close button in the bottom stripe
+export const SIDECAR_FULLY_CLOSED = (N: number, splitIndex = 1) =>
+  `${SIDECAR(N, splitIndex)} .kui--sidecar:not([data-visible])`
 
 export const INVERTED_COLORS = '.kui--inverted-color-context'
 
@@ -127,7 +143,7 @@ export const INVERTED_COLORS = '.kui--inverted-color-context'
  * Tree
  *
  */
-export const TREE = (N: number) => `${SIDECAR_TAB_CONTENT(N)} .kui--tree`
+export const TREE = (N: number, splitIndex = 1) => `${SIDECAR_TAB_CONTENT(N, splitIndex)} .kui--tree`
 export const TREE_VIEWS_AND_BODY = (N: number) => `${TREE(N)} .kui--tree-nav-and-body`
 export const TREE_VIEWS = (N: number) => `${TREE_VIEWS_AND_BODY(N)} ul[role="tree"]`
 export const _TREE_LIST = (id: string) => `li[id="${id}"]`

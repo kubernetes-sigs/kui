@@ -213,14 +213,12 @@ export async function nOfCurrentBlock(app: Application, splitIndex = 1) {
 }
 
 /** Index of last executed block */
-export async function lastBlock(res: AppAndCount): Promise<AppAndCount> {
+export async function lastBlock(app: Application, splitIndex = 1): Promise<AppAndCount> {
   return {
-    app: res.app,
-    splitIndex: res.splitIndex,
+    app,
+    splitIndex: splitIndex,
     count: parseInt(
-      await res.app.client
-        .$(Selectors.PROMPT_BLOCK_LAST_FOR_SPLIT(res.splitIndex))
-        .then(_ => _.getAttribute(Selectors.N_ATTR)),
+      await app.client.$(Selectors.PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)).then(_ => _.getAttribute(Selectors.N_ATTR)),
       10
     )
   }

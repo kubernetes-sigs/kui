@@ -95,7 +95,7 @@ describe('command history plain', function(this: Common.ISuite) {
       const N = ((await ReplExpect.okWithCustom({ passthrough: true })(res)) as any) as number
       const selector = `${Selectors.LIST_RESULTS_N(N)}:last-child .entity-name`
       await this.app.client.$(selector).then(_ => _.click())
-      return ReplExpect.okWith('README.md')({ app: this.app, count: N + 1 })
+      return ReplExpect.okWith('README.md')(await CLI.lastBlock(this.app, 2))
     } catch (err) {
       Common.oops(this, true)(err)
     }

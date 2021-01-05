@@ -178,17 +178,22 @@ export const expectArray = (expected: Array<string>, failFast = true, subset = f
 }
 
 /** get the monaco editor text */
-export const getValueFromMonaco = async (
-  res: AppAndCount,
-  container = `${Selectors.PROMPT_BLOCK_N(res.count)} .bx--tab-content:not([hidden])`
-) => {
+export const getValueFromMonaco = async (res: AppAndCount, container?: string) => {
+  if (!container) {
+    container =
+      res.splitIndex !== undefined
+        ? `${Selectors.PROMPT_BLOCK_N_FOR_SPLIT(res.count, res.splitIndex)} .bx--tab-content:not([hidden])`
+        : `${Selectors.PROMPT_BLOCK_N(res.count)} .bx--tab-content:not([hidden])`
+  }
+
   const selector = `${container} .monaco-editor-wrapper`
+
   try {
     await res.app.client.$(selector).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
   } catch (err) {
     console.error('cannot find editor', err)
     await res.app.client
-      .$(Selectors.SIDECAR(res.count))
+      .$(Selectors.SIDECAR(res.count, res.splitIndex))
       .then(_ => _.getHTML())
       .then(html => {
         console.log('here is the content of the sidecar:')
@@ -353,10 +358,12 @@ export async function removeBlock(res: AppAndCount) {
 /** Switch sidecar tab */
 export function switchToTab(mode: string) {
   return async (res: AppAndCount) => {
-    const tab = await res.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, mode))
+    const tab = await res.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, mode, res.splitIndex))
     await tab.waitForDisplayed()
     await tab.click()
-    await res.app.client.$(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, mode)).then(_ => _.waitForDisplayed())
+    await res.app.client
+      .$(Selectors.SIDECAR_MODE_BUTTON_SELECTED(res.count, mode, res.splitIndex))
+      .then(_ => _.waitForDisplayed())
     return res
   }
 }
@@ -364,4 +371,76 @@ export function switchToTab(mode: string) {
 /** Output of the given block */
 export function outputOf(res: AppAndCount) {
   return res.app.client.$(Selectors.OUTPUT_N(res.count, res.splitIndex)).then(_ => _.getText())
+}
+
+/**
+ * Execute `command` and expect a table with `name`
+ *
+ */
+export async function doList(ctx: Common.ISuite, command: string, name: string) {
+  try {
+    const tableRes = await CLI.command(command, ctx.app)
+    return ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(tableRes)
+  } catch (err) {
+    await Common.oops(ctx, true)(err)
+  }
+}
+
+export async function openSidecarByClick(
+  ctx: Common.ISuite,
+  selector: string,
+  name: string,
+  mode?: string,
+  activationId?: string
+) {
+  const app = ctx.app
+
+  // now click on the table row
+  await app.client.$(`${selector}`).then(_ => _.click())
+
+  // expect 2 splits in total
+  const splitIndex = 2
+  await ReplExpect.splitCount(splitIndex)(app)
+
+  // expect sidecar shown in the last blck of the second split
+  const sidecarRes = await CLI.lastBlock(app, splitIndex)
+  await SidecarExpect.open(sidecarRes).then(SidecarExpect.showing(name, activationId))
+
+  if (mode) {
+    await SidecarExpect.mode(mode)(sidecarRes)
+  }
+
+  return sidecarRes
+}
+
+/**
+ * Execute `command` and expect a table with `name`,
+ * and then open sidecar by clicking the `name`
+ *
+ */
+export async function listAndOpenSidecarNoWait(ctx: Common.ISuite, command: string, name: string, mode?: string) {
+  const selector = await doList(ctx, command, name)
+  return openSidecarByClick(ctx, selector, name, mode)
+}
+
+/**
+ * Click sidecar mode button by `mode`
+ *
+ */
+export async function clickSidecarModeButton(ctx: Common.ISuite, res: AppAndCount, mode: string) {
+  return ctx.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, mode, res.splitIndex)).then(async _ => {
+    await _.waitForDisplayed()
+    await _.click()
+  })
+}
+
+/**
+ * Click a sidecar button with `selector`
+ *
+ */
+export async function clickSidecarButtonCustomized(ctx: Common.ISuite, res: AppAndCount, selector: string) {
+  return ctx.app.client.$(`${Selectors.SIDECAR(res.count, res.splitIndex)} ${selector}`).then(async _ => {
+    await _.waitForDisplayed()
+    await _.click()
+  })
 }

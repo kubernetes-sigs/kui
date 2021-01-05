@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
+import { Common, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 import {
   createNS,
   allocateNS,
@@ -132,17 +132,12 @@ commands.forEach(command => {
     ) => {
       it(`should switch to container ${container}`, async () => {
         try {
-          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'container-list')).then(async _ => {
-            await _.waitForDisplayed()
-            await _.click()
-          })
-          await this.app.client
-            .$(`${Selectors.SIDECAR(res.count)} .bx--overflow-menu-options button[data-mode="${container}"]`)
-            .then(async _ => {
-              await _.waitForDisplayed()
-              await _.click()
-            })
-
+          await Util.clickSidecarModeButton(this, res, 'container-list')
+          await Util.clickSidecarButtonCustomized(
+            this,
+            res,
+            `.bx--overflow-menu-options button[data-mode="${container}"]`
+          )
           await SidecarExpect.toolbarText({ type: toolbar.type, text: toolbar.text, exact: false })(res)
         } catch (err) {
           return Common.oops(this, true)(err)
@@ -156,10 +151,8 @@ commands.forEach(command => {
       it('should toggle streaming', async () => {
         try {
           await sleep(sleepTime)
-          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'toggle-streaming')).then(async _ => {
-            await _.waitForDisplayed()
-            await _.click()
-          })
+          await Util.clickSidecarModeButton(this, res, 'toggle-streaming')
+
           if (changeToLive) {
             await SidecarExpect.toolbarText({ type: 'info', text: 'Logs are live', exact: false })(res)
           } else {
