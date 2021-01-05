@@ -34,7 +34,7 @@
   "dependencies": {
     "assert": "2.0.0",
     "browserify-zlib": "0.2.0",
-    "Buffer": "0.0.0",
+    "buffer": "6.0.3",
     "compression-webpack-plugin": "7.1.1",
     "constants-browserify": "1.0.0",
     "copy-webpack-plugin": "7.0.0",
@@ -50,10 +50,10 @@
     "node-loader": "1.0.2",
     "os-browserify": "0.3.0",
     "path-browserify": "1.0.1",
-    "process": "^0.11.10",
+    "process": "0.11.10",
     "raw-loader": "4.0.2",
     "require-all": "3.0.0",
-    "sass": "1.30.0",
+    "sass": "1.32.0",
     "sass-loader": "10.1.0",
     "shebang-loader": "0.0.1",
     "source-map-loader": "2.0.0",
@@ -67,8 +67,8 @@
     "url-loader": "4.1.1",
     "util": "0.12.3",
     "webpack": "5.11.1",
-    "webpack-cli": "4.3.0",
-    "webpack-dev-server": "3.11.0"
+    "webpack-cli": "4.3.1",
+    "webpack-dev-server": "3.11.1"
   },
   "kui": {
     "headless": false,
