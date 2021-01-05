@@ -633,11 +633,14 @@ export async function toKuiTable(
 
   const header = {
     name: forAllNamespaces ? 'Namespace' : columnDefinitions[0].name,
-    attributes: columnDefinitions.slice(forAllNamespaces ? 0 : 1).map(_ => ({
-      key: _.name,
-      value: _.name,
-      outerCSS: outerCSSForKey[_.name]
-    }))
+    attributes: columnDefinitions.slice(forAllNamespaces ? 0 : 1).map(_ => {
+      const key = _.name.toUpperCase()
+      return {
+        key,
+        value: _.name,
+        outerCSS: outerCSSForKey[key]
+      }
+    })
   }
 
   const nameColumnIdx = /Name/i.test(header.name) ? 0 : header.attributes.findIndex(_ => /Name/i.test(_.key)) + 1
