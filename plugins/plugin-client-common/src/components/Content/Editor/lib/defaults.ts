@@ -34,6 +34,7 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   contextmenu: false,
   scrollBeyondLastLine: false,
   scrollBeyondLastColumn: 2,
+  scrollbar: { alwaysConsumeMouseWheel: false },
   cursorStyle: 'block',
   fontFamily: 'var(--font-monospace)',
   fontSize: options.fontSize || getKuiFontSize(),
