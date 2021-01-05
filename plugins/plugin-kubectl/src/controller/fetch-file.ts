@@ -72,14 +72,14 @@ async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: st
  */
 export default (registrar: Registrar) => {
   registrar.listen(
-    `/${commandPrefix}/_fetchstream`,
+    `/${commandPrefix}/_openstream`,
     async (args: Arguments<Options>) => {
-      const uri = args.argvNoOptions[args.argvNoOptions.indexOf('_fetchstream') + 1]
+      const uri = args.argvNoOptions[args.argvNoOptions.indexOf('_openstream') + 1]
       const headers =
         typeof args.execOptions.data === 'object' && !Buffer.isBuffer(args.execOptions.data)
           ? args.execOptions.data.headers
           : undefined
-      debug('fetchstream', uri)
+      debug('openstream', uri)
 
       if (!args.execOptions.onInit) {
         throw new Error('Internal Error: onInit required')

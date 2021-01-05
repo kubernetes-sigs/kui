@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Abortable, Arguments, FlowControllable, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
+import { Abortable, Arguments, FlowControllable, Row, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
 import { toKuiTable } from '../../../lib/view/formatTable'
 import { fetchFile, openStream } from '../../../lib/util/fetch-file'
@@ -23,23 +23,37 @@ import { KubeOptions, withKubeconfigFrom } from '../../kubectl/options'
 
 import URLFormatter from './url'
 import { headersForTableRequest } from './headers'
+import { FinalState } from '../../../lib/model/states'
+import { isResourceReady } from '../../kubectl/status'
 import { MetaTable, isMetaTable } from '../../../lib/model/resource'
 
 const debug = Debug('plugin-kubectl/client/direct/watch')
 
+/** The apiServer will emit a stream of these messages */
 interface WatchUpdate {
+  /** The nature of the change covered by the rows of the associated table */
   type: 'MODIFIED' | 'ADDED' | 'DELETED'
+
+  /** The rows of this table indicate the resources modified/added/deleted */
   object: MetaTable
 }
 
+/**
+ * This class provides an implementation of a Watcher extension of a
+ * Kui Table. It establishes a stream to the apiServer, and hooks the emitted stream of WatchUpdate events into the WatchPusher API of the table: i.e. the this.pusher.offline(), update(), header(), and footer() calls.
+ *
+ */
 class DirectWatcher implements Abortable, Watcher {
-  /** the table push API */
+  /** The table push API */
   private pusher: WatchPusher
 
-  /** the current stream job */
+  /** The current stream jobs. These will be aborted/flow-controlled as directed by the associated view. */
   private jobs: (Abortable & FlowControllable)[] = []
 
-  /** We only seem to get these once */
+  /** Debouncer: the apiServer may send us DELETED or ADDED events multiple times for a given resource :( */
+  private readonly readyDebouncer: Record<string, boolean>
+
+  /** We only seem to get these once, so we need to remember them */
   private bodyColumnDefinitions: MetaTable['columnDefinitions']
   private footerColumnDefinitions: {
     lastSeenColumnIdx: number
@@ -50,11 +64,19 @@ class DirectWatcher implements Abortable, Watcher {
 
   // eslint-disable-next-line no-useless-constructor
   public constructor(
-    private readonly args: Arguments<KubeOptions>,
+    private readonly drilldownCommand: string,
+    private readonly args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
     private readonly kind: string | Promise<string>,
     private readonly resourceVersion: Table['resourceVersion'],
-    private readonly formatUrl: URLFormatter
-  ) {}
+    private readonly formatUrl: URLFormatter,
+    private readonly finalState?: FinalState,
+    private nNotReady?: number, // number of resources to wait on
+    private readonly monitorEvents = true
+  ) {
+    if (finalState) {
+      this.readyDebouncer = {}
+    }
+  }
 
   /** This will be called by the view when it wants the underlying streamer to resume flowing updates */
   public xon() {
@@ -68,14 +90,14 @@ class DirectWatcher implements Abortable, Watcher {
 
   /** This will be called by the view when it wants the underlying streamer to die */
   public abort() {
-    debug('abort requested', this.jobs.length)
+    debug('abort requested', this.jobs.length, this.jobs)
     this.jobs.forEach(job => job.abort())
   }
 
   /** This will be called by the view when it is ready to accept push updates */
   public async init(pusher: WatchPusher) {
     this.pusher = pusher
-    await Promise.all([this.initBodyUpdates(), this.initFooterUpdates()])
+    await Promise.all([this.initBodyUpdates(), this.monitorEvents ? this.initFooterUpdates() : Promise.resolve()])
   }
 
   /** Initialize the streamer for main body updates; i.e. for the rows of the table */
@@ -243,22 +265,51 @@ class DirectWatcher implements Abortable, Watcher {
     }
 
     setTimeout(async () => {
-      const table = await toKuiTable(update.object, this.kind, this.args)
+      const table = await toKuiTable(update.object, this.kind, this.args, this.drilldownCommand)
 
       if (sendHeaders) {
         this.pusher.header(table.header)
       }
 
-      table.body.forEach(row => {
+      table.body.forEach((row, idx) => {
         if (update.type === 'ADDED' || update.type === 'MODIFIED') {
           this.pusher.update(row, true)
         } else {
           this.pusher.offline(row.rowKey)
         }
+
+        this.checkIfReady(row, idx, update)
       })
 
       this.pusher.batchUpdateDone()
     })
+  }
+
+  /**
+   * If we were asked to watch for resources reaching a given
+   * `this.finalState`, then check the resource represented by the
+   * given Row against the desired final state.
+   *
+   */
+  private checkIfReady(row: Row, idx: number, update: WatchUpdate) {
+    if (this.finalState && this.nNotReady > 0) {
+      debug('checking if resource is ready', this.finalState, this.nNotReady, row, update.type, update.object.rows[idx])
+
+      const isReady =
+        (update.type === 'ADDED' && this.finalState === FinalState.OnlineLike) ||
+        (update.type === 'DELETED' && this.finalState === FinalState.OfflineLike) ||
+        (update.type === 'MODIFIED' && isResourceReady(row, this.finalState))
+
+      if (isReady && !this.readyDebouncer[row.rowKey]) {
+        debug('A resource is in its final state', row.name, this.nNotReady)
+        this.readyDebouncer[row.rowKey] = true
+        if (--this.nNotReady <= 0) {
+          debug('All resources are in their final state')
+          this.abort()
+          this.pusher.done()
+        }
+      }
+    }
   }
 }
 
@@ -269,10 +320,14 @@ class DirectWatcher implements Abortable, Watcher {
  *
  */
 export default async function makeWatchable(
-  args: Arguments<KubeOptions>,
+  drilldownCommand: string,
+  args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
   kind: string | Promise<string>,
   table: Table,
-  formatUrl: URLFormatter
+  formatUrl: URLFormatter,
+  finalState?: FinalState,
+  nNotReady?: number,
+  monitorEvents?: boolean
 ): Promise<Table | (Table & Watchable)> {
   if (!table.resourceVersion) {
     // we need a cursor to start watching
@@ -280,5 +335,16 @@ export default async function makeWatchable(
     return table
   }
 
-  return Object.assign(table, { watch: new DirectWatcher(args, kind, table.resourceVersion, formatUrl) })
+  return Object.assign(table, {
+    watch: new DirectWatcher(
+      drilldownCommand,
+      args,
+      kind,
+      table.resourceVersion,
+      formatUrl,
+      finalState,
+      nNotReady,
+      monitorEvents
+    )
+  })
 }

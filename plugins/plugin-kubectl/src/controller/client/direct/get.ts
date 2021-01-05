@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Arguments, CodedError, ExecType } from '@kui-shell/core'
+import { Arguments, CodedError, ExecType, Table } from '@kui-shell/core'
 
 import makeWatchable from './watch'
 import { Explained } from '../../kubectl/explain'
 import { fetchFile } from '../../../lib/util/fetch-file'
+import { getCommandFromArgs } from '../../../lib/util/util'
 import { toKuiTable, withNotFound } from '../../../lib/view/formatTable'
 
 import { KubeOptions, formatOf, getNamespace, isTableRequest, isWatchRequest } from '../../kubectl/options'
@@ -28,60 +29,77 @@ import { urlFormatterFor } from './url'
 import { headersForTableRequest } from './headers'
 import { isStatus, KubeItems, MetaTable } from '../../../lib/model/resource'
 
-export default async function getDirect(args: Arguments<KubeOptions>, _kind: Promise<Explained>) {
-  const explainedKind = _kind ? await _kind : { kind: undefined, version: undefined, isClusterScoped: false }
+export async function getTable(
+  drilldownCommand: string,
+  namespace: string,
+  names: string[],
+  explainedKind: Explained,
+  format: string,
+  args: Pick<Arguments<KubeOptions>, 'REPL' | 'parsedOptions' | 'execOptions'>
+): Promise<string | Table> {
   const { kind } = explainedKind
-  const formatUrl = await urlFormatterFor(args, explainedKind)
+  const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
 
-  const format = formatOf(args)
-  const kindIdx = args.argvNoOptions.indexOf('get') + 1
-  const names = args.argvNoOptions.slice(kindIdx + 1)
   const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
-  if (isTableRequest(args)) {
-    const fmt = format || 'default'
-    if (fmt === 'wide' || fmt === 'default') {
-      // first, fetch the data
-      const responses = await fetchFile(args.REPL, urls, { headers: headersForTableRequest, returnErrors: true })
+  const fmt = format || 'default'
+  if (fmt === 'wide' || fmt === 'default') {
+    // first, fetch the data; we pass returnErrors=true here, so that we can assemble 404s properly
+    const responses = await fetchFile(args.REPL, urls, { headers: headersForTableRequest, returnErrors: true })
 
-      // then dissect it into errors and non-errors
-      const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
+    // then dissect it into errors and non-errors
+    const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
 
-      // assemble the non-errors into a single table
-      const metaTable = ok.reduce<MetaTable>((metaTable, data) => {
-        const thisTable =
-          Buffer.isBuffer(data) || typeof data === 'string'
-            ? (JSON.parse(data.toString()) as MetaTable)
-            : (data as MetaTable)
+    // assemble the non-errors into a single table
+    const metaTable = ok.reduce<MetaTable>((metaTable, data) => {
+      const thisTable =
+        Buffer.isBuffer(data) || typeof data === 'string'
+          ? (JSON.parse(data.toString()) as MetaTable)
+          : (data as MetaTable)
 
-        if (!metaTable) {
-          // first table response
-          return thisTable
-        } else {
-          // accumulate table responses
-          metaTable.rows = metaTable.rows.concat(thisTable.rows)
-          return metaTable
-        }
-      }, undefined)
-
-      if (
-        args.execOptions.type === ExecType.TopLevel &&
-        metaTable &&
-        metaTable.rows.length === 0 &&
-        !isWatchRequest(args)
-      ) {
-        return `No resources found in **${await getNamespace(args)}** namespace.`
+      if (!metaTable) {
+        // first table response
+        return thisTable
       } else {
-        try {
-          // withNotFound will add error rows to the table for each error
-          const table = withNotFound(await toKuiTable(metaTable, kind, args), errors.map(_ => _.message).join('\n'))
-          return !isWatchRequest(args) ? table : makeWatchable(args, kind, table, formatUrl)
-        } catch (err) {
-          console.error('error formatting table', err)
-          throw new Error('Internal Error')
-        }
+        // accumulate table responses
+        metaTable.rows = metaTable.rows.concat(thisTable.rows)
+        return metaTable
+      }
+    }, undefined)
+
+    if (
+      args.execOptions.type === ExecType.TopLevel &&
+      metaTable &&
+      metaTable.rows.length === 0 &&
+      !isWatchRequest(args)
+    ) {
+      return `No resources found in **${namespace}** namespace.`
+    } else {
+      try {
+        // withNotFound will add error rows to the table for each error
+        const table = withNotFound(
+          await toKuiTable(metaTable, kind, args, drilldownCommand),
+          errors.map(_ => _.message).join('\n')
+        )
+        return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, table, formatUrl)
+      } catch (err) {
+        console.error('error formatting table', err)
+        throw new Error('Internal Error')
       }
     }
+  }
+}
+
+export async function get(
+  drilldownCommand: string,
+  namespace: string,
+  names: string[],
+  explainedKind: Explained,
+  format: string,
+  args: Pick<Arguments<KubeOptions>, 'REPL' | 'parsedOptions' | 'execOptions'>
+) {
+  if (isTableRequest(args)) {
+    return getTable(drilldownCommand, namespace, names, explainedKind, format, args)
   }
 
   if (
@@ -90,6 +108,9 @@ export default async function getDirect(args: Arguments<KubeOptions>, _kind: Pro
     args.parsedOptions.context === undefined &&
     (format === 'json' || format === 'yaml' || format === 'name')
   ) {
+    const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
+    const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
+
     let response: string | Buffer | object
     try {
       response = (await fetchFile(args.REPL, urls, { headers: { accept: 'application/json' } }))[0]
@@ -141,4 +162,15 @@ export default async function getDirect(args: Arguments<KubeOptions>, _kind: Pro
       }
     }
   }
+}
+
+export default async function getDirect(args: Arguments<KubeOptions>, _kind: Promise<Explained>) {
+  const namespace = getNamespace(args)
+  const format = formatOf(args)
+  const drilldownCommand = getCommandFromArgs(args)
+  const kindIdx = args.argvNoOptions.indexOf('get') + 1
+  const names = args.argvNoOptions.slice(kindIdx + 1)
+  const explainedKind = _kind ? await _kind : { kind: undefined, version: undefined, isClusterScoped: false }
+
+  return get(drilldownCommand, await namespace, names, explainedKind, format, args)
 }

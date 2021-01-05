@@ -222,21 +222,27 @@ async function getResourcesReferencedByCommandLine(
         namespace
       }))
   } else if (verb === 'create') {
-    return args.argvNoOptions
-      .slice(args.argvNoOptions.indexOf('status') + 2)
-      .map(nameGroupVersion => nameGroupVersion.split(/\./))
-      .map(([name, group, version]) => ({
-        group,
-        version,
-        kind,
-        name,
-        namespace
-      }))
+    const isCreateSecret = /secret(s)?/i.test(kind)
+    if (isCreateSecret) {
+      // ugh, the phrasing is different for creating secrets,
+      // e.g. "create <kind> default <name>", rather than the usual
+      // "create <kind> <name>"
+      return [{ name: nameAlt, kind, namespace }]
+    } else {
+      return args.argvNoOptions
+        .slice(args.argvNoOptions.indexOf('status') + 2)
+        .map(nameGroupVersion => nameGroupVersion.split(/\./))
+        .map(([name, group, version]) => ({
+          group,
+          version,
+          kind,
+          name,
+          namespace
+        }))
+    }
   }
 
-  const isCreateSecret = !isDelete && /secret(s)?/i.test(kind)
-  const [name, group, version] = isCreateSecret ? [nameAlt] : nameGroupVersion.split(/\./)
-
+  const [name, group, version] = nameGroupVersion.split(/\./)
   return [{ group, version, kind, name, namespace }]
 }
 
@@ -245,7 +251,7 @@ async function getResourcesReferencedByCommandLine(
  * desired final state?
  *
  */
-function isResourceReady(row: Row, finalState: FinalState) {
+export function isResourceReady(row: Row, finalState: FinalState) {
   const status = row.attributes.find(_ => /STATUS/i.test(_.key))
   if (status !== undefined) {
     // primary plan: use the STATUS column

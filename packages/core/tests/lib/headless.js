@@ -114,7 +114,7 @@ class CLI {
    */
   command(cmd, env = {}, { errOk = undefined } = {}) {
     return new Promise(resolve => {
-      const command = `${this.exe} ${cmd} --no-color`
+      const command = `${this.exe} ${cmd} ` + (/kui/.test(this.exe) ? ' --no-color' : '')
       debug('executing command', command)
 
       const ourEnv = Object.assign({}, process.env, env, {

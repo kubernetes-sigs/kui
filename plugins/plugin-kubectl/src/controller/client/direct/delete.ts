@@ -20,11 +20,11 @@ import { Arguments, is404 } from '@kui-shell/core'
 import { fetchFile } from '../../../lib/util/fetch-file'
 import { getKindAndVersion } from '../../kubectl/explain'
 
-import { KubeOptions, fileOf, getLabel } from '../../kubectl/options'
+import { KubeOptions, fileOf, getLabel, getNamespace } from '../../kubectl/options'
 
+import status from './status'
 import handleErrors from './errors'
-import { urlFormatterFor } from './url'
-import { status } from '../../kubectl/exec'
+import { urlFormatterForArgs } from './url'
 import { FinalState } from '../../../lib/model/states'
 import { getCommandFromArgs } from '../../../lib/util/util'
 import { headersForPlainRequest as headers } from './headers'
@@ -43,7 +43,7 @@ export default async function deleteDirect(
   if (!fileOf(args) && !getLabel(args) && !args.parsedOptions['dry-run'] && !args.parsedOptions['field-selector']) {
     const explainedKind = await _kind
     const { kind } = explainedKind
-    const formatUrl = (await urlFormatterFor(args, explainedKind)).bind(undefined, true, false)
+    const formatUrl = await urlFormatterForArgs(args, explainedKind)
 
     // this tells the apiServer that we want the delete to return right away
     const data = { propagationPolicy: 'Background' }
@@ -51,7 +51,7 @@ export default async function deleteDirect(
     const kindIdx = args.argvNoOptions.indexOf('delete') + 1
     const names = args.argvNoOptions.slice(kindIdx + 1)
     if (names.length > 0) {
-      const urls = names.map(formatUrl).join(',')
+      const urls = names.map(formatUrl.bind(undefined, true, false)).join(',')
       debug('attempting delete direct', urls)
 
       const responses = await fetchFile(args.REPL, urls, { method: 'delete', headers, returnErrors: true, data })
@@ -67,7 +67,14 @@ export default async function deleteDirect(
         // kubectl CLI handle the errors for now
       } else {
         // success!
-        return status(args, 'delete', getCommandFromArgs(args), FinalState.OfflineLike)
+        const groups = [
+          {
+            names,
+            namespace: await getNamespace(args),
+            explainedKind
+          }
+        ]
+        return status(args, groups, FinalState.OfflineLike)
       }
     }
   }

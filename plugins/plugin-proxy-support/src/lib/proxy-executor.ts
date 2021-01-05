@@ -139,15 +139,15 @@ class ProxyEvaluator implements ReplEval {
             ? await execOptions.onInit({
                 write: (data: string) => channel.send(JSON.stringify({ type: 'data', data, uuid })),
                 xon: () => {
-                  debug('xon requested')
+                  debug('xon requested on streaming proxy exec')
                   channel.send(JSON.stringify({ type: 'xon', uuid }))
                 },
                 xoff: () => {
-                  debug('xoff requested')
+                  debug('xoff requested on streaming proxy exec')
                   channel.send(JSON.stringify({ type: 'xoff', uuid }))
                 },
                 abort: () => {
-                  debug('abort requested')
+                  debug('abort requested on streaming proxy exec')
                   channel.send(JSON.stringify({ type: 'kill', uuid }))
                 }
               })
@@ -191,6 +191,11 @@ class ProxyEvaluator implements ReplEval {
 
                       channel.removeEventListener('message', onMessage)
                       const code = response.response.code || response.response.statusCode
+
+                      if (execOptions.onExit) {
+                        execOptions.onExit(code)
+                      }
+
                       if (code !== undefined && code !== 200) {
                         if (isUsageError(response.response)) {
                           // e.g. k get -h

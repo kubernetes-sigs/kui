@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { Registrar, Arguments, WithSourceReferences, Table, isTable } from '@kui-shell/core'
 
 import defaultFlags from './flags'
@@ -27,9 +28,10 @@ import { isUsage, doHelp } from '../../lib/util/help'
 import getSourceRefs from './source'
 import { doGetAsEntity, viewTransformer } from './get'
 
-const verbs = ['create' as const, 'apply' as const]
+const debug = Debug('plugin-kubectl/controller/kubectl/create')
 
-// export const doCreate = (verb: string, command = 'kubectl') => doExecWithStatus(verb, FinalState.OnlineLike, command)
+/** The create-like verbs we will handle */
+const verbs = ['create' as const, 'apply' as const]
 
 export const doCreate = (verb: 'create' | 'apply', command = 'kubectl') => async (args: Arguments<KubeOptions>) => {
   if (isUsage(args)) {
@@ -48,6 +50,8 @@ export const doCreate = (verb: 'create' | 'apply', command = 'kubectl') => async
         const response = await createDirect(args, verb)
         if (response) {
           return response
+        } else {
+          debug('createDirect falling through to CLI impl')
         }
       } catch (err) {
         if (err.code === 404) {
