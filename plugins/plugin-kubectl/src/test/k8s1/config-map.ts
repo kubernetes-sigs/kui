@@ -17,7 +17,6 @@
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import {
   waitForGreen,
-  waitForRed,
   defaultModeForGet,
   createNS,
   allocateNS,
@@ -81,7 +80,7 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
             await expectContent(res, content)
           }
         } catch (err) {
-          return Common.oops(this)(err)
+          return Common.oops(this, true)(err)
         }
       })
     }
@@ -90,12 +89,8 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     const deleteIt = (name: string) => {
       it(`should delete the configmap ${name} via ${kubectl} `, () => {
         return CLI.command(`${kubectl} delete cm ${name} ${inNamespace}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
-          )
-          .then(selector => waitForRed(this.app, selector))
           .then(() => waitTillNone('configmap', undefined, name, undefined, inNamespace))
-          .catch(Common.oops(this))
+          .catch(Common.oops(this, true))
       })
     }
 
@@ -107,7 +102,7 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
             ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
           )
           .then(selector => waitForGreen(this.app, selector))
-          .catch(Common.oops(this))
+          .catch(Common.oops(this, true))
       })
     }
 

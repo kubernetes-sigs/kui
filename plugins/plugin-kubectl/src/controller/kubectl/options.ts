@@ -76,8 +76,8 @@ export function getFileFromArgv(args: Arguments<KubeOptions>): string {
   }
 }
 
-export function formatOf(args: Arguments<KubeOptions>): OutputFormat {
-  return args.parsedOptions.o || args.parsedOptions.output
+export function formatOf({ parsedOptions }: Pick<Arguments<KubeOptions>, 'parsedOptions'>): OutputFormat {
+  return parsedOptions.o || parsedOptions.output
 }
 
 /** @return is request file and without format */
@@ -115,11 +115,11 @@ export function isHelpRequest(args: Arguments<KubeOptions>) {
   )
 }
 
-export function isTableRequest(args: Arguments<KubeOptions>) {
+export function isTableRequest(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>) {
   return isTableFormat(formatOf(args))
 }
 
-export function isWatchRequest(args: Arguments<KubeOptions>) {
+export function isWatchRequest(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>) {
   return args.parsedOptions.w || args.parsedOptions.watch || args.parsedOptions['watch-only']
 }
 
@@ -141,16 +141,16 @@ export function isTableWatchRequest(args: Arguments<KubeOptions>) {
   return isWatchRequest(args) && isTableRequest(args)
 }
 
-export function getLabel(args: Arguments<KubeOptions>) {
-  const label = args.parsedOptions.l || args.parsedOptions.label
+export function getLabel({ parsedOptions }: Pick<Arguments<KubeOptions>, 'parsedOptions'>) {
+  const label = parsedOptions.l || parsedOptions.label
   if (label) {
     return label
   } else {
     // yargs-parser doesn't handle -lname=nginx without the space
     // after -l; or least not the way we've configured it
-    for (const key in args.parsedOptions) {
+    for (const key in parsedOptions) {
       if (/^l.+/.test(key) && key !== 'limit') {
-        const value = args.parsedOptions[key]
+        const value = parsedOptions[key]
         if (value) {
           return `${key.slice(1)}=${value}`
         }
@@ -186,7 +186,7 @@ export function hasLabel(args: Arguments<KubeOptions>) {
 }
 
 /** @return the namespace as expressed in the command line, or undefined if not */
-export function getNamespaceAsExpressed(args: Arguments<KubeOptions>): string {
+export function getNamespaceAsExpressed(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string {
   return args.parsedOptions.n || args.parsedOptions.namespace
 }
 

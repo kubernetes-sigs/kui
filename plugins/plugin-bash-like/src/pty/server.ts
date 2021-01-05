@@ -301,6 +301,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           debug(`kill requested. hasShell=${shell !== undefined} hasJob=${job !== undefined}`)
           if (job) {
             job.abort()
+            jobs[msg.uuid] = undefined
           }
           break
         }
@@ -322,7 +323,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           const execOptions = Object.assign({}, msg.execOptions, { rethrowErrors: true })
           if (msg.stream) {
             // then we will stream back the output; otherwise, we will use a request/response style of execution
-            debug('initializing streaming exec')
+            debug('initializing streaming exec', msg.uuid)
             execOptions.onInit = (job: Abortable & FlowControllable) => {
               jobs[msg.uuid] = job
               return chunk =>

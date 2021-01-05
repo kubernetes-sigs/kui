@@ -15,7 +15,13 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForRed, waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  waitTillNone,
+  waitForGreen,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const kubectl = 'kubectl'
 const name = 'foo-secret'
@@ -44,12 +50,8 @@ describe('kubectl secrets', function(this: Common.ISuite) {
 
   it('should delete a generic secret', async () => {
     try {
-      const selector = await CLI.command(`${kubectl} delete secret ${name} ${inNamespace}`, this.app).then(
-        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })
-      )
-
-      // wait for the badge to become green
-      await waitForRed(this.app, selector)
+      await CLI.command(`${kubectl} delete secret ${name} ${inNamespace}`, this.app)
+      await waitTillNone('secret', undefined, name, undefined, inNamespace)(this.app)
     } catch (err) {
       await Common.oops(this, true)(err)
     }

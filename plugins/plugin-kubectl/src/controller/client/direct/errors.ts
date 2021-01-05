@@ -17,10 +17,16 @@
 import { CodedError, isCodedError, REPL } from '@kui-shell/core'
 
 import URLFormatter from './url'
+import { headersForPlainRequest } from './headers'
 import { Status, isStatus } from '../../../lib/model/resource'
 import { fetchFile, FetchedFile, isReturnedError } from '../../../lib/util/fetch-file'
 
-type WithErrors = { errors: CodedError[]; ok: (string | Buffer | object)[] }
+type WithErrors = {
+  errors: CodedError[]
+  ok: (string | Buffer | object)[]
+  okIndices: number[]
+  errorIndices: number[]
+}
 
 /** See if the given error message is a Kubernetes Status object */
 function tryParseAsStatus(message: string): string | Status {
@@ -40,7 +46,8 @@ export default async function handleErrors(
   responses: FetchedFile[],
   formatUrl: URLFormatter,
   kind: string,
-  repl: REPL
+  repl: REPL,
+  returnErrors = false
 ): Promise<WithErrors> {
   const withErrors: (string | Buffer | object | CodedError)[] = await Promise.all(
     responses.map(async data => {
@@ -55,7 +62,7 @@ export default async function handleErrors(
             const nsUrl = formatUrl(false)
             const kindUrl = formatUrl(true) + '?limit=1'
 
-            const opts = { headers: { accept: 'application/json' } }
+            const opts = { headers: headersForPlainRequest }
             const [nsData, kindData] = await Promise.all([
               fetchFile(repl, nsUrl, opts)
                 .then(_ => _[0])
@@ -92,18 +99,26 @@ export default async function handleErrors(
     })
   )
 
-  if (withErrors.every(isCodedError)) {
+  if (!returnErrors && withErrors.every(isCodedError)) {
     // we didn't get a single good response back
     const error: CodedError = new Error(withErrors.map(_ => _.message).join('\n'))
     error.code = withErrors[0].code
     throw error
   } else {
-    const init: WithErrors = { errors: [] as CodedError[], ok: [] as (string | Buffer | object)[] }
-    return withErrors.reduce<WithErrors>((pair, data) => {
+    const init: WithErrors = {
+      errors: [] as CodedError[],
+      ok: [] as (string | Buffer | object)[],
+      okIndices: [] as number[],
+      errorIndices: [] as number[]
+    }
+
+    return withErrors.reduce<WithErrors>((pair, data, idx) => {
       if (isCodedError(data)) {
         pair.errors.push(data)
+        pair.errorIndices.push(idx)
       } else {
         pair.ok.push(data)
+        pair.okIndices.push(idx)
       }
 
       return pair

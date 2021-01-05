@@ -34,3 +34,14 @@ export function is404<Code = number>(err: string | object | Error): err is Coded
   const error = err as CodedError<404>
   return !!(error.code === 404 || error.statusCode === 404)
 }
+
+export function is409<Code = number>(err: string | object | Error): err is CodedError<409> {
+  const error = err as CodedError<409>
+  return !!(error.code === 409 || error.statusCode === 409)
+}
+
+export function is404or409<Code = number>(err: string | object | Error): err is CodedError<404 | 409> {
+  const error = err as CodedError<404 | 409>
+  const code = error.code || error.statusCode
+  return code === 404 || code === 409
+}

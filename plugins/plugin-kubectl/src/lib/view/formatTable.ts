@@ -33,7 +33,6 @@ import TrafficLight from '../model/traffic-light'
 import { isClusterScoped, MetaTable } from '../model/resource'
 import { getCurrentDefaultNamespace } from '../../'
 import { RawResponse } from '../../controller/kubectl/response'
-import { getCommandFromArgs } from '../util/util'
 import KubeOptions, {
   formatOf,
   isForAllNamespaces,
@@ -182,7 +181,10 @@ function cssForReadyCount(ready: string): string {
 }
 
 /** @return a namespace breadcrumb, either from the one given by args, or using the default from context */
-export async function getNamespaceBreadcrumbs(entityType: string, args: Arguments<KubeOptions>): Promise<Breadcrumb[]> {
+export async function getNamespaceBreadcrumbs(
+  entityType: string,
+  args: Pick<Arguments<KubeOptions>, 'parsedOptions' | 'execOptions' | 'REPL'>
+): Promise<Breadcrumb[]> {
   const ns = await (isClusterScoped(entityType)
     ? undefined
     : getNamespaceAsExpressed(args) ||
@@ -609,14 +611,14 @@ export function hideWithSidecar(attr: number | string, table: Table) {
 export async function toKuiTable(
   table: MetaTable,
   kind: string | Promise<string>,
-  args: Arguments<KubeOptions>
+  args: Pick<Arguments<KubeOptions>, 'parsedOptions' | 'execOptions' | 'REPL'>,
+  drilldownCommand: string
 ): Promise<Table> {
   const format = formatOf(args)
   const forAllNamespaces = isForAllNamespaces(args.parsedOptions)
   const includedColumns = table.columnDefinitions.map(_ => format === 'wide' || _.priority === 0)
   const columnDefinitions = table.columnDefinitions.filter(_ => format === 'wide' || _.priority === 0)
 
-  const drilldownCommand = getCommandFromArgs(args)
   const drilldownVerb = 'get'
   const drilldownKind = await kind
   const drilldownFormat = '-o yaml'

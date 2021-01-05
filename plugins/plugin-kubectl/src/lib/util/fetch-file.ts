@@ -26,6 +26,9 @@ import { KubeOptions, isRecursive } from '../../controller/kubectl/options'
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
 
+/** Maximum number of times to retry on ECONNREFUSED */
+const MAX_ECONNREFUSED_RETRIES = 10
+
 const httpScheme = /http(s)?:\/\//
 const kubernetesScheme = /^kubernetes:\/\//
 
@@ -53,7 +56,7 @@ export async function openStream<T extends object>(
   if (inBrowser() && hasProxy()) {
     debug('routing openStream request to proxy', url)
     await args.REPL.rexec(
-      `_fetchstream ${encodeComponent(url)}`,
+      `_openstream ${encodeComponent(url)}`,
       Object.assign(
         {},
         {
@@ -64,6 +67,7 @@ export async function openStream<T extends object>(
         }
       )
     )
+    debug('routed openStream to proxy: done', url)
   } else {
     // we need to set JSON to false to disable needle's parsing, which
     // seems not to be compatible with streaming
@@ -75,6 +79,11 @@ export async function openStream<T extends object>(
         debug('abort requested', typeof stream['destroy'])
         if (typeof stream['destroy'] === 'function') {
           stream['destroy']()
+        }
+
+        if (typeof mgmt.onExit === 'function') {
+          debug('sending onExit')
+          mgmt.onExit(0)
         }
       },
       xon: () => stream.resume(),
@@ -96,21 +105,41 @@ interface FetchOptions<Data extends BodyData | BodyData[]> {
 }
 
 export async function _needle(
-  { rexec }: REPL,
+  repl: Pick<REPL, 'rexec'>,
   url: string,
-  opts?: FetchOptions<BodyData>
+  opts?: FetchOptions<BodyData>,
+  retryCount = 0
 ): Promise<{ statusCode: number; body: string | object }> {
   if (!inBrowser()) {
     const method = (opts && opts.method) || 'get'
     const headers = Object.assign({ connection: 'keep-alive' }, opts.headers)
     debug('fetch via needle', method, headers)
-    const { statusCode, body } = await needle(method, await rescheme(url), opts.data, {
-      json: true,
-      follow_max: 10,
-      headers
-    })
-    debug('fetch via needle done', statusCode)
-    return { statusCode, body }
+    try {
+      const { statusCode, body } = await needle(method, await rescheme(url), opts.data, {
+        json: true,
+        follow_max: 10,
+        headers
+      })
+      debug('fetch via needle done', statusCode)
+      return { statusCode, body }
+    } catch (err) {
+      if (err.code === 'ECONNREFUSED' && retryCount < MAX_ECONNREFUSED_RETRIES) {
+        // then the proxy is probably transiently offline, e.g. due to
+        // switching context or namespace
+        debug('retrying due to ECONNREFUSED')
+        return new Promise((resolve, reject) => {
+          setTimeout(async () => {
+            try {
+              _needle(repl, url, opts, retryCount + 1).then(resolve, reject)
+            } catch (err) {
+              reject(err)
+            }
+          }, 50)
+        })
+      } else {
+        throw err
+      }
+    }
   } else if (inBrowser()) {
     // Unfortunately, we cannot rely on being able to fetch files
     // directly from a browser. For one, if the remote site does not
@@ -122,7 +151,8 @@ export async function _needle(
       throw new Error(strings('Unable to fetch remote file'))
     } else {
       debug('fetch via proxy')
-      const body = (await rexec<(string | object)[]>(`_fetchfile ${encodeComponent(url)}`, { data: opts })).content[0]
+      const body = (await repl.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(url)}`, { data: opts }))
+        .content[0]
       return {
         statusCode: 200,
         body
