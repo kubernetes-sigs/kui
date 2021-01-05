@@ -24,8 +24,8 @@ import {
   deletePodByName,
   waitForGreen,
   getTerminalText,
-  waitForTerminalText,
-  defaultModeForGet
+  openSidecarByList,
+  waitForTerminalText
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const command = 'kubectl'
@@ -50,19 +50,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   const getPodAndOpenSidecar = () => {
     it(`should get pods via ${command} then click`, async () => {
       try {
-        const tableRes = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app)
-
-        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })(tableRes)
-
-        // wait for the badge to become green
-        await waitForGreen(this.app, selector)
-
-        // now click on the table row
-        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-        res = ReplExpect.blockAfter(tableRes)
-        await SidecarExpect.open(res)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing(podName))
+        res = await openSidecarByList(this, `${command} get pods ${podName} -n ${ns}`, podName)
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -111,10 +99,12 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   const doRetry = (toolbar: { type: string; text: string; exact: boolean }) => {
     it('should click retry button', async () => {
       try {
-        await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming')).then(async _ => {
-          await _.waitForDisplayed()
-          await _.click()
-        })
+        await this.app.client
+          .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming', res.splitIndex))
+          .then(async _ => {
+            await _.waitForDisplayed()
+            await _.click()
+          })
         await SidecarExpect.toolbarText(toolbar)(res)
       } catch (err) {
         return Common.oops(this, true)(err)
@@ -186,9 +176,9 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       await sleep(3)
 
       console.error('3')
-      const elts = await this.app.client.$$(`${Selectors.SIDECAR_TAB_CONTENT(res.count)} .xterm-rows`)
+      const elts = await this.app.client.$$(`${Selectors.SIDECAR_TAB_CONTENT(res.count, res.splitIndex)} .xterm-rows`)
       console.error('3b', elts && elts.length)
-      await this.app.client.$(`${Selectors.SIDECAR_TAB_CONTENT(res.count)}`).then(_ => _.click())
+      await this.app.client.$(`${Selectors.SIDECAR_TAB_CONTENT(res.count, res.splitIndex)}`).then(_ => _.click())
       await this.app.client.keys(`while true; do echo hi; sleep 1; done${Keys.ENTER}`)
 
       console.error('4')

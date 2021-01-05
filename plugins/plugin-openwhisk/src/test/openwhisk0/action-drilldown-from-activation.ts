@@ -49,7 +49,7 @@ describe('activation list, activation get, click on header', function(this: Comm
   })
 
   it(`click on action name in sidecar header and show action source`, async () => {
-    await this.app.client.$(Selectors.SIDECAR_TITLE(res.count)).then(_ => _.click())
+    await this.app.client.$(Selectors.SIDECAR_TITLE(res.count, res.splitIndex)).then(_ => _.click())
     return SidecarExpect.openInBlockAfter(res)
       .then(SidecarExpect.showing(actionName))
       .then(res =>

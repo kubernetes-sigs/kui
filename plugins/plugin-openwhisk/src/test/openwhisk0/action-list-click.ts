@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 
@@ -43,24 +43,13 @@ describe('create action list it then click to show it again', function(this: Com
 
   it(`should list ${actionName}, click it, show it`, async () => {
     try {
-      const res1 = await CLI.command(`wsk action list`, this.app)
-      const selector = await ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('foo') })(res1)
-
-      // click on the row entity, and expect sidecar to show it
-      this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-
-      const res = ReplExpect.blockAfter(res1)
-      await SidecarExpect.open(res)
-        .then(SidecarExpect.showing(actionName))
-
-        // also confirm that source matches
-        .then(() =>
-          this.app.client.waitUntil(async () => {
-            const actualSrc = await Util.getValueFromMonaco(res)
-            return actualSrc.trim() === expectedSrc
-          })
-        )
-
+      const res = await Util.listAndOpenSidecarNoWait(this, `wsk action list`, actionName)
+      await this.app.client
+        .waitUntil(async () => {
+          // also confirm that source matches
+          const actualSrc = await Util.getValueFromMonaco(res)
+          return actualSrc.trim() === expectedSrc
+        })
         // wait a bit and retry, to make sure it doesn't disappear
         .then(() => new Promise(resolve => setTimeout(resolve, 3000)))
         .then(() =>

@@ -19,7 +19,7 @@
  *    this test also covers toggling the sidecar
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 
 import * as openwhisk from '@kui-shell/plugin-openwhisk/tests/lib/openwhisk/openwhisk'
 import { dirname } from 'path'
@@ -54,11 +54,9 @@ localDescribe('Create a sequence with whitespacey names', function(this: Common.
 
   it(`should show ${actionName1} by clicking on the result of "ls"`, async () => {
     try {
-      const res = await CLI.command('wsk action list', this.app).then(ReplExpect.justOK)
+      const res = await CLI.command('wsk action list', this.app).then(ReplExpect.ok)
 
-      await this.app.client.$(Selectors.LIST_RESULT_BY_N_AND_NAME(res.count, actionName1)).then(_ => _.click())
-
-      await SidecarExpect.openInBlockAfter(res).then(SidecarExpect.showing(actionName1))
+      await Util.openSidecarByClick(this, Selectors.LIST_RESULT_BY_N_AND_NAME(res.count, actionName1), actionName1)
     } catch (err) {
       Common.oops(this, true)(err)
     }

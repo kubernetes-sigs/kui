@@ -245,7 +245,7 @@ export class TestTable {
     const ctx = _ctx || this.ctx
     const self = this // eslint-disable-line @typescript-eslint/no-this-alias
 
-    const clickCell = (row: Row, command: string, prompt: string) => {
+    const clickCell = (row: Row, command: string) => {
       it(`should click to execute from test table: ${command}`, async () => {
         try {
           const cell = await ctx.app.client.$(
@@ -253,7 +253,6 @@ export class TestTable {
           )
           await cell.waitForExist()
           await cell.click()
-          await CLI.expectPriorInput(prompt, command)(ctx.app)
         } catch (err) {
           await Common.oops(ctx, true)(err)
         }
@@ -262,7 +261,7 @@ export class TestTable {
 
     // For each row, check the first cell
     expectTable.body.forEach(row => {
-      clickCell(row, row.onclick, Selectors.PROMPT_LAST)
+      clickCell(row, row.onclick)
     })
   }
 }

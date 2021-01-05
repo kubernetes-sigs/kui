@@ -43,7 +43,7 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this)))
 
-  const doListAndClick = async () => {
+  const doListAndMetaClick = async () => {
     const holdDown = Keys.holdDownKey.bind(this)
     const release = Keys.releaseKey.bind(this)
 
@@ -57,24 +57,12 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
 
     return res
   }
-  it('list and click, and drilldown should be in a new split', async () => {
+  it('list and click with meta key, and drilldown should not be in a new split', async () => {
     try {
       await ReplExpect.splitCount(1)
-      await doListAndClick()
-      await ReplExpect.splitCount(2)
-      await SidecarExpect.open({ app: this.app, count: 0, splitIndex: 2 }).then(
-        SidecarExpect.showing('package.json', undefined, undefined, undefined, undefined, undefined, undefined, false)
-      )
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
-  })
-  it('list and click again, and drilldown should be in that same new split', async () => {
-    try {
-      await ReplExpect.splitCount(2)
-      await doListAndClick()
-      await ReplExpect.splitCount(2)
-      await SidecarExpect.open({ app: this.app, count: 1, splitIndex: 2 }).then(
+      const res = await doListAndMetaClick()
+      await ReplExpect.splitCount(1)
+      await SidecarExpect.open(ReplExpect.blockAfter(res)).then(
         SidecarExpect.showing('package.json', undefined, undefined, undefined, undefined, undefined, undefined, false)
       )
     } catch (err) {

@@ -18,7 +18,7 @@ const { v4: uuid } = require('uuid')
 const assert = require('assert')
 const { dirname, join } = require('path')
 
-const { Common, CLI, ReplExpect, Selectors, SidecarExpect } = require('@kui-shell/test')
+const { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } = require('@kui-shell/test')
 const { makeCLI } = require('@kui-shell/core/tests/lib/headless')
 
 const ROOT = process.env.TEST_ROOT
@@ -114,6 +114,31 @@ exports.deleteNS = (ctx, ns, command = 'kubectl', theCli = CLI) => {
       }
     })
   }
+}
+
+/**
+ * Execute a `command` to show a table;
+ * wait for `name` to be green
+ *
+ */
+exports.list = async (ctx, command, name, wait = true) => {
+  const selector = await Util.doList(ctx, command, name)
+  if (wait) {
+    // wait for the badge to become green
+    await exports.waitForGreen(ctx.app, selector)
+  }
+  return selector
+}
+
+/**
+ * Execute a `command` to show a table;
+ * wait for `name` to be green;
+ * click the `name` to open a sdiecar
+ *
+ */
+exports.openSidecarByList = async (ctx, command, name, wait = true, mode = exports.defaultModeForGet) => {
+  const selector = await exports.list(ctx, command, name, wait)
+  return Util.openSidecarByClick(ctx, `${selector} .clickable`, name, mode)
 }
 
 exports.deletePodByName = (ctx, pod, ns, command = 'kubectl', theCli = CLI) => {
@@ -253,12 +278,12 @@ exports.doHelp = function doHelp(cmd, breadcrumbs, modes, content = '') {
 }
 
 /** Selector to extract the Terminal rows */
-const terminalRows = N => `${Selectors.SIDECAR_TAB_CONTENT(N)} .xterm-rows`
+const terminalRows = (N, splitIndex) => `${Selectors.SIDECAR_TAB_CONTENT(N, splitIndex)} .xterm-rows`
 
 /** Get text from a Terminal-oriented tab */
 exports.getTerminalText = async function(res) {
-  await this.app.client.$(terminalRows(res.count)).then(_ => _.waitForExist())
-  return this.app.client.$(terminalRows(res.count)).then(_ => _.getText())
+  await this.app.client.$(terminalRows(res.count, res.splitIndex)).then(_ => _.waitForExist())
+  return this.app.client.$(terminalRows(res.count, res.splitIndex)).then(_ => _.getText())
 }
 
 /** Wait for the given checker to be true, w.r.t. the log text in the view */

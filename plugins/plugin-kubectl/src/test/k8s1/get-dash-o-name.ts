@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import {
   waitForGreen,
-  defaultModeForGet,
   createNS,
   allocateNS,
-  deleteNS
+  deleteNS,
+  defaultModeForGet
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
@@ -60,13 +60,10 @@ describe(`kubectl get dash o name ${process.env.MOCHA_RUN_TARGET || ''}`, functi
           const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.GRID_CELL_BY_NAME('nginx') })(
             res
           )
-
           // now click on the table row
-          await this.app.client.$(`${selector}.clickable`).then(_ => _.click())
-          await SidecarExpect.openInBlockAfter(res)
-            .then(SidecarExpect.showing('nginx'))
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .then(SidecarExpect.yaml({ Status: 'Running' }))
+          await Util.openSidecarByClick(this, `${selector}.clickable`, 'nginx', defaultModeForGet).then(
+            SidecarExpect.yaml({ Status: 'Running' })
+          )
         } catch (err) {
           return Common.oops(this, true)(err)
         }

@@ -75,7 +75,7 @@ wdescribe(`kubectl logs follow via table ${process.env.MOCHA_RUN_TARGET || ''}`,
         ReplExpect.ok
       )
 
-      const rows = `${Selectors.SIDECAR_TAB_CONTENT(res.count)} .xterm-rows`
+      const rows = `${Selectors.SIDECAR_TAB_CONTENT(res.count, res.splitIndex)} .xterm-rows`
 
       await sleep(sleepTime)
       const text1 = await getTextContent(this.app, rows)

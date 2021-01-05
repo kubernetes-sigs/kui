@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import {
   defaultModeForGet,
+  openSidecarByList,
   waitForGreen,
   waitForRed,
   createNS,
@@ -35,44 +36,14 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
   allocateNS(this, ns, 'kubectl')
 
   it(`should create, get and delete the sample pod from URL via kubectl, and replay`, async () => {
-    const verifySidecar = async (res: ReplExpect.AppAndCount, sidecarNotOpen = false) => {
-      console.error('verifying sidecar')
-      if (sidecarNotOpen) {
-        await SidecarExpect.notOpen(res)
-      } else {
-        await SidecarExpect.open(res)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing('nginx'))
-          .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
-      }
-    }
-
-    const verifyCreation = async (createSelector: string) => {
-      console.error('verifying creation')
-      await waitForGreen(this.app, createSelector)
-      // await this.app.client.$(Selectors.TABLE_FOOTER(createRes.count)).then(_ => _.waitForDisplayed())
-    }
-
-    const verifyDeletion = async (deleteSelector: string) => {
-      console.error('verifying deletion')
-      await waitForRed(this.app, deleteSelector)
-    }
-
     // here comes the tests
     try {
       console.error('creating')
-      const createRes = await CLI.command(
+      await openSidecarByList(
+        this,
         `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
+        'nginx'
       )
-
-      const createSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(createRes)
-      await verifyCreation(createSelector)
-      await this.app.client.$(`${createSelector} .clickable`).then(async _ => {
-        await _.waitForExist()
-        await _.click()
-      })
-      await verifySidecar(ReplExpect.blockAfter(createRes))
 
       console.error('deleting')
       const deleteRes = await CLI.command(
@@ -81,7 +52,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       )
 
       const deleteSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(deleteRes)
-      await verifyDeletion(deleteSelector)
+      await waitForRed(this.app, deleteSelector)
 
       console.error('snapshoting')
       await CLI.command(`snapshot ${file}`, this.app).then(ReplExpect.justOK)
@@ -91,8 +62,7 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
 
       await CLI.command(`replay ${file}`, this.app)
 
-      await verifySidecar(deleteRes, true)
-      await verifyDeletion(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
+      await waitForRed(this.app, `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
@@ -169,16 +139,12 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
       await CLI.command(`replay ${file}`, this.app)
 
       await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`).then(_ => _.waitForDisplayed())
-
-      const lastRes = await CLI.lastBlock(res)
-      await SidecarExpect.notOpen(res)
-      await SidecarExpect.notOpen(lastRes)
-
-      await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`).then(_ => _.click())
-
-      await SidecarExpect.openInBlockAfter(lastRes)
-        .then(SidecarExpect.mode(defaultModeForGet))
-        .then(SidecarExpect.showing('nginx'))
+      await Util.openSidecarByClick(
+        this,
+        `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`,
+        'nginx',
+        defaultModeForGet
+      )
     } catch (err) {
       await Common.oops(this, true)(err)
     }

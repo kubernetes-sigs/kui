@@ -17,6 +17,7 @@
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
 import {
   waitForGreen,
+  openSidecarByList,
   defaultModeForGet,
   createNS,
   allocateNS,
@@ -56,21 +57,16 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
      * optionally expect the given content to appear in the sidecar
      *
      */
-    const listAndClick = (name: string, content?: Record<string, any>) => {
+    const _listAndClick = (name: string, content?: Record<string, any>) => {
       it(`should list configmaps via ${kubectl} then click on ${name}`, async () => {
         try {
-          const tableRes = await CLI.command(`${kubectl} get cm ${inNamespace}`, this.app)
-          const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(tableRes)
+          const res = await openSidecarByList(
+            this,
+            `${kubectl} get cm ${inNamespace}`,
+            name,
+            false // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
+          )
 
-          // Note: configmaps don't really have a status, so there is nothing to wait for on "get"
-          // await waitForGreen(this.app, selector)
-
-          // now click on the table row
-          await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-          const res = ReplExpect.blockAfter(tableRes)
-          await SidecarExpect.open(res)
-            .then(SidecarExpect.mode(defaultModeForGet))
-            .then(SidecarExpect.showing(name))
           if (content) {
             if (content.data) {
               await SidecarExpect.yaml(content.data)(res)
@@ -114,8 +110,8 @@ describe(`kubectl configmap ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
     createIt('yoyo')
     createIt('momo', '--from-literal hello=world')
 
-    listAndClick('yoyo')
-    listAndClick('momo', {
+    _listAndClick('yoyo')
+    _listAndClick('momo', {
       data: {
         hello: 'world'
       }
