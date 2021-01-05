@@ -15,16 +15,16 @@
  */
 
 import Debug from 'debug'
-import { Arguments, is404 } from '@kui-shell/core'
+import { Arguments, isTable, is404or409 } from '@kui-shell/core'
 
 import { fetchFile } from '../../../lib/util/fetch-file'
-import { getKindAndVersion } from '../../kubectl/explain'
+import { Explained, getKindAndVersion } from '../../kubectl/explain'
 
-import { KubeOptions, fileOf, getLabel } from '../../kubectl/options'
+import { KubeOptions, fileOf, getLabel, getNamespace } from '../../kubectl/options'
 
+import status from './status'
 import handleErrors from './errors'
-import { urlFormatterFor } from './url'
-import { status } from '../../kubectl/exec'
+import { urlFormatterForArgs } from './url'
 import { FinalState } from '../../../lib/model/states'
 import { getCommandFromArgs } from '../../../lib/util/util'
 import { headersForPlainRequest as headers } from './headers'
@@ -34,19 +34,16 @@ const debug = Debug('plugin-kubectl/controller/client/direct/create')
 export default async function createDirect(
   args: Arguments<KubeOptions>,
   verb: 'create' | 'apply',
-  _kind = getKindAndVersion(
-    getCommandFromArgs(args),
-    args,
-    args.argvNoOptions[args.argvNoOptions.indexOf('create') + 1]
-  )
+  _kind?: Promise<Explained>
 ) {
   // For now, we only handle create-by-name
   if (!fileOf(args) && !getLabel(args) && !args.parsedOptions['dry-run'] && !args.parsedOptions['field-selector']) {
-    const explainedKind = await _kind
+    const explainedKind = await (_kind ||
+      getKindAndVersion(getCommandFromArgs(args), args, args.argvNoOptions[args.argvNoOptions.indexOf(verb) + 1]))
     const { kind, version } = explainedKind
 
     // the last undefined is needed: we don't want to include a name in the URL path
-    const formatUrl = (await urlFormatterFor(args, explainedKind)).bind(undefined, true, false, undefined)
+    const formatUrl = await urlFormatterForArgs(args, explainedKind)
 
     const kindIdx = args.argvNoOptions.indexOf('create') + 1
     const names = args.argvNoOptions.slice(kindIdx + 1)
@@ -64,25 +61,41 @@ export default async function createDirect(
       }))
 
       const urls = names
-        .map(formatUrl)
+        .map(formatUrl.bind(undefined, true, false, undefined))
         .map(url => `${url}?fieldManager=kubectl-create`)
         .join(',')
       debug('attempting create namespace direct', names, urls)
 
       const responses = await fetchFile(args.REPL, urls, { method: 'post', headers, returnErrors: true, data })
 
-      // then dissect it into errors and non-errors
-      const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
+      // then dissect it into errors and non-errors; the last true means return, don't throw, errors
+      const { errors, okIndices, ok } = await handleErrors(responses, formatUrl, kind, args.REPL, true)
       if (ok.length === 0) {
-        // all 404 errors? then tell the user about them (no need to re-invoke the CLI)
-        if (errors.length > 0 && errors.every(is404)) {
+        // all errors? then tell the user about them (no need to re-invoke the CLI)
+        if (errors.length > 0 && errors.every(is404or409)) {
           return errors.map(_ => _.message).join('\n')
         }
         // otherwise: intentional fall-through, returning void; let
         // kubectl CLI handle the errors for now
       } else {
         // success!
-        return status(args, 'create', getCommandFromArgs(args), FinalState.OnlineLike)
+        const groups = [
+          {
+            names: okIndices.map(idx => names[idx]),
+            namespace: await getNamespace(args),
+            explainedKind
+          }
+        ]
+
+        const watchPart = await status(args, groups, FinalState.OnlineLike)
+
+        if (errors.length === 0) {
+          return watchPart
+        } else if (isTable(watchPart)) {
+          return [watchPart, ...errors.map(_ => _.message)]
+        } else {
+          return [...watchPart, ...errors.map(_ => _.message)]
+        }
       }
     }
   }

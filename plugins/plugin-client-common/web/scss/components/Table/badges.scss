@@ -157,13 +157,20 @@ $grid-cell-size: 1.25rem;
 }
 
 [data-table-watching='true'] .bx--data-table {
-  [data-tag='badge-circle'][data-just-updated] {
+  [data-tag='badge-circle'] {
     &.yellow-background {
-      animation: var(--animation-infinite-repeating-pulse);
+      /* if it's yellow, but we're not sure if it was just updated, blink around 20 times */
+      animation: var(--animation-long-repeating-pulse);
+
+      &[data-just-updated] {
+        /* if we know the resource was just updated, blink until we get new information */
+        animation: var(--animation-infinite-repeating-pulse);
+      }
     }
 
     &.red-background {
-      animation: pulse 1000ms 6 alternate-reverse;
+      /* if it's red, then blink around 6 times */
+      animation: var(--animation-medium-repeating-pulse);
     }
   }
 }

@@ -298,7 +298,7 @@ async function fetch(command: string, args: Arguments, kindAsProvidedByUser: str
     }
   } catch (err) {
     if (!/does not exist/i.test(err.message)) {
-      console.error(`error explaining kind ${kindAsProvidedByUser}`, err)
+      console.error(`error explaining kind ${kindAsProvidedByUser}`, args, err)
       throw err
     }
   }

@@ -16,7 +16,7 @@
 
 import { dirname, join } from 'path'
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { waitTillNone, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 const jobYaml = join(ROOT, 'data/k8s/job.yaml')
@@ -71,11 +71,8 @@ synonyms.forEach(kubectl => {
 
     it('should delete a job', async () => {
       try {
-        const selector: string = await CLI.command(`${kubectl} delete job ${jobName} ${inNamespace}`, this.app).then(
-          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(jobName) })
-        )
-
-        await waitForRed(this.app, selector)
+        await CLI.command(`${kubectl} delete job ${jobName} ${inNamespace}`, this.app)
+        await waitTillNone('job', undefined, jobName, undefined, inNamespace)(this.app)
       } catch (err) {
         return Common.oops(this, true)(err)
       }

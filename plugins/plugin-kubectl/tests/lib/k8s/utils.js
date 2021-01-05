@@ -130,19 +130,22 @@ exports.deletePodByName = (ctx, pod, ns, command = 'kubectl', theCli = CLI) => {
  * Keep poking the given kind till no more such entities exist
  *
  */
-exports.waitTillNone = (kind, theCli = CLI, name = '', okToSurvive, inNamespace = '') => app =>
+exports.waitTillNone = (kind, theCli = makeCLI('kubectl'), name = '', okToSurvive, inNamespace = '') => app =>
   new Promise(resolve => {
     // fetch the entities
-    const fetch = () =>
-      theCli.command(`kubectl get "${kind}" ${name} ${inNamespace}`, app, {
-        errOk: theCli.exitCode(404)
+    const fetch = async () => {
+      const response = await theCli.command(`get "${kind}" ${name} ${inNamespace}`, app, {
+        errOk: 1
       })
+      return response
+    }
+
     // verify the entities
     const verify = okToSurvive
       ? theCli === ReplExpect
         ? theCli.expectOKWith(okToSurvive)
         : theCli.expectOK(okToSurvive)
-      : theCli.expectError(theCli.exitCode(404))
+      : theCli.expectError(1, 'not found')
 
     const iter = () => {
       return fetch()
