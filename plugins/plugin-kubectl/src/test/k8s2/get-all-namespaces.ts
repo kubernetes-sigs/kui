@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import {
   waitForGreen,
   waitForRed,
@@ -83,17 +83,9 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
 
             // wait for the badge to become green
             await waitForGreen(this.app, selector)
-
             // make sure the NAME cell is clickable (as opposed to, say, the NAMESPACE cell)
-            await this.app.client
-              .$(`${selector} .clickable[data-key="NAME"]`)
-              .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
-
-            // now click on that cell
-            await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-            await SidecarExpect.open(ReplExpect.blockAfter(res))
-              .then(SidecarExpect.mode(defaultModeForGet))
-              .then(SidecarExpect.showing('nginx', undefined, undefined, ns))
+            const clickOn = `${selector} .clickable[data-key="NAME"]`
+            await Util.openSidecarByClick(this, clickOn, 'nginx', defaultModeForGet)
           } catch (err) {
             return Common.oops(this, true)(err)
           }

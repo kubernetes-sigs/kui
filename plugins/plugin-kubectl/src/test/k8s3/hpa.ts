@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import {
-  waitForGreen,
   waitForRed,
-  defaultModeForGet,
   createNS,
   allocateNS,
-  deleteNS
+  deleteNS,
+  openSidecarByList
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { dirname } from 'path'
@@ -44,20 +43,7 @@ describe(`kubectl create hpa HorizontalPodAutoscaler ${process.env.MOCHA_RUN_TAR
 
     it(`should create a HorizontalPodAutoscaler hpa via ${kubectl}`, async () => {
       try {
-        const res = await CLI.command(`${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, this.app)
-
-        const selector = await ReplExpect.okWithCustom<string>({
-          selector: Selectors.BY_NAME('travelapp-hpa')
-        })(res)
-
-        // wait for the badge to become green
-        await waitForGreen(this.app, selector)
-
-        // now click on the table row
-        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-        await SidecarExpect.openInBlockAfter(res)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing('travelapp-hpa'))
+        await openSidecarByList(this, `${kubectl} apply -f "${ROOT}/data/k8s/hpa.yaml" ${inNamespace}`, 'travelapp-hpa')
       } catch (err) {
         return Common.oops(this, true)(err)
       }

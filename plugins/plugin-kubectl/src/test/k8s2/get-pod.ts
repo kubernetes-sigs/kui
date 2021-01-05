@@ -16,9 +16,9 @@
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
+  openSidecarByList,
   waitForGreen,
   waitForRed,
-  defaultModeForGet,
   createNS,
   allocateNS,
   deleteNS
@@ -163,21 +163,11 @@ commands.forEach(command => {
     // NOTE: this is an alternative test for the click mid-creation test above, since sidecar table poller is not ready
     it(`should show summary tab if we click after creation`, async () => {
       try {
-        const res = await CLI.command(
+        await openSidecarByList(
+          this,
           `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-          this.app
-        )
-        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
-
-        await waitForGreen(this.app, selector)
-        await this.app.client.$(`${selector} .clickable`).then(async _ => {
-          await _.waitForExist()
-          await _.click()
-        })
-        await SidecarExpect.open(ReplExpect.blockAfter(res))
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing('nginx'))
-          .then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
+          'nginx'
+        ).then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
 
         // await testContainersTab()
         // await testLogsTab()
@@ -272,18 +262,7 @@ commands.forEach(command => {
     let clickRes: ReplExpect.AppAndCount
     it(`should list pods via ${command} then click`, async () => {
       try {
-        const tableRes = await CLI.command(`${command} get pods ${inNamespace}`, this.app)
-        const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(tableRes)
-
-        // wait for the badge to become green
-        await waitForGreen(this.app, selector)
-
-        // now click on the table row
-        await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-        clickRes = ReplExpect.blockAfter(tableRes)
-        await SidecarExpect.open(clickRes)
-          .then(SidecarExpect.mode(defaultModeForGet))
-          .then(SidecarExpect.showing('nginx'))
+        clickRes = await openSidecarByList(this, `${command} get pods ${inNamespace}`, 'nginx')
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -291,8 +270,12 @@ commands.forEach(command => {
 
     it('should click on the sidecar maximize button', async () => {
       try {
-        await this.app.client.$(Selectors.SIDECAR_MAXIMIZE_BUTTON(clickRes.count)).then(_ => _.click())
-        await this.app.client.$(Selectors.SIDECAR_FULLSCREEN(clickRes.count)).then(_ => _.waitForExist())
+        await this.app.client
+          .$(Selectors.SIDECAR_MAXIMIZE_BUTTON(clickRes.count, clickRes.splitIndex))
+          .then(_ => _.click())
+        await this.app.client
+          .$(Selectors.SIDECAR_FULLSCREEN(clickRes.count, clickRes.splitIndex))
+          .then(_ => _.waitForExist())
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -300,9 +283,11 @@ commands.forEach(command => {
 
     it('should click on the sidecar maximize button to restore split screen', async () => {
       try {
-        await this.app.client.$(Selectors.SIDECAR_MAXIMIZE_BUTTON(clickRes.count)).then(_ => _.click())
         await this.app.client
-          .$(Selectors.SIDECAR_FULLSCREEN(clickRes.count))
+          .$(Selectors.SIDECAR_MAXIMIZE_BUTTON(clickRes.count, clickRes.splitIndex))
+          .then(_ => _.click())
+        await this.app.client
+          .$(Selectors.SIDECAR_FULLSCREEN(clickRes.count, clickRes.splitIndex))
           .then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
       } catch (err) {
         return Common.oops(this, true)(err)

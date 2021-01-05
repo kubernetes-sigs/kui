@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { CLI, Common, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
-import { defaultModeForGet, waitForGreen } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { CLI, Common, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
+import { defaultModeForGet, openSidecarByList, waitForGreen } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 export let res: ReplExpect.AppAndCount
 
@@ -54,19 +54,7 @@ export function wait(this: Common.ISuite, ns: string, command: string, podName: 
 export function get(this: Common.ISuite, ns: string, command: string, podName: string, wait = true) {
   it(`should get pod ${podName} via ${command} then click`, async () => {
     try {
-      res = await CLI.command(`${command} get pods ${podName} -n ${ns}`, this.app)
-      const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(podName) })(res)
-
-      if (wait) {
-        // wait for the badge to become green
-        await waitForGreen(this.app, selector)
-      }
-
-      // now click on the table row
-      await this.app.client.$(`${selector} .clickable`).then(_ => _.click())
-      await SidecarExpect.openInBlockAfter(res)
-        .then(SidecarExpect.mode(defaultModeForGet))
-        .then(SidecarExpect.showing(podName))
+      await openSidecarByList(this, `${command} get pods ${podName} -n ${ns}`, podName, wait, defaultModeForGet)
     } catch (err) {
       return Common.oops(this, true)(err)
     }
@@ -74,10 +62,7 @@ export function get(this: Common.ISuite, ns: string, command: string, podName: s
 }
 
 export async function clickRetry(this: Common.ISuite, res: ReplExpect.AppAndCount) {
-  await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'retry-streaming')).then(async _ => {
-    await _.waitForDisplayed()
-    await _.click()
-  })
+  await Util.clickSidecarModeButton(this, res, 'retry-streaming')
 }
 
 async function waitUntilPreviousIs(
@@ -137,10 +122,7 @@ export function clickPrevious(this: Common.ISuite, type: 'info' | 'warning', pre
 
   it(`should click the previous toggle button and expect previous=${previous}`, async () => {
     const mode = 'kubectl-logs-previous-toggle'
-    await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, mode)).then(async _ => {
-      await _.waitForDisplayed()
-      await _.click()
-    })
+    await Util.clickSidecarModeButton(this, res, mode)
     await wait(res)
   })
 }
