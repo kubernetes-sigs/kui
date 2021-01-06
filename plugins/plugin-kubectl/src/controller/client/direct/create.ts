@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Arguments, isTable, is404or409 } from '@kui-shell/core'
+import { Arguments, Table, isTable, is404or409 } from '@kui-shell/core'
 
 import { fetchFile } from '../../../lib/util/fetch-file'
 import { Explained, getKindAndVersion } from '../../kubectl/explain'
@@ -30,6 +30,16 @@ import { getCommandFromArgs } from '../../../lib/util/util'
 import { headersForPlainRequest as headers } from './headers'
 
 const debug = Debug('plugin-kubectl/controller/client/direct/create')
+
+function withErrors(watchPart: string[] | Table, errors: Error[]) {
+  if (errors.length === 0) {
+    return watchPart
+  } else if (isTable(watchPart)) {
+    return [watchPart, ...errors.map(_ => _.message)]
+  } else {
+    return [...watchPart, ...errors.map(_ => _.message)]
+  }
+}
 
 export default async function createDirect(
   args: Arguments<KubeOptions>,
@@ -88,14 +98,7 @@ export default async function createDirect(
         ]
 
         const watchPart = await status(args, groups, FinalState.OnlineLike)
-
-        if (errors.length === 0) {
-          return watchPart
-        } else if (isTable(watchPart)) {
-          return [watchPart, ...errors.map(_ => _.message)]
-        } else {
-          return [...watchPart, ...errors.map(_ => _.message)]
-        }
+        return withErrors(watchPart, errors)
       }
     }
   }

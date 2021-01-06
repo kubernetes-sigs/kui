@@ -27,12 +27,15 @@ import {
   Watchable,
   Watcher,
   WatchPusher,
+  isTable,
   i18n
 } from '@kui-shell/core'
 
 import { flags } from './flags'
+import { getKindAndVersion } from './explain'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
 import { initialCapital } from '../../lib/view/formatTable'
+import statusDirect, { Group } from '../client/direct/status'
 import {
   KubeOptions as Options,
   fileOf,
@@ -562,15 +565,53 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
       }
     }
 
-    /* if (nResourcesToWaitFor > 1) {
-    // we don't yet support this; return whatever kubectl emitted from
-    // the initial command
-    return initialResponse
-  } */
-
     // the desired final state of the specified resources
     const finalState = args.parsedOptions['final-state']
 
+    // try handing off to direct/status
+    try {
+      const explainedResources = await Promise.all(
+        resourcesToWaitFor.map(async _ =>
+          Object.assign(_, {
+            explainedKind: await getKindAndVersion(command || 'kubectl', args, _.kind)
+          })
+        )
+      )
+      const groups = explainedResources.reduce((groups, resource) => {
+        const group = groups.find(
+          _ =>
+            _.namespace === resource.namespace &&
+            _.explainedKind.kind === resource.explainedKind.kind &&
+            _.explainedKind.version === resource.explainedKind.version
+        )
+        if (!group) {
+          groups.push({
+            names: [resource.name],
+            namespace: resource.namespace,
+            explainedKind: resource.explainedKind
+          })
+        } else {
+          group.names.push(resource.name)
+        }
+        return groups
+      }, [] as Group[])
+      const response = await statusDirect(args, groups, finalState, commandArg)
+      if (response) {
+        // then direct/status obliged!
+        debug('using direct/status response')
+        if (isTable(response)) {
+          return response
+        } else {
+          return response.join('\n')
+        }
+      }
+    } catch (err) {
+      console.error('Error with direct/status. Falling back on polling implementation.', err)
+    }
+
+    // if we got here, then direct/status either failed, or refused to
+    // handle this use case; fall back to the old polling impl
+    debug('backup plan: using old status poller')
     return new StatusWatcher(args, args.tab, resourcesToWaitFor, finalState, contextArgs, commandArg).initialTable()
   } catch (err) {
     console.error('error constructing StatusWatcher', err)
