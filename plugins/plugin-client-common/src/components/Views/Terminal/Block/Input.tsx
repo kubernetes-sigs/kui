@@ -483,7 +483,7 @@ export default class Input extends InputProvider {
           if (isInViewport(this.state.prompt) && this.props.isFocused) {
             this.state.prompt.focus()
           }
-        })
+        }, 2000)
       }
 
       return (
