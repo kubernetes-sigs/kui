@@ -23,6 +23,7 @@
   .pf-c-dropdown__toggle.pf-m-plain,
   .pf-c-dropdown__toggle-text {
     color: var(--color-text-01);
+    display: flex;
   }
   .pf-c-dropdown__menu {
     background-color: var(--color-base05);
