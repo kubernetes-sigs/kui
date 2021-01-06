@@ -35,7 +35,8 @@ export async function getTable(
   names: string[],
   explainedKind: Explained,
   format: string,
-  args: Pick<Arguments<KubeOptions>, 'REPL' | 'parsedOptions' | 'execOptions'>
+  args: Pick<Arguments<KubeOptions>, 'REPL' | 'parsedOptions' | 'execOptions'>,
+  needsStatusColumn = false
 ): Promise<string | Table> {
   const { kind } = explainedKind
   const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
@@ -78,7 +79,7 @@ export async function getTable(
       try {
         // withNotFound will add error rows to the table for each error
         const table = withNotFound(
-          await toKuiTable(metaTable, kind, args, drilldownCommand),
+          await toKuiTable(metaTable, kind, args, drilldownCommand, needsStatusColumn),
           errors.map(_ => _.message).join('\n')
         )
         return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, table, formatUrl)

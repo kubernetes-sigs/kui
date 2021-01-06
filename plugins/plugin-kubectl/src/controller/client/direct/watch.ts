@@ -38,45 +38,12 @@ interface WatchUpdate {
   object: MetaTable
 }
 
-/**
- * This class provides an implementation of a Watcher extension of a
- * Kui Table. It establishes a stream to the apiServer, and hooks the emitted stream of WatchUpdate events into the WatchPusher API of the table: i.e. the this.pusher.offline(), update(), header(), and footer() calls.
- *
- */
-class DirectWatcher implements Abortable, Watcher {
+export abstract class DirectWatcher {
   /** The table push API */
-  private pusher: WatchPusher
+  protected pusher: WatchPusher
 
   /** The current stream jobs. These will be aborted/flow-controlled as directed by the associated view. */
-  private jobs: (Abortable & FlowControllable)[] = []
-
-  /** Debouncer: the apiServer may send us DELETED or ADDED events multiple times for a given resource :( */
-  private readonly readyDebouncer: Record<string, boolean>
-
-  /** We only seem to get these once, so we need to remember them */
-  private bodyColumnDefinitions: MetaTable['columnDefinitions']
-  private footerColumnDefinitions: {
-    lastSeenColumnIdx: number
-    objectColumnIdx: number
-    messageColumnIdx: number
-    nameColumnIdx: number
-  }
-
-  // eslint-disable-next-line no-useless-constructor
-  public constructor(
-    private readonly drilldownCommand: string,
-    private readonly args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
-    private readonly kind: string | Promise<string>,
-    private readonly resourceVersion: Table['resourceVersion'],
-    private readonly formatUrl: URLFormatter,
-    private readonly finalState?: FinalState,
-    private nNotReady?: number, // number of resources to wait on
-    private readonly monitorEvents = true
-  ) {
-    if (finalState) {
-      this.readyDebouncer = {}
-    }
-  }
+  protected jobs: (Abortable & FlowControllable)[] = []
 
   /** This will be called by the view when it wants the underlying streamer to resume flowing updates */
   public xon() {
@@ -92,6 +59,54 @@ class DirectWatcher implements Abortable, Watcher {
   public abort() {
     debug('abort requested', this.jobs.length, this.jobs)
     this.jobs.forEach(job => job.abort())
+  }
+
+  /** This will be called by the streamer when the underlying job has exited */
+  public onExit(exitCode: number) {
+    debug('job exited', exitCode)
+    // for now, we don't have much to do here
+  }
+
+  /** This will be called by the streamer when it is ready to start flowing data. */
+  public onReady() {
+    // for now, we don't have much to do here
+    debug('job is ready')
+  }
+}
+
+/**
+ * This class provides an implementation of a Watcher extension of a
+ * Kui Table. It establishes a stream to the apiServer, and hooks the emitted stream of WatchUpdate events into the WatchPusher API of the table: i.e. the this.pusher.offline(), update(), header(), and footer() calls.
+ *
+ */
+export class SingleKindDirectWatcher extends DirectWatcher implements Abortable, Watcher {
+  /** Debouncer: the apiServer may send us DELETED or ADDED events multiple times for a given resource :( */
+  private readonly readyDebouncer: Record<string, boolean>
+
+  /** We only seem to get these once, so we need to remember them */
+  private bodyColumnDefinitions: MetaTable['columnDefinitions']
+  private footerColumnDefinitions: {
+    lastSeenColumnIdx: number
+    objectColumnIdx: number
+    messageColumnIdx: number
+    nameColumnIdx: number
+  }
+
+  public constructor(
+    private readonly drilldownCommand: string,
+    private readonly args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
+    private readonly kind: string | Promise<string>,
+    private readonly resourceVersion: Table['resourceVersion'],
+    private readonly formatUrl: URLFormatter,
+    private readonly finalState?: FinalState,
+    private nNotReady?: number, // number of resources to wait on
+    private readonly monitorEvents = true,
+    private readonly needsStatusColumn = false
+  ) {
+    super()
+    if (finalState) {
+      this.readyDebouncer = {}
+    }
   }
 
   /** This will be called by the view when it is ready to accept push updates */
@@ -229,18 +244,6 @@ class DirectWatcher implements Abortable, Watcher {
     }
   }
 
-  /** This will be called by the streamer when the underlying job has exited */
-  public onExit(exitCode: number) {
-    debug('job exited', exitCode)
-    // for now, we don't have much to do here
-  }
-
-  /** This will be called by the streamer when it is ready to start flowing data. */
-  public onReady() {
-    // for now, we don't have much to do here
-    debug('job is ready')
-  }
-
   /** The streamer is almost ready. We give it back a stream to push data to */
   public onInitForBodyUpdates(job: Abortable & FlowControllable) {
     this.jobs.push(job)
@@ -265,7 +268,7 @@ class DirectWatcher implements Abortable, Watcher {
     }
 
     setTimeout(async () => {
-      const table = await toKuiTable(update.object, this.kind, this.args, this.drilldownCommand)
+      const table = await toKuiTable(update.object, this.kind, this.args, this.drilldownCommand, this.needsStatusColumn)
 
       if (sendHeaders) {
         this.pusher.header(table.header)
@@ -327,7 +330,8 @@ export default async function makeWatchable(
   formatUrl: URLFormatter,
   finalState?: FinalState,
   nNotReady?: number,
-  monitorEvents?: boolean
+  monitorEvents = true,
+  needsStatusColumn = false
 ): Promise<Table | (Table & Watchable)> {
   if (!table.resourceVersion) {
     // we need a cursor to start watching
@@ -336,7 +340,7 @@ export default async function makeWatchable(
   }
 
   return Object.assign(table, {
-    watch: new DirectWatcher(
+    watch: new SingleKindDirectWatcher(
       drilldownCommand,
       args,
       kind,
@@ -344,7 +348,8 @@ export default async function makeWatchable(
       formatUrl,
       finalState,
       nNotReady,
-      monitorEvents
+      monitorEvents,
+      needsStatusColumn
     )
   })
 }

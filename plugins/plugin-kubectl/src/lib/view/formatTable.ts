@@ -108,6 +108,13 @@ const tagForKey = {
   Status: 'badge'
 }
 
+const tagsForKind = {
+  Deployment: {
+    READY: 'badge',
+    Ready: 'badge'
+  }
+}
+
 /**
  * Split the given string at the given split indices
  *
@@ -608,11 +615,33 @@ export function hideWithSidecar(attr: number | string, table: Table) {
   }
 }
 
+function addStatusColumnToRowIfNeeded(
+  row: Row,
+  isNeeded = !row.attributes.find(_ => /STATUS/i.test(_.key) || /READY/i.test(_.key))
+): void {
+  if (isNeeded) {
+    const Status = 'Status' // important: do not i18n
+    row.attributes.push({ key: Status, value: 'Ready', tag: 'badge', css: TrafficLight.Green })
+  }
+}
+
+function addStatusColumnIfNeeded(table: Table): Table {
+  const statusAttr = table.header.attributes.find(_ => /STATUS/i.test(_.key) || /READY/i.test(_.key))
+  if (!statusAttr) {
+    const Status = 'Status' // important: do not i18n
+    table.header.attributes.push({ key: Status, value: Status })
+    table.body.forEach(row => addStatusColumnToRowIfNeeded(row, true))
+  }
+
+  return table
+}
+
 export async function toKuiTable(
   table: MetaTable,
   kind: string | Promise<string>,
   args: Pick<Arguments<KubeOptions>, 'parsedOptions' | 'execOptions' | 'REPL'>,
-  drilldownCommand: string
+  drilldownCommand: string,
+  needsStatusColumn = false
 ): Promise<Table> {
   const format = formatOf(args)
   const forAllNamespaces = isForAllNamespaces(args.parsedOptions)
@@ -678,20 +707,31 @@ export async function toKuiTable(
         return {
           key,
           value,
-          tag: tagForKey[key],
+          tag: tagForKey[key] || (tagsForKind[drilldownKind] && tagsForKind[drilldownKind][key]),
           onclick: !forAllNamespaces || idx > 0 ? false : onclick,
           outerCSS: outerCSSForKey[key],
-          css: [cssForKey[key], cssForValue[value], /Ready/i.test(key) ? cssForReadyCount(value) : ''].join(' ')
+          css: [
+            cssForKey[key],
+            cssForValue[value],
+            /Ready/i.test(key) ? cssForReadyCount(value) : '',
+            /failed/i.test(value) ? TrafficLight.Red : ''
+          ].join(' ')
         }
       })
     }
   })
 
-  return {
+  const kuiTable = {
     header,
     body,
     title: await kind,
     resourceVersion: table.metadata.resourceVersion,
     breadcrumbs: await getNamespaceBreadcrumbs(await kind, args)
+  }
+
+  if (needsStatusColumn) {
+    return addStatusColumnIfNeeded(kuiTable)
+  } else {
+    return kuiTable
   }
 }
