@@ -9,6 +9,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "target": "ES2016",
+    "skipLibCheck": true,
     "sourceMap": true,
     "declaration": true,
     "experimentalDecorators": true,
