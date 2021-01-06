@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.7](https://github.com/IBM/kui/compare/v9.3.6...v9.3.7) (2021-01-06)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** monaco editor always consumes mouse wheel scrolling events ([f7d7ee6](https://github.com/IBM/kui/commit/f7d7ee6)), closes [#6480](https://github.com/IBM/kui/issues/6480)
+
 ## [9.3.6](https://github.com/IBM/kui/compare/v9.3.5...v9.3.6) (2020-12-28)
 
 ### Bug Fixes
