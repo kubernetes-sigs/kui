@@ -31,9 +31,11 @@ export default async function withSourceRefs(
 
   if (filepath && isTableRequest(args)) {
     try {
-      const data = (await fetchFile(args.REPL, filepath))[0]
-      return {
-        templates: [{ filepath, data, isFor, kind: 'source', contentType: 'yaml' }]
+      const data = (await fetchFile(args.REPL, filepath)).filter(_ => _)[0]
+      if (data) {
+        return {
+          templates: [{ filepath, data, isFor, kind: 'source', contentType: 'yaml' }]
+        }
       }
     } catch (err) {
       console.error('Error fetching source ref', err)

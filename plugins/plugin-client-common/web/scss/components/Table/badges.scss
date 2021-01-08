@@ -169,8 +169,8 @@ $grid-cell-size: 1.25rem;
     }
 
     &.red-background {
-      /* if it's red, then blink around 6 times */
-      animation: var(--animation-medium-repeating-pulse);
+      /* if it's red, then blink around 3 times */
+      animation: var(--animation-short-repeating-pulse);
     }
   }
 }

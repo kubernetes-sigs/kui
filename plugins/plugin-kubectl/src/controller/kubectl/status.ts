@@ -15,6 +15,7 @@
  */
 
 import Debug from 'debug'
+import { DirEntry } from '@kui-shell/plugin-bash-like/fs'
 import {
   Abortable,
   Arguments,
@@ -27,6 +28,8 @@ import {
   Watchable,
   Watcher,
   WatchPusher,
+  encodeComponent,
+  flatten,
   isTable,
   i18n
 } from '@kui-shell/core'
@@ -132,11 +135,19 @@ const usage = (command: string) => ({
  *
  */
 async function getResourcesReferencedByFile(file: string, args: Arguments<FinalStateOptions>): Promise<ResourceRef[]> {
-  const [{ safeLoadAll }, raw] = await Promise.all([import('js-yaml'), fetchFile(args.REPL, file)])
+  const files = new Set(
+    (
+      await args.REPL.rexec<DirEntry[]>(`vfs ls ${encodeComponent(file)} ${encodeComponent(file)}/**/*.{yaml,yml}`)
+    ).content.map(_ => _.path)
+  )
 
-  const namespaceFromCommandLine = await getNamespace(args)
+  const [{ safeLoadAll }, namespaceFromCommandLine, raw] = await Promise.all([
+    import('js-yaml'),
+    getNamespace(args),
+    fetchFile(args.REPL, files.size === 0 ? file : Array.from(files).join(','))
+  ])
 
-  const models: KubeResource[] = safeLoadAll(raw[0])
+  const models = flatten(raw.map(_ => safeLoadAll(_) as KubeResource[]))
   return models
     .filter(_ => _.metadata)
     .map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {
@@ -595,6 +606,7 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
         }
         return groups
       }, [] as Group[])
+
       const response = await statusDirect(args, groups, finalState, commandArg)
       if (response) {
         // then direct/status obliged!

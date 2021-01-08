@@ -208,7 +208,7 @@ export class TestTable {
             selector: Selectors.TABLE_HEADER_CELL(expectTable.header.name)
           })
         )
-        .catch(Common.oops(ctx)))
+        .catch(Common.oops(ctx, true)))
 
     if (validation) {
       if (validation.cells) {
@@ -251,7 +251,8 @@ export class TestTable {
           const cell = await ctx.app.client.$(
             `${Selectors.OUTPUT_N(self.cmdIdx)} ${Selectors.TABLE_CELL(row.name, expectTable.header.name)}`
           )
-          await cell.waitForExist()
+          await cell.waitForExist({ timeout: 10000 })
+          await cell.scrollIntoView()
           await cell.click()
         } catch (err) {
           await Common.oops(ctx, true)(err)

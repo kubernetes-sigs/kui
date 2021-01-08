@@ -30,7 +30,7 @@ export default async function getAvailablePlugins(
   tab: Tab,
   url = defaultURL
 ): Promise<{ plugins: AvailablePluginRaw[] }> {
-  return JSON.parse((await fetchFileString(tab.REPL, `${url}/plugins`))[0])
+  return JSON.parse((await fetchFileString(tab.REPL, `${url}/plugins`))[0] || '{ "plugins": [] }')
 }
 
 /**

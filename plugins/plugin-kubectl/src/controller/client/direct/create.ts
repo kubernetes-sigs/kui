@@ -98,7 +98,9 @@ export default async function createDirect(
         ]
 
         const watchPart = await status(args, groups, FinalState.OnlineLike)
-        return withErrors(watchPart, errors)
+        if (watchPart) {
+          return withErrors(watchPart, errors)
+        }
       }
     }
   }
