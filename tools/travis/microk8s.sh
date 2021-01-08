@@ -11,16 +11,17 @@ mkdir -p ~/.kube
 # Download and install misc packages and utilities
 pushd /tmp
   # Download and install kubectl
-  (curl -LO https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl && \
+  echo "Downloading this kubectl: https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl"
+  curl --retry 5 -LO https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl && \
        sudo cp kubectl /usr/local/bin/kubectl && \
-       sudo chmod a+rx /usr/local/bin/kubectl) &
+       sudo chmod a+rx /usr/local/bin/kubectl
 
   # Download and install helm
   #  curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && chmod +x get_helm.sh && ./get_helm.sh
   if [ -n "$NEEDS_HELM" ]; then
       PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
       echo "Downloading this helm: https://get.helm.sh/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz"
-      curl -L "https://get.helm.sh/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz" | tar zxf -
+      curl --retry 5 -L "https://get.helm.sh/helm-v${TRAVIS_HELM_VERSION}-${PLATFORM}-amd64.tar.gz" | tar zxf -
       sudo cp ${PLATFORM}-amd64/helm /usr/local/bin
       sudo chmod +x /usr/local/bin/helm
   fi
@@ -29,19 +30,16 @@ pushd /tmp
   if [ -n "$NEEDS_OC" ]; then
       PLATFORM=`uname | tr '[:upper:]' '[:lower:]'`
       echo "Downloading this oc: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${TRAVIS_OC_VERISON}/openshift-client-${PLATFORM}.tar.gz"
-      curl -L "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${TRAVIS_OC_VERISON}/openshift-client-${PLATFORM}.tar.gz" | tar zxf -
+      curl --retry 5 -L "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${TRAVIS_OC_VERISON}/openshift-client-${PLATFORM}.tar.gz" | tar zxf -
       sudo cp oc /usr/local/bin
       sudo chmod +x /usr/local/bin/oc
       oc version
 
       echo "Downloading this odo: https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-${PLATFORM}-amd64"
-      sudo sh -c "curl -L https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-${PLATFORM}-amd64 -o /usr/local/bin/odo"
+      sudo sh -c "curl --retry 5 -L https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-${PLATFORM}-amd64 -o /usr/local/bin/odo"
       sudo chmod +x /usr/local/bin/odo
       odo version
   fi
-
-  # wait for the kubectl download
-  wait
 popd
 
 # waiting till microk8s is ready
