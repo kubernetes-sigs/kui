@@ -96,29 +96,21 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
           .catch(Common.oops(this, true))
       })
 
-      it(`should initiate namespace switch via click`, () => {
-        const radioButton = Selectors.RADIO_BUTTON
-        const radioButtonSelected = Selectors.RADIO_BUTTON_SELECTED
+      it('should initiate namespace switch via click', async () => {
+        try {
+          await CLI.command(`kubectl config set-context --current --namespace=${ns1}`, this.app).then(ReplExpect.ok)
 
-        return CLI.command(`${kubectl} get ns ${ns1}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: radioButton })
-          )
-          .then(selector =>
-            this.app.client.waitUntil(async () => {
-              console.error('1', selector)
-              await this.app.client.$(selector).then(_ => _.click())
-              console.error('2', Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
-              const actualNamespace = await this.app.client
-                .$(Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
-                .then(_ => _.getText())
-              console.error('3', actualNamespace)
-              await this.app.client.$(selector.replace(radioButton, radioButtonSelected)).then(_ => _.waitForExist())
-              console.error('4')
-              return actualNamespace === ns1
-            })
-          )
-          .catch(Common.oops(this, true))
+          this.app.client.waitUntil(async () => {
+            console.error('1', Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
+            const actualNamespace = await this.app.client
+              .$(Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
+              .then(_ => _.getText())
+            console.error('2', actualNamespace)
+            return actualNamespace === ns1
+          })
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
       })
 
       it(`should show ${ns1} as current namespace`, () => {

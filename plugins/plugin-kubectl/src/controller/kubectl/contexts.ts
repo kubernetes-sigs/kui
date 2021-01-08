@@ -14,33 +14,16 @@
  * limitations under the License.
  */
 
-import {
-  i18n,
-  REPL as REPLType,
-  RadioTable,
-  RadioTableRow,
-  radioTableCellToString,
-  Table,
-  isTable,
-  Row,
-  RawResponse,
-  Arguments,
-  Registrar,
-  UsageModel,
-  KResponse
-} from '@kui-shell/core'
+import { REPL as REPLType, Table, Row, RawResponse, Arguments, Registrar, UsageModel, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
 import apiVersion from './apiVersion'
-import { t2rt } from './get-namespaces'
 import { KubeOptions } from './options'
 import { doExecWithTable } from './exec'
 import commandPrefix from '../command-prefix'
 import { KubeContext } from '../../lib/model/resource'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { onKubectlConfigChangeEvents } from './config'
-
-const strings = i18n('plugin-kubectl')
 
 const usage = {
   context: (command: string): UsageModel => ({
@@ -56,76 +39,6 @@ const usage = {
     optional: [{ name: '-o', docs: 'Output format', allowed: ['wide'] }],
     example: 'kubectl contexts'
   })
-}
-
-/** Exclude the CURRENT column. */
-function rtRowsFor(row: Row, wide: boolean): RadioTableRow {
-  const rtRow = t2rt(row)
-  rtRow.cells = rtRow.cells.slice(1)
-
-  // hide the name column unless the user asked for -o wide
-  if (!wide) {
-    rtRow.cells = rtRow.cells.map(_ =>
-      typeof _ === 'string'
-        ? _
-        : Object.assign(_, {
-            value: _.value.replace(/^(.+)\/[a-z0-9]+$/, '$1').replace(/^IAM#(.*)\/.*$/, '$1'),
-            title: _.value
-          })
-    )
-
-    rtRow.nameIdx = 1
-  }
-
-  return rtRow
-}
-
-/**
- * Add click handlers to change context
- *
- */
-const asRadioTable = (args: Arguments, { header, body }: Table): RadioTable => {
-  /* const header = t2rt(table.header)
-  const body = table.body.map(row => {
-    const nameAttr = row.attributes.find(({ key }) => key === 'NAME')
-    const { value: contextName } = nameAttr
-
-    return {
-      nameIdx: 0,
-      cells: [
-        contextName,
-        ...row.attributes.map(({ value, outerCSS, css }) => ({
-          value,
-          hints: hintsFor(outerCSS, css),
-          onSelect: () => REPL.pexec(`kubectl config use-context ${REPL.encodeComponent(contextName)}`)
-        }))
-      ]
-    }
-  }) */
-
-  // leftover from old model bad choices
-  const defaultSelectedIdx = body.findIndex(_ => _.rowCSS[0] === 'selected-row')
-
-  // did the user ask for a wide table (i.e. table without processing)?
-  const wide = args.parsedOptions.o === 'wide'
-
-  return {
-    apiVersion: 'kui-shell/v1',
-    kind: 'RadioTable',
-    title: strings('contextsTableTitle'),
-    defaultSelectedIdx,
-
-    header: rtRowsFor(header, wide),
-    body: body
-      .map(row => rtRowsFor(row, wide))
-      .map(rtRow => {
-        const context = radioTableCellToString(rtRow.cells[0], true) // true: use title if we have it
-
-        return Object.assign(rtRow, {
-          onSelect: `kubectl config use-context ${context}`
-        })
-      })
-  }
 }
 
 /** Extract the cell value for the given column name (`key`) in the given `row` */
@@ -226,23 +139,6 @@ const listContexts = async (args: Arguments): Promise<RawResponse<KubeContext[]>
   }
 }
 
-// addClickHandlers(contexts, args)
-/** Table -> RadioTable view transformer */
-function viewTransformer(args: Arguments<KubeOptions>, response: Table) {
-  if (isTable(response)) {
-    return asRadioTable(args, response)
-  } else {
-    return response
-  }
-}
-
-/**
- * Command registration flags for commands that we want to present as
- * a RadioTable.
- *
- */
-const rtFlags = Object.assign({}, flags, { viewTransformer })
-
 /**
  * Register the commands
  *
@@ -251,7 +147,7 @@ export default (commandTree: Registrar) => {
   commandTree.listen(
     `/${commandPrefix}/kubectl/config/get-contexts`,
     (args: Arguments): Promise<KResponse> => (isUsage(args) ? doHelp('kubectl', args) : doExecWithTable(args)),
-    rtFlags
+    flags
   )
 
   commandTree.listen(
@@ -274,7 +170,7 @@ export default (commandTree: Registrar) => {
       {
         usage: usage.contexts('contexts')
       },
-      rtFlags
+      flags
     )
   )
 }

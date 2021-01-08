@@ -155,7 +155,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           const currentContextAsIndicatedByContextsTable = await CLI.command(`contexts -o wide`, this.app)
             .then(
               ReplExpect.okWithCustom<string>({
-                selector: `${Selectors.RADIO_BUTTON_SELECTED} [data-is-name]`
+                selector: `${Selectors.TABLE_CELL('*', 'NAME')}`
               })
             )
             .then(selector => this.app.client.$(selector))
@@ -173,10 +173,11 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       it(`should list contexts and show the context ${contextName}`, async () => {
         try {
           const allContextNames = await CLI.command(`contexts -o wide`, this.app)
-            .then(
-              ReplExpect.okWithCustom<string>({ selector: ' ' })
-            )
-            .then(selector => this.app.client.$$(`${selector} [data-is-name]`))
+            .then(async res => {
+              const nameCellSelector = Selectors.BY_KEY('NAME')
+              const selector = await ReplExpect.okWithCustom<string>({ selector: nameCellSelector })(res)
+              return this.app.client.$$(selector)
+            })
             .then(elements => Promise.all(elements.map(_ => _.getText())))
 
           assert.ok(allContextNames.find(_ => _ === contextName))
@@ -220,29 +221,24 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     }
 
     /* switch to the given context */
-    const switchToContext = (contextName: string) => {
-      it(`should switch to the context ${contextName}`, async () => {
+    const switchToContextByCommand = (contextName: string) => {
+      it(`should switch to the context ${contextName} by command`, async () => {
         try {
-          const selector = await CLI.command(`contexts -o wide`, this.app).then(
-            ReplExpect.okWithCustom<string>({
-              selector: Selectors.RADIO_BUTTON_BY_NAME(contextName)
-            })
-          )
-
-          await this.app.client.$(selector).then(_ => _.click())
-
-          // the row in that first table had better now be selected
-          await this.app.client.$(`${selector}${Selectors.RADIO_BUTTON_IS_SELECTED}`).then(_ => _.waitForExist())
+          await CLI.command(`${kubectl} config use-context ${contextName}`, this.app).then(ReplExpect.ok)
 
           // and if we request a new contexts table, it'd better be selected there, too
-          const selector2 = await CLI.command(`contexts -o wide`, this.app).then(
-            ReplExpect.okWithCustom<string>({
-              selector: Selectors.RADIO_BUTTON_BY_NAME(contextName)
-            })
-          )
-          await this.app.client.$(`${selector2}${Selectors.RADIO_BUTTON_IS_SELECTED}`).then(_ => _.waitForExist())
+          const currentContext = await CLI.command(`contexts -o wide`, this.app)
+            .then(
+              ReplExpect.okWithCustom<string>({
+                selector: `${Selectors.TABLE_CELL('*', 'NAME')}`
+              })
+            )
+            .then(selector => this.app.client.$(selector))
+            .then(_ => _.getText())
+
+          assert.strictEqual(contextName, currentContext)
         } catch (err) {
-          return Common.oops(this, true)(err)
+          await Common.oops(this, true)(err)
         }
       })
     }
@@ -261,7 +257,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     listPodsAndExpectOne('nginx', ns)
     listPodsAndExpectOne('nginx', ns, `--kubeconfig ${initialKubeConfig}`)
     getPodInSidecar('nginx', ns, `--kubeconfig ${initialKubeConfig}`)
-    switchToContext('holla')
+    switchToContextByCommand('holla')
     listPodsAndExpectOne('nginx')
     deleteIt(ns)
   })
