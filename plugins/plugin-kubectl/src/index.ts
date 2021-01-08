@@ -123,7 +123,6 @@ export { register as registerConfig } from './controller/kubectl/config'
 export { registerApplySubcommands } from './controller/kubectl/apply-subcommands'
 
 export { viewTransformer as getTransformer, doGetAsMMR as getAsMMRTransformer } from './controller/kubectl/get'
-export { viewTransformer as getNamespacesTransformer } from './controller/kubectl/get-namespaces'
 
 /** A channel that covers *possible* changes to kubectl config */
 export {
