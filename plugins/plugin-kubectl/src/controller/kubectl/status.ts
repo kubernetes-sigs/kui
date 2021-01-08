@@ -601,7 +601,8 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
             namespace: resource.namespace,
             explainedKind: resource.explainedKind
           })
-        } else {
+        } else if (!group.names.includes(resource.name)) {
+          // potentially inefficient
           group.names.push(resource.name)
         }
         return groups
