@@ -40,7 +40,7 @@ const expectRow = [
 ]
 
 /** test table, validate its cells and drilldown from the rows */
-new TestTable('should test table with dilldown', {
+new TestTable('should test table with drilldown', {
   exec: {
     command: 'test table',
     expectTable: {
