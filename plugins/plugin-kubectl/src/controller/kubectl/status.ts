@@ -607,7 +607,7 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
         return groups
       }, [] as Group[])
 
-      const response = await statusDirect(args, groups, finalState, commandArg)
+      const response = await statusDirect(args, groups, finalState, commandArg, file)
       if (response) {
         // then direct/status obliged!
         debug('using direct/status response')
