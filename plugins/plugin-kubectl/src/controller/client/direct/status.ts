@@ -15,6 +15,7 @@
  */
 
 import Debug from 'debug'
+import { basename } from 'path'
 import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, WatchPusher, flatten } from '@kui-shell/core'
 
 import { getTable } from './get'
@@ -156,7 +157,8 @@ export default async function watchMulti(
   args: Arguments<KubeOptions>,
   groups: Group[],
   finalState: FinalState,
-  drilldownCommand = getCommandFromArgs(args)
+  drilldownCommand = getCommandFromArgs(args),
+  file?: string
 ): Promise<void | string[] | Table | (Table & Watchable)> {
   if (groups.length === 0) {
     return
@@ -223,33 +225,47 @@ export default async function watchMulti(
 
     // HETEROGENEOUS CASE
     // we need to assemble a unifiedTable facade
-    const unifiedTable: Table & Watchable = {
-      header: unifyHeaders([].concat(...tables.map(_ => _.table.header))),
-      body: unifyRows(
-        [].concat(...tables.map(_ => _.table.body)),
-        flatten(
-          groups.map(_ =>
-            Array(_.names.length)
-              .fill(0)
-              .map(() => _.explainedKind.kind)
-          )
+    const title = file ? basename(file) : undefined
+    const breadcrumbs = groups.every(_ => _.namespace === groups[0].namespace)
+      ? [{ label: groups[0].namespace }]
+      : undefined
+
+    // header and body
+    const header = unifyHeaders([].concat(...tables.map(_ => _.table.header)))
+    const body = unifyRows(
+      [].concat(...tables.map(_ => _.table.body)),
+      flatten(
+        groups.map(_ =>
+          Array(_.names.length)
+            .fill(0)
+            .map(() => _.explainedKind.kind)
         )
-      ),
-      watch: new MultiKindWatcher(
-        drilldownCommand,
-        args,
-        tables.map(_ => groups[_.idx].explainedKind),
-        tables.map(_ => _.table.resourceVersion),
-        await Promise.all(
-          tables.map(_ => {
-            const group = groups[_.idx]
-            return urlFormatterFor(group.namespace, myArgs, group.explainedKind)
-          })
-        ),
-        finalState,
-        tables.map(_ => _.table.body.map(_ => _.rowKey)),
-        tables.map(_ => countNotReady(_.table, finalState))
       )
+    )
+
+    // watcher
+    const watch = new MultiKindWatcher(
+      drilldownCommand,
+      args,
+      tables.map(_ => groups[_.idx].explainedKind),
+      tables.map(_ => _.table.resourceVersion),
+      await Promise.all(
+        tables.map(_ => {
+          const group = groups[_.idx]
+          return urlFormatterFor(group.namespace, myArgs, group.explainedKind)
+        })
+      ),
+      finalState,
+      tables.map(_ => _.table.body.map(_ => _.rowKey)),
+      tables.map(_ => countNotReady(_.table, finalState))
+    )
+
+    const unifiedTable: Table & Watchable = {
+      title,
+      breadcrumbs,
+      header,
+      body,
+      watch
     }
     return unifiedTable
   } else {
