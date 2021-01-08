@@ -38,7 +38,7 @@ export const parse = async (raw: string | PromiseLike<string>): Promise<KubeReso
  */
 export const read = async (tab: Tab, filepath: string): Promise<string> => {
   const data = await fetchFileString(tab.REPL, filepath)
-  if (data.length === 1) {
+  if (data.length === 1 && data[0]) {
     return data[0]
   } else {
     throw new Error(`Failed to fetch ${filepath}`)

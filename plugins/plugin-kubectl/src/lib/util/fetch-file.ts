@@ -234,11 +234,15 @@ export async function fetchFile(
 }
 
 /** same as fetchFile, but returning a string rather than a Buffer */
-export async function fetchFileString(repl: REPL, url: string, headers?: Record<string, string>): Promise<string[]> {
+export async function fetchFileString(
+  repl: REPL,
+  url: string,
+  headers?: Record<string, string>
+): Promise<(void | string)[]> {
   const files = await fetchFile(repl, url, { headers })
   return files.map(_ => {
     try {
-      return _.toString()
+      return _ ? _.toString() : undefined
     } catch (err) {
       console.error('Unable to convert fetched file to string', err, _)
       return ''

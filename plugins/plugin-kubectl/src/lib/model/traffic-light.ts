@@ -26,4 +26,18 @@ enum TrafficLight {
   Green = 'green-background'
 }
 
+export function toTrafficLight(str: string): TrafficLight {
+  if (str.indexOf(TrafficLight.Red) >= 0) {
+    return TrafficLight.Red
+  } else if (str.indexOf(TrafficLight.Yellow) >= 0) {
+    return TrafficLight.Yellow
+  } else if (str.indexOf(TrafficLight.Blue) >= 0) {
+    return TrafficLight.Blue
+  } else if (str.indexOf(TrafficLight.Green) >= 0) {
+    return TrafficLight.Green
+  } else {
+    return TrafficLight.Gray
+  }
+}
+
 export default TrafficLight

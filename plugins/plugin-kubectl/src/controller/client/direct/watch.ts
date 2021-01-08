@@ -38,12 +38,14 @@ interface WatchUpdate {
   object: MetaTable
 }
 
-export abstract class DirectWatcher {
+export abstract class DirectWatcher implements Watcher, Abortable, Omit<FlowControllable, 'write'> {
   /** The table push API */
   protected pusher: WatchPusher
 
   /** The current stream jobs. These will be aborted/flow-controlled as directed by the associated view. */
   protected jobs: (Abortable & FlowControllable)[] = []
+
+  abstract init(pusher: WatchPusher): void
 
   /** This will be called by the view when it wants the underlying streamer to resume flowing updates */
   public xon() {
@@ -99,13 +101,19 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     private readonly resourceVersion: Table['resourceVersion'],
     private readonly formatUrl: URLFormatter,
     private readonly finalState?: FinalState,
+    initialRowKeys?: string[],
     private nNotReady?: number, // number of resources to wait on
     private readonly monitorEvents = true,
     private readonly needsStatusColumn = false
   ) {
     super()
     if (finalState) {
-      this.readyDebouncer = {}
+      this.readyDebouncer = initialRowKeys
+        ? initialRowKeys.reduce((M, rowKey) => {
+            M[rowKey] = false
+            return M
+          }, {} as Record<string, boolean>)
+        : undefined
     }
   }
 
@@ -275,6 +283,12 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
       }
 
       table.body.forEach((row, idx) => {
+        const rowNeverSeenBefore = this.readyDebouncer && this.readyDebouncer[row.rowKey] === undefined
+        if (rowNeverSeenBefore) {
+          debug('dropping untracked row', row.rowKey)
+          return
+        }
+
         if (update.type === 'ADDED' || update.type === 'MODIFIED') {
           this.pusher.update(row, true)
         } else {
@@ -296,14 +310,22 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
    */
   private checkIfReady(row: Row, idx: number, update: WatchUpdate) {
     if (this.finalState && this.nNotReady > 0) {
-      debug('checking if resource is ready', this.finalState, this.nNotReady, row, update.type, update.object.rows[idx])
-
       const isReady =
         (update.type === 'ADDED' && this.finalState === FinalState.OnlineLike) ||
         (update.type === 'DELETED' && this.finalState === FinalState.OfflineLike) ||
         (update.type === 'MODIFIED' && isResourceReady(row, this.finalState))
 
-      if (isReady && !this.readyDebouncer[row.rowKey]) {
+      debug(
+        'checking if resource is ready',
+        isReady,
+        this.finalState,
+        this.nNotReady,
+        row,
+        update.type,
+        update.object.rows[idx]
+      )
+
+      if (this.readyDebouncer && isReady && !this.readyDebouncer[row.rowKey]) {
         debug('A resource is in its final state', row.name, this.nNotReady)
         this.readyDebouncer[row.rowKey] = true
         if (--this.nNotReady <= 0) {
@@ -329,6 +351,7 @@ export default async function makeWatchable(
   table: Table,
   formatUrl: URLFormatter,
   finalState?: FinalState,
+  initialRowKeys?: string[],
   nNotReady?: number,
   monitorEvents = true,
   needsStatusColumn = false
@@ -347,6 +370,7 @@ export default async function makeWatchable(
       table.resourceVersion,
       formatUrl,
       finalState,
+      initialRowKeys,
       nNotReady,
       monitorEvents,
       needsStatusColumn
