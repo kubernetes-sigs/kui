@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  Arguments,
-  Registrar,
-  Tab,
-  RadioTable,
-  RadioTableRow,
-  radioTableCellToString,
-  CellShould,
-  Table,
-  isTable,
-  Row,
-  KResponse
-} from '@kui-shell/core'
+import { Arguments, Registrar, Tab, Table } from '@kui-shell/core'
 
 import { getCurrentContext } from './contexts'
 import commandPrefix from '../command-prefix'
-import { doGet, doGetAsMMR, getFlags as flags } from './get'
-import { isKubeResource } from '../../lib/model/resource'
-import { KubeOptions, isTableRequest, isWatchRequest } from './options'
+import { getFlags as flags } from './get'
+import { KubeOptions } from './options'
 
 /**
  * Summarize the resources in the namespace indicated by the last
@@ -94,114 +81,7 @@ async function doGetCurrentNamespace({ tab }: Arguments<KubeOptions>) {
   return (await getCurrentContext(tab)).metadata.namespace
 }
 
-/** Align the table model of outerCSS and css to CellShould hints */
-function hintsFor(key: string, outerCSS: string, css: string): CellShould[] {
-  const hints = [] as CellShould[]
-
-  if (/hide-with-sidecar/.test(outerCSS)) {
-    hints.push(CellShould.HideWithSidecar)
-  }
-
-  if (/green-background/.test(css)) {
-    hints.push(CellShould.HaveGreenBadge)
-  } else if (/yellow-background/.test(css)) {
-    hints.push(CellShould.HaveYellowBadge)
-  } else if (/red-background/.test(css)) {
-    hints.push(CellShould.HaveRedBadge)
-  } else if (/gray-background/.test(css)) {
-    hints.push(CellShould.HaveGrayBadge)
-  }
-
-  if (key === 'STATUS') {
-    hints.push(CellShould.HideWithSidecar)
-  }
-
-  return hints
-}
-
-/** Convert old Table row model to new RadioTable row model. */
-export function t2rt({ name, attributes }: Row): RadioTableRow {
-  return {
-    nameIdx: 0,
-    cells: [
-      name,
-      ...attributes.map(({ key, value, outerCSS, css }) => ({
-        value,
-        hints: hintsFor(key, outerCSS, css)
-      }))
-    ]
-  }
-}
-
-/** Function type that will actuate a namespace switch */
-type SwitchFn = (ns: string, args: Arguments<KubeOptions>) => string
-
-/** SwitchFn impl that uses `kubectl config set-context` */
-const doSwitchViaKubectl: SwitchFn = (ns: string) => {
-  return `kubectl config set-context --current --namespace=${ns}`
-}
-
-/** Format as RadioTable */
-async function asRadioTable(
-  doSwitch: SwitchFn,
-  args: Arguments<KubeOptions>,
-  { header, body }: Table
-): Promise<RadioTable> {
-  const { tab } = args
-  const {
-    metadata: { namespace: currentNamespace }
-  } = await getCurrentContext(tab)
-
-  const defaultSelectedIdx = body.findIndex(_ => _.name === currentNamespace)
-
-  const radio: RadioTable = {
-    apiVersion: 'kui-shell/v1',
-    kind: 'RadioTable',
-    title: 'Namespaces',
-    defaultSelectedIdx,
-
-    header: t2rt(header),
-    body: body.map(t2rt).map(rtRow => {
-      const ns = radioTableCellToString(rtRow.cells[rtRow.nameIdx])
-      return Object.assign(rtRow, {
-        onSelect: doSwitch(ns, args)
-      })
-    })
-  }
-
-  return radio
-}
-
-/** Table -> RadioTable view transformer */
-export function viewTransformer(doSwitch: SwitchFn, args: Arguments<KubeOptions>, response: KResponse) {
-  if (isTable(response)) {
-    if (isTableRequest(args) && !isWatchRequest(args)) {
-      return asRadioTable(doSwitch, args, response)
-    } else {
-      return response
-    }
-  } else if (isKubeResource(response)) {
-    return doGetAsMMR(args, response)
-  } else {
-    return response
-  }
-}
-
-/**
- * Command registration flags for commands that we want to present as
- * a RadioTable.
- *
- */
-const rtFlags = Object.assign({}, flags, { viewTransformer: viewTransformer.bind(undefined, doSwitchViaKubectl) })
-
 export default (commandTree: Registrar) => {
-  commandTree.listen(`/${commandPrefix}/kubectl/get/namespaces`, doGet('kubectl'), rtFlags)
-  commandTree.listen(`/${commandPrefix}/k/get/namespaces`, doGet('kubectl'), rtFlags)
-  commandTree.listen(`/${commandPrefix}/kubectl/get/namespace`, doGet('kubectl'), rtFlags)
-  commandTree.listen(`/${commandPrefix}/k/get/namespace`, doGet('kubectl'), rtFlags)
-  commandTree.listen(`/${commandPrefix}/kubectl/get/ns`, doGet('kubectl'), rtFlags)
-  commandTree.listen(`/${commandPrefix}/k/get/ns`, doGet('kubectl'), rtFlags)
-
   commandTree.listen(`/${commandPrefix}/namespace/current`, doGetCurrentNamespace, flags)
   commandTree.listen(`/${commandPrefix}/namespace/summarize`, doSummarizeNamespace, flags)
 }
