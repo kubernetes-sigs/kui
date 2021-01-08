@@ -101,16 +101,17 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     private readonly resourceVersion: Table['resourceVersion'],
     private readonly formatUrl: URLFormatter,
     private readonly finalState?: FinalState,
-    initialRowKeys?: string[],
+    initialRowKeys?: { rowKey: string; isReady: boolean }[],
     private nNotReady?: number, // number of resources to wait on
     private readonly monitorEvents = true,
     private readonly needsStatusColumn = false
   ) {
     super()
     if (finalState) {
+      // populate the readyDebouncer using the initial set of rows
       this.readyDebouncer = initialRowKeys
-        ? initialRowKeys.reduce((M, rowKey) => {
-            M[rowKey] = false
+        ? initialRowKeys.reduce((M, { rowKey, isReady }) => {
+            M[rowKey] = isReady
             return M
           }, {} as Record<string, boolean>)
         : undefined
@@ -311,9 +312,9 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   private checkIfReady(row: Row, idx: number, update: WatchUpdate) {
     if (this.finalState && this.nNotReady > 0) {
       const isReady =
-        (update.type === 'ADDED' && this.finalState === FinalState.OnlineLike) ||
+        // NOPE: could be added and still not ready (update.type === 'ADDED' && this.finalState === FinalState.OnlineLike) ||
         (update.type === 'DELETED' && this.finalState === FinalState.OfflineLike) ||
-        (update.type === 'MODIFIED' && isResourceReady(row, this.finalState))
+        ((update.type === 'ADDED' || update.type === 'MODIFIED') && isResourceReady(row, this.finalState))
 
       debug(
         'checking if resource is ready',
@@ -351,7 +352,7 @@ export default async function makeWatchable(
   table: Table,
   formatUrl: URLFormatter,
   finalState?: FinalState,
-  initialRowKeys?: string[],
+  initialRowKeys?: { rowKey: string; isReady: boolean }[],
   nNotReady?: number,
   monitorEvents = true,
   needsStatusColumn = false
