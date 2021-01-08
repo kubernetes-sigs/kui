@@ -62,7 +62,7 @@ class MultiKindWatcher implements Abortable, Watcher {
     private readonly resourceVersion: Table['resourceVersion'][],
     private readonly formatUrl: URLFormatter[],
     private readonly finalState: FinalState,
-    private readonly initialRowKeys: string[][],
+    private readonly initialRowKeys: { rowKey: string; isReady: boolean }[][],
     private readonly nNotReady: number[], // number of resources to wait on
     private readonly monitorEvents = false
   ) {}
@@ -215,7 +215,7 @@ export default async function watchMulti(
           tables[0].table,
           urlFormatterFor(groups[0].namespace, myArgs, groups[0].explainedKind),
           finalState,
-          tables[0].table.body.map(_ => _.rowKey),
+          tables[0].table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) })),
           nNotReady,
           false, // no events
           true // yes, make sure there is a status column
@@ -256,7 +256,7 @@ export default async function watchMulti(
         })
       ),
       finalState,
-      tables.map(_ => _.table.body.map(_ => _.rowKey)),
+      tables.map(_ => _.table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) }))),
       tables.map(_ => countNotReady(_.table, finalState))
     )
 
