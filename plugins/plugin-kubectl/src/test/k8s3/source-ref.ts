@@ -20,10 +20,14 @@ import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 
+const timeout = 8000
+
 /** confirm the given toggler state */
 async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean) {
   // confirm the toggler UI
-  await this.app.client.$(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded)).then(_ => _.waitForDisplayed())
+  console.error('C1')
+  await this.app.client.$(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded)).then(_ => _.waitForExist({ timeout }))
+  console.error('C2')
 
   if (isExpanded) {
     // if it is expanded, also confirm the expanded editor state
@@ -39,7 +43,13 @@ async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, is
 
 /** click to toggle state */
 async function clickToToggle(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean) {
-  await this.app.client.$(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded)).then(_ => _.click())
+  console.error('T1')
+  const toggler = await this.app.client.$(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded))
+  console.error('T2')
+  await toggler.waitForExist({ timeout })
+  console.error('T2')
+  await toggler.click()
+  console.error('T3')
   return !isExpanded
 }
 

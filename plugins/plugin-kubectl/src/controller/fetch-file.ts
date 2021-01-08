@@ -56,11 +56,11 @@ async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: st
     const [isFile1, isFile2, isFile3] = await Promise.all([isFile(k1), isFile(k2), isFile(k3)])
     const dir = uri // if we are here, then `uri` is a directory
     if (isFile1) {
-      return { data: (await fetchFileString(repl, k1))[0], dir }
+      return { data: (await fetchFileString(repl, k1))[0] || '', dir }
     } else if (isFile2) {
-      return { data: (await fetchFileString(repl, k2))[0], dir }
+      return { data: (await fetchFileString(repl, k2))[0] || '', dir }
     } else if (isFile3) {
-      return { data: (await fetchFileString(repl, k3))[0], dir }
+      return { data: (await fetchFileString(repl, k3))[0] || '', dir }
     }
   }
 }

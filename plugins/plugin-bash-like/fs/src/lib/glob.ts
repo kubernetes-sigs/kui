@@ -94,7 +94,7 @@ async function isDir(filepath: string): Promise<Stats> {
   return new Promise((resolve, reject) => {
     stat(filepath, (err, stats) => {
       if (err) {
-        if (err.code === 'ENOENT') {
+        if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {
           resolve(undefined)
         } else {
           reject(err)
@@ -168,14 +168,16 @@ export async function kuiglob({
   const globbedEntries =
     toGlob.length === 0 && inputs.length > 0
       ? []
-      : ((await globby(toGlob.length === 0 ? '*' : toGlob, {
-          followSymbolicLinks: false,
+      : (((await globby(toGlob.length === 0 ? ['*'] : toGlob, {
           onlyFiles: false,
+          suppressErrors: true,
+          expandDirectories: false, // see https://github.com/sindresorhus/globby/issues/166
+          followSymbolicLinks: false,
           dot: parsedOptions.a || parsedOptions.all,
           stats: needStats,
           objectMode: !needStats,
           cwd: isHeadless() ? process.cwd() : tab.state.cwd
-        })) as RawGlobStats[])
+        })) as any) as RawGlobStats[])
   //  ^^^^^^ re: type conversion; globby type declaration issue #139
 
   // handle -d; fast-glob doesn't seem to handle this very well on its

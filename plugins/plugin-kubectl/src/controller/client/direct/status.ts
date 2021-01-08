@@ -15,10 +15,12 @@
  */
 
 import Debug from 'debug'
-import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
+import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, WatchPusher, flatten } from '@kui-shell/core'
 
 import { getTable } from './get'
+import fabricate404Table from './404'
 import URLFormatter, { urlFormatterFor } from './url'
+import { unifyHeaders, unifyRow, unifyRows } from './unify'
 import makeWatchable, { DirectWatcher, SingleKindDirectWatcher } from './watch'
 
 import { Explained } from '../../kubectl/explain'
@@ -26,7 +28,6 @@ import { KubeOptions } from '../../kubectl/options'
 import { isResourceReady } from '../../kubectl/status'
 
 import { FinalState } from '../../../lib/model/states'
-import TrafficLight from '../../../lib/model/traffic-light'
 import { getCommandFromArgs } from '../../../lib/util/util'
 
 const debug = Debug('plugin-kubectl/controller/client/direct/status')
@@ -49,6 +50,9 @@ class MultiKindWatcher implements Abortable, Watcher {
   /** The current watchers, one per explainedKind */
   private watchers: DirectWatcher[]
 
+  /** Number of sub-tables not done */
+  private nNotDone = 0
+
   // eslint-disable-next-line no-useless-constructor
   public constructor(
     private readonly drilldownCommand: string,
@@ -57,32 +61,72 @@ class MultiKindWatcher implements Abortable, Watcher {
     private readonly resourceVersion: Table['resourceVersion'][],
     private readonly formatUrl: URLFormatter[],
     private readonly finalState: FinalState,
-    private nNotReady: number[], // number of resources to wait on
-    private readonly monitorEvents = true
+    private readonly initialRowKeys: string[][],
+    private readonly nNotReady: number[], // number of resources to wait on
+    private readonly monitorEvents = false
   ) {}
 
   public abort() {
     debug('abort requested', this.watchers.length)
-    this.watchers.forEach(_ => _.abort())
+    this.watchers.forEach(watcher => {
+      if (watcher) {
+        watcher.abort()
+      }
+    })
   }
 
   public init(pusher: WatchPusher) {
     this.pusher = pusher
 
     this.watchers = this.resourceVersion.map((resourceVersion, idx) => {
-      const watcher = new SingleKindDirectWatcher(
-        this.drilldownCommand,
-        this.args,
-        this.kind[idx].kind,
-        resourceVersion,
-        this.formatUrl[idx],
-        this.finalState,
-        this.nNotReady[idx],
-        this.monitorEvents
-      )
-      watcher.init(pusher)
-      return watcher
+      if (!resourceVersion || this.nNotReady[idx] === 0) {
+        return undefined
+      } else {
+        const watcher = new SingleKindDirectWatcher(
+          this.drilldownCommand,
+          this.args,
+          this.kind[idx].kind,
+          resourceVersion,
+          this.formatUrl[idx],
+          this.finalState,
+          this.initialRowKeys[idx],
+          this.nNotReady[idx],
+          this.monitorEvents,
+          true // yes, make sure there is a status column
+        )
+
+        if (this.nNotReady[idx] > 0) {
+          this.nNotDone++
+        }
+        return watcher
+      }
     })
+
+    this.watchers.forEach((watcher, idx) => {
+      if (watcher) {
+        watcher.init(this.myPusher(idx))
+      }
+    })
+  }
+
+  private myPusher(idx: number): WatchPusher {
+    const overrides: Pick<WatchPusher, 'header' | 'update' | 'done'> = {
+      header: (header: Row) => {
+        this.pusher.header(unifyHeaders([header]))
+      },
+      update: (row: Row, batch?: boolean, changed?: boolean) => {
+        debug('update of unified row', row.rowKey, this.kind[idx].kind, row.attributes[1].value)
+        this.pusher.update(unifyRow(row, this.kind[idx].kind), batch, changed)
+      },
+      done: () => {
+        debug('one sub-table is done', this.kind[idx], this.nNotDone)
+        if (--this.nNotDone <= 0) {
+          debug('all sub-tables are done')
+          this.pusher.done()
+        }
+      }
+    }
+    return Object.assign({}, this.pusher, overrides)
   }
 }
 
@@ -91,70 +135,52 @@ interface WithIndex<T extends string | Table> {
   table: T
 }
 
-function isStringWithIndex(response: WithIndex<string | Table>): response is WithIndex<string> {
-  return typeof response.table === 'string'
-}
-
-function isTableWithIndex(response: WithIndex<string | Table>): response is WithIndex<Table> {
-  return !isStringWithIndex(response)
-}
-
-function fabricate404Row(name: string): Row {
-  return {
-    name,
-    attributes: [
-      {
-        key: 'Status',
-        value: 'Offline',
-        tag: 'badge',
-        css: TrafficLight.Red
-      }
-    ]
-  }
-}
-
-function fabricate404Table(names: string[]) {
-  // return names
-  // .map(name => `${kindPart(explainedKind.version, explainedKind.kind)} "${name}" deleted`)
-  // .join('\n')
-  return {
-    header: {
-      name: 'Name',
-      attributes: [
-        {
-          key: 'Status',
-          value: 'Status'
-        }
-      ]
-    },
-    body: names.map(fabricate404Row)
-  }
-}
-
-/** for apply/delete use cases, the caller may identify a FinalState and a countdown goal */
+/**
+ * If at least one resource is not in the given `finalState`, return a
+ * single unified `Table & Watchable` that will monitor the given
+ * `groups` of resources until they have all reached the given
+ * `FinalState`.
+ *
+ * If the desired final state is `OfflineLike`, and all of the
+ * resources are already offline, return a plain `Table` with all rows
+ * marked as Offline.
+ *
+ * If none of the groups is valid (e.g. by specifying a bogus Kind),
+ * return a `string[]` that conveys the error messages.
+ *
+ * Finally, this function may refuse to handle the request, in which case
+ * it will retur `void`.
+ *
+ */
 export default async function watchMulti(
   args: Arguments<KubeOptions>,
   groups: Group[],
   finalState: FinalState,
   drilldownCommand = getCommandFromArgs(args)
-) {
-  if (groups.length !== 1) {
+): Promise<void | string[] | Table | (Table & Watchable)> {
+  if (groups.length === 0) {
     return
   }
 
   const myArgs = { REPL: args.REPL, execOptions: { type: args.execOptions.type }, parsedOptions: {} }
-  // const nResources = groups.reduce((N, group) => N + group.names.length, 0)
-
-  const tables: WithIndex<string | Table>[] = await Promise.all(
+  const tables: WithIndex<Table>[] = await Promise.all(
     groups.map(async (_, idx) => ({
       idx,
-      table: await getTable(drilldownCommand, _.namespace, _.names, _.explainedKind, 'default', myArgs, true).catch(
-        (err: CodedError) => {
+      table: await getTable(drilldownCommand, _.namespace, _.names, _.explainedKind, 'default', myArgs, true)
+        .then(response => {
+          if (typeof response === 'string') {
+            // turn the string parts into 404 tables
+            return fabricate404Table(_.names, _.explainedKind.kind)
+          } else {
+            return response
+          }
+        })
+        .catch((err: CodedError) => {
           if (err.code === 404) {
             // This means every single name in _.names is missing
             if (finalState === FinalState.OfflineLike) {
               // Then that's what we want! we are done!
-              return fabricate404Table(_.names)
+              return fabricate404Table(_.names, _.explainedKind.kind)
             } else {
               // Otherwise, we are waiting till they are online, so
               // return an empty table. This table will subsequently
@@ -164,31 +190,18 @@ export default async function watchMulti(
               } as Table
             }
           }
-        }
-      )
+        })
     }))
   )
 
-  const { stringParts, tableParts } = tables.reduce(
-    (pair, response) => {
-      if (isStringWithIndex(response)) {
-        pair.stringParts.push(response)
-      } else if (isTableWithIndex(response)) {
-        pair.tableParts.push(response)
-      }
-      return pair
-    },
-    { stringParts: [] as WithIndex<string>[], tableParts: [] as WithIndex<Table>[] }
-  )
-
-  if (tableParts.length > 0) {
-    if (groups.length === 1 && tableParts.length === 1) {
+  if (tables.length > 0) {
+    if (groups.length === 1 && tables.length === 1) {
       // HOMOGENEOUS CASE
-      const nNotReady = countNotReady(tableParts[0].table, finalState)
+      const nNotReady = countNotReady(tables[0].table, finalState)
       if (nNotReady === 0) {
         // sub-case 1: nothing to watch, as everything is already "ready"
         debug('special case: single-group watching, all-ready all ready!', nNotReady, groups[0])
-        return tableParts[0].table
+        return tables[0].table
       } else {
         // sub-case 2: a subset may be done, but we need to fire up a
         // watcher to monitor the rest
@@ -197,9 +210,10 @@ export default async function watchMulti(
           drilldownCommand,
           myArgs,
           groups[0].explainedKind.kind,
-          tableParts[0].table,
+          tables[0].table,
           urlFormatterFor(groups[0].namespace, myArgs, groups[0].explainedKind),
           finalState,
+          tables[0].table.body.map(_ => _.rowKey),
           nNotReady,
           false, // no events
           true // yes, make sure there is a status column
@@ -207,39 +221,37 @@ export default async function watchMulti(
       }
     }
 
-    // If we get here, then this impl does not yet handle this use
-    // case. It is up to the caller to figure out a backup plan.
-    return
-
     // HETEROGENEOUS CASE
     // we need to assemble a unifiedTable facade
-    // NOT YET DONE. for now, we handle only the single-kind/homogeneous cases
-    // eslint-disable-next-line no-unreachable
-    const firstTableWithHeader = tableParts.find(_ => _.table.header)
-    // eslint-disable-next-line no-unreachable,@typescript-eslint/no-unused-vars
     const unifiedTable: Table & Watchable = {
-      header: firstTableWithHeader ? firstTableWithHeader.table.header : undefined,
-      body: [].concat(...tableParts.map(_ => _.table.body)) as Table['body'],
+      header: unifyHeaders([].concat(...tables.map(_ => _.table.header))),
+      body: unifyRows(
+        [].concat(...tables.map(_ => _.table.body)),
+        flatten(
+          groups.map(_ =>
+            Array(_.names.length)
+              .fill(0)
+              .map(() => _.explainedKind.kind)
+          )
+        )
+      ),
       watch: new MultiKindWatcher(
         drilldownCommand,
         args,
-        tableParts.map(_ => groups[_.idx].explainedKind),
-        tableParts.map(_ => _.table.resourceVersion),
+        tables.map(_ => groups[_.idx].explainedKind),
+        tables.map(_ => _.table.resourceVersion),
         await Promise.all(
-          tableParts.map(_ => {
+          tables.map(_ => {
             const group = groups[_.idx]
             return urlFormatterFor(group.namespace, myArgs, group.explainedKind)
           })
         ),
         finalState,
-        tableParts.map(_ => countNotReady(_.table, finalState))
+        tables.map(_ => _.table.body.map(_ => _.rowKey)),
+        tables.map(_ => countNotReady(_.table, finalState))
       )
     }
-    // eslint-disable-next-line no-unreachable
-    throw new Error('Unsupported use case')
-  } else if (stringParts.length > 0) {
-    // all strings, which will be the messages from the apiServer, e.g. conveying the state "this resource that you asked to watch until it was deleted... well it is already deleted"
-    return stringParts.map(_ => _.table)
+    return unifiedTable
   } else {
     throw new Error('nothing to watch')
   }
