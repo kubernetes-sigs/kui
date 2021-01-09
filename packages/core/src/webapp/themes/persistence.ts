@@ -158,16 +158,26 @@ export const switchToPersistedThemeChoice = async (): Promise<void> => {
       debug('switching to persisted theme choice')
       try {
         await switchTo(theme, true)
+        return
       } catch (err) {
-        debug('error switching to persisted theme choice, using default')
-        await switchTo(await getDefaultTheme(), true)
+        console.error('error switching to persisted theme choice', err)
+        // intentional fall-through
       }
     } else {
       debug('no persisted theme choice')
-      await switchTo(await getDefaultTheme(), true)
+      // intentional fall-through
     }
   } catch (err) {
-    console.error('cannot find a theme', err)
+    // intentional fall-through
+    console.error('Error loading persisted theme choice', err)
+  }
+
+  // Here is the fall-through handler: switch to the default theme
+  // choice
+  try {
+    await switchTo(await getDefaultTheme(), true)
+  } catch (err) {
+    console.error('Critical error!!! Cannot find a theme.', err)
   }
 }
 
