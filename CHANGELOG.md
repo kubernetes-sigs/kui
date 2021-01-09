@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.8](https://github.com/IBM/kui/compare/v9.3.7...v9.3.8) (2021-01-09)
+
+### Bug Fixes
+
+- **packages/builder:** electron builder uses the top-level package.json version instead of client version when building electron dists ([f05c69e](https://github.com/IBM/kui/commit/f05c69e)), closes [#6488](https://github.com/IBM/kui/issues/6488)
+- **plugins/plugin-client-common:** in patternfly-based components, the CurrentContext widget has poor alignment ([ef71a2e](https://github.com/IBM/kui/commit/ef71a2e)), closes [#6494](https://github.com/IBM/kui/issues/6494)
+
 ## [9.3.7](https://github.com/IBM/kui/compare/v9.3.6...v9.3.7) (2021-01-06)
 
 ### Bug Fixes
