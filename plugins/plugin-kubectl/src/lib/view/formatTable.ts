@@ -268,22 +268,25 @@ export const formatTable = async <O extends KubeOptions>(
     (rows, idx): Row => {
       const name = nameColumnIdx >= 0 ? rows[nameColumnIdx].value : ''
       const nameSplit = name.split(/\//) // for "get all", the name field will be <kind/entityName>
-      const nameForDisplay = nameSplit[1] || rows[0].value
       const nameForDrilldown = nameSplit[1] || name
       const css = ''
       const firstColumnCSS = idx === 0 || rows[0].key !== 'CURRENT' ? css : 'selected-entity'
 
+      const rowIsSelectable = rows[0].key === 'CURRENT'
+      const rowIsSelected = rowIsSelectable && rows[0].value === '*'
+      const rowCSS = [rowIsSelected ? 'selected-row' : ''].filter(_ => _)
+
+      const nameForDisplay =
+        idx > 0 && rowIsSelected ? '*' : idx > 0 && rowIsSelectable ? '' : nameSplit[1] || rows[0].value
+
       // if we have a "name split", e.g. "pod/myPod", then keep track of the "pod" part
-      if (nameSplit[1]) {
+      if (!rowIsSelectable && nameSplit[1]) {
         if (!entityTypeFromRows) {
           entityTypeFromRows = nameSplit[0]
         } else if (entityTypeFromRows !== nameSplit[0]) {
           entityTypeFromRows = undefined
         }
       }
-
-      const rowIsSelected = rows[0].key === 'CURRENT' && rows[0].value === '*'
-      const rowCSS = [rowIsSelected ? 'selected-row' : ''].filter(_ => _)
 
       // if there isn't a global namespace specifier, maybe there is a row namespace specifier
       // we use the row specifier in preference to a global specifier -- is that right?
@@ -329,7 +332,7 @@ export const formatTable = async <O extends KubeOptions>(
         key: rows[0].key,
         name: nameForDisplay,
         rowKey,
-        fontawesome: idx !== 0 && rows[0].key === 'CURRENT' && 'fas fa-check',
+        fontawesome: rowIsSelected ? 'fas fa-check' : undefined,
         onclick: nameColumnIdx === 0 && onclick, // if the first column isn't the NAME column, no onclick; see onclick below
         onclickIdempotent: true,
         css: firstColumnCSS + (rows[0].key === nameColumn ? ' kui--table-cell-is-name' : ''),
@@ -371,6 +374,7 @@ export const formatTable = async <O extends KubeOptions>(
     header: Object.assign(rows[0], {
       key: rows[0].key || rows[0].name,
       name: initialCapital(rows[0].name),
+      isSortable: rows[0].name !== 'CURRENT',
       attributes: (rows[0].attributes || []).map(_ => Object.assign(_, { value: initialCapital(_.value) }))
     }),
     body: rows.slice(1),
