@@ -38,7 +38,8 @@ export default function renderBody(
 ) {
   return (
     <TableBody>
-      {renderOpts.rows.map((row, ridx) => {
+      {renderOpts.rows.map(row => {
+        const ridx = parseInt(row.id, 10)
         const kuiRow = kuiTable.body[offset + ridx]
         const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
 
