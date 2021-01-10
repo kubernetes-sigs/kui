@@ -106,8 +106,8 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     return last && now - last < 250
   }
 
-  private async reportCurrentContext(idx?: Tab | number) {
-    const tab = getTab(idx)
+  private async reportCurrentContext(idx?: Tab | number | string) {
+    const tab = getTab(typeof idx === 'string' ? undefined : idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
         eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentContext())

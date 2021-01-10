@@ -27,6 +27,7 @@ import makeWatchable, { DirectWatcher, SingleKindDirectWatcher } from './watch'
 import { Explained } from '../../kubectl/explain'
 import { KubeOptions } from '../../kubectl/options'
 import { isResourceReady } from '../../kubectl/status'
+import { emitKubectlConfigChangeEvent } from '../../kubectl/config'
 
 import { FinalState } from '../../../lib/model/states'
 import { getCommandFromArgs } from '../../../lib/util/util'
@@ -203,6 +204,9 @@ export default async function watchMulti(
       if (nNotReady === 0) {
         // sub-case 1: nothing to watch, as everything is already "ready"
         debug('special case: single-group watching, all-ready all ready!', nNotReady, groups[0])
+        if (groups[0].explainedKind.kind === 'Namespace') {
+          emitKubectlConfigChangeEvent('CreateOrDeleteNamespace')
+        }
         return tables[0].table
       } else {
         // sub-case 2: a subset may be done, but we need to fire up a

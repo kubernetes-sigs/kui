@@ -25,9 +25,10 @@ import { KubeOptions, fileOf, getLabel, getNamespace } from '../../kubectl/optio
 import status from './status'
 import handleErrors from './errors'
 import { urlFormatterForArgs } from './url'
+import { headersForPlainRequest as headers } from './headers'
+
 import { FinalState } from '../../../lib/model/states'
 import { getCommandFromArgs } from '../../../lib/util/util'
-import { headersForPlainRequest as headers } from './headers'
 
 const debug = Debug('plugin-kubectl/controller/client/direct/create')
 

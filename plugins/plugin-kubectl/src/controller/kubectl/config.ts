@@ -18,12 +18,12 @@ import { Arguments, Registrar, eventChannelUnsafe } from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithPty } from './exec'
-import { KubeOptions } from './options'
 import commandPrefix from '../command-prefix'
+import { KubeOptions, getNamespaceAsExpressed } from './options'
 
 const kubectlConfigChangeChannel = '/kubectl/config/change'
 type Change = 'NewContext' | 'AlteredContext'
-type Handler = (args: Arguments<KubeOptions>) => void
+type Handler = (type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace', namespace?: string) => void
 
 const mutators = [
   'delete-cluster',
@@ -37,8 +37,15 @@ const mutators = [
   'use-context'
 ]
 
-export function emitKubectlConfigChangeEvent(args: Arguments<KubeOptions>) {
-  eventChannelUnsafe.emit(kubectlConfigChangeChannel, args)
+export function emitKubectlConfigChangeEvent(
+  type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace',
+  namespace?: string
+) {
+  try {
+    eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace)
+  } catch (err) {
+    console.error('Error in onKubectlConfigChangeEvent handler', err)
+  }
 }
 
 export function onKubectlConfigChangeEvents(handler: Handler) {
@@ -67,7 +74,7 @@ async function doConfig(args: Arguments<KubeOptions>) {
       : undefined
 
   if (change) {
-    emitKubectlConfigChangeEvent(args)
+    emitKubectlConfigChangeEvent('SetNamespaceOrContext', getNamespaceAsExpressed(args))
   }
 
   return response

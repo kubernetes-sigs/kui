@@ -27,7 +27,12 @@ import {
 export default function registerOcProjectGet(registrar: Registrar) {
   registrar.listen(`/${commandPrefix}/oc/project`, async args => {
     const response = await doExecWithStdout(args, undefined, 'oc')
-    emitKubectlConfigChangeEvent(args)
+
+    const newNamespace = args.argvNoOptions[args.argvNoOptions.indexOf('project') + 1]
+    if (newNamespace) {
+      emitKubectlConfigChangeEvent('SetNamespaceOrContext', newNamespace)
+    }
+
     return response
   })
 
