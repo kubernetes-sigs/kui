@@ -170,7 +170,13 @@ function initProxyState() {
     const myProxyState = startProxy()
     currentProxyState = myProxyState
 
-    myProxyState.then(state => onKubectlConfigChangeEvents(state.onQuitHandler))
+    myProxyState.then(state =>
+      onKubectlConfigChangeEvents(type => {
+        if (type === 'SetNamespaceOrContext') {
+          state.onQuitHandler()
+        }
+      })
+    )
   }
 
   return currentProxyState

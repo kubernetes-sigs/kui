@@ -22,13 +22,7 @@ import * as assert from 'assert'
 
 import { expandHomeDir } from '@kui-shell/core'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
-import {
-  waitForGreen,
-  waitForRed,
-  createNS,
-  waitTillNone,
-  defaultModeForGet
-} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { waitForGreen, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -49,19 +43,9 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
 
   synonyms.forEach(kubectl => {
     /** delete the given namespace */
-    const deleteIt = (name: string, errOk = false) => {
+    const deleteIt = (name: string, context: string, kubeconfig: string) => {
       it(`should delete the namespace ${name} via ${kubectl}`, () => {
-        return CLI.command(`${kubectl} delete namespace ${name}`, this.app)
-          .then(
-            ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name), errOk })
-          ) // FIXME
-          .then(selector => waitForRed(this.app, selector))
-          .then(() => waitTillNone('namespace', undefined, name))
-          .catch(err => {
-            if (!errOk) {
-              return Common.oops(this, true)(err)
-            }
-          })
+        execSync(`kubectl delete namespace ${name} --context ${context} --kubeconfig ${kubeconfig}`)
       })
     }
 
@@ -259,6 +243,6 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     getPodInSidecar('nginx', ns, `--kubeconfig ${initialKubeConfig}`)
     switchToContextByCommand('holla')
     listPodsAndExpectOne('nginx')
-    deleteIt(ns)
+    deleteIt(ns, initialContext, initialKubeConfig)
   })
 })

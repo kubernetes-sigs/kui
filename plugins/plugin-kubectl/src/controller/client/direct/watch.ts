@@ -17,15 +17,17 @@
 import Debug from 'debug'
 import { Abortable, Arguments, FlowControllable, Row, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
-import { toKuiTable } from '../../../lib/view/formatTable'
-import { fetchFile, openStream } from '../../../lib/util/fetch-file'
-import { KubeOptions, withKubeconfigFrom } from '../../kubectl/options'
-
 import URLFormatter from './url'
 import { headersForTableRequest } from './headers'
+
 import { FinalState } from '../../../lib/model/states'
-import { isResourceReady } from '../../kubectl/status'
+import { toKuiTable } from '../../../lib/view/formatTable'
+import { fetchFile, openStream } from '../../../lib/util/fetch-file'
 import { MetaTable, isMetaTable } from '../../../lib/model/resource'
+
+import { isResourceReady } from '../../kubectl/status'
+import { emitKubectlConfigChangeEvent } from '../../kubectl/config'
+import { KubeOptions, withKubeconfigFrom } from '../../kubectl/options'
 
 const debug = Debug('plugin-kubectl/client/direct/watch')
 
@@ -294,6 +296,14 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
           this.pusher.update(row, true)
         } else {
           this.pusher.offline(row.rowKey)
+        }
+
+        if (this.kind === 'Namespace') {
+          if (update.type === 'ADDED') {
+            emitKubectlConfigChangeEvent('CreateOrDeleteNamespace', row.name)
+          } else if (update.type === 'DELETED') {
+            emitKubectlConfigChangeEvent('CreateOrDeleteNamespace', row.name)
+          }
         }
 
         this.checkIfReady(row, idx, update)
