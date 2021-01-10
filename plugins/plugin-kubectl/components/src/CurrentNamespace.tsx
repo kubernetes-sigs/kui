@@ -72,8 +72,8 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     return last && now - last < 250
   }
 
-  private async reportCurrentNamespace(idx?: Tab | number) {
-    const tab = getTab(idx)
+  private async reportCurrentNamespace(idx?: Tab | number | string) {
+    const tab = getTab(typeof idx === 'string' ? undefined : idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
         eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentNamespace())

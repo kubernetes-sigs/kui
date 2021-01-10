@@ -18,7 +18,6 @@ import { REPL as REPLType, Table, Row, RawResponse, Arguments, Registrar, UsageM
 
 import flags from './flags'
 import apiVersion from './apiVersion'
-import { KubeOptions } from './options'
 import { doExecWithTable } from './exec'
 import commandPrefix from '../command-prefix'
 import { KubeContext } from '../../lib/model/resource'
@@ -74,11 +73,14 @@ export async function getCurrentContextName({ REPL }: { REPL: REPLType }) {
 
 /** Extract the namespace from the current context */
 let currentDefaultNamespaceCache: string
-onKubectlConfigChangeEvents(({ command, parsedOptions }: Pick<Arguments<KubeOptions>, 'command' | 'parsedOptions'>) => {
-  if (/k(ubectl?)\s+config\s+set-context/.test(command) && parsedOptions.namespace) {
-    currentDefaultNamespaceCache = parsedOptions.namespace
-  } else {
-    currentDefaultNamespaceCache = undefined
+onKubectlConfigChangeEvents((type, namespace) => {
+  if (type === 'SetNamespaceOrContext') {
+    if (typeof namespace === 'string') {
+      currentDefaultNamespaceCache = namespace
+    } else {
+      // invalidate cache
+      currentDefaultNamespaceCache = undefined
+    }
   }
 })
 export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }) {
