@@ -27,6 +27,7 @@ import {
   pexecInCurrentTab
 } from '@kui-shell/core'
 
+import Icons from '../../spi/Icons'
 const Markdown = React.lazy(() => import('../Markdown'))
 import ErrorCell from './ErrorCell'
 import whenNothingIsSelected from '../../../util/selection'
@@ -145,7 +146,13 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
             </span>
           )}
           <span className="kui--cell-inner-text">
-            {table.markdown ? <Markdown nested source={innerText} /> : innerText}
+            {cidx === 0 && kuiRow.fontawesome === 'fas fa-check' ? (
+              <Icons icon="Checkmark" />
+            ) : table.markdown ? (
+              <Markdown nested source={innerText} />
+            ) : (
+              innerText
+            )}
           </span>
         </span>
       </TableCell>

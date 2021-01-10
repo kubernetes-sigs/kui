@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Row as KuiRow } from '@kui-shell/core'
+import { Table } from '@kui-shell/core'
 
 import React from 'react'
 import { DataTableCustomRenderProps, TableHead, TableRow, TableHeader } from 'carbon-components-react'
@@ -23,7 +23,10 @@ import { DataTableCustomRenderProps, TableHead, TableRow, TableHeader } from 'ca
  * Render the TableHeader part
  *
  */
-export default function renderHeader(kuiHeader: KuiRow, { getHeaderProps, headers }: DataTableCustomRenderProps) {
+export default function renderHeader(
+  kuiHeader: Table['header'],
+  { getHeaderProps, headers }: DataTableCustomRenderProps
+) {
   return (
     <TableHead>
       <TableRow>
@@ -37,7 +40,7 @@ export default function renderHeader(kuiHeader: KuiRow, { getHeaderProps, header
               {...getHeaderProps({
                 header,
                 'data-key': header.key,
-                // isSortable: isSortable,
+                isSortable: cidx > 0 || kuiHeader.isSortable,
                 className: `kui--header-cell ${outerCSS || ''}`
               })}
             >

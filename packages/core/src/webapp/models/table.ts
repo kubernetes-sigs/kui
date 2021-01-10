@@ -164,7 +164,7 @@ export class Table<RowType extends Row = Row> {
 
   style?: TableStyle
 
-  header?: RowType
+  header?: RowType & { isSortable?: boolean }
 
   footer?: string[]
 
