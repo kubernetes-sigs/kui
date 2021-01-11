@@ -11,6 +11,7 @@ body[kui-theme-style] .kui--tab-content {
   }
   .xterm-terminated .xterm-rows > div {
     white-space: pre-wrap;
+    word-break: break-all;
     height: auto; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
   }
   /*.xterm-terminated.error .xterm-rows > div {

@@ -63,13 +63,20 @@ function sameStyle(cell1: IBufferCell, cell2: IBufferCell): boolean {
  *
  */
 function squashRow(row: IBufferLine, previous: IBufferCell, current: IBufferCell, cells: XtermResponseCell[]) {
-  row.getCell(0, previous)
-  let runningSquash = createCell(previous)
-  cells.push(runningSquash)
+  let runningSquash: XtermResponseCell
+
+  row.getCell(0, previous) // this copies the first cell into `previous`
+  if (cells[cells.length - 1] && sameStyle(previous, current)) {
+    runningSquash = cells[cells.length - 1]
+    runningSquash.innerText += previous.getChars()
+  } else {
+    runningSquash = createCell(previous)
+    cells.push(runningSquash)
+  }
 
   for (let idx = 1; idx < row.length; idx++) {
-    row.getCell(idx - 1, previous)
-    row.getCell(idx, current)
+    row.getCell(idx - 1, previous) // previous now holds cells[idx-1]
+    row.getCell(idx, current) // current now holds cells[idx]
 
     if (sameStyle(previous, current)) {
       // same decoration from one cell to the next
