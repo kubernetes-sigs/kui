@@ -118,7 +118,7 @@ describe('tab navigation', function(this: Common.ISuite) {
     })
   }
 
-  const TAB_BUTTON_N = (N: number) => `.kui--tab:nth-child(${N}) .bx--header__menu-item`
+  const TAB_BUTTON_N = Selectors.TOP_TAB_N_CLICKABLE
 
   const promptBetterBeFocused = async () => {
     const promptIsFocused = await this.app.client['isActive'](Selectors.CURRENT_PROMPT)

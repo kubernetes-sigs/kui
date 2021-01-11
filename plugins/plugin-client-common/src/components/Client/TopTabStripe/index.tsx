@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { KeyCodes, inElectron } from '@kui-shell/core'
-import { Header, HeaderName, HeaderMenuButton, HeaderNavigation } from 'carbon-components-react'
+import { Nav, NavList, Page, PageHeader } from '@patternfly/react-core'
 
 import TabModel from '../TabModel'
 import KuiContext from '../context'
@@ -114,21 +114,23 @@ export default class TopTabStripe extends React.PureComponent<Props> {
   private tabs() {
     return (
       <React.Fragment>
-        <HeaderNavigation aria-label="Tabs">
-          {this.props.tabs.map((tab, idx) => (
-            <Tab
-              {...this.props}
-              key={idx}
-              idx={idx}
-              uuid={tab.uuid}
-              title={tab.title}
-              closeable={this.props.tabs.length > 1}
-              active={idx === this.props.activeIdx}
-              onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
-              onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
-            />
-          ))}
-        </HeaderNavigation>
+        <Nav aria-label="Tabs" variant="horizontal" className="kui--header-tabs">
+          <NavList className="kui--tab-list">
+            {this.props.tabs.map((tab, idx) => (
+              <Tab
+                {...this.props}
+                key={idx}
+                idx={idx}
+                uuid={tab.uuid}
+                title={tab.title}
+                closeable={this.props.tabs.length > 1}
+                active={idx === this.props.activeIdx}
+                onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
+                onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
+              />
+            ))}
+          </NavList>
+        </Nav>
         <div className="kui--top-tab-buttons">
           <NewTabButton onNewTab={this.props.onNewTab} />
           <SplitTerminalButton />
@@ -141,43 +143,33 @@ export default class TopTabStripe extends React.PureComponent<Props> {
     return <About expanded={args.isSideNavExpanded} />
   } */
 
-  private headerMenu(args: CarbonHeaderArgs) {
-    return (
-      <HeaderMenuButton
-        aria-label="Open menu"
-        isCollapsible
-        onClick={args.onClickSideNavExpand}
-        isActive={args.isSideNavExpanded}
-      />
-    )
-  }
-
   private headerName() {
     return (
       <KuiContext.Consumer>
         {config => (
-          <HeaderName prefix="" className="kui--header--name">
+          <div prefix="" className="kui--header--name">
             {config.productName || 'Kui'}
-          </HeaderName>
+          </div>
         )}
       </KuiContext.Consumer>
     )
   }
 
-  /** Buttons that appear in the top right */
-  private buttons() {
-    if (this.props.tabs[this.props.activeIdx]) {
-      const { buttons } = this.props.tabs[this.props.activeIdx]
-      return (
-        <div
-          id="kui--custom-top-tab-stripe-button-container"
-          num-button={buttons.length} // helps with css to calculate the right position of the container
-          className="kui--hide-in-narrower-windows" // re: kui--hide-in-narrower-windows, see https://github.com/IBM/kui/issues/4459
-        >
-          {buttons.map(_ => _.icon)}
-        </div>
-      )
+  private header() {
+    const logoProps = {
+      /*      href: 'https://patternfly.org',
+      onClick: () => console.log('clicked logo'),
+      target: '_blank' */
     }
+
+    return (
+      <PageHeader
+        className="kui--top-tab-stripe-header"
+        logo={this.headerName()}
+        logoProps={logoProps}
+        topNav={this.tabs()}
+      />
+    )
   }
 
   /**
@@ -186,13 +178,12 @@ export default class TopTabStripe extends React.PureComponent<Props> {
    */
   public render() {
     return (
-      <Header aria-label="Header" className="kui--top-tab-stripe">
-        {/* this.headerMenu(args) */}
-        {this.headerName()}
-        {this.tabs()}
-        {this.buttons()}
-        {/* this.sidenav(args) */}
-      </Header>
+      <Page
+        aria-label="Header"
+        className="kui--top-tab-stripe"
+        header={this.header()}
+        mainContainerId="kui--top-tab-stripe-main"
+      />
     )
   }
 }
