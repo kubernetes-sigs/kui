@@ -15,7 +15,7 @@
  */
 
 @mixin TopTabStripe {
-  .kui--top-tab-stripe {
+  body[kui-theme-style] .kui--top-tab-stripe {
     @content;
   }
 }
@@ -26,8 +26,15 @@
   }
 }
 
+@mixin TopTabs {
+  .pf-c-page__header-nav {
+    /* I can't find a way to give us a kui-- className here */
+    @content;
+  }
+}
+
 @mixin Tab {
-  .kui--tab {
+  .kui--tab-list > .kui--tab {
     @content;
   }
 }
@@ -51,6 +58,12 @@
   }
 }
 
+@mixin HeaderNameContainer {
+  .pf-c-page__header-brand {
+    /* I can't find a way to give us a kui-- className here */
+    @content;
+  }
+}
 @mixin HeaderName {
   .kui--header--name {
     @content;
@@ -58,7 +71,13 @@
 }
 
 @mixin TabLabel {
-  .bx--header__menu-item {
+  .kui--tab--label {
+    @content;
+  }
+}
+
+@mixin TabClose {
+  .kui--tab-close {
     @content;
   }
 }

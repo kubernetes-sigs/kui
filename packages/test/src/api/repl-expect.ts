@@ -316,7 +316,7 @@ export function splitCount(expectedSplitCount: number, inverseColors = false, ex
     if (inverseColors) {
       await app.client
         .$(Selectors.SPLIT_N(expectedSplitIndex || expectedSplitCount, inverseColors))
-        .then(_ => _.waitForExist())
+        .then(_ => _.waitForExist({ timeout: waitTimeout }))
     }
   }
 }

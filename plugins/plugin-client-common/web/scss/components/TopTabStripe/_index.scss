@@ -15,43 +15,35 @@
  */
 
 @import 'mixins';
-@import 'carbon-components/scss/components/ui-shell/_header.scss';
-@import 'carbon-components/scss/components/ui-shell/_ui-shell.scss';
+@import '../../PatternFly/common';
+
+$height: 2.75rem;
+$tab-label-font-size: 0.875rem;
 
 @include TopTabStripe {
   --tab-shadow: inset 0 -3px 0 0;
+  --pf-c-page__header--BackgroundColor: var(--color-stripe-01);
 
-  height: 2.75rem;
-  background-color: var(--color-stripe-01);
+  height: $height;
   border-bottom: none;
   transition-property: background-color;
   position: unset;
+  align-items: stretch;
 
-  .bx--header__action {
-    .bx--header__action--active {
-      border-left-color: var(--color-table-border2);
-      border-bottom-color: var(--color-table-border1);
-    }
-    &:focus {
-      border-color: var(--color-base04);
-    }
+  .kui--top-tab-stripe-header {
+    height: $height;
+    min-height: $height;
+    align-items: stretch;
+  }
+  #kui--top-tab-stripe-main {
+    /* we don't use the Page content part */
+    display: none;
   }
 
-  .bx--header__menu-trigger {
-    &:hover {
-      fill: var(--color-text-01);
-      background: var(--color-ui-04);
-    }
-    & > svg {
-      fill: var(--color-text-02);
-    }
-  }
-
-  @include HeaderName {
-    font-size: inherit;
-    position: relative;
-    border: none;
+  @include HeaderNameContainer {
+    align-items: stretch;
     margin-right: 1em;
+    position: relative;
 
     /* vertical separator */
     &:after {
@@ -60,28 +52,28 @@
       height: 60%;
       width: 1px;
       right: 1px;
+      top: 50%;
+      transform: translateY(-50%);
       position: absolute;
     }
   }
+  @include HeaderName {
+    color: var(--color-text-01);
+    font-weight: bold;
+    font-size: inherit;
+    position: relative;
+    border: none;
+  }
 
-  .bx--header__name {
+  @include HeaderName {
     &,
     &:hover {
       color: var(--color-text-02);
     }
   }
 
-  .bx--header__nav {
-    padding-left: 0;
-
-    /* this rule is important: otherwise the default carbon components
-   styling uses media selectors to hide our Tab buttons for narrower
-   windows */
-    display: block;
-
-    &:before {
-      display: none;
-    }
+  @include TabClose {
+    font-size: 0.75rem;
   }
 
   @include Tab {
@@ -93,14 +85,21 @@
 
     a:not([data-custom-label]) {
       max-width: 20em;
+      padding-right: 0.5em;
     }
 
-    box-shadow: var(--tab-shadow) var(--color-table-border3);
+    padding-left: 0;
+    padding-right: 0;
+    --pf-c-nav--m-horizontal__link--Left: 0;
+    --pf-c-nav--m-horizontal__link--Right: 0;
+
+    --pf-c-nav__link--FontSize: $tab-label-font-size;
+    --pf-c-nav__link--before--BorderColor: var(--color-table-border3);
     &:hover {
-      box-shadow: var(--tab-shadow) var(--color-table-border2);
+      --pf-c-nav__link--before--BorderColor: var(--color-table-border2);
     }
     &.kui--tab--active {
-      box-shadow: var(--tab-shadow) var(--active-tab-color);
+      --pf-c-nav__link--before--BorderColor: var(--active-tab-color);
     }
 
     &:not(:first-child) {
@@ -154,18 +153,6 @@
 
       &:focus {
         border-color: var(--color-brand-03);
-      }
-    }
-
-    .bx--text-truncate--end {
-      display: flex;
-      align-items: center;
-
-      .kui--tab--label {
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
     }
 
@@ -233,90 +220,13 @@
       fill: var(--color-text-02);
     }
   }
+  @include TopTabs {
+    padding-left: 0;
+  }
 }
 
 @media (max-width: 42rem) {
-  .kui--top-tab-stripe {
+  @include TopTabStripe {
     display: none;
-  }
-}
-
-#kui--custom-top-tab-stripe-button-container {
-  display: flex;
-  justify-content: flex-end;
-  position: relative;
-
-  &[num-button='2'] {
-    /* number of buttons in the container */
-    $numButtons: 2;
-    right: calc(-1.875em * #{$numButtons - 1} - 3px);
-  }
-
-  &[num-button='4'] {
-    /* number of buttons in the container */
-    $numButtons: 4;
-    right: calc(-1.875em * #{$numButtons - 1} - 3px);
-  }
-
-  /*  &:not(:hover) {
-    svg[data-active='true'] {
-      margin-right: 6px;
-    }
-  } */
-
-  /* 2.75: height of header; 0.875: font size of header; 24px height of icons */
-  $headerHeight: 2.75em;
-  $headerFontSize: 0.875;
-  $iconSize: 32px;
-  $iconPadding: 3px;
-  top: calc(((#{$headerHeight} * #{$headerFontSize}) - #{$iconSize}) / 2 + 1px);
-
-  transition-property: right;
-  color: var(--color-text-01);
-
-  &:hover {
-    /* expose all buttons when hovering over the button container */
-    right: 0;
-
-    svg {
-      color: var(--color-text-02);
-
-      &,
-      &:not([data-active]) {
-        /*order: unset;*/
-      }
-
-      &[data-active]:not(.kui--rotate-180-then-flip) {
-        color: var(--active-tab-color);
-        border-bottom-color: currentColor;
-      }
-
-      &[data-active].kui--rotate-180-then-flip {
-        color: var(--active-tab-color);
-        border-top-color: currentColor;
-      }
-    }
-  }
-
-  svg {
-    padding: $iconPadding;
-    fill: currentColor;
-    stroke: currentColor;
-    stroke-width: 1;
-    border-bottom: 2px solid transparent;
-    border-top: 2px solid transparent;
-
-    &:hover {
-      opacity: 1;
-    }
-
-    &:not([data-active]) {
-      order: 99999;
-      &:hover {
-        cursor: pointer;
-        background: var(--color-table-border3);
-        color: var(--color-text-01);
-      }
-    }
   }
 }
