@@ -15,31 +15,37 @@
  */
 
 @import '../StatusStripe/mixins';
-
-@include StatusStripeElement {
-  .kui--dropdown__toggle {
-    padding: 0;
-  }
-  .pf-c-dropdown__toggle.pf-m-plain,
-  .pf-c-dropdown__toggle-text {
-    color: var(--color-text-01);
-    display: flex;
-  }
-  .pf-c-dropdown__menu {
-    background-color: var(--color-base05);
-  }
-  .pf-c-dropdown__toggle-icon {
-    margin-left: 0.5rem;
-    margin-right: 0;
-  }
-}
+@import '../Terminal/mixins';
 
 body[kui-theme-style] {
-  .pf-c-dropdown__toggle {
-    /* see https://github.com/IBM/kui/issues/4649 */
-    padding-top: 0;
-    padding-bottom: 0;
+  @include BlockOutput {
+    .pf-c-dropdown__menu {
+      max-height: 15rem;
+    }
+  }
 
+  @include StatusStripeElement {
+    .pf-c-dropdown__menu {
+      max-height: 35rem;
+    }
+    .kui--dropdown__toggle {
+      padding: 0;
+    }
+    .pf-c-dropdown__toggle-icon {
+      margin-left: 0.5rem;
+      margin-right: 0;
+    }
+  }
+
+  .pf-c-dropdown__toggle,
+  .pf-c-dropdown__toggle-text {
+    display: flex;
+    font-size: inherit;
+    color: var(--color-text-01);
+    font-family: var(--font-sans-serif);
+  }
+
+  .pf-c-dropdown__toggle {
     &:focus {
       outline: none;
     }
@@ -48,8 +54,14 @@ body[kui-theme-style] {
   .pf-c-dropdown__menu {
     /* see https://github.com/IBM/kui/issues/4651 */
     z-index: 1;
+    max-height: 30rem;
+    overflow-y: auto;
+    background-color: var(--color-dropdown);
 
     .pf-c-dropdown__menu-item {
+      font-size: inherit;
+      font-family: var(--font-sans-serif);
+
       svg[data-mode='selected container'] {
         /* need to override some enclosing hover effects from sidecar toolbar */
         fill: currentColor;

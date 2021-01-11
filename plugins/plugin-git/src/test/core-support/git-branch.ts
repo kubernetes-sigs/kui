@@ -80,7 +80,7 @@ function makeBranch(branchName: string, tmpdir: string) {
   return checkout(branchName, tmpdir, '-b')
 }
 
-const suiteName = `git branch as RadioTable ${process.env.MOCHA_RUN_TARGET || ''}`
+const suiteName = `git branch as DropDown ${process.env.MOCHA_RUN_TARGET || ''}`
 describe(suiteName, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -95,27 +95,22 @@ describe(suiteName, function(this: Common.ISuite) {
   const listAndExpect = (branch: string) => {
     pit(`should list branch ${branch} as a RadioTable`, () =>
       CLI.command('git branch', this.app)
-        .then(ReplExpect.okWith(branch))
+        .then(ReplExpect.okWithDropDownList(branch))
         .catch(Common.oops(this, true))
     )
   }
 
   // list branches and click the given branch name row
   const listAndClick = (branch: string) => {
-    pit(`should initiate namespace switch via click`, () => {
-      const radioButton = Selectors.RADIO_BUTTON_BY_NAME(branch)
-      const radioButtonSelected = Selectors.RADIO_BUTTON_SELECTED
-
-      return CLI.command(`git branch`, this.app)
-        .then(ReplExpect.okWithCustom({ selector: radioButton }))
-        .then((selector: string) =>
+    pit(`should initiate git branch switch via command`, () => {
+      return CLI.command(`git checkout ${branch}`, this.app)
+        .then(ReplExpect.ok)
+        .then(() =>
           this.app.client.waitUntil(
             async () => {
-              await this.app.client.$(selector).then(_ => _.click())
               const actualBranch = await this.app.client
                 .$(Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-git--current-git-branch'))
                 .then(_ => _.getText())
-              await this.app.client.$(selector.replace(radioButton, radioButtonSelected)).then(_ => _.waitForExist())
               return actualBranch === branch
             },
             { timeout: CLI.waitTimeout }

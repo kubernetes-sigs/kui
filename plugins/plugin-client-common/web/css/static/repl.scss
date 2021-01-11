@@ -13,6 +13,9 @@
   /* streaming output of stdout; make sure stderr occurs below */
   flex-direction: column;
 }
+.repl-result.overflow-visible {
+  overflow: visible;
+}
 .repl-result > p:not(:first-child) {
   padding-top: 1rem;
 }

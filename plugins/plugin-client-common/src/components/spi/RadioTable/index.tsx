@@ -15,15 +15,12 @@
  */
 
 import React from 'react'
+import { pexecInCurrentTab, radioTableCellToString } from '@kui-shell/core'
 
 import Props from './model'
-import Carbon from './impl/Carbon'
-// import PatternFly4 from './impl/PatternFly'
+import DropDown from '../DropDown'
 
 export interface State {
-  page: number
-  pageSize: number
-  offset: number
   selectedIdx: number
 }
 
@@ -31,47 +28,20 @@ export default class RadioTableSpi extends React.PureComponent<Props, State> {
   public constructor(props: Props) {
     super(props)
 
-    const pageSize = 15
-    this.state = {
-      page: 1,
-      pageSize,
-      offset: 0,
-      selectedIdx: this.props.table.defaultSelectedIdx
-    }
-  }
-
-  private onChange(selectedIdx: number) {
-    this.setState({ selectedIdx })
-  }
-
-  private numRows() {
-    return this.props.table.body.length
-  }
-
-  private carbon() {
-    return <Carbon {...this.props} {...this.state} onChange={this.onChange.bind(this)} />
-  }
-
-  /* private patternfly() {
-    return <PatternFly4 {...this.props} {...this.state} onChange={this.onChange.bind(this)} />
-  } */
-
-  private broker() {
-    // notes: the PatternFly DataTable is junk
-    /* <KuiContext.Consumer>
-          {config =>
-            config.components === 'patternfly' ? (
-              {this.patternfly()}
-            ) : (
-              {this.carbon()}
-            )
-          }
-        </KuiContext.Consumer> */
-
-    return this.carbon()
+    this.state = { selectedIdx: props.table.defaultSelectedIdx }
   }
 
   public render() {
-    return this.carbon()
+    return (
+      <DropDown
+        toggle="caret"
+        actions={this.props.table.body.map((_, idx) => ({
+          label: radioTableCellToString(_.cells[_.nameIdx]),
+          isSelected: this.state.selectedIdx === idx,
+          handler: () => pexecInCurrentTab(_.onSelect)
+        }))}
+        position="left"
+      />
+    )
   }
 }

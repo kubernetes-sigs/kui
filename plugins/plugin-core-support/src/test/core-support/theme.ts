@@ -124,7 +124,7 @@ const reloadAndThenDefault = reloadAndThen(Default)
 // const clickOnThemeButtonThenClickOnLight = clickOnThemeButtonThenClickOnTheme(Light)
 // const clickOnThemeButtonThenClickOnDark = clickOnThemeButtonThenClickOnTheme(Dark)
 
-describe('theme switching', function(this: Common.ISuite) {
+describe('theme switching via command', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -136,20 +136,12 @@ describe('theme switching', function(this: Common.ISuite) {
 
   it('should list built-in Light theme', () =>
     CLI.command('theme list', this.app)
-      .then(
-        ReplExpect.okWithCustom({
-          selector: `[data-name="${Light.name}"]`
-        })
-      )
+      .then(ReplExpect.okWithDropDownList(Light.name))
       .catch(Common.oops(this)))
 
   it('should list built-in Dark theme', () =>
     CLI.command('theme list', this.app)
-      .then(
-        ReplExpect.okWithCustom({
-          selector: `[data-name="${Dark.name}"]`
-        })
-      )
+      .then(ReplExpect.okWithDropDownList(Dark.name))
       .catch(Common.oops(this)))
 
   resetTheme(this)
