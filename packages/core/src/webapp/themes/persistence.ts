@@ -175,7 +175,7 @@ export const switchToPersistedThemeChoice = async (): Promise<void> => {
   // Here is the fall-through handler: switch to the default theme
   // choice
   try {
-    await switchTo(await getDefaultTheme(), true)
+    await switchTo(await getDefaultTheme())
   } catch (err) {
     console.error('Critical error!!! Cannot find a theme.', err)
   }
