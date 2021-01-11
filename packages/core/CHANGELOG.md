@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.9](https://github.com/IBM/kui/compare/v9.3.8...v9.3.9) (2021-01-11)
+
+### Bug Fixes
+
+- **packages/core:** first-time users may not see Themes widget ([08db4e0](https://github.com/IBM/kui/commit/08db4e0)), closes [#6528](https://github.com/IBM/kui/issues/6528)
+- **packages/core:** For some users, the Themes selector may not be shown ([0889535](https://github.com/IBM/kui/commit/0889535)), closes [#6519](https://github.com/IBM/kui/issues/6519)
+
 ## [9.3.8](https://github.com/IBM/kui/compare/v9.3.7...v9.3.8) (2021-01-09)
 
 **Note:** Version bump only for package @kui-shell/core
