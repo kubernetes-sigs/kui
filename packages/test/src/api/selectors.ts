@@ -338,3 +338,9 @@ export const SIDECAR_TOOLBAR_TEXT_LAST = (type: string) =>
   `${SIDECAR_TOOLBAR_LAST} .sidecar-toolbar-text[data-type="${type}"] .sidecar-toolbar-text-content`
 export const SIDECAR_TOOLBAR_BUTTON_LAST = (mode: string) =>
   `${SIDECAR_TOOLBAR_LAST} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button[data-mode="${mode}"] [role="tab"]`
+
+/** dropdown */
+export const DROPDOWN = `.kui--dropdown`
+export const DROPDOWN_N = (N: number, splitIndex = 1) => `${OUTPUT_N(N, splitIndex)} ${DROPDOWN}`
+export const DROPDOWN_N_MENU_ITEM = (N: number, label: string, splitIndex = 1) =>
+  `${DROPDOWN_N(N, splitIndex)} .kui--dropdown__menu-item[data-mode="${label}"]`

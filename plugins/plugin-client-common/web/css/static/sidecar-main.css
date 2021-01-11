@@ -23,9 +23,6 @@ $toolbar-height: 1.5rem;
   max-height: 100%;
   overflow-x: hidden;
 
-  /* float above the repl and SplitPane draggable */
-  z-index: 1;
-
   transition-property: background-color, color, border-color;
   transition-duration: calc(var(--transition-duration) * 2); /* twice the normal duration */
   display: flex;
@@ -47,7 +44,6 @@ $toolbar-height: 1.5rem;
   .sidecar-bottom-stripe {
     flex-basis: 2.5em;
     display: flex;
-    z-index: 5;
     background-color: var(--color-stripe-02);
     /* border-bottom: 1px inset var(--color-ui-02); */
   }

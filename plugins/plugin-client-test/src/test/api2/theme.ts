@@ -22,19 +22,11 @@ describe('theme switching', function(this: Common.ISuite) {
 
   it('should list plugin-provided Light theme', () =>
     CLI.command('theme list', this.app)
-      .then(
-        ReplExpect.okWithCustom({
-          selector: `[data-name="Light"]`
-        })
-      )
+      .then(ReplExpect.okWithDropDownList('Light'))
       .catch(Common.oops(this, true)))
 
   it('should list client-provided Test Theme', () =>
     CLI.command('theme list', this.app)
-      .then(
-        ReplExpect.okWithCustom({
-          selector: `[data-name="Test Theme"]`
-        })
-      )
+      .then(ReplExpect.okWithDropDownList('Test Theme'))
       .catch(Common.oops(this, true)))
 })
