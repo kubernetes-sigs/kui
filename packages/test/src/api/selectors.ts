@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
-export const TOP_TAB = '.kui--tab'
+export const TOP_TAB = '.kui--tab-list > .kui--tab'
 export const TOP_TAB_N = (N: number) => `${TOP_TAB}:nth-child(${N})`
+export const TOP_TAB_N_CLICKABLE = (N: number) => `${TOP_TAB_N(N)} > a`
 export const TOP_TAB_CLOSE_N = (N: number) => `${TOP_TAB}:nth-child(${N}) .kui--tab-close`
 export const TOP_TAB_WITH_TITLE = (title: string) => `${TOP_TAB} a[data-custom-label-text="${title}"]`
 export const TAB_CONTENT = '.kui--tab-content'

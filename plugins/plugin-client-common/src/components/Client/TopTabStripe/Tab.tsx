@@ -26,7 +26,7 @@ import {
   getPersistedThemeChoice,
   findThemeByName
 } from '@kui-shell/core'
-import { HeaderMenuItem } from 'carbon-components-react'
+import { NavItem } from '@patternfly/react-core'
 
 import Icons from '../../spi/Icons'
 const Markdown = React.lazy(() => import('../../Content/Markdown'))
@@ -147,12 +147,14 @@ export default class Tab extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <HeaderMenuItem
+      <NavItem
         href="#"
         data-tab-names={this.state.topTabNames}
         data-fresh={this.state.isFreshlyCreated}
         data-custom-label={this.props.title ? true : undefined}
         data-custom-label-text={this.props.title || undefined}
+        isActive={this.props.active}
+        styleChildren={false}
         className={
           'kui--tab kui--tab-navigatable' +
           (this.props.active ? ' kui--tab--active' : '') +
@@ -197,7 +199,7 @@ export default class Tab extends React.PureComponent<Props, State> {
             <Icons icon="WindowClose" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
           </div>
         )}
-      </HeaderMenuItem>
+      </NavItem>
     )
   }
 }
