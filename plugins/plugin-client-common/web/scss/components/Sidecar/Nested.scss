@@ -21,6 +21,11 @@
 @include WidthConstrained {
   @include NestedSidecar {
     min-width: unset;
+
+    @include Maximized {
+      /* see https://github.com/IBM/kui/issues/6531 */
+      left: calc(#{$input-padding-left});
+    }
   }
 }
 
