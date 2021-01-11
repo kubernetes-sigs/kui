@@ -63,6 +63,7 @@ function isList({ argvNoOptions, parsedOptions }: Arguments<GitBranchOptions>): 
 }
 
 async function doListBranches(args: Arguments<GitBranchOptions>): Promise<RadioTable> {
+  args.argvNoOptions.push('--no-pager') // see https://github.com/IBM/kui/issues/6535
   args.argvNoOptions.push('--color=never')
   const response = stripAnsi(await doExecWithStdoutViaPty(args))
 
