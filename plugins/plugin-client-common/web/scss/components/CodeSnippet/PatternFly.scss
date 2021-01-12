@@ -16,18 +16,27 @@
 
 @import '../../PatternFly/common';
 
-body[kui-theme-style] .pf-c-clipboard-copy__expandable-content {
-  color: var(--color-text-01);
-}
+body[kui-theme-style] .pf-c-clipboard-copy {
+  font-family: var(--font-monospace);
 
-body[kui-theme-style='dark'] .pf-c-clipboard-copy__expandable-content {
-  color: var(--pf-global--Color--300);
-}
+  .pf-c-form-control {
+    font-size: inherit;
+    color: var(--color-text-01);
+    border-color: var(--color-base02);
+    background-color: var(--color-base03);
+  }
 
-body[kui-theme-style='light'] .kui--inverted-color-context .pf-c-clipboard-copy__expandable-content {
-  color: var(--pf-global--Color--300);
-}
+  .pf-c-button::after {
+    border-color: var(--color-base02);
+  }
 
-.pf-c-clipboard-copy .pf-c-button.pf-m-control {
-  color: var(--color-text-01);
+  .pf-c-clipboard-copy__expandable-content {
+    color: var(--color-text-01);
+    border-color: var(--color-base03);
+    background-color: var(--color-base02);
+  }
+
+  .pf-c-clipboard-copy .pf-c-button.pf-m-control {
+    color: var(--color-text-01);
+  }
 }
