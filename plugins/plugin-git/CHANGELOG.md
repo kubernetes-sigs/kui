@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.10](https://github.com/IBM/kui/compare/v9.3.9...v9.3.10) (2021-01-12)
+
+### Bug Fixes
+
+- **plugins/plugin-git:** git branch command fails if the underlying git command decides to paginate ([02bb5e5](https://github.com/IBM/kui/commit/02bb5e5)), closes [#6535](https://github.com/IBM/kui/issues/6535)
+- **plugins/plugin-git:** kui's git branch command fails if the underlying git command decides to paginate ([9742595](https://github.com/IBM/kui/commit/9742595)), closes [#6535](https://github.com/IBM/kui/issues/6535)
+
 ## [9.3.9](https://github.com/IBM/kui/compare/v9.3.8...v9.3.9) (2021-01-11)
 
 **Note:** Version bump only for package @kui-shell/plugin-git

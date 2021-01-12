@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.10](https://github.com/IBM/kui/compare/v9.3.9...v9.3.10) (2021-01-12)
+
+**Note:** Version bump only for package @kui-shell/plugin-skeleton
+
 ## [9.3.9](https://github.com/IBM/kui/compare/v9.3.8...v9.3.9) (2021-01-11)
 
 **Note:** Version bump only for package @kui-shell/plugin-skeleton
