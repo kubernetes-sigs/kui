@@ -33,8 +33,7 @@ import {
   ListItem
 } from 'carbon-components-react'
 
-const CodeSnippet = React.lazy(() => import('../spi/CodeSnippet'))
-
+import CodeSnippet from '../spi/CodeSnippet'
 import 'carbon-components/scss/components/link/_link.scss'
 import '../../../web/scss/components/List/Carbon.scss'
 import '../../../web/scss/components/StructuredList/Carbon.scss'
