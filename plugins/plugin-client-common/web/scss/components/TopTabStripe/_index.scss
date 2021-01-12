@@ -31,6 +31,7 @@ $tab-label-font-size: 0.875rem;
   align-items: stretch;
 
   .kui--top-tab-stripe-header {
+    display: flex;
     height: $height;
     min-height: $height;
     align-items: stretch;
@@ -44,6 +45,9 @@ $tab-label-font-size: 0.875rem;
     align-items: stretch;
     margin-right: 1em;
     position: relative;
+
+    /** Override some media queries */
+    padding-right: var(--pf-c-page__header-brand--xl--PaddingRight);
 
     /* vertical separator */
     &:after {
@@ -222,6 +226,7 @@ $tab-label-font-size: 0.875rem;
   }
   @include TopTabs {
     padding-left: 0;
+    background-color: transparent;
   }
 }
 
