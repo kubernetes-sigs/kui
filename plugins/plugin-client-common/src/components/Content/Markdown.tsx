@@ -18,8 +18,8 @@ import React from 'react'
 import { v4 as uuid } from 'uuid'
 import TurndownService from 'turndown'
 import ReactMarkdown from 'react-markdown'
-import { dirname, join, relative } from 'path'
 import { REPL, Tab as KuiTab } from '@kui-shell/core'
+import { dirname, isAbsolute, join, relative } from 'path'
 
 import {
   Link,
@@ -78,6 +78,14 @@ export default class Markdown extends React.PureComponent<Props> {
     }
   }
 
+  private handleImage(src: string, width?: number) {
+    const isLocal = !/^http/i.test(src)
+    if (isLocal && this.props.fullpath) {
+      const absoluteSrc = isAbsolute(src) ? src : join(dirname(this.props.fullpath), src)
+      return <img src={absoluteSrc} width={width} />
+    }
+  }
+
   public render() {
     return (
       <ReactMarkdown
@@ -88,6 +96,19 @@ export default class Markdown extends React.PureComponent<Props> {
             (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : ' full-height')
         }
         renderers={{
+          html: props => {
+            if (/<img/.test(props.value)) {
+              const srcMatch = props.value.match(/src="?([^"\s]+)"?/)
+              const widthMatch = props.value.match(/width="?(\d+)"?/)
+              if (srcMatch) {
+                return this.handleImage(srcMatch[1], widthMatch[1]) || <span />
+              }
+            }
+
+            // Render the raw string for all other raw html tags
+            return <span>{props.value}</span>
+          },
+
           link: props => {
             const isLocal = !/^http/i.test(props.href)
             const target = !isLocal ? '_blank' : undefined
@@ -153,14 +174,7 @@ export default class Markdown extends React.PureComponent<Props> {
             )
           },
           image: props => {
-            const isLocal = !/^http/i.test(props.src)
-            if (isLocal && this.props.fullpath) {
-              const absoluteSrc = join(dirname(this.props.fullpath), props.src)
-              const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteSrc)
-              return <img src={relativeToCWD} />
-            } else {
-              return <img {...props} />
-            }
+            return this.handleImage(props.src, props.width) || <img {...props} />
           },
           list: props => {
             return React.createElement(
