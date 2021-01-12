@@ -40,20 +40,20 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
 
 interface State {
   editor: Monaco.ICodeEditor
-  wrapper: HTMLDivElement
+  wrapper: React.RefObject<HTMLDivElement>
   catastrophicError: Error
   cleaners: (() => void)[]
 }
 
-export default class SimpleEditor extends React.PureComponent<Props, State> {
+export default class SimpleEditor extends React.Component<Props, State> {
   public constructor(props: Props) {
     super(props)
 
     // created below in render() via ref={...} -> initMonaco()
     this.state = {
       cleaners: [],
+      wrapper: React.createRef<HTMLDivElement>(),
       editor: undefined,
-      wrapper: undefined,
       catastrophicError: undefined
     }
   }
@@ -66,19 +66,19 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
     console.error('catastrophic error in Editor', error, errorInfo)
   }
 
+  public shouldComponentUpdate(nextProps: Props, nextState: State) {
+    return !nextState.editor || !!nextState.catastrophicError
+  }
+
   /** Called whenever we have proposed (props,state); we derive a new State */
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if (!state.editor && state.wrapper) {
-      // then we are ready to render monaco into the wrapper
-      return SimpleEditor.initMonaco(props, state)
-    } else {
-      if (state.editor) {
-        if (state.editor.getValue() !== props.content) {
-          state.editor.setValue(props.content)
-        }
+    if (state.editor) {
+      if (state.editor.getValue() !== props.content) {
+        state.editor.setValue(props.content)
       }
-      return state
     }
+
+    return state
   }
 
   /** Called when this component is no longer attached to the document */
@@ -99,7 +99,7 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
   }
 
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
-  private static initMonaco(props: Props, state: State): Partial<State> {
+  private initMonaco(props: Props, state: State) {
     const cleaners = []
 
     try {
@@ -117,7 +117,7 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
         providedOptions,
         overrides
       )
-      const editor = Monaco.create(state.wrapper, options)
+      const editor = Monaco.create(state.wrapper.current, options)
 
       if (options.readOnly && props.simple) {
         // if we know 1) the height of the content won't change, and
@@ -125,10 +125,11 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
         // for inline editor components, as opposed to editor
         // components that are intended to fill the full view), then:
         // size the height to fit the content
-        state.wrapper.style.height = Math.min(0.3 * window.innerHeight, Math.max(250, editor.getContentHeight())) + 'px'
+        state.wrapper.current.style.height =
+          Math.min(0.3 * window.innerHeight, Math.max(250, editor.getContentHeight())) + 'px'
       }
 
-      state.wrapper['getValueForTests'] = () => {
+      state.wrapper.current['getValueForTests'] = () => {
         return editor.getValue()
       }
 
@@ -158,14 +159,24 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
         }
       })
 
-      return {
+      this.setState({
         editor,
         cleaners
-      }
+      })
     } catch (err) {
       console.error('Error initing Monaco: ', err)
-      state.catastrophicError = err
-      return state
+      this.setState({
+        catastrophicError: err
+      })
+    }
+  }
+
+  public componentDidMount() {
+    if (!this.state.editor && this.state.wrapper.current) {
+      // then we are ready to render monaco into the wrapper
+      this.initMonaco(this.props, this.state)
+    } else if (this.props.scrollIntoView && this.state.wrapper.current) {
+      this.state.wrapper.current.scrollIntoView()
     }
   }
 
@@ -174,18 +185,7 @@ export default class SimpleEditor extends React.PureComponent<Props, State> {
       return <div className="oops"> {this.state.catastrophicError.toString()}</div>
     } else {
       const className = 'monaco-editor-wrapper' + (this.props.className ? ' ' + this.props.className : '')
-      return (
-        <div
-          className={className}
-          ref={wrapper => {
-            if (this.props.scrollIntoView && wrapper) {
-              wrapper.scrollIntoView()
-            }
-
-            this.setState({ wrapper })
-          }}
-        ></div>
-      )
+      return <div className={className} ref={this.state.wrapper} />
     }
   }
 }
