@@ -28,7 +28,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
       <ClipboardCopy
         isReadOnly
         isCode
-        isExpanded={needsMultiLine(this.props.value)}
+        isExpanded={this.props.value && needsMultiLine(this.props.value)}
         variant={ClipboardCopyVariant.expansion}
         onCopy={this.props.onCopy}
       >
