@@ -152,10 +152,11 @@ async function getResourcesReferencedByCommandLine(
   verb: string,
   argvRest: string[],
   namespace: string,
-  finalState: FinalState
+  finalState?: FinalState
 ): Promise<ResourceRef[]> {
   // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
   const [kind, nameGroupVersion, nameAlt] = argvRest
+  console.error('argvRest', argvRest)
 
   const isDelete = finalState === FinalState.OfflineLike
   if (isDelete) {
@@ -482,9 +483,10 @@ export const doStatus = async (
   args: Arguments<Options>,
   verb: string,
   command: string,
-  initialResponse: string,
-  finalState: FinalState,
-  statusArgs?: string[]
+  initialCrudResponse?: string,
+  finalState?: FinalState,
+  statusArgs?: string[],
+  isWatchRequest = true
 ): Promise<string | Table> => {
   const namespace = await getNamespace(args)
   const file = fileOf(args)
@@ -508,7 +510,7 @@ export const doStatus = async (
       if (isJob({ apiVersion: `${group}/${version}`, kind })) {
         const watchJobs = withKubeconfigFrom(
           args,
-          `${command || 'kubectl'} get ${kind}.${version}.${group} ${name} --watch`
+          `${command || 'kubectl'} get ${kind}.${version}.${group} ${name} ${isWatchRequest ? '--watch' : ''}`
         )
         return args.REPL.qexec(watchJobs)
       }
@@ -543,7 +545,7 @@ export const doStatus = async (
         return groups
       }, [] as Group[])
 
-      const response = await statusDirect(args, groups, finalState, command, file)
+      const response = await statusDirect(args, groups, finalState, command, file, isWatchRequest)
       if (response) {
         // then direct/status obliged!
         debug('using direct/status response')
@@ -560,29 +562,23 @@ export const doStatus = async (
     // if we got here, then direct/status either failed, or refused to
     // handle this use case; fall back to the old polling impl
     debug('backup plan: using old status poller')
-    return new StatusWatcher(
-      args,
-      args.tab,
-      resourcesToWaitFor,
-      finalState,
-      `-n ${namespace} ${getContextForArgv(args)}`,
-      command
-    ).initialTable()
+    if (isWatchRequest) {
+      return new StatusWatcher(
+        args,
+        args.tab,
+        resourcesToWaitFor,
+        finalState,
+        `-n ${namespace} ${getContextForArgv(args)}`,
+        command
+      ).initialTable()
+    }
   } catch (err) {
     console.error('error constructing StatusWatcher', err)
 
     // the text that the create or delete emitted, i.e. the command that
     // initiated this status request
-    return initialResponse
+    if (isWatchRequest) {
+      return initialCrudResponse
+    }
   }
-  /* return args.REPL.qexec(
-    cmd,
-    args.block,
-    undefined,
-    Object.assign({}, args.execOptions, {
-      finalState,
-      nResourcesToWaitFor,
-      initialResponse
-    })
-  ) */
 }

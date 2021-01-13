@@ -22,7 +22,17 @@ import { fetchFile } from '../../../lib/util/fetch-file'
 import { getCommandFromArgs } from '../../../lib/util/util'
 import { toKuiTable, withNotFound } from '../../../lib/view/formatTable'
 
-import { KubeOptions, formatOf, getNamespace, isTableRequest, isWatchRequest } from '../../kubectl/options'
+import { doStatus } from '../../kubectl/status'
+import {
+  KubeOptions,
+  fileOf,
+  formatOf,
+  kustomizeOf,
+  getNamespace,
+  isEntityFormat,
+  isTableRequest,
+  isWatchRequest
+} from '../../kubectl/options'
 
 import handleErrors from './errors'
 import { urlFormatterFor } from './url'
@@ -91,23 +101,45 @@ export async function getTable(
   }
 }
 
+/**
+ * Direct `get` only handles the following cases:
+ *
+ * 1. file request with table output, e.g. `kubectl get -f` and `kubectl get -k`
+ * 2. table request, e.g. `kubectl get pods` and `kubectl get pod nginx`
+ * 3. entity request with kind and name, e.g. `get pod nginx -o yaml`
+ *
+ * TODO 1: consolidate `1` and `2` into a single table request handler using `doStatus`
+ * TODO 2: handle entity request with file
+ *
+ */
 export async function get(
   drilldownCommand: string,
   namespace: string,
   names: string[],
   explainedKind: Explained,
   format: string,
-  args: Pick<Arguments<KubeOptions>, 'REPL' | 'parsedOptions' | 'execOptions'>
+  args: Arguments<KubeOptions>
 ) {
+  const isFileRequest = fileOf(args) || kustomizeOf(args)
+  const isEntityAndNameFormat = isEntityFormat(format) || format === 'name'
+
+  /** 1. file request with table output, e.g. `kubectl get -f` and `kubectl get -k` */
+  if (isFileRequest && !isEntityAndNameFormat) {
+    return doStatus(args, 'get', drilldownCommand, undefined, undefined, undefined, false)
+  }
+
+  /** 2. table request, e.g. `kubectl get pods` and `kubectl get pod nginx` */
   if (isTableRequest(args)) {
     return getTable(drilldownCommand, namespace, names, explainedKind, format, args)
   }
 
+  /** 3. entity request with kind and name, e.g. `get pod nginx -o yaml` */
   if (
     !isTableRequest(args) &&
+    !isFileRequest &&
     args.parsedOptions.kubeconfig === undefined &&
     args.parsedOptions.context === undefined &&
-    (format === 'json' || format === 'yaml' || format === 'name')
+    isEntityAndNameFormat
   ) {
     const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
     const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
