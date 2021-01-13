@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-// FIXME:
-/* eslint-disable react/prop-types */
-
 import React from 'react'
 
-interface Props {
-  className?: string
-}
-
-export default class MeterWidgets extends React.PureComponent<Props> {
-  private className() {
-    return 'kui--status-stripe-meter ' + (this.props.className || '')
-  }
-
-  public render() {
-    return <div className={this.className()}>{this.props.children}</div>
-  }
+/**
+ * This components can be used as a space filler in your StatusStripe.
+ *
+ */
+export default function SpaceFiller() {
+  return <div className="flex-fill" />
 }

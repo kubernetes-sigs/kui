@@ -114,7 +114,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
           {this.message()}
           {this.widgets()}
 
-          <MeterWidgets>
+          <MeterWidgets className="kui--hide-in-narrower-windows">
             <Settings />
           </MeterWidgets>
 
