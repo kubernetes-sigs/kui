@@ -19,3 +19,11 @@
     @content;
   }
 }
+
+@mixin EditorBackground {
+  .monaco-editor,
+  .monaco-editor .margin,
+  .monaco-editor-background {
+    @content;
+  }
+}

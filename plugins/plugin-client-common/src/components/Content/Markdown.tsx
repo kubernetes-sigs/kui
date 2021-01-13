@@ -18,7 +18,7 @@ import React from 'react'
 import { v4 as uuid } from 'uuid'
 import TurndownService from 'turndown'
 import ReactMarkdown from 'react-markdown'
-import { REPL, Tab as KuiTab } from '@kui-shell/core'
+import { REPL, Tab as KuiTab, getPrimaryTabId } from '@kui-shell/core'
 import { dirname, isAbsolute, join, relative } from 'path'
 
 import {
@@ -34,6 +34,8 @@ import {
 } from 'carbon-components-react'
 
 import CodeSnippet from '../spi/CodeSnippet'
+const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
+
 import 'carbon-components/scss/components/link/_link.scss'
 import '../../../web/scss/components/List/Carbon.scss'
 import '../../../web/scss/components/StructuredList/Carbon.scss'
@@ -158,11 +160,31 @@ export default class Markdown extends React.PureComponent<Props> {
               return <Link {...props} href={props.href} target={target} onClick={onClick} />
             }
           },
-          code: props => (
-            <div className="paragraph">
-              <CodeSnippet value={props.value} onCopy={this.onCopy.bind(this, props.value)} />
-            </div>
-          ),
+          code: props => {
+            if (this.props.nested) {
+              return (
+                <div className="paragraph">
+                  <CodeSnippet value={props.value} onCopy={this.onCopy.bind(this, props.value)} />
+                </div>
+              )
+            } else {
+              return (
+                <p>
+                  <code className="kui--code--editor">
+                    <SimpleEditor
+                      tabUUID={getPrimaryTabId(this.props.tab)}
+                      content={props.value as string}
+                      contentType={props.language}
+                      fontSize={12}
+                      simple
+                      minHeight={0}
+                      readonly
+                    />
+                  </code>
+                </p>
+              )
+            }
+          },
           heading: props => {
             const valueChild =
               props.children && props.children.length === 1
