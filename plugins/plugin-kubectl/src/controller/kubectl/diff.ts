@@ -51,10 +51,16 @@ const doDiff = (command: string) =>
         const enclosingDirectory = dirname(filepath)
         const packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory
 
+        console.error('!!1', `${command} get ${getFileForArgv(args)} -o yaml`)
+        console.error('!!2', `${command} apply ${getFileForArgv(args)} --dry-run=server -o yaml`)
+
         const [previous, current] = await Promise.all([
           REPL.qexec(withKubeconfigFrom(args, `${command} get ${getFileForArgv(args)} -o yaml`)),
           REPL.qexec(withKubeconfigFrom(args, `${command} apply ${getFileForArgv(args)} --dry-run=server -o yaml`))
         ])
+
+        console.error('previous', previous)
+        console.error('current', current)
 
         if (isKubeResource(previous) && isKubeResource(current)) {
           const mode: Mode = {
