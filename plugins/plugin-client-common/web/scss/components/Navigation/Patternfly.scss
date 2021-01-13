@@ -15,34 +15,39 @@
  */
 
 @import './common';
+@import '../Sidecar/mixins';
 @import '../../PatternFly/common';
 
-body[kui-theme-style] .pf-c-nav {
-  --pf-c-nav__list-toggle--FontSize: 1em;
-  width: $nav-width;
-  background-color: var(--color-sidecar-header);
+body[kui-theme-style] {
+  @include Sidecar {
+    .pf-c-nav {
+      --pf-c-nav__list-toggle--FontSize: 1em;
+      width: $nav-width;
+      background-color: var(--color-sidecar-header);
 
-  .pf-c-nav__list {
-    a:hover:not(.plain-anchor) {
-      color: unset;
-    }
+      .pf-c-nav__list {
+        a:hover:not(.plain-anchor) {
+          color: unset;
+        }
 
-    .pf-c-nav__item.pf-m-expandable::before {
-      border-bottom-color: var(--pf-global--BackgroundColor--dark-400);
-    }
+        .pf-c-nav__item.pf-m-expandable::before {
+          border-bottom-color: var(--pf-global--BackgroundColor--dark-400);
+        }
 
-    .pf-c-nav__item .pf-c-nav__list .pf-c-nav__link {
-      @include NavItemMaxWidth;
-    }
+        .pf-c-nav__item .pf-c-nav__list .pf-c-nav__link {
+          @include NavItemMaxWidth;
+        }
 
-    .pf-c-nav__link {
-      color: var(--pf-global--Color);
-      &.pf-c-nav__link.pf-m-current {
-        background-color: var(--pf-global--BackgroundColor--dark-100);
-      }
-      &:hover {
-        cursor: pointer;
-        background-color: var(--pf-global--BackgroundColor--dark-400);
+        .pf-c-nav__link {
+          color: var(--pf-global--Color);
+          &.pf-c-nav__link.pf-m-current {
+            background-color: var(--pf-global--BackgroundColor--dark-100);
+          }
+          &:hover {
+            cursor: pointer;
+            background-color: var(--pf-global--BackgroundColor--dark-400);
+          }
+        }
       }
     }
   }
