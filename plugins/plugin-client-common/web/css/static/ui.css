@@ -772,23 +772,12 @@ $kui--page-content-paragraph-padding: 0.375em;
 }
 .page-content h2,
 .page-h2 {
-  font-size: 2em;
-  font-weight: 300;
-  margin: 1em 0;
-  position: relative;
+  font-size: 1.875em;
+  font-weight: 500;
+  margin: 0.875em 0 0.5em;
   line-height: 1.25;
-}
-.page-content h2::before,
-.page-h2::before {
-  background-color: var(--color-content-divider);
-  content: "";
-  display: block;
-  height: 1px;
-  left: 0;
-  position: absolute;
-  bottom: -5px;
-  width: 100%;
-  z-index: 100;
+  border-bottom: 1px solid var(--color-content-divider);
+  padding-bottom: 5px;
 }
 .page-content > h3:first-child,
 .page-content > h2:first-child,
@@ -820,6 +809,18 @@ $kui--page-content-paragraph-padding: 0.375em;
 .page-content h5 {
   font-size: 1.25em;
   line-height: 2em;
+}
+.page-content img {
+  &[data-float] {
+    background-color: var(--color-sidecar-background-01);
+    padding-bottom: 0.5em;
+  }
+  &[data-float="left"] {
+    padding-right: 1em;
+  }
+  &[data-float="right"] {
+    padding-left: 1em;
+  }
 }
 .page-content ol,
 .page-content ul {
