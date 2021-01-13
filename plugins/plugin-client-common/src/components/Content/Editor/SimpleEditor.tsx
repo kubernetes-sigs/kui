@@ -34,6 +34,9 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
   onContentChange?: (content: string) => void
   scrollIntoView?: boolean
 
+  /** Minimum height of the editor */
+  minHeight?: number
+
   /** Use a light theme? Default: false */
   light?: boolean
 }
@@ -108,7 +111,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
         value: props.content,
         readOnly: props.readonly !== undefined ? props.readonly : true,
         fontSize: props.fontSize || getKuiFontSize(),
-        language: props.contentType,
+        language: /^(ba)?sh$/.test(props.contentType) ? 'shell' : props.contentType,
         simple: props.simple
       }
       const overrides: Monaco.IStandaloneEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
@@ -125,8 +128,9 @@ export default class SimpleEditor extends React.Component<Props, State> {
         // for inline editor components, as opposed to editor
         // components that are intended to fill the full view), then:
         // size the height to fit the content
+        const minHeight = this.props.minHeight !== undefined ? this.props.minHeight : 250
         state.wrapper.current.style.height =
-          Math.min(0.3 * window.innerHeight, Math.max(250, editor.getContentHeight())) + 'px'
+          Math.min(0.3 * window.innerHeight, Math.max(minHeight, editor.getContentHeight())) + 'px'
       }
 
       state.wrapper.current['getValueForTests'] = () => {
