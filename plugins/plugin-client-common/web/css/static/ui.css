@@ -1,6 +1,24 @@
+/*
+ * Copyright 2017-20 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import "ansi_up";
 @import "master-font-size";
 @import "../../scss/components/Chart/colors";
+@import "../../scss/components/Editor/mixins";
+@import "../../scss/components/Sidecar/mixins";
 
 * {
   box-sizing: border-box;
@@ -674,6 +692,13 @@ body.oops-total-catastrophe #restart-needed-warning {
 .page-content {
   flex: 1;
 }
+@include Sidecar {
+  .page-content.padding-content {
+    padding: 2rem;
+    margin: 0 auto;
+    max-width: 65rem;
+  }
+}
 .page-content hr {
   margin: 2.25em 0;
   border: 0.5px solid var(--color-content-divider);
@@ -697,8 +722,11 @@ body.oops-total-catastrophe #restart-needed-warning {
     margin: 0;
   }
 }
+.page-content img[align="left"] {
+  padding-right: 1.25em;
+}
 .page-content img[align="right"] {
-  padding-left: 20px;
+  padding-left: 1.25em;
 }
 .page-content p {
   font-size: inherit;
@@ -713,9 +741,16 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-family: var(--font-monospace);
 }
 @mixin CommentaryCode {
-  .repl .page-content p > code,
-  .repl .page-content li > code {
+  .page-content p > code,
+  .page-content li > code {
     @content;
+  }
+}
+@mixin CommentaryCodeInInvertedColorContext {
+  .kui--inverted-color-context {
+    @include CommentaryCode {
+      @content;
+    }
   }
 }
 @mixin CommentaryCodeStandalone {
@@ -724,20 +759,37 @@ body.oops-total-catastrophe #restart-needed-warning {
     @content;
   }
 }
-@include CommentaryCode {
-  word-break: break-all;
-
-  /* mimic github styling here */
-  background-color: rgba(27, 31, 35, 0.05);
-  padding: 0.2em 0.4em;
-  font-size: calc(13em / 16);
-  border-radius: 6px;
-}
-body[kui-theme-style="dark"] {
+$commentary-code-bg-light: rgba(27, 31, 35, 0.05);
+$commentary-code-bg-dark: rgba(227, 231, 235, 0.1);
+.repl {
   @include CommentaryCode {
-    background-color: rgba(227, 231, 235, 0.1);
+    word-break: break-all;
+
+    /* mimic github styling here */
+    background-color: $commentary-code-bg-light;
+    padding: 0.2em 0.4em;
+    font-size: calc(13em / 16);
+    border-radius: 6px;
   }
 }
+body[kui-theme-style="dark"] .repl {
+  @include CommentaryCode {
+    background-color: $commentary-code-bg-dark;
+  }
+}
+@include CommentaryCodeInInvertedColorContext {
+  background-color: $commentary-code-bg-dark;
+}
+.kui .page-content code.kui--code--editor {
+  display: block;
+  padding: 0.5em 1em;
+}
+.kui .page-content {
+  @include EditorBackground {
+    background-color: transparent;
+  }
+}
+
 .page-content pre > code {
   color: inherit;
 }
@@ -776,7 +828,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   font-weight: 500;
   margin: 0.875em 0 0.5em;
   line-height: 1.25;
-  border-bottom: 1px solid var(--color-content-divider);
+  border-bottom: 1px solid var(--color-table-border3);
   padding-bottom: 5px;
 }
 .page-content > h3:first-child,
@@ -816,10 +868,10 @@ $kui--page-content-paragraph-padding: 0.375em;
     padding-bottom: 0.5em;
   }
   &[data-float="left"] {
-    padding-right: 1em;
+    padding-right: 1.25em;
   }
   &[data-float="right"] {
-    padding-left: 1em;
+    padding-left: 1.25em;
   }
 }
 .page-content ol,
