@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { basename } from 'path'
 import {
   Arguments,
   CodedError,
   KResponse,
-  DiffState,
   MultiModalResponse,
   Registrar,
   Table,
@@ -36,15 +34,7 @@ import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { kindAndNamespaceOf, kindPart } from './fqn'
 import { Explained, getKindAndVersion } from './explain'
-import { getCommandFromArgs, formDashFileCommandFromArgs, removeLastAppliedConfig } from '../../lib/util/util'
-import {
-  deployedMode,
-  getSources,
-  doDeployedMode,
-  doDryRunMode,
-  dryRunMode,
-  KubeResourcesWithDiffState
-} from '../../lib/util/tree'
+import { getCommandFromArgs, removeLastAppliedConfig } from '../../lib/util/util'
 import { isUsage, doHelp } from '../../lib/util/help'
 import {
   KubeOptions,
@@ -55,8 +45,6 @@ import {
   formatOf,
   isWatchRequest,
   getNamespace,
-  isTreeReq,
-  fileOfWithDetail,
   withKubeconfigFrom,
   getNamespaceAsExpressed,
   getResourceNamesForArgv
@@ -258,132 +246,6 @@ export async function doGetAsMMR(
   }
 }
 
-export async function doTreeMMR(
-  args: Arguments<KubeOptions>,
-  namespace: string,
-  filepath: string,
-  resourcesWithState: KubeResourcesWithDiffState[]
-) {
-  try {
-    const applyCommand = formDashFileCommandFromArgs(args, namespace, filepath, 'apply')
-    const isDeployed = resourcesWithState.every(({ originalResponse }) => {
-      return (
-        isKubeResource(originalResponse) &&
-        (!isKubeItems(originalResponse) || (isKubeItems(originalResponse) && originalResponse.items.length !== 0))
-      )
-    })
-    const hasChanges = resourcesWithState.findIndex(({ state }) => state === DiffState.CHANGED) !== -1
-    const applyButton = (!isDeployed || hasChanges) && {
-      mode: 'apply',
-      label: hasChanges ? strings('Apply Changes') : strings('Deploy Application'),
-      kind: 'drilldown' as const,
-      command: applyCommand
-    }
-
-    return {
-      kind: 'Resources',
-      metadata: {
-        name: basename(filepath),
-        namespace
-      },
-      onclick: {
-        kind: `open ${filepath}`,
-        name: `open ${filepath}`,
-        namespace: `kubectl get ns ${namespace} -o yaml`
-      },
-      defaultMode: isDeployed ? deployedMode : dryRunMode,
-      modes: await Promise.all([
-        getSources(args, filepath, isDeployed),
-        isDeployed
-          ? doDeployedMode(args, namespace, resourcesWithState, hasChanges)
-          : doDryRunMode(args, namespace, resourcesWithState),
-        applyButton
-      ]).then(_ => _.filter(x => x))
-    }
-  } catch (err) {
-    console.error(err)
-    throw err
-  }
-}
-/**
- * This is the handler of `kubectl get -f`, which returns
- * `MultiModalResponse` with three tabs:
- * 1. tree of templates
- * 2. tree of applied resources
- * 3. tree of apply-dry-run resources (TODO)
- *
- */
-export async function doGetAsMMRTree(args: Arguments<KubeOptions>, filepath: string, resource: KubeResource) {
-  try {
-    const namespace = await getNamespace(args)
-    const dryRunCommand = `${formDashFileCommandFromArgs(args, namespace, filepath, 'apply')} --dry-run=server`
-    const [dryRunRaw, dryRunResponse] = await Promise.all([
-      args.REPL.qexec<string>(dryRunCommand),
-      args.REPL.qexec<KubeResource>(`${dryRunCommand} -o yaml`)
-    ])
-
-    const findInKubeResource = (kind: string, name: string, resource: KubeResource) => {
-      if (isKubeResource(resource)) {
-        if (isKubeItems(resource)) {
-          return resource.items.find(_ => _.kind.toLowerCase() === kind && _.metadata.name === name)
-        } else if (resource.metadata.name === name && resource.kind.toLowerCase() === kind) {
-          return resource
-        }
-      }
-    }
-
-    let resourcesWithState: KubeResourcesWithDiffState[] =
-      dryRunRaw.trim().length > 0 &&
-      dryRunRaw
-        .trim()
-        .split(/\n/)
-        .map(line => {
-          const cells = line.replace(' (server dry run)', '').split(' ')
-          if (cells.length >= 1) {
-            const kind = cells[0].split('/')[0].split('.')[0] // e.g. deployment.apps/frontend; service/frontend created
-            const name = cells[0].split('/')[1]
-
-            const state = cells[1].includes('unchanged')
-              ? DiffState.UNCHANGED
-              : cells[1].includes('created')
-              ? DiffState.ADDED
-              : DiffState.CHANGED
-
-            return {
-              state,
-              originalResponse: findInKubeResource(kind, name, resource),
-              changedResponse: findInKubeResource(kind, name, dryRunResponse)
-            }
-          }
-        })
-
-    if (isKubeResource(resource)) {
-      if (isKubeItems(resource) && resource.items.length !== 0) {
-        resourcesWithState = resourcesWithState.concat(
-          resource.items
-            .filter(_ => !findInKubeResource(_.kind, _.metadata.name, dryRunResponse))
-            .map(_ => {
-              return {
-                state: DiffState.DELETED,
-                originalResponse: _
-              }
-            })
-        )
-      } else if (!findInKubeResource(resource.kind, resource.metadata.name, dryRunResponse)) {
-        resourcesWithState.push({
-          state: DiffState.DELETED,
-          originalResponse: resource
-        })
-      }
-    }
-
-    return doTreeMMR(args, namespace, filepath, resourcesWithState)
-  } catch (err) {
-    console.error('error getting tree as MMR', err)
-    throw err
-  }
-}
-
 /**
  * kubectl get as custom response
  *
@@ -401,7 +263,7 @@ async function rawGet(
 ) {
   const command = _command === 'k' ? 'kubectl' : _command
 
-  if ((command === 'oc' || command === 'kubectl') && !fileOf(args) && !args.argvNoOptions.includes('|')) {
+  if ((command === 'oc' || command === 'kubectl') && !args.argvNoOptions.includes('|')) {
     // try talking to the apiServer directly
     const response = await getDirect(args, _kind)
     if (response) {
@@ -490,12 +352,6 @@ export const doGet = (command: string) =>
       }
     }
 
-    // fetch raw yaml for tree request
-    if (isTreeReq(args)) {
-      args.command = `${args.command} -o yaml`
-      args.parsedOptions.o = 'yaml'
-    }
-
     const response = await rawGet(args, command, fullKind)
 
     if (isKubeTableResponse(response)) {
@@ -572,16 +428,10 @@ function doGetAsMMRDiff(args: Arguments<KubeOptions>) {
 
 /** KubeResource -> MultiModalResponse view transformer for `kubectl get` */
 function viewTransformerForGet(args: Arguments<KubeOptions>, response: KubeResource) {
-  // tranform getFile response to MMR with tree response
-  const fileOf = fileOfWithDetail(args)
-  if (fileOf.filepath) {
-    return doGetAsMMRTree(args, fileOf.filepath, response)
+  if (!isKubeResource(response) && isDiffRequest(args) && typeof args.execOptions.data['diff'] === 'string') {
+    return doGetAsMMRDiff(args)
   } else {
-    if (!isKubeResource(response) && isDiffRequest(args) && typeof args.execOptions.data['diff'] === 'string') {
-      return doGetAsMMRDiff(args)
-    } else {
-      return viewTransformer(args, response)
-    }
+    return viewTransformer(args, response)
   }
 }
 

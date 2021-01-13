@@ -159,7 +159,8 @@ export default async function watchMulti(
   groups: Group[],
   finalState: FinalState,
   drilldownCommand = getCommandFromArgs(args),
-  file?: string
+  file?: string,
+  isWatchRequest = true
 ): Promise<void | string[] | Table | (Table & Watchable)> {
   if (groups.length === 0) {
     return
@@ -181,7 +182,7 @@ export default async function watchMulti(
         .catch((err: CodedError) => {
           if (err.code === 404) {
             // This means every single name in _.names is missing
-            if (finalState === FinalState.OfflineLike) {
+            if (!isWatchRequest || finalState === FinalState.OfflineLike) {
               // Then that's what we want! we are done!
               return fabricate404Table(_.names, _.explainedKind.kind)
             } else {
@@ -200,7 +201,7 @@ export default async function watchMulti(
   if (tables.length > 0) {
     if (groups.length === 1 && tables.length === 1) {
       // HOMOGENEOUS CASE
-      const nNotReady = countNotReady(tables[0].table, finalState)
+      const nNotReady = !isWatchRequest ? 0 : countNotReady(tables[0].table, finalState)
       if (nNotReady === 0) {
         // sub-case 1: nothing to watch, as everything is already "ready"
         debug('special case: single-group watching, all-ready all ready!', nNotReady, groups[0])
@@ -247,31 +248,35 @@ export default async function watchMulti(
       )
     )
 
-    // watcher
-    const watch = new MultiKindWatcher(
-      drilldownCommand,
-      args,
-      tables.map(_ => groups[_.idx].explainedKind),
-      tables.map(_ => _.table.resourceVersion),
-      await Promise.all(
-        tables.map(_ => {
-          const group = groups[_.idx]
-          return urlFormatterFor(group.namespace, myArgs, group.explainedKind)
-        })
-      ),
-      finalState,
-      tables.map(_ => _.table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) }))),
-      tables.map(_ => countNotReady(_.table, finalState))
-    )
-
-    const unifiedTable: Table & Watchable = {
+    const unifiedTable: Table = {
       title,
       breadcrumbs,
       header,
-      body,
-      watch
+      body
     }
-    return unifiedTable
+
+    if (!isWatchRequest) {
+      return unifiedTable
+    } else {
+      // watcher
+      const watch = new MultiKindWatcher(
+        drilldownCommand,
+        args,
+        tables.map(_ => groups[_.idx].explainedKind),
+        tables.map(_ => _.table.resourceVersion),
+        await Promise.all(
+          tables.map(_ => {
+            const group = groups[_.idx]
+            return urlFormatterFor(group.namespace, myArgs, group.explainedKind)
+          })
+        ),
+        finalState,
+        tables.map(_ => _.table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) }))),
+        tables.map(_ => countNotReady(_.table, finalState))
+      )
+
+      return Object.assign(unifiedTable, { watch })
+    }
   } else {
     throw new Error('nothing to watch')
   }
