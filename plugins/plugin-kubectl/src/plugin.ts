@@ -30,7 +30,6 @@ import kgetNs from './controller/kubectl/get-namespaces'
 import kustomize from './controller/kubectl/kustomize'
 import raw from './controller/kubectl/raw'
 import run from './controller/kubectl/run'
-import status from './controller/kubectl/status'
 import top from './controller/kubectl/top'
 import config from './controller/kubectl/config'
 import jobList from './controller/kubectl/job/list'
@@ -55,7 +54,6 @@ export default async (registrar: Registrar) => {
   kustomize(registrar)
   raw(registrar)
   run(registrar)
-  status(registrar)
   top(registrar)
   config(registrar)
   applySubcommands(registrar)

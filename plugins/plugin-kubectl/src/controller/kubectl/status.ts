@@ -20,7 +20,6 @@ import {
   Abortable,
   Arguments,
   CodedError,
-  Registrar,
   Tab,
   Table,
   Row,
@@ -34,12 +33,11 @@ import {
   i18n
 } from '@kui-shell/core'
 
-import { flags } from './flags'
 import { getKindAndVersion } from './explain'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
 import { initialCapital } from '../../lib/view/formatTable'
 import statusDirect, { Group } from '../client/direct/status'
-import {
+import KubeOptions, {
   KubeOptions as Options,
   fileOf,
   kustomizeOf,
@@ -48,7 +46,6 @@ import {
   isDryRun,
   withKubeconfigFrom
 } from './options'
-import commandPrefix from '../command-prefix'
 import { EventWatcher } from './watch/get-watch'
 import KubeResource, { isJob } from '../../lib/model/resource'
 
@@ -66,84 +63,23 @@ const debug = Debug('plugin-kubectl/controller/kubectl/status')
 /** administrative CRDs that we want to ignore */
 // const adminCRDFilter = '-l app!=mixer,app!=istio-pilot,app!=ibmcloud-image-enforcement,app!=ibm-cert-manager'
 
-const usage = (command: string) => ({
-  command,
-  strict: command,
-  docs: 'Check the deployment status of a set of resources',
-  onlyEnforceOptions: true,
-  optional: [
-    {
-      name: '--filename',
-      alias: '-f',
-      file: true,
-      docs: 'A kubernetes resource file or kind'
-    },
-    {
-      name: '--kustomize',
-      alias: '-k',
-      file: true,
-      docs: 'A kustomize file or directory'
-    },
-    {
-      name: 'resourceName',
-      positional: true,
-      docs: 'The name of a kubernetes resource of the given kind'
-    },
-    { name: '--final-state', hidden: true }, // when do we stop polling for status updates?
-    { name: '--namespace', alias: '-n', docs: 'Inspect a specified namespace' },
-    { name: '--all', alias: '-a', docs: 'Show status across all namespaces' },
-    {
-      name: '--multi',
-      alias: '-m',
-      docs: 'Display multi-cluster views as a multiple tables'
-    },
-    {
-      name: '--response',
-      docs: 'The initial response from the CRUD command'
-    },
-    {
-      name: '--command',
-      string: true,
-      docs: 'The initial command from the CRUD command'
-    },
-    {
-      name: '--verb',
-      string: true,
-      docs: 'The initial verb (e.g. create or delete) from the CRUD command'
-    },
-    {
-      name: '--dry-run'
-    },
-    {
-      name: '--watching',
-      hidden: true,
-      boolean: true,
-      docs: 'internal use: called as part of the polling loop'
-    },
-    {
-      name: '--watch',
-      alias: '-w',
-      boolean: true,
-      docs: 'After listing/getting the requested object, watch for changes'
-    }
-  ],
-  example: `kubectl ${command} @seed/cloud-functions/function/echo.yaml`
-})
-
 /**
  * @param file an argument to `-f` or `-k`; e.g. `kubectl -f <file>`
  *
  */
-async function getResourcesReferencedByFile(file: string, args: Arguments<FinalStateOptions>): Promise<ResourceRef[]> {
+async function getResourcesReferencedByFile(
+  file: string,
+  args: Arguments<Options>,
+  namespaceFromCommandLine: string
+): Promise<ResourceRef[]> {
   const files = new Set(
     (
       await args.REPL.rexec<DirEntry[]>(`vfs ls ${encodeComponent(file)} ${encodeComponent(file)}/**/*.{yaml,yml}`)
     ).content.map(_ => _.path)
   )
 
-  const [{ safeLoadAll }, namespaceFromCommandLine, raw] = await Promise.all([
+  const [{ safeLoadAll }, raw] = await Promise.all([
     import('js-yaml'),
-    getNamespace(args),
     fetchFile(args.REPL, files.size === 0 ? file : Array.from(files).join(','))
   ])
 
@@ -171,7 +107,8 @@ interface Kustomization {
 }
 async function getResourcesReferencedByKustomize(
   kusto: string,
-  args: Arguments<FinalStateOptions>
+  args: Arguments<Options>,
+  namespace: string
 ): Promise<ResourceRef[]> {
   const [{ safeLoad }, { join }, raw] = await Promise.all([
     import('js-yaml'),
@@ -198,7 +135,7 @@ async function getResourcesReferencedByKustomize(
             version,
             kind,
             name: metadata.name,
-            namespace: metadata.namespace || (await getNamespace(args))
+            namespace: metadata.namespace || namespace
           }
         })
     )
@@ -212,15 +149,15 @@ async function getResourcesReferencedByKustomize(
  *
  */
 async function getResourcesReferencedByCommandLine(
+  verb: string,
   argvRest: string[],
-  args: Arguments<FinalStateOptions>
+  namespace: string,
+  finalState: FinalState
 ): Promise<ResourceRef[]> {
   // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
-  const { verb } = args.parsedOptions
   const [kind, nameGroupVersion, nameAlt] = argvRest
-  const namespace = await getNamespace(args)
 
-  const isDelete = args.parsedOptions['final-state'] === FinalState.OfflineLike
+  const isDelete = finalState === FinalState.OfflineLike
   if (isDelete) {
     // kubectl delete (ns [m1 m2 m2 m3])
     //                ^ argvRest       ^
@@ -243,8 +180,8 @@ async function getResourcesReferencedByCommandLine(
       // "create <kind> <name>"
       return [{ name: nameAlt, kind, namespace }]
     } else {
-      return args.argvNoOptions
-        .slice(args.argvNoOptions.indexOf('status') + 2)
+      return argvRest
+        .slice(1)
         .map(nameGroupVersion => nameGroupVersion.split(/\./))
         .map(([name, group, version]) => ({
           group,
@@ -408,7 +345,7 @@ class StatusWatcher implements Abortable, Watcher {
 
   // eslint-disable-next-line no-useless-constructor
   public constructor(
-    private readonly args: Arguments<FinalStateOptions>,
+    private readonly args: Arguments<KubeOptions>,
     private readonly tab: Tab,
     private readonly resourcesToWaitFor: ResourceRef[],
     private readonly finalState: FinalState,
@@ -541,28 +478,29 @@ class StatusWatcher implements Abortable, Watcher {
   }
 }
 
-interface FinalStateOptions extends Options {
-  verb: string
-  command: string
-  response?: string
-  'final-state'?: FinalState
-}
-
-const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>): Promise<string | Table> => {
-  const rest = args.argvNoOptions.slice(args.argvNoOptions.indexOf('status') + 1)
-  const commandArg = command || args.parsedOptions.command
+export const doStatus = async (
+  args: Arguments<Options>,
+  verb: string,
+  command: string,
+  initialResponse: string,
+  finalState: FinalState,
+  statusArgs?: string[]
+): Promise<string | Table> => {
+  const namespace = await getNamespace(args)
   const file = fileOf(args)
   const kusto = kustomizeOf(args)
-  const contextArgs = getContextForArgv(args)
-  // const fileArgs = file ? `-f ${file}` : ''
-  // const cmd = `${command} get ${rest} --watch ${fileArgs} ${contextArgs}`
 
   try {
     const resourcesToWaitFor = file
-      ? await getResourcesReferencedByFile(file, args)
+      ? await getResourcesReferencedByFile(file, args, namespace)
       : kusto
-      ? await getResourcesReferencedByKustomize(kusto, args)
-      : await getResourcesReferencedByCommandLine(rest, args)
+      ? await getResourcesReferencedByKustomize(kusto, args, namespace)
+      : await getResourcesReferencedByCommandLine(
+          verb,
+          statusArgs || args.argvNoOptions.slice(args.argvNoOptions.indexOf(verb) + 1),
+          namespace,
+          finalState
+        )
     debug('resourcesToWaitFor', resourcesToWaitFor)
 
     if (resourcesToWaitFor.length === 1) {
@@ -575,9 +513,6 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
         return args.REPL.qexec(watchJobs)
       }
     }
-
-    // the desired final state of the specified resources
-    const finalState = args.parsedOptions['final-state']
 
     // try handing off to direct/status
     try {
@@ -608,7 +543,7 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
         return groups
       }, [] as Group[])
 
-      const response = await statusDirect(args, groups, finalState, commandArg, file)
+      const response = await statusDirect(args, groups, finalState, command, file)
       if (response) {
         // then direct/status obliged!
         debug('using direct/status response')
@@ -625,13 +560,19 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
     // if we got here, then direct/status either failed, or refused to
     // handle this use case; fall back to the old polling impl
     debug('backup plan: using old status poller')
-    return new StatusWatcher(args, args.tab, resourcesToWaitFor, finalState, contextArgs, commandArg).initialTable()
+    return new StatusWatcher(
+      args,
+      args.tab,
+      resourcesToWaitFor,
+      finalState,
+      `-n ${namespace} ${getContextForArgv(args)}`,
+      command
+    ).initialTable()
   } catch (err) {
     console.error('error constructing StatusWatcher', err)
 
     // the text that the create or delete emitted, i.e. the command that
     // initiated this status request
-    const initialResponse = args.parsedOptions.response
     return initialResponse
   }
   /* return args.REPL.qexec(
@@ -644,21 +585,4 @@ const doStatus = (command: string) => async (args: Arguments<FinalStateOptions>)
       initialResponse
     })
   ) */
-}
-
-/**
- * Register the commands
- *
- */
-export default (registrar: Registrar) => {
-  const opts = Object.assign(
-    {
-      usage: usage('status')
-    },
-    flags(['watching'])
-  )
-
-  registrar.listen(`/${commandPrefix}/kubectl/status`, doStatus('kubectl'), opts)
-  registrar.listen(`/${commandPrefix}/k/status`, doStatus('k'), opts)
-  registrar.listen(`/${commandPrefix}/status`, doStatus(''), opts)
 }

@@ -28,10 +28,10 @@ import {
   KResponse
 } from '@kui-shell/core'
 
+import { doStatus } from './status'
 import RawResponse from './response'
-import commandPrefix from '../command-prefix'
 import KubeResource from '../../lib/model/resource'
-import { KubeOptions, getContextForArgv, getFileForArgv, getNamespace, isDryRun } from './options'
+import { KubeOptions } from './options'
 
 import { FinalState } from '../../lib/model/states'
 import { stringToTable, KubeTableResponse } from '../../lib/view/formatTable'
@@ -45,12 +45,11 @@ export type Prepare<O extends KubeOptions> = (args: Arguments<O>) => string
 export const NoPrepare = <O extends KubeOptions>(args: Arguments<O>) => args.command
 
 /** Special case preparation for status */
-export type PrepareForStatus<O extends KubeOptions> = (cmd: string, args: Arguments<O>) => string | Promise<string>
+export type PrepareForStatus<O extends KubeOptions> = (cmd: string, args: Arguments<O>) => string[] | Promise<string[]>
 
 /** Standard status preparation */
 function DefaultPrepareForStatus<O extends KubeOptions>(verb: string, args: Arguments<O>) {
-  const rest = args.argvNoOptions.slice(args.argvNoOptions.indexOf(verb) + 1).join(' ')
-  return `${getFileForArgv(args, true)}${rest}`
+  return args.argvNoOptions.slice(args.argvNoOptions.indexOf(verb) + 1)
 }
 
 /**
@@ -240,43 +239,13 @@ export async function doExecWithTable<O extends KubeOptions>(
   }
 }
 
-/** Configure a call to the Kui status command */
-export async function status<O extends KubeOptions>(
-  args: Arguments<O>,
-  verb: string,
-  command: string,
-  finalState: FinalState,
-  prepareForStatus: PrepareForStatus<O> = DefaultPrepareForStatus,
-  response?: RawResponse
-) {
-  const contextArgs = `-n ${await getNamespace(args)} ${getContextForArgv(args)}`
-  const watchArgs = `--final-state ${finalState} --watch`
-  const dryRunArgs = isDryRun(args)
-    ? `--dry-run ${typeof args.parsedOptions['dry-run'] === 'boolean' ? '' : args.parsedOptions['dry-run']}`
-    : ''
-
-  // this helps with error reporting: if something goes wrong with
-  // displaying "status", we can always report the initial response
-  // from the exec command
-  const errorReportingArgs = response ? `--response "${response.content.stdout}"` : ''
-
-  const statusArgs = await prepareForStatus(verb, args)
-
-  const verbArgs = `--verb ${verb}`
-  const commandArgs = `--command ${command}`
-
-  const statusCmd = `${commandPrefix} status ${statusArgs} ${watchArgs} ${dryRunArgs} ${contextArgs} ${errorReportingArgs} ${commandArgs} ${verbArgs}`
-
-  return args.REPL.qexec<KubeTableResponse>(statusCmd, args.block)
-}
-
 /**
  * Execute a command, and then execute the status command which will
  * poll until the given FinalState is reached.
  *
  */
 export const doExecWithStatus = <O extends KubeOptions>(
-  cmd: string,
+  verb: string,
   finalState: FinalState,
   command = 'kubectl',
   prepareForExec: Prepare<O> = NoPrepare,
@@ -291,7 +260,10 @@ export const doExecWithStatus = <O extends KubeOptions>(
   } else if (isHeadless()) {
     return response.content.stdout
   } else {
-    return status(args, cmd, command, finalState, prepareForStatus, response)
+    const statusArgs = await prepareForStatus(verb, args)
+    const initialResponse = response ? `--response "${response.content.stdout}"` : ''
+
+    return doStatus(args, verb, command, initialResponse, finalState, statusArgs)
   }
 }
 
