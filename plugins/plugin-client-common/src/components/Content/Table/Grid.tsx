@@ -99,13 +99,13 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
         style={{ gridTemplateColumns: `repeat(auto-fill, minmax(calc(${ex}ex + ${em}em), auto))` }}
       >
         {this.props.response.body.map(_ => (
-          <div
-            key={_.name}
-            data-name={_.name}
-            className={(_.css || '') + (_.onclick ? ' clickable' : '')}
-            onClick={onClickForCell(_, this.props.tab, this.props.repl, _.onclick)}
-          >
-            {_.name}
+          <div key={_.name} data-name={_.name} className={_.css}>
+            <span
+              className={_.onclick && 'clickable'}
+              onClick={onClickForCell(_, this.props.tab, this.props.repl, _.onclick)}
+            >
+              {_.name}
+            </span>
           </div>
         ))}
       </div>
