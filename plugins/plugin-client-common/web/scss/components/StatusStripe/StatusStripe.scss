@@ -16,6 +16,7 @@
 
 @import 'mixins';
 @import '../DropDown/mixins';
+@import '../common/narrow-window';
 
 $font-size: 0.75rem;
 
@@ -133,8 +134,8 @@ $element-padding: 1rem;
   }
 
   .kui--status-stripe-context {
-    flex: 1;
     font-size: $font-size;
+    border-right: $element-border;
 
     .kui--status-stripe-element {
       padding-left: calc(#{$element-padding} * 0.875 / 0.75);
@@ -143,10 +144,6 @@ $element-padding: 1rem;
     .kui--status-stripe-element-wrapper:not(:first-child),
     .kui--status-stripe-element:not(:first-child) {
       border-left: $element-border;
-    }
-    .kui--status-stripe-element-wrapper:last-child,
-    .kui--status-stripe-element:last-child {
-      border-right: $element-border;
     }
     .kui--status-stripe-element:not(:first-child):not([data-padding='none']) {
       padding-left: $element-padding;
@@ -253,4 +250,6 @@ $element-padding: 1rem;
       border-radius: 4px 4px 0px 0px;
     }
   }
+
+  @include HideInNarrowWindows;
 }
