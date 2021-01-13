@@ -18,27 +18,15 @@ import React from 'react'
 import { v4 as uuid } from 'uuid'
 import TurndownService from 'turndown'
 import ReactMarkdown from 'react-markdown'
-import { REPL, Tab as KuiTab, getPrimaryTabId } from '@kui-shell/core'
 import { dirname, isAbsolute, join, relative } from 'path'
+import { List, ListComponent, ListItem } from '@patternfly/react-core'
+import { REPL, Tab as KuiTab, getPrimaryTabId } from '@kui-shell/core'
 
-import {
-  Link,
-  StructuredListWrapper,
-  StructuredListHead,
-  StructuredListRow,
-  StructuredListCell,
-  StructuredListBody,
-  OrderedList,
-  UnorderedList,
-  ListItem
-} from 'carbon-components-react'
+// GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
+import gfm from 'remark-gfm'
 
 import CodeSnippet from '../spi/CodeSnippet'
 const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
-
-import 'carbon-components/scss/components/link/_link.scss'
-import '../../../web/scss/components/List/Carbon.scss'
-import '../../../web/scss/components/StructuredList/Carbon.scss'
 
 interface Props {
   source: string
@@ -93,6 +81,7 @@ export default class Markdown extends React.PureComponent<Props> {
   public render() {
     return (
       <ReactMarkdown
+        plugins={[gfm]}
         source={this.source()}
         className={
           this.props.className ||
@@ -157,7 +146,7 @@ export default class Markdown extends React.PureComponent<Props> {
             } else if (!isLocal && this.props.noExternalLinks) {
               return <span className={this.props.className}>{props.href}</span>
             } else {
-              return <Link {...props} href={props.href} target={target} onClick={onClick} />
+              return <a className="bx--link" {...props} target={target} onClick={onClick} />
             }
           },
           code: props => {
@@ -207,30 +196,20 @@ export default class Markdown extends React.PureComponent<Props> {
             return this.handleImage(props.src, props) || <img {...props} />
           },
           list: props => {
-            return React.createElement(
-              props.ordered ? OrderedList : UnorderedList,
-              { nested: props.depth > 0, className: props.className },
-              props.children
-            )
+            return <List component={props.ordered ? ListComponent.ol : ListComponent.ul}>{props.children}</List>
           },
           listItem: props => <ListItem className={props.className}>{props.children}</ListItem>,
           table: props => (
-            <StructuredListWrapper className={props.className + ' kui--table-like'}>
-              {props.children}
-            </StructuredListWrapper>
+            <table className={props.className + ' kui--table-like kui--structured-list'}>{props.children}</table>
           ),
-          tableHead: props => <StructuredListHead className={props.className}>{props.children}</StructuredListHead>,
-          tableBody: props => <StructuredListBody className={props.className}>{props.children}</StructuredListBody>,
-          tableRow: props => (
-            <StructuredListRow head={props.isHeader} className={props.className}>
-              {props.children}
-            </StructuredListRow>
+          tableHead: props => (
+            <thead className={props.className + ' kui--structured-list-thead'}>{props.children}</thead>
           ),
-          tableCell: props => (
-            <StructuredListCell head={props.isHeader} className={props.className}>
-              {props.children}
-            </StructuredListCell>
-          )
+          tableBody: props => (
+            <tbody className={props.className + ' kui--structured-list-tbody'}>{props.children}</tbody>
+          ),
+          tableRow: props => <tr {...props} />,
+          tableCell: props => React.createElement(props.isHeader ? 'th' : 'td', props)
         }}
       />
     )

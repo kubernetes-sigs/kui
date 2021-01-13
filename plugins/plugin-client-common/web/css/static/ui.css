@@ -817,6 +817,7 @@ $kui--page-content-paragraph-padding: 0.375em;
     letter-spacing: 0;
     line-height: 1.25;
     padding: 0;
+    white-space: normal;
   }
 }
 .page-content h1:only-child {
@@ -830,6 +831,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   line-height: 1.25;
   border-bottom: 1px solid var(--color-table-border3);
   padding-bottom: 5px;
+  white-space: normal;
 }
 .page-content > h3:first-child,
 .page-content > h2:first-child,
@@ -845,6 +847,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   letter-spacing: 0;
   padding: 1em 0 0.5em;
   line-height: 1.625em;
+  white-space: normal;
 }
 .page-content h4 {
   color: var(--color-brand-01);
@@ -861,6 +864,20 @@ $kui--page-content-paragraph-padding: 0.375em;
 .page-content h5 {
   font-size: 1.25em;
   line-height: 2em;
+  white-space: normal;
+}
+.page-content .kui--structured-list {
+  tr {
+    border-bottom: 1px solid var(--color-table-border3);
+  }
+  th {
+    height: 2.5em;
+    font-weight: bold;
+    padding: 1em 1em 0.5em;
+  }
+  td {
+    padding: 1em 1em 1.5em;
+  }
 }
 .page-content img {
   &[data-float] {
@@ -873,26 +890,6 @@ $kui--page-content-paragraph-padding: 0.375em;
   &[data-float="right"] {
     padding-left: 1.25em;
   }
-}
-.page-content ol,
-.page-content ul {
-  font-size: inherit;
-  margin-left: 2em;
-  line-height: 1.125em;
-  letter-spacing: 0.16px;
-}
-.page-content li {
-  font-weight: 400;
-  list-style-type: none;
-  position: relative;
-  &:not(:first-child) {
-    margin-top: 0.5em;
-  }
-}
-.page-content li:before {
-  content: "\002013";
-  left: -1em;
-  position: absolute;
 }
 
 body[kui-theme-style] {
