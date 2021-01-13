@@ -28,6 +28,7 @@
     "monaco-editor": "0.21.2",
     "monaco-editor-webpack-plugin": "2.1.0",
     "react-markdown": "5.0.3",
+    "remark-gfm": "1.0.0",
     "spinkit": "2.0.1",
     "tmp": "0.2.1",
     "turndown": "7.0.0"
