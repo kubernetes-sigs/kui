@@ -35,7 +35,7 @@ async function prepareArgsForStatus(this: Promise<KubernetesVersion>, cmd: strin
   const kind = major === 1 && minor < 16 ? 'deployment' : 'pod'
 
   const name = args.argvNoOptions[args.argvNoOptions.indexOf(cmd) + 1]
-  return `${kind} ${name}`
+  return [kind, name]
 }
 
 export const doRun = (command = 'kubectl') => (args: Arguments<KubeOptions>): Promise<KResponse> => {
