@@ -69,6 +69,10 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
             const res = await CLI.command(`${kubectl} get pods ${allNamespace}`, this.app)
             const { app, count } = res
 
+            const asListButton = await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(count))
+            await asListButton.waitForExist({ timeout: CLI.waitTimeout })
+            await asListButton.click()
+
             await this.app.client.$(Selectors.TABLE_TITLE(count)).then(_ => _.waitForExist())
 
             const actualTitle = await this.app.client.$(Selectors.TABLE_TITLE(count)).then(_ => _.getText())
