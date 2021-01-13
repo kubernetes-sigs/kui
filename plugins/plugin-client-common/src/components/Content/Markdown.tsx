@@ -78,11 +78,13 @@ export default class Markdown extends React.PureComponent<Props> {
     }
   }
 
-  private handleImage(src: string, width?: number) {
+  private handleImage(src: string, props: { width?: number; align?: React.CSSProperties['float'] }) {
     const isLocal = !/^http/i.test(src)
     if (isLocal && this.props.fullpath) {
+      const style = props ? { float: props.align } : undefined
       const absoluteSrc = isAbsolute(src) ? src : join(dirname(this.props.fullpath), src)
-      return <img src={absoluteSrc} width={width} />
+
+      return <img src={absoluteSrc} width={props.width} style={style} data-float={props.align} />
     }
   }
 
@@ -100,8 +102,14 @@ export default class Markdown extends React.PureComponent<Props> {
             if (/<img/.test(props.value)) {
               const srcMatch = props.value.match(/src="?([^"\s]+)"?/)
               const widthMatch = props.value.match(/width="?(\d+)"?/)
+              const alignMatch = props.value.match(/align="?([^"\s]+)"?/)
               if (srcMatch) {
-                return this.handleImage(srcMatch[1], widthMatch[1]) || <span />
+                return (
+                  this.handleImage(srcMatch[1], {
+                    width: widthMatch && widthMatch[1],
+                    align: alignMatch && alignMatch[1]
+                  }) || <span />
+                )
               }
             }
 
@@ -174,7 +182,7 @@ export default class Markdown extends React.PureComponent<Props> {
             )
           },
           image: props => {
-            return this.handleImage(props.src, props.width) || <img {...props} />
+            return this.handleImage(props.src, props) || <img {...props} />
           },
           list: props => {
             return React.createElement(
