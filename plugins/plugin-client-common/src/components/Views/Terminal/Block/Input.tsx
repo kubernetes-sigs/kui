@@ -478,12 +478,18 @@ export default class Input extends InputProvider {
     const active = isActive(this.props.model) || this.state.isReEdit
 
     if (active) {
-      if (this.props.isFocused && this.state.prompt && document.activeElement !== this.state.prompt) {
-        setTimeout(() => {
-          if (isInViewport(this.state.prompt) && this.props.isFocused) {
-            this.state.prompt.focus()
+      if (this.state.prompt) {
+        if (this.props.isFocused) {
+          if (document.activeElement !== this.state.prompt) {
+            setTimeout(() => {
+              if (isInViewport(this.state.prompt) && this.props.isFocused) {
+                this.state.prompt.focus()
+              }
+            }, 2000)
           }
-        }, 2000)
+        } else {
+          setTimeout(() => this.state.prompt.scrollIntoView(), 10)
+        }
       }
 
       return (
