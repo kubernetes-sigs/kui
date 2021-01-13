@@ -52,6 +52,9 @@ interface Props {
 
   /** periodically check for updates with this interval (millis) */
   interval?: number
+
+  /** Additional css classes */
+  className?: string
 }
 
 interface State {
@@ -213,6 +216,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
       return (
         <Widget
           id="kui--plugin-core-support--update-checker"
+          className={this.props.className}
           viewLevel="info"
           text={this.text()}
           title={strings(

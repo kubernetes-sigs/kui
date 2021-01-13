@@ -53,3 +53,11 @@ $medium-width-upper-bound: 68rem;
     @content;
   }
 }
+
+@mixin HideInNarrowWindows {
+  @include narrow-window {
+    .kui--hide-in-narrower-windows {
+      display: none;
+    }
+  }
+}

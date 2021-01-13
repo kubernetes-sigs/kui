@@ -17,7 +17,14 @@
 import React from 'react'
 
 import { i18n, inBrowser, isPopup } from '@kui-shell/core'
-import { Kui, KuiProps, ContextWidgets, MeterWidgets, CurrentWorkingDirectory } from '@kui-shell/plugin-client-common'
+import {
+  Kui,
+  KuiProps,
+  ContextWidgets,
+  MeterWidgets,
+  CurrentWorkingDirectory,
+  SpaceFiller
+} from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
@@ -83,7 +90,9 @@ export default function renderMain(props: KuiProps) {
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
       </ContextWidgets>
 
-      <MeterWidgets>
+      <SpaceFiller />
+
+      <MeterWidgets className="kui--hide-in-narrower-windows">
         {/* <ClusterUtilization /> */}
         {/* !isPopup() && <OpenWhiskGridWidget /> */}
         {inBrowser() && <ProxyOfflineIndicator />}
