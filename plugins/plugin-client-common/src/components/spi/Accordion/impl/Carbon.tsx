@@ -51,7 +51,7 @@ export default class CarbonAccordion extends React.PureComponent<Props, State> {
               eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
             }}
           >
-            {this.props.content[idx]}
+            {this.props.content[idx]()}
           </AccordionItem>
         ))}
       </Accordion>

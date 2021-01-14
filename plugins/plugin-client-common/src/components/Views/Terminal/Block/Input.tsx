@@ -252,15 +252,17 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   /** render sourceRef content. Currently only use SimpleEditor. */
   protected sourceRefContent(content: string, contentType: string) {
-    return (
-      <SimpleEditor
-        tabUUID={getPrimaryTabId(this.props.tab)}
-        content={content.replace(/\n$/, '')} /* monaco's renderFinalNewline option doesn't seem to do what we need */
-        contentType={contentType}
-        className="kui--source-ref-editor kui--inverted-color-context"
-        fontSize={12}
-        simple
-      />
+    return () => (
+      <React.Suspense fallback={<div />}>
+        <SimpleEditor
+          tabUUID={getPrimaryTabId(this.props.tab)}
+          content={content.replace(/\n$/, '')} /* monaco's renderFinalNewline option doesn't seem to do what we need */
+          contentType={contentType}
+          className="kui--source-ref-editor kui--inverted-color-context"
+          fontSize={12}
+          simple
+        />
+      </React.Suspense>
     )
   }
 

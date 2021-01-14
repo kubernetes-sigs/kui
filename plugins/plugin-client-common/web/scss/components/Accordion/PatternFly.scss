@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@import 'mixins';
 
 @include Accordion {
   margin: 0.5rem 0 0;
@@ -37,6 +37,7 @@
 }
 
 @include AccordionContentBody {
+  padding: 0;
   &:before {
     display: none;
   }

@@ -38,6 +38,11 @@ export default class PatternFlyAccordion extends React.PureComponent<Props, Stat
     }
   }
 
+  private content(idx: number) {
+    const isHidden = this.state.expandedIdx !== idx
+    return <AccordionContent isHidden={isHidden}>{!isHidden && this.props.content[idx]()}</AccordionContent>
+  }
+
   public render() {
     return (
       <Accordion
@@ -45,19 +50,22 @@ export default class PatternFlyAccordion extends React.PureComponent<Props, Stat
         className={`kui--accordion ${this.props.isWidthConstrained ? 'flex-fill' : ''}`}
       >
         {this.props.names.map((name, idx) => (
-          <AccordionItem key={idx}>
-            <AccordionToggle
-              id={idx.toString()}
-              onClick={() => {
-                this.setState(curState => ({ expandedIdx: curState.expandedIdx !== idx ? idx : -1 }))
-                eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
-              }}
-              isExpanded={this.state.expandedIdx === idx}
-            >
-              {this.state.expandedIdx !== idx ? strings('Show X', name) : strings('Hide X', name)}
-            </AccordionToggle>
-            <AccordionContent isHidden={this.state.expandedIdx !== idx}>{this.props.content[idx]}</AccordionContent>
-          </AccordionItem>
+          <div key={idx} className="kui--accordion-item">
+            {/*          ^^^^^^^^^ AccordionItem does not accept className */}
+            <AccordionItem>
+              <AccordionToggle
+                id={idx.toString()}
+                onClick={() => {
+                  this.setState(curState => ({ expandedIdx: curState.expandedIdx !== idx ? idx : -1 }))
+                  eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
+                }}
+                isExpanded={this.state.expandedIdx === idx}
+              >
+                {this.state.expandedIdx !== idx ? strings('Show X', name) : strings('Hide X', name)}
+              </AccordionToggle>
+              {this.content(idx)}
+            </AccordionItem>
+          </div>
         ))}
       </Accordion>
     )
