@@ -213,7 +213,6 @@ export {
   FunctionThatProducesContent
 } from './models/mmr/content-types'
 export { ToolbarText, ToolbarAlert, isSupportedToolbarTextType } from './webapp/views/toolbar-text'
-export { DiffState, TreeResponse, isTreeResponse, TreeItem } from './models/TreeResponse'
 
 // low-level UI
 export { default as doCancel } from './webapp/cancel'

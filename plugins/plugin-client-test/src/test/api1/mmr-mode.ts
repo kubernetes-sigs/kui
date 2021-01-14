@@ -26,7 +26,6 @@ import { TestMMR, MMRExpectMode } from '@kui-shell/test'
 
 import { MyResource } from '../../lib/models'
 import { metadata as _meta } from '../../lib/cmds/mmr-mode'
-import tree from '../../lib/cmds/content/tree'
 
 const { metadata } = _meta
 
@@ -110,12 +109,6 @@ const testReact = new TestMMR({
   command: 'test mmr react'
 })
 
-const testTree = new TestMMR({
-  metadata,
-  testName: 'test mmr tree',
-  command: 'test mmr tree'
-})
-
 const testDiff = new TestMMR({
   metadata,
   testName: 'test mmr diff',
@@ -161,7 +154,7 @@ testReact.toolbarText({
   text: 'hello this is iter',
   exact: false
 })
-testTree.tree(tree, 'tree')
+
 testDiff.diffPlainText('diff', 'barrrrrrrrr')
 testDefault.name({ heroName: true })
 testDefault.modes(expectModes, expectModes[0], { testWindowButtons: true })

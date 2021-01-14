@@ -25,11 +25,8 @@ import {
   eventBus,
   Tab,
   Table,
-  TreeResponse,
   isTable,
   isScalarContent,
-  TreeItem,
-  isTreeResponse,
   isMultiModalResponse
 } from '@kui-shell/core'
 
@@ -128,25 +125,7 @@ export function tabAlignment(block: CompleteBlock, tab: Tab): CompleteBlock {
   if (isMultiModalResponse(block.completeEvent.response)) {
     block.completeEvent.response.modes.forEach(mode => {
       if (isScalarContent(mode)) {
-        if (isTreeResponse(mode.content)) {
-          const allocateNode = (node: TreeItem) => {
-            if (node.onclickEvents) {
-              allocateTab(node.onclickEvents.startEvent, tab)
-              allocateTab(node.onclickEvents.completeEvent, tab)
-            }
-          }
-
-          const allocateTree = async (nodes: TreeItem[]) => {
-            nodes.map(node => {
-              allocateNode(node)
-              if (node.children) {
-                return allocateTree(node.children)
-              }
-            })
-          }
-
-          allocateTree(mode.content.data)
-        } else if (isTable(mode.content)) {
+        if (isTable(mode.content)) {
           allocateTabForTable(mode.content)
         }
       }
@@ -202,54 +181,6 @@ export class FlightRecorder {
     )
   }
 
-  private async recordTree(tree: TreeResponse) {
-    const clickTreeNode = async (node: TreeItem) => {
-      if (node.onclick && typeof node.onclick === 'string') {
-        const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
-        const command = node.onclick
-
-        const onCommandStart = (startEvent: CommandStartEvent) => {
-          if (node.onclickEvents) {
-            Object.assign(node.onclickEvents, { startEvent })
-          } else {
-            Object.assign(node, { onclickEvents: { startEvent } })
-          }
-        }
-
-        const onCommandComplete = (completeEvent: CommandCompleteEvent) => {
-          if (node.onclickEvents) {
-            Object.assign(node.onclickEvents, { completeEvent })
-          } else {
-            Object.assign(node, { onclickEvents: { completeEvent } })
-          }
-        }
-
-        eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
-        eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
-
-        try {
-          await fakeTab.REPL.pexec(command, { tab: fakeTab })
-        } finally {
-          eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
-          eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
-        }
-      }
-    }
-
-    const clickTree = async (nodes: TreeItem[]) => {
-      await Promise.all(
-        nodes.map(async node => {
-          await clickTreeNode(node)
-          if (node.children) {
-            return clickTree(node.children)
-          }
-        })
-      )
-    }
-
-    await clickTree(tree.data)
-  }
-
   /**
    * Run through the rows of a Table response, issue the onclick
    * handler, and store the (start,complete) event pairs, indexed by
@@ -265,9 +196,7 @@ export class FlightRecorder {
               await Promise.all(
                 _.completeEvent.response.modes.map(async mode => {
                   if (isScalarContent(mode)) {
-                    if (isTreeResponse(mode.content)) {
-                      await this.recordTree(mode.content)
-                    } else if (isTable(mode.content)) {
+                     if (isTable(mode.content)) {
                       await this.recordTable(mode.content)
                     }
                   }
