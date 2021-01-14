@@ -4,6 +4,7 @@ metadata:
   name: redis-slave
   labels:
     app: redis
+    tier: backend
 spec:
   selector:
     matchLabels:

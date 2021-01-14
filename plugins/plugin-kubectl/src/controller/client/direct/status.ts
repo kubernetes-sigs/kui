@@ -21,7 +21,7 @@ import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, Watch
 import { getTable } from './get'
 import fabricate404Table from './404'
 import URLFormatter, { urlFormatterFor } from './url'
-import { unifyHeaders, unifyRow, unifyRows } from './unify'
+import { unifyRow, unifyRows } from './unify'
 import makeWatchable, { DirectWatcher, SingleKindDirectWatcher } from './watch'
 
 import { Explained } from '../../kubectl/explain'
@@ -113,8 +113,10 @@ class MultiKindWatcher implements Abortable, Watcher {
 
   private myPusher(idx: number): WatchPusher {
     const overrides: Pick<WatchPusher, 'header' | 'update' | 'done'> = {
-      header: (header: Row) => {
-        this.pusher.header(unifyHeaders([header]))
+      header: () => {
+        // instead: have the view infer headers from the body; this
+        // allows for more schema flexibility across rows
+        // this.pusher.header(unifyHeaders([header]))
       },
       update: (row: Row, batch?: boolean, changed?: boolean) => {
         debug('update of unified row', row.rowKey, this.kind[idx].kind, row.attributes[1].value)
@@ -236,7 +238,9 @@ export default async function watchMulti(
       : undefined
 
     // header and body
-    const header = unifyHeaders([].concat(...tables.map(_ => _.table.header)))
+    // re: header, have the view infer headers from the body; this
+    // allows for more schema flexibility across rows
+    const header = undefined // unifyHeaders([].concat(...tables.map(_ => _.table.header)))
     const body = unifyRows(
       [].concat(...tables.map(_ => _.table.body)),
       flatten(
