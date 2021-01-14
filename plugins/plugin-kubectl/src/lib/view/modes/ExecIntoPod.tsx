@@ -16,6 +16,7 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
+
 import {
   Arguments,
   ModeRegistration,
@@ -536,14 +537,22 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     xterm.open(dom)
 
     const doResize = () => {
-      fitAddon.fit()
+      try {
+        fitAddon.fit()
+      } catch (err) {
+        // this is due to not being in focus, so it isn't critical
+        console.error(err)
+      }
     }
 
     // resize once on init
     doResize()
 
-    const observer = new ResizeObserver(() => {
-      setTimeout(doResize)
+    const observer = new ResizeObserver(function observer(observed) {
+      // re: the if guard, see https://github.com/IBM/kui/issues/6585
+      if (observed.every(_ => _.contentRect.width > 0 && _.contentRect.height > 0)) {
+        setTimeout(doResize)
+      }
     })
     observer.observe(dom)
     perTerminalCleaners.push(() => observer.disconnect())
