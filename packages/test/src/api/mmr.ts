@@ -16,7 +16,7 @@
 
 import { ok } from 'assert'
 import { Application } from 'spectron'
-import { promiseEach, BadgeSpec, TreeResponse } from '@kui-shell/core'
+import { promiseEach, BadgeSpec } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -408,23 +408,6 @@ export class TestMMR {
         backToOpen()
         showModes()
       }
-    })
-  }
-
-  public tree(expectTree: TreeResponse, mode: string) {
-    const { command, testName } = this.param
-
-    describe(`tree ${testName} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
-      before(Common.before(this))
-      after(Common.after(this))
-
-      it('should should open sidecar with tree view', () =>
-        CLI.command(command, this.app)
-          .then(ReplExpect.ok)
-          .then(SidecarExpect.open)
-          .then(SidecarExpect.mode(mode))
-          .then(SidecarExpect.tree(expectTree.data))
-          .catch(Common.oops(this, true)))
     })
   }
 
