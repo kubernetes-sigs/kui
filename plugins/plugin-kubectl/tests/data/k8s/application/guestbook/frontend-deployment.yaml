@@ -4,6 +4,7 @@ metadata:
   name: frontend
   labels:
     app: guestbook
+    tier: frontend
 spec:
   selector:
     matchLabels:

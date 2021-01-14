@@ -18,13 +18,22 @@
 
 import { ReactElement } from 'react'
 import { Breadcrumb } from '../../models/NavResponse'
-import { MetadataBearing, Entity } from '../../models/entity'
+import { MetadataBearing, MetadataNamedResource, Entity } from '../../models/entity'
 
 export class Row {
   attributes?: Cell[]
 
   /** uniquely identifies this row in a given table; if not defined, we will use the name field as the row key */
   rowKey?: string
+
+  /** optional associated metadata for the corresponding resource */
+  object?: Pick<MetadataNamedResource, 'metadata'> & {
+    spec?: {
+      selector?: {
+        matchLabels?: Record<string, string>
+      }
+    }
+  }
 
   /** the key-value pair for the first column */
   key?: string

@@ -4,6 +4,7 @@ metadata:
   name: redis-master
   labels:
     app: redis
+    tier: backend
 spec:
   selector:
     matchLabels:
