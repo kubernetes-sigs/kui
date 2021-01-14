@@ -65,6 +65,34 @@ const updateInputAndMoveCaretToEOL = (input: Input, entry: HistoryLine) => {
   }
 }
 
+/**
+ *
+ * "hello wor<userHitsCtrl+Delete>" -> "hello "
+ * "hello world <userHitsCtrl+Delete>" -> "hello world"
+ * "hello.world<userHitsCtrl+Delete>" -> "hello"
+ *
+ */
+function deleteThisWord(prompt: HTMLInputElement) {
+  const start = prompt.selectionStart
+  const end = prompt.selectionEnd
+
+  if (start === end) {
+    let idx = start
+    for (; idx >= 0; idx--) {
+      if (/\W/.test(prompt.value[idx])) {
+        break
+      }
+    }
+    idx++ // back up the last idx--
+    if (idx < start) {
+      // another +1 here because the browser will delete one for us
+      prompt.value = prompt.value.substring(0, idx + 1)
+      return true
+    }
+  }
+  return false
+}
+
 export default function onKeyDown(this: Input, event: KeyboardEvent) {
   const tab = this.props.tab
   const block = this.props._block
@@ -94,6 +122,8 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
       debug('exit via ctrl+D')
       tab.REPL.pexec('exit', { tab })
     }
+  } else if (event.key === 'Backspace' && event.ctrlKey) {
+    deleteThisWord(prompt)
   } else if (char === KeyCodes.PAGEUP) {
     if (inBrowser()) {
       debug('pageup')
