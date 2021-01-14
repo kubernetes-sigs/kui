@@ -80,11 +80,6 @@ export function formatOf({ parsedOptions }: Pick<Arguments<KubeOptions>, 'parsed
   return parsedOptions.o || parsedOptions.output
 }
 
-/** @return is request file and without format */
-export function isTreeReq(args: Arguments<KubeOptions>) {
-  return !formatOf(args) && fileOf(args)
-}
-
 export function isEntityFormat(format: OutputFormat): format is EntityFormat {
   return format === 'yaml' || format === 'json'
 }

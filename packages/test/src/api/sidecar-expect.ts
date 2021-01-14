@@ -204,31 +204,6 @@ export const defaultMode = (expected: { mode: string; label?: string }) => async
   return res
 }
 
-export type ExpectedTree = {
-  id: string
-  children?: ExpectedTree[]
-}
-
-export const tree = (expected: ExpectedTree[]) => async (res: AppAndCount) => {
-  const count = res.count
-  const testTree = async (nodes: ExpectedTree[]) => {
-    await promiseEach(nodes, async node => {
-      const tree = await res.app.client.$(Selectors.TREE_LIST(count, node.id))
-      await tree.waitForDisplayed()
-
-      if (node.children) {
-        await res.app.client.$(Selectors.TREE_LIST_EXPANDED(count, node.id)).then(_ => _.waitForDisplayed())
-        return testTree(node.children)
-      } else {
-        await res.app.client.$(Selectors.TREE_LIST_AS_BUTTON(count, node.id)).then(_ => _.waitForDisplayed())
-      }
-    })
-  }
-
-  await testTree(expected)
-  return res
-}
-
 export const textPlainContent = (content: string) => async (res: AppAndCount) => {
   await expectText(res.app, content)(Selectors.SIDECAR_CUSTOM_CONTENT(res.count, res.splitIndex))
   return res
