@@ -158,7 +158,7 @@ export default class Markdown extends React.PureComponent<Props> {
               )
             } else {
               return (
-                <p>
+                <div className="paragraph">
                   <code className="kui--code--editor">
                     <SimpleEditor
                       tabUUID={getPrimaryTabId(this.props.tab)}
@@ -170,7 +170,7 @@ export default class Markdown extends React.PureComponent<Props> {
                       readonly
                     />
                   </code>
-                </p>
+                </div>
               )
             }
           },
