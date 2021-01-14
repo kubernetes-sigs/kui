@@ -1,29 +1,52 @@
-# The Kui Framework for Graphical Terminals
+# Kui: CLI-driven Graphics for Kubernetes
 
-[![Build Status](https://travis-ci.com/IBM/kui.svg?branch=master)](https://travis-ci.com/IBM/kui)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![codecov](https://codecov.io/gh/IBM/kui/branch/master/graph/badge.svg)](https://codecov.io/gh/IBM/kui)
-[![Type Coverage](https://img.shields.io/endpoint.svg?url=https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/badge.json?which=core)](https://us-south.functions.cloud.ibm.com/api/v1/web/kuishell_production/kui/typecov-model.json)
+![ts](https://flat.badgen.net/badge/-/TypeScript?icon=typescript&label&labelColor=blue&color=555555)
+![Electron](https://flat.badgen.net/badge/Electron/10/orange)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://img.shields.io/travis/IBM/kui/master?style=flat-square)](https://travis-ci.com/IBM/kui)
 
-Kui combines the power of familiar CLIs with visualizations in
-high-impact areas. Kui enables you to manipulate complex JSON and YAML
-data models, integrate disparate tooling, and provides quick access to
-aggregate views of operational data.
+We love CLIs, and think they are critical for interacting in a
+flexible way with the cloud. We need the power to go off the
+rails. But ASCII is tedious. Kui takes your normal `kubectl` command
+line requests and **responds with graphics**. Instead of ASCII tables,
+you are presented with sortable ones. Instead of copying and pasting
+long auto-generated resource names to drill down, in Kui **you just
+click**.
 
 <img align="right" width="410" src="docs/readme/images/sidecar.png">
 
-## Installation
+Watch and `apply` requests present you with live tables. Instead of
+poring over complex YAML, you can browse the facets of your resources
+in a tabbed UI. Drill down, drill up, and view logs or the events
+related just to the resource of interest, again with Kui you can just
+click.
 
-We offer prebuilt images that provide Kubernetes enhancements:
+Iterating through a table to find the needle in the haystack? With
+Kui, you can click the rows in rapid succession, and Kui sends the
+details to a side terminal; the main table will not scroll out of view.
+
+Working with
+[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/)?
+You can see a "waterfall" diagram by simply executing `k get jobs`.
+
+In summary: Kui enhances your CLI experience, but is also fast. It
+launches in 1-2 seconds, and can process standard `kubectl` commands
+**2-3 times faster** than `kubectl` itself.
+
+Next steps:
+
+- I want to [download a prebuilt binary](#installation)
+- I want to [enhance Kui](#contributing)
+- I want to build my own [custom-branded Kui client](https://github.com/IBM/kui/wiki/5.-How-to-Customize-Your-Client)
+
+## Installation
 
 [Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-To run Kui as a [kubectl
-plugin](https://kubernetes.io/docs/tasks/extend-kubectl/kubectl-plugins/)
-(for `kubectl` 1.12+). These distributions contain a `kubectl-kui`
-script that serves as a `kubectl` plugin for Kui. For Windows and
-Linux, add the unpacked directory to your PATH; for MacOS, the script
-is nested inside of the application:
+You may launch Kui in two ways:
+
+- Open the Kui app, either by double clicking on the executable, or by launching the executable from your terminal, e.g. `open /path/to/Kui.app` on macOS.
+- As a `kubectl` plugin, via the `kubectl-kui` script that is bundled with the prebuilt images. Make sure the directory enclosing the script is on your PATH; e.g. for macOS:
 
 ```bash
 curl -L https://macos-tarball.kui-shell.org/ | tar jxf -
@@ -34,32 +57,18 @@ kubectl kui get pods
 After the final command, you should see a popup window listing pods in
 your current namespace.
 
-You may also install Kui as an [`ibmcloud` CLI
-plugin](tools/go/ibmcloud/README.md#prebuilt-binaries).
+## Feature Gallery
 
-## Contributing
-
-If you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md).
-
-## Kui is a CLI, with Visualizations on the Side
+With Kui, your drilldown excursions will not pollute the command
+history of your main flow of terminal operations. Kui directs
+drilldowns to the side. You may also split your terminal and have 2-3
+mini watchers running alongside your main terminal experience.
 
 <img width="640" align="left" src="docs/readme/images/kui-experience.gif">
-
-To help with complex data, Kui offers a suite of
-**visualizations**. You can quickly flip between the terminal and
-these visualizations, without having to switch to a browser, log in,
-and navigate through complex menu structures.
-
-Kui uses [Electron](https://electronjs.org) to provide you with an
-augmented but CLI-focused development experience. You will have
-access to your filesystem and your favorite terminal and text
-editor. At the same time, one may offer a hosted Kui, allowing the
-same experience in both a local- and browser-based experience.
 
 <img width="342" src="docs/readme/images/namespaces.png"> <img width="276" src="docs/readme/images/summary.png"> <img width="286" src="docs/readme/images/usage.png">
 <img width="100" src="docs/readme/images/grid.png">
 
-## More Resources
+## Contributing
 
-- [Developer Guide](https://github.com/IBM/kui/wiki)
-- Kui can form the basis for delivering CLI-driven GUI experiences. For example, Kui has a custom client for Apache OpenWhisk: [Oui](https://github.com/kui-shell/oui#readme)
+If you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md). Kui uses [Electron](https://electronjs.org), which allows for distributing clients either as a local platform application, or as a hosted browser-based client.
