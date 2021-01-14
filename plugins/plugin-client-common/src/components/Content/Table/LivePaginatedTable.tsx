@@ -17,7 +17,7 @@
 import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 
 import PaginatedTable, { Props, State } from './PaginatedTable'
-import { kuiHeader2carbonHeader, kuiRow2carbonRow, NamedDataTableRow } from './kui2carbon'
+import { kuiHeaderFromBody, kuiHeader2carbonHeader, kuiRow2carbonRow, NamedDataTableRow } from './kui2carbon'
 
 type LiveProps = Props<KuiTable & Watchable> & { onRender: (hasContent: boolean) => void }
 
@@ -132,6 +132,13 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    *
    */
   private update(newKuiRow: KuiRow, batch = false, justUpdated = true) {
+    if (!this.props.response.header) {
+      const header = kuiHeaderFromBody([newKuiRow])
+      if (header) {
+        this.header(header)
+      }
+    }
+
     const existingRows = this._deferredUpdate || this.state.rows
     const nRowsBefore = existingRows.length
 

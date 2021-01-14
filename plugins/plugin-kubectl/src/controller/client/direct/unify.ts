@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Table, Row } from '@kui-shell/core'
+import { Cell, Row, Table } from '@kui-shell/core'
 import TrafficLight, { toTrafficLight } from '../../../lib/model/traffic-light'
 
 /** Do not i18n! */
@@ -40,11 +40,12 @@ export function rowWith(
   kind: string,
   status: string,
   trafficLight: TrafficLight,
-  originalRow?: Row
+  originalRow?: Row,
+  extraAttrs: Cell[] = []
 ): Row {
   const overlay: Row = {
     name,
-    attributes: [
+    attributes: extraAttrs.concat([
       {
         key: Kind,
         value: kind
@@ -55,7 +56,7 @@ export function rowWith(
         tag: 'badge',
         css: trafficLight
       }
-    ]
+    ])
   }
 
   if (originalRow) {
@@ -70,6 +71,16 @@ export function unifyHeaders(headers: Table['header'][]): Table['header'] {
   return standardStatusHeader
 }
 
+function getFromLabel(object: Row['object'], field: string): string {
+  return object.metadata.labels[field]
+}
+
+function getFromSelector(object: Row['object'], field: string) {
+  if (object.spec && object.spec.selector && object.spec.selector.matchLabels) {
+    return object.spec.selector.matchLabels[field]
+  }
+}
+
 export function unifyRow(row: Row, kind: string): Row {
   const name = row.name
 
@@ -77,7 +88,26 @@ export function unifyRow(row: Row, kind: string): Row {
   const status = badgeColumnIdx >= 0 ? row.attributes[badgeColumnIdx].value : 'Unknown'
   const trafficLight = badgeColumnIdx >= 0 ? toTrafficLight(row.attributes[badgeColumnIdx].css) : TrafficLight.Gray
 
-  return rowWith(name, kind, status, trafficLight, row)
+  const extraAttrs: Cell[] = []
+  if (row.object) {
+    const tier =
+      getFromLabel(row.object, 'tier') ||
+      getFromLabel(row.object, 'app.kubernetes.io/component') ||
+      getFromSelector(row.object, 'tier')
+    if (tier) {
+      extraAttrs.push({ key: 'Tier', value: tier })
+    }
+
+    const app =
+      getFromLabel(row.object, 'app') ||
+      getFromLabel(row.object, 'app.kubernetes.io/name') ||
+      getFromSelector(row.object, 'app')
+    if (app) {
+      extraAttrs.push({ key: 'Application', value: app })
+    }
+  }
+
+  return rowWith(name, kind, status, trafficLight, row, extraAttrs)
 }
 
 export function unifyRows(rows: Table['body'], kinds: string | string[]): Table['body'] {

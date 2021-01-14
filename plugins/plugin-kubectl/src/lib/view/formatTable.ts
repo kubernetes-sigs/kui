@@ -700,6 +700,7 @@ export async function toKuiTable(
     const onclick = onclickFor(row, name)
 
     return {
+      object: row.object,
       key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name,
       rowKey,
       name: forAllNamespaces ? row.object.metadata.namespace : name,

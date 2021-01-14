@@ -49,6 +49,7 @@ export interface MetadataNamedResource {
     namespace?: string
     generation?: string
     creationTimestamp?: string
+    labels?: Record<string, string>
   }
 }
 

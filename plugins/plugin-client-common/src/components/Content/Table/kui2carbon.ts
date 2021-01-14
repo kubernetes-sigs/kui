@@ -23,6 +23,16 @@ export interface NamedDataTableRow extends DataTableRow {
   justUpdated: boolean
 }
 
+export function kuiHeaderFromBody(body: KuiTable['body']): KuiTable['header'] {
+  if (body.length > 0) {
+    const attributes = (body[0].attributes || []).map(({ key, value }) => ({
+      key: key || value,
+      value: key || value
+    }))
+    return { key: body[0].key, name: body[0].name, attributes }
+  }
+}
+
 /** attempt to infer header model from body model */
 function headerFromBody(table: KuiTable) {
   if (table.body.length > 0) {
@@ -30,9 +40,9 @@ function headerFromBody(table: KuiTable) {
       key: key || value,
       header: key || value
     }))
-    const headers = [{ key: 'NAME', header: 'NAME' }, ...attrs]
+    const headers = [{ key: 'Name', header: 'Name' }, ...attrs]
     table.header = {
-      name: 'NAME',
+      name: 'Name',
       attributes: attrs.map(({ key }) => ({ key, value: key }))
     }
     return headers
@@ -70,12 +80,11 @@ export function kuiRow2carbonRow(headers: DataTableHeader[], justUpdated = false
 
     if (!row.attributes) row.attributes = []
     row.attributes.forEach((attr, cidx) => {
-      const { key, value } = attr
-      const kkey = headers[cidx + 1].key
-      if (!key) {
+      const kkey = attr.key || headers[cidx + 1] ? headers[cidx + 1].key : undefined
+      if (!attr.key && kkey) {
         attr.key = kkey
       }
-      rowData[kkey] = value
+      rowData[kkey] = attr.value
     })
 
     if (!rowData.NAME) {
