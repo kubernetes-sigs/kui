@@ -18,10 +18,19 @@ import { Tab } from '@kui-shell/core'
 
 interface Props {
   className?: string
-  names: string[]
-  content: React.ReactNode[]
   isWidthConstrained?: boolean
   tab: Tab
+
+  /** The titles of the accordion entries */
+  names: string[]
+
+  /**
+   * The content for the accordion entries. These are intentionally
+   * delayed via the `() => ...`, to avoid rendering the content for
+   * all accordion elements up front. See https://github.com/IBM/kui/issues/6582
+   *
+   */
+  content: (() => React.ReactNode)[]
 }
 
 export default Props
