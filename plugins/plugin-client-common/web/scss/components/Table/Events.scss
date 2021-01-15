@@ -31,14 +31,6 @@ $inter-message-spacing: 0.1875rem;
   }
 }
 
-.kui--scrollback:not([data-is-minisplit]) {
-  .kui--data-table-as-grid {
-    .kui--data-table-footer-message {
-      max-width: 22rem;
-    }
-  }
-}
-
 /* applies only to tables */
 .kui--data-table-container {
   .kui--data-table-footer-messages {
