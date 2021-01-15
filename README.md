@@ -13,7 +13,8 @@ you are presented with sortable ones. Instead of copying and pasting
 long auto-generated resource names to drill down, in Kui **you just
 click**.
 
-<img align="right" width="410" src="docs/readme/images/sidecar.png">
+<img width="600" align="right" src="docs/readme/images/kui-experience.gif">
+<img width="250" align="right" src="docs/readme/images/grid-watch.gif">
 
 Watch and `apply` requests present you with live tables. Instead of
 poring over complex YAML, you can browse the facets of your resources
@@ -25,9 +26,11 @@ Iterating through a table to find the needle in the haystack? With
 Kui, you can click the rows in rapid succession, and Kui sends the
 details to a side terminal; the main table will not scroll out of view.
 
-Working with
-[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/)?
-You can see a "waterfall" diagram by simply executing `k get jobs`.
+<img width="250" align="right" src="docs/readme/images/usage.png">
+<img width="250" align="right" src="docs/readme/images/sequence-diagram.png">
+
+If you are working with [jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),
+you can see a "waterfall" diagram by simply executing `k get jobs`.
 
 In summary: Kui enhances your CLI experience, but is also fast. It
 launches in 1-2 seconds, and can process standard `kubectl` commands
@@ -57,18 +60,10 @@ kubectl kui get pods
 After the final command, you should see a popup window listing pods in
 your current namespace.
 
-## Feature Gallery
-
-With Kui, your drilldown excursions will not pollute the command
-history of your main flow of terminal operations. Kui directs
-drilldowns to the side. You may also split your terminal and have 2-3
-mini watchers running alongside your main terminal experience.
-
-<img width="640" align="left" src="docs/readme/images/kui-experience.gif">
-
-<img width="342" src="docs/readme/images/namespaces.png"> <img width="276" src="docs/readme/images/summary.png"> <img width="286" src="docs/readme/images/usage.png">
-<img width="100" src="docs/readme/images/grid.png">
-
 ## Contributing
 
-If you want to help, please take a look at the [developer guide](https://github.com/IBM/kui/wiki) and our [guidelines](CONTRIBUTING.md). Kui uses [Electron](https://electronjs.org), which allows for distributing clients either as a local platform application, or as a hosted browser-based client.
+Kui uses [Electron](https://electronjs.org), which allows for
+distributing clients either as a local platform application, or as a
+hosted browser-based client. If you want to help, please take a look
+at the [developer guide](https://github.com/IBM/kui/wiki) and our
+[guidelines](CONTRIBUTING.md).
