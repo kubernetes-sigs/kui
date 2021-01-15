@@ -17,6 +17,7 @@
 import Debug from 'debug'
 import { Abortable, Arguments, FlowControllable, Row, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
+import { Group, isObjectInGroups } from './group'
 import URLFormatter from './url'
 import { headersForTableRequest } from './headers'
 
@@ -102,6 +103,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     private readonly kind: string | Promise<string>,
     private readonly resourceVersion: Table['resourceVersion'],
     private readonly formatUrl: URLFormatter,
+    private readonly groups: Group[],
     private readonly finalState?: FinalState,
     initialRowKeys?: { rowKey: string; isReady: boolean }[],
     private nNotReady?: number, // number of resources to wait on
@@ -143,17 +145,26 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   }
 
   private lastFooterEvents: Record<string, boolean>
-  private filterFooterRows(table: MetaTable, nameColumnIdx: number): MetaTable['rows'] {
+  private filterFooterRows(table: MetaTable, nameColumnIdx: number, objectColumnIdx: number): MetaTable['rows'] {
+    const rows = table.rows.filter(row => {
+      const kindAndName = row.cells[objectColumnIdx]
+      if (typeof kindAndName === 'string') {
+        const kind = kindAndName.split('/')[0]
+        const name = kindAndName.split('/')[1]
+        return isObjectInGroups(this.groups, kind, name)
+      }
+    })
+
     const last = this.lastFooterEvents
-    this.lastFooterEvents = table.rows.reduce((M, row) => {
+    this.lastFooterEvents = rows.reduce((M, row) => {
       M[row.cells[nameColumnIdx]] = true
       return M
     }, {})
 
     if (!last) {
-      return table.rows
+      return rows
     } else {
-      return table.rows.filter(row => !last[row.cells[nameColumnIdx]])
+      return rows.filter(row => !last[row.cells[nameColumnIdx]])
     }
   }
 
@@ -164,7 +175,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     } else {
       const { lastSeenColumnIdx, objectColumnIdx, messageColumnIdx, nameColumnIdx } = this.footerColumnDefinitions
 
-      return this.filterFooterRows(table, nameColumnIdx).map(_ => {
+      return this.filterFooterRows(table, nameColumnIdx, objectColumnIdx).map(_ => {
         const lastSeen = _.cells[lastSeenColumnIdx]
         const involvedObjectName = _.cells[objectColumnIdx]
         const message = _.cells[messageColumnIdx]
@@ -225,6 +236,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     const events = (
       await fetchFile(this.args.REPL, this.formatEventUrl(), { headers: headersForTableRequest })
     )[0] as MetaTable
+
     if (isMetaTable(events)) {
       this.onEventData({ object: events })
 
@@ -279,6 +291,13 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     }
 
     setTimeout(async () => {
+      const kind = this.kind
+      if (typeof kind === 'string') {
+        update.object.rows = update.object.rows.filter(row =>
+          isObjectInGroups(this.groups, kind, row.object.metadata.name)
+        )
+      }
+
       const table = await toKuiTable(update.object, this.kind, this.args, this.drilldownCommand, this.needsStatusColumn)
 
       if (sendHeaders) {
@@ -359,6 +378,7 @@ export default async function makeWatchable(
   drilldownCommand: string,
   args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
   kind: string | Promise<string>,
+  groups: Group[],
   table: Table,
   formatUrl: URLFormatter,
   finalState?: FinalState,
@@ -380,6 +400,7 @@ export default async function makeWatchable(
       kind,
       table.resourceVersion,
       formatUrl,
+      groups,
       finalState,
       initialRowKeys,
       nNotReady,

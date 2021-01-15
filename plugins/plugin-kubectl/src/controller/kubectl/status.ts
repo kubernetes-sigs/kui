@@ -36,7 +36,8 @@ import {
 import { getKindAndVersion } from './explain'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
 import { initialCapital } from '../../lib/view/formatTable'
-import statusDirect, { Group } from '../client/direct/status'
+import statusDirect from '../client/direct/status'
+import { Group } from '../client/direct/group'
 import KubeOptions, {
   KubeOptions as Options,
   fileOf,
