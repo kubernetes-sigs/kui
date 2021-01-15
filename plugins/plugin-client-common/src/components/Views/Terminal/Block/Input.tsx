@@ -32,6 +32,7 @@ import whenNothingIsSelected from '../../../../util/selection'
 import {
   BlockModel,
   isActive,
+  isActiveAndDifferent,
   isProcessing,
   isFinished,
   hasCommand,
@@ -381,7 +382,7 @@ export default class Input extends InputProvider {
         prompt: undefined,
         execUUID: undefined
       }
-    } else if (isActive(props.model) && state.model !== props.model) {
+    } else if (isActiveAndDifferent(props.model, state.model)) {
       return {
         model: props.model,
         prompt: undefined,
