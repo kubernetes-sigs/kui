@@ -11,10 +11,9 @@ rails. But ASCII is tedious. Kui takes your normal `kubectl` command
 line requests and **responds with graphics**. Instead of ASCII tables,
 you are presented with sortable ones. Instead of copying and pasting
 long auto-generated resource names to drill down, in Kui **you just
-click**.
+click**. [Download Now!](#installation)
 
 <img width="600" align="right" src="docs/readme/images/kui-experience.gif">
-<img width="250" align="right" src="docs/readme/images/grid-watch.gif">
 
 Watch and `apply` requests present you with live tables. Instead of
 poring over complex YAML, you can browse the facets of your resources
@@ -24,13 +23,12 @@ click.
 
 Iterating through a table to find the needle in the haystack? With
 Kui, you can click the rows in rapid succession, and Kui sends the
-details to a side terminal; the main table will not scroll out of view.
-
-<img width="250" align="right" src="docs/readme/images/usage.png">
-<img width="250" align="right" src="docs/readme/images/sequence-diagram.png">
-
-If you are working with [jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),
+details to a side terminal; the main table will not scroll out of
+view. If you are working with
+[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),
 you can see a "waterfall" diagram by simply executing `k get jobs`.
+
+<img height="185" src="docs/readme/images/grid-watch.gif"><img height="185" src="docs/readme/images/sequence-diagram.png"><img height="185" src="docs/readme/images/pod.png">
 
 In summary: Kui enhances your CLI experience, but is also fast. It
 launches in 1-2 seconds, and can process standard `kubectl` commands
@@ -59,6 +57,11 @@ kubectl kui get pods
 
 After the final command, you should see a popup window listing pods in
 your current namespace.
+
+### Rolling Your Own
+
+Don't trust the prebuilt binaries? We hear you. [Roll your own
+Kui](https://github.com/IBM/kui/wiki#getting-started).
 
 ## Contributing
 
