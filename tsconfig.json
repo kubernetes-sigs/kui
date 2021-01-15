@@ -38,12 +38,6 @@
       "path": "plugins/plugin-proxy-support"
     },
     {
-      "path": "plugins/plugin-skeleton"
-    },
-    {
-      "path": "plugins/plugin-openwhisk"
-    },
-    {
       "path": "plugins/plugin-client-default"
     },
     {
@@ -54,12 +48,6 @@
     },
     {
       "path": "plugins/plugin-client-notebook"
-    },
-    {
-      "path": "plugins/plugin-ibmcloud"
-    },
-    {
-      "path": "plugins/plugin-s3"
     },
     {
       "path": "packages/react"
