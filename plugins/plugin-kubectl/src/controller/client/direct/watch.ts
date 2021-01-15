@@ -136,8 +136,8 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   private formatEventUrl(watchOpts?: { resourceVersion: Table['resourceVersion'] }) {
     const fieldSelector = `fieldSelector=involvedObject.kind=${this.kind}`
     return (
-      this.formatUrl() +
-      `/events?${fieldSelector}` +
+      this.formatUrl(true, undefined, undefined, { version: 'v1', kind: 'Event' }) +
+      `?${fieldSelector}` +
       (!watchOpts ? '' : `&watch=true&resourceVersion=${watchOpts.resourceVersion.toString()}`)
     )
   }
@@ -242,7 +242,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
         headersForTableRequest
       )
     } else {
-      console.error('Unexpected response from event query', events)
+      console.error('Unexpected response from event query', this.formatEventUrl(), events)
     }
   }
 

@@ -19,17 +19,31 @@ import { Arguments } from '@kui-shell/core'
 import { Explained } from '../../kubectl/explain'
 import { KubeOptions, getLabel, getNamespace, isForAllNamespaces } from '../../kubectl/options'
 
-export type URLFormatter = (includeKind?: boolean, includeQueries?: boolean, name?: string) => string
+export type URLFormatter = (
+  includeKind?: boolean,
+  includeQueries?: boolean,
+  name?: string,
+  overrides?: { version?: string; kind?: string }
+) => string
+
+/** e.g. "apis/apps/v1" for deployments */
+function apiOnPathFor(version: string) {
+  return version === 'v1' ? 'api/v1' : `apis/${encodeURIComponent(version)}`
+}
+
+function kindOnPathFor(kind: string) {
+  return `/${encodeURIComponent(kind.toLowerCase() + (/s$/.test(kind) ? '' : 's'))}`
+}
 
 export function urlFormatterFor(
   namespace: string,
   { parsedOptions }: Pick<Arguments<KubeOptions>, 'parsedOptions'>,
   { kind, version, isClusterScoped }: Explained
 ): URLFormatter {
-  const kindOnPath = `/${encodeURIComponent(kind.toLowerCase() + (/s$/.test(kind) ? '' : 's'))}`
+  const kindOnPath = kindOnPathFor(kind)
 
   // e.g. "apis/apps/v1" for deployments
-  const apiOnPath = version === 'v1' ? 'api/v1' : `apis/${encodeURIComponent(version)}`
+  const apiOnPath = apiOnPathFor(version)
 
   // a bit complex: "kubectl get ns", versus "kubectl get ns foo"
   // the "which" is "foo" in the second case
@@ -66,10 +80,19 @@ export function urlFormatterFor(
   }
 
   // format a url
-  return (includeKind = false, includeQueries = false, name?: string) =>
-    `kubernetes:///${apiOnPath}${namespaceOnPath}${!includeKind ? '' : kindOnPath}${
+  return (
+    includeKind = false,
+    includeQueries = false,
+    name?: string,
+    overrides?: { version?: string; kind?: string }
+  ) => {
+    const myApiOnPath = overrides && overrides.version ? apiOnPathFor(overrides.version) : apiOnPath
+    const myKindOnPath = overrides && overrides.kind ? kindOnPathFor(overrides.kind) : kindOnPath
+
+    return `kubernetes:///${myApiOnPath}${namespaceOnPath}${!includeKind ? '' : myKindOnPath}${
       !name ? '' : `/${encodeURIComponent(name)}`
     }${!includeQueries || queries.length === 0 ? '' : '?' + queries.join('&')}`
+  }
 }
 
 export async function urlFormatterForArgs(
