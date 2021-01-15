@@ -41,8 +41,12 @@ class WebSocketChannel implements Channel {
 
   /** Forcibly close the channel */
   close() {
-    debug('closing websocket channel')
-    this.ws.close()
+    try {
+      debug('closing websocket channel')
+      this.ws.close()
+    } catch (err) {
+      console.error('Error in WebSocketChannel.close', err)
+    }
   }
 
   send(msg: string) {
@@ -55,7 +59,7 @@ class WebSocketChannel implements Channel {
     try {
       return this.ws.send(JSON.stringify(withUser))
     } catch (err) {
-      console.error('Error from WebSocketChannel:', err)
+      console.error('Error in WebSocketChannel.send', err)
     }
   }
 
@@ -65,34 +69,42 @@ class WebSocketChannel implements Channel {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   removeEventListener(eventType: string, handler: any) {
-    this.ws.removeEventListener(eventType, handler)
+    try {
+      this.ws.removeEventListener(eventType, handler)
+    } catch (err) {
+      console.error('Error in WebSocketChannel.removeEventListener', err)
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(eventType: string, handler: any) {
-    switch (eventType) {
-      // new Kui browser client
-      case 'open':
-        debug('WebSocketChannel: installing onopen handler')
-        this.ws.addEventListener(eventType, handler)
-        break
+    try {
+      switch (eventType) {
+        // new Kui browser client
+        case 'open':
+          debug('WebSocketChannel: installing onopen handler')
+          this.ws.addEventListener(eventType, handler)
+          break
 
-      // message from Kui browser client
-      case 'message':
-        debug('WebSocketChannel: installing onmessage handler')
-        // this.onmessage = message => handler(message.data)
-        this.ws.addEventListener(eventType, handler)
-        break
+        // message from Kui browser client
+        case 'message':
+          debug('WebSocketChannel: installing onmessage handler')
+          // this.onmessage = message => handler(message.data)
+          this.ws.addEventListener(eventType, handler)
+          break
 
-      case 'error':
-        debug('WebSocketChannel: installing onerror handler')
-        this.ws.addEventListener(eventType, handler)
-        break
+        case 'error':
+          debug('WebSocketChannel: installing onerror handler')
+          this.ws.addEventListener(eventType, handler)
+          break
 
-      case 'close':
-        debug('WebSocketChannel: installing onclose handler')
-        this.ws.addEventListener(eventType, handler)
-        break
+        case 'close':
+          debug('WebSocketChannel: installing onclose handler')
+          this.ws.addEventListener(eventType, handler)
+          break
+      }
+    } catch (err) {
+      console.error('Error in WebSocketChannel.on', err)
     }
   }
 }
