@@ -68,13 +68,13 @@ export default class Markdown extends React.PureComponent<Props> {
     }
   }
 
-  private handleImage(src: string, props: { width?: number; align?: React.CSSProperties['float'] }) {
+  private handleImage(src: string, props: { width?: number; align?: React.CSSProperties['float'] }, key?: string) {
     const isLocal = !/^http/i.test(src)
     if (isLocal && this.props.fullpath) {
       const style = props ? { float: props.align } : undefined
       const absoluteSrc = isAbsolute(src) ? src : join(dirname(this.props.fullpath), src)
 
-      return <img src={absoluteSrc} width={props.width} style={style} data-float={props.align} />
+      return <img key={key} src={absoluteSrc} width={props.width} style={style} data-float={props.align} />
     }
   }
 
@@ -91,17 +91,26 @@ export default class Markdown extends React.PureComponent<Props> {
         renderers={{
           html: props => {
             if (/<img/.test(props.value)) {
-              const srcMatch = props.value.match(/src="?([^"\s]+)"?/)
-              const widthMatch = props.value.match(/width="?(\d+)"?/)
-              const alignMatch = props.value.match(/align="?([^"\s]+)"?/)
-              if (srcMatch) {
-                return (
-                  this.handleImage(srcMatch[1], {
-                    width: widthMatch && widthMatch[1],
-                    align: alignMatch && alignMatch[1]
-                  }) || <span />
-                )
-              }
+              const images = props.value.split(/<img/).filter(_ => _)
+              const imageTags = images
+                .map((value, idx) => {
+                  const srcMatch = value.match(/src="?([^"\s]+)"?/)
+                  const widthMatch = value.match(/width="?(\d+)"?/)
+                  const alignMatch = value.match(/align="?([^"\s]+)"?/)
+                  if (srcMatch) {
+                    return this.handleImage(
+                      srcMatch[1],
+                      {
+                        width: widthMatch && widthMatch[1],
+                        align: alignMatch && alignMatch[1]
+                      },
+                      idx
+                    )
+                  }
+                })
+                .filter(_ => _)
+
+              return <React.Fragment>{imageTags}</React.Fragment>
             }
 
             // Render the raw string for all other raw html tags
