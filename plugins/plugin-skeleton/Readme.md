@@ -1,1 +1,0 @@
-Hi! If you came from [wiki](https://github.com/IBM/kui/wiki), please note that plugin-skeleton is the place to prototype your code, so any pull request from plugin-sandbox won't be accepted. Thank you!
