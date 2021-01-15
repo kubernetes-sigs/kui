@@ -695,17 +695,17 @@ body.oops-total-catastrophe #restart-needed-warning {
 }
 @include Sidecar {
   .page-content.padding-content {
-    padding: 2rem;
     margin: 0 auto;
-    max-width: 65rem;
+
+    /* these rules attempt to mimic github.com as of 20210115 */
+    padding: 2rem;
+    max-width: 960px; /* 75% of 1280px */
+    width: 100%;
   }
 }
 .page-content hr {
   margin: 2.25em 0;
   border: 0.5px solid var(--color-content-divider);
-}
-.page-content img {
-  max-width: 100%;
 }
 .page-content blockquote {
   border-left: 0.25em solid var(--color-table-border1);
@@ -722,12 +722,6 @@ body.oops-total-catastrophe #restart-needed-warning {
     padding: 0;
     margin: 0;
   }
-}
-.page-content img[align="left"] {
-  padding-right: 1.25em;
-}
-.page-content img[align="right"] {
-  padding-left: 1.25em;
 }
 .page-content p {
   font-size: inherit;
@@ -875,6 +869,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   }
 }
 .page-content img {
+  max-width: 100%;
   &[data-float] {
     background-color: var(--color-sidecar-background-01);
     padding-bottom: 0.5em;
@@ -884,6 +879,9 @@ $kui--page-content-paragraph-padding: 0.375em;
   }
   &[data-float="right"] {
     padding-left: 1.25em;
+  }
+  &:not([data-float]) + img:not([data-float]) {
+    margin-left: 0.25em;
   }
 }
 
