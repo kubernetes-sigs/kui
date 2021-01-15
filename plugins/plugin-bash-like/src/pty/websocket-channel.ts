@@ -51,7 +51,12 @@ class WebSocketChannel implements Channel {
       uid: this.uid,
       gid: this.gid
     })
-    return this.ws.send(JSON.stringify(withUser))
+    // message from Kui proxy process that we are retransmitting to the browser
+    try {
+      return this.ws.send(JSON.stringify(withUser))
+    } catch (err) {
+      console.error('Error from WebSocketChannel:', err)
+    }
   }
 
   get readyState(): number {
@@ -66,11 +71,13 @@ class WebSocketChannel implements Channel {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   on(eventType: string, handler: any) {
     switch (eventType) {
+      // new Kui browser client
       case 'open':
         debug('WebSocketChannel: installing onopen handler')
         this.ws.addEventListener(eventType, handler)
         break
 
+      // message from Kui browser client
       case 'message':
         debug('WebSocketChannel: installing onmessage handler')
         // this.onmessage = message => handler(message.data)
