@@ -18,6 +18,7 @@ import Debug from 'debug'
 import { basename } from 'path'
 import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, WatchPusher, flatten } from '@kui-shell/core'
 
+import { Group } from './group'
 import { getTable } from './get'
 import fabricate404Table from './404'
 import URLFormatter, { urlFormatterFor } from './url'
@@ -33,12 +34,6 @@ import { FinalState } from '../../../lib/model/states'
 import { getCommandFromArgs } from '../../../lib/util/util'
 
 const debug = Debug('plugin-kubectl/controller/client/direct/status')
-
-export interface Group {
-  names: string[]
-  namespace: string
-  explainedKind: Explained
-}
 
 function countNotReady(table: Table, finalState: FinalState) {
   return table.body.reduce((N, row) => (isResourceReady(row, finalState) ? N : N + 1), 0)
@@ -62,6 +57,7 @@ class MultiKindWatcher implements Abortable, Watcher {
     private readonly kind: Explained[],
     private readonly resourceVersion: Table['resourceVersion'][],
     private readonly formatUrl: URLFormatter[],
+    private readonly groups: Group[],
     private readonly finalState: FinalState,
     private readonly initialRowKeys: { rowKey: string; isReady: boolean }[][],
     private readonly nNotReady: number[], // number of resources to wait on
@@ -90,6 +86,7 @@ class MultiKindWatcher implements Abortable, Watcher {
           this.kind[idx].kind,
           resourceVersion,
           this.formatUrl[idx],
+          this.groups,
           this.finalState,
           this.initialRowKeys[idx],
           this.nNotReady[idx],
@@ -219,12 +216,13 @@ export default async function watchMulti(
           drilldownCommand,
           myArgs,
           groups[0].explainedKind.kind,
+          groups,
           tables[0].table,
           urlFormatterFor(groups[0].namespace, myArgs, groups[0].explainedKind),
           finalState,
           tables[0].table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) })),
           nNotReady,
-          false, // no events
+          true, // watch events
           true // yes, make sure there is a status column
         )
       }
@@ -274,9 +272,11 @@ export default async function watchMulti(
             return urlFormatterFor(group.namespace, myArgs, group.explainedKind)
           })
         ),
+        groups,
         finalState,
         tables.map(_ => _.table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) }))),
-        tables.map(_ => countNotReady(_.table, finalState))
+        tables.map(_ => countNotReady(_.table, finalState)),
+        true // watch events
       )
 
       return Object.assign(unifiedTable, { watch })
