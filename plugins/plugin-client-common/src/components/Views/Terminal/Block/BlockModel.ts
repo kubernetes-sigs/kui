@@ -126,6 +126,11 @@ export function isActive(block: BlockModel): block is ActiveBlock {
   return block.state === BlockState.Active
 }
 
+/** @return true if the given `block` is `Active` and differs from the other `oblock` */
+export function isActiveAndDifferent(block: BlockModel, oblock: BlockModel): block is ActiveBlock {
+  return isActive(block) && (!isActive(oblock) || block.cwd !== oblock.cwd || block.value !== oblock.value)
+}
+
 export function isCancelled(block: BlockModel): block is CancelledBlock {
   return block.state === BlockState.Cancelled
 }
@@ -168,7 +173,7 @@ export function Active(initialValue?: string): ActiveBlock {
   return {
     cwd: cwd(),
     state: BlockState.Active,
-    value: initialValue
+    value: initialValue || ''
   }
 }
 

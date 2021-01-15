@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 IBM Corporation
+ * Copyright 2017-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,19 @@ export function doClear(this: Common.ISuite, residualBlockCount = 1, splitIndex 
     .then(() => SidecarExpect.closed)
     .catch(Common.oops(this, true))
 }
+
+describe(`clear the console from scratch ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const clear = doClear.bind(this)
+
+  it('should clear the console from scratch', () => clear())
+  it('should use echo via kuiecho', () =>
+    CLI.command('kuiecho hello', this.app)
+      .then(ReplExpect.okWithString('hello'))
+      .catch(Common.oops(this, true)))
+})
 
 describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
