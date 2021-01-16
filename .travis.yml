@@ -84,8 +84,8 @@ jobs:
     #
     - env: N="k8s browser" NEEDS_K8S=true NEEDS_OC=true NEEDS_TOP=true MOCHA_RUN_TARGET=webpack
       script:
-        - concurrently -n K8S3,K8S4 'npm run test1 k8s3' 'npm run test2 k8s4'
         - concurrently -n K8S2 'npm run test1 k8s2'
+        - concurrently -n K8S3,K8S4 'npm run test1 k8s3' 'npm run test2 k8s4'
 
     #
     # General Tests on macOS using an electron client

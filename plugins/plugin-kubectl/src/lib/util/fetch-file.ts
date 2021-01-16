@@ -93,6 +93,11 @@ export async function openStream<T extends object>(
       }
     })
 
+    stream.on('error', err => {
+      console.error('stream suddenly died', err)
+      throw new Error(err)
+    })
+
     JSONStream(stream, await onData, mgmt.onExit)
   }
 }

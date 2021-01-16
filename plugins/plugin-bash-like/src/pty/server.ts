@@ -316,7 +316,11 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           }
 
           const terminate = (str: string) => {
-            ws.send(str)
+            try {
+              ws.send(str)
+            } catch (err) {
+              console.error('error in terminate send', err)
+            }
             // ws.send(`___kui_exit___ ${msg.uuid}`)
           }
 
@@ -326,14 +330,19 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
             debug('initializing streaming exec', msg.uuid)
             execOptions.onInit = (job: Abortable & FlowControllable) => {
               jobs[msg.uuid] = job
-              return chunk =>
-                ws.send(
-                  JSON.stringify({
-                    type: 'chunk',
-                    uuid: msg.uuid,
-                    chunk
-                  })
-                )
+              return chunk => {
+                try {
+                  ws.send(
+                    JSON.stringify({
+                      type: 'chunk',
+                      uuid: msg.uuid,
+                      chunk
+                    })
+                  )
+                } catch (err) {
+                  console.error('error in stream send', err)
+                }
+              }
             }
           }
 
@@ -400,17 +409,29 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
 
               // send all PTY data out to the websocket client
               shell.on('data', (data: string) => {
-                ws.send(JSON.stringify({ type: 'data', data, uuid: msg.uuid }))
+                try {
+                  ws.send(JSON.stringify({ type: 'data', data, uuid: msg.uuid }))
+                } catch (err) {
+                  console.error('error in data send', err)
+                }
               })
 
               shell.on('exit', (exitCode: number) => {
                 shell = undefined
                 if (msg.uuid) delete shells[msg.uuid]
-                ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
+                try {
+                  ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
+                } catch (err) {
+                  console.error('error in exit send', err)
+                }
                 // exitNow(exitCode)
               })
 
-              ws.send(JSON.stringify({ type: 'state', state: 'ready', uuid: msg.uuid }))
+              try {
+                ws.send(JSON.stringify({ type: 'state', state: 'ready', uuid: msg.uuid }))
+              } catch (err) {
+                console.error('error in ready send', err)
+              }
               resolve(shell)
             } catch (err) {
               console.error('could not exec', err)

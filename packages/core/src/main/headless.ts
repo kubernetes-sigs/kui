@@ -40,11 +40,10 @@ let exitCode = 0
 
 // electron pops up a window by default, for uncaught exceptions
 process.on('uncaughtException', async (err: Error) => {
-  debug('uncaughtException')
-  debug(err)
-  const colors = await import('colors/safe')
-  console.error(colors.red(err.toString()))
-  process.exit(1)
+  console.error('Unncaught Exception', err)
+  if (!/ERR_STREAM_DESTROYED/.test(err.message)) {
+    process.exit(1)
+  }
 })
 
 process.on('exit', code => {
