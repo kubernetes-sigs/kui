@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-2020 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,11 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
       // upstream client has sent data downstream; forward it to the subprocess
       ws.on('message', (data: string) => {
         debugW('forwarding message downstream')
-        child.stdin.write(`${data}${MARKER}`)
+        try {
+          child.stdin.write(`${data}${MARKER}`)
+        } catch (err) {
+          console.error('error in child write', err)
+        }
       })
 
       // on pong response, indicate we remain alive
@@ -93,12 +97,19 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
 
     child.on('exit', (code: number) => {
       debugW('child exit', code)
+      if (typeof code === 'number' && code !== 0) {
+        console.error('child exited with non-zero exit code', code)
+      }
       this.emit('exit', code)
     })
 
     child.stderr.on('data', (data: Buffer) => {
       if (data.length > 0) {
-        debugE(data.toString())
+        if (debugE.enabled) {
+          debugE(data.toString())
+        } else {
+          console.error(data.toString())
+        }
       }
     })
 
@@ -140,7 +151,11 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
         .filter(_ => _)
         .forEach(_ => {
           debugW('forwarding child output upstream')
-          this.ws.send(`${_}${MARKER}`)
+          try {
+            this.ws.send(`${_}${MARKER}`)
+          } catch (err) {
+            console.error('error in stdio send', err)
+          }
         })
     }
   }
@@ -206,7 +221,11 @@ export class StdioChannelKuiSide extends EventEmitter implements Channel {
   public send(msg: string) {
     if (this.readyState === ReadyState.OPEN) {
       // debugK('send', msg)
-      process.stdout.write(`${msg}${MARKER}`)
+      try {
+        process.stdout.write(`${msg}${MARKER}`)
+      } catch (err) {
+        console.error('error in process write', err)
+      }
     }
   }
 
