@@ -94,8 +94,18 @@ export async function openStream<T extends object>(
     })
 
     stream.on('error', err => {
-      debug('stream suddenly died', err)
-      throw new Error(err)
+      //
+      // It's highly likely to be ok if the stream went away. This is
+      // usually a sign that we are in the Kui proxy, and the Kui browser
+      // client simply went away.
+      //
+      // !!DANGER!!: do not throw an exception here, as it will currently
+      //             percolate all the way up and result in a Kui proxy
+      //             failure due to an uncaughtException.
+      //
+      if (err.code !== 'ERR_STREAM_DESTROYED') {
+        console.error('stream suddenly died', err)
+      }
     })
 
     JSONStream(stream, await onData, mgmt.onExit)
