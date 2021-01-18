@@ -20,7 +20,7 @@ import { Arguments, is404 } from '@kui-shell/core'
 import { fetchFile } from '../../../lib/util/fetch-file'
 import { Explained, getKindAndVersion } from '../../kubectl/explain'
 
-import { KubeOptions, fileOf, getLabel, getNamespace } from '../../kubectl/options'
+import { KubeOptions, getFileFromArgv, getLabel, getNamespace } from '../../kubectl/options'
 
 import status from './status'
 import handleErrors from './errors'
@@ -33,7 +33,12 @@ const debug = Debug('plugin-kubectl/controller/client/direct/delete')
 
 export default async function deleteDirect(args: Arguments<KubeOptions>, _kind?: Promise<Explained>) {
   // For now, we only handle delete-by-name
-  if (!fileOf(args) && !getLabel(args) && !args.parsedOptions['dry-run'] && !args.parsedOptions['field-selector']) {
+  if (
+    !getFileFromArgv(args) &&
+    !getLabel(args) &&
+    !args.parsedOptions['dry-run'] &&
+    !args.parsedOptions['field-selector']
+  ) {
     const explainedKind = await (_kind ||
       getKindAndVersion(getCommandFromArgs(args), args, args.argvNoOptions[args.argvNoOptions.indexOf('delete') + 1]))
     const { kind } = explainedKind

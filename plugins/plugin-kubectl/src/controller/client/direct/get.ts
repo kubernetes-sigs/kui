@@ -26,9 +26,8 @@ import { toKuiTable, withNotFound } from '../../../lib/view/formatTable'
 import { doStatus } from '../../kubectl/status'
 import {
   KubeOptions,
-  fileOf,
   formatOf,
-  kustomizeOf,
+  getFileFromArgv,
   getNamespace,
   isEntityFormat,
   isTableRequest,
@@ -130,7 +129,7 @@ export async function get(
   format: string,
   args: Arguments<KubeOptions>
 ) {
-  const isFileRequest = fileOf(args) || kustomizeOf(args)
+  const isFileRequest = getFileFromArgv(args)
   const isEntityAndNameFormat = isEntityFormat(format) || format === 'name'
 
   /** 1. file request with table output, e.g. `kubectl get -f` and `kubectl get -k` */

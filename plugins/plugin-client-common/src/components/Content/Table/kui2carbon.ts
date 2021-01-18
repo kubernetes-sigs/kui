@@ -80,7 +80,7 @@ export function kuiRow2carbonRow(headers: DataTableHeader[], justUpdated = false
 
     if (!row.attributes) row.attributes = []
     row.attributes.forEach((attr, cidx) => {
-      const kkey = attr.key || headers[cidx + 1] ? headers[cidx + 1].key : undefined
+      const kkey = headers[cidx + 1] ? headers[cidx + 1].key : attr.key
       if (!attr.key && kkey) {
         attr.key = kkey
       }

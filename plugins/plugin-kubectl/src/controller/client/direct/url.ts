@@ -45,6 +45,11 @@ export function urlFormatterFor(
   // e.g. "apis/apps/v1" for deployments
   const apiOnPath = apiOnPathFor(version)
 
+  if (!namespace) {
+    console.error('Internal oddity with namespace, falling back on "default", and was given:', namespace)
+    namespace = 'default'
+  }
+
   // a bit complex: "kubectl get ns", versus "kubectl get ns foo"
   // the "which" is "foo" in the second case
   const namespaceOnPath = isForAllNamespaces(parsedOptions)
