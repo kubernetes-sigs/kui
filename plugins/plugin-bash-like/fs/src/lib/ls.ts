@@ -231,6 +231,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
     noSort: true,
     defaultPresentation,
     allowedPresentations,
+    drilldownTo: 'this-split',
     style: wide ? undefined : TableStyle.Light
   }
 }
