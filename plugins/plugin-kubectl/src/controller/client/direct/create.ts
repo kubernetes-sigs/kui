@@ -20,7 +20,7 @@ import { Arguments, Table, isTable, is404or409 } from '@kui-shell/core'
 import { fetchFile } from '../../../lib/util/fetch-file'
 import { Explained, getKindAndVersion } from '../../kubectl/explain'
 
-import { KubeOptions, fileOf, getLabel, getNamespace } from '../../kubectl/options'
+import { KubeOptions, getFileFromArgv, getLabel, getNamespace } from '../../kubectl/options'
 
 import status from './status'
 import handleErrors from './errors'
@@ -48,7 +48,12 @@ export default async function createDirect(
   _kind?: Promise<Explained>
 ) {
   // For now, we only handle create-by-name
-  if (!fileOf(args) && !getLabel(args) && !args.parsedOptions['dry-run'] && !args.parsedOptions['field-selector']) {
+  if (
+    !getFileFromArgv(args) &&
+    !getLabel(args) &&
+    !args.parsedOptions['dry-run'] &&
+    !args.parsedOptions['field-selector']
+  ) {
     const explainedKind = await (_kind ||
       getKindAndVersion(getCommandFromArgs(args), args, args.argvNoOptions[args.argvNoOptions.indexOf(verb) + 1]))
     const { kind, version } = explainedKind

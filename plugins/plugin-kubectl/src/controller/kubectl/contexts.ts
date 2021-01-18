@@ -66,7 +66,7 @@ export async function getAllContexts({ REPL }: { REPL: REPLType }): Promise<Kube
   return (await REPL.rexec<KubeContext[]>('contexts')).content
 }
 
-export async function getCurrentContextName({ REPL }: { REPL: REPLType }) {
+export async function getCurrentContextName({ REPL }: { REPL: REPLType }): Promise<string> {
   const context = await REPL.qexec<string>('kubectl config current-context')
   return context ? context.trim() : context
 }
@@ -75,7 +75,7 @@ export async function getCurrentContextName({ REPL }: { REPL: REPLType }) {
 let currentDefaultNamespaceCache: string
 onKubectlConfigChangeEvents((type, namespace) => {
   if (type === 'SetNamespaceOrContext') {
-    if (typeof namespace === 'string') {
+    if (typeof namespace === 'string' && namespace.length > 0) {
       currentDefaultNamespaceCache = namespace
     } else {
       // invalidate cache
@@ -83,12 +83,22 @@ onKubectlConfigChangeEvents((type, namespace) => {
     }
   }
 })
-export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }) {
+export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }): Promise<string> {
   if (currentDefaultNamespaceCache) {
     return currentDefaultNamespaceCache
   }
 
-  const ns = await REPL.qexec<string>(`kubectl config view --minify --output "jsonpath={..namespace}"`)
+  const cmdline = `kubectl config view --minify --output "jsonpath={..namespace}"`
+  const ns = await REPL.qexec<string>(cmdline)
+    .then(ns => {
+      if (typeof ns !== 'string' || ns.length === 0) {
+        // e.g. microk8s
+        console.error('Suspicious return value for current namespace', ns, cmdline)
+        return 'default'
+      } else {
+        return ns
+      }
+    })
     .then(ns => {
       currentDefaultNamespaceCache = ns
       return ns
@@ -100,12 +110,7 @@ export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }) {
       return 'default'
     })
 
-  if (typeof ns !== 'string') {
-    // e.g. microk8s
-    return 'default'
-  } else {
-    return ns ? ns.trim() : ns
-  }
+  return ns ? ns.trim() : ns
 }
 
 /**
