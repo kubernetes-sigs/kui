@@ -75,13 +75,13 @@ export default function renderMain(props: KuiProps) {
     >
       <ContextWidgets>
         <CurrentWorkingDirectory />
-        <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
         <CurrentNamespace />
+        <CurrentGitBranch className="kui--hide-in-narrower-windows" />
       </ContextWidgets>
 
       <MeterWidgets>
-        <ProxyOfflineIndicator />
+        {inBrowser() && <ProxyOfflineIndicator />}
         <Screenshot />
       </MeterWidgets>
     </Kui>
