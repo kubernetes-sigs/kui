@@ -35,6 +35,11 @@ commands.forEach(command => {
     before(Common.before(this))
     after(Common.after(this))
 
+    it(`should present an error for just "${command} kustomize"`, () =>
+      CLI.command(`${command} kustomize`, this.app)
+        .then(ReplExpect.error(500, 'unable to find one of'))
+        .catch(Common.oops(this, true)))
+
     const kustomize = doHelp.bind(this)
     kustomize(
       `${command} kustomize "${BASE}"`,

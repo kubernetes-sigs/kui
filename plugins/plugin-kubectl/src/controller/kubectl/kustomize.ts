@@ -35,7 +35,11 @@ const strings = i18n('plugin-kubectl', 'kustomize')
 function prepare(args: Arguments<KubeOptions>): string {
   const idx = args.argvNoOptions.indexOf('kustomize')
   const filepath = args.argvNoOptions[idx + 1]
-  return args.command.replace(new RegExp(filepath, 'g'), expandHomeDir(filepath))
+  if (!filepath) {
+    return args.command
+  } else {
+    return args.command.replace(new RegExp(filepath, 'g'), expandHomeDir(filepath))
+  }
 }
 
 function groupByKind(resources: KubeResource[], rawFull: string): Menu[] {

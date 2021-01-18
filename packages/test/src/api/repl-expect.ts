@@ -171,22 +171,29 @@ export const ok = async (res: AppAndCount) =>
     .then(elts => assert.strictEqual(elts.length, 0))
     .then(() => res)
 
-export const error = (statusCode: number | string, expect?: string) => async (res: AppAndCount) =>
-  expectOK(res, {
-    selfSelector: `.oops[data-status-code="${statusCode || 0}"]`,
-    expectError: true,
-    expect: expect
-  }).then(() => res.app)
-
-export const errorWithPassthrough = (statusCode: number | string, expect?: string) => async (
-  res: AppAndCount
-): Promise<number> =>
-  expectOK(res, {
-    selector: `.oops[data-status-code="${statusCode || 0}"]`,
-    expectError: true,
-    expect: expect,
-    passthrough: true
+export const error = (statusCode: number | string, expect?: string) => async (res: AppAndCount) => {
+  await expectOK(res, {
+    expectError: true
   })
+
+  if (expect) {
+    const selfSelector = `.oops[data-status-code="${statusCode || 0}"]`
+    const selector = `${Selectors.OUTPUT_N(res.count, res.splitIndex || 1)}${selfSelector || ''}`
+    let idx = 0
+    await res.app.client.waitUntil(
+      async () => {
+        const actualText = await res.app.client.$(selector).then(_ => _.getText())
+        if (++idx > 5) {
+          console.error(`still waiting for actualText=${actualText} expectedText=${expect}`)
+        }
+        return actualText.indexOf(expect) >= 0
+      },
+      { timeout: waitTimeout }
+    )
+  }
+
+  return res.app
+}
 
 export const blankWithOpts = (opts = {}) => async (res: AppAndCount) =>
   expectOK(res, Object.assign({ selector: '', expectError: true }, opts))
