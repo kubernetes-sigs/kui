@@ -147,6 +147,13 @@ export class Table<RowType extends Row = Row> {
   /** This field helps with watching/paginating */
   resourceVersion?: number | string
 
+  /**
+   * Should drilldowns go to a side split, or to this split? Default:
+   * `side-split`, unless the user chords the click with the Meta key
+   * (which is Command on macOS, and Option on Linux/Windows
+   */
+  drilldownTo?: 'side-split' | 'this-split'
+
   /** Default presentation? */
   defaultPresentation?: PresentationStyle
 

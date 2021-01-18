@@ -102,7 +102,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
           <div key={_.name} data-name={_.name} className={_.css}>
             <span
               className={_.onclick && 'clickable'}
-              onClick={onClickForCell(_, this.props.tab, this.props.repl, _.onclick)}
+              onClick={onClickForCell(_, this.props.tab, this.props.repl, _.onclick, this.props.response)}
             >
               {_.name}
             </span>
@@ -144,7 +144,8 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
               kuiRow,
               tab,
               repl,
-              kuiRow.attributes.find(_ => _.onclick)
+              kuiRow.attributes.find(_ => _.onclick),
+              this.props.response
             )
           }
 

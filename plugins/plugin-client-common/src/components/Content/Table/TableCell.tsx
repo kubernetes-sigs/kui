@@ -47,8 +47,10 @@ export function onClickForCell(
   tab: Tab,
   repl: REPL,
   cell?: KuiCell,
-  selectRow: () => void = () => undefined
+  opts?: Pick<KuiTable, 'drilldownTo'> & { selectRow?: () => void }
 ): CellOnClickHandler {
+  const { drilldownTo = 'side-split', selectRow = () => undefined } = opts || {}
+
   const handler = cell && cell.onclick ? cell.onclick : row.onclick
   if (handler === false) {
     return () => handler
@@ -71,7 +73,7 @@ export function onClickForCell(
       return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
-        if (!XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
+        if (drilldownTo === 'side-split' && !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
           pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
         } else {
           repl.pexec(handler, opts)
@@ -126,7 +128,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
       <TableCell
         key={cell.id}
         className={cellClassName}
-        onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1])}
+        onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1], table)}
       >
         <span
           data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
