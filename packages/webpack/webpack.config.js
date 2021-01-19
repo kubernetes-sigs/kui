@@ -490,8 +490,6 @@ module.exports = {
       { test: /translation-demo\/composition.js$/, use: 'ignore-loader' },
       { test: /@seed/, use: 'ignore-loader' },
       { test: /\.DOCS/, use: 'ignore-loader' },
-      { test: /\/docs\//, use: 'ignore-loader' },
-      { test: /\/examples\//, use: 'ignore-loader' },
       { test: /plugins\/*\/node_modules/, use: 'ignore-loader' },
       { test: /packages\/*\/node_modules/, use: 'ignore-loader' },
       // { test: /modules\/composer\/@demos\/.*\.js/, use: 'raw-loader' },
