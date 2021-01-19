@@ -134,7 +134,7 @@ export async function get(
 
   /** 1. file request with table output, e.g. `kubectl get -f` and `kubectl get -k` */
   if (isFileRequest && !isEntityAndNameFormat) {
-    return doStatus(args, 'get', drilldownCommand, undefined, undefined, undefined, false)
+    return doStatus(args, 'get', drilldownCommand, undefined, undefined, undefined, isWatchRequest(args))
   }
 
   /** 2. table request, e.g. `kubectl get pods` and `kubectl get pod nginx` */

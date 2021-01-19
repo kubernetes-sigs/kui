@@ -93,7 +93,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   private offline(rowKey: string) {
     const existingRows = this.state.rows
 
-    const foundIndex = existingRows.findIndex(_ => _.NAME === rowKey)
+    const foundIndex = existingRows.findIndex(_ => (_.rowKey ? _.rowKey === rowKey : _.NAME === rowKey))
     if (foundIndex === -1) {
       console.error('table row went offline, but not found in view model', rowKey, existingRows)
     } else {
@@ -142,11 +142,11 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     const existingRows = this._deferredUpdate || this.state.rows
     const nRowsBefore = existingRows.length
 
-    const foundIndex = existingRows.findIndex(
-      _ => (_.rowKey && _.rowKey === newKuiRow.rowKey) || _.NAME === newKuiRow.name
-      // the _.rowKey existence check here is important
-      // because we didn't ask rowKey to be a required field
-      // if both of the rowKey are undefined, we will get a wrong foundIndex
+    // the _.rowKey existence check here is important
+    // because we didn't ask rowKey to be a required field
+    // if both of the rowKey are undefined, we will get a wrong foundIndex
+    const foundIndex = existingRows.findIndex(_ =>
+      _.rowKey && newKuiRow.rowKey ? _.rowKey === newKuiRow.rowKey : _.NAME === newKuiRow.name
     )
 
     const insertionIndex = foundIndex === -1 ? nRowsBefore : foundIndex

@@ -96,6 +96,7 @@ export function sameResourceVersion(a: MultiModalResponse<KubeResource>, b: Mult
 export type KubeMetadata = Partial<WithOwnerReferences> &
   Partial<WithResourceVersion> & {
     name: string
+    uid?: string
     namespace?: string
     labels?: { [key: string]: string }
     annotations?: object

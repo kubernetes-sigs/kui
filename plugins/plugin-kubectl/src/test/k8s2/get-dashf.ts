@@ -60,6 +60,23 @@ commands.forEach(command => {
         .catch(Common.oops(this))
     })
 
+    it(`should watch sample pod from local file and delete it via ${command}`, () => {
+      return CLI.command(`${command} get -f ${file} ${inNamespace} -w`, this.app)
+        .then(async res => {
+          const watchSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
+          await waitForGreen(this.app, watchSelector)
+
+          await CLI.command(`${command} delete -f ${file} ${inNamespace}`, this.app)
+            .then(
+              ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+            )
+            .then(selector => waitForRed(this.app, selector))
+
+          await waitForRed(this.app, watchSelector)
+        })
+        .catch(Common.oops(this))
+    })
+
     const dir = `${ROOT}/data/k8s/application/guestbook`
     it('should get an offline table when getting offline directory', () => {
       return CLI.command(`${command} get --filename ${dir} ${inNamespace}`, this.app)
@@ -70,7 +87,7 @@ commands.forEach(command => {
         .catch(Common.oops(this, true))
     })
 
-    it(`should create sample application from local file via ${command}`, () => {
+    it(`should create sample application from local directory via ${command}`, () => {
       return CLI.command(`${command} apply -f ${dir} ${inNamespace}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('frontend') })
@@ -79,13 +96,52 @@ commands.forEach(command => {
         .catch(Common.oops(this))
     })
 
-    it(`should get sample application from local file via ${command}`, () => {
+    it(`should get sample application from local directory via ${command}`, () => {
       return CLI.command(`${command} get -f ${dir} ${inNamespace}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('frontend') })
         )
         .then(selector => waitForGreen(this.app, selector))
         .catch(Common.oops(this))
+    })
+
+    const duplicatedName = 'redis-master'
+    let watchSelector: string
+
+    it(`should watch sample application from local directory and delete it via ${command}`, () => {
+      return CLI.command(`${command} get -f ${dir} ${inNamespace} -w`, this.app)
+        .then(async res => {
+          watchSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('redis-master') })(res)
+          return watchSelector
+        })
+        .then(selector => waitForGreen(this.app, selector))
+        .catch(Common.oops(this))
+    })
+
+    it(`should should delete ${duplicatedName} service via ${command}`, () => {
+      return CLI.command(`${command} delete service ${duplicatedName} ${inNamespace}`, this.app)
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) })
+        )
+        .then(selector => waitForRed(this.app, selector))
+        .catch(Common.oops(this))
+    })
+
+    it(`should watch ${duplicatedName} deployment still green`, () => {
+      return waitForGreen(this.app, watchSelector).catch(Common.oops(this))
+    })
+
+    it(`should should delete ${duplicatedName} deployment via ${command}`, () => {
+      return CLI.command(`${command} delete deployment ${duplicatedName} ${inNamespace}`, this.app)
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) })
+        )
+        .then(selector => waitForRed(this.app, selector))
+        .catch(Common.oops(this))
+    })
+
+    it(`should watch ${duplicatedName} deployment to be red`, () => {
+      return waitForRed(this.app, watchSelector).catch(Common.oops(this))
     })
 
     deleteNS(this, ns)

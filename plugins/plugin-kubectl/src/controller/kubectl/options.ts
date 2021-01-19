@@ -115,7 +115,7 @@ export function isTableRequest(args: Pick<Arguments<KubeOptions>, 'parsedOptions
 }
 
 export function isWatchRequest(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>) {
-  return args.parsedOptions.w || args.parsedOptions.watch || args.parsedOptions['watch-only']
+  return !!(args.parsedOptions.w || args.parsedOptions.watch || args.parsedOptions['watch-only'])
 }
 
 export function watchRequestFrom(args: Arguments<KubeOptions>, forceWatch = false) {

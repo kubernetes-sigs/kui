@@ -680,29 +680,15 @@ export async function toKuiTable(
 
   const nameColumnIdx = /Name/i.test(header.name) ? 0 : header.attributes.findIndex(_ => /Name/i.test(_.key)) + 1
 
-  const body = table.rows.map((row, idx) => {
+  const body = table.rows.map(row => {
     const cells = row.cells.filter((cell, idx) => includedColumns[idx])
     const name = cells[nameColumnIdx].toString()
-
-    /**
-     * rowKey is the unique string that distinguishes each row
-     * option 1. name
-     * option 2. `first column`-`name`, e.g. --all-namespaces
-     * option 3. `first column`-`idx` when there's no name column, e.g. k get events
-     *
-     */
-    const rowKey = name
-      ? forAllNamespaces
-        ? `${forAllNamespaces ? row.object.metadata.namespace : cells[0]}-${name}`
-        : name
-      : `${cells[0]}-${idx}`
-
     const onclick = onclickFor(row, name)
 
     return {
       object: row.object,
       key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name,
-      rowKey,
+      rowKey: `${name}_${drilldownKind}_${row.object.metadata.namespace}`,
       name: forAllNamespaces ? row.object.metadata.namespace : name,
       onclick: forAllNamespaces ? false : onclick,
       attributes: cells.slice(forAllNamespaces ? 0 : 1).map((cell, idx) => {
