@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0-beta.3](https://github.com/IBM/kui/compare/v10.0.0-beta.2...v10.0.0-beta.3) (2021-01-19)
+
+**Note:** Version bump only for package @kui-shell/plugin-core-support
+
 # [10.0.0-beta.2](https://github.com/IBM/kui/compare/v4.5.0...v10.0.0-beta.2) (2021-01-19)
 
 ### Bug Fixes
