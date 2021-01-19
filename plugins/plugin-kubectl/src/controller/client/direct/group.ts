@@ -22,15 +22,11 @@ export interface Group {
   explainedKind: Explained
 }
 
-export function isObjectInGroups(groups: Group[], kind: string, name: string) {
-  return (
-    groups.length === 0 ||
-    groups.findIndex(({ explainedKind, names }) => {
-      const isKindMatch = explainedKind.kind.toLowerCase() === kind.toLowerCase()
-      const noNamesInGroup = names.length === 0
-      const isNameMatch = names.includes(name)
+export function isObjectInGroup(group: Group, kind: string, name: string) {
+  const { explainedKind, names } = group
+  const isKindMatch = explainedKind.kind.toLowerCase() === kind.toLowerCase()
+  const noNamesInGroup = names.length === 0
+  const isNameMatch = names.includes(name)
 
-      return isKindMatch && (isNameMatch || noNamesInGroup)
-    }) !== -1
-  )
+  return isKindMatch && (isNameMatch || noNamesInGroup)
 }
