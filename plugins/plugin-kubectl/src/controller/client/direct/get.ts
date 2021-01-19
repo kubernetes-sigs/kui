@@ -16,7 +16,6 @@
 
 import { Arguments, CodedError, ExecType, Table } from '@kui-shell/core'
 
-import { Group } from './group'
 import makeWatchable from './watch'
 import { Explained } from '../../kubectl/explain'
 import { fetchFile } from '../../../lib/util/fetch-file'
@@ -93,15 +92,8 @@ export async function getTable(
           errors.map(_ => _.message).join('\n')
         )
 
-        const groups = metaTable.rows.reduce(
-          (groups, row) => {
-            groups[0].names.push(row.object.metadata.name)
-            return groups
-          },
-          [{ explainedKind, names: [], namespace }] as Group[]
-        )
-
-        return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, groups, table, formatUrl)
+        const group = { explainedKind, names, namespace }
+        return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, group, table, formatUrl)
       } catch (err) {
         console.error('error formatting table', err)
         throw new Error('Internal Error')

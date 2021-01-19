@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { Abortable, Arguments, FlowControllable, Row, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
-import { Group, isObjectInGroups } from './group'
+import { Group, isObjectInGroup } from './group'
 import URLFormatter from './url'
 import { headersForTableRequest } from './headers'
 
@@ -103,7 +103,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     private readonly kind: string | Promise<string>,
     private readonly resourceVersion: Table['resourceVersion'],
     private readonly formatUrl: URLFormatter,
-    private readonly groups: Group[],
+    private readonly group: Group,
     private readonly finalState?: FinalState,
     initialRowKeys?: { rowKey: string; isReady: boolean }[],
     private nNotReady?: number, // number of resources to wait on
@@ -151,7 +151,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
       if (typeof kindAndName === 'string') {
         const kind = kindAndName.split('/')[0]
         const name = kindAndName.split('/')[1]
-        return isObjectInGroups(this.groups, kind, name)
+        return isObjectInGroup(this.group, kind, name)
       }
     })
 
@@ -293,9 +293,11 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     setTimeout(async () => {
       const kind = this.kind
       if (typeof kind === 'string') {
+        console.error('hi', update)
         update.object.rows = update.object.rows.filter(row =>
-          isObjectInGroups(this.groups, kind, row.object.metadata.name)
+          isObjectInGroup(this.group, kind, row.object.metadata.name)
         )
+        console.error('ha?', update.object.rows)
       }
 
       const table = await toKuiTable(update.object, this.kind, this.args, this.drilldownCommand, this.needsStatusColumn)
@@ -378,7 +380,7 @@ export default async function makeWatchable(
   drilldownCommand: string,
   args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
   kind: string | Promise<string>,
-  groups: Group[],
+  group: Group,
   table: Table,
   formatUrl: URLFormatter,
   finalState?: FinalState,
@@ -400,7 +402,7 @@ export default async function makeWatchable(
       kind,
       table.resourceVersion,
       formatUrl,
-      groups,
+      group,
       finalState,
       initialRowKeys,
       nNotReady,
