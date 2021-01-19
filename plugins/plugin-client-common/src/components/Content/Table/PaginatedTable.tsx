@@ -314,6 +314,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           sortRow={sortRow}
           render={renderOpts => (
             <TableContainer
+              data-is-empty={response.body.length === 0}
               className={
                 'kui--data-table-container' +
                 (this.props.title ? ' kui--data-table-container-with-toolbars' : '') +

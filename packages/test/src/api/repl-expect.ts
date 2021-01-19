@@ -307,6 +307,28 @@ export const okWithDropDownList = (openAndExpectLabel: string, click = false) =>
     })
 }
 
+const currentEventCount = async (app: Application, outputCount: number): Promise<number> => {
+  const events = await app.client.$$(Selectors.TABLE_FOOTER(outputCount))
+  const res = !events ? 0 : events.length
+  return res
+}
+
+export const okWithEvents = async (ctx: ISuite, res: AppAndCount) => {
+  let idx = 0
+  await ctx.app.client.waitUntil(
+    async () => {
+      const actualEventCount = await currentEventCount(ctx.app, res.count)
+      if (++idx > 5) {
+        console.error('still waiting for events')
+      }
+      console.log('actualEventCount', actualEventCount)
+      return actualEventCount > 0
+    },
+    { timeout: waitTimeout }
+  )
+  return res
+}
+
 /** as long as its ok, accept anything */
 export const okWithAny = async (res: AppAndCount) => expectOK(res)
 

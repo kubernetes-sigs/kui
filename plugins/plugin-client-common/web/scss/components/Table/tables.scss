@@ -242,7 +242,7 @@ body[kui-theme-style] .kui--data-table-wrapper {
 
 /** inner scrolling for tall tables, when not in a minisplit */
 .kui--scrollback:not([data-is-minisplit]):not([data-is-width-constrained]) {
-  .kui--data-table-container {
+  .kui--data-table-container:not([data-is-empty]) {
     min-width: $min-body-width;
     /* max-height: $max-body-height; see https://github.com/IBM/kui/issues/5221 */
     min-height: $min-body-height;
