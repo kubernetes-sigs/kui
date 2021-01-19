@@ -293,11 +293,9 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     setTimeout(async () => {
       const kind = this.kind
       if (typeof kind === 'string') {
-        console.error('hi', update)
         update.object.rows = update.object.rows.filter(row =>
           isObjectInGroup(this.group, kind, row.object.metadata.name)
         )
-        console.error('ha?', update.object.rows)
       }
 
       const table = await toKuiTable(update.object, this.kind, this.args, this.drilldownCommand, this.needsStatusColumn)
