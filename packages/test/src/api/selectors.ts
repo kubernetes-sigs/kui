@@ -57,7 +57,7 @@ export const SIDECAR_PACKAGE_NAME_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-namespace .bx--link`
 export const SIDECAR_POPUP_TITLE = SIDECAR_TITLE
 export const SIDECAR_POPUP_HERO_TITLE = SIDECAR_HERO_TITLE
-export const SIDECAR_KIND = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .kui--sidecar-kind .bx--link`
+export const SIDECAR_KIND = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .kui--sidecar-kind`
 export const SIDECAR_CONTENT = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .sidecar-content`
 export const SIDECAR_WEB_ACTION_URL = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .sidecar-header .entity-web-export-url.has-url`

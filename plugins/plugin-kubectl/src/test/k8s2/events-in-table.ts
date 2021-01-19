@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-import { Application } from 'spectron'
-
 import { Common, CLI, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
-import { createNS, allocateNS, deleteNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { createNS, allocateNS, deleteNS, waitForGreen } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { readFileSync } from 'fs'
 import { dirname, join } from 'path'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
-const inputBuffer = readFileSync(join(ROOT, 'data/k8s/crashy.yaml'))
+const inputBuffer = readFileSync(join(ROOT, 'data/k8s/headless/pod.yaml'))
 const inputEncoded = inputBuffer.toString('base64')
-const name = 'kui-crashy'
+const name = 'nginx'
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
   commands.push('oc')
-}
-
-const currentEventCount = async (app: Application, outputCount: number): Promise<number> => {
-  const events = await app.client.$$(Selectors.TABLE_FOOTER(outputCount))
-  const res = !events ? 0 : events.length
-  return res
 }
 
 commands.forEach(command => {
@@ -46,7 +37,19 @@ commands.forEach(command => {
 
     const ns: string = createNS()
     const inNamespace = `-n ${ns}`
+    let watchEventsRes: ReplExpect.AppAndCount
+
     allocateNS(this, ns)
+
+    it(`should watch for events and expect empty via ${command}`, () => {
+      return CLI.command(`${command} get events -w ${inNamespace}`, this.app)
+        .then(ReplExpect.ok)
+        .then(res => {
+          watchEventsRes = res
+          return res
+        })
+        .catch(Common.oops(this, true))
+    })
 
     it(`should create ${name} pod expect string`, () => {
       return CLI.command(`echo ${inputEncoded} | base64 --decode | kubectl create -f - ${inNamespace}`, this.app)
@@ -54,121 +57,60 @@ commands.forEach(command => {
         .catch(Common.oops(this, true))
     })
 
-    it('should open a table watcher and expect at least one event, since we just created the resource', async () => {
+    it(`should open a events watcher and expect at least one event, since we just created the resource`, async () => {
       try {
-        const res = await CLI.command(`${command} get pods --watch ${inNamespace}`, this.app)
-        console.log('wait for pod to come up')
-        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(res).then(selector =>
-          waitForGreen(this.app, selector)
-        )
-
-        console.log('wait for events 1')
-        let idx = 0
-        await this.app.client.waitUntil(
-          async () => {
-            const actualEventCount = await currentEventCount(this.app, res.count)
-            if (++idx > 5) {
-              console.error('still waiting for events 1')
-            }
-            console.log('actualEventCount1', actualEventCount)
-            return actualEventCount > 0
-          },
-          { timeout: CLI.waitTimeout }
-        )
-
-        console.log('click on event to drill down')
-        await this.app.client.$(Selectors.TABLE_FOOTER_MESSAGE_LINK(res.count, 1)).then(_ => _.click())
-        await SidecarExpect.openInBlockAfter(res).then(SidecarExpect.kind('Event'))
+        await ReplExpect.okWithEvents(this, watchEventsRes)
       } catch (err) {
         return Common.oops(this, true)(err)
       }
     })
 
-    it(`should watch with resource name and expect events`, async () => {
+    let watchPodRes1: ReplExpect.AppAndCount
+    it(`should open a pods watcher via ${command}`, async () => {
       try {
-        const res = await CLI.command(`${command} get pods ${name} --watch ${inNamespace}`, this.app)
-        console.log('wait for pod to come up')
-        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(res).then(selector =>
+        watchPodRes1 = await CLI.command(`${command} get pods --watch ${inNamespace}`, this.app)
+        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(watchPodRes1).then(selector =>
           waitForGreen(this.app, selector)
-        )
-
-        console.log('wait for events 2')
-        let idx = 0
-        await this.app.client.waitUntil(
-          async () => {
-            const actualEventCount = await currentEventCount(this.app, res.count)
-            if (++idx > 5) {
-              console.error('still waiting for events 2')
-            }
-            console.log('actualEventCount2', actualEventCount)
-            return actualEventCount > 0
-          },
-          { timeout: CLI.waitTimeout }
         )
       } catch (err) {
         return Common.oops(this, true)(err)
       }
     })
 
-    deleteNS(this, ns)
-  })
-
-  // DISABLED: see https://github.com/IBM/kui/issues/5152#issuecomment-692654143
-  xdescribe(`${command} create pod watch events ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
-    before(Common.before(this))
-    after(Common.after(this))
-
-    const ns: string = createNS()
-    const inNamespace = `-n ${ns}`
-    allocateNS(this, ns)
-
-    it(`should create sample pod from URL via ${command} and expect at least one event, since we just created the resource`, async () => {
+    it(`should expect at least one event in pod watcher, since we just created the resource`, async () => {
       try {
-        const createRes = await CLI.command(
-          `${command} apply -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-          this.app
-        )
+        await ReplExpect.okWithEvents(this, watchPodRes1)
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
 
-        console.log('wait for creating the pod')
-        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(createRes).then(selector =>
+    it(`should drilldown the event footer in the pod watcher and expect sidecar open`, async () => {
+      try {
+        await this.app.client.$(Selectors.TABLE_FOOTER_MESSAGE_LINK(watchPodRes1.count, 1)).then(_ => _.click())
+        await SidecarExpect.openInBlockAfter(watchPodRes1).then(SidecarExpect.kind('Event'))
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+
+    let watchPodRes2: ReplExpect.AppAndCount
+    it(`should watch with pod name`, async () => {
+      try {
+        watchPodRes2 = await CLI.command(`${command} get pods ${name} --watch ${inNamespace}`, this.app)
+        await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(name) })(watchPodRes2).then(selector =>
           waitForGreen(this.app, selector)
         )
-
-        console.log('wait for events 3')
-        let idx = 0
-        await this.app.client.waitUntil(
-          async () => {
-            const actualEventCount = await currentEventCount(this.app, createRes.count)
-            if (++idx > 5) {
-              console.error('still waiting for some events 3')
-            }
-            console.log('actualEventCount3', actualEventCount)
-            return actualEventCount > 0
-          },
-          { timeout: CLI.waitTimeout }
-        )
-        const eventsBeforeDelete = await this.app.client
-          .$(Selectors.TABLE_FOOTER(createRes.count))
-          .then(_ => _.getText())
-
-        console.log('wait for deleting the pod')
-        const deletion = await CLI.command(`${command} delete pods nginx ${inNamespace}`, this.app)
-        const deletionSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(
-          deletion
-        )
-        await waitForRed(this.app, deletionSelector)
-
-        // the events in the first table shouldn't be affected since that crud-watcher was done
-        const eventsAfterDelete = await this.app.client
-          .$(Selectors.TABLE_FOOTER(createRes.count))
-          .then(_ => _.getText())
-        if (Array.isArray(eventsAfterDelete)) {
-          eventsAfterDelete.forEach((event, idx) => assert.ok(event === eventsBeforeDelete[idx]))
-        } else {
-          assert.ok(eventsAfterDelete === eventsBeforeDelete)
-        }
       } catch (err) {
-        await Common.oops(this, true)(err)
+        return Common.oops(this, true)(err)
+      }
+    })
+
+    it(`should expect at least one event in pod watcher 2, since we just created the resource`, async () => {
+      try {
+        await ReplExpect.okWithEvents(this, watchPodRes2)
+      } catch (err) {
+        return Common.oops(this, true)(err)
       }
     })
 
