@@ -35,8 +35,10 @@ import { getCommandFromArgs } from '../../../lib/util/util'
 
 const debug = Debug('plugin-kubectl/controller/client/direct/status')
 
-function countNotReady(table: Table, finalState: FinalState) {
-  return table.body.reduce((N, row) => (isResourceReady(row, finalState) ? N : N + 1), 0)
+function countNotReady(table: Table, finalState?: FinalState) {
+  return finalState
+    ? table.body.reduce((N, row) => (isResourceReady(row, finalState) ? N : N + 1), 0)
+    : table.body.length
 }
 
 // this is still TODO; for now, we only handle the homogeneous case
@@ -156,7 +158,7 @@ interface WithIndex<T extends string | Table> {
 export default async function watchMulti(
   args: Arguments<KubeOptions>,
   groups: Group[],
-  finalState: FinalState,
+  finalState?: FinalState,
   drilldownCommand = getCommandFromArgs(args),
   file?: string,
   isWatchRequest = true
