@@ -53,6 +53,7 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
   }
 }
 
+const setCaretPositionToStart = (input: HTMLInputElement) => setCaretPosition(input, 0)
 const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
 
 /** Update the given input to reflect the given HistoryLine */
@@ -161,22 +162,12 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
     // restore the prompt cursor position
     // debug('restoring cursor position', currentCursorPosition)
     // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
-  } else if (char === KeyCodes.HOME) {
-    // go to first command in history
-    setTimeout(async () => {
-      const historyModel = await (await import('@kui-shell/core')).History(tab)
-      const entry = historyModel.first()
-      if (entry) {
-        updateInputAndMoveCaretToEOL(this, entry)
-      }
-    })
-  } else if (char === KeyCodes.END) {
-    // go to last command in history
-    setTimeout(async () => {
-      const historyModel = await (await import('@kui-shell/core')).History(tab)
-      const entry = historyModel.last()
-      updateInputAndMoveCaretToEOL(this, entry)
-    })
+  } else if (event.key === 'Home' && event.shiftKey && process.platform === 'darwin') {
+    // go to beginning of line
+    setCaretPositionToStart(prompt)
+  } else if (event.key === 'End' && event.shiftKey && process.platform === 'darwin') {
+    // go to end of line
+    setCaretPositionToEnd(prompt)
   } else if (char === KeyCodes.DOWN || (char === KeyCodes.N && event.ctrlKey)) {
     // going DOWN past the last history item will result in '', i.e. a blank line
     setTimeout(async () => {
