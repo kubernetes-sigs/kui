@@ -48,7 +48,17 @@ export async function getTable(
   needsStatusColumn = false
 ): Promise<string | Table> {
   const { kind } = explainedKind
+  const group = { explainedKind, names, namespace }
   const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
+
+  // Special Case: `k get events -w` return an empty table with just a streaming event footer
+  if (kind === 'Event' && isWatchRequest(args)) {
+    const table = { body: [] }
+    return makeWatchable(drilldownCommand, args, kind, group, table, formatUrl, undefined, undefined, undefined, {
+      doWatch: true,
+      watchEventsOnly: true
+    })
+  }
 
   const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
@@ -92,7 +102,6 @@ export async function getTable(
           errors.map(_ => _.message).join('\n')
         )
 
-        const group = { explainedKind, names, namespace }
         return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, group, table, formatUrl)
       } catch (err) {
         console.error('error formatting table', err)

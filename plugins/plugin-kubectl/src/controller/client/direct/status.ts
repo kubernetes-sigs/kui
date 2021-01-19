@@ -92,7 +92,7 @@ class MultiKindWatcher implements Abortable, Watcher {
           this.finalState,
           this.initialRowKeys[idx],
           this.nNotReady[idx],
-          this.monitorEvents,
+          { doWatch: this.monitorEvents, watchEventsOnly: false },
           true // yes, make sure there is a status column
         )
 
@@ -224,7 +224,7 @@ export default async function watchMulti(
           finalState,
           tables[0].table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) })),
           nNotReady,
-          true, // watch events
+          undefined,
           true // yes, make sure there is a status column
         )
       }

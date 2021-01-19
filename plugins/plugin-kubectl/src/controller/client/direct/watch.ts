@@ -107,7 +107,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     private readonly finalState?: FinalState,
     initialRowKeys?: { rowKey: string; isReady: boolean }[],
     private nNotReady?: number, // number of resources to wait on
-    private readonly monitorEvents = true,
+    private readonly monitorEvents = { doWatch: true, watchEventsOnly: false },
     private readonly needsStatusColumn = false
   ) {
     super()
@@ -125,7 +125,13 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   /** This will be called by the view when it is ready to accept push updates */
   public async init(pusher: WatchPusher) {
     this.pusher = pusher
-    await Promise.all([this.initBodyUpdates(), this.monitorEvents ? this.initFooterUpdates() : Promise.resolve()])
+    const updateBody = !(this.monitorEvents && this.monitorEvents.watchEventsOnly)
+    const updateFooter = this.monitorEvents && this.monitorEvents.doWatch
+
+    await Promise.all([
+      updateBody ? this.initBodyUpdates() : Promise.resolve(),
+      updateFooter ? this.initFooterUpdates() : Promise.resolve()
+    ])
   }
 
   /** Initialize the streamer for main body updates; i.e. for the rows of the table */
@@ -136,24 +142,29 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   }
 
   private formatEventUrl(watchOpts?: { resourceVersion: Table['resourceVersion'] }) {
-    const fieldSelector = `fieldSelector=involvedObject.kind=${this.kind}`
+    const url = this.formatUrl(true, this.monitorEvents.watchEventsOnly, undefined, { version: 'v1', kind: 'Event' })
+    const fieldSelector = this.monitorEvents.watchEventsOnly ? '' : `?fieldSelector=involvedObject.kind=${this.kind}`
+    const joinQueries = this.monitorEvents.watchEventsOnly && !url.endsWith('?') ? '?' : ''
+
     return (
-      this.formatUrl(true, undefined, undefined, { version: 'v1', kind: 'Event' }) +
-      `?${fieldSelector}` +
-      (!watchOpts ? '' : `&watch=true&resourceVersion=${watchOpts.resourceVersion.toString()}`)
+      url +
+      fieldSelector +
+      (!watchOpts ? '' : `${joinQueries}&watch=true&resourceVersion=${watchOpts.resourceVersion.toString()}`)
     )
   }
 
   private lastFooterEvents: Record<string, boolean>
   private filterFooterRows(table: MetaTable, nameColumnIdx: number, objectColumnIdx: number): MetaTable['rows'] {
-    const rows = table.rows.filter(row => {
-      const kindAndName = row.cells[objectColumnIdx]
-      if (typeof kindAndName === 'string') {
-        const kind = kindAndName.split('/')[0]
-        const name = kindAndName.split('/')[1]
-        return isObjectInGroup(this.group, kind, name)
-      }
-    })
+    const rows = this.monitorEvents.watchEventsOnly
+      ? table.rows
+      : table.rows.filter(row => {
+          const kindAndName = row.cells[objectColumnIdx]
+          if (typeof kindAndName === 'string') {
+            const kind = kindAndName.split('/')[0]
+            const name = kindAndName.split('/')[1]
+            return isObjectInGroup(this.group, kind, name)
+          }
+        })
 
     const last = this.lastFooterEvents
     this.lastFooterEvents = rows.reduce((M, row) => {
@@ -384,10 +395,10 @@ export default async function makeWatchable(
   finalState?: FinalState,
   initialRowKeys?: { rowKey: string; isReady: boolean }[],
   nNotReady?: number,
-  monitorEvents = true,
+  monitorEvents = { doWatch: true, watchEventsOnly: false },
   needsStatusColumn = false
 ): Promise<Table | (Table & Watchable)> {
-  if (!table.resourceVersion) {
+  if (!table.resourceVersion && !(monitorEvents && monitorEvents.watchEventsOnly)) {
     // we need a cursor to start watching
     console.error('Cannot start watching, due to missing resourceVersion')
     return table
