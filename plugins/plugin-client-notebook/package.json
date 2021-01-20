@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-notebooks",
-  "version": "9.3.0",
+  "version": "10.0.0-beta.8",
   "description": "A Kui client that serves up notebooks",
   "main": "dist/index.js",
   "module": "mdist/index.js",
