@@ -23,7 +23,7 @@ const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.js
 const timeout = 8000
 
 /** confirm the given toggler state */
-async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean) {
+async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean, kind: string) {
   // confirm the toggler UI
   console.error('C1')
   await this.app.client.$(Selectors.SOURCE_REF_TOGGLE_N(res.count, isExpanded)).then(_ => _.waitForExist({ timeout }))
@@ -32,10 +32,7 @@ async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, is
   if (isExpanded) {
     // if it is expanded, also confirm the expanded editor state
     await this.app.client.waitUntil(
-      () =>
-        Util.getValueFromMonaco(res, Selectors.SOURCE_REF_N(res.count)).then(
-          Util.expectYAML({ kind: 'Deployment' }, true)
-        ),
+      () => Util.getValueFromMonaco(res, Selectors.SOURCE_REF_N(res.count)).then(Util.expectYAML({ kind }, true)),
       { timeout: CLI.waitTimeout }
     )
   }
@@ -70,7 +67,41 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
       let isExpanded = false // default isExpanded?
       for (let idx = 0; idx < 5; idx++) {
-        await confirm(isExpanded)
+        await confirm(isExpanded, 'Deployment')
+        isExpanded = await toggle(isExpanded)
+      }
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it('should create with directory and see source ref', async () => {
+    try {
+      const res = await CLI.command(`kubectl create -f ${ROOT}/data/k8s/bunch ${inNamespace}`, this.app)
+
+      const confirm = confirmState.bind(this, res)
+      const toggle = clickToToggle.bind(this, res)
+
+      let isExpanded = false // default isExpanded?
+      for (let idx = 0; idx < 5; idx++) {
+        await confirm(isExpanded, 'Pod')
+        isExpanded = await toggle(isExpanded)
+      }
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it('should create with kustomization and see source ref', async () => {
+    try {
+      const res = await CLI.command(`kubectl create -k ${ROOT}/data/k8s/kustomize/base ${inNamespace}`, this.app)
+
+      const confirm = confirmState.bind(this, res)
+      const toggle = clickToToggle.bind(this, res)
+
+      let isExpanded = false // default isExpanded?
+      for (let idx = 0; idx < 5; idx++) {
+        await confirm(isExpanded, 'Deployment')
         isExpanded = await toggle(isExpanded)
       }
     } catch (err) {

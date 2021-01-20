@@ -15,7 +15,6 @@
  */
 
 import Debug from 'debug'
-import { DirEntry } from '@kui-shell/plugin-bash-like/fs'
 import {
   Abortable,
   Arguments,
@@ -27,7 +26,6 @@ import {
   Watchable,
   Watcher,
   WatchPusher,
-  encodeComponent,
   flatten,
   isTable,
   i18n
@@ -50,7 +48,7 @@ import KubeOptions, {
 import { EventWatcher } from './watch/get-watch'
 import KubeResource, { isJob } from '../../lib/model/resource'
 
-import fetchFile, { fetchFileKustomize } from '../../lib/util/fetch-file'
+import { fetchKusto, fetchFilesVFS } from '../../lib/util/fetch-file'
 
 import TrafficLight from '../../lib/model/traffic-light'
 import { isDone, FinalState } from '../../lib/model/states'
@@ -73,18 +71,9 @@ async function getResourcesReferencedByFile(
   args: Arguments<Options>,
   namespaceFromCommandLine: string
 ): Promise<ResourceRef[]> {
-  const files = new Set(
-    (
-      await args.REPL.rexec<DirEntry[]>(`vfs ls ${encodeComponent(file)} ${encodeComponent(file)}/**/*.{yaml,yml}`)
-    ).content.map(_ => _.path)
-  )
+  const [{ safeLoadAll }, raw] = await Promise.all([import('js-yaml'), fetchFilesVFS(args, file, true)])
 
-  const [{ safeLoadAll }, raw] = await Promise.all([
-    import('js-yaml'),
-    fetchFile(args.REPL, files.size === 0 ? file : Array.from(files).join(','))
-  ])
-
-  const models = flatten(raw.map(_ => safeLoadAll(_) as KubeResource[]))
+  const models = flatten(raw.map(_ => safeLoadAll(_.data) as KubeResource[]))
   return models
     .filter(_ => _.metadata)
     .map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {
@@ -99,50 +88,28 @@ async function getResourcesReferencedByFile(
     })
 }
 
-/**
- * @param kusto a kustomize file spec
- *
- */
-interface Kustomization {
-  resources?: string[]
-}
 async function getResourcesReferencedByKustomize(
   kusto: string,
   args: Arguments<Options>,
   namespace: string
 ): Promise<ResourceRef[]> {
-  const [{ safeLoad }, { join }, raw] = await Promise.all([
-    import('js-yaml'),
-    import('path'),
-    fetchFileKustomize(args.REPL, kusto)
-  ])
+  const [{ templates }, { safeLoad }] = await Promise.all([fetchKusto(args, kusto), import('js-yaml')])
 
-  const kustomization = safeLoad(raw.data) as Kustomization
-  if (kustomization.resources) {
-    const files = await Promise.all(
-      kustomization.resources.map(resource => {
-        return fetchFile(args.REPL, raw.dir ? join(raw.dir, resource) : resource)
+  return await Promise.all(
+    templates
+      .map(raw => safeLoad(raw.data))
+      .map(async (resource: KubeResource) => {
+        const { apiVersion, kind, metadata } = resource
+        const { group, version } = versionOf(apiVersion)
+        return {
+          group,
+          version,
+          kind,
+          name: metadata.name,
+          namespace: metadata.namespace || namespace
+        }
       })
-    )
-
-    return await Promise.all(
-      files
-        .map(raw => safeLoad(raw[0]))
-        .map(async (resource: KubeResource) => {
-          const { apiVersion, kind, metadata } = resource
-          const { group, version } = versionOf(apiVersion)
-          return {
-            group,
-            version,
-            kind,
-            name: metadata.name,
-            namespace: metadata.namespace || namespace
-          }
-        })
-    )
-  }
-
-  return []
+  )
 }
 
 /**
@@ -157,7 +124,6 @@ async function getResourcesReferencedByCommandLine(
 ): Promise<ResourceRef[]> {
   // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
   const [kind, nameGroupVersion, nameAlt] = argvRest
-  console.error('argvRest', argvRest)
 
   const isDelete = finalState === FinalState.OfflineLike
   if (isDelete) {
