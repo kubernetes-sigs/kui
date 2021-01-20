@@ -17,6 +17,7 @@
 import Debug from 'debug'
 import { join } from 'path'
 import needle, { BodyData } from 'needle'
+import { DirEntry } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, ExecOptions, REPL, inBrowser, hasProxy, encodeComponent, i18n } from '@kui-shell/core'
 
 import JSONStream from './json'
@@ -304,3 +305,40 @@ export async function fetchRawFiles(args: Arguments<KubeOptions>, filepath: stri
 }
 
 export default fetchFileString
+
+export async function fetchFilesVFS(args: Arguments<KubeOptions>, filepath: string, fetchNestedYamls?: boolean) {
+  const path = fetchNestedYamls ? `${encodeComponent(filepath)} ${encodeComponent(filepath)}/**/*.{yaml,yml}` : filepath
+  const paths = new Set((await args.REPL.rexec<DirEntry[]>(`vfs ls ${path}`)).content.map(_ => _.path))
+  const raw = await fetchFileString(args.REPL, paths.size === 0 ? filepath : Array.from(paths).join(','))
+
+  return raw.map((data, idx) => {
+    if (data) {
+      return { filepath: paths.size === 0 ? filepath : Array.from(paths)[idx], data }
+    }
+  })
+}
+
+interface Kustomization {
+  resources?: string[]
+}
+
+export async function fetchKusto(args: Arguments<KubeOptions>, kusto: string) {
+  const [{ safeLoad }, { join }, raw] = await Promise.all([
+    import('js-yaml'),
+    import('path'),
+    fetchFileKustomize(args.REPL, kusto)
+  ])
+
+  const kustomization = safeLoad(raw.data) as Kustomization
+
+  if (kustomization.resources) {
+    const resources = kustomization.resources
+      .map(resource => encodeComponent(raw.dir ? join(raw.dir, resource) : resource))
+      .join(' ')
+    const files = await fetchFilesVFS(args, resources)
+    return {
+      customization: { filepath: kusto, data: raw.data },
+      templates: files.map(({ filepath, data }) => ({ filepath, data }))
+    }
+  }
+}
