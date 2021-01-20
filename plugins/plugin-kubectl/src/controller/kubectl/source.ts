@@ -16,8 +16,8 @@
 
 import { Arguments, WithSourceReferences } from '@kui-shell/core'
 
-import fetchFile from '../../lib/util/fetch-file'
-import { KubeOptions, fileOfWithDetail, isTableRequest } from './options'
+import { fetchKusto, fetchFilesVFS } from '../../lib/util/fetch-file'
+import { kustomizeOf, KubeOptions, fileOfWithDetail, isTableRequest } from './options'
 
 /**
  * Fetch any references to --file sources, so that the views can show
@@ -28,13 +28,32 @@ export default async function withSourceRefs(
   args: Arguments<KubeOptions>
 ): Promise<WithSourceReferences['kuiSourceRef']> {
   const { filepath, isFor } = fileOfWithDetail(args)
+  const kusto = kustomizeOf(args)
 
-  if (filepath && isTableRequest(args)) {
+  if (isTableRequest(args)) {
     try {
-      const data = (await fetchFile(args.REPL, filepath)).filter(_ => _)[0]
-      if (data) {
+      if (filepath) {
+        const files = await fetchFilesVFS(args, filepath, true)
         return {
-          templates: [{ filepath, data, isFor, kind: 'source', contentType: 'yaml' }]
+          templates: files.map(({ filepath, data }) => ({
+            filepath,
+            data,
+            isFor,
+            kind: 'source' as const,
+            contentType: 'yaml'
+          }))
+        }
+      } else if (kusto) {
+        const { customization, templates } = await fetchKusto(args, kusto)
+        return {
+          customization: { filepath: customization.filepath, data: customization.data, isFor: 'k' },
+          templates: templates.map(({ filepath, data }) => ({
+            filepath,
+            data,
+            isFor,
+            kind: 'source' as const,
+            contentType: 'yaml'
+          }))
         }
       }
     } catch (err) {

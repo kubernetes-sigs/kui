@@ -273,14 +273,19 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
     if (model && isWithCompleteEvent(model) && isTable(model.response) && hasSourceReferences(model.response)) {
       const sourceRef = model.response.kuiSourceRef
+      const names = sourceRef.templates.concat(sourceRef.customization || []).map(_ => basename(_.filepath))
+      const content = sourceRef.templates
+        .map(_ => this.sourceRefContent(_.data, _.contentType))
+        .concat(sourceRef.customization ? this.sourceRefContent(sourceRef.customization.data, 'yaml') : [])
+
       return (
         <div className="repl-input-sourceref">
           <div className="repl-context"></div>
           <Accordion
-            names={sourceRef.templates.map(_ => basename(_.filepath))}
+            names={names}
             isWidthConstrained={this.props.isWidthConstrained}
             tab={this.props.tab}
-            content={sourceRef.templates.map(_ => this.sourceRefContent(_.data, _.contentType))}
+            content={content}
           />
         </div>
       )
