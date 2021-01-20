@@ -217,7 +217,9 @@ export const waitForXtermInput = (app: Application, N: number) => {
   return app.client.$(selector).then(_ => _.waitForExist())
 }
 
-export const expectText = (app: Application, expectedText: string, exact = true) => async (selector: string) => {
+export const expectText = (app: Application, expectedText: string, exact = true, timeout = CLI.waitTimeout) => async (
+  selector: string
+) => {
   let idx = 0
   await app.client.waitUntil(
     async () => {
@@ -236,7 +238,7 @@ export const expectText = (app: Application, expectedText: string, exact = true)
         return actualText.indexOf(expectedText) >= 0
       }
     },
-    { timeout: CLI.waitTimeout }
+    { timeout }
   )
   return app
 }
@@ -323,14 +325,25 @@ export async function openSidecarByClick(
 ) {
   const app = ctx.app
 
+  // after we click, we expect two splits
+  const splitIndex = 2
+
+  // Note! if we already have 2 splits, we need to grab the count before we click! see https://github.com/IBM/kui/issues/6636
+  const currentSplitCount = (await app.client.$$(Selectors.SPLITS)).length
+  const currentLastBlockIdx = currentSplitCount === splitIndex ? (await CLI.lastBlock(app, splitIndex)).count : -1
+
   // now click on the table row
   await app.client.$(`${selector}`).then(_ => _.click())
 
   // expect 2 splits in total
-  const splitIndex = 2
   await ReplExpect.splitCount(splitIndex)(app)
 
   // expect sidecar shown in the last blck of the second split
+  await app.client.waitUntil(async () => {
+    const sidecarRes = await CLI.lastBlock(app, splitIndex)
+    return sidecarRes.count > currentLastBlockIdx
+  })
+
   const sidecarRes = await CLI.lastBlock(app, splitIndex)
   await SidecarExpect.open(sidecarRes).then(SidecarExpect.showing(name, activationId))
 

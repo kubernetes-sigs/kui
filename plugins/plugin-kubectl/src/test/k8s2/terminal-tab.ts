@@ -51,6 +51,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
     it(`should get pods via ${command} then click`, async () => {
       try {
         res = await openSidecarByList(this, `${command} get pods ${podName} -n ${ns}`, podName)
+        console.error('G', res.count, res.splitIndex)
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -116,19 +117,34 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   const exitTerminalTabAndRetry = () => {
     it('should show terminal tab and exit with error', async () => {
       try {
+        console.error('E1', res.count, res.splitIndex)
         await Util.switchToTab('terminal')(res)
 
+        console.error('E2')
         await SidecarExpect.toolbarText({
           type: 'info',
           text: `Connected to container ${containerName}`,
           exact: false
         })(res)
 
-        await new Promise(resolve => setTimeout(resolve, 5000))
-
-        this.app.client.keys(`exit 1${Keys.ENTER}`)
-
-        await SidecarExpect.toolbarText({ type: 'error', text: 'has closed', exact: false })(res)
+        for (let idx = 0; idx < 5; idx++) {
+          try {
+            console.error('E3', idx)
+            await sleep(5)
+            console.error('E4', idx)
+            await this.app.client.keys(`exit 1${Keys.ENTER}`)
+            console.error('E5', idx)
+            await SidecarExpect.toolbarText({ type: 'error', text: 'has closed', exact: false, timeout: 8000 })(res)
+            console.error('E6', idx)
+            break
+          } catch (err) {
+            if (idx === 4) {
+              throw err
+            } else {
+              console.error('Error waiting for toolbar text. Retrying')
+            }
+          }
+        }
       } catch (err) {
         return Common.oops(this, true)(err)
       }
