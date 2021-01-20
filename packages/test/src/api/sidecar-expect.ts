@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { promiseEach } from '@kui-shell/core'
 import * as assert from 'assert'
 
 import { waitTimeout } from './cli'
@@ -118,11 +117,14 @@ export const mode = (expectedMode: string) => async (res: AppAndCount) => {
   return res
 }
 
-export const toolbarText = (expect: { type: string; text: string; exact?: boolean }) => async (res: AppAndCount) => {
+export const toolbarText = (expect: { type: string; text: string; exact?: boolean; timeout?: number }) => async (
+  res: AppAndCount
+) => {
   await expectText(
     res.app,
     expect.text,
-    expect.exact || false
+    expect.exact || false,
+    expect.timeout
   )(Selectors.SIDECAR_TOOLBAR_TEXT(res.count, expect.type, res.splitIndex))
   return res
 }
