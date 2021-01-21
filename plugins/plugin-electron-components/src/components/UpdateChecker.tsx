@@ -122,7 +122,15 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
   private checkForUpdates() {
     needle('get', FEED, { json: true })
       .then(res => {
-        const entryForLatestVersion = res.body.children.filter(_ => _.name === 'entry')[0]
+        const entryForLatestVersion = res.body.children
+          .filter(_ => _.name === 'entry')
+          .find(_ =>
+            _.children.find(
+              _ =>
+                _.name === 'title' && !_.value.includes('beta') && !_.value.includes('alpha') && !_.value.includes('rc')
+            )
+          )
+
         this.setState({
           entryForLatestVersion: {
             title: this.atomValueFor('title', res.body),
