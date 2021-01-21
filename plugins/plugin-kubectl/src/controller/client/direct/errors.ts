@@ -29,7 +29,7 @@ type WithErrors = {
 }
 
 /** See if the given error message is a Kubernetes Status object */
-function tryParseAsStatus(message: string): string | Status {
+export function tryParseAsStatus(message: string): string | Status {
   try {
     const obj = JSON.parse(message)
     if (isStatus(obj)) {
