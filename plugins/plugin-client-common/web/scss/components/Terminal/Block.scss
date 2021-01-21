@@ -256,7 +256,6 @@ $focus-color: var(--color-brand-01);
 
       /** For In[N], i.e. Notebook style, we want to reserve a fixed amount of space, so that everything lines up */
       &:not([data-custom-prompt]) {
-        flex-basis: 3em;
         min-width: $repl-context-min-width;
         margin-right: $repl-context-margin-right;
       }
