@@ -18,7 +18,7 @@ import Debug from 'debug'
 import { join } from 'path'
 import needle, { BodyData } from 'needle'
 import { DirEntry } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, ExecOptions, REPL, inBrowser, hasProxy, encodeComponent, i18n } from '@kui-shell/core'
+import { Arguments, CodedError, ExecOptions, REPL, inBrowser, hasProxy, encodeComponent, i18n } from '@kui-shell/core'
 
 import JSONStream from './json'
 import getProxyState from '../../controller/client/proxy'
@@ -179,7 +179,16 @@ export async function _needle(
 
 async function fetchRemote(repl: REPL, url: string, opts?: FetchOptions<BodyData>) {
   debug('fetchRemote', url, opts)
-  const fetchOnce = () => _needle(repl, url, opts).then(_ => _.body)
+  const fetchOnce = () =>
+    _needle(repl, url, opts).then(_ => {
+      if (_.statusCode === 0 || _.statusCode === 200 || typeof _.body !== 'string') {
+        return _.body
+      } else {
+        const err: CodedError = new Error(_.body.toString())
+        err.code = _.statusCode
+        throw err
+      }
+    })
 
   const retry = (delay: number) => async (err: Error) => {
     if (/timeout/.test(err.message) || /hang up/.test(err.message) || /hangup/.test(err.message)) {
