@@ -254,7 +254,7 @@ export default async function watchMulti(
 
     const unifiedTable: Table = {
       title,
-      breadcrumbs,
+      breadcrumbs: !isWatchRequest ? breadcrumbs : undefined,
       header,
       body
     }
