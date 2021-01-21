@@ -281,6 +281,7 @@ class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
     const newValue = prefix + extra + suffix
     const selectionStart = lastIdx + extra.length
     setPromptValue(prompt, newValue, selectionStart)
+    prompt.focus()
 
     // nothing to render in the tab completion portion of the UI.
     return false as const
@@ -370,6 +371,9 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
   protected willUpdate(completions: Completions, prefillPartialMatches: boolean): boolean {
     return (
       this.prefillPartialMatches !== prefillPartialMatches ||
+      (!!this.completions.completions && !completions.completions) ||
+      (!this.completions.completions && !!completions.completions) ||
+      this.completions.completions.length !== completions.completions.length ||
       !(
         this.completions.completions.length === completions.completions.length &&
         this.completions.completions.every((_, idx) => this.eq(_, completions.completions[idx]))
