@@ -33,9 +33,9 @@ import {
   isWatchRequest
 } from '../../kubectl/options'
 
-import handleErrors from './errors'
 import { urlFormatterFor } from './url'
 import { headersForTableRequest } from './headers'
+import handleErrors, { tryParseAsStatus } from './errors'
 import { isStatus, KubeItems, MetaTable } from '../../../lib/model/resource'
 
 export async function getTable(
@@ -158,7 +158,7 @@ export async function get(
     try {
       response = (await fetchFile(args.REPL, urls, { headers: { accept: 'application/json' } }))[0]
     } catch (err) {
-      response = JSON.parse(err.message)
+      response = tryParseAsStatus(err.message)
       if (!isStatus(response)) {
         throw err
       }
@@ -169,17 +169,23 @@ export async function get(
       error.code = response.code
       throw error
     } else if (format === 'name') {
-      return {
-        content: {
-          code: 0,
-          stderr: '',
-          stdout: ((Buffer.isBuffer(response) || typeof response === 'string'
-            ? JSON.parse(response.toString())
-            : response) as KubeItems).items
-            .map(_ => _.metadata.name)
-            .join('\n'),
-          wasSentToPty: false
+      try {
+        const stdout = ((Buffer.isBuffer(response) || typeof response === 'string'
+          ? JSON.parse(response.toString())
+          : response) as KubeItems).items
+          .map(_ => _.metadata.name)
+          .join('\n')
+
+        return {
+          content: {
+            code: 0,
+            stderr: '',
+            stdout,
+            wasSentToPty: false
+          }
         }
+      } catch (err) {
+        throw new Error(response.toString())
       }
     } else if (format === 'yaml') {
       const { safeDump } = await import('js-yaml')
