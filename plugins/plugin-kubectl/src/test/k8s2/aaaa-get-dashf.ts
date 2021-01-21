@@ -48,7 +48,7 @@ commands.forEach(command => {
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     it(`should get sample pod from local file via ${command}`, () => {
@@ -57,7 +57,7 @@ commands.forEach(command => {
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     it(`should watch sample pod from local file and delete it via ${command}`, () => {
@@ -74,7 +74,7 @@ commands.forEach(command => {
 
           await waitForRed(this.app, watchSelector)
         })
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     const dir = `${ROOT}/data/k8s/application/guestbook`
@@ -93,7 +93,7 @@ commands.forEach(command => {
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('frontend') })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     it(`should get sample application from local directory via ${command}`, () => {
@@ -102,7 +102,7 @@ commands.forEach(command => {
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('frontend') })
         )
         .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     const duplicatedName = 'redis-master'
@@ -115,7 +115,7 @@ commands.forEach(command => {
           return watchSelector
         })
         .then(selector => waitForGreen(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     it(`should should delete ${duplicatedName} service via ${command}`, () => {
@@ -124,11 +124,11 @@ commands.forEach(command => {
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) })
         )
         .then(selector => waitForRed(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     it(`should watch ${duplicatedName} deployment still green`, () => {
-      return waitForGreen(this.app, watchSelector).catch(Common.oops(this))
+      return waitForGreen(this.app, watchSelector).catch(Common.oops(this, true))
     })
 
     it(`should should delete ${duplicatedName} deployment via ${command}`, () => {
@@ -137,11 +137,11 @@ commands.forEach(command => {
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(duplicatedName) })
         )
         .then(selector => waitForRed(this.app, selector))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
 
     it(`should watch ${duplicatedName} deployment to be red`, () => {
-      return waitForRed(this.app, watchSelector).catch(Common.oops(this))
+      return waitForRed(this.app, watchSelector).catch(Common.oops(this, true))
     })
 
     deleteNS(this, ns)
