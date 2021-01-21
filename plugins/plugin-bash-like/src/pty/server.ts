@@ -566,7 +566,7 @@ export default (commandTree: Registrar) => {
       new Promise(async (resolve, reject) => {
         try {
           await new StdioChannelKuiSide().init(() => {
-            console.error('done with stdiochannel')
+            debug('done with stdiochannel')
             resolve(true)
           })
         } catch (err) {
