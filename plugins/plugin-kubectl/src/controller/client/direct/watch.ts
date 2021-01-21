@@ -100,7 +100,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   public constructor(
     private readonly drilldownCommand: string,
     private readonly args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
-    private readonly kind: string | Promise<string>,
+    private readonly kind: string,
     private readonly resourceVersion: Table['resourceVersion'],
     private readonly formatUrl: URLFormatter,
     private readonly group: Group,
@@ -301,46 +301,41 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
       this.bodyColumnDefinitions = update.object.columnDefinitions
     }
 
-    setTimeout(async () => {
-      const kind = this.kind
-      if (typeof kind === 'string') {
-        update.object.rows = update.object.rows.filter(row =>
-          isObjectInGroup(this.group, kind, row.object.metadata.name)
-        )
+    update.object.rows = update.object.rows.filter(row =>
+      isObjectInGroup(this.group, this.kind, row.object.metadata.name)
+    )
+
+    const table = toKuiTable(update.object, this.kind, this.args, this.drilldownCommand, this.needsStatusColumn)
+
+    if (sendHeaders) {
+      this.pusher.header(table.header)
+    }
+
+    table.body.forEach((row, idx) => {
+      const rowNeverSeenBefore = this.readyDebouncer && this.readyDebouncer[row.rowKey] === undefined
+      if (rowNeverSeenBefore) {
+        debug('dropping untracked row', row.rowKey)
+        return
       }
 
-      const table = await toKuiTable(update.object, this.kind, this.args, this.drilldownCommand, this.needsStatusColumn)
-
-      if (sendHeaders) {
-        this.pusher.header(table.header)
+      if (update.type === 'ADDED' || update.type === 'MODIFIED') {
+        this.pusher.update(row, true)
+      } else {
+        this.pusher.offline(row.rowKey)
       }
 
-      table.body.forEach((row, idx) => {
-        const rowNeverSeenBefore = this.readyDebouncer && this.readyDebouncer[row.rowKey] === undefined
-        if (rowNeverSeenBefore) {
-          debug('dropping untracked row', row.rowKey)
-          return
+      if (this.kind === 'Namespace') {
+        if (update.type === 'ADDED') {
+          emitKubectlConfigChangeEvent('CreateOrDeleteNamespace', row.name)
+        } else if (update.type === 'DELETED') {
+          emitKubectlConfigChangeEvent('CreateOrDeleteNamespace', row.name)
         }
+      }
 
-        if (update.type === 'ADDED' || update.type === 'MODIFIED') {
-          this.pusher.update(row, true)
-        } else {
-          this.pusher.offline(row.rowKey)
-        }
-
-        if (this.kind === 'Namespace') {
-          if (update.type === 'ADDED') {
-            emitKubectlConfigChangeEvent('CreateOrDeleteNamespace', row.name)
-          } else if (update.type === 'DELETED') {
-            emitKubectlConfigChangeEvent('CreateOrDeleteNamespace', row.name)
-          }
-        }
-
-        this.checkIfReady(row, idx, update)
-      })
-
-      this.pusher.batchUpdateDone()
+      this.checkIfReady(row, idx, update)
     })
+
+    this.pusher.batchUpdateDone()
   }
 
   /**
@@ -388,7 +383,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
 export default async function makeWatchable(
   drilldownCommand: string,
   args: Pick<Arguments<KubeOptions>, 'REPL' | 'execOptions' | 'parsedOptions'>,
-  kind: string | Promise<string>,
+  kind: string,
   group: Group,
   table: Table,
   formatUrl: URLFormatter,

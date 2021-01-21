@@ -640,20 +640,20 @@ function addStatusColumnIfNeeded(table: Table): Table {
   return table
 }
 
-export async function toKuiTable(
+export function toKuiTable(
   table: MetaTable,
-  kind: string | Promise<string>,
+  kind: string,
   args: Pick<Arguments<KubeOptions>, 'parsedOptions' | 'execOptions' | 'REPL'>,
   drilldownCommand: string,
   needsStatusColumn = false
-): Promise<Table> {
+): Table {
   const format = formatOf(args)
   const forAllNamespaces = isForAllNamespaces(args.parsedOptions)
   const includedColumns = table.columnDefinitions.map(_ => format === 'wide' || _.priority === 0)
   const columnDefinitions = table.columnDefinitions.filter(_ => format === 'wide' || _.priority === 0)
 
   const drilldownVerb = 'get'
-  const drilldownKind = await kind
+  const drilldownKind = kind
   const drilldownFormat = '-o yaml'
 
   const onclickFor = (row: MetaTable['rows'][0], name: string) => {
@@ -712,12 +712,18 @@ export async function toKuiTable(
     }
   })
 
+  const breadcrumbs =
+    (isForAllNamespaces(args.parsedOptions) && [{ label: strings('all') }]) ||
+    (table.rows.length > 0 && table.rows.every(({ object }) => object.metadata.namespace)
+      ? [{ label: table.rows[0].object.metadata.namespace }]
+      : undefined)
+
   const kuiTable = {
     header,
     body,
-    title: await kind,
+    title: kind,
     resourceVersion: table.metadata.resourceVersion,
-    breadcrumbs: await getNamespaceBreadcrumbs(await kind, args)
+    breadcrumbs
   }
 
   if (needsStatusColumn) {
