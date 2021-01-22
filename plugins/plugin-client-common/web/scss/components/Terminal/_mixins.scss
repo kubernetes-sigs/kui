@@ -82,15 +82,13 @@ $action-hover-delay: 210ms;
   @include Scrollback {
     @include Block {
       &:focus {
-        @include Input {
-          &:hover {
-            @content;
-          }
+        @include InputWrapper {
+          @content;
         }
       }
     }
     @include FinishedBlock {
-      @include Input {
+      @include InputWrapper {
         &:hover {
           @content;
         }
