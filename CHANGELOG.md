@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.11](https://github.com/IBM/kui/compare/v9.3.10...v9.3.11) (2021-01-22)
+
+### Bug Fixes
+
+- **plugins/plugin-electron-components:** UpdateChecker should ignore prereleases ([98ac907](https://github.com/IBM/kui/commit/98ac907)), closes [#6655](https://github.com/IBM/kui/issues/6655)
+
 ## [9.3.10](https://github.com/IBM/kui/compare/v9.3.9...v9.3.10) (2021-01-12)
 
 ### Bug Fixes

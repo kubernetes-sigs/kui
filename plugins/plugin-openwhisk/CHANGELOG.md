@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.11](https://github.com/kui-shell/oui/compare/v9.3.10...v9.3.11) (2021-01-22)
+
+**Note:** Version bump only for package @kui-shell/plugin-openwhisk
+
 ## [9.3.10](https://github.com/kui-shell/oui/compare/v9.3.9...v9.3.10) (2021-01-12)
 
 **Note:** Version bump only for package @kui-shell/plugin-openwhisk
