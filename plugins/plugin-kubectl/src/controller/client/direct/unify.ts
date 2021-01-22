@@ -94,17 +94,15 @@ export function unifyRow(row: Row, kind: string): Row {
       getFromLabel(row.object, 'tier') ||
       getFromLabel(row.object, 'app.kubernetes.io/component') ||
       getFromSelector(row.object, 'tier')
-    if (tier) {
-      extraAttrs.push({ key: 'Tier', value: tier })
-    }
+
+    extraAttrs.push({ key: 'Tier', value: tier || '' })
 
     const app =
       getFromLabel(row.object, 'app') ||
       getFromLabel(row.object, 'app.kubernetes.io/name') ||
       getFromSelector(row.object, 'app')
-    if (app) {
-      extraAttrs.push({ key: 'Application', value: app })
-    }
+
+    extraAttrs.push({ key: 'Application', value: app || '' })
   }
 
   return rowWith(name, kind, status, trafficLight, row, extraAttrs)
