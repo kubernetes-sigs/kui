@@ -26,11 +26,13 @@ import {
   Watchable,
   Watcher,
   WatchPusher,
+  WithSourceReferences,
   flatten,
   isTable,
   i18n
 } from '@kui-shell/core'
 
+import toSourceRefs from './source'
 import { getKindAndVersion } from './explain'
 import { fqnOfRef, ResourceRef, versionOf } from './fqn'
 import { initialCapital } from '../../lib/view/formatTable'
@@ -39,6 +41,7 @@ import { Group } from '../client/direct/group'
 import KubeOptions, {
   KubeOptions as Options,
   fileOf,
+  fileOfWithDetail,
   kustomizeOf,
   getNamespace,
   getContextForArgv,
@@ -62,6 +65,8 @@ const debug = Debug('plugin-kubectl/controller/kubectl/status')
 /** administrative CRDs that we want to ignore */
 // const adminCRDFilter = '-l app!=mixer,app!=istio-pilot,app!=ibmcloud-image-enforcement,app!=ibm-cert-manager'
 
+type Resources = { resourcesToWaitFor: ResourceRef[] } & Partial<Pick<WithSourceReferences, 'kuiSourceRef'>>
+
 /**
  * @param file an argument to `-f` or `-k`; e.g. `kubectl -f <file>`
  *
@@ -70,11 +75,12 @@ async function getResourcesReferencedByFile(
   file: string,
   args: Arguments<Options>,
   namespaceFromCommandLine: string
-): Promise<ResourceRef[]> {
+): Promise<Resources> {
+  const { isFor } = fileOfWithDetail(args)
   const [{ safeLoadAll }, raw] = await Promise.all([import('js-yaml'), fetchFilesVFS(args, file, true)])
 
   const models = flatten(raw.map(_ => safeLoadAll(_.data) as KubeResource[]))
-  return models
+  const resourcesToWaitFor = models
     .filter(_ => _.metadata)
     .map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {
       const { group, version } = versionOf(apiVersion)
@@ -86,17 +92,22 @@ async function getResourcesReferencedByFile(
         namespace
       }
     })
+
+  return {
+    resourcesToWaitFor,
+    kuiSourceRef: toSourceRefs(raw, isFor)
+  }
 }
 
 async function getResourcesReferencedByKustomize(
   kusto: string,
   args: Arguments<Options>,
   namespace: string
-): Promise<ResourceRef[]> {
-  const [{ templates }, { safeLoad }] = await Promise.all([fetchKusto(args, kusto), import('js-yaml')])
+): Promise<Resources> {
+  const [kuiSourceRef, { safeLoad }] = await Promise.all([fetchKusto(args, kusto), import('js-yaml')])
 
-  return await Promise.all(
-    templates
+  const resourcesToWaitFor = await Promise.all(
+    kuiSourceRef.templates
       .map(raw => safeLoad(raw.data))
       .map(async (resource: KubeResource) => {
         const { apiVersion, kind, metadata } = resource
@@ -110,6 +121,11 @@ async function getResourcesReferencedByKustomize(
         }
       })
   )
+
+  return {
+    kuiSourceRef,
+    resourcesToWaitFor
+  }
 }
 
 /**
@@ -121,7 +137,7 @@ async function getResourcesReferencedByCommandLine(
   argvRest: string[],
   namespace: string,
   finalState?: FinalState
-): Promise<ResourceRef[]> {
+): Promise<Resources> {
   // Notes: kubectl create secret <generic> <name> <-- the name is in a different slot :(
   const [kind, nameGroupVersion, nameAlt] = argvRest
 
@@ -130,25 +146,8 @@ async function getResourcesReferencedByCommandLine(
     // kubectl delete (ns [m1 m2 m2 m3])
     //                ^ argvRest       ^
     //                    ^ slice(1)  ^
-    return argvRest
-      .slice(1)
-      .map(nameGroupVersion => nameGroupVersion.split(/\./))
-      .map(([name, group, version]) => ({
-        group,
-        version,
-        kind,
-        name,
-        namespace
-      }))
-  } else if (verb === 'create') {
-    const isCreateSecret = /secret(s)?/i.test(kind)
-    if (isCreateSecret) {
-      // ugh, the phrasing is different for creating secrets,
-      // e.g. "create <kind> default <name>", rather than the usual
-      // "create <kind> <name>"
-      return [{ name: nameAlt, kind, namespace }]
-    } else {
-      return argvRest
+    return {
+      resourcesToWaitFor: argvRest
         .slice(1)
         .map(nameGroupVersion => nameGroupVersion.split(/\./))
         .map(([name, group, version]) => ({
@@ -159,10 +158,35 @@ async function getResourcesReferencedByCommandLine(
           namespace
         }))
     }
+  } else if (verb === 'create') {
+    const isCreateSecret = /secret(s)?/i.test(kind)
+    if (isCreateSecret) {
+      // ugh, the phrasing is different for creating secrets,
+      // e.g. "create <kind> default <name>", rather than the usual
+      // "create <kind> <name>"
+      return {
+        resourcesToWaitFor: [{ name: nameAlt, kind, namespace }]
+      }
+    } else {
+      return {
+        resourcesToWaitFor: argvRest
+          .slice(1)
+          .map(nameGroupVersion => nameGroupVersion.split(/\./))
+          .map(([name, group, version]) => ({
+            group,
+            version,
+            kind,
+            name,
+            namespace
+          }))
+      }
+    }
   }
 
   const [name, group, version] = nameGroupVersion.split(/\./)
-  return [{ group, version, kind, name, namespace }]
+  return {
+    resourcesToWaitFor: [{ group, version, kind, name, namespace }]
+  }
 }
 
 /**
@@ -460,7 +484,7 @@ export const doStatus = async (
   const kusto = kustomizeOf(args)
 
   try {
-    const resourcesToWaitFor = file
+    const { resourcesToWaitFor, kuiSourceRef } = file
       ? await getResourcesReferencedByFile(file, args, namespace)
       : kusto
       ? await getResourcesReferencedByKustomize(kusto, args, namespace)
@@ -517,7 +541,12 @@ export const doStatus = async (
         // then direct/status obliged!
         debug('using direct/status response')
         if (isTable(response)) {
-          return response
+          if (isWatchRequest && verb !== 'delete') {
+            return Object.assign(response, { kuiSourceRef })
+          } else {
+            // for now: no source refs for normal gets and deletes
+            return response
+          }
         } else {
           return response.join('\n')
         }
@@ -530,14 +559,17 @@ export const doStatus = async (
     // handle this use case; fall back to the old polling impl
     debug('backup plan: using old status poller')
     if (isWatchRequest) {
-      return new StatusWatcher(
-        args,
-        args.tab,
-        resourcesToWaitFor,
-        finalState,
-        `-n ${namespace} ${getContextForArgv(args)}`,
-        command
-      ).initialTable()
+      return Object.assign(
+        new StatusWatcher(
+          args,
+          args.tab,
+          resourcesToWaitFor,
+          finalState,
+          `-n ${namespace} ${getContextForArgv(args)}`,
+          command
+        ).initialTable(),
+        { kuiSourceRef: isWatchRequest && verb !== 'delete' ? kuiSourceRef : undefined } // see: for now no source refs, above
+      )
     }
   } catch (err) {
     console.error('error constructing StatusWatcher', err)

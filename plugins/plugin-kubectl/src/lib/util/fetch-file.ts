@@ -315,7 +315,11 @@ export async function fetchRawFiles(args: Arguments<KubeOptions>, filepath: stri
 
 export default fetchFileString
 
-export async function fetchFilesVFS(args: Arguments<KubeOptions>, filepath: string, fetchNestedYamls?: boolean) {
+export async function fetchFilesVFS(
+  args: Arguments<KubeOptions>,
+  filepath: string,
+  fetchNestedYamls?: boolean
+): Promise<{ filepath: string; data: string }[]> {
   const path = fetchNestedYamls ? `${encodeComponent(filepath)} ${encodeComponent(filepath)}/**/*.{yaml,yml}` : filepath
   const paths = new Set((await args.REPL.rexec<DirEntry[]>(`vfs ls ${path}`)).content.map(_ => _.path))
   const raw = await fetchFileString(args.REPL, paths.size === 0 ? filepath : Array.from(paths).join(','))
@@ -346,8 +350,8 @@ export async function fetchKusto(args: Arguments<KubeOptions>, kusto: string) {
       .join(' ')
     const files = await fetchFilesVFS(args, resources)
     return {
-      customization: { filepath: kusto, data: raw.data },
-      templates: files.map(({ filepath, data }) => ({ filepath, data }))
+      customization: { filepath: kusto, data: raw.data, contentType: 'yaml', isFor: 'k' },
+      templates: files.map(({ filepath, data }) => ({ filepath, data, contentType: 'yaml', isFor: 'k' }))
     }
   }
 }
