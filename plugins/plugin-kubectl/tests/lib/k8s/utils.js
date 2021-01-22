@@ -95,13 +95,13 @@ exports.allocateNS = (ctx, ns, command = 'kubectl', theCli = CLI) => {
 }
 
 exports.deleteNS = (ctx, ns, command = 'kubectl', theCli = CLI) => {
-  if (!process.env.TRAVIS_JOB_ID) {
-    // to save travis test time
-    const namespaces = Array.isArray(ns) ? ns : [ns]
-    it(`should delete the namespaces ${namespaces}`, async () => {
-      try {
-        const res = await theCli.command(`${command} delete namespace ${namespaces.join(' ')}`, ctx.app)
+  const namespaces = Array.isArray(ns) ? ns : [ns]
+  it(`should delete the namespaces ${namespaces}`, async () => {
+    try {
+      const res = await theCli.command(`${command} delete namespace ${namespaces.join(' ')}`, ctx.app)
 
+      if (!process.env.TRAVIS_JOB_ID) {
+        // to save travis test time, don't wait for the namespace deletion to finish
         await Promise.all(
           namespaces.map(ns =>
             ReplExpect.okWithCustom({ selector: Selectors.BY_NAME(ns) })(res).then(selector =>
@@ -109,11 +109,11 @@ exports.deleteNS = (ctx, ns, command = 'kubectl', theCli = CLI) => {
             )
           )
         )
-      } catch (err) {
-        await Common.oops(ctx, true)(err)
       }
-    })
-  }
+    } catch (err) {
+      await Common.oops(ctx, true)(err)
+    }
+  })
 }
 
 /**
