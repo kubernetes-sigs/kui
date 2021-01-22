@@ -541,10 +541,10 @@ export const doStatus = async (
         // then direct/status obliged!
         debug('using direct/status response')
         if (isTable(response)) {
-          if (isWatchRequest && verb !== 'delete') {
+          if (verb !== 'delete') {
             return Object.assign(response, { kuiSourceRef })
           } else {
-            // for now: no source refs for normal gets and deletes
+            // no source refs for deletes
             return response
           }
         } else {
@@ -568,7 +568,7 @@ export const doStatus = async (
           `-n ${namespace} ${getContextForArgv(args)}`,
           command
         ).initialTable(),
-        { kuiSourceRef: isWatchRequest && verb !== 'delete' ? kuiSourceRef : undefined } // see: for now no source refs, above
+        { kuiSourceRef: verb !== 'delete' ? kuiSourceRef : undefined } // see: for now no source refs, above
       )
     }
   } catch (err) {
