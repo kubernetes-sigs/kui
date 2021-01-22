@@ -19,7 +19,9 @@ import { DropDown, DropDownAction } from '../../..'
 import { DropDownProps } from '../../spi/DropDown'
 
 export type Props = Pick<DropDownProps, 'position'> & {
+  /** Dom identifier for status stripe wrapper around the button */
   id?: string
+
   icon?: React.ReactNode
   title?: string
   actions: DropDownAction[]

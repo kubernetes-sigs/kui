@@ -129,7 +129,9 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
           const widget = await this.app.client.$('#kui--plugin-kubeui--current-namespace button')
           await widget.click()
 
-          const menuItem = await this.app.client.$(`.bx--list-box__menu-item[title="default"]`)
+          const menuItem = await this.app.client.$(
+            `${Selectors.STATUS_STRIPE} ${Selectors.DROPDOWN_MENU_ITEM_NAMED('default')}`
+          )
           await menuItem.waitForDisplayed()
         } catch (err) {
           await Common.oops(this, true)(err)

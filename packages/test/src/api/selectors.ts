@@ -281,7 +281,7 @@ export const ALT_BUFFER_N = (N: number) => `${CURRENT_TAB} .kui--scrollback:nth-
 export const NOSPLIT_ALT_BUFFER_N = (N: number) => `${CURRENT_TAB}.xterm-alt-buffer-mode`
 
 /** Status Stripe widgets */
-const STATUS_STRIPE = '#kui--status-stripe'
+export const STATUS_STRIPE = '#kui--status-stripe'
 export const STATUS_STRIPE_TYPE = (type: 'default' | 'blue') => `${STATUS_STRIPE}[data-type="${type}"]`
 export const STATUS_STRIPE_MESSAGE = `${STATUS_STRIPE} .kui--status-stripe-message-element`
 export const STATUS_STRIPE_WIDGET = (which: string, dot: '.' | '#' = '.') => `${STATUS_STRIPE} ${dot}${which}`
@@ -324,5 +324,6 @@ export const SIDECAR_TOOLBAR_BUTTON_LAST = (mode: string) =>
 /** dropdown */
 export const DROPDOWN = `.kui--dropdown`
 export const DROPDOWN_N = (N: number, splitIndex = 1) => `${OUTPUT_N(N, splitIndex)} ${DROPDOWN}`
+export const DROPDOWN_MENU_ITEM_NAMED = (label: string) => `.kui--dropdown__menu-item[data-mode="${label}"]`
 export const DROPDOWN_N_MENU_ITEM = (N: number, label: string, splitIndex = 1) =>
-  `${DROPDOWN_N(N, splitIndex)} .kui--dropdown__menu-item[data-mode="${label}"]`
+  `${DROPDOWN_N(N, splitIndex)} ${DROPDOWN_MENU_ITEM_NAMED(label)}`
