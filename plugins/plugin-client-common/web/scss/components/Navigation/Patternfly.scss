@@ -26,6 +26,16 @@ body[kui-theme-style] {
       background-color: var(--color-sidecar-header);
 
       .pf-c-nav__list {
+        /** 
+         * NOTE: carbon components set section to always display: block
+         * in carbon-components/css/carbon-components.css
+         * and carbon-components/scss/globals/scss/_css--reset.scss,
+         * which overrides browser's default behavior to diplay:none for hidden sections
+         */
+        section[hidden] {
+          display: none;
+        }
+
         a:hover:not(.plain-anchor) {
           color: unset;
         }
