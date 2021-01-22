@@ -84,7 +84,7 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
       let isExpanded = false // default isExpanded?
       for (let idx = 0; idx < 5; idx++) {
-        await confirm(isExpanded, 'Pod')
+        await confirm(isExpanded, 'Deployment')
         isExpanded = await toggle(isExpanded)
       }
     } catch (err) {
