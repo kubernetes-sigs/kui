@@ -14,50 +14,20 @@
  * limitations under the License.
  */
 
-import { Arguments, WithSourceReferences } from '@kui-shell/core'
+import { fileOfWithDetail } from './options'
+import { WithSourceReferences } from '@kui-shell/core'
 
-import { fetchKusto, fetchFilesVFS } from '../../lib/util/fetch-file'
-import { kustomizeOf, KubeOptions, fileOfWithDetail, isTableRequest } from './options'
-
-/**
- * Fetch any references to --file sources, so that the views can show
- * the user what happened in more detail.
- *
- */
-export default async function withSourceRefs(
-  args: Arguments<KubeOptions>
-): Promise<WithSourceReferences['kuiSourceRef']> {
-  const { filepath, isFor } = fileOfWithDetail(args)
-  const kusto = kustomizeOf(args)
-
-  if (isTableRequest(args)) {
-    try {
-      if (filepath) {
-        const files = await fetchFilesVFS(args, filepath, true)
-        return {
-          templates: files.map(({ filepath, data }) => ({
-            filepath,
-            data,
-            isFor,
-            kind: 'source' as const,
-            contentType: 'yaml'
-          }))
-        }
-      } else if (kusto) {
-        const { customization, templates } = await fetchKusto(args, kusto)
-        return {
-          customization: { filepath: customization.filepath, data: customization.data, isFor: 'k' },
-          templates: templates.map(({ filepath, data }) => ({
-            filepath,
-            data,
-            isFor,
-            kind: 'source' as const,
-            contentType: 'yaml'
-          }))
-        }
-      }
-    } catch (err) {
-      console.error('Error fetching source ref', err)
-    }
+export default function toSourceRefs(
+  files: { filepath: string; data: string }[],
+  isFor: ReturnType<typeof fileOfWithDetail>['isFor']
+): WithSourceReferences['kuiSourceRef'] {
+  return {
+    templates: files.map(({ filepath, data }) => ({
+      filepath,
+      data,
+      isFor,
+      kind: 'source' as const,
+      contentType: 'yaml'
+    }))
   }
 }

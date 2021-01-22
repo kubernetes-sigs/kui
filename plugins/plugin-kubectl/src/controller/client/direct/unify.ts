@@ -72,7 +72,7 @@ export function unifyHeaders(headers: Table['header'][]): Table['header'] {
 }
 
 function getFromLabel(object: Row['object'], field: string): string {
-  return object.metadata.labels[field]
+  return object.metadata && object.metadata.labels ? object.metadata.labels[field] : undefined
 }
 
 function getFromSelector(object: Row['object'], field: string) {
