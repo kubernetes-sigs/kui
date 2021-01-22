@@ -489,14 +489,11 @@ export default class Input extends InputProvider {
       if (this.state.prompt) {
         if (this.props.isFocused) {
           if (document.activeElement !== this.state.prompt) {
-            setTimeout(
-              () => {
-                if (isInViewport(this.state.prompt) && this.props.isFocused) {
-                  this.state.prompt.focus()
-                }
-              },
-              this.state.tabCompletion ? 0 : 2000
-            )
+            setTimeout(() => {
+              if (isInViewport(this.state.prompt) && this.props.isFocused) {
+                this.state.prompt.focus()
+              }
+            })
           }
         } else {
           setTimeout(() => this.state.prompt.scrollIntoView(), 10)
