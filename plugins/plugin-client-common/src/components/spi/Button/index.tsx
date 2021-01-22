@@ -16,18 +16,11 @@
 
 import React from 'react'
 
-import KuiContext from '../../Client/context'
-
 import Props from './model'
-import Carbon from './impl/Carbon'
 import PatternFly4 from './impl/PatternFly'
 
 export { Props }
 
 export default function ButtonSpi(props: Props): React.ReactElement {
-  return (
-    <KuiContext.Consumer>
-      {config => (config.components === 'patternfly' ? <PatternFly4 {...props} /> : <Carbon {...props} />)}
-    </KuiContext.Consumer>
-  )
+  return <PatternFly4 {...props} />
 }
