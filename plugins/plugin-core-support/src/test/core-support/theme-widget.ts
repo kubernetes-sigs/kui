@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { resetTheme } from './theme-common'
 
 const altTheme = 'Carbon Gray90'
@@ -30,7 +30,9 @@ describe('theme switching via status stripe widget', function(this: Common.ISuit
       const widget = await this.app.client.$('#kui--settings-widget button')
       await widget.click()
 
-      const menuItem = await this.app.client.$(`.bx--list-box__menu-item[title="${altTheme}"]`)
+      const menuItem = await this.app.client.$(
+        `${Selectors.STATUS_STRIPE} ${Selectors.DROPDOWN_MENU_ITEM_NAMED(altTheme)}`
+      )
       await menuItem.click()
     } catch (err) {
       await Common.oops(this, true)(err)
