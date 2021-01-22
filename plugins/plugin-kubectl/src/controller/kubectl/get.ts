@@ -265,14 +265,10 @@ async function rawGet(
 
   if ((command === 'oc' || command === 'kubectl') && !args.argvNoOptions.includes('|')) {
     // try talking to the apiServer directly
-    try {
-      const response = await getDirect(args, _kind)
-      if (response) {
-        // that worked!
-        return response
-      }
-    } catch (err) {
-      console.error('direct/get failed; fall back to kubectl get', err)
+    const response = await getDirect(args, _kind)
+    if (response) {
+      // that worked!
+      return response
     }
   }
 
