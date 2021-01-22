@@ -30,15 +30,17 @@ you can see a "waterfall" diagram by simply executing `k get jobs`.
 
 <img height="185" src="docs/readme/images/grid-watch.gif"><img height="185" src="docs/readme/images/sequence-diagram.png"><img height="185" src="docs/readme/images/pod.png">
 
+<img width="575" align="right" src="docs/readme/images/minisplits.png">
+
 In summary: Kui enhances your CLI experience, but is also fast. It
 launches in 1-2 seconds, and can process standard `kubectl` commands
 **2-3 times faster** than `kubectl` itself.
 
-Next steps:
+### Next steps
 
-- I want to [download a prebuilt binary](#installation)
-- I want to [enhance Kui](#contributing)
-- I want to build my own [custom-branded Kui client](https://github.com/IBM/kui/wiki/5.-How-to-Customize-Your-Client)
+- [Download a prebuilt binary](#installation)
+- [Enhance Kui](#contributing)
+- Build your own [custom-branded Kui client](https://github.com/IBM/kui/wiki/5.-How-to-Customize-Your-Client)
 
 ## Installation
 
