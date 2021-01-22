@@ -26,7 +26,7 @@ commands.forEach(command => {
   const ns: string = createNS()
   const inNamespace = `-n ${ns}`
 
-  describe(`${command} get dashF ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  xdescribe(`${command} get dashF ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
