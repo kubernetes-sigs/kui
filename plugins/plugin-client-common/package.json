@@ -20,7 +20,6 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@carbon/icons-react": "10.20.0",
     "@patternfly/react-core": "4.84.4",
     "carbon-components": "10.23.2",
     "carbon-components-react": "7.23.2",
