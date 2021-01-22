@@ -16,9 +16,6 @@
 
 import React from 'react'
 
-import KuiContext from '../../Client/context'
-
-const Carbon = React.lazy(() => import('./impl/Carbon'))
 const PatternFly = React.lazy(() => import('./impl/PatternFly'))
 
 export type SupportedIcon =
@@ -55,9 +52,6 @@ export type SupportedIcon =
   | 'Split'
   | 'Trash'
   | 'TerminalOnly'
-  | 'TerminalPlusSidecar'
-  | 'TerminalPlusWatcher'
-  | 'TerminalSidecarWatcher'
   | 'Theme'
   | 'Up'
   | 'Warning'
@@ -71,14 +65,5 @@ export interface Props extends Record<string, any> {
 }
 
 export default function iconImpl(props: Props): React.ReactElement {
-  if (props.icon === 'TerminalPlusWatcher' || props.icon === 'TerminalSidecarWatcher') {
-    return <Carbon {...props} />
-  }
-  return (
-    <React.Suspense fallback={<div />}>
-      <KuiContext.Consumer>
-        {config => (config.components === 'patternfly' ? <PatternFly {...props} /> : <Carbon {...props} />)}
-      </KuiContext.Consumer>
-    </React.Suspense>
-  )
+  return <PatternFly {...props} />
 }

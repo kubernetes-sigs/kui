@@ -17,17 +17,9 @@
 import React from 'react'
 
 import Props from './model'
-import KuiContext from '../../Client/context'
 
 const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
-const Carbon = React.lazy(() => import('./impl/Carbon'))
 
 export default function Accordion(props: Props): React.ReactElement {
-  return (
-    <React.Suspense fallback={<div />}>
-      <KuiContext.Consumer>
-        {config => (config.components === 'patternfly' ? <PatternFly4 {...props} /> : <Carbon {...props} />)}
-      </KuiContext.Consumer>
-    </React.Suspense>
-  )
+  return <PatternFly4 {...props} />
 }
