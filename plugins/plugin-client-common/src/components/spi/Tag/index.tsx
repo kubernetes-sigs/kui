@@ -16,17 +16,11 @@
 
 import React from 'react'
 import Props from './model'
-import KuiContext from '../../Client/context'
 
-const Carbon = React.lazy(() => import('./impl/Carbon'))
 const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 
 export { Props }
 
 export default function TagSpi(props: Props): React.ReactElement {
-  return (
-    <KuiContext.Consumer>
-      {config => (config.components === 'patternfly' ? <PatternFly4 {...props} /> : <Carbon {...props} />)}
-    </KuiContext.Consumer>
-  )
+  return <PatternFly4 {...props} />
 }
