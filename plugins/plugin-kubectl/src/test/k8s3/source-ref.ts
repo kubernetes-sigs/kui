@@ -94,16 +94,21 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
   it('should create with kustomization and see source ref', async () => {
     try {
-      const res = await CLI.command(`kubectl create -k ${ROOT}/data/k8s/kustomize/base ${inNamespace}`, this.app)
+      console.error('SRK1')
+      const res = await CLI.command(`kubectl apply -k ${ROOT}/data/k8s/kustomize/base ${inNamespace}`, this.app)
 
       const confirm = confirmState.bind(this, res)
       const toggle = clickToToggle.bind(this, res)
 
       let isExpanded = false // default isExpanded?
       for (let idx = 0; idx < 5; idx++) {
+        console.error(`SRK2.${idx}`)
         await confirm(isExpanded, 'Deployment')
+        console.error(`SRK3.${idx}`)
         isExpanded = await toggle(isExpanded)
+        console.error(`SRK4.${idx}`)
       }
+      console.error('SRK5')
     } catch (err) {
       await Common.oops(this, true)(err)
     }

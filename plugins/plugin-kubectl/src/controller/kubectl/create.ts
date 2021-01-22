@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Registrar, Arguments, WithSourceReferences, Table, isTable } from '@kui-shell/core'
+import { Registrar, Arguments } from '@kui-shell/core'
 
 import defaultFlags from './flags'
 import { isDryRun, isEntityFormat, KubeOptions, formatOf } from './options'
@@ -25,7 +25,6 @@ import createDirect from '../client/direct/create'
 
 import { FinalState } from '../../lib/model/states'
 import { isUsage, doHelp } from '../../lib/util/help'
-import getSourceRefs from './source'
 import { doGetAsEntity, viewTransformer } from './get'
 
 const debug = Debug('plugin-kubectl/controller/kubectl/create')
@@ -61,14 +60,9 @@ export const doCreate = (verb: 'create' | 'apply', command = 'kubectl') => async
         }
       }
 
-      const kuiSourceRef = getSourceRefs(args)
-      const table = await doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
-      if (isTable(table)) {
-        const response: Table & WithSourceReferences = Object.assign({}, table, { kuiSourceRef: await kuiSourceRef })
-        return response
-      } else {
-        return table
-      }
+      // Note: the kuiSourceRef info will be added by `doStatus` in
+      // ./status.ts, which is called by `doExecWithStatus`
+      return doExecWithStatus(verb, FinalState.OnlineLike, command)(args)
     }
   }
 }
