@@ -262,8 +262,9 @@ async function rawGet(
     : getKindAndVersion(_command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
 ) {
   const command = _command === 'k' ? 'kubectl' : _command
+  const isGetAll = args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1] === 'all'
 
-  if ((command === 'oc' || command === 'kubectl') && !args.argvNoOptions.includes('|')) {
+  if ((command === 'oc' || command === 'kubectl') && !args.argvNoOptions.includes('|') && !isGetAll) {
     // try talking to the apiServer directly
     const response = await getDirect(args, _kind)
     if (response) {
