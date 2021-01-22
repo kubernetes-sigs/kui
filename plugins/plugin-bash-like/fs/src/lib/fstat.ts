@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-19 IBM Corporation
+ * Copyright 2018-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,57 +39,62 @@ export const fstat = ({
   argvNoOptions,
   parsedOptions
 }: Pick<Arguments<FStatOptions>, 'argvNoOptions' | 'parsedOptions'>) => {
+  const filepath = argvNoOptions[1]
+  const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
+
+  const prettyFullPath = fullpath.replace(new RegExp(`^${process.env.HOME}`), '~')
+
   return new Promise<FStat>((resolve, reject) => {
-    const filepath = argvNoOptions[1]
-
-    const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
-
-    const prettyFullPath = fullpath.replace(new RegExp(`^${process.env.HOME}`), '~')
-
-    // note: stat not lstat, because we want to follow the link
-    stat(fullpath, (err, stats) => {
-      if (err) {
-        if (err.code === 'ENOENT') {
-          if (parsedOptions['enoent-ok']) {
-            // file does not exist; caller told us that's ok
-            resolve({
-              viewer,
-              filepath,
-              fullpath: prettyFullPath,
-              isDirectory: false,
-              data: ''
-            })
-          }
-
-          const error: CodedError = new Error(err.message)
-          error.stack = err.stack
-          error.code = 404
-          reject(error)
-        } else {
-          reject(err)
+    const handleError = (err: CodedError<string>) => {
+      if (err.code === 'ENOENT') {
+        if (parsedOptions['enoent-ok']) {
+          // file does not exist; caller told us that's ok
+          resolve({
+            viewer,
+            filepath,
+            fullpath: prettyFullPath,
+            isDirectory: false,
+            data: ''
+          })
         }
-      } else if (stats.isDirectory() || !parsedOptions['with-data']) {
-        resolve({
-          viewer,
-          filepath,
-          fullpath: prettyFullPath,
-          isDirectory: stats.isDirectory()
-        })
+
+        const error: CodedError = new Error(err.message)
+        error.stack = err.stack
+        error.code = 404
+        reject(error)
       } else {
-        readFile(fullpath, (err, data) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve({
-              viewer,
-              filepath,
-              fullpath: prettyFullPath,
-              data: data.toString(),
-              isDirectory: false
-            })
-          }
-        })
+        reject(err)
       }
-    })
+    }
+
+    if (parsedOptions['with-data']) {
+      readFile(fullpath, (err, data) => {
+        if (err) {
+          return handleError(err)
+        } else {
+          resolve({
+            viewer,
+            filepath,
+            fullpath: prettyFullPath,
+            data: data.toString(),
+            isDirectory: false
+          })
+        }
+      })
+    } else {
+      // note: stat not lstat, because we want to follow the link
+      stat(fullpath, (err, stats) => {
+        if (err) {
+          return handleError(err)
+        } else {
+          resolve({
+            viewer,
+            filepath,
+            fullpath: prettyFullPath,
+            isDirectory: stats.isDirectory()
+          })
+        }
+      })
+    }
   })
 }
