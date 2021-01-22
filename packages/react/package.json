@@ -15,7 +15,6 @@
     "url": "git+https://github.com/IBM/kui.git"
   },
   "dependencies": {
-    "@types/carbon__icons-react": "10.21.0",
     "react": "16.13.1",
     "react-dom": "16.13.1"
   },
