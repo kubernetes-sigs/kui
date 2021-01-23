@@ -32,7 +32,6 @@ import {
   inBrowser,
   ExecType,
   ExecOptions,
-  sameTab,
   disableInputQueueing
 } from '@kui-shell/core'
 
@@ -162,17 +161,6 @@ class Resizer {
     }
     document.addEventListener('select', this.clearXtermSelectionNow)
 
-    const ourTab = tab
-    this.doToggle = ({ tab }: { tab: Tab }) => {
-      // sidecar resize
-      if (sameTab(tab, ourTab)) {
-        this.resizeNow()
-      } else {
-        debug('toggle event, but not for our sidecar')
-      }
-    }
-    eventChannelUnsafe.on('/sidecar/toggle', this.doToggle)
-
     this.resize()
   }
 
@@ -187,7 +175,6 @@ class Resizer {
   destroy() {
     this.exitAltBufferMode()
     this.exitApplicationMode()
-    eventChannelUnsafe.off('/sidecar/toggle', this.doToggle)
     window.removeEventListener('resize', this.resizeNow)
     document.removeEventListener('select', this.clearXtermSelectionNow)
   }
