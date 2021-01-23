@@ -43,7 +43,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       try {
         await openSidecarByList(this, `kubectl create -f ${ROOT}/data/k8s/deployment.yaml ${inNamespace}`, 'myapp')
       } catch (err) {
-        return Common.oops(this)(err)
+        return Common.oops(this, true)(err)
       }
     })
   }
@@ -82,7 +82,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
             }
           })
       } catch (err) {
-        return Common.oops(this)(err)
+        return Common.oops(this, true)(err)
       }
     })
   }
@@ -115,7 +115,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       return CLI.command(`kubectl delete deployment myapp ${inNamespace}`, this.app)
         .then(ReplExpect.okWithAny)
         .then(() => waitTillNone('deployment', undefined, 'myapp', undefined, inNamespace))
-        .catch(Common.oops(this))
+        .catch(Common.oops(this, true))
     })
   }
 
@@ -123,11 +123,11 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     it('should delete the deployment by clicking on the sidecar delete button', async () => {
       try {
         await Util.clickSidecarModeButton(this, res, 'delete')
-        await this.app.client.$('#confirm-dialog').then(_ => _.waitForExist())
-        await this.app.client.$('#confirm-dialog .bx--btn--danger').then(_ => _.click())
+        await this.app.client.$(Selectors.CONFIRM_DIALOG).then(_ => _.waitForExist())
+        await this.app.client.$(Selectors.CONFIRM_DIALOG_CONFIRM_BUTTON).then(_ => _.click())
         await waitTillNone('deployment', undefined, 'myapp', undefined, inNamespace)
       } catch (err) {
-        return Common.oops(this)(err)
+        return Common.oops(this, true)(err)
       }
     })
   }

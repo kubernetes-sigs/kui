@@ -15,10 +15,8 @@
  */
 
 import React from 'react'
+import Modal from '../spi/Modal'
 import { i18n, eventChannelUnsafe, Tab as KuiTab } from '@kui-shell/core'
-import { Modal } from 'carbon-components-react'
-
-import '../../../web/css/static/Confirm.scss'
 
 const strings = i18n('plugin-core-support')
 
@@ -90,14 +88,13 @@ export default class Confirm extends React.PureComponent<Props, State | ActiveSt
       return (
         <Modal
           id="confirm-dialog"
-          open
-          danger
-          modalHeading={strings('pleaseConfirm')}
+          isOpen
+          titleIconVariant="danger"
+          title={strings('pleaseConfirm')}
           primaryButtonText={strings('yesIAmSure')}
           secondaryButtonText={strings('cancel')}
-          onRequestSubmit={() => this.onConfirm(true)}
-          onRequestClose={() => this.onConfirm(false)}
-          onSecondarySubmit={() => this.onConfirm(false)}
+          onSubmit={() => this.onConfirm(true)}
+          onClose={() => this.onConfirm(false)}
         >
           <p className="bx--modal-content__text">{strings('aboutToExecute')}</p>
           <p className="bx--modal-content__text">

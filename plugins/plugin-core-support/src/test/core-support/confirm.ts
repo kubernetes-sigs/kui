@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019, 2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ describe('Confirm dialog', function(this: Common.ISuite) {
 
   it('should not do anything if user cancels', () => {
     return CLI.command('confirm "echo hello"', this.app)
-      .then(() => this.app.client.$('#confirm-dialog'))
+      .then(() => this.app.client.$(Selectors.CONFIRM_DIALOG))
       .then(_ => _.waitForExist())
-      .then(() => this.app.client.$('#confirm-dialog .bx--btn--secondary'))
+      .then(() => this.app.client.$(Selectors.CONFIRM_DIALOG_CANCEL_BUTTON))
       .then(_ => _.click())
       .then(() =>
         ReplExpect.okWithCustom({
@@ -38,11 +38,11 @@ describe('Confirm dialog', function(this: Common.ISuite) {
 
   it('should execute if user confirms', () => {
     return CLI.command('confirm "echo hello"', this.app)
-      .then(() => this.app.client.$('#confirm-dialog'))
+      .then(() => this.app.client.$(Selectors.CONFIRM_DIALOG))
       .then(_ => _.waitForExist())
-      .then(() => this.app.client.$('#confirm-dialog .bx--btn--danger'))
+      .then(() => this.app.client.$(Selectors.CONFIRM_DIALOG_CONFIRM_BUTTON))
       .then(_ => _.click())
-      .then(() => this.app.client.$(`${Selectors.OUTPUT_LAST}`))
+      .then(() => this.app.client.$(Selectors.OUTPUT_LAST))
       .then(_ => _.waitForExist())
       .then(() => ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('hello') })) // <-- FIXME this does not seem correct
       .catch(Common.oops(this))
