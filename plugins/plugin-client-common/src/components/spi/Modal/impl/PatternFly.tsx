@@ -22,6 +22,10 @@ import { Button, Modal } from '@patternfly/react-core'
 export default function PatternFlyModal(props: Props): React.ReactElement {
   return (
     <Modal
+      id={props.id}
+      isOpen={props.isOpen}
+      title={props.title}
+      titleIconVariant={props.titleIconVariant}
       variant="small"
       actions={[
         <Button key="confirm" variant="primary" className="kui--modal-btn--primary" onClick={props.onSubmit}>
@@ -31,7 +35,8 @@ export default function PatternFlyModal(props: Props): React.ReactElement {
           {props.secondaryButtonText}
         </Button>
       ]}
-      {...props}
-    />
+    >
+      {props.children}
+    </Modal>
   )
 }
