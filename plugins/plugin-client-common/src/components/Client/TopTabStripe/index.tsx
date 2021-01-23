@@ -139,10 +139,6 @@ export default class TopTabStripe extends React.PureComponent<Props> {
     )
   }
 
-  /* private sidenav(args: CarbonHeaderArgs) {
-    return <About expanded={args.isSideNavExpanded} />
-  } */
-
   private headerName() {
     return (
       <KuiContext.Consumer>
