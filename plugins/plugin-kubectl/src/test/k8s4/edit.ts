@@ -56,13 +56,21 @@ commands.forEach(command => {
       })
     }
 
-    const edit = (name: string, kind: string | RegExp = 'Pod', nameAsShown = name, mode = 'raw') => {
+    const edit = (
+      name: string,
+      kind: string | RegExp = 'Pod',
+      nameAsShown = name,
+      mode = 'raw',
+      clickable?: boolean
+    ) => {
       it(`should edit it via ${command} edit with name=${name || 'no-name'}`, async () => {
         try {
           res = await CLI.command(`${command} edit pod ${name || ''} ${inNamespace}`, this.app)
             .then(ReplExpect.ok)
             .then(SidecarExpect.open)
-            .then(SidecarExpect.showing(nameAsShown, undefined, undefined, ns))
+            .then(
+              SidecarExpect.showing(nameAsShown, undefined, undefined, ns, undefined, undefined, undefined, clickable)
+            )
             .then(SidecarExpect.mode(mode))
             .then(
               SidecarExpect.yaml({
@@ -286,7 +294,7 @@ commands.forEach(command => {
 
     const name2 = 'nginx2'
     create(name2, 'pod2.yaml')
-    edit('', /List$/, '2 items', 'edit')
+    edit('', /List$/, '2 items', 'edit', false)
 
     edit(nginx)
     modify(nginx)

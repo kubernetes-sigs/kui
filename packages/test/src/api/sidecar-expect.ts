@@ -365,6 +365,9 @@ export const showing = (
   return res
 }
 
+export const showingNotClickable = (expectedName: string, expectedPackageName?: string) =>
+  showing(expectedName, undefined, undefined, expectedPackageName, undefined, undefined, undefined, false)
+
 export const showingTopNav = (expectedName: string) =>
   showing(expectedName, undefined, undefined, undefined, undefined, undefined, 'topnav')
 
