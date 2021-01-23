@@ -25,6 +25,7 @@ export default function PatternFlyTag(props: Props) {
       onClick={props.onClick}
       variant={props.kind}
       isSmall={props.size === 'small'}
+      tabIndex={props.tabIndex}
       className={['kui--tag', props.className].join(' ')}
     >
       {props.children}
