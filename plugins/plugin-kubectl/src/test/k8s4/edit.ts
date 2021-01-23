@@ -65,18 +65,34 @@ commands.forEach(command => {
     ) => {
       it(`should edit it via ${command} edit with name=${name || 'no-name'}`, async () => {
         try {
+          console.error('E1')
           res = await CLI.command(`${command} edit pod ${name || ''} ${inNamespace}`, this.app)
-            .then(ReplExpect.ok)
-            .then(SidecarExpect.open)
-            .then(
-              SidecarExpect.showing(nameAsShown, undefined, undefined, ns, undefined, undefined, undefined, clickable)
-            )
-            .then(SidecarExpect.mode(mode))
-            .then(
-              SidecarExpect.yaml({
-                kind
-              })
-            )
+
+          console.error('E2')
+          await ReplExpect.ok(res)
+
+          console.error('E3')
+          await SidecarExpect.open(res)
+
+          console.error('E4')
+          await SidecarExpect.showing(
+            nameAsShown,
+            undefined,
+            undefined,
+            ns,
+            undefined,
+            undefined,
+            undefined,
+            clickable
+          )(res)
+
+          console.error('E5')
+          await SidecarExpect.mode(mode)(res)
+
+          console.error('E6')
+          await SidecarExpect.yaml({
+            kind
+          })(res)
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -97,26 +113,26 @@ commands.forEach(command => {
           // we'll inject some garbage that we expect to fail validation
           const garbage = 'zzzzzz'
 
-          console.error('1')
+          console.error('ME1')
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.keys(`${where}${garbage}`) // <-- injecting garbage
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save')).then(_ => _.click())
-          console.error('2')
+          console.error('ME2')
 
           // an error state and the garbage text had better appear in the toolbar text
           await SidecarExpect.toolbarAlert({ type: 'error', text: expectedError || garbage, exact: false })(res)
-          console.error('3')
+          console.error('ME3')
 
           // expect line number to be highlighted, and for that line to be visible
           await this.app.client
             .$(`${Selectors.SIDECAR_TAB_CONTENT(res.count)} .kui--editor-line-highlight`)
             .then(_ => _.waitForDisplayed())
-          console.error('4')
+          console.error('ME4')
 
           if (revert) {
             await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Revert')).then(_ => _.click())
-            console.error('5')
+            console.error('ME5')
             let idx = 0
             await this.app.client.waitUntil(
               async () => {
@@ -129,7 +145,7 @@ commands.forEach(command => {
               { timeout: CLI.waitTimeout }
             )
           }
-          console.error('6')
+          console.error('ME6')
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -164,9 +180,9 @@ commands.forEach(command => {
           const saveButton = await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
           await saveButton.click()
           // await SidecarExpect.toolbarAlert({ type: 'success', text: 'Successfully Applied', exact: false })(res)
-          console.error('1')
+          console.error('M1')
           await saveButton.waitForExist({ timeout: 10000, reverse: true })
-          console.error('2')
+          console.error('M2')
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -204,7 +220,7 @@ commands.forEach(command => {
             await _.click()
           })
 
-          console.error('1')
+          console.error('CE1')
           await new Promise(resolve => setTimeout(resolve, 5000))
 
           // edit button should not exist
@@ -213,21 +229,21 @@ commands.forEach(command => {
             .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
 
           // should still be showing pod {name}, but now with the yaml tab selected
-          console.error('2')
+          console.error('CE2')
           await SidecarExpect.showing(name, undefined, undefined, ns)(res)
-          console.error('3')
+          console.error('CE3')
           await SidecarExpect.mode('raw')(res)
 
           // also: no back/forward buttons should be visible
-          console.error('4')
+          console.error('CE4')
           await this.app.client
             .$(Selectors.SIDECAR_BACK_BUTTON(res.count))
             .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
-          console.error('5')
+          console.error('CE5')
           await this.app.client
             .$(Selectors.SIDECAR_FORWARD_BUTTON(res.count))
             .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
-          console.error('6')
+          console.error('CE6')
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -299,10 +315,8 @@ commands.forEach(command => {
     edit(nginx)
     modify(nginx)
     modify(nginx, 'foo1', 'bar1') // successfully re-modify the resource in the current tab
-    console.error('validation error')
     validationError(true) // do unsupported edits in the current tab, and then undo the changes
     modify(nginx, 'foo2', 'bar2') // after error, successfully re-modify the resource in the current tab
-    console.error('parse error')
     parseError() // after sucess, do unsupported edits
 
     // FIXME: after this, the test is not working

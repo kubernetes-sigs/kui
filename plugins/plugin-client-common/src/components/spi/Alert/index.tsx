@@ -17,10 +17,10 @@
 import React from 'react'
 import Props from './model'
 
-const Carbon = React.lazy(() => import('./impl/Carbon'))
+const PatternFly = React.lazy(() => import('./impl/PatternFly'))
 
 export { Props }
 
 export default function AlertSpi(props: Props): React.ReactElement {
-  return <Carbon {...props} />
+  return <PatternFly {...props} />
 }

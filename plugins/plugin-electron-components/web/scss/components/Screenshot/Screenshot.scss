@@ -24,118 +24,27 @@ body .bx--toast-notification {
 }
 
 body[kui-theme-style] {
-  #screenshot-captured.bx--toast-notification {
-    flex-direction: row;
+  #screenshot-captured.kui--toolbar-alert {
+    position: absolute;
+    bottom: 4.25rem;
+    right: 2em;
+    width: 30rem;
+    height: auto;
+    z-index: 5;
 
-    &:not(.bx--toast-notification--low-contrast) a {
-      &:hover {
-        text-decoration: none;
-      }
-      &,
-      &:hover {
-        color: var(--color-screenshot-button-foreground);
-      }
-      &.bx--btn--primary {
-        background-color: var(--color-screenshot-primary-button-background);
-        border: var(--color-screenshot-primary-button-border);
-        &:hover {
-          background-color: var(--color-screenshot-primary-button-background-hover);
-        }
-      }
-      &.bx--btn--secondary {
-        background-color: var(--color-screenshot-secondary-button-background);
-        border: var(--color-screenshot-secondary-button-border);
-        &:hover {
-          background-color: var(--color-screenshot-secondary-button-background-hover);
-          border: var(--color-screenshot-secondary-button-border-hover);
-        }
-      }
+    .kui--screenshot-captured-bottom-message {
+      /* bookend the spacing with the top text */
+      margin-top: 1.5rem;
+      margin-bottom: 1rem;
     }
 
-    .bx--toast-notification__title,
-    .bx--toast-notification__subtitle {
-      color: var(--color-screenshot-foreground);
-    }
-
-    &.bx--toast-notification--success {
-      border-color: var(--color-ok);
-
-      svg.bx--toast-notification__icon {
-        & {
-          stroke: var(--color-ok);
-          fill: var(--color-base07);
-        }
-        path {
-          fill: unset;
-        }
-      }
-    }
-
-    .bx--toast-notification__close-button {
-      &:focus {
-        outline-color: var(--color-screenshot-foreground);
-      }
-
-      .bx--toast-notification__close-icon {
-        &,
-        & path {
-          fill: var(--color-screenshot-foreground);
-        }
-      }
-    }
-
-    &.bx--toast-notification--info,
-    &.bx--toast-notification--success {
-      position: absolute;
-      bottom: 2.25rem;
-      right: 0em;
-      width: 30rem;
+    .screenshot-image {
+      max-width: 100%;
       height: auto;
-      z-index: 5;
-
-      background: var(--color-screenshot-background);
-      color: var(--color-screenshot-foreground);
-
-      .kui--screenshot-captured-bottom-message {
-        /* bookend the spacing with the top text */
-        margin-top: 1.5rem;
-        margin-bottom: 1rem;
-      }
-
-      .screenshot-image {
-        max-width: 100%;
-        height: auto;
-        max-height: 17rem;
-        object-fit: contain;
-        object-position: top left;
-        box-shadow: 0 0 2px var(--color-base05);
-      }
+      max-height: 17rem;
+      object-fit: contain;
+      object-position: top left;
+      box-shadow: 0 0 2px var(--color-base05);
     }
   }
-}
-
-#kui--screenshot-overlay {
-  position: absolute;
-  z-index: 10000;
-
-  cursor: copy !important;
-  border: 2px dashed var(--color-base06);
-
-  /* occlude everything else */
-  box-shadow: 0 0 0 1000px rgba(20, 20, 20, 0.5);
-
-  filter: sepia(0.75) opacity(0.5);
-
-  &.kui--screenshot-overlay-transparent {
-    border: none;
-    filter: none;
-    opacity: 0;
-  }
-}
-
-body[kui-theme-style='light'] #kui--screenshot-overlay {
-  background: var(--color-base02);
-}
-body[kui-theme-style='dark'] #kui--screenshot-overlay {
-  background: var(--color-base04);
 }
