@@ -16,9 +16,7 @@
 
 import React from 'react'
 
-const Carbon = React.lazy(() => import('./impl/Carbon'))
 const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
-import KuiContext from '../../Client/context'
 
 import Props, { BreadcrumbView } from './model'
 export { Props, BreadcrumbView }
@@ -34,9 +32,5 @@ export function getCurrentPageIdx(props: Props) {
 }
 
 export default function BreadcrumbSpi(props: Props): React.ReactElement {
-  return (
-    <KuiContext.Consumer>
-      {config => (config.components === 'patternfly' ? <PatternFly4 {...props} /> : <Carbon {...props} />)}
-    </KuiContext.Consumer>
-  )
+  return <PatternFly4 {...props} />
 }

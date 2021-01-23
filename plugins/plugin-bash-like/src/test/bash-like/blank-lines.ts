@@ -44,14 +44,14 @@ describe('Comments and blank line handling', function(this: Common.ISuite) {
     CLI.command(`open ../../README.md  #hello  `, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('README.md'))
+      .then(SidecarExpect.showingNotClickable('README.md'))
       .catch(Common.oops(this, true)))
 
   it('should handle a command with suffix comment', () =>
     CLI.command(`open ../../LICENSE ### ### # #    hello  `, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing('LICENSE'))
+      .then(SidecarExpect.showingNotClickable('LICENSE'))
       .catch(Common.oops(this, true)))
 
   const comment = 'open ../../README.md'
