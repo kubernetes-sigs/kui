@@ -145,80 +145,6 @@ export default class Screenshot extends React.PureComponent<Props, State> {
     })
   }
 
-  /** Transition to a state where we are ready to capture a screenshot */
-  private activate() {
-    this.cleaners = []
-    const elements = document.querySelectorAll('.kui--screenshotable')
-    for (let idx = 0; idx < elements.length; idx++) {
-      this.cleaners.push(this.wrap(elements[idx]))
-    }
-
-    const onKeyUp = (evt: KeyboardEvent) => {
-      if (evt.key === 'Escape') {
-        evt.stopPropagation()
-        this.deactivate()
-        this.setState({ isActive: false })
-      }
-    }
-    document.body.addEventListener('keyup', onKeyUp)
-    this.cleaners.push(() => document.body.removeEventListener('keyup', onKeyUp))
-  }
-
-  /** Number to css "px" */
-  private px(N: number) {
-    return `${N}px`
-  }
-
-  /** Wrap a given dom Element so that it is screenshotable */
-  private wrap(element: Element) {
-    const onMouseOver = (evt: MouseEvent) => {
-      evt.stopPropagation()
-
-      if (this.overlayCleaner) {
-        this.overlayCleaner()
-      }
-
-      const pos = element.getBoundingClientRect()
-      const overlay = document.createElement('div')
-      overlay.id = 'kui--screenshot-overlay'
-      overlay.style.left = this.px(pos.left)
-      overlay.style.top = this.px(pos.top)
-      overlay.style.width = this.px(pos.width)
-      overlay.style.height = this.px(pos.height)
-      document.body.appendChild(overlay)
-      element.classList.add('kui--screenshot-hover')
-      if (this.renderOverlayTransparent) {
-        overlay.classList.add('kui--screenshot-overlay-transparent')
-      }
-
-      const onMouseOut = () => {
-        overlay.remove()
-        element.classList.remove('kui--screenshot-hover')
-      }
-      overlay.addEventListener('mouseout', onMouseOut, { once: true })
-
-      overlay.addEventListener(
-        'click',
-        () => {
-          onMouseOut()
-          this.onClickScreenshotRegion(element)
-        },
-        { once: true }
-      )
-
-      this.overlayCleaner = onMouseOut
-      this.toggleOverlayTransparency = () => {
-        overlay.classList.toggle('kui--screenshot-overlay-transparent')
-      }
-    }
-
-    element.addEventListener('mouseover', onMouseOver)
-
-    return () => {
-      element.removeEventListener('mouseover', onMouseOver)
-    }
-  }
-
   /** User has clicked on the Save to Desktop button */
   private async saveToDisk() {
     const { join } = await import('path')
@@ -262,6 +188,8 @@ export default class Screenshot extends React.PureComponent<Props, State> {
     this.setState({ isActive: false, captured: undefined })
   }
 
+  private readonly _onClose = this.closeNotification.bind(this)
+
   /** Render a ToastNotification to tell the user what we captured */
   private notification() {
     if (this.state && this.state.captured) {
@@ -273,13 +201,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
       }
 
       return (
-        <Alert
-          id="screenshot-captured"
-          timeout={timeout}
-          alert={alert}
-          className="kui--inverted-color-context"
-          onCloseButtonClick={this.closeNotification.bind(this)}
-        >
+        <Alert id="screenshot-captured" isGlobal timeout={timeout} alert={alert} onCloseButtonClick={this._onClose}>
           <div className="flex-layout">
             <img src={this.state.captured.toDataURL()} className="screenshot-image" />
           </div>
@@ -289,51 +211,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
     }
   }
 
-  /** User has clicked on the screenshot button */
-  private onScreenshotButtonClick(evt: MouseEvent) {
-    evt.preventDefault()
-
-    this.setState(curState => {
-      const isActive = !curState.isActive
-
-      if (!isActive) {
-        this.deactivate()
-      } else {
-        this.activate()
-      }
-
-      return { isActive, captured: undefined }
-    })
-  }
-
-  /** Render the screenshot button */
-  /* private button() {
-    const active = this.state.isActive
-    const onClick = this.onScreenshotButtonClick.bind(this)
-
-    return (
-      <a
-        href="#"
-        tabIndex={-1}
-        className="kui--tab-navigatable clickable kui--screenshot-button"
-        onClick={onClick}
-        data-active={active}
-      >
-        {active ? (
-          <Icons icon="ScreenshotInProgress" onMouseDown={evt => evt.preventDefault()} />
-        ) : (
-          <Icons icon="Screenshot" onMouseDown={evt => evt.preventDefault()} />
-        )}
-      </a>
-    )
-  } */
-
   public render() {
-    return (
-      <React.Fragment>
-        {this.notification()}
-        {/* this.button() */}
-      </React.Fragment>
-    )
+    return <React.Fragment>{this.notification()}</React.Fragment>
   }
 }
