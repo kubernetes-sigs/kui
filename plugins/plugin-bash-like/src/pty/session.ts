@@ -18,7 +18,7 @@
 
 import Debug from 'debug'
 
-import { inBrowser, inElectron, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
+import { eventBus, inBrowser, inElectron, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
 
 import { Channel, InProcessChannel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -117,6 +117,13 @@ async function newSessionForTab(tab: Tab) {
 
   await thisSession
   tab.classList.add('kui--session-init-done')
+}
+
+/** Connection to Kui proxy has been severed */
+export function invalidateSession(tab: Tab) {
+  _singleChannel = undefined
+  eventBus.emit('/tab/offline', tab)
+  eventBus.emitWithTabId(`/tab/offline`, tab.state.uuid)
 }
 
 /**
