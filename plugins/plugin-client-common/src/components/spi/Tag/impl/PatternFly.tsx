@@ -20,5 +20,7 @@ import { Badge } from '@patternfly/react-core'
 import Props from '../model'
 
 export default function PatternFlyTag(props: Props) {
-  return <Badge {...props} className={['kui--tag', props.className, props.spanclassname].join(' ')} />
+  const color =
+    props.type === 'ok' ? 'green-background' : props.type === 'error' ? 'red-background' : 'yellow-background'
+  return <Badge {...props} className={['kui--tag', color, props.spanclassname].join(' ')} />
 }
