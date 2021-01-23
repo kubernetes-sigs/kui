@@ -42,9 +42,9 @@ export const SIDECAR_FULLSCREEN = (N: number, splitIndex = 1) => `${SIDECAR(N, s
 export const SIDECAR_WITH_FAILURE = (N: number, splitIndex = 1) =>
   `${SIDECAR_BASE(N, splitIndex)}.visible.activation-success-false`
 export const SIDECAR_ACTIVATION_TITLE = (N: number, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name-hash .bx--link`
+  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name-hash a`
 export const SIDECAR_TITLE = (N: number, splitIndex = 1, clickable = true) =>
-  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name` + (clickable ? ' .bx--link' : '')
+  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name` + (clickable ? ' a' : '')
 export const SIDECAR_HERO_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .sidecar-header .sidecar-header-name`
 export const SIDECAR_LEFTNAV_TITLE = (N: number, splitIndex = 1) =>
@@ -52,9 +52,9 @@ export const SIDECAR_LEFTNAV_TITLE = (N: number, splitIndex = 1) =>
 export const SIDECAR_HEADER_NAVIGATION = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar--titlebar-navigation`
 export const SIDECAR_BREADCRUMBS = (N: number, splitIndex = 1) =>
-  `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .bx--breadcrumb .bx--breadcrumb-item .bx--link`
+  `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .kui--breadcrumb .kui--breadcrumb-item`
 export const SIDECAR_PACKAGE_NAME_TITLE = (N: number, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-namespace .bx--link`
+  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-namespace`
 export const SIDECAR_POPUP_TITLE = SIDECAR_TITLE
 export const SIDECAR_POPUP_HERO_TITLE = SIDECAR_HERO_TITLE
 export const SIDECAR_KIND = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .kui--sidecar-kind`

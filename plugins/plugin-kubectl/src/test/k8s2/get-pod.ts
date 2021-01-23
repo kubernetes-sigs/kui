@@ -196,7 +196,7 @@ commands.forEach(command => {
         .then(ReplExpect.ok)
         .then(SidecarExpect.open)
         .then(SidecarExpect.mode('raw'))
-        .then(SidecarExpect.showing(getListAsYAMLCommand))
+        .then(SidecarExpect.showingNotClickable(getListAsYAMLCommand))
         .catch(Common.oops(this, true))
     })
 

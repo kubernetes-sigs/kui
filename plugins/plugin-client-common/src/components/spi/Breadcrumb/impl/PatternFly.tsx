@@ -27,7 +27,7 @@ export default class PatternflyBreadcrumb extends React.PureComponent<Props> {
     const currentPageIdx = getCurrentPageIdx(this.props)
 
     return (
-      <Breadcrumb>
+      <Breadcrumb className="kui--breadcrumb">
         {this.props.breadcrumbs.map((_, idx) => {
           const onClick = _.command && (() => this.props.repl.pexec(_.command))
           return (
@@ -36,6 +36,7 @@ export default class PatternflyBreadcrumb extends React.PureComponent<Props> {
               key={idx}
               className={[
                 _.className,
+                'kui--breadcrumb-item',
                 _.deemphasize && 'kui--secondary-breadcrumb',
                 idx === currentPageIdx && 'kui--current-page-breadcrumb'
               ]

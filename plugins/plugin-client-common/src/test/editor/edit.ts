@@ -60,14 +60,14 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
     CLI.command(`edit ${nonExistFilePath}`, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(nonExistFileName))
+      .then(SidecarExpect.showingNotClickable(nonExistFileName))
       .catch(Common.oops(this, true)))
 
   it(`should open ${nonExistFilePath}`, () =>
     CLI.command(`open ${nonExistFilePath}`, this.app)
       .then(ReplExpect.ok)
       .then(SidecarExpect.open)
-      .then(SidecarExpect.showing(nonExistFileName))
+      .then(SidecarExpect.showingNotClickable(nonExistFileName))
       .catch(Common.oops(this, true)))
 
   it(`should rm ${nonExistFilePath}`, () =>
@@ -86,7 +86,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
       const res = await CLI.command(`edit --create ${nonExistFilePath2}`, this.app)
         .then(ReplExpect.ok)
         .then(SidecarExpect.open)
-        .then(SidecarExpect.showing(nonExistFileName2))
+        .then(SidecarExpect.showingNotClickable(nonExistFileName2))
 
       await setValue(res, 'testing edit non-existing file')
       await save(res)
@@ -99,7 +99,7 @@ Common.pDescribe(`editor basics ${process.env.MOCHA_RUN_TARGET || ''}`, function
       const res = await CLI.command(`open ${nonExistFilePath2}`, this.app)
         .then(ReplExpect.ok)
         .then(SidecarExpect.open)
-        .then(SidecarExpect.showing(nonExistFileName2))
+        .then(SidecarExpect.showingNotClickable(nonExistFileName2))
 
       await verifyTextExist(
         `${Selectors.SIDECAR(res.count)} .monaco-editor .view-lines`,
