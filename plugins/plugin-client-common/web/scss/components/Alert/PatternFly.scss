@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren } from 'react'
-import { ToolbarAlert } from '@kui-shell/core'
+.kui--toolbar-alert {
+  white-space: normal;
 
-type Props = PropsWithChildren<{
-  alert: ToolbarAlert
-  id?: string
-  timeout?: number
-  isGlobal?: boolean /* defaults to false */
-  className?: string
-  hideCloseButton?: boolean
-  onCloseButtonClick?: () => void
-}>
-
-export default Props
+  h4 {
+    font-size: inherit;
+  }
+}

@@ -1087,6 +1087,10 @@ body {
   --color-ui-05: var(--color-base04);
   --color-ui-06: var(--color-base02);
 
+  /** Themes really should define these. But we can provide a rough approximation. */
+  --color-light-red: rgba(var(--color-red-rgb), 0.9);
+  --color-light-green: rgba(var(--color-red-green), 0.9);
+
   /* e.g. xterm ANSI colors; in case themes want a light yellow for
    badges, and a darker yellow for text */
   --color-yellow-text: var(--color-yellow);
