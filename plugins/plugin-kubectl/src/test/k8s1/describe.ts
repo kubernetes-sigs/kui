@@ -151,11 +151,11 @@ commands.forEach(command => {
         })
 
         // wait for delete confirmation popup
-        await this.app.client.$('#confirm-dialog .bx--btn--danger').then(async _ => {
+        await this.app.client.$(Selectors.CONFIRM_DIALOG_CONFIRM_BUTTON).then(async _ => {
           await _.waitForExist()
           await _.click()
         })
-        await this.app.client.$('#confirm-dialog').then(_ => _.waitForExist({ timeout: 20000, reverse: true })) // go away!
+        await this.app.client.$(Selectors.CONFIRM_DIALOG).then(_ => _.waitForExist({ timeout: 20000, reverse: true })) // go away!
       } catch (err) {
         await Common.oops(this, true)(err)
       }

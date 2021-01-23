@@ -186,8 +186,8 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
             await deletionButton.waitForExist()
             await deletionButton.click()
 
-            await this.app.client.$('#confirm-dialog').then(_ => _.waitForExist())
-            await this.app.client.$('#confirm-dialog .bx--btn--danger').then(_ => _.click())
+            await this.app.client.$(Selectors.CONFIRM_DIALOG).then(_ => _.waitForExist())
+            await this.app.client.$(Selectors.CONFIRM_DIALOG_CONFIRM_BUTTON).then(_ => _.click())
 
             // exepct a deletion table
             const deletionEntitySelector = await ReplExpect.okWithCustom<string>({

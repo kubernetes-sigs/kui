@@ -327,3 +327,8 @@ export const DROPDOWN_N = (N: number, splitIndex = 1) => `${OUTPUT_N(N, splitInd
 export const DROPDOWN_MENU_ITEM_NAMED = (label: string) => `.kui--dropdown__menu-item[data-mode="${label}"]`
 export const DROPDOWN_N_MENU_ITEM = (N: number, label: string, splitIndex = 1) =>
   `${DROPDOWN_N(N, splitIndex)} ${DROPDOWN_MENU_ITEM_NAMED(label)}`
+
+/** Confirm Dialog */
+export const CONFIRM_DIALOG = '#confirm-dialog'
+export const CONFIRM_DIALOG_CONFIRM_BUTTON = `${CONFIRM_DIALOG} .kui--modal-btn--primary`
+export const CONFIRM_DIALOG_CANCEL_BUTTON = `${CONFIRM_DIALOG} .kui--modal-btn--secondary`

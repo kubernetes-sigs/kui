@@ -481,9 +481,9 @@ export class TestMMR {
               await buttonElt.click()
 
               if (button.confirm) {
-                const dialog = '#confirm-dialog'
-                const denyItSel = `${dialog} .bx--btn--secondary`
-                const confirmItSel = `${dialog} .bx--btn--danger`
+                // const dialog = Selectors.CONFIRM_DIALOG
+                const denyItSel = Selectors.CONFIRM_DIALOG_CANCEL_BUTTON
+                const confirmItSel = Selectors.CONFIRM_DIALOG_CONFIRM_BUTTON
                 const [denyIt, confirmIt] = await Promise.all([app.client.$(denyItSel), app.client.$(confirmItSel)])
 
                 await Promise.all([denyIt, confirmIt].map(_ => _.waitForDisplayed()))
