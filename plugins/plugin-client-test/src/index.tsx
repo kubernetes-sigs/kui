@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { Kui, KuiProps, ContextWidgets, MeterWidgets } from '@kui-shell/plugin-client-common'
+import { Kui, KuiProps, ContextWidgets, MeterWidgets, SpaceFiller } from '@kui-shell/plugin-client-common'
 import CounterWidget from './CounterWidget'
 
 /** We have tests that ensure the scss import worked */
@@ -37,6 +37,8 @@ export default function TestClient(props: KuiProps) {
       <ContextWidgets>
         <CounterWidget idx={0} />
       </ContextWidgets>
+
+      <SpaceFiller />
 
       <MeterWidgets>
         <CounterWidget idx={1} />
