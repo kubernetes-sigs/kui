@@ -27,7 +27,6 @@ import {
   Abortable,
   FlowControllable,
   eventChannelUnsafe,
-  eventBus,
   XtermResponse,
   CodedError,
   inBrowser,
@@ -39,8 +38,8 @@ import {
 
 import Options from './options'
 import ChannelId from './channel-id'
-import { getChannelForTab } from './session'
 import { cleanupTerminalAfterTermination } from './util'
+import { getChannelForTab, invalidateSession } from './session'
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 
 const debug = Debug('plugins/bash-like/pty/client')
@@ -792,8 +791,7 @@ const getOrCreateChannel = async (
       ws.removeEventListener('close', onClose)
       if (!tab.state.closed) {
         debug('attempting to reestablish connection, because the tab is still open')
-        eventBus.emit('/tab/offline', tab)
-        eventBus.emitWithTabId(`/tab/offline`, tab.state.uuid)
+        invalidateSession(tab)
       }
     }
     ws.on('close', onClose)
