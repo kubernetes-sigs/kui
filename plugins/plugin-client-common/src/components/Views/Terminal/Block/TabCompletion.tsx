@@ -19,7 +19,6 @@
 import Debug from 'debug'
 import React from 'react'
 import minimist from 'yargs-parser'
-import { Button } from 'carbon-components-react'
 import {
   typeahead,
   getCurrentTab,
@@ -29,6 +28,7 @@ import {
   Split
 } from '@kui-shell/core'
 
+import Button from '../../../spi/Button'
 import { InputProvider as Input } from './Input'
 import '../../../../../web/css/static/TabCompletion.scss'
 
@@ -349,7 +349,7 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
 
     return (
       <div className="kui--tab-completions--option" key={idx} data-value={value}>
-        <Button href="#" size="small" tabIndex={1} onClick={() => this.completeWith(idx)}>
+        <Button size="small" tabIndex={1} onClick={() => this.completeWith(idx)}>
           <React.Fragment>
             <span className="kui--tab-completions--option-partial">{preText}</span>
             <span className="kui--tab-completions--option-completion">{postText}</span>

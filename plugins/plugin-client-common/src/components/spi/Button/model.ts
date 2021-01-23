@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-interface Props {
+import { PropsWithChildren } from 'react'
+
+type Props = PropsWithChildren<{
+  tabIndex?: number
   className?: string
   onClick?: () => void
   size?: 'small' | 'default'
   kind?: 'tertiary' | 'secondary' | 'primary'
-  children: string
-}
+}>
 
 export default Props

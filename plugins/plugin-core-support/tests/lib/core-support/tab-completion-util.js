@@ -114,7 +114,7 @@ exports.tabbyWithOptions = (
             // then we expect non-visibility of the tab-completion popup
             // console.error('Expecting non-existence of popup')
             return ctx.app.client
-              .$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`)
+              .$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option button`)
               .then(_ =>
                 _.waitForDisplayed({
                   timeout: 10000,
@@ -128,14 +128,16 @@ exports.tabbyWithOptions = (
                 throw err
               })
           } else {
-            const selector = `${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`
+            const selector = `${Selectors.PROMPT_BLOCK_N(
+              count
+            )} .kui--tab-completions .kui--tab-completions--option button`
             // console.error('Expecting existence of popup', selector)
             return ctx.app.client.$(selector).then(_ => _.waitForDisplayed({ timeout: 10000 }))
           }
         })
         .then(() =>
           ctx.app.client
-            .$$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`)
+            .$$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option button`)
             .then(elements => Promise.all(elements.map(_ => _.getText())))
         )
         .then(expectArray(expected))
@@ -148,7 +150,7 @@ exports.tabbyWithOptions = (
             )} .kui--tab-completions .kui--tab-completions--option[data-value="${expected[click].replace(
               /\\/g,
               '\\\\'
-            )}"] a`
+            )}"] button`
             // console.error('clicking', click, selector)
             return ctx.app.client.$(selector).then(async _ => {
               await _.waitForDisplayed({ timeout: 10000 })
@@ -199,7 +201,9 @@ exports.tabbyWithOptionsThenCancel = (ctx, partial, expected) =>
         .then(() => ctx.app.client.$(Selectors.CURRENT_PROMPT))
         .then(setValue(`${partial}${Keys.TAB}`))
         .then(() =>
-          ctx.app.client.$(`${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option a`)
+          ctx.app.client.$(
+            `${Selectors.PROMPT_BLOCK_N(count)} .kui--tab-completions .kui--tab-completions--option button`
+          )
         )
         .then(_ => _.waitForDisplayed())
         .then(() =>
