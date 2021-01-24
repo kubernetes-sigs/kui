@@ -23,7 +23,7 @@ html.kui {
 
   &.kui--14px {
     --kui--master-font-size: 14px;
-    --kui--master-font-scale: 1calc (14 / 16);
+    --kui--master-font-scale: calc (14 / 16);
     font-size: var(--kui--master-font-size);
   }
 

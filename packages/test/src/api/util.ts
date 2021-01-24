@@ -182,8 +182,8 @@ export const getValueFromMonaco = async (res: AppAndCount, container?: string) =
   if (!container) {
     container =
       res.splitIndex !== undefined
-        ? `${Selectors.PROMPT_BLOCK_N_FOR_SPLIT(res.count, res.splitIndex)} .bx--tab-content:not([hidden])`
-        : `${Selectors.PROMPT_BLOCK_N(res.count)} .bx--tab-content:not([hidden])`
+        ? `${Selectors.PROMPT_BLOCK_N_FOR_SPLIT(res.count, res.splitIndex)} .kui--tab-content:not([hidden])`
+        : `${Selectors.PROMPT_BLOCK_N(res.count)} .kui--tab-content:not([hidden])`
   }
 
   const selector = `${container} .monaco-editor-wrapper`
