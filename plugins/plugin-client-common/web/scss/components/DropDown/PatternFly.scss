@@ -17,6 +17,21 @@
 @import '../StatusStripe/mixins';
 @import '../Terminal/mixins';
 
+body[kui-theme-style='light'] {
+  @include StatusStripeElement {
+    .pf-c-dropdown__menu .pf-c-dropdown__menu-item {
+      color: var(--color-base00);
+    }
+  }
+}
+body[kui-theme-style='dark'] {
+  @include StatusStripeElement {
+    .pf-c-dropdown__menu .pf-c-dropdown__menu-item {
+      color: var(--color-text-01);
+    }
+  }
+}
+
 body[kui-theme-style] {
   @include BlockOutput {
     .pf-c-dropdown__menu {
@@ -35,13 +50,17 @@ body[kui-theme-style] {
       margin-left: 0.5rem;
       margin-right: 0;
     }
+
+    .pf-c-dropdown__toggle,
+    .pf-c-dropdown__toggle-text {
+      color: var(--color-text-01);
+    }
   }
 
   .pf-c-dropdown__toggle,
   .pf-c-dropdown__toggle-text {
     display: flex;
     font-size: inherit;
-    color: var(--color-text-01);
     font-family: var(--font-sans-serif);
   }
 
