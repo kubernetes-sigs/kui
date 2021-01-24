@@ -16,9 +16,8 @@
 
 import React from 'react'
 import { Event, NativeImage } from 'electron'
-import { Button } from 'carbon-components-react'
-import { Alert } from '@kui-shell/plugin-client-common'
 import { i18n, eventChannelUnsafe } from '@kui-shell/core'
+import { Alert, Button } from '@kui-shell/plugin-client-common'
 
 import '../../web/scss/components/Screenshot/Screenshot.scss'
 
@@ -168,17 +167,12 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   /** Inside of the ToastNotification, render a Save to Desktop button */
   private saveToDiskButton() {
     return (
-      <div className="bx--btn-set">
-        <Button
-          href="#"
-          size="small"
-          kind="secondary"
-          onClick={() => this.setState({ isActive: false, captured: undefined })}
-        >
-          {strings('Done')}
-        </Button>
-        <Button href="#" size="small" className="screenshot-save-button" onClick={this.saveToDisk.bind(this)}>
+      <div className="kui--button-set">
+        <Button size="small" className="screenshot-save-button" onClick={this.saveToDisk.bind(this)}>
           {strings('Save to desktop')}
+        </Button>
+        <Button size="small" kind="tertiary" onClick={() => this.setState({ isActive: false, captured: undefined })}>
+          {strings('Done')}
         </Button>
       </div>
     )
@@ -190,7 +184,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
 
   private readonly _onClose = this.closeNotification.bind(this)
 
-  /** Render a ToastNotification to tell the user what we captured */
+  /** Render an Alert to tell the user what we captured */
   private notification() {
     if (this.state && this.state.captured) {
       const timeout = 10 * 1000
