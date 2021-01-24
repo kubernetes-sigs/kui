@@ -117,7 +117,7 @@ commands.forEach(command => {
           await new Promise(resolve => setTimeout(resolve, 2000))
           await this.app.client.keys(`${where}${garbage}`) // <-- injecting garbage
           await new Promise(resolve => setTimeout(resolve, 2000))
-          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save')).then(_ => _.click())
+          await this.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'Save')).then(_ => _.click())
           console.error('ME2')
 
           // an error state and the garbage text had better appear in the toolbar text
@@ -131,7 +131,7 @@ commands.forEach(command => {
           console.error('ME4')
 
           if (revert) {
-            await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Revert')).then(_ => _.click())
+            await this.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'Revert')).then(_ => _.click())
             console.error('ME5')
             let idx = 0
             await this.app.client.waitUntil(
@@ -177,7 +177,7 @@ commands.forEach(command => {
           await this.app.client.keys(`${Keys.End}${Keys.ENTER}${key}: ${value}${Keys.ENTER}`)
           await new Promise(resolve => setTimeout(resolve, 2000))
 
-          const saveButton = await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+          const saveButton = await this.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'Save'))
           await saveButton.click()
           // await SidecarExpect.toolbarAlert({ type: 'success', text: 'Successfully Applied', exact: false })(res)
           console.error('M1')
@@ -215,7 +215,7 @@ commands.forEach(command => {
           await SidecarExpect.mode(defaultModeForGet)(res)
 
           // click the edit button
-          await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button')).then(async _ => {
+          await this.app.client.$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'edit-button')).then(async _ => {
             await _.waitForDisplayed()
             await _.click()
           })
@@ -225,7 +225,7 @@ commands.forEach(command => {
 
           // edit button should not exist
           await this.app.client
-            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
+            .$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'edit-button'))
             .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
 
           // should still be showing pod {name}, but now with the yaml tab selected
@@ -271,7 +271,7 @@ commands.forEach(command => {
 
           // edit button should not exist
           await this.app.client
-            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'edit-button'))
+            .$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'edit-button'))
             .then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
 
           // try editing the summary mode
@@ -292,7 +292,7 @@ commands.forEach(command => {
           assert.ok(actualText === actualText2)
 
           await this.app.client
-            .$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'Save'))
+            .$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, 'Save'))
             .then(_ => _.waitForExist({ timeout: 10000, reverse: true })) // should not have apply button
         } catch (err) {
           await Common.oops(this, true)(err)

@@ -83,43 +83,6 @@ $focus-color: var(--color-brand-03);
 }
 
 .kui--sidecar-header-and-body {
-  .bx--tabs--scrollable {
-    display: flex;
-    font-size: inherit;
-    background-color: var(--color-sidecar-header);
-
-    .bx--tab-content {
-      padding: 0;
-    }
-    .bx--tab--overflow-nav-button:focus {
-      outline-color: $focus-color;
-    }
-    .bx--tab--overflow-nav-button svg {
-      fill: var(--color-text-01);
-    }
-    .bx--tabs__overflow-indicator--left,
-    .bx--tabs__overflow-indicator--right {
-      display: none;
-    }
-  }
-
-  .kui--sidecar-tabs-container .bx--tab-content,
-  .bx--tab-content {
-    /* TODO    @extend .full-height; */
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: hidden;
-
-    /* carbon override */
-    padding: 0;
-
-    &[aria-hidden='true'],
-    &[hidden] {
-      display: none;
-    }
-  }
-
   .kui--sidecar-content {
     display: flex;
     flex: 1;
@@ -142,64 +105,6 @@ $focus-color: var(--color-brand-03);
       display: none;
     }
   }
-
-  .bx--snippet {
-    & {
-      background: var(--color-sidecar-background-02);
-      border-color: transparent;
-      color: var(--color-text-01);
-      min-width: 20em;
-      font-family: var(--font-monospace);
-    }
-
-    &.bx--snippet--single {
-      &:after {
-        display: none;
-      }
-      .bx--snippet-container {
-        &:focus {
-          outline-color: $focus-color;
-        }
-
-        code {
-          pre {
-            font-family: unset;
-
-            &:after {
-              display: none;
-            }
-          }
-        }
-      }
-    }
-
-    code {
-      font-family: unset;
-      font-size: unset;
-      pre {
-        font-size: unset;
-        --color-selection-background: var(--color-base0C);
-      }
-    }
-
-    &.bx--snippet--multi {
-      .bx--snippet-container {
-        code {
-          pre {
-            white-space: pre-wrap;
-
-            &:after {
-              display: none;
-            }
-          }
-        }
-      }
-    }
-
-    .bx--snippet__icon {
-      fill: var(--color-text-01);
-    }
-  }
 }
 
 .minimized [data-view-id] > div:not(.sidecar-bottom-stripe) {
@@ -208,23 +113,4 @@ $focus-color: var(--color-brand-03);
 
 .kui--sidecar.visible.maximized {
   flex-basis: 100%;
-}
-
-body[kui-theme-style] .bx--copy-btn {
-  border-color: transparent;
-  background-color: transparent;
-  font-family: var(--font-sans-serif);
-
-  &:hover {
-    background-color: var(--color-base00);
-  }
-
-  &:focus {
-    outline-color: $focus-color;
-  }
-
-  .bx--copy-btn__feedback {
-    font-size: inherit;
-    background-color: var(--color-base03);
-  }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import React from 'react'
-import { Tabs, Tab } from 'carbon-components-react'
+import { Tabs, Tab, TabTitleText } from '@patternfly/react-core'
 
 import {
   eventChannelUnsafe,
@@ -39,6 +39,7 @@ import { BreadcrumbView } from '../../spi/Breadcrumb'
 import BaseSidecar, { Props, State } from './BaseSidecarV2'
 
 import '../../../../web/css/static/ToolbarButton.scss'
+import '../../../../web/scss/components/Sidecar/PatternFly.scss'
 
 /** Lazily load KuiContent; see https://github.com/IBM/kui/issues/3746 */
 const KuiContent = React.lazy(() => import('../../Content/KuiContent'))
@@ -203,30 +204,49 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
     eventChannelUnsafe.emit(`/mode/focus/on/tab/${this.props.uuid}/mode/${newMode.mode}`, newMode)
   }
 
+  /** eventKey property for a Tab */
+  private eventKey(idx: number) {
+    return idx
+  }
+
+  /** idx from the encoded eventKey */
+  private idxFromEventKey(eventKey: number) {
+    return eventKey
+  }
+
+  /** User has changed selected Tab */
+  private onSelect(_, eventKey: number) {
+    const idx = this.idxFromEventKey(eventKey)
+
+    // tell the views that we have changed focus
+    this.broadcastFocusChange(idx)
+
+    this.setState(curState => {
+      const toolbarText = curState.tabs[idx].toolbarText || curState.toolbarText
+      return Object.assign({}, curState, { currentTabIndex: idx, toolbarText })
+    })
+  }
+
+  private readonly _onSelect = this.onSelect.bind(this)
+
   // first div used to be sidecar-top-stripe
   private tabs() {
     return (
       <div className="kui--sidecar-tabs-container zoomable full-height" onClick={this._stopPropagation}>
         <Tabs
-          className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container"
-          selected={this.current.currentTabIndex}
-          onSelectionChange={(idx: number) => {
-            // tell the views that we have changed focus
-            this.broadcastFocusChange(idx)
-
-            this.setState(curState => {
-              const toolbarText = curState.tabs[idx].toolbarText || curState.toolbarText
-              return Object.assign({}, curState, { currentTabIndex: idx, toolbarText })
-            })
-          }}
+          className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container kui--sidecar-tabs"
+          activeKey={this.eventKey(this.current.currentTabIndex)}
+          onSelect={this._onSelect}
         >
           {this.current.tabs.map((mode: MultiModalMode, idx: number) => (
             <Tab
               key={mode.mode}
               id={mode.mode}
-              className="sidecar-bottom-stripe-button"
-              label={mode.label || mode.mode}
+              eventKey={this.eventKey(idx)}
+              className="sidecar-bottom-stripe-button kui--sidecar-tab kui--full-height"
+              title={<TabTitleText className="kui--sidecar-tab-label">{mode.label || mode.mode}</TabTitleText>}
               data-mode={mode.mode}
+              data-is-selected={idx === this.current.currentTabIndex || undefined}
               onMouseDown={this._preventDefault}
             >
               {this.tabContent(idx)}
@@ -258,7 +278,10 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
 
   private tabContent(idx: number) {
     return (
-      <div className="sidecar-content-container kui--tab-content">
+      <div
+        className="sidecar-content-container kui--tab-content"
+        hidden={idx !== this.current.currentTabIndex || undefined}
+      >
         <div className="custom-content">
           <ToolbarContainer
             tab={this.props.tab}
@@ -400,7 +423,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
       return (
         <div
           className={'kui--sidecar kui--inverted-color-context kui--sidecar-nested ' + this.width()}
-          ref={dom => this.setState({ dom })}
+          ref={this.dom}
           data-view="topnav"
           onClick={this._stopPropagation}
         >

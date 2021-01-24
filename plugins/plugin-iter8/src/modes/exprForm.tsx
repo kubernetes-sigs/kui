@@ -31,7 +31,6 @@ import {
 import { View32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
-import '@kui-shell/plugin-client-common/web/css/static/Tooltip.scss'
 import 'carbon-components/scss/components/combo-box/_combo-box.scss'
 import 'carbon-components/scss/components/toggle/_toggle.scss'
 import 'carbon-components/scss/components/select/_select.scss'

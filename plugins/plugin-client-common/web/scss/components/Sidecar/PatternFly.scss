@@ -14,12 +14,27 @@
  * limitations under the License.
  */
 
-@import '_mixins';
-@import '~carbon-components/scss/components/tile/_tile.scss';
+@import 'mixins';
+@import '../common/Lightweight';
 
-body[kui-theme-style] .bx--tile {
-  min-width: unset;
-  min-height: unset;
-  background-color: var(--color-base01);
-  padding: 1em;
+@include Sidecar {
+  /* We can get rid of this once we get rid of Carbon :( */
+  section[hidden] {
+    display: none;
+  }
+}
+
+@include SidecarTopTabLabel {
+  color: var(--color-text-01);
+}
+@include LightweightUI {
+  &[kui-theme-style='light'] {
+    @include SidecarTopTabLabel {
+      color: var(--color-base00);
+    }
+  }
+}
+
+@include SidecarTopTabSelectedBorder {
+  border-color: var(--color-base0C);
 }
