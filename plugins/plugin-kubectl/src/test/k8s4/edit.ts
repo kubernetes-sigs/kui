@@ -319,6 +319,8 @@ commands.forEach(command => {
     modify(nginx, 'foo2', 'bar2') // after error, successfully re-modify the resource in the current tab
     parseError() // after sucess, do unsupported edits
 
+    it('should refresh', () => Common.refresh(this))
+
     // FIXME: after this, the test is not working
     edit(nginx)
     validationError(true) // do unsupported edits in the current tab, then undo the changes
