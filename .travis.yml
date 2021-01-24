@@ -12,7 +12,6 @@ env:
     - WEBPACK_CLIENT_URL="http://localhost:9080/"
     - RUNNING_KUI_TEST=true
     - KUI_USE_HTTP=true
-    - IBMCLOUD_TRACE=true
     - CSP_ALLOWED_HOSTS="http://localhost:8081 ws://localhost:8081 http://localhost:9953 ws://localhost:9080 http://localhost:9080 ws://localhost:9081 http://localhost:9081 ws://localhost:9082 http://localhost:9082 ws://localhost:9084 http://localhost:9084"
     - PATH=bin:$PATH
     - TRAVIS_KUBE_SERVER_VERSION=17
@@ -44,7 +43,6 @@ install:
 
   - if [ -n "$NEEDS_K8S" ]; then ./tools/travis/microk8s.sh & k8s=$!; fi
   - npm ci
-  - if [ -n "$NEEDS_IBMCLOUD" ]; then ./tools/travis/ibmcloud.sh && ./tools/travis/ibmcloud-plugin-build-install.sh; fi
   - if [ -n "$CLIENT" ] && [ "$CLIENT" != "default" ]; then ./bin/switch-client.sh ${CLIENT-default}; fi
   - ./tools/codecov/instrument.sh
   - if [ "$MOCHA_RUN_TARGET" = "webpack" ]; then export KUI_USE_PROXY=true; if [ "$DEPLOY" = "cluster" ]; then npx kui-build-webpack && npx kui-build-docker-with-proxy && (kui-run-cproxy &); else npm run watch:webpack; fi; elif [ -z "$TEST_FROM_BUILD" ]; then npm run watch:electron; else npm run build:electron:$TRAVIS_OS_NAME:${TRAVIS_CPU_ARCH-amd64}; fi
@@ -69,7 +67,7 @@ jobs:
     #
     # Kubernetes Tests, using an electron-based client
     #
-    - env: N="k8s electron" NEEDS_K8S=true NEEDS_OC=true NEEDS_TOP=true MOCHA_RUN_TARGET=electron TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" KUI_DIST_PATH=${TEST_FROM_BUILD} NEEDS_IBMCLOUD=true NEEDS_HELM=true
+    - env: N="k8s electron" NEEDS_K8S=true NEEDS_OC=true NEEDS_TOP=true MOCHA_RUN_TARGET=electron TEST_FROM_BUILD="${TRAVIS_BUILD_DIR}/dist/electron/Kui-linux-x64/Kui" KUI_DIST_PATH=${TEST_FROM_BUILD} NEEDS_HELM=true
       script:
         - concurrently -n K8S 'npm run test1 k8s k8s-popup'
         - concurrently -n K8S1,LOGS,HELM 'npm run test1 k8s1' 'npm run test2 logs' 'npm run test3 helm' 
