@@ -20,7 +20,7 @@ import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/
 import { dirname } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 
-const timeout = 8000
+const timeout = 20000
 
 /** confirm the given toggler state */
 async function confirmState(this: Common.ISuite, res: ReplExpect.AppAndCount, isExpanded: boolean, kind: string) {
