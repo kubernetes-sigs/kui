@@ -24,6 +24,8 @@ import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, withKubeconfigFrom } from './options'
 
+import fastPathCases from './explain-fastpath'
+
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/controller/kubectl/explain')
 
@@ -305,7 +307,11 @@ async function fetch(command: string, args: Arguments, kindAsProvidedByUser: str
 }
 
 export function getKindAndVersion(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<Explained> {
-  if (!cache[kindAsProvidedByUser]) {
+  const fastPath = fastPathCases[kindAsProvidedByUser]
+  if (fastPath) {
+    // we have precomputed some of the common cases
+    return Promise.resolve(fastPath)
+  } else if (!cache[kindAsProvidedByUser]) {
     // otherwise, we need to do a more expensive call to `kubectl`
     cache[kindAsProvidedByUser] = fetch(command, args, kindAsProvidedByUser)
   }
