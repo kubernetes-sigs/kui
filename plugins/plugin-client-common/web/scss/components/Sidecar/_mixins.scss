@@ -26,6 +26,32 @@
   }
 }
 
+@mixin SidecarTopTabs {
+  .kui--sidecar-tabs {
+    @content;
+  }
+}
+
+@mixin SidecarTopTab {
+  .kui--sidecar-tab {
+    @content;
+  }
+}
+
+@mixin SidecarTopTabSelectedBorder {
+  @include SidecarTopTab {
+    button[data-is-selected]:after {
+      @content;
+    }
+  }
+}
+
+@mixin SidecarTopTabLabel {
+  .kui--sidecar-tab-label {
+    @content;
+  }
+}
+
 @mixin NestedSidecar {
   .kui--sidecar-nested {
     @content;

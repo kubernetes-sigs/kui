@@ -23,7 +23,6 @@ import TitleBar, { Props as TitleBarProps } from './TitleBar'
 
 import '../../../../web/css/static/sidecar.scss'
 import '../../../../web/css/static/sidecar-main.css'
-import '../../../../web/css/static/sidecar-carbon.css'
 import '../../../../web/scss/components/Sidecar/_index.scss'
 
 export interface SidecarOptions {
@@ -53,14 +52,14 @@ export type Props<R extends KResponse> = SidecarOptions &
   }
 
 export interface State {
-  /** screenshotable region */
-  dom?: HTMLElement
-
   /** maximized? */
   isMaximized?: boolean
 }
 
 export default class BaseSidecar<R extends KResponse, S extends State> extends React.PureComponent<Props<R>, S> {
+  /** screenshotable region */
+  protected readonly dom = React.createRef<HTMLDivElement>()
+
   protected readonly _preventDefault = (evt: React.SyntheticEvent) => evt.preventDefault()
   protected readonly _stopPropagation = (evt: React.SyntheticEvent) => evt.stopPropagation()
 
@@ -121,7 +120,7 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
 
   private onScreenshot() {
     setTimeout(() => {
-      eventChannelUnsafe.emit('/screenshot/element', this.state.dom)
+      eventChannelUnsafe.emit('/screenshot/element', this.dom.current)
     })
   }
 
