@@ -1,19 +1,20 @@
-@import 'carbon-components/scss/components/tooltip/_tooltip.scss';
-@import 'carbon-components/scss/components/notification/_toast-notification.scss';
+/*
+ * Copyright 2020-2021 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-body .bx--toast-notification {
-  /* provide default values for these color classes */
-  --color-screenshot-background: var(--color-base02);
-  --color-screenshot-foreground: var(--color-base06);
-  --color-screenshot-primary-button-background: var(--color-primary-button-background);
-  --color-screenshot-primary-button-border: var(--color-primary-button-border);
-  --color-screenshot-primary-button-background-hover: var(--color-primary-button-background-hover);
-  --color-screenshot-button-foreground: var(--color-text-01);
-  --color-screenshot-secondary-button-background: var(--color-secondary-button-background);
-  --color-screenshot-secondary-button-background-hover: var(--color-secondary-button-background-hover);
-  --color-screenshot-secondary-button-border: var(--color-secondary-button-border);
-  --color-screenshot-secondary-button-border-hover: var(--color-secondary-button-border-hover);
-}
+@import '@kui-shell/plugin-client-common/web/scss/components/ButtonSet';
 
 .kui--screenshot-button[data-active='true'] svg path {
   fill: var(--color-base0C);

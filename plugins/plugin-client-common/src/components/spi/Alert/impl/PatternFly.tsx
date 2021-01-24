@@ -64,6 +64,7 @@ export default class PatternFlyAlert extends React.PureComponent<Props, State> {
         title={this.props.alert.title}
         actionClose={!this.props.hideCloseButton && <AlertActionCloseButton onClose={this._onClose} />}
         timeout={this.props.timeout}
+        onTimeout={this._onClose}
         isInline={!this.props.isGlobal}
         variant={this.props.alert.type === 'error' ? 'danger' : this.props.alert.type}
       >
