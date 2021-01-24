@@ -54,6 +54,7 @@ export { default as LeftNavSidecar } from './components/Views/Sidecar/LeftNavSid
 
 // SPI
 export { default as Alert } from './components/spi/Alert'
+export { default as Button } from './components/spi/Button'
 export { default as Card } from './components/spi/Card'
 export { default as Popover } from './components/spi/Popover'
 export { default as Tag } from './components/spi/Tag'

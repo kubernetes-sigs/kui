@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { Button } from '@patternfly/react-core'
-
-import Props from '../model'
-
-export default function PatternFlyTag(props: Props) {
-  return (
-    <Button
-      onClick={props.onClick}
-      variant={props.kind}
-      isSmall={props.size === 'small'}
-      tabIndex={props.tabIndex}
-      className={['kui--button', 'kui--tag', props.className].join(' ')}
-    >
-      {props.children}
-    </Button>
-  )
+.kui--button-set {
+  .kui--button:not(:last-child) {
+    margin-right: 0.25em;
+  }
 }
