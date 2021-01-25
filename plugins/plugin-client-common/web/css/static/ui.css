@@ -414,6 +414,14 @@ pre.monospace {
   font-weight: inherit;
 }
 body[kui-theme-style] {
+  ol,
+  ul {
+    margin: 0;
+    padding-inline-start: 0;
+  }
+  li {
+    list-style-type: none;
+  }
   .small-bottom-pad {
     margin-bottom: 1ex;
     display: inline-flex;

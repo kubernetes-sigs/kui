@@ -54,6 +54,7 @@ import {
   PauseCircleIcon as Pause,
   RebootingIcon as Retry,
   SlidersHIcon as Sequence,
+  SearchIcon as Search,
   BellIcon as Notification,
   PlayCircleIcon as Play
 } from '@patternfly/react-icons'
@@ -136,6 +137,8 @@ export default function PatternFly4Icons(props: Props) {
       return <ScreenshotInProgress {...props} />
     case 'Split':
       return <TerminalPlusSidecar style={size20} {...props} />
+    case 'Search':
+      return <Search style={size20} {...props} />
     case 'Trash':
       return <Trash {...props} />
     case 'TerminalOnly':

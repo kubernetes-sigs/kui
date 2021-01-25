@@ -17,7 +17,7 @@
 import React from 'react'
 import { i18n } from '@kui-shell/core'
 import { Event, FoundInPageResult } from 'electron'
-import { Search as CarbonSearch } from 'carbon-components-react'
+import { Icons } from '@kui-shell/plugin-client-common'
 
 import '../../web/scss/components/Search/Search.scss'
 
@@ -79,10 +79,6 @@ export default class Search extends React.PureComponent<Props, State> {
     })
   }
 
-  /* public componentDidCatch(error, errorInfo) {
-    console.error('!!!!EEE', error, errorInfo)
-  }  */
-
   private async onChange() {
     if (this._input) {
       if (this._input.value.length === 0) {
@@ -124,11 +120,9 @@ export default class Search extends React.PureComponent<Props, State> {
     this._input.focus()
   }
 
-  private doFocus(search?: CarbonSearch) {
-    if (!!search && !!search['input'] && typeof search['input'].focus === 'function') {
-      if (!this._input) {
-        this._input = search['input']
-      }
+  private doFocus(input?: HTMLInputElement) {
+    if (!!input && !this._input) {
+      this._input = input
     }
 
     if (this.state.isActive && this._input) {
@@ -158,17 +152,34 @@ export default class Search extends React.PureComponent<Props, State> {
       this._input = undefined
       return <React.Fragment />
     } else {
+      /**
+       * NOTE: we need the ref input to manage the focus.
+       * We want the search input to focus when user hits ctrl+f,
+       * and stay focused when electron finds match.
+       * With PatternFly’s SearchInput (function component), we can’t access the refs and manage the focus.
+       * So, we crafted the search input by ourselves. See issue: https://github.com/IBM/kui/issues/4364
+       *
+       */
+
       // re: id, text-search test needs this
       return (
-        <div className="kui--search flex-layout" id="search-bar">
-          <CarbonSearch
-            id="search-input"
-            placeHolderText={strings('placeHolderText')}
-            size="sm"
-            labelText="Search"
-            onChange={this.onChange.bind(this)}
-            ref={this.doFocus.bind(this)}
-          />
+        <div className="pf-c-search-input kui--search flex-layout" id="search-bar">
+          <span className="pf-c-search-input__text">
+            <span className="pf-c-search-input__icon">
+              <Icons icon="Search" />
+            </span>
+            <input
+              className="pf-c-search-input__text-input"
+              id="search-input"
+              placeholder={strings('placeHolderText')}
+              aria-label="Search"
+              onChange={this.onChange.bind(this)}
+              spellCheck={false}
+              ref={input => {
+                this.doFocus(input)
+              }}
+            />
+          </span>
           {this.matchCount()}
         </div>
       )

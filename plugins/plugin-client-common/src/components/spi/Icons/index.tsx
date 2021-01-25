@@ -46,6 +46,7 @@ export type SupportedIcon =
   | 'PreviousPage'
   | 'Screenshot'
   | 'ScreenshotInProgress'
+  | 'Search'
   | 'Server'
   | 'Settings'
   | 'Sequence'
