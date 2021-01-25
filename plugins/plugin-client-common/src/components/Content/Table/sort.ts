@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import { SortRowData } from 'carbon-components-react'
-import { DataTableSortState } from 'carbon-components-react/lib/components/DataTable/state/sorting'
-
-const byte = 1
+/* const byte = 1
 const kilobyte = 1024 * byte
 const megabyte = 1024 * kilobyte
 const gigabyte = 1024 * megabyte
@@ -50,3 +47,4 @@ function sortRowWithDir(cellA: string, cellB: string, key: string, state: DataTa
 export default function sortRow(cellA: string, cellB: string, data: SortRowData): number {
   return sortRowWithDir(cellA, cellB, data.key, data.sortDirection)
 }
+*/
