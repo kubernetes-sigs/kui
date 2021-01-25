@@ -1,41 +1,16 @@
-@import 'carbon-components/scss/components/search/_search.scss';
-
 .kui--search {
-  position: relative;
-
   .kui--search-match-count {
     position: absolute;
     right: 3em;
   }
-  .bx--search {
-    .bx--search-magnifier {
-      fill: var(--color-text-02);
+  .pf-c-search-input__icon {
+    svg {
+      vertical-align: -0.125em;
     }
-
-    .bx--search-close {
-      fill: var(--color-text-01);
-
-      &:focus {
-        outline-color: var(--color-brand-01);
-      }
-
-      &::before {
-        background-color: var(--color-base01);
-      }
-      &:focus::before,
-      &:active::before {
-        background-color: var(--color-brand-01);
-      }
-    }
-
-    .bx--search-input {
-      background-color: var(--color-base01);
-      border-color: var(--color-base02);
-      color: var(--color-text-01);
-
-      &:focus {
-        outline-color: var(--color-brand-01);
-      }
-    }
+  }
+  .pf-c-search-input__text-input {
+    font-family: var(--font-sans-serif);
+    color: var(--color-text-01);
+    position: unset;
   }
 }
