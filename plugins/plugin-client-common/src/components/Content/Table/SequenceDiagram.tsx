@@ -542,9 +542,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     }
 
     return (
-      <div className="kui--data-table-container bx--data-table-container">
+      <div className="kui--data-table-container kui--data-table-container">
         <table
-          className="bx--data-table bx--data-table--compact kui--sequence-diagram"
+          className="kui--table-like-wrapper pf-m-compact kui--sequence-diagram"
           data-size={this.size()}
           data-color-by="duration"
         >

@@ -192,7 +192,7 @@ export const LIST_RESULTS_BY_NAME_N = (N: number, splitIndex = 1) =>
 
 export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string, splitIndex = 1) =>
   `${LIST_RESULTS_N(N, splitIndex)}[data-name="${name}"]`
-export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr th button[data-key="${cellKey}"]`
+export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr [data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
 export const TABLE_SHOW_AS_SEQUENCE = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-sequence`
@@ -212,7 +212,7 @@ export const TABLE_AS_GRID_CELL = (N: number, name: string) =>
   `${TABLE_AS_GRID(N)} [data-tag="badge"][data-entity-name="${name}"]`
 export const TABLE_AS_GRID_CELL_RED = (N: number, name: string) => `${TABLE_AS_GRID_CELL(N, name)} .red-background`
 export const TABLE_AS_GRID_CELL_GREEN = (N: number, name: string) => `${TABLE_AS_GRID_CELL(N, name)} .green-background`
-export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .bx--data-table:not(.kui--data-table-as-grid)`
+export const TABLE_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--table-like-wrapper:not(.kui--data-table-as-grid)`
 
 export const TABLE_AS_SEQUENCE = (N: number) => `${OUTPUT_N(N)} .kui--data-table-as-sequence`
 export const TABLE_AS_SEQUENCE_BAR = (N: number) => `${TABLE_AS_SEQUENCE(N)} .kui--bar`
@@ -226,7 +226,7 @@ export const TABLE_TITLE_SECONDARY = (N: number) => `${OUTPUT_N(N)} .kui--second
 export const TABLE_TITLE_NROWS = (N: number) => `${OUTPUT_N(N)} .kui--nrows-breadcrumb`
 export const BY_NAME = (name: string) => `tbody [data-name="${name}"]`
 export const BY_KEY = (key: string) => `tbody [data-key="${key}"]`
-export const GRID_CELL_BY_NAME = (name: string) => `.grid-layout > div[data-name="${name}"]`
+export const GRID_CELL_BY_NAME = (name: string) => `.grid-layout > [data-name="${name}"]`
 export const LIST_RESULT_FIRST = 'tbody tr:first-child .clickable'
 export const LIST_RESULT_BY_N_AND_NAME = (N: number, name: string, splitIndex = 1) =>
   `${LIST_RESULT_BY_N_FOR_NAME(N, name, splitIndex)} .entity-name`

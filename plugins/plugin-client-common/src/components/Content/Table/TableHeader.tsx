@@ -17,38 +17,28 @@
 import { Table } from '@kui-shell/core'
 
 import React from 'react'
-import { DataTableCustomRenderProps, TableHead, TableRow, TableHeader } from 'carbon-components-react'
+import { Thead, Th, Tr } from '@patternfly/react-table'
+
+function th(key: string, value: string, outerCSS: string, css?: string) {
+  return (
+    <Th key={key || value} data-key={key || value} className={`kui--header-cell ${outerCSS || ''}`}>
+      {css ? <span className={css}>{value}</span> : value}
+    </Th>
+  )
+}
 
 /**
  * Render the TableHeader part
  *
  */
-export default function renderHeader(
-  kuiHeader: Table['header'],
-  { getHeaderProps, headers }: DataTableCustomRenderProps
-) {
+export default function renderHeader(kuiHeader: Table['header']) {
+  // isSortable: cidx > 0 || kuiHeader.isSortable,
   return (
-    <TableHead>
-      <TableRow>
-        {headers.map((header, cidx) => {
-          const outerCSS = cidx === 0 ? kuiHeader.outerCSS : kuiHeader.attributes[cidx - 1].outerCSS
-          const css = cidx === 0 ? kuiHeader.css : kuiHeader.attributes[cidx - 1].css
-
-          return (
-            <TableHeader
-              key={header.key}
-              {...getHeaderProps({
-                header,
-                'data-key': header.key,
-                isSortable: cidx > 0 || kuiHeader.isSortable,
-                className: `kui--header-cell ${outerCSS || ''}`
-              })}
-            >
-              {css ? <span className={css}>{header.header}</span> : header.header}
-            </TableHeader>
-          )
-        })}
-      </TableRow>
-    </TableHead>
+    <Thead>
+      <Tr>
+        {th(kuiHeader.key, kuiHeader.name, kuiHeader.outerCSS, kuiHeader.css)}
+        {kuiHeader.attributes.map(attr => th(attr.key, attr.value, attr.outerCSS, attr.css))}
+      </Tr>
+    </Thead>
   )
 }

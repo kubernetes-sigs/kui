@@ -20,8 +20,6 @@ const Markdown = React.lazy(() => import('../Markdown'))
 import Icons from '../../spi/Icons'
 import Breadcrumb, { Props as BreadcrumbProps } from '../../spi/Breadcrumb'
 
-import 'carbon-components/scss/components/pagination/_pagination.scss'
-
 import '../../../../web/css/static/ToolbarButton.scss'
 import '../../../../web/scss/components/Table/Events.scss'
 import '../../../../web/scss/components/Table/Toolbar.scss'

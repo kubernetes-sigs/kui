@@ -16,8 +16,8 @@
 
 import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 
+import kuiHeaderFromBody from './kuiHeaderFromBody'
 import PaginatedTable, { Props, State } from './PaginatedTable'
-import { kuiHeaderFromBody, kuiHeader2carbonHeader, kuiRow2carbonRow, NamedDataTableRow } from './kui2carbon'
 
 type LiveProps = Props<KuiTable & Watchable> & { onRender: (hasContent: boolean) => void }
 
@@ -27,7 +27,7 @@ interface LiveState extends State {
 
 export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
   /** To allow for batch updates, the setState can be deferred until a call to updateDone() */
-  private _deferredUpdate: NamedDataTableRow[]
+  private _deferredUpdate: KuiRow[]
 
   public constructor(props: LiveProps) {
     super(props)
@@ -91,9 +91,9 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    *
    */
   private offline(rowKey: string) {
-    const existingRows = this.state.rows
+    const existingRows = this.state.body
 
-    const foundIndex = existingRows.findIndex(_ => (_.rowKey ? _.rowKey === rowKey : _.NAME === rowKey))
+    const foundIndex = existingRows.findIndex(_ => (_.rowKey ? _.rowKey === rowKey : _.name === rowKey))
     if (foundIndex === -1) {
       console.error('table row went offline, but not found in view model', rowKey, existingRows)
     } else {
@@ -106,14 +106,14 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
         }
       })
 
-      const newRow = kuiRow2carbonRow(this.state.headers, true)(kuiRow, foundIndex)
+      const newRow = kuiRow // TODO Missing justUpdated: true kuiRow2carbonRow(this.state.header, true)(kuiRow, foundIndex)
       const newRows = existingRows
         .slice(0, foundIndex)
         .concat([newRow])
         .concat(existingRows.slice(foundIndex + 1))
 
       this.setState({
-        rows: newRows
+        body: newRows
       })
     }
   }
@@ -124,14 +124,14 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    */
   private allOffline() {
     this.props.response.body = []
-    this.setState({ isWatching: false, rows: [] })
+    this.setState({ isWatching: false, body: [] })
   }
 
   /**
    * update consumes the update notification and apply it to the table view
    *
    */
-  private update(newKuiRow: KuiRow, batch = false, justUpdated = true) {
+  private update(newKuiRow: KuiRow, batch = false /*, justUpdated = true */) {
     if (!this.props.response.header) {
       const header = kuiHeaderFromBody([newKuiRow])
       if (header) {
@@ -139,19 +139,19 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
       }
     }
 
-    const existingRows = this._deferredUpdate || this.state.rows
-    const nRowsBefore = existingRows.length
+    const existingRows = this._deferredUpdate || this.state.body
+    // const nRowsBefore = existingRows.length
 
     // the _.rowKey existence check here is important
     // because we didn't ask rowKey to be a required field
     // if both of the rowKey are undefined, we will get a wrong foundIndex
     const foundIndex = existingRows.findIndex(_ =>
-      _.rowKey && newKuiRow.rowKey ? _.rowKey === newKuiRow.rowKey : _.NAME === newKuiRow.name
+      _.rowKey && newKuiRow.rowKey ? _.rowKey === newKuiRow.rowKey : _.name === newKuiRow.name
     )
 
-    const insertionIndex = foundIndex === -1 ? nRowsBefore : foundIndex
+    // const insertionIndex = foundIndex === -1 ? nRowsBefore : foundIndex
 
-    const newRow = kuiRow2carbonRow(this.state.headers, justUpdated)(newKuiRow, insertionIndex)
+    const newRow = newKuiRow // TODO missing justUpdated kuiRow2carbonRow(this.state.headers, justUpdated)(newKuiRow, insertionIndex)
 
     // Notes: since PaginatedTable is a React.PureComponent, we will
     // need to create a new array, rather than mutating the existing
@@ -172,7 +172,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     }
 
     if (!batch) {
-      this.setState({ rows: newRows })
+      this.setState({ body: newRows })
     } else {
       this._deferredUpdate = newRows
     }
@@ -181,9 +181,9 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   /** End of a deferred batch of updates */
   private batchUpdateDone() {
     if (this._deferredUpdate) {
-      const rows = this._deferredUpdate
+      const body = this._deferredUpdate
       this._deferredUpdate = undefined
-      this.setState({ rows })
+      this.setState({ body })
     }
   }
 
@@ -193,7 +193,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    */
   private header(newKuiHeader: KuiRow) {
     this.props.response.header = newKuiHeader
-    this.setState({ headers: kuiHeader2carbonHeader(newKuiHeader) })
+    this.setState({ header: newKuiHeader })
   }
 
   /**

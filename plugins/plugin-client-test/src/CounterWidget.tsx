@@ -15,10 +15,9 @@
  */
 
 import React from 'react'
-import { Flag16 as FlagIcon } from '@carbon/icons-react'
 
 import { wireToStandardEvents } from '@kui-shell/core'
-import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
 interface Props {
   idx: number
@@ -71,7 +70,7 @@ export default class CounterWidget extends React.PureComponent<Props, State> {
         iconOnclick="echo hi"
         textOnclick="echo ho"
       >
-        <FlagIcon />
+        <Icons icon="Trash" />
       </TextWithIconWidget>
     )
   }
