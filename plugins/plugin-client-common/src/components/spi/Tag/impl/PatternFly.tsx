@@ -21,6 +21,12 @@ import Props from '../model'
 
 export default function PatternFlyTag(props: Props) {
   const color =
-    props.type === 'ok' ? 'green-background' : props.type === 'error' ? 'red-background' : 'yellow-background'
+    props.type === 'ok'
+      ? 'green-background'
+      : props.type === 'error'
+      ? 'red-background'
+      : props.type === 'warning'
+      ? 'yellow-background'
+      : 'gray-background'
   return <Badge {...props} className={['kui--tag', color, props.spanclassname].join(' ')} />
 }
