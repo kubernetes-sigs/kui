@@ -19,11 +19,14 @@ import { Button } from '@patternfly/react-core'
 
 import Props from '../model'
 
-export default function PatternFlyTag(props: Props) {
+export default function PatternFlyButton(props: Props) {
   return (
     <Button
+      id={props.id}
+      type={props.type}
       onClick={props.onClick}
       variant={props.kind}
+      isDisabled={props.isDisabled}
       isSmall={props.size === 'small'}
       tabIndex={props.tabIndex}
       className={['kui--button', 'kui--tag', props.className].join(' ')}
