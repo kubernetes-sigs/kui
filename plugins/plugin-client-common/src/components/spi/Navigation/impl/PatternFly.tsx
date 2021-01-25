@@ -36,23 +36,26 @@ export default class PatternflyNavigation extends React.PureComponent<Navigation
         isExpanded={true}
         className={menuIdx === 0 ? 'sidecar-header-name-content' : undefined}
       >
-        {thisNav.tabs.map((mode: MultiModalMode, idx: number) => (
-          <NavItem
-            href="#" // needed for tab navigation
-            key={idx} // if you make this mode.mode, then data-mode doesn't work
-            data-mode={mode.mode} // needed for tests
-            isActive={this.props.current.current.menuIdx === menuIdx && this.props.current.current.tabIdx === idx}
-            onClick={evt => {
-              evt.stopPropagation()
-              this.props.changeCurrent(menuIdx, idx)
-            }}
-            onMouseDown={event => event.preventDefault()}
-          >
-            <span className="kui--mode-placeholder" data-mode={mode.mode}>
-              {strings(mode.label || mode.mode)}
-            </span>
-          </NavItem>
-        ))}
+        {thisNav.tabs.map((mode: MultiModalMode, idx: number) => {
+          const isActive = this.props.current.current.menuIdx === menuIdx && this.props.current.current.tabIdx === idx
+          return (
+            <NavItem
+              href="#" // needed for tab navigation
+              key={idx} // if you make this mode.mode, then data-mode doesn't work
+              data-mode={mode.mode} // needed for tests
+              isActive={isActive}
+              onClick={evt => {
+                evt.stopPropagation()
+                this.props.changeCurrent(menuIdx, idx)
+              }}
+              onMouseDown={event => event.preventDefault()}
+            >
+              <span className="kui--mode-placeholder" data-mode={mode.mode} data-current={isActive}>
+                {strings(mode.label || mode.mode)}
+              </span>
+            </NavItem>
+          )
+        })}
       </NavExpandable>
     )
   }

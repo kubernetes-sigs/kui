@@ -15,23 +15,17 @@
  */
 
 import React from 'react'
-import { KuiContext } from '../../..'
 
 import NavigationProps from './model'
 export { Model as NavigationModel, HistoryEntry } from './model'
 
-const Carbon = React.lazy(() => import('./impl/Carbon'))
 const PatternFly = React.lazy(() => import('./impl/PatternFly'))
 
 export default class Navigation extends React.PureComponent<NavigationProps> {
   public render() {
     return (
       <React.Suspense fallback={<div />}>
-        <KuiContext.Consumer>
-          {({ components }) =>
-            components === 'patternfly' ? <PatternFly {...this.props} /> : <Carbon {...this.props} />
-          }
-        </KuiContext.Consumer>
+        <PatternFly {...this.props} />
       </React.Suspense>
     )
   }
