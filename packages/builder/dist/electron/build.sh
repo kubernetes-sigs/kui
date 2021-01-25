@@ -47,10 +47,8 @@ export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.co
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
 #
-set +e
-export VERSION=$(cat "$CLIENT_HOME"/node_modules/@kui-shell/client/package.json | jq --raw-output .version)
+export VERSION=$(node -e 'console.log(require((process.env.CLIENT_HOME || ".") + "/node_modules/@kui-shell/client/package.json").version)')
 if [ $? != 0 ]; then VERSION=0.0.1; fi
-set -e
 echo "Using VERSION=$VERSION"
 
 function tarCopy {
