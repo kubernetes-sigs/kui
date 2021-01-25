@@ -322,7 +322,7 @@ class Events extends React.PureComponent<Props, State> {
 
     return (
       <div className="scrollable scrollable-auto">
-        <div className="bx--data-table kui--kubectl-events-grid">
+        <div className="kui--table-like-wrapper kui--kubectl-events-grid">
           {this.state.events.map((event, idx) => (
             <EventUI {...event} now={this.state.now} key={idx} {...this.props} />
           ))}

@@ -68,7 +68,7 @@ commands.forEach(command => {
         /* 
         await Promise.resolve({ app: this.app, count: res.count + 1 }).then(ReplExpect.okWithAny)
 
-        const table = `${Selectors.OUTPUT_N(res.count + 1)} .bx--data-table`
+        const table = `${Selectors.OUTPUT_N(res.count + 1)} table`
 
         // test events table has correct header
         const headerWithSidecarOpen = ['REASON', 'MESSAGE']
@@ -87,7 +87,7 @@ commands.forEach(command => {
     it('should click on Show Involved Object', async () => {
       try {
         const res = await CLI.command(`k get events -o wide -n ${ns}`, this.app)
-        const table = `${Selectors.OUTPUT_N(res.count)} .bx--data-table`
+        const table = `${Selectors.OUTPUT_N(res.count)} table`
         const clickOn = `${table} tr:first-child .clickable`
         const resAfter = await Util.openSidecarByClick(this, clickOn, podName)
 

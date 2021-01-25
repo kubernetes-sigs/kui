@@ -24,6 +24,12 @@ $bar-height-huge: 0.5em; /* e.g. 8px */
 
 $grid-cell-hover-filter: saturate(2) brightness(1.25);
 
+@mixin Table {
+  table.kui--table-like-wrapper {
+    @content;
+  }
+}
+
 @mixin TableContainer {
   .kui--data-table-container {
     @content;

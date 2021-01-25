@@ -16,7 +16,7 @@
 
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
-import { TableCell, DataTableCell } from 'carbon-components-react'
+import { Td } from '@patternfly/react-table'
 import {
   Table as KuiTable,
   Cell as KuiCell,
@@ -94,52 +94,40 @@ export function onClickForCell(
  *
  */
 export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated: boolean, tab: Tab, repl: REPL) {
-  return function KuiTableCell(cell: DataTableCell, cidx: number) {
-    // e.g. is this a badge/status-like cell?
-    const tag = cidx > 0 && kuiRow.attributes[cidx - 1].tag
-
-    // column key
-    const key = cidx > 0 && kuiRow.attributes[cidx - 1].key
-
+  return function KuiTableCell(
+    key: string,
+    value: string,
+    tag: string,
+    outerCSS: string,
+    css: string,
+    onclick: KuiRow['onclick'],
+    cidx: number
+  ) {
     // className for the td
     const cellClassName =
       cidx === 0
-        ? 'entity-name ' + (kuiRow.outerCSS || '')
+        ? 'entity-name ' + (outerCSS || '')
         : (key === 'NAME' ? 'kui--entity-name-secondary ' : key === 'STATUS' ? 'kui--status-cell' : '') +
-          (kuiRow.attributes[cidx - 1].outerCSS || '')
+          (outerCSS || '')
 
-    const outerClassName =
-      'cell-inner ' +
-      (cidx === 0
-        ? (kuiRow.css || '') + (kuiRow.onclick ? ' clickable' : '')
-        : (kuiRow.attributes[cidx - 1].css || '') + (kuiRow.attributes[cidx - 1].onclick ? ' clickable' : ''))
-
-    const css = cidx > 0 ? kuiRow.attributes[cidx - 1].css : undefined
+    const outerClassName = 'cell-inner ' + (css || '') + (onclick ? ' clickable' : '')
 
     // the text value of the cell
-    const valueDom = kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom
-    const innerText =
-      valueDom ||
-      ((cidx - 1 === table.durationColumnIdx || cidx - 1 === table.coldStartColumnIdx) && cell.value
-        ? prettyPrintDuration(parseInt(cell.value, 10))
-        : cell.value)
+    const valueDom = cidx > 0 && kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom
+    const title =
+      (cidx - 1 === table.durationColumnIdx || cidx - 1 === table.coldStartColumnIdx) && value
+        ? prettyPrintDuration(parseInt(value, 10))
+        : value
+    const innerText = valueDom || title
 
+    const { attributes = [] } = kuiRow
     return (
-      <TableCell
-        key={cell.id}
-        className={cellClassName}
-        onClick={onClickForCell(kuiRow, tab, repl, kuiRow.attributes[cidx - 1], table)}
-      >
-        <span
-          data-key={cidx === 0 ? kuiRow.key : kuiRow.attributes[cidx - 1].key}
-          data-value={cell.value}
-          data-tag={tag}
-          className={outerClassName}
-        >
+      <Td key={cidx} className={cellClassName} onClick={onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table)}>
+        <span data-key={key} data-value={value} data-tag={tag} className={outerClassName}>
           {tag === 'badge' && (
             <span
               key={css /* force restart of animation if color changes */}
-              title={innerText}
+              title={title}
               className={css || 'kui--status-unknown'}
               data-tag="badge-circle"
               data-just-updated={justUpdated || undefined}
@@ -151,13 +139,13 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
             {cidx === 0 && kuiRow.fontawesome === 'fas fa-check' ? (
               <Icons icon="Checkmark" />
             ) : table.markdown ? (
-              <Markdown nested source={innerText} />
+              <Markdown nested source={title} />
             ) : (
               innerText
             )}
           </span>
         </span>
-      </TableCell>
+      </Td>
     )
   }
 }
