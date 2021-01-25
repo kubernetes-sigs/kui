@@ -46,7 +46,7 @@ export const SIDECAR_TITLE = (N: number, splitIndex = 1, clickable = true) =>
 export const SIDECAR_HERO_TITLE = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .sidecar-header .sidecar-header-name`
 export const SIDECAR_LEFTNAV_TITLE = (N: number, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .sidecar-header-name-content .bx--side-nav__submenu-title`
+  `${SIDECAR(N, splitIndex)} .sidecar-header-name-content button`
 export const SIDECAR_HEADER_NAVIGATION = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar--titlebar-navigation`
 export const SIDECAR_BREADCRUMBS = (N: number, splitIndex = 1) =>
@@ -96,16 +96,17 @@ export const SIDECAR_MODE_BUTTON_SELECTED = (N: number, mode: string, splitIndex
   `${SIDECAR_MODE_BUTTON(N, mode, splitIndex)}[data-is-selected]`
 
 // left nav sidecar
+export const SIDECAR_LEFTNAV = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)}[data-view="leftnav"]`
+export const SIDECAR_LEFTNAV_NAV = (N: number, splitIndex = 1) => `${SIDECAR_LEFTNAV(N, splitIndex)} nav`
 export const SIDECAR_NAV_COMMAND_LINKS = (N: number, link: string, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .bx--side-nav__item .bx--side-nav__link.kui--nav-command-link[data-link="${link}"]`
+  `${SIDECAR_LEFTNAV_NAV(N, splitIndex)} .kui--nav-command-link[data-link="${link}"]`
 export const SIDECAR_NAV_HREF_LINKS = (N: number, link: string, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .bx--side-nav__item .bx--side-nav__link.kui--nav-href-link[data-link="${link}"]`
-export const SIDECAR_MODE_BUTTONS_V2 = (N: number, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .bx--side-nav__menu .bx--side-nav__link` // all mode buttons in the left nav
+  `${SIDECAR(N, splitIndex)}   .kui--nav-href-link[data-link="${link}"]`
+export const SIDECAR_MODE_BUTTONS_V2 = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)} .kui--mode-placeholder` // all mode buttons in the left nav
 export const SIDECAR_MODE_BUTTON_V2 = (N: number, mode: string, splitIndex = 1) =>
   `${SIDECAR_MODE_BUTTONS_V2(N, splitIndex)}[data-mode="${mode}"]` // specific mode button in the left nav
 export const SIDECAR_MODE_BUTTON_SELECTED_V2 = (N: number, mode: string, splitIndex = 1) =>
-  `${SIDECAR_MODE_BUTTON_V2(N, mode, splitIndex)}.bx--side-nav__link--current`
+  `${SIDECAR_MODE_BUTTON_V2(N, mode, splitIndex)}[data-current="true"]`
 
 export const SIDECAR_BACK_BUTTON = (N: number, splitIndex = 1) =>
   `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .kui--sidecar--titlebar-navigation--back`
