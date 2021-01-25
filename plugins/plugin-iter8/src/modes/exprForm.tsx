@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,26 @@ import React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component Imports
 import {
+  ActionGroup,
   Form,
   FormGroup,
   TextInput,
-  Button,
-  MultiSelect,
   Checkbox,
-  ComboBox,
-  Tag,
-  Toggle
-} from 'carbon-components-react'
-import { View32, SubtractAlt32, Data_132 as Data132 } from '@carbon/icons-react'
+  FormSelect,
+  FormSelectOption,
+  Switch as Toggle
+} from '@patternfly/react-core'
+import { Button, Tag } from '@kui-shell/plugin-client-common'
 // UI Style imports
 import '../../src/web/scss/static/exprForm.scss'
-import 'carbon-components/scss/components/combo-box/_combo-box.scss'
-import 'carbon-components/scss/components/toggle/_toggle.scss'
-import 'carbon-components/scss/components/select/_select.scss'
-import 'carbon-components/scss/components/multi-select/_multi-select.scss'
-import 'carbon-components/scss/components/button/_button.scss'
-import 'carbon-components/scss/components/checkbox/_checkbox.scss'
 // Functionality Imports
 import GetKubeInfo from '../components/cluster-info'
 import { GetMetricConfig } from '../components/metric-config'
 import getRequestModel from '../utility/get-iter8-req'
 import { Formstate } from '../modes/state-models'
 import { experimentTypes } from '../utility/variables'
+
+import MultiSelect from './MultiSelect'
 
 /*
  * Data models for the state object in ExprForm
@@ -100,6 +95,10 @@ export default class ExprBase extends React.Component<{}, Formstate> {
     this.addCriterion = this.addCriterion.bind(this)
   }
 
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(error, errorInfo)
+  }
+
   /*
    * ==== Basic Experiment State Handlers =====
    */
@@ -136,44 +135,42 @@ export default class ExprBase extends React.Component<{}, Formstate> {
     this.handleAddCand(obj)
   }
 
-  private handleSelectExpType = value => {
+  private handleSelectExpType = (value: string) => {
     console.log('Running ' + value + ' Experiment')
   }
 
-  private handleAddNs = value => {
+  private handleAddNs = (value: string) => {
     if (value == null) {
       this.setState({ namespace: '', service: '', baseline: '', candidates: [] })
       const svcList = []
       this.setState({ svcList })
     } else {
-      this.setState({ namespace: value.text, service: '', baseline: '', candidates: [] })
+      this.setState({ namespace: value, service: '', baseline: '', candidates: [] })
 
       setTimeout(async () => {
-        const [svcList] = await Promise.all([this.kubeMethods.getSvc(value.text, this.args)])
+        const [svcList] = await Promise.all([this.kubeMethods.getSvc(value, this.args)])
         this.setState({ svcList })
       })
     }
     this.setState({ deployList: [] })
   }
 
-  private handleAddSvc = value => {
+  private handleAddSvc = (value: string) => {
     if (value == null) {
       this.setState({ service: '', baseline: '', candidates: [] })
       const deployList = []
       this.setState({ deployList })
     } else {
-      this.setState({ service: value.text, baseline: '', candidates: [] })
+      this.setState({ service: value, baseline: '', candidates: [] })
 
       setTimeout(async () => {
-        const [deployList] = await Promise.all([
-          this.kubeMethods.getDeployment(this.state.namespace, value.text, this.args)
-        ])
+        const [deployList] = await Promise.all([this.kubeMethods.getDeployment(this.state.namespace, value, this.args)])
         this.setState({ deployList })
       })
     }
   }
 
-  private handleEdgeServiceChange = value => {
+  private handleEdgeServiceChange = (value: boolean) => {
     if (value === true) {
       this.setState({ edgeService: true })
     } else {
@@ -182,8 +179,8 @@ export default class ExprBase extends React.Component<{}, Formstate> {
     }
   }
 
-  private addHostGatewayPairs = value => {
-    const hostgateway = value.target.value.split(';')
+  private addHostGatewayPairs = (value: string) => {
+    const hostgateway = value.split(';')
     const obj = []
     let temp = []
     for (let i = 0; i < hostgateway.length; i++) {
@@ -203,9 +200,9 @@ export default class ExprBase extends React.Component<{}, Formstate> {
     }
   }
 
-  private handleAddBase = value => {
+  private handleAddBase = (value: string) => {
     if (value == null) this.setState({ baseline: '', candidates: [] })
-    else this.setState({ baseline: value.text, candidates: [] })
+    else this.setState({ baseline: value, candidates: [] })
   }
 
   /*
@@ -262,7 +259,7 @@ export default class ExprBase extends React.Component<{}, Formstate> {
   }
 
   // Updates states based on limit type changes
-  private handleLimitTypeChange = (value, idx) => {
+  private handleLimitTypeChange = (value: boolean, idx: number) => {
     const limitType = value ? 'relative' : 'absolute'
     const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], limitType: limitType }
@@ -270,7 +267,7 @@ export default class ExprBase extends React.Component<{}, Formstate> {
   }
 
   // Update the state for limit value
-  private handleLimitValChange = (value, idx) => {
+  private handleLimitValChange = (value: string, idx: number) => {
     const limitValue = value === '' ? 0 : parseFloat(value)
     const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], limitValue: limitValue }
@@ -278,7 +275,7 @@ export default class ExprBase extends React.Component<{}, Formstate> {
   }
 
   // Disables all the other checkboxes
-  private handleRewardChange = idx => {
+  private handleRewardChange = (idx: number) => {
     const newMetric = [...this.state.criteria]
     newMetric[idx] = { ...newMetric[idx], reward: !newMetric[idx].reward }
     this.setState(prevState => ({
@@ -308,97 +305,121 @@ export default class ExprBase extends React.Component<{}, Formstate> {
   public render() {
     const { criteria } = this.state
     return (
-      <Form className="plugin-iter8-formProps" onSubmit={this.preventFormRefresh}>
-        <div>
-          <FormGroup legendText="" style={{ width: 600 }}>
-            <h3>
-              <span style={{ fontFamily: 'monospace', fontSize: 'larger' }}>iter8 </span> Experiment Configurations{' '}
-            </h3>
-          </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
+      <div className="padding-content scrollable scrollable-auto">
+        <h2>iter8 Experiment Configurations</h2>
+        <Form className="plugin-iter8-formProps" onSubmit={this.preventFormRefresh}>
+          <FormGroup
+            style={{ width: 350 }}
+            label="Name"
+            helperText="Name to identify the experiment"
+            helperTextInvalid="This is a required field"
+            isRequired
+            fieldId="exprForm-id-2"
+          >
             <TextInput
               id="experiment-name"
-              labelText="Name"
-              helperText="Name to identify the experiment."
               placeholder="Eg: experiment_v1_v2"
               onChange={this.handleNameChange}
               type="text"
-              invalidText="This is a required field."
-              required
             ></TextInput>
           </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
-            <ComboBox
+          <FormGroup
+            style={{ width: 350 }}
+            label="Experiment Type"
+            helperText="Type of experiment to be conducted"
+            isRequired
+            fieldId="exprForm-id-3"
+          >
+            <FormSelect
               id="experiment-type-select"
-              titleText="Experiment Type"
-              helperText="Type of experiment to be conducted"
               placeholder="Select an Experiment Type"
-              items={[experimentTypes.hil]}
-              onChange={value => this.handleSelectExpType(value.selectedItem)}
-              required
-            />
+              onChange={value => this.handleSelectExpType(value)}
+            >
+              {[experimentTypes.hil].map((option, idx) => (
+                <FormSelectOption key={idx} label={option} />
+              ))}
+            </FormSelect>
           </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
-            <ComboBox
+          <FormGroup
+            style={{ width: 350 }}
+            label="Service Namespace"
+            helperText="Namespace where the target service resides"
+            isRequired
+            fieldId="exprForm-id-4"
+          >
+            <FormSelect
               id="namespace-select"
-              titleText="Service Namespace"
-              helperText="Namespace where the target service resides"
               placeholder="Select a Namespace"
-              items={this.state.nsList}
-              itemToString={item => (item ? item.text : '')}
-              onChange={value => this.handleAddNs(value.selectedItem)}
-              required
-            />
+              onChange={value => this.handleAddNs(value)}
+            >
+              {this.state.nsList.map((option, idx) => (
+                <FormSelectOption key={idx} label={option ? option.text : ''} />
+              ))}
+            </FormSelect>
           </FormGroup>
-          <FormGroup legendText="">
+          <FormGroup label="Edge Service" fieldId="exprForm-id-5">
             <Toggle
               aria-label=""
-              labelText="Edge Service"
               id="edge-service"
-              defaultToggled
-              labelA="False"
-              labelB="True"
-              onToggle={value => this.handleEdgeServiceChange(value)}
+              isChecked
+              label="False"
+              labelOff="True"
+              onChange={value => this.handleEdgeServiceChange(value)}
             />
           </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
+          <FormGroup
+            style={{ width: 350 }}
+            label="Host/Gateway pairs"
+            helperText="Enter Host and gateway names for edge service"
+            helperTextInvalid="Invalid Host Gateway Pairs. Try again"
+            validated={this.state.invalidHostGateways ? 'error' : 'default'}
+            fieldId="exprForm-id-6"
+          >
             <TextInput
               id="hostGateway"
-              labelText="Host/Gateway pairs"
-              helperText="Enter Host and gateway names for edge service"
               placeholder="Eg: hostname1, gatewayname1; hostname2, gatewayname2"
               onChange={value => this.addHostGatewayPairs(value)}
               type="text"
-              disabled={!this.state.edgeService}
-              invalid={this.state.invalidHostGateways}
-              invalidText="Invalid Host Gateway Pairs. Try again"
+              isDisabled={!this.state.edgeService}
             ></TextInput>
           </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
-            <ComboBox
-              id="service-select"
-              titleText="Service"
-              helperText="Name of the target service"
-              placeholder="Select a Service"
-              items={this.state.svcList}
-              itemToString={item => (item ? item.text : '')}
-              onChange={value => this.handleAddSvc(value.selectedItem)}
-              required
-            />
+          <FormGroup
+            style={{ width: 350 }}
+            label="Service"
+            helperText="Name of the target service"
+            isRequired
+            fieldId="exprForm-id-7"
+          >
+            <FormSelect id="service-select" placeholder="Select a Service" onChange={value => this.handleAddSvc(value)}>
+              {this.state.svcList.map((option, idx) => (
+                <FormSelectOption key={idx} label={option ? option.text : ''} />
+              ))}
+            </FormSelect>
           </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
-            <ComboBox
+          <FormGroup
+            style={{ width: 350 }}
+            label="Baseline Deployment"
+            helperText="The version of the service to be used as experimental baseline"
+            isRequired
+            fieldId="exprForm-id-8"
+          >
+            <FormSelect
               id="baseline-select"
-              titleText="Baseline Deployment"
-              helperText="The version of the service to be used as experimental baseline"
               placeholder="Select a Baseline Deployment"
-              items={this.state.deployList}
-              itemToString={item => (item ? item.text : '')}
-              onChange={value => this.handleAddBase(value.selectedItem)}
-              required
-            />
+              onChange={value => this.handleAddBase(value)}
+            >
+              {this.state.deployList.map((option, idx) => (
+                <FormSelectOption key={idx} label={option ? option.text : ''} />
+              ))}
+            </FormSelect>
           </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
+          <FormGroup
+            style={{ width: 350 }}
+            label="Select Candidate Deployment(s)"
+            validated={this.state.invalidCandidate ? 'error' : 'default'}
+            helperTextInvalid="Cannot select same version as experimental baseline."
+            fieldId="exprForm-id-9"
+          >
             <p>
               <span> Candidate Deployment(s) </span>
               <br />
@@ -406,117 +427,110 @@ export default class ExprBase extends React.Component<{}, Formstate> {
             </p>
             <MultiSelect
               id="candidates-select"
-              items={this.state.deployList}
-              itemToString={item => (item ? item.text : '')}
-              label="Select Candidate Deployment(s)"
-              onChange={value => this.handleAddCand(value.selectedItems)}
-              invalid={this.state.invalidCandidate}
-              invalidText="Cannot select same version as experimental baseline."
+              options={this.state.deployList.map(_ => (_ ? _.text : ''))}
+              onChange={selectedItems => this.handleAddCand(selectedItems)}
             />
-            <br />
+          </FormGroup>
+          <FormGroup
+            label="or Add Candidate Deployment(s) below:"
+            helperText="Comma separated candidate names"
+            fieldId="exprForm-id-10"
+          >
             <TextInput
               id="candidate-name"
-              labelText="or Add Candidate Deployment(s) below:"
-              helperText="Comma separated candidate names"
               placeholder="reviews_v3, reviews_v4"
               onChange={value => this.handleSplitCand(value)}
               type="text"
             ></TextInput>
           </FormGroup>
           {this.state.showCriteria ? (
-            <FormGroup legendText="">
-              <div style={{ position: 'relative' }}>
-                {criteria.map((val, idx) => {
-                  const criterionId = `criterion-${idx}`
-                  const limitTypeId = `limitType-${idx}`
-                  const limitValueId = `limitValue-${idx}`
-                  const deletecriterion = `deletecriterion-${idx}`
-                  const checkId = `checkbox-${idx}`
-                  return (
-                    <div style={{ padding: 20 }} key={idx}>
-                      <h5> {`Criterion #${idx + 1}`}</h5>
-                      <ComboBox
-                        id={criterionId}
-                        titleText="Metric name"
-                        helperText="Metric to be used for this critetion"
-                        placeholder="Select a Metric"
-                        items={this.state.totalMetricsList}
-                        itemToString={item => (item ? item.name : '')}
-                        onChange={value => this.handleMetricName(value.selectedItem, idx)}
-                      />
-                      <Tag type="cyan">{val.type === '' ? '...' : val.type}</Tag>
-                      <Tag type="magenta">
-                        {val.reward
-                          ? 'Reward'
-                          : val.limitType === ''
-                          ? 'Absolute Threshold'
-                          : `${val.limitType} threshold`}
-                      </Tag>
-                      <br></br>
-                      <span className="child">
-                        {val.limitType ? null : this.handleLimitTypeChange(false, idx)}
+            <div style={{ position: 'relative' }}>
+              {criteria.map((val, idx) => {
+                const criterionId = `criterion-${idx}`
+                const limitTypeId = `limitType-${idx}`
+                const limitValueId = `limitValue-${idx}`
+                const deletecriterion = `deletecriterion-${idx}`
+                const checkId = `checkbox-${idx}`
+                return (
+                  <div style={{ padding: 20 }} key={idx}>
+                    <h5> {`Criterion #${idx + 1}`}</h5>
+                    <FormGroup
+                      fieldId={`exprForm-id-11-${idx}-1`}
+                      label="Metric name"
+                      helperText="Metric to be used for this critetion"
+                    >
+                      <FormSelect id={criterionId} onChange={value => this.handleMetricName(value, idx)}>
+                        {this.state.totalMetricsList.map((option, idx) => (
+                          <FormSelectOption key={idx} label={option ? option.name : ''} />
+                        ))}
+                      </FormSelect>
+                    </FormGroup>
+                    <Tag type="ok">{val.type === '' ? '...' : val.type}</Tag>
+                    <Tag type="warning">
+                      {val.reward
+                        ? 'Reward'
+                        : val.limitType === ''
+                        ? 'Absolute Threshold'
+                        : `${val.limitType} threshold`}
+                    </Tag>
+                    <br></br>
+                    <span className="child">
+                      {val.limitType ? null : this.handleLimitTypeChange(false, idx)}
+                      <FormGroup fieldId={`exprForm-id-11-${idx}-2`} label="Threshold Type">
                         <Toggle
                           aria-label=""
-                          labelText="Threshold Type"
                           id={limitTypeId}
-                          disabled={val.reward}
-                          labelA="Absolute"
-                          labelB="Relative"
-                          onToggle={value => this.handleLimitTypeChange(value, idx)}
+                          isDisabled={val.reward}
+                          label="Absolute"
+                          labelOff="Relative"
+                          onChange={value => this.handleLimitTypeChange(value, idx)}
                         />
-                      </span>
-                      <span className="child">
+                      </FormGroup>
+                    </span>
+                    <span className="child">
+                      <FormGroup
+                        fieldId={`exprForm-id-11-${idx}-3`}
+                        label="Limit Value"
+                        helperText="Set a value for the threshold selected"
+                        helperTextInvalid="Limit values can only be set for non-reward metrics"
+                        validated={val.reward && val.limitValue !== 0 ? 'error' : 'default'}
+                      >
                         <TextInput
                           id={limitValueId}
-                          labelText="Limit Value"
-                          helperText="Set a value for the threshold selected"
-                          disabled={val.reward}
-                          invalid={val.reward && val.limitValue !== 0}
-                          invalidText="Limit values can only be set for non-reward metrics"
-                          onChange={e => this.handleLimitValChange(e.target.value, idx)}
+                          isDisabled={val.reward}
+                          onChange={value => this.handleLimitValChange(value, idx)}
                         />
-                      </span>
+                      </FormGroup>
+                    </span>
+                    <FormGroup fieldId={`exprForm-id-11-${idx}-4`} label="Set as reward">
                       <Checkbox
                         id={checkId}
-                        labelText="Set as reward"
-                        disabled={(!val.reward && this.state.disableReward) || val.type === 'Counter'}
+                        isDisabled={(!val.reward && this.state.disableReward) || val.type === 'Counter'}
                         onChange={() => this.handleRewardChange(idx)}
                       />
-                      <Button
-                        id={deletecriterion}
-                        size="small"
-                        kind="ghost"
-                        renderIcon={SubtractAlt32}
-                        onClick={() => this.deleteCriterion(idx)}
-                        style={{ color: 'red', paddingLeft: 'initial' }}
-                      >
-                        {`Delete Criterion ${idx + 1}`}
-                      </Button>
-                    </div>
-                  )
-                })}
-              </div>
-            </FormGroup>
+                    </FormGroup>
+                    <Button id={deletecriterion} size="small" kind="danger" onClick={() => this.deleteCriterion(idx)}>
+                      {`Delete Criterion ${idx + 1}`}
+                    </Button>
+                  </div>
+                )
+              })}
+            </div>
           ) : null}
-          <FormGroup legendText="" style={{ width: 350 }}>
-            <Button
-              id="addcriterion"
-              style={{ position: 'relative', backgroundColor: 'mediumseagreen' }}
-              size="default"
-              kind="primary"
-              renderIcon={Data132}
-              onClick={this.addCriterion}
-            >
-              Add Criterion
-            </Button>
-          </FormGroup>
-          <FormGroup legendText="" style={{ width: 350 }}>
-            <Button id="submitform" type="submit" size="default" renderIcon={View32} onClick={this.submitForm}>
-              Create Experiment
-            </Button>
-          </FormGroup>
-        </div>
-      </Form>
+          <ActionGroup>
+            <FormGroup style={{ width: 350 }} fieldId="exprForm-id-12">
+              <Button id="addcriterion" size="default" kind="primary" onClick={this.addCriterion}>
+                Add Criterion
+              </Button>
+            </FormGroup>
+            <FormGroup style={{ width: 350 }} fieldId="exprForm-id-13">
+              <Button id="submitform" type="submit" size="default" onClick={this.submitForm}>
+                Create Experiment
+              </Button>
+            </FormGroup>
+          </ActionGroup>
+        </Form>
+      </div>
     )
   }
 }

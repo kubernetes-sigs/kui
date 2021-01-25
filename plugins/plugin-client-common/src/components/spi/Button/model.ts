@@ -17,11 +17,14 @@
 import { PropsWithChildren } from 'react'
 
 type Props = PropsWithChildren<{
+  id?: string
   tabIndex?: number
   className?: string
+  isDisabled?: boolean
   onClick?: () => void
   size?: 'small' | 'default'
-  kind?: 'tertiary' | 'secondary' | 'primary'
+  kind?: 'tertiary' | 'secondary' | 'primary' | 'link' | 'danger'
+  type?: 'submit' | 'reset' | 'button'
 }>
 
 export default Props

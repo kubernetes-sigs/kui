@@ -16,14 +16,16 @@
 
 import React from 'react'
 import { safeLoad, safeDump } from 'js-yaml'
-import { TrashCan20, Reset20, Add20, Edit20 } from '@carbon/icons-react'
-import { Button, DataTable, Form, FormGroup, Select, SelectItem, TextInput } from 'carbon-components-react'
-import 'carbon-components/scss/components/button/_button.scss'
-import 'carbon-components/scss/components/data-table/_data-table-expandable.scss'
-import 'carbon-components/scss/components/data-table/_data-table.scss'
-import 'carbon-components/scss/components/data-table/_data-table-action.scss'
-import 'carbon-components/scss/components/data-table/_data-table-core.scss'
-import 'carbon-components/scss/components/data-table/_data-table-skeleton.scss'
+import { Button, Icons } from '@kui-shell/plugin-client-common'
+import { Caption, TableComposable, Tbody, Tr, Td } from '@patternfly/react-table'
+import {
+  ActionGroup,
+  Form,
+  FormGroup,
+  FormSelect as Select,
+  FormSelectOption as SelectItem,
+  TextInput
+} from '@patternfly/react-core'
 
 import '../../src/web/scss/static/metrics.scss'
 
@@ -39,8 +41,6 @@ import {
   MetricConfigMap
 } from '../components/metric-config-types'
 import { kubectlApplyRule } from '../components/traffic-split'
-
-const { Table, TableBody, TableCell, TableRow, TableContainer, TableExpandRow, TableExpandedRow } = DataTable
 
 let COUNTER_METRIC_REQUIRED_ATTRIBUTES
 let RATIO_METRIC_REQUIRED_ATTRIBUTES
@@ -521,7 +521,7 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
       <div>
         <div className="deletedtext">Deleted</div>
         <div className="clickableicon" onClick={() => this.restoreMetricHandler(metricName, type)}>
-          <Reset20 />
+          <Icons icon="Retry" />
           {type === MetricTypes.ratio &&
           this.state.ratioMetricsState[metricName].custom &&
           this.state.ratioMetricsState[metricName].alsoRestore.length ? (
@@ -1050,129 +1050,115 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
   private renderTableTitle = (title: string, type: MetricTypes) => {
     return (
       <div>
-        {title} <Add20 onClick={() => this.displayAddMetric(type)} className="clickableicon" />
+        {title} <Icons icon="Add" onClick={() => this.displayAddMetric(type)} className="clickableicon" />
       </div>
     )
   }
 
   // Displays the details of a metric (all of its properties and its values)
   private renderMetricDetails = (metric: CounterMetric | RatioMetric, type: MetricTypes) => {
+    const rows = this.getInitialRowsFromObjectKeys(metric)
+
     return (
-      <DataTable
-        rows={this.getInitialRowsFromObjectKeys(metric)}
-        headers={[]}
-        render={({ rows, getTableProps }) => (
-          <TableContainer>
-            <Table {...getTableProps()}>
-              <TableBody className="innertable">
-                {rows.map(row => {
-                  const attributeData =
-                    type === MetricTypes.counter
-                      ? COUNTER_METRIC_ATTRIBUTES_DATA.find(attribute => {
-                          return attribute.name === row.id
-                        })
-                      : RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
-                          return attribute.name === row.id
-                        })
+      <TableComposable className="kui--table-like-wrapper">
+        <Tbody className="innertable">
+          {rows.map(row => {
+            const attributeData =
+              type === MetricTypes.counter
+                ? COUNTER_METRIC_ATTRIBUTES_DATA.find(attribute => {
+                    return attribute.name === row.id
+                  })
+                : RATIO_METRIC_ATTRIBUTES_DATA.find(attribute => {
+                    return attribute.name === row.id
+                  })
 
-                  // Dropdown options should use the printable version
-                  if (attributeData.type === AttributeTypes.dropdown) {
-                    const dropdownOption = attributeData.dropdownOptions.find(option => {
-                      return option.value === metric[row.id]
-                    })
+            // Dropdown options should use the printable version
+            if (attributeData.type === AttributeTypes.dropdown) {
+              const dropdownOption = attributeData.dropdownOptions.find(option => {
+                return option.value === metric[row.id]
+              })
 
-                    return (
-                      <TableRow key={row.id}>
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell>{dropdownOption.printableOption}</TableCell>
-                      </TableRow>
-                    )
-                  }
+              return (
+                <Tr key={row.id}>
+                  <Td>{row.id}</Td>
+                  <Td>{dropdownOption.printableOption}</Td>
+                </Tr>
+              )
+            }
 
-                  return (
-                    <TableRow key={row.id}>
-                      <TableCell>{row.id}</TableCell>
-                      <TableCell>{metric[row.id]}</TableCell>
-                    </TableRow>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      />
+            return (
+              <Tr key={row.id}>
+                <Td>{row.id}</Td>
+                <Td>{metric[row.id]}</Td>
+              </Tr>
+            )
+          })}
+        </Tbody>
+      </TableComposable>
     )
   }
 
   private renderMetricTable = (metrics: MetricsState, type: MetricTypes, title: string) => {
+    const rows = this.getInitialRowsFromObjectKeys(metrics)
     return (
-      <div>
-        <DataTable
-          rows={this.getInitialRowsFromObjectKeys(metrics)}
-          headers={[]}
-          render={({ rows, getRowProps, getTableProps }) => (
-            <TableContainer title={this.renderTableTitle(title, type)}>
-              <Table {...getTableProps()}>
-                <TableBody>
-                  {rows.map(row => (
-                    <React.Fragment key={row.id}>
-                      <TableExpandRow {...getRowProps({ row, ariaLabel: 'Information Unavailable' })}>
-                        <TableCell>{row.id}</TableCell>
-                        <TableCell>
-                          <div
-                            className="clickableicon"
-                            onClick={() => {
-                              // Only allow editing if the metric is custom (not part of iter8)
-                              if (metrics[row.id].custom) {
-                                this.displayEditMetric(row.id, type)
-                              }
-                            }}
-                          >
-                            <Edit20 />
-                            {!metrics[row.id].custom ? this.renderIter8ImmutableMetricWarning('edit') : null}
+      <TableComposable className="kui--table-like-wrapper">
+        <Caption>{this.renderTableTitle(title, type)}</Caption>
+        <Tbody isExpanded>
+          {rows.map(row => (
+            <React.Fragment key={row.id}>
+              <Tr aria-label="Information Unavailable" isExpanded>
+                <Td>{row.id}</Td>
+                <Td>
+                  <div
+                    className="clickableicon"
+                    onClick={() => {
+                      // Only allow editing if the metric is custom (not part of iter8)
+                      if (metrics[row.id].custom) {
+                        this.displayEditMetric(row.id, type)
+                      }
+                    }}
+                  >
+                    <Icons icon="Edit" />
+                    {!metrics[row.id].custom ? this.renderIter8ImmutableMetricWarning('edit') : null}
+                  </div>
+                </Td>
+                <Td className="width20">
+                  <div>
+                    {metrics[row.id].isDeleted ? (
+                      <div>{this.renderDeleteWarning(row.id, type)}</div>
+                    ) : (
+                      <div
+                        className="clickableicon"
+                        onClick={() => {
+                          // Only allow deletion if the metric is custom (not part of iter8)
+                          if (metrics[row.id].custom) {
+                            this.deleteMetricHandler(row.id, type)
+                          }
+                        }}
+                      >
+                        <Icons icon="Trash" />
+                        {type === MetricTypes.counter &&
+                        metrics[row.id].custom &&
+                        metrics[row.id].alsoDelete.length > 0 ? (
+                          <div className="warningtext">
+                            Warning: Will also delete {metrics[row.id].alsoDelete.join(', ')}
                           </div>
-                        </TableCell>
-                        <TableCell className="width20">
-                          <div>
-                            {metrics[row.id].isDeleted ? (
-                              <div>{this.renderDeleteWarning(row.id, type)}</div>
-                            ) : (
-                              <div
-                                className="clickableicon"
-                                onClick={() => {
-                                  // Only allow deletion if the metric is custom (not part of iter8)
-                                  if (metrics[row.id].custom) {
-                                    this.deleteMetricHandler(row.id, type)
-                                  }
-                                }}
-                              >
-                                <TrashCan20 />
-                                {type === MetricTypes.counter &&
-                                metrics[row.id].custom &&
-                                metrics[row.id].alsoDelete.length > 0 ? (
-                                  <div className="warningtext">
-                                    Warning: Will also delete {metrics[row.id].alsoDelete.join(', ')}
-                                  </div>
-                                ) : null}
-                                {!metrics[row.id].custom ? this.renderIter8ImmutableMetricWarning('delete') : null}
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableExpandRow>
-                      {row.isExpanded && (
-                        <TableExpandedRow colSpan={4}>
-                          <div>{this.renderMetricDetails(metrics[row.id].details, type)}</div>
-                        </TableExpandedRow>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        />
-      </div>
+                        ) : null}
+                        {!metrics[row.id].custom ? this.renderIter8ImmutableMetricWarning('delete') : null}
+                      </div>
+                    )}
+                  </div>
+                </Td>
+              </Tr>
+              {row.isExpanded && (
+                <Tr colSpan={4} isExpanded>
+                  <div>{this.renderMetricDetails(metrics[row.id].details, type)}</div>
+                </Tr>
+              )}
+            </React.Fragment>
+          ))}
+        </Tbody>
+      </TableComposable>
     )
   }
 
@@ -1195,15 +1181,21 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
         ? attribute.invalidChecks[formType].invalidText
         : ''
 
+      const id = attribute.name
+      const label = attribute.printableName
       return (
-        <FormGroup key={attribute.name} legendText="">
+        <FormGroup
+          key={attribute.name}
+          label={label}
+          fieldId={`get-metrics-${label}-${id}`}
+          helperText={attribute.description}
+          helperTextInvalid={invalidText}
+          validated={invalid ? 'error' : 'default'}
+          isRequired={attribute.required}
+        >
           <TextInput
-            id={attribute.name}
-            labelText={attribute.printableName}
-            helperText={attribute.description}
+            id={id}
             value={newMetric[attribute.name]}
-            invalid={invalid}
-            invalidText={invalidText}
             onChange={e => {
               return this.updateAttribute(e, attribute)
             }}
@@ -1233,15 +1225,21 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
         : ''
 
       // Dropdown menu
+      const id = attribute.name
+      const label = attribute.printableName
       return (
-        <FormGroup key={attribute.name} legendText="">
+        <FormGroup
+          key={attribute.name}
+          label={label}
+          fieldId={`get-metrics-select-${label}-${id}`}
+          helperText={attribute.description}
+          helperTextInvalid={invalidText}
+          validated={invalid ? 'error' : 'default'}
+          isRequired={attribute.required}
+        >
           <Select
-            id={attribute.name}
-            labelText={attribute.printableName}
-            helperText={attribute.description}
+            id={id}
             value={printableValue}
-            invalid={invalid}
-            invalidText={invalidText}
             onChange={e => {
               return this.updateAttribute(e, attribute)
             }}
@@ -1252,9 +1250,9 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
                 return (
                   <SelectItem
                     key="default"
-                    text={attribute.noDefaultDropdownOptionPlaceholder}
+                    label={attribute.noDefaultDropdownOptionPlaceholder}
                     value={attribute.noDefaultDropdownOptionPlaceholder}
-                  ></SelectItem>
+                  />
                 )
               }
             })()}
@@ -1263,9 +1261,9 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
               return (
                 <SelectItem
                   key={option.printableOption}
-                  text={option.printableOption}
+                  label={option.printableOption}
                   value={option.printableOption}
-                ></SelectItem>
+                />
               )
             })}
           </Select>
@@ -1277,7 +1275,7 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
   private renderMetricForm = (selectedType: MetricTypes, submitCallback: (e) => void, formType: FormTypes) => {
     return (
       <div>
-        <Form style={{ display: 'block' }} onSubmit={submitCallback}>
+        <Form onSubmit={submitCallback}>
           {(() => {
             if (selectedType === MetricTypes.counter) {
               return COUNTER_METRIC_ATTRIBUTES_DATA.map(attribute => this.renderAttributeForm(attribute, formType))
@@ -1285,31 +1283,28 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
               return RATIO_METRIC_ATTRIBUTES_DATA.map(attribute => this.renderAttributeForm(attribute, formType))
             }
           })()}
-          <Button style={{ display: 'inline-block' }} kind="primary" type="submit">
-            {(() => {
-              if (formType === FormTypes.add) {
-                if (selectedType === MetricTypes.counter) {
-                  return 'Create counter metric'
+          <ActionGroup>
+            <Button kind="primary" type="submit">
+              {(() => {
+                if (formType === FormTypes.add) {
+                  if (selectedType === MetricTypes.counter) {
+                    return 'Create counter metric'
+                  } else {
+                    return 'Create ratio metric'
+                  }
                 } else {
-                  return 'Create ratio metric'
+                  if (selectedType === MetricTypes.counter) {
+                    return 'Edit counter metric'
+                  } else {
+                    return 'Edit ratio metric'
+                  }
                 }
-              } else {
-                if (selectedType === MetricTypes.counter) {
-                  return 'Edit counter metric'
-                } else {
-                  return 'Edit ratio metric'
-                }
-              }
-            })()}
-          </Button>
-          <Button
-            style={{ display: 'inline-block', marginLeft: '10px' }}
-            kind="primary"
-            type="button"
-            onClick={this.displayGetMetrics}
-          >
-            Back
-          </Button>
+              })()}
+            </Button>
+            <Button className="small-left-pad" kind="link" type="button" onClick={this.displayGetMetrics}>
+              Cancel
+            </Button>
+          </ActionGroup>
         </Form>
       </div>
     )
@@ -1325,15 +1320,17 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
             {this.renderMetricTable(counterMetricsState, MetricTypes.counter, 'Counter Metrics')}
             {this.renderMetricTable(ratioMetricsState, MetricTypes.ratio, 'Ratio Metrics')}
 
-            <Button style={{ display: 'block', margin: '10px' }} kind="primary" onClick={this.refreshState}>
-              Refresh
-            </Button>
+            <div className="padding-content">
+              <Button kind="primary" onClick={this.refreshState}>
+                Refresh
+              </Button>
+            </div>
           </div>
         )
 
       case DisplayMode.addMetric:
         return (
-          <div style={{ margin: '10px' }}>
+          <div className="padding-content">
             {(() => {
               return this.renderMetricForm(selectedType, this.addMetricHandler, FormTypes.add)
             })()}
@@ -1342,7 +1339,7 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
 
       case DisplayMode.editMetric:
         return (
-          <div style={{ margin: '10px' }}>
+          <div className="padding-content">
             {(() => {
               return this.renderMetricForm(selectedType, this.editMetricHandler, FormTypes.edit)
             })()}

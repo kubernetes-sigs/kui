@@ -17,32 +17,11 @@
 import React from 'react'
 import { eventChannelUnsafe } from '@kui-shell/core'
 // Component imports
-import {
-  Form,
-  FormGroup,
-  InlineLoading,
-  Button,
-  Slider,
-  Dropdown,
-  DataTable,
-  InlineNotification,
-  ToastNotification,
-  RadioButtonGroup,
-  RadioButton,
-  ComboBox
-} from 'carbon-components-react'
-import { Stop32, Undo32, Export32, ChartLineData32, Help16, FaceCool20, FaceNeutral20 } from '@carbon/icons-react'
+import { Alert, Button, Icons, Loading } from '@kui-shell/plugin-client-common'
+import { Caption, TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table'
+import { Form, FormGroup, FormSelect, FormSelectOption, Touchspin } from '@patternfly/react-core'
 const Chart = React.lazy(() => import('react-apexcharts'))
 // Styling imports
-import 'carbon-components/scss/components/loading/_loading.scss'
-import 'carbon-components/scss/components/form/_form.scss'
-import 'carbon-components/scss/components/list/_list.scss'
-import 'carbon-components/scss/components/button/_button.scss'
-import 'carbon-components/scss/components/slider/_slider.scss'
-import 'carbon-components/scss/components/dropdown/_dropdown.scss'
-import 'carbon-components/scss/components/data-table/_data-table.scss'
-import 'carbon-components/scss/components/notification/_inline-notification.scss'
-import 'carbon-components/scss/components/notification/_toast-notification.scss'
 import '../../src/web/scss/static/decisionForm.scss'
 // Functional imports
 import { DecisionState } from '../modes/state-models'
@@ -51,8 +30,6 @@ import GetAnalyticsAssessment from '../utility/get-analytics-assessment'
 import NameDict from '../utility/get-display-name'
 import { criteriaChartDesign } from '../utility/variables'
 import { trafficCheck, getUserDecision, applyTrafficSplit } from '../components/traffic-split'
-// Deconstructs the DataTable component
-const { TableContainer, Table, TableHead, TableRow, TableBody, TableCell, TableHeader } = DataTable
 
 // Function for round off
 function roundoff(value, fix = 4) {
@@ -67,36 +44,32 @@ interface TableProps {
   id: string
   rows: any
   headers: any
-  getHeaderProps: any
   title: string
   params: any
 }
 
-const renderTable = TableProps => (
-  <TableContainer title={TableProps.title}>
-    <Table>
-      <TableHead>
-        <TableRow>
-          {TableProps.headers.map(header => (
-            <TableHeader {...TableProps.getHeaderProps({ header })} key={header.key}>
-              {header.header}
-            </TableHeader>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {TableProps.rows.map(row => (
-          <TableRow key={row.id}>
-            {row.cells.map(cell => (
-              <TableCell key={cell.id}>
-                <div>{cell.value}</div>
-              </TableCell>
-            ))}
-          </TableRow>
+const renderTable = (props: TableProps) => (
+  <React.Fragment>
+    {props.title && <Caption>{props.title}</Caption>}
+    <Thead>
+      <Tr>
+        {props.headers.map(header => (
+          <Th key={header.key}>{header.header}</Th>
         ))}
-      </TableBody>
-    </Table>
-  </TableContainer>
+      </Tr>
+    </Thead>
+    <Tbody>
+      {props.rows.map(row => (
+        <Tr key={row.id}>
+          {row.cells.map(cell => (
+            <Td key={cell.id}>
+              <div>{cell.value}</div>
+            </Td>
+          ))}
+        </Tr>
+      ))}
+    </Tbody>
+  </React.Fragment>
 )
 
 export default class DecisionBase extends React.Component<{}, DecisionState> {
@@ -462,7 +435,7 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
   }
 
   // Get and set Advanced Statistics table values
-  private getAdvancedStatistics(key) {
+  private getAdvancedStatistics(key: string) {
     this.setState({ selectedAdvancedStatistic: key })
     this.setState({ advancedStatisticsRows: this.advancedStatisticsObject[this.advancedStatisticsNames[key]] })
   }
@@ -530,14 +503,24 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
   }
 
   // Get new traffic recommendations for the selected algorithm type
-  private handleAlgoChange = value => {
-    this.setState({ selectedAlgo: value.id })
-    this.getTrafficRecs(value.id, this.state.experimentResult)
+  private handleAlgoChange = (value: string) => {
+    this.setState({ selectedAlgo: value })
+    this.getTrafficRecs(value, this.state.experimentResult)
     this.handleReset()
   }
 
+  /** Handle sliders changing from the text input element */
+  private handleTrafficChangeFromInputElement(evt: React.FormEvent<HTMLInputElement>, version: string) {
+    const valString = (event.target as HTMLInputElement).value
+    try {
+      this.handleTrafficChange(parseInt(valString, 10), version)
+    } catch (err) {
+      console.error('User entered invalid value')
+    }
+  }
+
   // Handle sliders changing
-  private handleTrafficChange = (value, version) => {
+  private handleTrafficChange = (value: number, version: string) => {
     let newSplit
     for (let i = 0; i < this.state.trafficSplit.length; i++) {
       if (this.state.trafficSplit[i].version === version) {
@@ -583,22 +566,22 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
   }
 
   // update decision
-  private updateExperimentDecision(value) {
+  private updateExperimentDecision(value: string) {
     this.setState({ experimentDecision: value })
     const baseline = this.state.experimentResult.baseline_assessment.id
     if (value === 'rollback') {
-      this.updateEndExperimentWinner({ selectedItem: baseline })
+      this.updateEndExperimentWinner(baseline)
     } else if (value === 'rollforwardwinner') {
       const winner = this.state.experimentResult.winner_assessment.winning_version_found
         ? this.state.experimentResult.winner_assessment.current_best_version
         : baseline
-      this.updateEndExperimentWinner({ selectedItem: winner })
+      this.updateEndExperimentWinner(winner)
     }
   }
 
   // Update winner
-  private updateEndExperimentWinner(value) {
-    this.setState({ endExperimentWinner: value.selectedItem })
+  private updateEndExperimentWinner(value: string) {
+    this.setState({ endExperimentWinner: value })
   }
 
   // handle end of experiment
@@ -619,112 +602,91 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
     ++this.notifKey // To regenerate notification
     const { trafficSplit } = this.state
     return (
-      <Form className="plugin-iter8-formProps" style={{ display: 'block' }}>
-        <FormGroup legendText="">
-          <InlineLoading
+      <Form className="plugin-iter8-formProps">
+        <FormGroup fieldId="decisionForm-id-1">
+          <Loading
             description={
               !this.state.experimentCreated ? 'Waiting for iter8 Experiment to be created...' : 'Experiment Created: '
             }
-            iconDescription="Active loading indicator"
-            status={this.state.experimentCreated ? 'finished' : 'active'}
-            style={{ width: 350 }}
           />
         </FormGroup>
         {this.state.haveResults ? (
           <div>
-            <FormGroup legendText="">
+            <FormGroup fieldId="decisionForm-id-2">
               <h4 className="titletexts"> Winner Assessments </h4>
               {this.state.experimentResult.winner_assessment.winning_version_found ? (
                 <div>
-                  <h4 className="green">
-                    {' '}
-                    Winner Found! <FaceCool20 />{' '}
-                  </h4>
+                  <h4 className="green">Winner Found!</h4>
                   <h5 className="green"> {this.winner} </h5>
                 </div>
               ) : (
                 <div>
-                  <h4 className="red">
-                    {' '}
-                    {this.winner} <FaceNeutral20 />{' '}
-                  </h4>
+                  <h4 className="red">{this.winner}</h4>
                 </div>
               )}
             </FormGroup>
-            <FormGroup legendText="">
+            <FormGroup fieldId="decisionForm-id-3">
               <h4 className="titletexts"> High Level Overview </h4>
-              <DataTable
-                headers={this.basicStatsHeader}
-                rows={this.basicStatsRows}
-                render={({ rows, headers, getHeaderProps }) =>
-                  renderTable({
-                    rows,
-                    headers,
-                    getHeaderProps,
-                    title: '',
-                    id: 'basic',
-                    params: {}
-                  })
-                }
-              />
+              <TableComposable>
+                {renderTable({
+                  headers: this.basicStatsRows,
+                  rows: this.basicStatsHeader,
+                  title: '',
+                  id: 'basic',
+                  params: {}
+                })}
+              </TableComposable>
             </FormGroup>
-            <FormGroup legendText="">
+            <FormGroup fieldId="decisionForm-id-4">
               <Button
                 size="default"
                 kind="primary"
-                renderIcon={ChartLineData32}
-                disabled={!this.state.experimentCreated || this.state.hasExperimentEnded}
+                isDisabled={!this.state.experimentCreated || this.state.hasExperimentEnded}
                 onClick={this.handleGetAssessment}
               >
                 Get Assessment
               </Button>
             </FormGroup>
-            <FormGroup legendText="">
+            <FormGroup
+              fieldId="decisionForm-id-5"
+              label="Traffic Routing Goal"
+              aria-label="Routing Goal Unavailable"
+              helperText="Choose your traffic routing goal"
+            >
               <h4 className="titletexts"> Traffic Assessments </h4>
-              <Dropdown
-                id="analyticsAlgo"
-                label="Traffic Routing Goal"
-                ariaLabel="Routing Goal Unavailable"
-                items={this.algoList}
-                itemToString={item => (item ? item.text : '')}
-                initialSelectedItem={this.algoList[0]}
-                titleText="Traffic Routing Goal"
-                helperText="Choose your traffic routing goal"
-                onChange={value => this.handleAlgoChange(value.selectedItem)}
-              />
+              <FormSelect id="analyticsAlgo" onChange={value => this.handleAlgoChange(value)}>
+                {this.algoList.map((option, idx) => (
+                  <FormSelectOption key={idx} label={option ? option.text : ''} />
+                ))}
+              </FormSelect>
               <div>
-                <Button
-                  style={{ backgroundColor: '#e65c00' }}
-                  size="default"
-                  kind="primary"
-                  renderIcon={Undo32}
-                  onClick={this.handleReset}
-                >
+                <Button size="default" kind="danger" onClick={this.handleReset}>
                   Reset Traffic
                 </Button>
                 <Button
                   size="default"
                   kind="primary"
-                  renderIcon={Export32}
                   onClick={this.handleApply}
-                  disabled={this.state.trafficErr || this.state.hasExperimentEnded}
+                  isDisabled={this.state.trafficErr || this.state.hasExperimentEnded}
                 >
                   Apply Traffic Split
                 </Button>
               </div>
               {this.state.notifyUser ? (
-                <ToastNotification
+                <Alert
+                  isGlobal
                   key={this.notifKey}
-                  caption={this.state.notifyTime}
-                  kind="success"
-                  title="Virtual Service & Destination Rule Created"
-                  subtitle="Traffic is being re-routed. Allow a few seconds for changes to be implemented."
+                  alert={{
+                    type: 'success',
+                    title: 'Virtual Service & Destination Rule Created',
+                    body: 'Traffic is being re-routed. Allow a few seconds for changes to be implemented.'
+                  }}
                   onCloseButtonClick={this.handleCloseNotif}
                 />
               ) : null}
             </FormGroup>
             {this.state.currentSplit.length > 0 ? (
-              <FormGroup className="currenttraffic" legendText="">
+              <FormGroup className="currenttraffic" fieldId="decisionForm-id-6">
                 <p> Current Traffic Split: </p>
                 {this.state.currentSplit.map((val, idx) => {
                   const sliderId = `${idx}=${val.split}`
@@ -738,35 +700,30 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
               </FormGroup>
             ) : null}
 
-            <FormGroup legendText="">
-              {trafficSplit.map((val, idx) => {
-                const sliderId = `${idx}=${val.split}`
-                return (
-                  <Slider
+            {trafficSplit.map((val, idx) => {
+              const sliderId = `${idx}=${val.split}`
+              return (
+                <FormGroup key={idx} fieldId={`decisionForm-id-7-${idx}`} label={val.version}>
+                  <Touchspin
                     key={sliderId}
                     value={val.split}
                     min={0}
                     max={100}
-                    labelText={val.version}
-                    style={{ width: 200 }}
-                    onRelease={num => this.handleTrafficChange(num.value, val.version)}
-                    onChange={num => this.doNothing(num)}
+                    unit="%"
+                    onPlus={() => this.handleTrafficChange(val.split + 1, val.version)}
+                    onMinus={() => this.handleTrafficChange(val.split - 1, val.version)}
+                    onChange={evt => this.handleTrafficChangeFromInputElement(evt, val.version)}
                   />
-                )
-              })}
-              {this.state.trafficErr ? (
-                <InlineNotification
-                  kind="error"
-                  notificationType="inline"
-                  role="alert"
-                  title="Invalid Traffic Split"
-                  subtitle="Traffic percentages must add to 100%"
-                  hideCloseButton={true}
-                  style={{ width: 600 }}
-                />
-              ) : null}
-            </FormGroup>
-            <FormGroup legendText="">
+                </FormGroup>
+              )
+            })}
+            {this.state.trafficErr ? (
+              <Alert
+                alert={{ type: 'error', title: 'Invalid Traffic Split', body: 'Traffic percentages must add to 100%' }}
+                hideCloseButton={true}
+              />
+            ) : null}
+            <FormGroup fieldId="decisionForm-id-8">
               <h4 className="titletexts"> Criteria Assessments </h4>
               {this.state.haveCriteriaComparison ? (
                 <div>
@@ -790,55 +747,49 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
                 <h4> No Criteria Assessment to show</h4>
               )}
             </FormGroup>
-            <FormGroup className="advancedstats" legendText="">
+            <FormGroup className="advancedstats" fieldId="decisionForm-id-9">
               <h4 onClick={this.toggleAdvancedStatistics}>
                 Advanced Statistics{' '}
                 <sup>
-                  <Help16 /> <div> Advanced Statistics is only available for Ratio Metrics </div>{' '}
+                  <Icons icon="Help" /> <div> Advanced Statistics is only available for Ratio Metrics </div>{' '}
                 </sup>
               </h4>
             </FormGroup>
             {this.state.showAdvancedStatistics && this.state.haveAdvancedStatistics ? (
-              <FormGroup legendText="">
-                <Dropdown
-                  id="advancedStatistics"
-                  label="Advanced Statistics"
-                  ariaLabel="Advanced Statistics Unavailable"
-                  items={Object.keys(this.advancedStatisticsNames)}
-                  initialSelectedItem={this.state.selectedAdvancedStatistic}
-                  titleText=""
-                  helperText="Choose a statistic to compare"
-                  onChange={value => this.getAdvancedStatistics(value.selectedItem)}
-                />
-                <DataTable
-                  headers={this.advancedStatiticsHeaders}
-                  rows={this.state.advancedStatisticsRows}
-                  render={({ rows, headers, getHeaderProps }) =>
-                    renderTable({
-                      rows,
-                      headers,
-                      getHeaderProps,
-                      title: 'Advanced Metric Assessment',
-                      id: 'advanced',
-                      params: {}
-                    })
-                  }
-                />
+              <FormGroup
+                fieldId="decisionForm-id-10"
+                label="Advanced Statistics"
+                aria-label="Advanced Statistics Unavailable"
+                helperText="Choose a statistic to compare"
+              >
+                <FormSelect id="advancedStatistics" onChange={value => this.getAdvancedStatistics(value)}>
+                  {Object.keys(this.advancedStatisticsNames).map((option, idx) => (
+                    <FormSelectOption key={idx} label={option} />
+                  ))}
+                </FormSelect>
+                <TableComposable>
+                  {renderTable({
+                    rows: this.state.advancedStatisticsRows,
+                    headers: this.advancedStatiticsHeaders,
+                    title: 'Advanced Metric Assessment',
+                    id: 'advanced',
+                    params: {}
+                  })}
+                </TableComposable>
               </FormGroup>
             ) : null}
             {this.state.showAdvancedStatistics && !this.state.haveAdvancedStatistics ? (
-              <FormGroup legendText="">
+              <FormGroup fieldId="decisionForm-id-11">
                 <h4> No Advanced Statistics to show</h4>
               </FormGroup>
             ) : null}
           </div>
         ) : null}
-        <FormGroup legendText="">
+        <FormGroup fieldId="decisionForm-id-12">
           <Button
             size="default"
             kind="primary"
-            renderIcon={ChartLineData32}
-            disabled={!this.state.experimentCreated || this.state.hasExperimentEnded}
+            isDisabled={!this.state.experimentCreated || this.state.hasExperimentEnded}
             onClick={this.handleGetAssessment}
           >
             Get Assessment
@@ -846,49 +797,44 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
         </FormGroup>
         {this.state.haveResults ? (
           <div>
-            <FormGroup legendText="">
-              <h4 className="titletexts"> End Experiment </h4>
-            </FormGroup>
+            <h4 className="titletexts"> End Experiment </h4>
             <FormGroup
-              invalid={false}
-              legendText="End the Experiment by choosing to roll back traffic to baseline or roll forward traffic to winner"
-              message={false}
-              messageText=""
+              fieldId="decisionForm-id-13"
+              label="End the Experiment by choosing to roll back traffic to baseline or roll forward traffic to winner"
             >
-              <RadioButtonGroup
-                defaultSelected="rollback"
-                labelPosition="right"
+              <FormSelect
                 name="end-experiment"
                 onChange={value => this.updateExperimentDecision(value)}
-                orientation="vertical"
-                valueSelected="rollback"
                 className="pad10"
               >
-                <RadioButton id="rollback" labelText="Roll Back to Baseline" value="rollback" />
-                <RadioButton id="rollforwardwinner" labelText="Roll Forward to Winner" value="rollforwardwinner" />
-                <RadioButton
+                <FormSelectOption id="rollback" label="Roll Back to Baseline" value="rollback" />
+                <FormSelectOption id="rollforwardwinner" label="Roll Forward to Winner" value="rollforwardwinner" />
+                <FormSelectOption
                   id="rollforwardother"
-                  labelText="Roll Forward to Another Deployment"
+                  label="Roll Forward to Another Deployment"
                   value="rollforwardother"
                 />
-              </RadioButtonGroup>
-              {this.state.experimentDecision === 'rollforwardother' ? (
-                <ComboBox
-                  id="winner-select"
-                  helperText="Select the winner of the experiment"
-                  placeholder="Select"
-                  items={this.deployList}
-                  onChange={value => this.updateEndExperimentWinner(value)}
-                />
-              ) : null}
+              </FormSelect>
             </FormGroup>
-            <FormGroup legendText="" className="endexpbtn">
+            {this.state.experimentDecision === 'rollforwardother' ? (
+              <FormGroup fieldId="decisionForm-id-13b" helperText="Select the winner of the experiment">
+                <FormSelect
+                  id="winner-select"
+                  placeholder="Select"
+                  onChange={value => this.updateEndExperimentWinner(value)}
+                >
+                  {this.deployList.map((option, idx) => (
+                    <FormSelectOption key={idx} label={option} />
+                  ))}
+                </FormSelect>
+              </FormGroup>
+            ) : null}
+            <FormGroup className="endexpbtn" fieldId="decisionForm-id-14">
               <Button
                 size="default"
                 kind="primary"
-                renderIcon={Stop32}
                 onClick={this.endExperiment}
-                disabled={this.state.hasExperimentEnded}
+                isDisabled={this.state.hasExperimentEnded}
               >
                 End Experiment
               </Button>
