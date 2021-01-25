@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-import { Tab, REPL, Table as KuiTable, TableStyle, i18n, isTableWithTimestamp, isWatchable } from '@kui-shell/core'
+import {
+  Tab,
+  REPL,
+  Table as KuiTable,
+  Row as KuiRow,
+  TableStyle,
+  i18n,
+  isTableWithTimestamp,
+  isWatchable
+} from '@kui-shell/core'
 
 import React from 'react'
-import { DataTable, DataTableHeader, TableContainer, Table } from 'carbon-components-react'
+import { TableComposable } from '@patternfly/react-table'
 
-import sortRow from './sort'
+// import sortRow from './sort'
 import Card from '../../spi/Card'
 import Timeline from './Timeline'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
 import SequenceDiagram from './SequenceDiagram'
+import kuiHeaderFromBody from './kuiHeaderFromBody'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
 import Grid, { findGridableColumn } from './Grid'
-import kui2carbon, { NamedDataTableRow } from './kui2carbon'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
 
-/** carbon styling */
-import 'carbon-components/scss/components/data-table/_data-table-core.scss'
-import 'carbon-components/scss/components/data-table/_data-table-sort.scss'
-
-/** hack (see comments in file) */
-import '../../../../web/scss/components/Table/hack-select.scss'
-
 /** import the kui theme alignment */
+import '../../../../web/scss/components/Table/PatternFly.scss'
 import '../../../../web/scss/components/Table/carbon-kui-theme-alignment.scss'
 
 const strings = i18n('plugin-client-common')
@@ -81,8 +84,8 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 /** state of PaginatedTable component */
 export type State<T extends KuiTable = KuiTable> = ToolbarProps & {
   response: T
-  headers: DataTableHeader[]
-  rows: NamedDataTableRow[]
+  header: KuiRow
+  body: KuiRow[]
   footer: string[]
 
   page: number
@@ -138,10 +141,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   public static getDerivedStateFromProps(props: Props, currentState?: State) {
     try {
-      // assemble the data model
-      const { headers, rows, footer } = kui2carbon(props.response)
+      const { header, body, footer, defaultPresentation } = props.response
 
-      const { defaultPresentation } = props.response
       const asGrid =
         ((!defaultPresentation || defaultPresentation === 'grid') &&
           props.asGrid &&
@@ -158,10 +159,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       }
 
       const newState = {
-        rows,
+        body,
         asGrid,
         footer,
-        headers,
+        header: header || kuiHeaderFromBody(body),
         asSequence,
         response: props.response,
         pageSize: props.pageSize || defaults.pageSize
@@ -264,7 +265,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             paginate={this.isPaginated()}
             setPage={(page: number) => this.setState({ page })}
             page={this.state.page}
-            totalItems={this.state.rows.length}
+            totalItems={this.state.body.length}
             pageSize={this.state.pageSize}
             hasSequenceButton={hasSequenceButton}
             asSequence={this.state.asSequence}
@@ -278,7 +279,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     )
   }
 
-  private grid(visibleRows: NamedDataTableRow[]) {
+  private grid(visibleRows: KuiRow[]) {
     return (
       <Grid
         tab={this.props.tab}
@@ -291,8 +292,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private justUpdatedMap() {
-    return this.state.rows.reduce((M, _) => {
-      if (_.justUpdated) M[_.rowKey] = true
+    return this.state.body.reduce(M => {
+      // FIXME if (_.justUpdated) M[_.rowKey] = true
       return M
     }, {} as Record<string, boolean>)
   }
@@ -302,50 +303,38 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     const { page } = this.state
 
     const response = this.props.response
-    const { headers, rows } = this.state
+    const { body, header } = this.state
+
+    const variant = 'compact'
+    /* this.props.response.style === TableStyle.Heavy
+      ? null
+      : this.props.response.style === undefined || this.props.response.style === TableStyle.Medium
+      ? null
+      : 'compact' */
 
     const isSortable = response.body.length > 1
-    const dataTable = (visibleRows: NamedDataTableRow[], offset = 0) => (
-      <React.Fragment>
-        <DataTable
-          rows={visibleRows}
-          headers={headers}
-          isSortable={isSortable}
-          sortRow={sortRow}
-          render={renderOpts => (
-            <TableContainer
-              data-is-empty={response.body.length === 0}
-              className={
-                'kui--data-table-container' +
-                (this.props.title ? ' kui--data-table-container-with-toolbars' : '') +
-                (this.props.response.title || this.props.response.breadcrumbs
-                  ? ' kui--data-table-container-with-title'
-                  : '') +
-                (isSortable ? ' kui--data-table-sortable' : '')
-              }
-            >
-              <Table
-                {...renderOpts.getTableProps()}
-                size={
-                  this.props.response.style === TableStyle.Heavy
-                    ? 'tall'
-                    : this.props.response.style === undefined || this.props.response.style === TableStyle.Medium
-                    ? 'short'
-                    : 'compact'
-                }
-              >
-                {response.header && renderHeader(response.header, renderOpts)}
-                {renderBody(response, this.justUpdatedMap(), renderOpts, tab, repl, offset)}
-              </Table>
-            </TableContainer>
-          )}
-        />
-      </React.Fragment>
+    const dataTable = (visibleRows: KuiRow[], offset = 0) => (
+      <div
+        className={
+          'kui--data-table-container' +
+          (this.props.title ? ' kui--data-table-container-with-toolbars' : '') +
+          (this.props.response.title || this.props.response.breadcrumbs
+            ? ' kui--data-table-container-with-title'
+            : '') +
+          (isSortable ? ' kui--data-table-sortable' : '')
+        }
+        data-is-empty={response.body.length === 0}
+      >
+        <TableComposable className="kui--table-like-wrapper" variant={variant}>
+          {header && renderHeader(header)}
+          {renderBody(response, this.justUpdatedMap(), tab, repl, offset)}
+        </TableComposable>
+      </div>
     )
 
     const paginated = this.isPaginated()
     return dataTable(
-      !paginated ? rows : rows.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
+      !paginated ? body : body.slice((page - 1) * this.state.pageSize, page * this.state.pageSize),
       !paginated ? 0 : (page - 1) * this.state.pageSize
     )
   }
@@ -368,7 +357,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       <React.Fragment>
         {includeToolbars && this.topToolbar(lightweightTables)}
         {this.state.asGrid
-          ? this.grid(this.state.rows)
+          ? this.grid(this.state.body)
           : this.state.asSequence
           ? this.sequence()
           : this.state.asTimeline

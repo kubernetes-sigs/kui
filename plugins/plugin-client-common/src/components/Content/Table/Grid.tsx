@@ -19,7 +19,6 @@ import { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
 
 import ErrorCell from './ErrorCell'
 import { onClickForCell } from './TableCell'
-import { NamedDataTableRow } from './kui2carbon'
 import DefaultColoring, { Coloring } from './Coloring'
 
 /** parameters to Grid component */
@@ -27,7 +26,7 @@ export type Props<T extends KuiTable = KuiTable> = {
   tab: Tab
   repl: REPL
   response: T
-  visibleRows: NamedDataTableRow[]
+  visibleRows: KuiRow[]
   justUpdated: Record<string, boolean> // rowKey index
 }
 
@@ -36,7 +35,7 @@ export const findGridableColumn = (response: KuiTable) => {
     ? response.durationColumnIdx
     : response.statusColumnIdx !== undefined
     ? response.statusColumnIdx
-    : response.body[0]
+    : response.body[0] && response.header
     ? response.header.attributes.findIndex(cell => /STATUS|REASON/i.test(cell.key))
     : -1
 }
@@ -57,7 +56,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
 
   public static getDerivedStateFromProps(props: Props) {
     return {
-      coloring: new DefaultColoring(props.response)
+      coloring: findGridableColumn(props.response) >= 0 ? new DefaultColoring(props.response) : undefined
     }
   }
 
@@ -122,7 +121,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
     const colorByDuration = response.colorBy === 'duration' || (!response.colorBy && response.durationColumnIdx >= 0)
 
     return (
-      <div className="bx--data-table kui--data-table-as-grid" style={style}>
+      <div className="kui--table-like-wrapper kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
           const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
           const title = `${kuiRow.name}\n${badgeCell ? badgeCell.value : ''}`

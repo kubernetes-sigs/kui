@@ -17,10 +17,9 @@
 import { Table, Tab, REPL } from '@kui-shell/core'
 
 import React from 'react'
-import { DataTableCustomRenderProps, TableBody, TableRow } from 'carbon-components-react'
+import { Tbody, Tr } from '@patternfly/react-table'
 
 import renderCell from './TableCell'
-import { NamedDataTableRow } from './kui2carbon'
 
 /**
  * Render the TableBody part
@@ -31,30 +30,28 @@ import { NamedDataTableRow } from './kui2carbon'
 export default function renderBody(
   kuiTable: Table,
   justUpdated: Record<string, boolean>, // rowKey index
-  renderOpts: DataTableCustomRenderProps<NamedDataTableRow>,
   tab: Tab,
   repl: REPL,
   offset: number
 ) {
   return (
-    <TableBody>
-      {renderOpts.rows.map(row => {
-        const ridx = parseInt(row.id, 10)
-        const kuiRow = kuiTable.body[offset + ridx]
+    <Tbody>
+      {kuiTable.body.map((kuiRow, ridx) => {
         const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
+        const cell = renderCell(kuiTable, kuiRow, updated, tab, repl)
+
+        const key = kuiRow.key || (kuiTable.header ? kuiTable.header.key || kuiTable.header.name : undefined)
 
         return (
-          <TableRow
-            key={row.id}
-            {...renderOpts.getRowProps({
-              row,
-              'data-name': kuiTable.body[offset + ridx].name
-            })}
-          >
-            {row.cells.map(renderCell(kuiTable, kuiRow, updated, tab, repl))}
-          </TableRow>
+          <Tr key={ridx} data-row-key={kuiRow.rowKey} data-name={kuiTable.body[offset + ridx].name}>
+            {cell(key, kuiRow.name, undefined, kuiRow.outerCSS, kuiRow.css, kuiRow.onclick, 0)}
+            {kuiRow.attributes &&
+              kuiRow.attributes.map((attr, idx) =>
+                cell(attr.key, attr.value, attr.tag, attr.outerCSS, attr.css, attr.onclick, idx + 1)
+              )}
+          </Tr>
         )
       })}
-    </TableBody>
+    </Tbody>
   )
 }

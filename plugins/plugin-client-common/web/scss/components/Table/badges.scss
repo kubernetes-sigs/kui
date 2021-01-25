@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ $grid-cell-size: 1.25rem;
   opacity: 1;
 }
 
-.bx--data-table,
 .kui--table-like-wrapper {
   [data-tag='badge'] {
     display: flex;
@@ -79,7 +78,7 @@ $grid-cell-size: 1.25rem;
       padding-top: var(--pf-c-card--child--PaddingBottom);
     }
 
-    .bx--data-table {
+    .kui--table-like-wrapper {
       display: grid;
       grid-column-gap: 3px;
       grid-row-gap: 3px;
@@ -123,7 +122,7 @@ $grid-cell-size: 1.25rem;
 }
 
 @mixin badge-only {
-  .bx--data-table-container .bx--data-table,
+  .kui--data-table-container .kui--table-like-wrapper,
   .kui--table-like {
     th[data-key='STATUS'],
     td.kui--status-cell {
@@ -156,7 +155,7 @@ $grid-cell-size: 1.25rem;
   }
 }
 
-[data-table-watching='true'] .bx--data-table {
+[data-table-watching='true'] .kui--table-like-wrapper {
   [data-tag='badge-circle'] {
     &.yellow-background {
       /* if it's yellow, but we're not sure if it was just updated, blink around 20 times */

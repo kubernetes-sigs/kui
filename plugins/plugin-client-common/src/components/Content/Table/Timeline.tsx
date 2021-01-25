@@ -233,7 +233,7 @@ export default class Timeline extends React.PureComponent<Props, State> {
     }
 
     return (
-      <div className="kui--data-table-container bx--data-table-container kui--timeline-container">
+      <div className="kui--data-table-container kui--timeline-container">
         <div className="kui--timeline">
           {this.yAxis()}
           {this.xAxis()}

@@ -71,7 +71,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
         await SidecarExpect.yaml({ Name: 'myapp' })(res)
           .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
           .then(() => Util.switchToTab('pods')(res))
-          .then(() => this.app.client.$(`${Selectors.SIDECAR_TAB_CONTENT(res.count, res.splitIndex)} .bx--data-table`))
+          .then(() => this.app.client.$(`${Selectors.SIDECAR_TAB_CONTENT(res.count, res.splitIndex)} table`))
           .then(_ => _.waitForExist())
           .then(async () => {
             if (singletonTablesHaveTitle) {

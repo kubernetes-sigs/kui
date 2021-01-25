@@ -50,7 +50,7 @@ commands.forEach(command => {
       // in any case, the containers tab should be selected now
       await this.app.client.waitForVisible(Selectors.SIDECAR_MODE_BUTTON_SELECTED('containers'))
 
-      const table = `${Selectors.SIDECAR_TAB_CONTENT} .bx--data-table`
+      const table = `${Selectors.SIDECAR_TAB_CONTENT} table`
       await this.app.client.waitForVisible(table)
 
       // check the conditions rows
