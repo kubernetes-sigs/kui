@@ -30,7 +30,8 @@ body.kui--patternfly4[kui-theme-style] {
   /* attribution: @patternfly/react-core/dist/styles/base.css version 4.18.5; license MIT */
   --pf-global--palette--black-100: #fafafa;
   --pf-global--palette--black-150: #f5f5f5;
-  --pf-global--palette--black-200: #f0f0f0;
+  --pf-global--palette--black-200: #f0f0f0; /* this is hsl(0deg,0%,94%) */
+  --pf-global--palette--black-250-kui: hsl(0deg 0% 90%);
   --pf-global--palette--black-300: #d2d2d2;
   --pf-global--palette--black-400: #b8bbbe;
   --pf-global--palette--black-500: #8a8d90;

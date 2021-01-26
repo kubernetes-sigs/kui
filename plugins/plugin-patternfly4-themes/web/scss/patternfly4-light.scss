@@ -35,9 +35,9 @@ body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
   --color-base0E: #d12765;
   --color-base0F: var(--pf-global--palette--purple-300);
 
-  --color-stripe-01: var(--pf-global--palette--black-300);
+  --color-stripe-01: var(--pf-global--palette--black-400);
   --color-repl-background: var(--pf-global--palette--black-150);
-  --color-repl-background-02: var(--color-base01);
+  --color-repl-background-02: var(--pf-global--palette--black-250-kui);
 
   --color-base08-rgb: var(--pf-global--palette--red-100-rgb);
   --color-red-rgb: var(--color-base08-rgb);
@@ -47,7 +47,7 @@ body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
   --color-background-03: var(--pf-global--palette--black-200);
 
   --color-table-border1: var(--pf-global--palette--black-200);
-  --color-table-border2: var(--pf-global--palette--black-500);
+  --color-table-border2: var(--pf-global--palette--black-600);
   --color-table-border3: var(--pf-global--palette--black-400);
 
   --color-sidecar-toolbar-background: var(--pf-global--palette--black-300);
