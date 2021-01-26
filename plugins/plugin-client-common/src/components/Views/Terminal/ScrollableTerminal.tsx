@@ -882,7 +882,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Split the view */
   private async onSplit(request: TabLayoutModificationResponse<NewSplitRequest>, sbuuid: string) {
     const nTerminals = this.state.splits.length
-    console.error('!!!!!!', nTerminals)
 
     if (nTerminals === MAX_TERMINALS) {
       return new Error(strings('No more splits allowed'))
