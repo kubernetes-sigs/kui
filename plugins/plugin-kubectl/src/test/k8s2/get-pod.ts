@@ -93,6 +93,18 @@ commands.forEach(command => {
         .catch(Common.oops(this, true))
     })
 
+    it(`should error out when getting without kind`, () => {
+      return CLI.command(`${command} get ${inNamespace}`, this.app)
+        .then(ReplExpect.error(500))
+        .catch(Common.oops(this, true))
+    })
+
+    it(`should error out when getting -o name without kind`, () => {
+      return CLI.command(`${command} get -o name ${inNamespace}`, this.app)
+        .then(ReplExpect.error(500))
+        .catch(Common.oops(this, true))
+    })
+
     /**
      * NOTE [myan 20190816]: In the test case below, The error message is different based on kube version
      * With version 1.12, the output is 'Error from server (NotFound): pods "shouldNotExist1" not found' only.
