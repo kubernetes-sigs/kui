@@ -22,6 +22,14 @@ $accordion--spacing: 0.125rem;
   }
 }
 
+@mixin AccordionItemButton {
+  @include Accordion {
+    button {
+      @content;
+    }
+  }
+}
+
 @mixin AccordionItem {
   .kui--accordion-item {
     @content;
