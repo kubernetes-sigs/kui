@@ -55,9 +55,10 @@ $block-padding: 0.25em;
   }
 
   /** Do not wrap input in minisplit (we don't have a lot of space) */
-  @include BlockInput {
+  /** Update: nice idea, but this breaks tab completion https://github.com/IBM/kui/issues/6752 */
+  /*@include BlockInput {
     flex-wrap: nowrap;
-  }
+  }*/
 
   /** Special background for the input wrapper of finished blocks */
   /* @include FinishedBlock {
