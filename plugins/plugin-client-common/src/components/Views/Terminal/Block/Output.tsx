@@ -57,7 +57,7 @@ import {
 } from './BlockModel'
 
 import Actions from './Actions'
-const Scalar = React.lazy(() => import('../../../Content/Scalar/'))
+import Scalar from '../../../Content/Scalar/' // !! DO NOT MAKE LAZY. See https://github.com/IBM/kui/issues/6758
 import KuiContext from '../../../Client/context'
 import { Maximizable } from '../../Sidecar/width'
 
