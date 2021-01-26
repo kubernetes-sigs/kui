@@ -65,6 +65,7 @@ $inter-message-spacing: 0.1875rem;
     color: var(--color-base0F);
     font-size: 0.75rem;
     display: inline-flex;
+    text-decoration: none; /* See https://github.com/IBM/kui/issues/6739 */
   }
 }
 
