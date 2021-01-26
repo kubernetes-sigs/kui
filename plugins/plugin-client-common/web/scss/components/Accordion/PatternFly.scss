@@ -20,14 +20,21 @@
   margin: 0.5rem 0 0;
 }
 
+@include AccordionItem {
+  h3 {
+    margin: 0;
+  }
+}
+
+@include AccordionItemButton {
+  background-color: transparent;
+}
+
 @include AccordionToggle {
   font-size: 0.825rem;
   font-family: var(--font-sans-serif);
   &:focus {
     outline: none;
-  }
-  &:before {
-    display: none;
   }
 }
 
