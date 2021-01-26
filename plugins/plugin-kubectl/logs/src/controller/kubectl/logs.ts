@@ -92,10 +92,14 @@ function getOrPty(verb: string) {
       if (!label) {
         const idx = args.argvNoOptions.indexOf(verb)
         const name = args.argvNoOptions[idx + 1]
-        const getPodCmd = withKubeconfigFrom(args, `${cmd} get pod ${name} -o yaml`)
-        return args.REPL.qexec(getPodCmd, undefined, undefined, {
-          tab: args.tab
-        })
+        if (!name) {
+          return doExecWithStdout(args, undefined, cmd)
+        } else {
+          const getPodCmd = withKubeconfigFrom(args, `${cmd} get pod ${name} -o yaml`)
+          return args.REPL.qexec(getPodCmd, undefined, undefined, {
+            tab: args.tab
+          })
+        }
       } else {
         const getPodCmd = withKubeconfigFrom(args, `${cmd} get pod -l ${label} -o json`)
         return args.REPL.qexec(getPodCmd, undefined, undefined, { tab: args.tab })
