@@ -18,7 +18,7 @@ import KuiConfiguration from './KuiConfiguration'
 
 const defaultConfiguration: KuiConfiguration = {
   productName: 'Kui Demo',
-  components: 'carbon'
+  components: 'patternfly'
 }
 
 export default defaultConfiguration
