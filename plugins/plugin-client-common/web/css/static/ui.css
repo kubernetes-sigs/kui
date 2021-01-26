@@ -735,6 +735,7 @@ body.oops-total-catastrophe #restart-needed-warning {
   font-size: inherit;
   font-weight: 400;
   line-height: 1.25em;
+  margin: 0;
 }
 .page-content li > p,
 .page-content p:only-child {
@@ -847,6 +848,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   letter-spacing: 0;
   padding: 1em 0 0.5em;
   line-height: 1.625em;
+  margin: 0;
 }
 .page-content h4 {
   color: var(--color-brand-01);
@@ -854,6 +856,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   padding-top: $kui--page-content-h4-padding;
   font-size: unset;
   line-height: unset;
+  margin: 0;
 
   &:not([data-is-href]) + p {
     padding-top: calc(0.5em + #{$kui--page-content-paragraph-padding});
