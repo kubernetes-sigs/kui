@@ -77,7 +77,7 @@ const strings = i18n('plugin-client-common')
 type Cleaner = () => void
 
 /** Hard limit on the number of Terminal splits */
-const MAX_TERMINALS = 5
+const MAX_TERMINALS = 8
 
 /** Remember the welcomed count in localStorage, using this key */
 const NUM_WELCOMED = 'kui-shell.org/ScrollableTerminal/NumWelcomed'
@@ -882,6 +882,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Split the view */
   private async onSplit(request: TabLayoutModificationResponse<NewSplitRequest>, sbuuid: string) {
     const nTerminals = this.state.splits.length
+    console.error('!!!!!!', nTerminals)
 
     if (nTerminals === MAX_TERMINALS) {
       return new Error(strings('No more splits allowed'))
@@ -1067,6 +1068,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       scrollback.facade.getSize = getSize.bind(ref)
 
       scrollback.facade.splitCount = () => this.state.splits.length
+      scrollback.facade.hasSideBySideTerminals = () =>
+        this.theseAreMiniSplits[this.state.splits.length].findIndex((isMini, idx, S) => {
+          return !isMini && idx < S.length - 1 && !S[idx + 1]
+        }) >= 0
 
       scrollback.facade.scrollToBottom = () => {
         ref.scrollTop = ref.scrollHeight
@@ -1126,10 +1131,29 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return scrollback.facade
   }
 
+  /**
+   * This map keeps track of which split indices are minisplits. The
+   * primary index is the current split count. That gives an array
+   * which indicates whether the given scrollback index is a
+   * minisplit.
+   *
+   */
+  private readonly theseAreMiniSplits = {
+    1: [false], // 1 split, not-minisplit
+    2: [false, false], // 2 splits, both not-minisplit
+    3: [true, true, false], // etc.
+    4: [true, true, false, false],
+    5: [true, true, true, false, false],
+    6: [true, true, true, false, false, false],
+    7: [true, true, true, true, true, false, false],
+    8: [true, true, true, true, true, true, true, false]
+  }
+
   /** Present the given scrollback as a minisplit? */
   private isMiniSplit(scrollback: ScrollbackState, sbidx: number) {
     return (
-      scrollback.forceMiniSplit || (this.state.splits.length > 2 && sbidx < this.state.splits.length - 1) || undefined
+      scrollback.forceMiniSplit || this.theseAreMiniSplits[this.state.splits.length][sbidx] || undefined
+      // scrollback.forceMiniSplit || (this.state.splits.length > 2 && sbidx < this.state.splits.length - 1) || undefined
     )
   }
 

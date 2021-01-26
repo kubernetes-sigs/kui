@@ -99,8 +99,15 @@ $action-hover-delay: 210ms;
 
 /** A "T T" layout, i.e. two terminals side-by-side */
 @mixin SideBySide {
-  .repl .kui--terminal-split-container[data-split-count='2'] {
-    @content;
+  .repl .kui--terminal-split-container {
+    &[data-split-count='2'],
+    &[data-split-count='4'],
+    &[data-split-count='5'],
+    &[data-split-count='6'],
+    &[data-split-count='7'],
+    &[data-split-count='8'] {
+      @content;
+    }
   }
 }
 

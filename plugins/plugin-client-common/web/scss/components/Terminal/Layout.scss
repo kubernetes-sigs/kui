@@ -30,20 +30,35 @@
 .kui--scrollback:nth-of-type(5) {
   grid-area: T5;
 }
+.kui--scrollback:nth-of-type(6) {
+  grid-area: T6;
+}
+.kui--scrollback:nth-of-type(7) {
+  grid-area: T7;
+}
+.kui--scrollback:nth-of-type(8) {
+  grid-area: T8;
+}
+
+@mixin Columns($N) {
+  grid-template-columns: repeat(#{$N}, 1fr);
+}
+@mixin Rows($N) {
+  grid-template-rows: repeat(#{$N}, 1fr);
+}
 
 /** Case: no splits */
 .kui--terminal-split-container[data-split-count='1'] {
-  grid-template-columns: repeat(1, 1fr);
-  grid-template-rows: repeat(1, 1fr);
+  @include Rows(1);
+  @include Columns(1);
   grid-template-areas: 'T1';
 }
 
 .kui--terminal-split-container {
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-
   /* two terminals */
   &[data-split-count='2'] {
+    @include Rows(2);
+    @include Columns(2);
     grid-template-areas:
       'T1 T2'
       'T1 T2';
@@ -51,25 +66,61 @@
 
   /* three terminals */
   &[data-split-count='3'] {
+    @include Rows(3);
+    @include Columns(2);
     grid-template-areas:
-      'T1 T3 T3'
-      'T2 T3 T3';
-    grid-template-columns: repeat(3, 1fr);
+      'T1 T2'
+      'T3 T3'
+      'T3 T3';
   }
 
   /* four terminals */
   &[data-split-count='4'] {
+    @include Rows(3);
+    @include Columns(4);
     grid-template-areas:
-      'T1 T2 T3'
-      'T4 T4 T4';
-    grid-template-columns: repeat(3, 1fr);
+      'T1 T1 T2 T2'
+      'T3 T3 T4 T4'
+      'T3 T3 T4 T4';
   }
 
   /* five terminals */
   &[data-split-count='5'] {
+    @include Rows(3);
+    @include Columns(6);
     grid-template-areas:
-      'T1 T2 T3'
-      'T4 T5 T5';
-    grid-template-columns: repeat(3, 1fr);
+      'T1 T1 T2 T2 T3 T3'
+      'T4 T4 T4 T5 T5 T5'
+      'T4 T4 T4 T5 T5 T5';
+  }
+
+  /* six terminals */
+  &[data-split-count='6'] {
+    @include Rows(3);
+    @include Columns(4);
+    grid-template-areas:
+      'T1 T2 T3 T3'
+      'T4 T4 T6 T6'
+      'T5 T5 T6 T6';
+  }
+
+  /* seven terminals */
+  &[data-split-count='7'] {
+    @include Rows(3);
+    @include Columns(4);
+    grid-template-areas:
+      'T1 T2 T3 T3'
+      'T4 T5 T7 T7'
+      'T6 T6 T7 T7';
+  }
+
+  /* eight terminals */
+  &[data-split-count='8'] {
+    @include Rows(3);
+    @include Columns(4);
+    grid-template-areas:
+      'T1 T2 T3 T3'
+      'T4 T5 T8 T8'
+      'T6 T7 T8 T8';
   }
 }
