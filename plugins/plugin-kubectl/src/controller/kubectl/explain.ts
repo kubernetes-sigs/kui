@@ -307,16 +307,18 @@ async function fetch(command: string, args: Arguments, kindAsProvidedByUser: str
 }
 
 export function getKindAndVersion(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<Explained> {
-  const fastPath = fastPathCases[kindAsProvidedByUser]
-  if (fastPath) {
-    // we have precomputed some of the common cases
-    return Promise.resolve(fastPath)
-  } else if (!cache[kindAsProvidedByUser]) {
-    // otherwise, we need to do a more expensive call to `kubectl`
-    cache[kindAsProvidedByUser] = fetch(command, args, kindAsProvidedByUser)
-  }
+  if (kindAsProvidedByUser) {
+    const fastPath = fastPathCases[kindAsProvidedByUser]
+    if (fastPath) {
+      // we have precomputed some of the common cases
+      return Promise.resolve(fastPath)
+    } else if (!cache[kindAsProvidedByUser]) {
+      // otherwise, we need to do a more expensive call to `kubectl`
+      cache[kindAsProvidedByUser] = fetch(command, args, kindAsProvidedByUser)
+    }
 
-  return cache[kindAsProvidedByUser]
+    return cache[kindAsProvidedByUser]
+  }
 }
 
 /**

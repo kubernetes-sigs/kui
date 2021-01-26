@@ -263,8 +263,9 @@ async function rawGet(
 ) {
   const command = _command === 'k' ? 'kubectl' : _command
   const isGetAll = args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1] === 'all'
+  const requestWithoutKind = isGetAll || (!fileOf(args) && !_kind)
 
-  if ((command === 'oc' || command === 'kubectl') && !args.argvNoOptions.includes('|') && !isGetAll) {
+  if ((command === 'oc' || command === 'kubectl') && !args.argvNoOptions.includes('|') && !requestWithoutKind) {
     // try talking to the apiServer directly
     const response = await getDirect(args, _kind)
     if (response) {
