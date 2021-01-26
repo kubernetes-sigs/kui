@@ -22,7 +22,7 @@ export type ThemeApiVersion = 'v1' | 'v2'
 
 /** Properties that can be associated with <Kui/> component */
 export interface ThemeProperties {
-  components: 'carbon' | 'patternfly'
+  components: 'patternfly'
   topTabNames: 'command' | 'fixed'
 }
 

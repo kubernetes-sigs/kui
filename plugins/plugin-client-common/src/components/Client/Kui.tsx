@@ -49,7 +49,7 @@ const strings = i18n('client')
 const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
 
 const defaultThemeProperties: ThemeProperties = {
-  components: 'carbon',
+  components: 'patternfly',
   topTabNames: 'fixed'
 }
 
