@@ -39,7 +39,7 @@ import {
 } from '@kui-shell/core'
 
 const Commentary = React.lazy(() => import('../Commentary'))
-import HTMLDom from './HTMLDom' // !! DO NOT MAKE LAZY. plugin-bash-like/pty/client fails in dimensions.actualCellWidthxHeight
+import HTMLDom from './HTMLDom' // !! DO NOT MAKE LAZY. See https://github.com/IBM/kui/issues/6758
 const XtermDom = React.lazy(() => import('./XtermDom'))
 import renderTable from '../Table'
 const Markdown = React.lazy(() => import('../Markdown'))
