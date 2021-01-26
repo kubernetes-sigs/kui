@@ -37,6 +37,7 @@ export interface Tab extends HTMLDivElement {
   getSize(): { width: number; height: number }
 
   splitCount(): number
+  hasSideBySideTerminals(): boolean
 }
 
 export function isTab(node: Element | Tab): node is Tab {

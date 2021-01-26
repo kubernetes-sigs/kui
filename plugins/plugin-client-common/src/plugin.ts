@@ -22,8 +22,8 @@ export default async (registrar: Registrar) => {
     await import(/* webpackMode: "lazy" */ './controller/split').then(_ => {
       registrar.listen('/split', _.default, { flags: { boolean: ['inverse'] } })
       registrar.listen('/split-debug', _.debug)
-      registrar.listen('/split-count', args => args.tab.splitCount())
-      registrar.listen('/is-split', args => args.tab.splitCount() > 1)
+      registrar.listen('/split-count', ({ tab }) => tab.splitCount())
+      registrar.listen('/is-split', ({ tab }) => tab.hasSideBySideTerminals())
     })
     await import(/* webpackMode: "lazy" */ './controller/alert').then(_ => _.default(registrar))
     await import(/* webpackMode: "lazy" */ './controller/card').then(_ => _.default(registrar))
