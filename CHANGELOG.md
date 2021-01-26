@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.3.12](https://github.com/IBM/kui/compare/v9.3.11...v9.3.12) (2021-01-26)
+
+### Bug Fixes
+
+- **packages/builder:** remove jq dependence from electron builder ([df550ac](https://github.com/IBM/kui/commit/df550ac)), closes [#6725](https://github.com/IBM/kui/issues/6725)
+
 ## [9.3.11](https://github.com/IBM/kui/compare/v9.3.10...v9.3.11) (2021-01-22)
 
 ### Bug Fixes
