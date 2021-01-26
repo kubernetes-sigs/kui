@@ -225,6 +225,16 @@ body[kui-theme-style] .kui--data-table-wrapper {
       padding-right: var(--pf-c-card--child--PaddingRight);
     }
   }
+
+  .kui--card-body {
+    table {
+      td,
+      th {
+        padding-left: var(--pf-c-card--child--PaddingLeft);
+      }
+    }
+  }
+
   &:not(.kui--data-table-as-grid) {
     .kui--card-body {
       padding-top: 0;
