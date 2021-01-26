@@ -612,7 +612,10 @@ async function initOnMessage(
         //     note: this is still an open issue for things like `git log` or `less` where
         //           the xterm stays alive in race with scrolling
         window.requestAnimationFrame(() => {
-          xtermContainer.remove()
+          // this tells the view to clear any prior output
+          // !! DO NOT CALL xtermContainer.remove() directly !!
+          execOptions.stdout(null)
+
           // respond to the REPL
           respondToRepl({
             apiVersion: 'kui-shell/v1',
@@ -883,7 +886,9 @@ export const doExec = (
               (execOptions.type === ExecType.Nested && execOptions.quiet !== false) ||
               resizer.wasEverInAltBufferMode()
             ) {
-              xtermContainer.remove()
+              // this tells the view to clear any prior output
+              // !! DO NOT CALL xtermContainer.remove() directly !!
+              execOptions.stdout(null)
             } else {
               xtermContainer.classList.add('xterm-terminated')
             }
