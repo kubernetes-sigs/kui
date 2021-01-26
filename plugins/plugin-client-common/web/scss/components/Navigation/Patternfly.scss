@@ -19,6 +19,18 @@
 @import '../../PatternFly/common';
 
 body[kui-theme-style] {
+  @include NestedLeftNavWidthConstrained {
+    .pf-c-nav {
+      max-width: 15em;
+    }
+  }
+
+  @include NestedLeftNavInMinisplit {
+    .pf-c-nav {
+      max-width: 10em;
+    }
+  }
+
   @include Sidecar {
     .pf-c-nav {
       --pf-c-nav__list-toggle--FontSize: 1em;
