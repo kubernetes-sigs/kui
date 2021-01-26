@@ -47,7 +47,9 @@ export default class XtermDom extends React.PureComponent<Props> {
   }
 
   public render() {
-    return (
+    return this.props.response.rows.length === 0 ? (
+      <React.Fragment />
+    ) : (
       <div className="padding-content scrollable scrollable-auto page-content" style={{ display: 'flex', flex: 1 }}>
         <div style={{ display: 'flex', flex: 1 }}>
           <div className="xterm-container xterm-terminated">

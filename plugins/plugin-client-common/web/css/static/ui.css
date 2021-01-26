@@ -127,6 +127,13 @@ body.still-loading .repl {
 }
 
 /* generic */
+.kui--ignore-if-empty {
+  display: flex;
+  flex: 1;
+  &:empty {
+    display: none;
+  }
+}
 .kui--hero-text {
   flex: 1;
   display: flex;
