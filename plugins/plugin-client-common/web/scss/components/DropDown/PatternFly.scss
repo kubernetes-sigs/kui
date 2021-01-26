@@ -15,22 +15,8 @@
  */
 
 @import '../StatusStripe/mixins';
+@import '../StatusStripe/StatusStripe.scss';
 @import '../Terminal/mixins';
-
-body[kui-theme-style='light'] {
-  @include StatusStripeElement {
-    .pf-c-dropdown__menu .pf-c-dropdown__menu-item {
-      color: var(--color-base00);
-    }
-  }
-}
-body[kui-theme-style='dark'] {
-  @include StatusStripeElement {
-    .pf-c-dropdown__menu .pf-c-dropdown__menu-item {
-      color: var(--color-text-01);
-    }
-  }
-}
 
 body[kui-theme-style] {
   @include BlockOutput {
@@ -42,6 +28,14 @@ body[kui-theme-style] {
   @include StatusStripeElement {
     .pf-c-dropdown__menu {
       max-height: 35rem;
+      background-color: $bg-type-default;
+
+      .pf-c-dropdown__menu-item {
+        &:hover,
+        &:focus {
+          background-color: $status-stripe-hover-bg-color;
+        }
+      }
     }
     .kui--dropdown__toggle {
       padding: 0;
@@ -50,11 +44,6 @@ body[kui-theme-style] {
       margin-left: 0.5rem;
       margin-right: 0;
     }
-
-    .pf-c-dropdown__toggle,
-    .pf-c-dropdown__toggle-text {
-      color: var(--color-text-01);
-    }
   }
 
   .pf-c-dropdown__toggle,
@@ -62,6 +51,7 @@ body[kui-theme-style] {
     display: flex;
     font-size: inherit;
     font-family: var(--font-sans-serif);
+    color: var(--color-text-01);
   }
 
   .pf-c-dropdown__toggle {
@@ -78,8 +68,14 @@ body[kui-theme-style] {
     background-color: var(--color-dropdown);
 
     .pf-c-dropdown__menu-item {
+      color: var(--color-text-01);
       font-size: inherit;
       font-family: var(--font-sans-serif);
+
+      &:hover,
+      &:focus {
+        background-color: var(--color-base02);
+      }
 
       svg[data-mode='selected container'] {
         /* need to override some enclosing hover effects from sidecar toolbar */

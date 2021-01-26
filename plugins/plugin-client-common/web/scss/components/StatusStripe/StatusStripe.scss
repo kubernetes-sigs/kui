@@ -32,6 +32,8 @@ $bg-type-red: var(--color-red);
 
 $element-padding: 1rem;
 
+$status-stripe-hover-bg-color: var(--color-table-border3);
+
 @include StatusStripe {
   display: flex;
   flex-basis: 2.25rem;
@@ -124,7 +126,7 @@ $element-padding: 1rem;
     &:not(.kui--status-stripe-tag-element) {
       cursor: pointer;
       color: $fg-type-default;
-      background-color: var(--color-table-border3);
+      background-color: $status-stripe-hover-bg-color;
     }
   }
 
