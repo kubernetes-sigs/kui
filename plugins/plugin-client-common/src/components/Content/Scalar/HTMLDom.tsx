@@ -49,7 +49,9 @@ export default class HTMLDom extends React.PureComponent<Props> {
   }
 
   public render() {
-    return (
+    return !this.props.content ? (
+      <React.Fragment />
+    ) : (
       <div
         className={
           'padding-content scrollable scrollable-auto page-content' +
@@ -57,7 +59,7 @@ export default class HTMLDom extends React.PureComponent<Props> {
         }
         style={{ display: 'flex', flex: 1 }}
       >
-        <div style={{ display: 'flex', flex: 1 }} ref={dom => this.setState({ dom })} />
+        <div className="kui--ignore-if-empty" ref={dom => this.setState({ dom })} />
       </div>
     )
   }
