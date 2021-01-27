@@ -59,7 +59,7 @@ commands.forEach(command => {
 
     it(`should open a events watcher and expect at least one event, since we just created the resource`, async () => {
       try {
-        await ReplExpect.okWithEvents(this, watchEventsRes)
+        await ReplExpect.okWithCustom({ selector: Selectors.TABLE_CELL(`pod/${name}`, 'OBJECT') })(watchEventsRes)
       } catch (err) {
         return Common.oops(this, true)(err)
       }

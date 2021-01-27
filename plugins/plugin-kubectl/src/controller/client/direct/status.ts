@@ -20,6 +20,7 @@ import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, Watch
 
 import { Group } from './group'
 import { getTable } from './get'
+import columnsOf from './columns'
 import fabricate404Table from './404'
 import URLFormatter, { urlFormatterFor } from './url'
 import { unifyRow, unifyRows } from './unify'
@@ -92,7 +93,7 @@ class MultiKindWatcher implements Abortable, Watcher {
           this.finalState,
           this.initialRowKeys[idx],
           this.nNotReady[idx],
-          { doWatch: this.monitorEvents, watchEventsOnly: false },
+          this.monitorEvents,
           true // yes, make sure there is a status column
         )
 
@@ -171,7 +172,16 @@ export default async function watchMulti(
   const tables: WithIndex<Table>[] = await Promise.all(
     groups.map(async (_, idx) => ({
       idx,
-      table: await getTable(drilldownCommand, _.namespace, _.names, _.explainedKind, 'default', myArgs, true)
+      table: await getTable(
+        drilldownCommand,
+        _.namespace,
+        _.names,
+        _.explainedKind,
+        'default',
+        myArgs,
+        true,
+        columnsOf(_.explainedKind.kind, args)
+      )
         .then(response => {
           if (typeof response === 'string') {
             // turn the string parts into 404 tables
@@ -224,7 +234,7 @@ export default async function watchMulti(
           finalState,
           tables[0].table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) })),
           nNotReady,
-          undefined,
+          true,
           true // yes, make sure there is a status column
         )
       }

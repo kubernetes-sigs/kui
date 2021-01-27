@@ -18,6 +18,7 @@ import Debug from 'debug'
 import { Abortable, Arguments, FlowControllable, Row, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
 import { Group, isObjectInGroup } from './group'
+import columnsOf from './columns'
 import URLFormatter from './url'
 import { headersForTableRequest } from './headers'
 
@@ -107,7 +108,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     private readonly finalState?: FinalState,
     initialRowKeys?: { rowKey: string; isReady: boolean }[],
     private nNotReady?: number, // number of resources to wait on
-    private readonly monitorEvents = { doWatch: true, watchEventsOnly: false },
+    private readonly monitorEvents = true,
     private readonly needsStatusColumn = false
   ) {
     super()
@@ -125,12 +126,10 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   /** This will be called by the view when it is ready to accept push updates */
   public async init(pusher: WatchPusher) {
     this.pusher = pusher
-    const updateBody = !(this.monitorEvents && this.monitorEvents.watchEventsOnly)
-    const updateFooter = this.monitorEvents && this.monitorEvents.doWatch
 
     await Promise.all([
-      updateBody ? this.initBodyUpdates() : Promise.resolve(),
-      updateFooter ? this.initFooterUpdates() : Promise.resolve()
+      this.initBodyUpdates(),
+      this.monitorEvents && this.kind !== 'Event' ? this.initFooterUpdates() : Promise.resolve()
     ])
   }
 
@@ -142,29 +141,26 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   }
 
   private formatEventUrl(watchOpts?: { resourceVersion: Table['resourceVersion'] }) {
-    const url = this.formatUrl(true, this.monitorEvents.watchEventsOnly, undefined, { version: 'v1', kind: 'Event' })
-    const fieldSelector = this.monitorEvents.watchEventsOnly ? '' : `?fieldSelector=involvedObject.kind=${this.kind}`
-    const joinQueries = this.monitorEvents.watchEventsOnly && !url.endsWith('?') ? '?' : ''
+    const fieldSelector = `fieldSelector=involvedObject.kind=${this.kind}`
 
     return (
-      url +
-      fieldSelector +
-      (!watchOpts ? '' : `${joinQueries}&watch=true&resourceVersion=${watchOpts.resourceVersion.toString()}`)
+      this.formatUrl(true, undefined, undefined, { version: 'v1', kind: 'Event' }) +
+      `?${fieldSelector}` +
+      (!watchOpts ? '' : `&watch=true&resourceVersion=${watchOpts.resourceVersion.toString()}`)
     )
   }
 
   private lastFooterEvents: Record<string, boolean>
   private filterFooterRows(table: MetaTable, nameColumnIdx: number, objectColumnIdx: number): MetaTable['rows'] {
-    const rows = this.monitorEvents.watchEventsOnly
-      ? table.rows
-      : table.rows.filter(row => {
-          const kindAndName = row.cells[objectColumnIdx]
-          if (typeof kindAndName === 'string') {
-            const kind = kindAndName.split('/')[0]
-            const name = kindAndName.split('/')[1]
-            return isObjectInGroup(this.group, kind, name)
-          }
-        })
+    const rows = table.rows.filter(row => {
+      const kindAndName = row.cells[objectColumnIdx]
+      if (typeof kindAndName === 'string') {
+        const kind = kindAndName.split('/')[0]
+        const name = kindAndName.split('/')[1]
+        console.error('isObjectInGroup', kind, name, this.group)
+        return isObjectInGroup(this.group, kind, name)
+      }
+    })
 
     const last = this.lastFooterEvents
     this.lastFooterEvents = rows.reduce((M, row) => {
@@ -305,7 +301,14 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
       isObjectInGroup(this.group, this.kind, row.object.metadata.name)
     )
 
-    const table = toKuiTable(update.object, this.kind, this.args, this.drilldownCommand, this.needsStatusColumn)
+    const table = toKuiTable(
+      update.object,
+      this.kind,
+      this.args,
+      this.drilldownCommand,
+      this.needsStatusColumn,
+      columnsOf(this.kind, this.args)
+    )
 
     if (sendHeaders) {
       this.pusher.header(table.header)
@@ -390,10 +393,10 @@ export default async function makeWatchable(
   finalState?: FinalState,
   initialRowKeys?: { rowKey: string; isReady: boolean }[],
   nNotReady?: number,
-  monitorEvents = { doWatch: true, watchEventsOnly: false },
+  monitorEvents = true,
   needsStatusColumn = false
 ): Promise<Table | (Table & Watchable)> {
-  if (!table.resourceVersion && !(monitorEvents && monitorEvents.watchEventsOnly)) {
+  if (!table.resourceVersion) {
     // we need a cursor to start watching
     console.error('Cannot start watching, due to missing resourceVersion')
     return table
