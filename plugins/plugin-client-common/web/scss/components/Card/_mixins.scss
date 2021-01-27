@@ -21,3 +21,15 @@ $head-spacing: 0.5em;
 $body-spacing: 0.5em;
 $pane-gap: 0.5em;
 $header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wrapper */
+
+@mixin Card {
+  .kui--card {
+    @content;
+  }
+}
+
+@mixin CardHeader {
+  .kui--card-header {
+    @content;
+  }
+}

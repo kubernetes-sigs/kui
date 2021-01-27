@@ -70,6 +70,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin BlockAfterBlock {
+  li.repl-block + li.repl-block {
+    @content;
+  }
+}
+
 @mixin MaximizedBlock {
   @include Block {
     &[data-is-maximized] {
