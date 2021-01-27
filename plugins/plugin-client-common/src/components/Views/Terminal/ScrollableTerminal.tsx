@@ -919,7 +919,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           .concat(newScrollback)
           .concat(splits.slice(insertIdx))
 
-        eventBus.emitTabLayoutChange(sbuuid, { isSidecarNowHidden: false, isWidthConstrained: true })
+        eventBus.emitTabLayoutChange(sbuuid, {
+          isSidecarNowHidden: false,
+          isWidthConstrained: this.isWidthConstrained(newScrollback, insertIdx)
+        })
 
         return {
           focusedIdx: newFocusedIdx,
@@ -1150,9 +1153,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Present the given scrollback as a minisplit? */
   private isMiniSplit(scrollback: ScrollbackState, sbidx: number) {
+    return scrollback.forceMiniSplit || this.theseAreMiniSplits[this.state.splits.length][sbidx] || undefined
+  }
+
+  /** Is this scrollback not-100% width? */
+  private isWidthConstrained(scrollback: ScrollbackState, sbidx: number) {
     return (
-      scrollback.forceMiniSplit || this.theseAreMiniSplits[this.state.splits.length][sbidx] || undefined
-      // scrollback.forceMiniSplit || (this.state.splits.length > 2 && sbidx < this.state.splits.length - 1) || undefined
+      this.isMiniSplit(scrollback, sbidx) ||
+      (scrollback.facade && scrollback.facade.hasSideBySideTerminals && scrollback.facade.hasSideBySideTerminals())
     )
   }
 
@@ -1165,7 +1173,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           {this.state.splits.map((scrollback, sbidx) => {
             const tab = this.tabFor(scrollback)
             const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
-            const isWidthConstrained = isMiniSplit || this.state.splits.length > 1
+            const isWidthConstrained = this.isWidthConstrained(scrollback, sbidx)
 
             // don't render any echo:false blocks
             const blocks = scrollback.blocks
