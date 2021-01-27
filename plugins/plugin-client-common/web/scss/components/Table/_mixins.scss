@@ -43,7 +43,7 @@ $grid-cell-hover-filter: saturate(2) brightness(1.25);
 }
 
 @mixin TableCard {
-  .kui--data-table-wrapper .kui--card {
+  .kui--table-card {
     @content;
   }
 }

@@ -326,7 +326,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         }
         data-is-empty={response.body.length === 0}
       >
-        <TableComposable className="kui--table-like-wrapper" variant={variant}>
+        <TableComposable className="kui--table-like-wrapper" variant={variant} isStickyHeader gridBreakPoint="">
           {header && renderHeader(header)}
           {renderBody(response, this.justUpdatedMap(), tab, repl, offset)}
         </TableComposable>
@@ -391,7 +391,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             {lightweightTables ? (
               this.content(true, true)
             ) : (
-              <Card header={this.topToolbar()} footer={this.bottomToolbar()}>
+              <Card header={this.topToolbar()} footer={this.bottomToolbar()} className="kui--table-card">
                 {this.content()}
               </Card>
             )}
