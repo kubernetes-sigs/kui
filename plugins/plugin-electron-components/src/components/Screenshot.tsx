@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,7 +196,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
 
       return (
         <Alert id="screenshot-captured" isGlobal timeout={timeout} alert={alert} onCloseButtonClick={this._onClose}>
-          <div className="flex-layout">
+          <div className="flex-layout top-pad">
             <img src={this.state.captured.toDataURL()} className="screenshot-image" />
           </div>
           <div className="kui--screenshot-captured-bottom-message">{this.saveToDiskButton()}</div>
