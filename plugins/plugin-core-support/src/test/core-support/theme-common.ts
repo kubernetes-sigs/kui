@@ -16,7 +16,7 @@
 
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
-export const defaultTheme = 'Carbon Gray10'
+export const defaultTheme = 'PatternFly4 Light'
 
 export const resetTheme = (ctx: Common.ISuite) => {
   it('should reset theme preference', () =>
