@@ -143,7 +143,9 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
         this,
         `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`,
         'nginx',
-        defaultModeForGet
+        defaultModeForGet,
+        undefined,
+        1 // replayed clicks currently don't support opening in a split; see https://github.com/IBM/kui/issues/6785
       )
     } catch (err) {
       await Common.oops(this, true)(err)
