@@ -33,6 +33,7 @@ import {
   isWatchRequest
 } from '../../kubectl/options'
 
+import columnsOf from './columns'
 import { urlFormatterFor } from './url'
 import { headersForTableRequest } from './headers'
 import handleErrors, { tryParseAsStatus } from './errors'
@@ -45,20 +46,12 @@ export async function getTable(
   explainedKind: Explained,
   format: string,
   args: Pick<Arguments<KubeOptions>, 'REPL' | 'parsedOptions' | 'execOptions'>,
-  needsStatusColumn = false
+  needsStatusColumn = false,
+  customColumns?: string[]
 ): Promise<string | Table> {
   const { kind } = explainedKind
   const group = { explainedKind, names, namespace }
   const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
-
-  // Special Case: `k get events -w` return an empty table with just a streaming event footer
-  if (kind === 'Event' && isWatchRequest(args)) {
-    const table = { body: [] }
-    return makeWatchable(drilldownCommand, args, kind, group, table, formatUrl, undefined, undefined, undefined, {
-      doWatch: true,
-      watchEventsOnly: true
-    })
-  }
 
   const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
@@ -98,7 +91,7 @@ export async function getTable(
       try {
         // withNotFound will add error rows to the table for each error
         const table = withNotFound(
-          await toKuiTable(metaTable, kind, args, drilldownCommand, needsStatusColumn),
+          await toKuiTable(metaTable, kind, args, drilldownCommand, needsStatusColumn, customColumns),
           errors.map(_ => _.message).join('\n')
         )
 
@@ -140,7 +133,16 @@ export async function get(
 
   /** 2. table request, e.g. `kubectl get pods` and `kubectl get pod nginx` */
   if (isTableRequest(args)) {
-    return getTable(drilldownCommand, namespace, names, explainedKind, format, args)
+    return getTable(
+      drilldownCommand,
+      namespace,
+      names,
+      explainedKind,
+      format,
+      args,
+      undefined,
+      columnsOf(explainedKind.kind, args)
+    )
   }
 
   /** 3. entity request with kind and name, e.g. `get pod nginx -o yaml` */

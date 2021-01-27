@@ -126,7 +126,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
         key={cidx}
         className={cellClassName}
         onClick={onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table)}
-        modifier={!/NAME|NAMESPACE/i.test(key) ? 'fitContent' : undefined}
+        modifier={/MESSAGE/i.test(key) ? 'wrap' : !/NAME|NAMESPACE/i.test(key) ? 'fitContent' : undefined}
       >
         <span data-key={key} data-value={value} data-tag={tag} className={outerClassName}>
           {tag === 'badge' && (

@@ -91,7 +91,7 @@ const cssForKey = {
   NAME: 'entity-name',
   SOURCE: 'lighter-text smaller-text',
   SUBOBJECT: 'lighter-text smaller-text',
-  MESSAGE: 'somewhat-smaller-text pre-wrap slightly-deemphasize',
+  MESSAGE: 'somewhat-smaller-text pre-wrap',
   'CREATED AT': 'lighter-text smaller-text',
 
   AGE: 'slightly-deemphasize',
@@ -645,12 +645,20 @@ export function toKuiTable(
   kind: string,
   args: Pick<Arguments<KubeOptions>, 'parsedOptions' | 'execOptions' | 'REPL'>,
   drilldownCommand: string,
-  needsStatusColumn = false
+  needsStatusColumn = false,
+  customColumns?: string[]
 ): Table {
   const format = formatOf(args)
   const forAllNamespaces = isForAllNamespaces(args.parsedOptions)
-  const includedColumns = table.columnDefinitions.map(_ => format === 'wide' || _.priority === 0)
-  const columnDefinitions = table.columnDefinitions.filter(_ => format === 'wide' || _.priority === 0)
+  const includedColumns = table.columnDefinitions.map(_ =>
+    customColumns ? customColumns.includes(_.name) : format === 'wide' || _.priority === 0
+  )
+  const _columnDefinitions = table.columnDefinitions.filter(_ =>
+    customColumns ? customColumns.includes(_.name) : format === 'wide' || _.priority === 0
+  )
+  const columnDefinitions = customColumns
+    ? _columnDefinitions.slice().sort((a, b) => customColumns.indexOf(a.name) - customColumns.indexOf(b.name))
+    : _columnDefinitions
 
   const drilldownVerb = 'get'
   const drilldownKind = kind
@@ -681,14 +689,23 @@ export function toKuiTable(
   const nameColumnIdx = /Name/i.test(header.name) ? 0 : header.attributes.findIndex(_ => /Name/i.test(_.key)) + 1
 
   const body = table.rows.map(row => {
-    const cells = row.cells.filter((cell, idx) => includedColumns[idx])
+    const cells = row.cells
+      .filter((_, idx) => includedColumns[idx])
+      .map((cell, index) => ({ cell, index }))
+      .sort(
+        (a, b) =>
+          columnDefinitions.findIndex(_ => _.name === _columnDefinitions[a.index].name) -
+          columnDefinitions.findIndex(_ => _.name === _columnDefinitions[b.index].name)
+      )
+      .map(_ => _.cell)
+
     const name = cells[nameColumnIdx].toString()
-    const onclick = onclickFor(row, name)
+    const onclick = onclickFor(row, row.object.metadata.name)
 
     return {
       object: row.object,
-      key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name,
-      rowKey: `${name}_${drilldownKind}_${row.object.metadata.namespace}`,
+      key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name.toUpperCase(),
+      rowKey: `${row.object.metadata.name}_${drilldownKind}_${row.object.metadata.namespace}`,
       name: forAllNamespaces ? row.object.metadata.namespace : name,
 
       onclickIdempotent: true,
