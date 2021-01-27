@@ -141,7 +141,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
 
   public static getDerivedStateFromProps(props: Props, currentState?: State) {
     try {
-      const { header, body, footer, defaultPresentation } = props.response
+      const { header = kuiHeaderFromBody(props.response.body), body, footer, defaultPresentation } = props.response
+      props.response.header = header
 
       const asGrid =
         ((!defaultPresentation || defaultPresentation === 'grid') &&
@@ -162,7 +163,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         body,
         asGrid,
         footer,
-        header: header || kuiHeaderFromBody(body),
+        header,
         asSequence,
         response: props.response,
         pageSize: props.pageSize || defaults.pageSize
