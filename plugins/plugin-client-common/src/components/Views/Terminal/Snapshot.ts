@@ -153,8 +153,8 @@ export class FlightRecorder {
         if (row.onclickIdempotent) {
           // look for onclicks in either the row, or a cell NAME
           const onclickHome =
-            typeof row.onclick === 'string' ? row : row.attributes.find(_ => _.onclick && _.key === 'NAME')
-          if (onclickHome) {
+            typeof row.onclick === 'string' ? row : row.attributes.find(_ => _.onclick && /Name/i.test(_.key))
+          if (onclickHome && typeof onclickHome.onclick === 'string') {
             const fakeTab = Object.assign({}, this.tab, { uuid: uuid() })
             const command = onclickHome.onclick
             onclickHome.onclick = {}
@@ -171,6 +171,8 @@ export class FlightRecorder {
 
             try {
               await fakeTab.REPL.pexec(command, { tab: fakeTab })
+            } catch (err) {
+              console.error('Error recording click', command, err)
             } finally {
               eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
               eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
@@ -196,7 +198,7 @@ export class FlightRecorder {
               await Promise.all(
                 _.completeEvent.response.modes.map(async mode => {
                   if (isScalarContent(mode)) {
-                     if (isTable(mode.content)) {
+                    if (isTable(mode.content)) {
                       await this.recordTable(mode.content)
                     }
                   }
