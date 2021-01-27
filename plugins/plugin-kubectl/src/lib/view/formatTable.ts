@@ -690,7 +690,10 @@ export function toKuiTable(
       key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name,
       rowKey: `${name}_${drilldownKind}_${row.object.metadata.namespace}`,
       name: forAllNamespaces ? row.object.metadata.namespace : name,
+
+      onclickIdempotent: true,
       onclick: forAllNamespaces ? false : onclick,
+
       attributes: cells.slice(forAllNamespaces ? 0 : 1).map((cell, idx) => {
         const key = columnDefinitions[forAllNamespaces ? idx : idx + 1].name.toUpperCase()
         const value = cell.toString()

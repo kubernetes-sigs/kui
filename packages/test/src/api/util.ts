@@ -321,12 +321,10 @@ export async function openSidecarByClick(
   selector: string,
   name: string,
   mode?: string,
-  activationId?: string
+  activationId?: string,
+  splitIndex = 2 // after we click, we expect two splits
 ) {
   const app = ctx.app
-
-  // after we click, we expect two splits
-  const splitIndex = 2
 
   // Note! if we already have 2 splits, we need to grab the count before we click! see https://github.com/IBM/kui/issues/6636
   const currentSplitCount = (await app.client.$$(Selectors.SPLITS)).length
