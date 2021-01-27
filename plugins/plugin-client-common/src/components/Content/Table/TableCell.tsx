@@ -107,7 +107,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
     const cellClassName =
       cidx === 0
         ? 'entity-name ' + (outerCSS || '')
-        : (key === 'NAME' ? 'kui--entity-name-secondary ' : key === 'STATUS' ? 'kui--status-cell' : '') +
+        : (/NAME/i.test(key) ? 'kui--entity-name-secondary ' : /STATUS/i.test(key) ? 'kui--status-cell' : '') +
           (outerCSS || '')
 
     const outerClassName = 'cell-inner ' + (css || '') + (onclick ? ' clickable' : '')
@@ -122,7 +122,12 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
 
     const { attributes = [] } = kuiRow
     return (
-      <Td key={cidx} className={cellClassName} onClick={onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table)}>
+      <Td
+        key={cidx}
+        className={cellClassName}
+        onClick={onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table)}
+        modifier={!/NAME|NAMESPACE/i.test(key) ? 'fitContent' : undefined}
+      >
         <span data-key={key} data-value={value} data-tag={tag} className={outerClassName}>
           {tag === 'badge' && (
             <span
