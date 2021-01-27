@@ -15,6 +15,8 @@
  */
 
 @import 'mixins';
+@import '../Card/mixins';
+@import '../Table/mixins';
 @import '../Table/lightweight_mixins';
 
 $block-padding: 0.25em;
@@ -26,6 +28,18 @@ $block-padding: 0.25em;
   flex-direction: column;
 
   @include LightweightBlocks;
+
+  /** No vertical real estate for the table card header in minisplits */
+  @include TableCard {
+    @include CardHeader {
+      display: none;
+    }
+  }
+
+  /** Hide the Active block in minisplits, to save vertical real estate */
+  @include BlockAfterBlock {
+    display: none;
+  }
 
   /** Pack the experimental tag a bit more tightly */
   @include ExperimentalTag {

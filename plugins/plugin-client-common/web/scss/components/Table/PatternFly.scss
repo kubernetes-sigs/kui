@@ -16,8 +16,13 @@
 
 @import 'mixins';
 
+/* @include TableContainer {
+  max-height: calc(0.7 * var(--kui--table-max-height));
+} */
+
 @include Table {
-  background: transparent;
+  background: var(--pf-c-card--BackgroundColor);
+  border-collapse: collapse;
 
   @include TableHeadCell {
     color: var(--color-text-01);
