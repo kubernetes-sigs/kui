@@ -126,7 +126,7 @@ $grid-cell-size: 1.25rem;
   .kui--table-like {
     th[data-key='STATUS'],
     td.kui--status-cell {
-      width: 2rem;
+      width: 5rem; /* leave from for "Status" in the header */
     }
     [data-tag='badge'] {
       justify-content: center;

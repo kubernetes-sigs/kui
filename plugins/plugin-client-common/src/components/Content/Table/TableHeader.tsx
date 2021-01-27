@@ -20,8 +20,12 @@ import React from 'react'
 import { Thead, Th, Tr } from '@patternfly/react-table'
 
 function th(key: string, value: string, outerCSS: string, css?: string) {
+  // nowrap seems to be needed to avoid PatternFly using a "truncate"
+  // mode; see TableCell, where we set "fitContent" as the modifier
+  // for the cells; but that alone seems to cause truncation in the
+  // header :( hence this "nowrap". A bit puzzling.
   return (
-    <Th key={key || value} data-key={key || value} className={`kui--header-cell ${outerCSS || ''}`}>
+    <Th key={key || value} data-key={key || value} className={`kui--header-cell ${outerCSS || ''}`} modifier="nowrap">
       {css ? <span className={css}>{value}</span> : value}
     </Th>
   )
