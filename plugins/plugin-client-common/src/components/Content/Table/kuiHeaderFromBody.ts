@@ -16,6 +16,11 @@
 
 import { Table as KuiTable } from '@kui-shell/core'
 
+/** NAME -> Name */
+function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}
+
 export default function kuiHeaderFromBody(body: KuiTable['body']): KuiTable['header'] {
   if (body.length > 0) {
     const attributes = (body[0].attributes || []).map(({ key, value }) => ({
@@ -24,6 +29,6 @@ export default function kuiHeaderFromBody(body: KuiTable['body']): KuiTable['hea
     }))
 
     const key = body[0].key || 'Name'
-    return { key, name: key, attributes }
+    return { key, name: capitalize(key), attributes }
   }
 }
