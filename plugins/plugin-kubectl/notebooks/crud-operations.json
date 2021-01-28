@@ -2,8 +2,8 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Notebook",
   "metadata": {
-    "name": "Kubernetes &mdash; `CRUD Operations`",
-    "description": "Kubernetes &mdash; `CRUD Operations`"
+    "name": "Kubernetes &mdash; CRUD Operations",
+    "description": "Kubernetes &mdash; CRUD Operations"
   },
   "spec": {
     "splits": [

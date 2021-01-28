@@ -3,7 +3,7 @@
   "kind": "Notebook",
   "metadata": {
     "name": "Kui Settings",
-    "description": "Kui &mdash; `Settings`",
+    "description": "Kui &mdash; Settings",
     "preferReExecute": true
   },
   "spec": {
