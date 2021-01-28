@@ -29,7 +29,7 @@ export function getSelectionText() {
 export default function whenNothingIsSelected(handler: (evt: MouseEvent) => void) {
   return (evt: MouseEvent) => {
     if (getSelectionText().length === 0) {
-      handler(evt)
+      return handler(evt)
     }
   }
 }
