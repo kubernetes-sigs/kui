@@ -198,7 +198,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         }
 
     this.state = {
-      focusedIdx: -1,
+      focusedIdx: this.props.snapshot && splits.length > 0 ? 0 : -1, // focus first split for replays
       splits,
       notebookMetadata
     }
