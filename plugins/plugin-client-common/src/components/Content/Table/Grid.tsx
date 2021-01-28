@@ -125,7 +125,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
         {response.body.map((kuiRow, kidx) => {
           const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
           const title = `${kuiRow.name}\n${badgeCell ? badgeCell.value : ''}`
-          const statusCss = badgeCell ? badgeCell.css : 'kui--status-unknown'
+          const statusCss = (badgeCell && badgeCell.css && badgeCell.css.trim()) || 'kui--status-unknown'
           const isError = /red-background/.test(statusCss)
           const css = colorByDuration ? this.durationCss(kuiRow, isError) : statusCss
 
