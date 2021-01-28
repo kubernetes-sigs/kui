@@ -896,6 +896,8 @@ $kui--page-content-paragraph-padding: 0.375em;
 }
 .page-content img {
   max-width: 100%;
+  object-position: left center;
+  object-fit: contain;
   &[data-float] {
     background-color: var(--color-sidecar-background-01);
     padding-bottom: 0.5em;
