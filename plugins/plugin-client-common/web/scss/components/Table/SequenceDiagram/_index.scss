@@ -27,6 +27,7 @@
 
 body[kui-theme-style] {
   @include SequenceDiagram {
+    width: 100%;
     @include SequenceDiagramGapCell {
       &.kui--table-cell-is-name {
         font-weight: bold;

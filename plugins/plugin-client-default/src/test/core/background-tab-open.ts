@@ -22,7 +22,7 @@
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** TODO could we extract this directly from welcome.json? */
-const nSplitsInWelcomeNotebook = 5
+const nSplitsInWelcomeNotebook = 6
 
 describe(`Background tab open onload ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
