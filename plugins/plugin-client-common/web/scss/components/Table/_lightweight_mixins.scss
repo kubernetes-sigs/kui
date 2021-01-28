@@ -22,23 +22,28 @@
   background-color: transparent;
 }
 
+@mixin BeforeInputWrapper {
+  @include InputWrapper {
+    &:before {
+      @content;
+    }
+  }
+}
+
 @mixin LightweightBlocks {
   @include BlockDuration {
     opacity: 1;
   }
 
   @include FinishedBlock {
-    @include InputWrapper {
-      &:before {
-        content: '';
-        left: -1em;
-        top: -$block-padding;
-        bottom: -$block-padding;
-        width: 4px;
-        position: absolute;
-        filter: opacity(0.375) grayscale(0.25);
-        background-color: var(--color-base0A);
-      }
+    @include BeforeInputWrapper {
+      content: '';
+      left: -1em;
+      top: -$block-padding;
+      bottom: -$block-padding;
+      width: 4px;
+      position: absolute;
+      @include ColorBeforeBlock;
     }
   }
 
@@ -61,6 +66,32 @@
 
   @include Block {
     padding: $block-padding 0;
+
+    /** focus */
+    &.error {
+      @include BeforeInputWrapper {
+        @include ColorBeforeErrorBlock;
+      }
+    }
+
+    &:focus,
+    &:hover[data-is-focused] {
+      @include BeforeInputWrapper {
+        @include ColorBeforeFocusBlock;
+      }
+    }
+
+    &:not(:focus):hover {
+      @include BeforeInputWrapper {
+        @include ColorBeforeHoverBlock;
+      }
+
+      &.error {
+        @include BeforeInputWrapper {
+          @include ColorBeforeHoverErrorBlock;
+        }
+      }
+    }
   }
 
   @include BlockOutput {

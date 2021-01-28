@@ -64,6 +64,14 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin FullHeightTerminal {
+  @include Scrollback {
+    &:not([data-is-minisplit]) {
+      @content;
+    }
+  }
+}
+
 @mixin Block {
   li.repl-block {
     @content;
@@ -255,4 +263,27 @@ $action-hover-delay: 210ms;
   .kui--repl-block-experimental-tag.kui--tag {
     @content;
   }
+}
+
+@mixin ColorBeforeErrorBlock {
+  opacity: 1;
+  background-color: var(--color-red);
+}
+
+@mixin ColorBeforeBlock {
+  background-color: var(--color-table-border2);
+  opacity: 0.625;
+}
+
+@mixin ColorBeforeFocusBlock {
+  opacity: 1;
+  background-color: var(--color-brand-01);
+}
+
+@mixin ColorBeforeHoverBlock {
+  background-color: var(--color-brand-01);
+}
+
+@mixin ColorBeforeHoverErrorBlock {
+  background-color: hsl(0, 100%, 70%);
 }
