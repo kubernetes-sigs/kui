@@ -1,126 +1,31 @@
-# Contributing to Kui
+# Contributing Guidelines
 
-This page contains information about reporting issues, how to suggest changes
-as well as the guidelines we follow for how our documents are formatted.
+Welcome to Kubernetes. We are excited about the prospect of you joining our [community](https://git.k8s.io/community)! The Kubernetes community abides by the CNCF [code of conduct](code-of-conduct.md). Here is an excerpt:
 
-## Table of Contents
+_As contributors and maintainers of this project, and in the interest of fostering an open and welcoming community, we pledge to respect all people who contribute through reporting issues, posting feature requests, updating documentation, submitting pull requests or patches, and other activities._
 
-- [Reporting an Issue](#reporting-an-issue)
-- [Suggesting a Change](#suggesting-a-change)
-- [Spec Formatting Conventions](#spec-formatting-conventions)
+## Getting Started
 
-## Reporting an Issue
+We have full documentation on how to get started contributing here:
 
-To report an issue, or to suggest an idea for a change that you haven't
-had time to write-up yet, open an
-[issue](https://github.com/IBM/kui/issues). It is best to check
-our existing [issues](https://github.com/IBM/kui/issues) first
-to see if a similar one has already been opened and discussed.
+<!---
+If your repo has certain guidelines for contribution, put them here ahead of the general k8s resources
+-->
 
-## Suggesting a Change
+- [Contributor License Agreement](https://git.k8s.io/community/CLA.md) Kubernetes projects require that you sign a Contributor License Agreement (CLA) before we can accept your pull requests
+- [Kubernetes Contributor Guide](https://git.k8s.io/community/contributors/guide) - Main contributor documentation, or you can just jump directly to the [contributing section](https://git.k8s.io/community/contributors/guide#contributing)
+- [Contributor Cheat Sheet](https://git.k8s.io/community/contributors/guide/contributor-cheatsheet) - Common resources for existing developers
 
-To suggest a change to this repository, submit a [pull
-request](https://github.com/IBM/kui/pulls)(PR) with the complete
-set of changes you'd like to see. See the
-[Spec Formatting Conventions](#spec-formatting-conventions) section for
-the guidelines we follow for how documents are formatted.
+## Mentorship
 
-Each PR must be signed per the following section.
+- [Mentoring Initiatives](https://git.k8s.io/community/mentoring) - We have a diverse set of mentorship programs available that are always looking for volunteers!
 
-### Assigning and Owning work
+<!---
+Custom Information - if you're copying this template for the first time you can add custom content here, for example:
 
-If you want to own and work on an issue, add a comment or “#dibs” it asking
-about ownership. A maintainer will then add the Assigned label and modify
-the first comment in the issue to include `Assigned to: @person`
+## Contact Information
 
-### Git Commit Guidelines
+- [Slack channel](https://kubernetes.slack.com/messages/kubernetes-users) - Replace `kubernetes-users` with your slack channel string, this will send users directly to your channel.
+- [Mailing list](URL)
 
-#### Conventional Commits
-
-This project uses [Conventional Commits](https://www.conventionalcommits.org) as a guide for commit messages. Please ensure that your commit message follows this structure:
-
-```
-type(component?): message
-```
-
-_type_ is one of: feat, fix, docs, chore, style, refactor, perf, test
-
-_component_ optionally is the name of the module you are fixing; either "core" or a named module in `plugins/` directory. Note: Please specify the full name of the module (e.g. plugin-bash-like) instead of abbreviation. It helps us generate the correct CHANGELOG.md.
-
-#### Sign your work
-
-The sign-off is a simple line at the end of the explanation for the patch. Your
-signature certifies that you wrote the patch or otherwise have the right to pass
-it on as an open-source patch. The rules are pretty simple: if you can certify
-the below (from [developercertificate.org](http://developercertificate.org/)):
-
-```
-Developer Certificate of Origin
-Version 1.1
-
-Copyright (C) 2004, 2006 The Linux Foundation and its contributors.
-1 Letterman Drive
-Suite D4700
-San Francisco, CA, 94129
-
-Everyone is permitted to copy and distribute verbatim copies of this
-license document, but changing it is not allowed.
-
-Developer's Certificate of Origin 1.1
-
-By making a contribution to this project, I certify that:
-
-(a) The contribution was created in whole or in part by me and I
-    have the right to submit it under the open source license
-    indicated in the file; or
-
-(b) The contribution is based upon previous work that, to the best
-    of my knowledge, is covered under an appropriate open source
-    license and I have the right under that license to submit that
-    work with modifications, whether created in whole or in part
-    by me, under the same open source license (unless I am
-    permitted to submit under a different license), as indicated
-    in the file; or
-
-(c) The contribution was provided directly to me by some other
-    person who certified (a), (b) or (c) and I have not modified
-    it.
-
-(d) I understand and agree that this project and the contribution
-    are public and that a record of the contribution (including all
-    personal information I submit with it, including my sign-off) is
-    maintained indefinitely and may be redistributed consistent with
-    this project or the open source license(s) involved.
-```
-
-Then you just add a line to every git commit message:
-
-    Signed-off-by: Joe Smith <joe.smith@email.com>
-
-Use your real name (sorry, no pseudonyms or anonymous contributions.)
-
-If you set your `user.name` and `user.email` git configs, you can sign your
-commit automatically with `git commit -s`.
-
-Note: If your git config information is set properly then viewing the
-`git log` information for your commit will look something like this:
-
-```
-Author: Joe Smith <joe.smith@email.com>
-Date:   Thu Feb 2 11:41:15 2018 -0800
-
-    docs: Update README
-
-    Signed-off-by: Joe Smith <joe.smith@email.com>
-```
-
-Notice the `Author` and `Signed-off-by` lines match. If they don't
-your PR will be rejected by the automated DCO check.
-
-## Spec Formatting Conventions
-
-Documents in this repository will adhere to the following rules:
-
-- Lines are wrapped at 80 columns (when possible)
-- Specifications will use [RFC2119](https://tools.ietf.org/html/rfc2119)
-  keywords to indicate normative requirements
+-->
