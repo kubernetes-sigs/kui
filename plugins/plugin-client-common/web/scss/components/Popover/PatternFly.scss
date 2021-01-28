@@ -18,6 +18,15 @@
 @import 'mixins';
 
 @include Popover {
+  h6 {
+    margin-top: 0;
+  }
+
+  .pf-c-popover__content {
+    max-height: 40rem; /* Neither PatternFly nor Carbon let us specify this via props */
+    overflow-y: auto;
+  }
+
   .pf-c-button {
     padding: 0;
   }
