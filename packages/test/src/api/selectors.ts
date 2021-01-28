@@ -192,7 +192,7 @@ export const LIST_RESULTS_BY_NAME_N = (N: number, splitIndex = 1) =>
   )} .repl-result > .kui--data-table-wrapper > .kui--screenshotable > ${TERMINAL_CARD} [data-name]`
 
 export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string, splitIndex = 1) =>
-  `${LIST_RESULTS_N(N, splitIndex)}[data-name="${name}"]`
+  `${LIST_RESULTS_N(N, splitIndex)}[data-name="${name}"] .clickable`
 export const TABLE_HEADER_CELL = (cellKey: string) => `thead tr [data-key="${cellKey}"]`
 export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name="${rowKey}"] [data-key="${cellKey}"]`
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
