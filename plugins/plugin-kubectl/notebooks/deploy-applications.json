@@ -2,8 +2,8 @@
   "apiVersion": "kui-shell/v1",
   "kind": "Notebook",
   "metadata": {
-    "name": "Kubernetes &mdash; ` Deploying Applications`",
-    "description": "Kubernetes &mdash; `Deploying Applications`"
+    "name": "Kubernetes &mdash; Deploying Applications",
+    "description": "Kubernetes &mdash; Deploying Applications"
   },
   "spec": {
     "splits": [

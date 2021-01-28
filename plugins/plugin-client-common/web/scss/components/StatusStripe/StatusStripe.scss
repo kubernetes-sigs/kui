@@ -25,7 +25,7 @@ $fg-type-default: var(--color-text-01);
 $bg-type-default: var(--color-sidecar-header);
 
 $fg-type-blue: var(--color-base00);
-$bg-type-blue: var(--color-base0C);
+$bg-type-blue: var(--color-base0D);
 
 $bg-type-yellow: var(--color-yellow);
 $bg-type-red: var(--color-red);
@@ -43,6 +43,10 @@ $status-stripe-hover-bg-color: var(--color-table-border3);
   &[data-type='blue'] {
     color: $fg-type-blue;
     background-color: $bg-type-blue;
+    filter: grayscale(0.5);
+    @include StatusStripeElement {
+      color: $fg-type-blue;
+    }
   }
   &[data-type='yellow'] {
     background-color: $bg-type-yellow;
@@ -192,7 +196,6 @@ $status-stripe-hover-bg-color: var(--color-table-border3);
 
     @include Dropdown {
       border: none;
-      color: $fg-type-default;
       background-color: transparent;
     }
     @include DropdownToggle {
