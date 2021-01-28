@@ -83,16 +83,23 @@ $focus-color: var(--color-brand-01);
   height: 100%;
 }
 
-/** Coloring the context border by status of the block in a full-height terminal */
-@include FullHeightTerminal {
+/** Coloring the context border by status of the block */
+@include Scrollback {
+  .repl-input:hover,
+  .repl-output:hover {
+    @include show-block-action-buttons;
+  }
+
   @include Block {
     position: relative;
     margin: 0.1875em 0;
 
     &:before {
+      background-color: var(--color-table-border2);
       border-left: none;
       border-right: none;
       border-radius: 1px;
+      opacity: 0.625;
       content: '';
       left: 0;
       position: absolute;
@@ -101,22 +108,14 @@ $focus-color: var(--color-brand-01);
       width: 4px;
       border-top-right-radius: 1px;
       border-bottom-right-radius: 1px;
-      @include ColorBeforeBlock;
     }
     &.error:before {
-      @include ColorBeforeErrorBlock;
+      opacity: 1;
+      background-color: var(--color-red);
     }
     &:hover .repl-output .repl-context:after {
       border-color: var(--color-base03);
     }
-  }
-}
-
-/** Coloring the context border by status of the block*/
-@include Scrollback {
-  .repl-input:hover,
-  .repl-output:hover {
-    @include show-block-action-buttons;
   }
 
   @include FinishedBlockWithInputAndOutput {
@@ -133,7 +132,10 @@ $focus-color: var(--color-brand-01);
     @include show-block-action-buttons;
 
     &:before {
-      @include ColorBeforeFocusBlock;
+      opacity: 1;
+    }
+    &:before {
+      background-color: $focus-color;
     }
     .repl-input .repl-context {
       opacity: 1;
@@ -143,13 +145,13 @@ $focus-color: var(--color-brand-01);
     &,
     &[data-is-output-only] {
       &:before {
-        @include ColorBeforeHoverBlock;
+        background-color: $focus-color;
       }
     }
 
     &.error {
       &:before {
-        @include ColorBeforeHoverErrorBlock;
+        background-color: hsl(0, 100%, 70%);
       }
     }
   }
