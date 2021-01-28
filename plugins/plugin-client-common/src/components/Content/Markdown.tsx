@@ -75,20 +75,12 @@ export default class Markdown extends React.PureComponent<Props> {
   ) {
     const isLocal = !/^http/i.test(src)
     if (isLocal && this.props.fullpath) {
-      const style = props ? { float: props.align } : undefined
       const absoluteSrc = isAbsolute(src) ? src : join(dirname(this.props.fullpath), src)
-
-      return (
-        <img
-          key={key}
-          src={absoluteSrc}
-          height={props.height}
-          width={props.width}
-          style={style}
-          data-float={props.align}
-        />
-      )
+      src = absoluteSrc
     }
+
+    const style = props ? { float: props.align } : undefined
+    return <img key={key} src={src} height={props.height} width={props.width} style={style} data-float={props.align} />
   }
 
   public render() {
@@ -124,7 +116,6 @@ export default class Markdown extends React.PureComponent<Props> {
                   }
                 })
                 .filter(_ => _)
-
               return <React.Fragment>{imageTags}</React.Fragment>
             }
 
