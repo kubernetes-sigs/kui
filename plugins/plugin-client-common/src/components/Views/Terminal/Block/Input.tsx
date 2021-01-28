@@ -500,7 +500,9 @@ export default class Input extends InputProvider {
             })
           }
         } else {
-          setTimeout(() => this.state.prompt.scrollIntoView(), 10)
+          // @starpit 20210128; i think this is leftover from earlier buggier days
+          // keeping around, commented out, for a bit just in case
+          // setTimeout(() => this.state.prompt.scrollIntoView(), 10)
         }
       }
 
