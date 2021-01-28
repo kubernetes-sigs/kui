@@ -72,3 +72,8 @@ distributing clients either as a local platform application, or as a
 hosted browser-based client. If you want to help, please take a look
 at the [developer guide](https://github.com/IBM/kui/wiki) and our
 [guidelines](CONTRIBUTING.md).
+
+## Code of Conduct
+
+Participation in the Kubernetes community is governed by the [Kubernetes Code
+of Conduct](https://github.com/kubernetes-sigs/krew/blob/master/code-of-conduct.md).
