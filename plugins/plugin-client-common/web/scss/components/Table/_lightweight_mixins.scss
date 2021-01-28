@@ -22,28 +22,49 @@
   background-color: transparent;
 }
 
-@mixin BeforeInputWrapper {
-  @include InputWrapper {
-    &:before {
-      @content;
-    }
-  }
-}
-
 @mixin LightweightBlocks {
   @include BlockDuration {
     opacity: 1;
   }
 
   @include FinishedBlock {
-    @include BeforeInputWrapper {
-      content: '';
-      left: -1em;
-      top: -$block-padding;
-      bottom: -$block-padding;
-      width: 4px;
-      position: absolute;
-      @include ColorBeforeBlock;
+    @include InputWrapper {
+      &:before {
+        content: '';
+        left: -1em;
+        top: -$block-padding;
+        bottom: -$block-padding;
+        width: 4px;
+        position: absolute;
+        opacity: 0.625;
+        background-color: var(--color-table-border2);
+      }
+    }
+
+    &.error {
+      @include InputWrapper {
+        &:before {
+          opacity: 1;
+          background-color: var(--color-red);
+        }
+      }
+    }
+
+    /** when not focus or hover the finished block, only show the input border */
+    &:not(:focus):not(:hover) {
+      &:before {
+        background-color: transparent;
+      }
+    }
+
+    /** when focus or hover the block, show the original block border */
+    &:focus,
+    &:hover {
+      @include InputWrapper {
+        &:before {
+          display: none;
+        }
+      }
     }
   }
 
@@ -66,32 +87,6 @@
 
   @include Block {
     padding: $block-padding 0;
-
-    /** focus */
-    &.error {
-      @include BeforeInputWrapper {
-        @include ColorBeforeErrorBlock;
-      }
-    }
-
-    &:focus,
-    &:hover[data-is-focused] {
-      @include BeforeInputWrapper {
-        @include ColorBeforeFocusBlock;
-      }
-    }
-
-    &:not(:focus):hover {
-      @include BeforeInputWrapper {
-        @include ColorBeforeHoverBlock;
-      }
-
-      &.error {
-        @include BeforeInputWrapper {
-          @include ColorBeforeHoverErrorBlock;
-        }
-      }
-    }
   }
 
   @include BlockOutput {
