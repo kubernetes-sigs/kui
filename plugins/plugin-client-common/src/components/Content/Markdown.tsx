@@ -101,7 +101,7 @@ export default class Markdown extends React.PureComponent<Props> {
                 .map((value, idx) => {
                   const srcMatch = value.match(/src="?([^"\s]+)"?/)
                   const heightMatch = value.match(/height="?(\d+)"?/)
-                  const widthMatch = value.match(/width="?(\d+)"?/)
+                  const widthMatch = value.match(/width="?(\d+%?)"?/)
                   const alignMatch = value.match(/align="?([^"\s]+)"?/)
                   if (srcMatch) {
                     return this.handleImage(
