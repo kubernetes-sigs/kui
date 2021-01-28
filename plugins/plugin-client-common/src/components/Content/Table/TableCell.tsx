@@ -59,6 +59,7 @@ export function onClickForCell(
       evt.stopPropagation()
       selectRow()
       handler()
+      return false
     })
   } else if (handler && handler.startEvent && handler.completeEvent) {
     return whenNothingIsSelected((evt: React.MouseEvent) => {
@@ -66,6 +67,7 @@ export function onClickForCell(
       selectRow()
       eventBus.emitCommandStart(handler.startEvent)
       eventBus.emitCommandComplete(handler.completeEvent)
+      return false
     })
   } else if (handler) {
     const opts = { tab }
@@ -78,12 +80,14 @@ export function onClickForCell(
         } else {
           repl.pexec(handler, opts)
         }
+        return false
       })
     } else {
       return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
         repl.qexec(handler, undefined, undefined, { tab })
+        return false
       })
     }
   }
@@ -110,7 +114,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
         : (/NAME/i.test(key) ? 'kui--entity-name-secondary ' : /STATUS/i.test(key) ? 'kui--status-cell' : '') +
           (outerCSS || '')
 
-    const outerClassName = 'cell-inner ' + (css || '') + (onclick ? ' clickable' : '')
+    const outerClassName = 'display-inline-block cell-inner ' + (css || '') + (onclick ? ' clickable' : '')
 
     // the text value of the cell
     const valueDom = cidx > 0 && kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom
@@ -125,10 +129,15 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
       <Td
         key={cidx}
         className={cellClassName}
-        onClick={onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table)}
         modifier={/MESSAGE/i.test(key) ? 'wrap' : !/NAME|NAMESPACE/i.test(key) ? 'fitContent' : undefined}
       >
-        <span data-key={key} data-value={value} data-tag={tag} className={outerClassName}>
+        <div
+          data-key={key}
+          data-value={value}
+          data-tag={tag}
+          className={outerClassName}
+          onClick={onclick ? onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table) : undefined}
+        >
           {tag === 'badge' && (
             <span
               key={css /* force restart of animation if color changes */}
@@ -149,7 +158,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
               innerText
             )}
           </span>
-        </span>
+        </div>
       </Td>
     )
   }

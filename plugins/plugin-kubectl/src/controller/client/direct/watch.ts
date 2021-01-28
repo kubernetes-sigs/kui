@@ -157,7 +157,6 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
       if (typeof kindAndName === 'string') {
         const kind = kindAndName.split('/')[0]
         const name = kindAndName.split('/')[1]
-        console.error('isObjectInGroup', kind, name, this.group)
         return isObjectInGroup(this.group, kind, name)
       }
     })
