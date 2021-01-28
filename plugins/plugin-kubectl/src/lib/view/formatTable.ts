@@ -686,8 +686,6 @@ export function toKuiTable(
     })
   }
 
-  const nameColumnIdx = /Name/i.test(header.name) ? 0 : header.attributes.findIndex(_ => /Name/i.test(_.key)) + 1
-
   const body = table.rows.map(row => {
     const cells = row.cells
       .filter((_, idx) => includedColumns[idx])
@@ -699,14 +697,13 @@ export function toKuiTable(
       )
       .map(_ => _.cell)
 
-    const name = cells[nameColumnIdx].toString()
     const onclick = onclickFor(row, row.object.metadata.name)
 
     return {
       object: row.object,
       key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name.toUpperCase(),
       rowKey: `${row.object.metadata.name}_${drilldownKind}_${row.object.metadata.namespace}`,
-      name: forAllNamespaces ? row.object.metadata.namespace : name,
+      name: forAllNamespaces ? row.object.metadata.namespace : cells[0].toString(),
 
       onclickIdempotent: true,
       onclick: forAllNamespaces ? false : onclick,
