@@ -56,6 +56,9 @@ body.kui--patternfly4[kui-theme='PatternFly4 Dark'][kui-theme-style] {
 
   --color-dropdown: var(--pf-global--palette--black-700);
 
+  --color-error-cell-bg: var(--color-base0E);
+  --color-error-cell-text: var(--color-base07);
+
   @include charts-dark;
   @include patternfly-sidecar;
 

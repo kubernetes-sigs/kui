@@ -43,4 +43,7 @@ body[kui-theme='Nord'] {
   --color-latency-3: #fee090;
   --color-latency-4: #fc8d59;
   --color-latency-5: #d73027;
+
+  --color-error-cell-bg: var(--color-latency-4);
+  --color-error-cell-text: var(--color-base00);
 }
