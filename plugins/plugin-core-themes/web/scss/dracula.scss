@@ -48,4 +48,7 @@ body[kui-theme='Dracula'] {
   --color-latency-3: #e7d4e8;
   --color-latency-4: #af8dc3;
   --color-latency-5: #762a83;
+
+  --color-error-cell-bg: var(--color-base0E);
+  --color-error-cell-text: var(--color-base00);
 }
