@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '../Terminal/_mixins';
+@import '../Terminal/mixins';
 
 @mixin sidecar-maximized-no-user {
   .toggle-sidecar-maximization-button {
