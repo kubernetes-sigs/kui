@@ -26,16 +26,10 @@ const inputEncoded = inputBuffer.toString('base64')
 const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
 const podName = 'eventgen'
-const sleepTime = 1
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
   commands.push('oc')
-}
-
-/** sleep for N seconds */
-function sleep(N: number) {
-  return new Promise(resolve => setTimeout(resolve, N * 1000))
 }
 
 commands.forEach(command => {
@@ -51,38 +45,6 @@ commands.forEach(command => {
       CLI.command(`echo ${inputEncoded} | base64 --decode | ${command} create -f - -n ${ns}`, this.app)
         .then(ReplExpect.okWithPtyOutput(podName))
         .catch(Common.oops(this, true)))
-
-    it('should open pod in sidecar, then click on events button', async () => {
-      try {
-        const res = await CLI.command(`${command} get pod ${podName} -n ${ns} -o yaml`, this.app)
-
-        await Promise.resolve(res)
-          .then(ReplExpect.ok)
-          .then(SidecarExpect.open)
-          .then(SidecarExpect.showing(podName))
-
-        await sleep(sleepTime)
-
-        await Util.switchToTab('events')(res)
-
-        /* 
-        await Promise.resolve({ app: this.app, count: res.count + 1 }).then(ReplExpect.okWithAny)
-
-        const table = `${Selectors.OUTPUT_N(res.count + 1)} table`
-
-        // test events table has correct header
-        const headerWithSidecarOpen = ['REASON', 'MESSAGE']
-        await Promise.all(
-          headerWithSidecarOpen.map(async _header => {
-            await this.app.client.waitForVisible(`${table} thead th[data-key="${_header}"]`)
-          })
-        ) */
-      } catch (err) {
-        await Common.oops(this, true)(err)
-      }
-    })
-
-    it('should refresh', () => Common.refresh(this))
 
     it('should click on Show Involved Object', async () => {
       try {

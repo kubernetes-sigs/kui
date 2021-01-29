@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import { createNS, allocateNS, deleteNS, openSidecarByList } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl']
@@ -26,7 +26,7 @@ const file = 'https://raw.githubusercontent.com/kubernetes/examples/master/stagi
 const name = 'nginx'
 
 commands.forEach(command => {
-  describe(`kubectl Events tab ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  describe(`kubectl Events Sidecar button ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
     before(Common.before(this))
     after(Common.after(this))
 
@@ -35,6 +35,7 @@ commands.forEach(command => {
     allocateNS(this, ns)
 
     let res: ReplExpect.AppAndCount
+    let watchEventsRes: ReplExpect.AppAndCount
     it('should create sample pod from URL', async () => {
       try {
         res = await openSidecarByList(this, `${command} create -f ${file} ${inNamespace}`, name)
@@ -43,11 +44,11 @@ commands.forEach(command => {
       }
     })
 
-    it('should switch to Events tab', async () => {
+    it('should click the show events button and expect an events table', async () => {
       try {
-        await Util.switchToTab('events')(res).then(
-          SidecarExpect.toolbarText({ type: 'info', text: 'Events are live streaming', exact: false })
-        )
+        await Util.clickSidecarModeButton(this, res, 'events')
+        watchEventsRes = ReplExpect.blockAfter(res)
+        await ReplExpect.okWithCustom({ selector: Selectors.TABLE_CELL(`pod/${name}`, 'OBJECT') })(watchEventsRes)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -55,7 +56,10 @@ commands.forEach(command => {
 
     const currentEventCount = async (): Promise<number> => {
       const events = await this.app.client.$$(
-        `${Selectors.SIDECAR(res.count, res.splitIndex)} .kui--kubectl-event-record`
+        `${Selectors.OUTPUT_N(watchEventsRes.count, watchEventsRes.splitIndex)} ${Selectors.TABLE_CELL(
+          `pod/${name}`,
+          'OBJECT'
+        )}`
       )
       return !events ? 0 : events.length
     }
