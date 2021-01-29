@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import { Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
+import React from 'react'
+import { i18n, Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
 
+import Icons from '../../spi/Icons'
 import kuiHeaderFromBody from './kuiHeaderFromBody'
 import PaginatedTable, { Props, State } from './PaginatedTable'
+
+const strings = i18n('plugin-client-common')
 
 type LiveProps = Props<KuiTable & Watchable> & { onRender: (hasContent: boolean) => void }
 
 interface LiveState extends State {
   isWatching: boolean
+  lastUpdatedMillis?: number
 }
 
 export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
@@ -86,6 +91,20 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     this.props.response.watch.init({ update, batchUpdateDone, offline, done, allOffline, header, footer })
   }
 
+  /** E.g. last updated time for live tables */
+  protected caption() {
+    if (this.state.lastUpdatedMillis) {
+      const icon = this.state.isWatching ? 'Eye' : 'EyeSlash'
+      const iconColor = this.state.isWatching ? 'green-text' : 'red-text'
+      return (
+        <React.Fragment>
+          <Icons icon={icon} className={'small-right-pad ' + iconColor} />
+          {strings('Last updated', new Date(this.state.lastUpdatedMillis).toLocaleTimeString())}
+        </React.Fragment>
+      )
+    }
+  }
+
   /**
    * offline takes the rowKey of the row to be deleted and applies this to the table view
    *
@@ -113,6 +132,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
         .concat(existingRows.slice(foundIndex + 1))
 
       this.setState({
+        lastUpdatedMillis: Date.now(),
         body: newRows
       })
     }
@@ -124,7 +144,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    */
   private allOffline() {
     this.props.response.body = []
-    this.setState({ isWatching: false, body: [] })
+    this.setState({ isWatching: false, body: [], lastUpdatedMillis: Date.now() })
   }
 
   /**
@@ -172,7 +192,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     }
 
     if (!batch) {
-      this.setState({ body: newRows })
+      this.setState({ body: newRows, lastUpdatedMillis: Date.now() })
     } else {
       this._deferredUpdate = newRows
     }
@@ -183,7 +203,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     if (this._deferredUpdate) {
       const body = this._deferredUpdate
       this._deferredUpdate = undefined
-      this.setState({ body })
+      this.setState({ body, lastUpdatedMillis: Date.now() })
     }
   }
 
@@ -193,7 +213,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    */
   private header(newKuiHeader: KuiRow) {
     this.props.response.header = newKuiHeader
-    this.setState({ header: newKuiHeader })
+    this.setState({ header: newKuiHeader, lastUpdatedMillis: Date.now() })
   }
 
   /**
@@ -205,6 +225,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
 
     this.setState(curState => {
       return {
+        lastUpdatedMillis: Date.now(),
         footer: curState.footer ? curState.footer.concat(streams) : streams
       }
     })
@@ -215,7 +236,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    *
    */
   private done() {
-    this.setState({ isWatching: false })
+    this.setState({ isWatching: false, lastUpdatedMillis: Date.now() })
     // TODO uncapture job-tab connection?
   }
 }

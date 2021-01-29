@@ -28,6 +28,8 @@ export type SupportedIcon =
   | 'Copy'
   | 'Edit'
   | 'Error'
+  | 'Eye'
+  | 'EyeSlash'
   | 'Forward'
   | 'Grid'
   | 'Github'
