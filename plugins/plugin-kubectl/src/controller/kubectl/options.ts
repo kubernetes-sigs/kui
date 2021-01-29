@@ -141,16 +141,23 @@ export function getLabel({ parsedOptions }: Pick<Arguments<KubeOptions>, 'parsed
   if (label) {
     return label
   } else {
+    // we need to pick the last one, in the case the command line
+    // specified more than one; e.g. for `k get pod -lname=nginx
+    // -lfoo=bar -n t1`, the kubectl CLI picks foo=bar
+    let lastOne: string
+
     // yargs-parser doesn't handle -lname=nginx without the space
     // after -l; or least not the way we've configured it
     for (const key in parsedOptions) {
       if (/^l.+/.test(key) && key !== 'limit') {
         const value = parsedOptions[key]
         if (value) {
-          return `${key.slice(1)}=${value}`
+          lastOne = `${key.slice(1)}=${value}`
         }
       }
     }
+
+    return lastOne
   }
 }
 
