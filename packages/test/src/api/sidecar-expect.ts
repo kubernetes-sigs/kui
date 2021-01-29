@@ -98,7 +98,7 @@ export const badge = (title: string, css?: string, absent = false) => async (res
 
 export const button = (button: { mode: string; label?: string }) => async (res: AppAndCount) => {
   await res.app.client
-    .$(Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, button.mode, res.splitIndex))
+    .$(Selectors.SIDECAR_MODE_BUTTON(res.count, button.mode, res.splitIndex))
     .then(_ => _.waitForDisplayed({ timeout: waitTimeout }))
   return res
 }

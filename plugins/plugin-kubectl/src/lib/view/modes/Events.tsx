@@ -69,7 +69,7 @@ export const eventsMode: ModeRegistration<KubeResource> = {
     mode: 'events',
     label: strings('Show Events'),
     kind: 'drilldown',
-    order: 110,
+    showRelatedResource: true,
     command
   }
 }

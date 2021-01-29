@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { Icons } from '@kui-shell/plugin-client-common'
 import { i18n, encodeComponent, Tab, ModeRegistration } from '@kui-shell/core'
 
 import { fqn } from '../../../controller/kubectl/fqn'
@@ -55,9 +53,8 @@ const mode: ModeRegistration<KubeResourceWithOwnerReferences> = {
   mode: {
     mode: 'ownerReference',
     kind: 'drilldown',
-    order: 90, // we want this to appear before DeleteButton, but after others...
+    showRelatedResource: true,
     label: strings('Show Owner Reference'),
-    icon: <Icons icon="Up" />,
     command
   }
 }
