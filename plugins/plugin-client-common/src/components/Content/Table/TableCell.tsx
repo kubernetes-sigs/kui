@@ -125,11 +125,14 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
     const innerText = valueDom || title
 
     const { attributes = [] } = kuiRow
+    // re: OBJECT, see https://github.com/IBM/kui/issues/6831
     return (
       <Td
         key={cidx}
         className={cellClassName}
-        modifier={/MESSAGE/i.test(key) ? 'wrap' : !/NAME|NAMESPACE/i.test(key) ? 'fitContent' : undefined}
+        modifier={
+          /OBJECT/i.test(key) || /MESSAGE/i.test(key) ? 'wrap' : !/NAME|NAMESPACE/i.test(key) ? 'fitContent' : undefined
+        }
       >
         <div
           data-key={key}
