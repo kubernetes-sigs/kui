@@ -435,6 +435,9 @@ body[kui-theme-style] {
   }
   button {
     font-family: var(--font-sans-serif);
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   .small-bottom-pad {
