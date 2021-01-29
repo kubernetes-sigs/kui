@@ -20,6 +20,7 @@ debug('loading')
 
 import { IpcRenderer } from 'electron'
 
+import { pexecInCurrentTab } from './tab'
 import { inElectron, Media, setMedia } from '../core/capabilities'
 
 /**
@@ -38,8 +39,7 @@ const listenForRemoteEvents = (ipcRenderer: IpcRenderer) => {
 
     ipcRenderer.on('/repl/qexec', async (event, { command }) => {
       debug('remote qexec', command)
-      const { qexec } = await import('../repl/exec')
-      return qexec(command)
+      return pexecInCurrentTab(command, undefined, false, true)
     })
   }
 }

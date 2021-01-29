@@ -33,6 +33,12 @@ const isDev = false
 const newTab = () => tellRendererToExecute('tab new')
 
 /**
+ * tell the current window to open a new split
+ *
+ */
+const newSplit = () => tellRendererToExecute('split')
+
+/**
  * tell the current window to close the current tab
  *
  */
@@ -99,6 +105,11 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         label: 'New Tab',
         click: () => newTab(),
         accelerator: 'CommandOrControl+T'
+      },
+      {
+        label: 'New Split',
+        click: () => newSplit(),
+        accelerator: 'CommandOrControl+U'
       },
       {
         label: 'Open',
