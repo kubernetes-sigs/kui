@@ -27,7 +27,7 @@ type LiveProps = Props<KuiTable & Watchable> & { onRender: (hasContent: boolean)
 
 interface LiveState extends State {
   isWatching: boolean
-  lastUpdatedMillis?: number
+  lastUpdatedMillis: number
 }
 
 export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
@@ -36,7 +36,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
 
   public constructor(props: LiveProps) {
     super(props)
-    this.state = Object.assign(this.state, { isWatching: true })
+    this.state = Object.assign(this.state, { isWatching: true, lastUpdatedMillis: Date.now() })
   }
 
   /**
