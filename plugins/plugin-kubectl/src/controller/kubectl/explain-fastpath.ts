@@ -109,29 +109,36 @@ const fastPathCases: Record<string, Explained> = {
 
   controllerrevision: ControllerRevision,
   controllerrevisions: ControllerRevision,
+  ControllerRevision: ControllerRevision,
+  'ControllerRevision.v1.apps': ControllerRevision,
+  ControllerRevisions: ControllerRevision,
 
   ds: DaemonSet,
   daemonset: DaemonSet,
   daemonsets: DaemonSet,
   DaemonSet: DaemonSet,
+  'DaemonSet.v1.apps': DaemonSet,
   DaemonSets: DaemonSet,
 
   rs: ReplicaSet,
   replicaset: ReplicaSet,
   replicasets: ReplicaSet,
   ReplicaSet: ReplicaSet,
+  'ReplicaSet.v1.apps': ReplicaSet,
   ReplicaSets: ReplicaSet,
 
   sts: StatefulSet,
   statefulset: StatefulSet,
   statefulsets: StatefulSet,
   StatefulSet: StatefulSet,
+  'StatefulSet.v1.apps': StatefulSet,
   StatefulSets: StatefulSet,
 
   deploy: Deployment,
   deployment: Deployment,
   deployments: Deployment,
   Deployment: Deployment,
+  'Deployment.v1.apps': Deployment,
   Deployments: Deployment,
 
   no: Node,
