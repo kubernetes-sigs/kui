@@ -64,6 +64,12 @@ const Service = {
   isClusterScoped: false
 }
 
+const Event = {
+  kind: 'Event',
+  version: 'v1',
+  isClusterScoped: false
+}
+
 const fastPathCases: Record<string, Explained> = {
   po: Pod,
   pod: Pod,
@@ -100,6 +106,12 @@ const fastPathCases: Record<string, Explained> = {
   nodes: Node,
   Node: Node,
   Nodes: Node,
+
+  ev: Event,
+  event: Event,
+  events: Event,
+  Event: Event,
+  Events: Event,
 
   pv: PersistentVolume,
   persistentvolume: PersistentVolume,
