@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { editor as Monaco } from 'monaco-editor'
+import { editor as Monaco, KeyMod, KeyCode } from 'monaco-editor'
 
 import { eventChannelUnsafe, eventBus } from '@kui-shell/core'
 
@@ -39,10 +39,16 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
 
   /** Use a light theme? Default: false */
   light?: boolean
+
+  /** Callback when user hits cmd/ctrl+S or shift-return */
+  onSave?: (content: string) => void
+
+  /** Callback when user hits Escape */
+  onCancel?: (content: string) => void
 }
 
 interface State {
-  editor: Monaco.ICodeEditor
+  editor: ReturnType<typeof Monaco.create>
   wrapper: React.RefObject<HTMLDivElement>
   catastrophicError: Error
   cleaners: (() => void)[]
@@ -101,6 +107,30 @@ export default class SimpleEditor extends React.Component<Props, State> {
     }
   }
 
+  /** Register onSave and onCancel keyboard shortcuts */
+  private registerKeyboardShortcuts(editor: State['editor']) {
+    const { onSave, onCancel } = this.props
+
+    // if the enclosing view has passed in an onSave controller, we
+    // will register CtrlCmd+S and Shift+Enter as keyboard shortcuts
+    // for this controller
+    if (onSave) {
+      editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => {
+        onSave(editor.getValue())
+      })
+      editor.addCommand(KeyMod.Shift | KeyCode.Enter, () => {
+        onSave(editor.getValue())
+      })
+    }
+
+    // ibid, but for Escape -> onCancel
+    if (onCancel) {
+      editor.addCommand(KeyCode.Escape, () => {
+        onCancel(editor.getValue())
+      })
+    }
+  }
+
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
   private initMonaco(props: Props, state: State) {
     const cleaners = []
@@ -121,6 +151,8 @@ export default class SimpleEditor extends React.Component<Props, State> {
         overrides
       )
       const editor = Monaco.create(state.wrapper.current, options)
+
+      this.registerKeyboardShortcuts(editor)
 
       if (options.readOnly && props.simple) {
         // if we know 1) the height of the content won't change, and

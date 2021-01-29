@@ -51,7 +51,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   /** update state to cancel any edits and close the editor */
-  private onCancel(evt: React.MouseEvent) {
+  private onCancel(evt?: React.MouseEvent) {
     this.onRevert(evt, false)
     this.removeOurselvesIfEmpty()
   }
@@ -73,9 +73,11 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   /** Update state to cancel any updates, but leave editor open */
-  private onRevert(evt: React.MouseEvent, isEdit = true) {
-    // so that the event doesn't propagate to the onClick on the Card itself
-    evt.stopPropagation()
+  private onRevert(evt?: React.MouseEvent, isEdit = true) {
+    if (evt) {
+      // so that the event doesn't propagate to the onClick on the Card itself
+      evt.stopPropagation()
+    }
 
     this.setState(curState => {
       // switch back to the lastAppliedTextValue
@@ -119,9 +121,11 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   /** Update state to reflect lastAppliedTextValue, and close the editor */
-  private onDone(evt: React.MouseEvent) {
-    // so that the event doesn't propagate to the onClick on the Card itself
-    evt.stopPropagation()
+  private onDone(evt?: React.MouseEvent) {
+    if (evt) {
+      // so that the event doesn't propagate to the onClick on the Card itself
+      evt.stopPropagation()
+    }
 
     if (!this.removeOurselvesIfEmpty()) {
       this.setState(curState => {
@@ -178,6 +182,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
     )
   }
 
+  /** Percolate `SimpleEditor` edits up to the Preview view */
   private onContentChange(value: string) {
     this.setState({ textValue: value })
     if (this.props.willUpdateResponse) {
@@ -186,6 +191,21 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   private readonly _onContentChange = this.onContentChange.bind(this)
+
+  /** User has requested to save changes via keyboard shortcut, from within `SimpleEditor` */
+  private onSaveFromEditor(value: string) {
+    this.onContentChange(value)
+    this.onDone()
+  }
+
+  private readonly _onSaveFromEditor = this.onSaveFromEditor.bind(this)
+
+  /** User has requested to cancel changes via keyboard shortcut, from within `SimpleEditor` */
+  private onCancelFromEditor() {
+    this.onCancel()
+  }
+
+  private readonly _onCancelFromEditor = this.onCancelFromEditor.bind(this)
 
   /** @return the initial content to display, before any editing */
   private initialTextValue() {
@@ -200,6 +220,8 @@ export default class Commentary extends React.PureComponent<Props, State> {
         className="kui--source-ref-editor kui--inverted-color-context"
         readonly={false}
         simple
+        onSave={this._onSaveFromEditor}
+        onCancel={this._onCancelFromEditor}
         onContentChange={this._onContentChange}
         contentType="markdown"
         scrollIntoView={this.props.isPartOfMiniSplit}
