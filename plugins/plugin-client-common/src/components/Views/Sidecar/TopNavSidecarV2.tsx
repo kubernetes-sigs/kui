@@ -35,6 +35,7 @@ import {
 import Badge from './Badge'
 import KuiContext from '../../Client/context'
 import ToolbarContainer from './ToolbarContainer'
+import Toolbar from './Toolbar'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
 import BaseSidecar, { Props, State } from './BaseSidecarV2'
 
@@ -291,7 +292,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
             didUpdateToolbar={this._didUpdateToolbar}
             toolbarText={this.state.toolbarText}
             noAlerts={this.current.currentTabIndex !== this.current.defaultMode}
-            buttons={this.current.buttons}
+            buttons={this.current.buttons.filter(_ => !(_.kind === 'drilldown' && _.showRelatedResource))}
           >
             {this.bodyContent(idx)}
           </ToolbarContainer>
@@ -345,6 +346,19 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
         </header>
       )
     }
+  }
+
+  private footer() {
+    return (
+      <Toolbar
+        bottom={true}
+        tab={this.props.tab}
+        execUUID={this.props.execUUID}
+        response={this.state.response}
+        args={{ argvNoOptions: this.props.argvNoOptions, parsedOptions: this.props.parsedOptions }}
+        buttons={this.current.buttons.filter(_ => _.kind === 'drilldown' && _.showRelatedResource)}
+      />
+    )
   }
 
   private kindBreadcrumb(): BreadcrumbView {
@@ -434,6 +448,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
           <div className="kui--sidecar-header-and-body" style={{ flexDirection: 'column' }}>
             {this.header()}
             {this.tabs()}
+            {this.footer()}
           </div>
         </div>
       )

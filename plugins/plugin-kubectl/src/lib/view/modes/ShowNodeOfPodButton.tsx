@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { Icons } from '@kui-shell/plugin-client-common'
 import { i18n, Tab, ModeRegistration } from '@kui-shell/core'
 
 import { isPod, Pod } from '../../model/resource'
@@ -40,9 +38,8 @@ const mode: ModeRegistration<Pod> = {
   mode: {
     mode: 'show-node',
     kind: 'drilldown',
-    order: 80, // we want this to appear before DeleteButton, but after others...
+    showRelatedResource: true,
     label: strings('Show Node'),
-    icon: <Icons icon="Server" />,
     command
   }
 }
