@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { PropsWithChildren, ReactElement, RefObject } from 'react'
+import { i18n } from '@kui-shell/core'
+const strings = i18n('plugin-client-common')
 
-type Props = PropsWithChildren<{
-  className?: string
-  markdown?: string
-  reference?: RefObject<any>
-  content?: string | ReactElement
-  position?: 'auto' | 'top' | 'bottom' | 'left' | 'right'
-}>
+/** @return markdown-formatted tooltip content */
+export default function tooltipContent(title: string, name: string, status?: string) {
+  const showMoreDetail = strings('Click to show more detail')
 
-export default Props
+  return `### ${title}
+#### ${name}
+
+${status ? 'Status: ' + status : ''}
+
+\`${showMoreDetail}\``
+}

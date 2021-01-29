@@ -875,8 +875,9 @@ $kui--page-content-paragraph-padding: 0.375em;
   font-size: unset;
   line-height: unset;
   margin: 0;
-
-  &:not([data-is-href]) + p {
+}
+.page.content:not([data-is-nested]) {
+  h4:not([data-is-href]) + p {
     padding-top: calc(0.5em + #{$kui--page-content-paragraph-padding});
   }
 }

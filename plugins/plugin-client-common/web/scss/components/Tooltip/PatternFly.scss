@@ -14,7 +14,68 @@
  * limitations under the License.
  */
 
-.kui--tooltip > div {
-  background-color: var(--color-base06);
-  color: var(--color-base00);
+$color: var(--color-base00);
+$bgcolor: var(--color-base06);
+
+.kui--tooltip {
+  &[data-is-markdown] {
+    .pf-c-tooltip__content {
+      padding: 0;
+      font-size: 0.75rem;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    p {
+      padding: var(--pf-c-tooltip__content--PaddingTop) var(--pf-c-tooltip__content--PaddingRight)
+        var(--pf-c-tooltip__content--PaddingBottom) var(--pf-c-tooltip__content--PaddingLeft);
+    }
+
+    h3 {
+      padding-bottom: 0;
+    }
+    h3 + h4 {
+      padding-top: 0;
+    }
+
+    p + p {
+      padding-top: 0;
+    }
+
+    code {
+      color: var(--color-base02);
+      font-family: var(--font-sans-serif);
+    }
+  }
+
+  & > div {
+    color: $color;
+    background-color: $bgcolor;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: $color;
+    padding-top: 0;
+    font-size: inherit;
+  }
+
+  h3 {
+  }
+
+  h4 {
+    font-weight: normal;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--color-table-border2);
+    }
+  }
+
+  hr {
+    margin: 0.5em 0;
+  }
 }
