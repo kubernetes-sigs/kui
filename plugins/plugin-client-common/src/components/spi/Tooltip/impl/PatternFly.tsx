@@ -17,18 +17,27 @@
 import React from 'react'
 import Props from '../model'
 
+import Markdown from '../../../Content/Markdown'
 import { Tooltip } from '@patternfly/react-core'
+
 import '../../../../../web/scss/components/Tooltip/PatternFly.scss'
 
 export default function PatternFlyTooltip(props: Props): React.ReactElement {
+  const isMarkdown = !!props.markdown || undefined
+
   return (
     <Tooltip
-      className="kui--tooltip"
       entryDelay={200}
+      className="kui--tooltip"
       reference={props.reference}
-      content={props.children}
-      position={props.position}
-      isContentLeftAligned
-    />
+      data-is-markdown={isMarkdown}
+      isContentLeftAligned={isMarkdown}
+      position={props.position || 'auto'}
+      content={
+        props.reference ? props.children : props.markdown ? <Markdown nested source={props.markdown} /> : props.content
+      }
+    >
+      {!props.reference && <React.Fragment>{props.children}</React.Fragment>}
+    </Tooltip>
   )
 }

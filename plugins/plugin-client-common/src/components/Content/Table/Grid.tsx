@@ -18,6 +18,8 @@ import React from 'react'
 import { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
 
 import ErrorCell from './ErrorCell'
+import Tooltip from '../../spi/Tooltip'
+import tooltipContent from './Tooltip'
 import { onClickForCell } from './TableCell'
 import DefaultColoring, { Coloring } from './Coloring'
 
@@ -124,7 +126,6 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
       <div className="kui--table-like-wrapper kui--data-table-as-grid" style={style}>
         {response.body.map((kuiRow, kidx) => {
           const badgeCell = gridableColumn !== -1 && kuiRow.attributes[gridableColumn]
-          const title = `${kuiRow.name}\n${badgeCell ? badgeCell.value : ''}`
           const statusCss = (badgeCell && badgeCell.css && badgeCell.css.trim()) || 'kui--status-unknown'
           const isError = /red-background/.test(statusCss)
           const css = colorByDuration ? this.durationCss(kuiRow, isError) : statusCss
@@ -133,7 +134,6 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
           const label = <span className="kui--grid-cell-label">{kuiRow.name.slice(0, 2)}</span>
 
           const props = {
-            title,
             key: css, // force restart of animation if color changes
             'data-tag': 'badge-circle',
             'data-color-by': colorByDuration ? 'duration' : 'status',
@@ -148,9 +148,13 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
             )
           }
 
+          const title = tooltipContent(this.props.response.title, kuiRow.name, badgeCell ? badgeCell.value : undefined)
+
           return (
             <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name} className="kui--grid-cell">
-              <span {...props}>{/red-background/.test(css) ? <ErrorCell /> : label}</span>
+              <Tooltip markdown={title} position="bottom">
+                <span {...props}>{/red-background/.test(css) ? <ErrorCell /> : label}</span>
+              </Tooltip>
             </span>
           )
         })}

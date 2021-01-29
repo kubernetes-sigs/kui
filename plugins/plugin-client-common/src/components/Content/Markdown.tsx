@@ -88,6 +88,7 @@ export default class Markdown extends React.PureComponent<Props> {
       <ReactMarkdown
         plugins={[gfm]}
         source={this.source()}
+        data-is-nested={this.props.nested || undefined}
         className={
           this.props.className ||
           'padding-content marked-content page-content' +
