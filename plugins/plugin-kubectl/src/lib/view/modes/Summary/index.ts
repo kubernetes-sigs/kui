@@ -21,6 +21,7 @@ import {
   isSummarizableKubeResource,
   isKubeResourceWithItsOwnSummary,
   isDeployment,
+  isEvent,
   isJob,
   isNamespace,
   isNode,
@@ -29,6 +30,7 @@ import {
 } from '../../../model/resource'
 
 import DeploymentSummary from './impl/Deployment'
+import EventSummary from './impl/Event'
 import GenericSummary from './impl/Generic'
 import JobSummary from './impl/Job'
 import NamespaceSummary from './impl/Namespace'
@@ -53,6 +55,8 @@ async function renderSummary({ REPL }: Tab, resource: KubeResource) {
       ? PodSummary(resource)
       : isDeployment(resource)
       ? DeploymentSummary(resource)
+      : isEvent(resource)
+      ? EventSummary(resource)
       : isReplicaSet(resource)
       ? ReplicaSetSummary(resource)
       : isNamespace(resource)
