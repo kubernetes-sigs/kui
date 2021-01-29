@@ -97,6 +97,9 @@ export default function renderMain(props: KuiProps) {
         {/* !isPopup() && <OpenWhiskGridWidget /> */}
         {inBrowser() && <ProxyOfflineIndicator />}
         {!isPopup() && !inBrowser() && <UpdateChecker />}
+      </MeterWidgets>
+
+      <MeterWidgets>
         <Screenshot />
       </MeterWidgets>
     </Kui>
