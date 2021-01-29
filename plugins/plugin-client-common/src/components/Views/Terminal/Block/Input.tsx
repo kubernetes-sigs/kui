@@ -16,8 +16,7 @@
 
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
-import { basename } from 'path'
-import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences, getPrimaryTabId } from '@kui-shell/core'
+import { Tab as KuiTab, doCancel, i18n } from '@kui-shell/core'
 
 import Actions from './Actions'
 import onPaste from './OnPaste'
@@ -45,9 +44,8 @@ import {
 import { BlockViewTraits, BlockOperationTraits } from './'
 
 const Tag = React.lazy(() => import('../../../spi/Tag'))
+const SourceRef = React.lazy(() => import('../SourceRef'))
 const Icons = React.lazy(() => import('../../../spi/Icons'))
-const Accordion = React.lazy(() => import('../../../spi/Accordion'))
-const SimpleEditor = React.lazy(() => import('../../../Content/Editor/SimpleEditor'))
 
 const strings = i18n('plugin-client-common')
 
@@ -251,55 +249,6 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     }
   }
 
-  /** render sourceRef content. Currently only use SimpleEditor. */
-  protected sourceRefContent(content: string, contentType: string) {
-    return () => (
-      <React.Suspense fallback={<div />}>
-        <SimpleEditor
-          tabUUID={getPrimaryTabId(this.props.tab)}
-          content={content.replace(/\n$/, '')} /* monaco's renderFinalNewline option doesn't seem to do what we need */
-          contentType={contentType}
-          className="kui--source-ref-editor kui--inverted-color-context"
-          fontSize={12}
-          simple
-        />
-      </React.Suspense>
-    )
-  }
-
-  /** If contained in the model, present the sources associated with this Input operation */
-  protected sourceRef() {
-    const { model } = this.props
-
-    if (model && isWithCompleteEvent(model) && isTable(model.response) && hasSourceReferences(model.response)) {
-      // Note that we currently do not render source refs in
-      // minisplit. See https://github.com/IBM/kui/issues/6750
-      if (!this.props.isPartOfMiniSplit) {
-        const sourceRef = model.response.kuiSourceRef
-        const names = sourceRef.templates.concat(sourceRef.customization || []).map(_ => basename(_.filepath))
-        const content = sourceRef.templates
-          .map(_ => this.sourceRefContent(_.data, _.contentType))
-          .concat(sourceRef.customization ? this.sourceRefContent(sourceRef.customization.data, 'yaml') : [])
-
-        return (
-          <div className="repl-input-sourceref">
-            <div className="repl-context"></div>
-            <Accordion
-              names={names}
-              isWidthConstrained={this.props.isWidthConstrained}
-              tab={this.props.tab}
-              content={content}
-            />
-          </div>
-        )
-      }
-    }
-
-    // if (this.state.sourceRef) {
-    //      return 'hi'
-    //    }
-  }
-
   public render() {
     return (
       <React.Suspense fallback={<div />}>
@@ -312,7 +261,12 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
           </div>
           {this.state && this.state.tabCompletion && this.state.tabCompletion.render()}
         </div>
-        {this.sourceRef()}
+        <SourceRef
+          tab={this.props.tab}
+          isWidthConstrained={this.props.isWidthConstrained}
+          model={this.props.model}
+          isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+        />
       </React.Suspense>
     )
   }
