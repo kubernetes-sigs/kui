@@ -37,6 +37,8 @@ import {
   ArrowDownIcon as MoveDown,
   MapMarkerAltIcon as Location,
   ServerIcon as Server,
+  EyeIcon as Eye,
+  EyeSlashIcon as EyeSlash,
   AtIcon as At,
   CodeBranchIcon as CodeBranch,
   ArrowLeftIcon as Back,
@@ -93,6 +95,10 @@ export default function PatternFly4Icons(props: Props) {
       return <Edit {...props} />
     case 'Error':
       return <Oops {...props} />
+    case 'Eye':
+      return <Eye {...props} />
+    case 'EyeSlash':
+      return <EyeSlash {...props} />
     case 'Forward':
       return <Forward style={Sidecar} {...props} />
     case 'Grid':

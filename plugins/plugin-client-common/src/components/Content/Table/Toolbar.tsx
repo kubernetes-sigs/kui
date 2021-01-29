@@ -29,10 +29,15 @@ export type Props = Partial<GridProps> &
   Partial<TimelineProps> &
   Partial<PaginationProps> &
   Partial<BreadcrumbProps> &
+  Partial<CaptionProps> &
   Partial<StreamProps> & {
     framed?: boolean
     className?: string
   }
+
+interface CaptionProps {
+  caption: string | React.ReactElement
+}
 
 interface GridProps {
   gridableColumn: number
@@ -222,6 +227,14 @@ export default class Toolbar extends React.PureComponent<Props> {
     }
   }
 
+  private caption() {
+    return (
+      this.props.caption && (
+        <div className="kui--table-caption flex-layout even-smaller-text sub-text">{this.props.caption}</div>
+      )
+    )
+  }
+
   public render() {
     const className = 'kui--data-table-toolbar' + (this.props.className ? ` ${this.props.className}` : '')
 
@@ -231,6 +244,7 @@ export default class Toolbar extends React.PureComponent<Props> {
         {this.buttons()}
         {this.props.children}
         {this.filler()}
+        {this.caption()}
         {this.messageStream()}
         {this.paginationController()}
       </div>

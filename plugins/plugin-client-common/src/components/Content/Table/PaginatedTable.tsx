@@ -273,12 +273,17 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             setAsSequence={(asSequence: boolean) => this.setState({ asSequence })}
             hasTimelineButton={hasTimelineButton}
             asTimeline={this.state.asTimeline}
+            caption={this.caption() || undefined}
             setAsTimeline={(asTimeline: boolean) => this.setState({ asTimeline })}
           />
         )}
       </React.Fragment>
     )
   }
+
+  /** E.g. last updated time for live tables */
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  protected caption(): ToolbarProps['caption'] | void {}
 
   private grid(visibleRows: KuiRow[]) {
     return (
