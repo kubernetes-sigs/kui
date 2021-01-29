@@ -171,7 +171,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         <Button size="small" className="screenshot-save-button" onClick={this.saveToDisk.bind(this)}>
           {strings('Save to desktop')}
         </Button>
-        <Button size="small" kind="tertiary" onClick={() => this.setState({ isActive: false, captured: undefined })}>
+        <Button size="small" kind="link" onClick={() => this.setState({ isActive: false, captured: undefined })}>
           {strings('Done')}
         </Button>
       </div>
