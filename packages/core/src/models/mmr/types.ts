@@ -122,6 +122,9 @@ export type DrilldownButton<T = MetadataBearing> = Label &
 
     /** Execute the command in place of the current block? Default: execute in a new block */
     inPlace?: boolean
+
+    /** Drilldown to related resource? */
+    showRelatedResource?: boolean
   }
 
 export type ViewButton<T = MetadataBearing> = Label &

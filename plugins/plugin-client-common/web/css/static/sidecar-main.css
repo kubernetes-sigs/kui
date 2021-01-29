@@ -119,6 +119,14 @@ $toolbar-height: 1.5rem;
     flex: 1;
     overflow: visible; /* for tooltip visibility */
   }
+
+  .sidecar-toolbar-text[data-location-bottom="true"],
+  .sidecar-bottom-stripe-mode-bits[data-location-bottom="true"] {
+    background-color: var(--color-sidecar-header);
+    color: var(--color-text-01);
+    font-size: calc(12em / 16);
+  }
+
   .sidecar-toolbar-text svg path {
     fill: var(--color-sidecar-toolbar-foreground);
     &[data-icon-path="inner-path"] {
@@ -168,7 +176,7 @@ $toolbar-height: 1.5rem;
   .sidecar-bottom-stripe-button {
     display: flex;
     line-height: 1.5em;
-    padding: 0 0.5em;
+    padding: 0 0.25em;
 
     & > button {
       padding: 0;
@@ -191,6 +199,24 @@ $toolbar-height: 1.5rem;
 
     [role="tab"] {
       display: flex;
+    }
+  }
+  .sidecar-bottom-stripe-mode-bits[data-location-bottom="true"] {
+    .sidecar-bottom-stripe-button {
+      padding: 1em;
+
+      &:hover {
+        background-color: var(--color-table-border3);
+      }
+
+      a,
+      button {
+        &:hover {
+          [role="tab"] {
+            color: var(--color-text-01);
+          }
+        }
+      }
     }
   }
   .graphical-icon svg {
