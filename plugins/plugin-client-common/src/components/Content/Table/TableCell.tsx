@@ -28,6 +28,8 @@ import {
 } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
+import Tooltip from '../../spi/Tooltip'
+import tooltipContent from './Tooltip'
 const Markdown = React.lazy(() => import('../Markdown'))
 import ErrorCell from './ErrorCell'
 import whenNothingIsSelected from '../../../util/selection'
@@ -124,6 +126,27 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
         : value
     const innerText = valueDom || title
 
+    const innerSpan = (
+      <span className="kui--cell-inner-text">
+        {cidx === 0 && kuiRow.fontawesome === 'fas fa-check' ? (
+          <Icons icon="Checkmark" />
+        ) : table.markdown ? (
+          <Markdown nested source={title} />
+        ) : (
+          innerText
+        )}
+      </span>
+    )
+
+    const innerSpanWithTooltip =
+      cidx === 0 && table.title ? (
+        <Tooltip markdown={tooltipContent(table.title, kuiRow.name, undefined)} position="bottom">
+          {innerSpan}
+        </Tooltip>
+      ) : (
+        innerSpan
+      )
+
     const { attributes = [] } = kuiRow
     // re: OBJECT, see https://github.com/IBM/kui/issues/6831
     return (
@@ -152,15 +175,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
               {/red-background/.test(css) ? <ErrorCell /> : undefined}
             </span>
           )}
-          <span className="kui--cell-inner-text">
-            {cidx === 0 && kuiRow.fontawesome === 'fas fa-check' ? (
-              <Icons icon="Checkmark" />
-            ) : table.markdown ? (
-              <Markdown nested source={title} />
-            ) : (
-              innerText
-            )}
-          </span>
+          {innerSpanWithTooltip}
         </div>
       </Td>
     )
