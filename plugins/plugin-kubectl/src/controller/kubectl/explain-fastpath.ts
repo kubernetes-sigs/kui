@@ -46,8 +46,26 @@ const PersistentVolume = {
   isClusterScoped: true
 }
 
+const ControllerRevision = {
+  kind: 'ControllerRevision',
+  version: 'apps/v1',
+  isClusterScoped: false
+}
+
+const DaemonSet = {
+  kind: 'DaemonSet',
+  version: 'apps/v1',
+  isClusterScoped: false
+}
+
 const ReplicaSet = {
   kind: 'ReplicaSet',
+  version: 'apps/v1',
+  isClusterScoped: false
+}
+
+const StatefulSet = {
+  kind: 'StatefulSet',
   version: 'apps/v1',
   isClusterScoped: false
 }
@@ -89,11 +107,26 @@ const fastPathCases: Record<string, Explained> = {
   Service: Service,
   Services: Service,
 
+  controllerrevision: ControllerRevision,
+  controllerrevisions: ControllerRevision,
+
+  ds: DaemonSet,
+  daemonset: DaemonSet,
+  daemonsets: DaemonSet,
+  DaemonSet: DaemonSet,
+  DaemonSets: DaemonSet,
+
   rs: ReplicaSet,
   replicaset: ReplicaSet,
   replicasets: ReplicaSet,
-  Replicaset: ReplicaSet,
-  Replicasets: ReplicaSet,
+  ReplicaSet: ReplicaSet,
+  ReplicaSets: ReplicaSet,
+
+  sts: StatefulSet,
+  statefulset: StatefulSet,
+  statefulsets: StatefulSet,
+  StatefulSet: StatefulSet,
+  StatefulSets: StatefulSet,
 
   deploy: Deployment,
   deployment: Deployment,
