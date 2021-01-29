@@ -22,6 +22,7 @@ import { eventBus, pexecInCurrentTab, i18n, StatusStripeChangeEvent } from '@kui
 
 import Settings from './Settings'
 import Icons from '../../spi/Icons'
+import Tooltip from '../../spi/Tooltip'
 import MeterWidgets from './MeterWidgets'
 const Markdown = React.lazy(() => import('../../Content/Markdown'))
 import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
@@ -37,6 +38,8 @@ function hasType(evt: Partial<StatusStripeChangeEvent>): evt is Pick<Required<St
 }
 
 export default class StatusStripe extends React.PureComponent<Props, State> {
+  private readonly helpRef = React.createRef<HTMLAnchorElement>()
+
   public constructor(props: Props) {
     super(props)
     eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
@@ -125,11 +128,14 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
               id="help-button"
               aria-label="Help"
               tabIndex={0}
-              title={strings('Click for help')}
+              ref={this.helpRef}
               onClick={() => this.doAbout()}
             >
               <Icons icon="Help" />
             </a>
+            <Tooltip reference={this.helpRef} position="top">
+              {strings('Click for help')}
+            </Tooltip>
           </div>
         </div>
       </React.Suspense>

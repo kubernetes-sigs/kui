@@ -29,6 +29,9 @@ import {
 import { NavItem } from '@patternfly/react-core'
 
 import Icons from '../../spi/Icons'
+import Tooltip from '../../spi/Tooltip'
+import ctrlOrMeta from './ctrlOrMeta'
+
 const Markdown = React.lazy(() => import('../../Content/Markdown'))
 
 const strings = i18n('plugin-core-support')
@@ -56,6 +59,8 @@ interface State {
 }
 
 export default class Tab extends React.PureComponent<Props, State> {
+  private readonly closeTabRef = React.createRef<HTMLDivElement>()
+
   private onCommandStart: (evt: Event) => void
   private onCommandComplete: (evt: Event) => void
   private onThemeChange: ({ themeModel: Theme }) => void
@@ -187,17 +192,22 @@ export default class Tab extends React.PureComponent<Props, State> {
         </div>
 
         {this.props.closeable && (
-          <div
-            className="kui--tab-close"
-            title={strings2('Close this tab')}
-            onClick={evt => {
-              evt.stopPropagation()
-              evt.preventDefault()
-              this.props.onCloseTab(this.props.idx)
-            }}
-          >
-            <Icons icon="WindowClose" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
-          </div>
+          <React.Fragment>
+            <div
+              className="kui--tab-close"
+              ref={this.closeTabRef}
+              onClick={evt => {
+                evt.stopPropagation()
+                evt.preventDefault()
+                this.props.onCloseTab(this.props.idx)
+              }}
+            >
+              <Icons icon="WindowClose" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+            </div>
+            <Tooltip reference={this.closeTabRef} position="bottom">
+              {strings2('Close this tab', ctrlOrMeta('W'))}
+            </Tooltip>
+          </React.Fragment>
         )}
       </NavItem>
     )

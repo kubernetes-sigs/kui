@@ -18,6 +18,8 @@ import React from 'react'
 import { i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
+import Tooltip from '../../spi/Tooltip'
+import ctrlOrMeta from './ctrlOrMeta'
 
 const strings = i18n('plugin-client-common')
 
@@ -26,7 +28,18 @@ interface Props {
 }
 
 export default class NewTabButton extends React.PureComponent<Props> {
-  public render() {
+  private readonly ref = React.createRef<HTMLAnchorElement>()
+  private readonly _onNewTab = () => this.props.onNewTab()
+
+  private tooltip() {
+    return (
+      <Tooltip reference={this.ref} position="bottom">
+        {strings('New Tab', ctrlOrMeta('T'))}
+      </Tooltip>
+    )
+  }
+
+  private button() {
     return (
       <a
         href="#"
@@ -34,11 +47,20 @@ export default class NewTabButton extends React.PureComponent<Props> {
         id="new-tab-button"
         aria-label="Open a new tab"
         tabIndex={0}
-        title={strings('New Tab')}
-        onClick={() => this.props.onNewTab()}
+        ref={this.ref}
+        onClick={this._onNewTab}
       >
         <Icons icon="Add" className="kui-new-tab__plus" />
       </a>
+    )
+  }
+
+  public render() {
+    return (
+      <React.Fragment>
+        {this.button()}
+        {this.tooltip()}
+      </React.Fragment>
     )
   }
 }
