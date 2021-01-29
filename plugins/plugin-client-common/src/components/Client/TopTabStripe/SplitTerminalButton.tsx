@@ -19,6 +19,8 @@ import { i18n, pexecInCurrentTab } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import KuiContext from '../context'
+import ctrlOrMeta from './ctrlOrMeta'
+import Tooltip from '../../spi/Tooltip'
 
 const strings = i18n('plugin-client-common')
 
@@ -28,22 +30,42 @@ const strings = i18n('plugin-client-common')
  *
  */
 export default class SplitTerminalButton extends React.PureComponent {
+  private readonly ref = React.createRef<HTMLAnchorElement>()
+  private readonly _onSplit = () => pexecInCurrentTab('split', undefined, false, true)
+
+  private tooltip() {
+    return (
+      <Tooltip reference={this.ref} position="bottom">
+        {strings('Split the terminal', ctrlOrMeta('U'))}
+      </Tooltip>
+    )
+  }
+
+  private button() {
+    return (
+      <a
+        href="#"
+        className="kui--tab-navigatable kui--top-tab-button"
+        id="kui--split-terminal-button"
+        aria-label="Split terminal"
+        tabIndex={0}
+        ref={this.ref}
+        onClick={this._onSplit}
+      >
+        <Icons icon="Split" />
+      </a>
+    )
+  }
+
   public render() {
     return (
       <KuiContext.Consumer>
         {config =>
           config.splitTerminals && (
-            <a
-              href="#"
-              className="kui--tab-navigatable kui--top-tab-button"
-              id="kui--split-terminal-button"
-              aria-label="Split terminal"
-              tabIndex={0}
-              title={strings('Split the Terminal')}
-              onClick={() => pexecInCurrentTab('split', undefined, false, true)}
-            >
-              <Icons icon="Split" />
-            </a>
+            <React.Fragment>
+              {this.button()}
+              {this.tooltip()}
+            </React.Fragment>
           )
         }
       </KuiContext.Consumer>
