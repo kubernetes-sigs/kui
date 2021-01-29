@@ -147,6 +147,19 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
       }
     })
   }
+  const saveViaKeys = (keys: string[], expect: string) => {
+    it(`should close the editor by typing ${keys}`, async () => {
+      try {
+        await this.app.client.keys(keys)
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
+        await verifyComment(expect)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
   const clickDone = (expect: string) => {
     it('should close the editor by clicking the Done button', async () => {
       try {
@@ -192,9 +205,43 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
       }
     })
   }
+  const escapeCancel = (expect: string) => {
+    it('should close the editor by typing Escape', async () => {
+      try {
+        await this.app.client.keys('Escape')
+        await this.app.client
+          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
+        await verifyComment(expect)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
 
   /** Here comes the test */
   it('should add comment', () =>
+    CLI.command(`# foo-shift-enter`, this.app)
+      .then(() => verifyComment('foo-shift-enter'))
+      .catch(Common.oops(this, true)))
+
+  // test shift-enter to save
+  openEditor('foo-shift-enter')
+  typeAndVerify('1', 'foo-shift-enter1')
+  saveViaKeys(['Shift', 'Enter'], 'foo-shift-enter1')
+
+  // test cmdctrl+s to save
+  openEditor('foo-shift-enter1')
+  typeAndVerify('2', 'foo-shift-enter12')
+  saveViaKeys([Keys.ctrlOrMeta, 's'], 'foo-shift-enter12')
+
+  // test Escape to cancel
+  openEditor('foo-shift-enter12')
+  typeAndVerify('3', 'foo-shift-enter123')
+  escapeCancel('foo-shift-enter12')
+
+  /** Here comes the test */
+  it('should add another comment', () =>
     CLI.command(`# foo`, this.app)
       .then(() => verifyComment('foo'))
       .catch(Common.oops(this, true)))
