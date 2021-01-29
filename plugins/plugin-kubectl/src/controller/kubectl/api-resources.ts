@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, KResponse, isTable } from '@kui-shell/core'
+import { Arguments, Registrar, KResponse, isTable, isXtermResponse } from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
@@ -33,6 +33,11 @@ export const doGet = (command: string) => async (args: Arguments<KubeOptions>): 
     const {
       content: { stderr, stdout }
     } = response
+
+    if (isXtermResponse(stdout)) {
+      // see https://github.com/IBM/kui/issues/6838
+      return stdout
+    }
 
     const table = await stringToTable(stdout, stderr, args, command, 'explain', 'api-resources')
 
