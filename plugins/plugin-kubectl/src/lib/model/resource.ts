@@ -711,3 +711,15 @@ export function isStatus(resource: string | Buffer | object | KubeResource): res
     return status.apiVersion === 'v1' && status.kind === 'Status'
   }
 }
+
+/** Kubernetes Secret */
+export interface Secret extends KubeResource {
+  apiVersion: 'v1'
+  kind: 'Secret'
+  type: string
+  data: Record<string, any>
+}
+
+export function isSecret(resource: KubeResource): resource is Secret {
+  return resource.apiVersion === 'v1' && resource.kind === 'Secret'
+}

@@ -28,6 +28,12 @@ const Pod = {
   isClusterScoped: false
 }
 
+const Secret = {
+  kind: 'Secret',
+  version: 'v1',
+  isClusterScoped: false
+}
+
 const Namespace = {
   kind: 'Namespace',
   version: 'v1',
@@ -94,6 +100,11 @@ const fastPathCases: Record<string, Explained> = {
   pods: Pod,
   Pod: Pod,
   Pods: Pod,
+
+  secret: Secret,
+  secrets: Secret,
+  Secret: Secret,
+  Secrets: Secret,
 
   ns: Namespace,
   namespace: Namespace,

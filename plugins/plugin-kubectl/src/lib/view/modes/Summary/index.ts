@@ -26,7 +26,8 @@ import {
   isNamespace,
   isNode,
   isPod,
-  isReplicaSet
+  isReplicaSet,
+  isSecret
 } from '../../../model/resource'
 
 import DeploymentSummary from './impl/Deployment'
@@ -37,6 +38,7 @@ import NamespaceSummary from './impl/Namespace'
 import NodeSummary from './impl/Node'
 import PodSummary from './impl/Pod'
 import ReplicaSetSummary from './impl/ReplicaSet'
+import SecretSummary from './impl/Secret'
 
 const strings = i18n('plugin-kubectl')
 
@@ -65,6 +67,8 @@ async function renderSummary({ REPL }: Tab, resource: KubeResource) {
       ? NodeSummary(resource)
       : isJob(resource)
       ? JobSummary(resource)
+      : isSecret(resource)
+      ? SecretSummary(resource)
       : GenericSummary(resource, REPL)
 
     // our content is that map, rendered as yaml
