@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,9 @@ $element-padding: 1rem;
 
 $status-stripe-hover-bg-color: var(--color-table-border3);
 
+/* see https://github.com/IBM/kui/issues/6880 */
+$z-index: var(--pf-global--ZIndex--xs);
+
 @include StatusStripe {
   display: flex;
   flex-basis: 2.25rem;
@@ -64,7 +67,7 @@ $status-stripe-hover-bg-color: var(--color-table-border3);
     }
   }
 
-  z-index: 10;
+  z-index: $z-index;
   box-shadow: 0 -1px 1px var(--color-base05);
 
   .kui--status-stripe-element a.clickable,
