@@ -87,7 +87,7 @@ export default class Toolbar extends React.PureComponent<Props> {
         <div className="sidecar-bottom-stripe-toolbar">
           <div
             className="sidecar-toolbar-text"
-            data-location-bottom={this.props.bottom}
+            data-location-bottom={this.props.bottom || undefined}
             data-type={this.props.toolbarText && this.props.toolbarText.type}
           >
             <div className="sidecar-toolbar-text-icon">{this.icon()}</div>
@@ -106,9 +106,9 @@ export default class Toolbar extends React.PureComponent<Props> {
 
           <div
             className="sidecar-bottom-stripe-mode-bits sidecar-bottom-stripe-button-container"
-            data-location-bottom={this.props.bottom}
+            data-location-bottom={this.props.bottom || undefined}
           >
-            <div className="fill-container flex-layout flush-right">{this.buttons()}</div>
+            <div className="fill-container flex-layout flush-right flex-align-stretch">{this.buttons()}</div>
           </div>
         </div>
       )
