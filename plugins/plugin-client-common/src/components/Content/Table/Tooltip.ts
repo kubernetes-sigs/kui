@@ -28,3 +28,8 @@ ${status ? 'Status: ' + status : ''}
 
 \`${showMoreDetail}\``
 }
+
+export const tooltipProps = {
+  entryDelay: 300,
+  position: 'bottom' as const
+}
