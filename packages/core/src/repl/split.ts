@@ -57,6 +57,7 @@ const endsWithQuoteSpace = (str: string, idx: number, lookFor: string): boolean 
   return false
 }
 
+const driveLetter = /^\w:\\/
 export const _split = (
   str: string,
   removeOuterQuotes = true,
@@ -69,12 +70,24 @@ export const _split = (
 
   let cur = ''
 
+  let isWindowsDrivePath = process.platform === 'win32' && driveLetter.test(str)
+
   const removedLastOpenQuote: boolean[] = []
   let escapeActive = false
   for (let idx = 0; idx < str.length; idx++) {
     let char = str.charAt(idx)
 
-    if (char === '\\') {
+    if (char === ' ') {
+      if (
+        process.platform === 'win32' &&
+        idx < str.length - 3 &&
+        /\w/.test(str.charAt(idx + 1)) &&
+        str.charAt(idx + 2) === ':' &&
+        str.charAt(idx + 3) === '\\'
+      ) {
+        isWindowsDrivePath = true
+      }
+    } else if (!isWindowsDrivePath && char === '\\') {
       if (!escapeActive) {
         escapeActive = true
         char = str.charAt(++idx)
