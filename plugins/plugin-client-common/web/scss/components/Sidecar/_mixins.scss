@@ -115,3 +115,16 @@
     @content;
   }
 }
+
+@mixin SidecarToolbarButton {
+  .sidecar-bottom-stripe-button {
+    @content;
+  }
+}
+
+@mixin SidecarBottomToolbar {
+  .sidecar-toolbar-text[data-location-bottom],
+  .sidecar-bottom-stripe-button-container.sidecar-bottom-stripe-mode-bits[data-location-bottom] {
+    @content;
+  }
+}
