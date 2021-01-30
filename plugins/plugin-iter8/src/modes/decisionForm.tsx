@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import { eventChannelUnsafe } from '@kui-shell/core'
 // Component imports
 import { Alert, Button, Icons, Loading } from '@kui-shell/plugin-client-common'
 import { Caption, TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table'
-import { Form, FormGroup, FormSelect, FormSelectOption, Touchspin } from '@patternfly/react-core'
+import { Form, FormGroup, FormSelect, FormSelectOption, TextInput } from '@patternfly/react-core'
 const Chart = React.lazy(() => import('react-apexcharts'))
 // Styling imports
 import '../../src/web/scss/static/decisionForm.scss'
@@ -509,16 +509,6 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
     this.handleReset()
   }
 
-  /** Handle sliders changing from the text input element */
-  private handleTrafficChangeFromInputElement(evt: React.FormEvent<HTMLInputElement>, version: string) {
-    const valString = (event.target as HTMLInputElement).value
-    try {
-      this.handleTrafficChange(parseInt(valString, 10), version)
-    } catch (err) {
-      console.error('User entered invalid value')
-    }
-  }
-
   // Handle sliders changing
   private handleTrafficChange = (value: number, version: string) => {
     let newSplit
@@ -704,15 +694,12 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
               const sliderId = `${idx}=${val.split}`
               return (
                 <FormGroup key={idx} fieldId={`decisionForm-id-7-${idx}`} label={val.version}>
-                  <Touchspin
+                  <TextInput
                     key={sliderId}
                     value={val.split}
-                    min={0}
-                    max={100}
-                    unit="%"
-                    onPlus={() => this.handleTrafficChange(val.split + 1, val.version)}
-                    onMinus={() => this.handleTrafficChange(val.split - 1, val.version)}
-                    onChange={evt => this.handleTrafficChangeFromInputElement(evt, val.version)}
+                    onChange={
+                      value => this.handleTrafficChange(parseInt(value, 10), val.version) /* FIXME validate!! */
+                    }
                   />
                 </FormGroup>
               )
