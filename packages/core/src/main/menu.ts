@@ -97,9 +97,9 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
 
     const fileMenuItems: MenuItemConstructorOptions[] = [
       {
-        label: 'New Window',
-        click: () => createWindow(),
-        accelerator: 'CommandOrControl+N'
+        label: 'New Split',
+        click: () => newSplit(),
+        accelerator: 'CommandOrControl+Y'
       },
       {
         label: 'New Tab',
@@ -107,9 +107,9 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         accelerator: 'CommandOrControl+T'
       },
       {
-        label: 'New Split',
-        click: () => newSplit(),
-        accelerator: 'CommandOrControl+U'
+        label: 'New Window',
+        click: () => createWindow(),
+        accelerator: 'CommandOrControl+N'
       },
       {
         label: 'Open',
