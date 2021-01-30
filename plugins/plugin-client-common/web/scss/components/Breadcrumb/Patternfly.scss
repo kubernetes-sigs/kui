@@ -22,6 +22,9 @@ body[kui-theme-style] nav[aria-label='Breadcrumb'] {
   .pf-c-breadcrumb__list {
     /* see https://github.com/IBM/kui/issues/4431 */
     overflow-x: hidden;
+
+    /* see https://github.com/IBM/kui/issues/6878 */
+    overflow-y: hidden;
   }
 
   .pf-c-breadcrumb__list {
