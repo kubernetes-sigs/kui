@@ -246,10 +246,18 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
     return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
   }
 
-  const srcs = opts.argvNoOptions.slice(opts.argv.indexOf(cmd) + 1)
+  //
+  // NOTE 1: please be careful to use the original command line, rather
+  // than Kui's parsing of it. Windows is weird about backslashes, in
+  // a way that is not compatible with Kui's defaultparsing. For the
+  // curious, this parsing is in `packages/core/src/repl/split.ts`.
+  // This is why we use opts.command rather than opts.argvNoOptions.
+  //
+  // NOTE 2: The 2nd regexp assumes that `ls` takes only boolean options.
+  //
+  const srcs = opts.command.replace(/^\s*ls/, '').replace(/\s--?\S+/g, '')
 
-  const cmdline =
-    'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + srcs.map(_ => encodeComponent(_)).join(' ')
+  const cmdline = 'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + srcs
 
   if (cmd === 'lls') {
     opts.parsedOptions.l = true
@@ -263,6 +271,7 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
       // ls on at least one non-directory yielded no entries (converseley: it is not an error if an ls on only-directories yielded no entries)
       const error: CodedError = new Error(
         srcs
+          .split(/\s/)
           .map((_, idx) => (isDirs[idx] ? undefined : `ls: ${_}: No such file or directory`))
           .filter(_ => _)
           .join('\n')
