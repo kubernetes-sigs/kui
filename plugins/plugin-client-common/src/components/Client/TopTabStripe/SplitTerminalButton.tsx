@@ -36,7 +36,7 @@ export default class SplitTerminalButton extends React.PureComponent {
   private tooltip() {
     return (
       <Tooltip reference={this.ref} position="bottom">
-        {strings('Split the terminal', ctrlOrMeta('U'))}
+        {strings('Split the terminal', ctrlOrMeta('Y'))}
       </Tooltip>
     )
   }
