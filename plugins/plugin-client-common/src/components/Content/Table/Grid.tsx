@@ -19,9 +19,9 @@ import { Tab, REPL, Table as KuiTable, Row as KuiRow } from '@kui-shell/core'
 
 import ErrorCell from './ErrorCell'
 import Tooltip from '../../spi/Tooltip'
-import tooltipContent from './Tooltip'
 import { onClickForCell } from './TableCell'
 import DefaultColoring, { Coloring } from './Coloring'
+import tooltipContent, { tooltipProps } from './Tooltip'
 
 /** parameters to Grid component */
 export type Props<T extends KuiTable = KuiTable> = {
@@ -152,7 +152,7 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
 
           return (
             <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name} className="kui--grid-cell">
-              <Tooltip markdown={title} position="bottom">
+              <Tooltip markdown={title} {...tooltipProps}>
                 <span {...props}>{/red-background/.test(css) ? <ErrorCell /> : label}</span>
               </Tooltip>
             </span>

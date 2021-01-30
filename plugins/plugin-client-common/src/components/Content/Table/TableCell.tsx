@@ -29,7 +29,7 @@ import {
 
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
-import tooltipContent from './Tooltip'
+import tooltipContent, { tooltipProps } from './Tooltip'
 const Markdown = React.lazy(() => import('../Markdown'))
 import ErrorCell from './ErrorCell'
 import whenNothingIsSelected from '../../../util/selection'
@@ -140,7 +140,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
 
     const innerSpanWithTooltip =
       cidx === 0 && table.title ? (
-        <Tooltip markdown={tooltipContent(table.title, kuiRow.name, undefined)} position="bottom">
+        <Tooltip markdown={tooltipContent(table.title, kuiRow.name)} {...tooltipProps}>
           {innerSpan}
         </Tooltip>
       ) : (

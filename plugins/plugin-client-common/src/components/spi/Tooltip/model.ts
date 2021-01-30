@@ -16,12 +16,61 @@
 
 import { PropsWithChildren, ReactElement, RefObject } from 'react'
 
-type Props = PropsWithChildren<{
+/**
+ * A Tooltip can be one of:
+ *
+ * 1) `ByReference`: have children be the content of the tooltip,
+ * and use a `reference` property to point to the item that is being tooltipped.
+ *  <Tooltip reference={thatOtherElement}>Hello this is the tooltip string</Tooltip>
+ *
+ * 2) `ByChildrenWithMarkdown`: have children be the item that is being tooltipped,
+ * and a `markdown` property that is the content of the tooltip, to be interpreted
+ * as markdown source.
+ *  <Tooltip markdown="# heading\n\netc."><Button>Ok</Button></Tooltip>
+ *
+ * 3) `ByChildrenWithContent`: ibid, but instead a `content` property that can be
+ * either a string or a ReactElement.
+ *  <Tooltip content={<h1>heading</h1><div>etc</div>}><Button>Ok</Button></Tooltip>
+ *
+ */
+
+type CommonProps = {
+  /** DOM class */
   className?: string
-  markdown?: string
-  reference?: RefObject<any>
-  content?: string | ReactElement
+
+  /** Default 200ms */
+  entryDelay?: number
+
+  /** Orienation of the tooltip relative to the tooltiped element */
   position?: 'auto' | 'top' | 'bottom' | 'left' | 'right'
-}>
+}
+
+type ByChildren = ByChildrenWithMarkdown | ByChildrenWithContent
+
+type ByChildrenWithMarkdown = PropsWithChildren<{
+  markdown: string
+}> &
+  CommonProps
+
+type ByChildrenWithContent = PropsWithChildren<{
+  content: string | ReactElement
+}> &
+  CommonProps
+
+/** Reference to attached item; children is tooltip content */
+type ByReference = PropsWithChildren<{
+  reference: RefObject<any>
+}> &
+  CommonProps
+
+type Props = ByReference | ByChildren
+
+export function isMarkdownProps(props: Props): props is ByChildrenWithMarkdown {
+  return typeof (props as ByChildrenWithMarkdown).markdown === 'string'
+}
+
+export function isReferenceProps(props: Props): props is ByReference {
+  return typeof (props as ByReference).reference !== 'undefined'
+}
 
 export default Props
