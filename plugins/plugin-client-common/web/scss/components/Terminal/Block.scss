@@ -43,12 +43,6 @@ $focus-color: var(--color-brand-01);
   list-style: none;
 }
 
-@include BlockHoverOrFocus {
-  @include BlockTimestamp {
-    @include DisappearOnHover;
-  }
-}
-
 @include FinishedBlockWithNoOutput {
   display: none;
 }
@@ -129,8 +123,6 @@ $focus-color: var(--color-brand-01);
   li:focus.repl-block,
   li:hover.repl-block[data-is-focused],
   .repl-block[data-is-focused] {
-    @include show-block-action-buttons;
-
     &:before {
       opacity: 1;
     }
@@ -348,5 +340,12 @@ $focus-color: var(--color-brand-01);
   }
   .kui--repl-block-re-editing {
     @include timestamp-like();
+  }
+}
+@include InputWrapper {
+  &:hover {
+    @include BlockTimestamp {
+      @include DisappearOnHover;
+    }
   }
 }
