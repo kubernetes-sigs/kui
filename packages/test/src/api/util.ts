@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 IBM Corporation
+ * Copyright 2019-2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -358,7 +358,7 @@ export async function openSidecarByClick(
  *
  */
 export async function listAndOpenSidecarNoWait(ctx: Common.ISuite, command: string, name: string, mode?: string) {
-  const selector = await doList(ctx, command, name)
+  const selector = `${await doList(ctx, command, name)} [data-value="${name}"].clickable`
   return openSidecarByClick(ctx, selector, name, mode)
 }
 
