@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: travelapp-container
-        image: nginx:latest
+        image: quay.io/bitnami/nginx:latest
         ports:
         - containerPort: 3000
 ---

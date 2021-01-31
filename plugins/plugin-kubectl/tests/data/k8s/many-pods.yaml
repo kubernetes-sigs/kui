@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -20,7 +20,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -33,7 +33,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -46,7 +46,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -59,7 +59,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -72,7 +72,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -85,7 +85,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -98,7 +98,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -111,7 +111,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -124,7 +124,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -137,7 +137,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -150,7 +150,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -163,7 +163,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -176,7 +176,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -189,7 +189,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -202,7 +202,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -215,7 +215,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -228,7 +228,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -241,7 +241,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
 ---
@@ -254,6 +254,6 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
