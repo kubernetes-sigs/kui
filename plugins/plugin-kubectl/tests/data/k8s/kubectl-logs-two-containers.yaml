@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: nginx
-    image: nginx
+    image: quay.io/bitnami/nginx
     command: ["/bin/sh", "-c", "while true; do echo nginx-`date +'%M:%S'`; sleep 1; done"]
   - name: vim
     image: jare/alpine-vim

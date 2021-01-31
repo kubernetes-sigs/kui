@@ -7,5 +7,5 @@ metadata:
 spec:
   containers:
   - name: crashy
-    image: nginx:1.18.0
+    image: quay.io/bitnami/nginx:1.18.0
     command: ["/bin/sh", "-c", "echo logtest; sleep 5; echo exiting; exit"]
