@@ -7,6 +7,6 @@
  spec:
    containers:
      - name: nginx
-       image: nginx
+       image: quay.io/bitnami/nginx
        ports:
          - containerPort: 88

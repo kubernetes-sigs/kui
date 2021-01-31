@@ -7,7 +7,7 @@ metadata:
     name: nginx
 spec:
   containers:
-  - name: nginx
-    image: nginx
+  - name: name
+    image: quay.io/bitnami/nginx
     ports:
     - containerPort: 80
