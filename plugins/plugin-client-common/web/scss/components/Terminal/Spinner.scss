@@ -32,6 +32,9 @@
 @include Spinner {
   --sk-size: 0.75em;
   --sk-color: var(--active-tab-color);
+
+  /* see https://github.com/IBM/kui/issues/6885 */
+  padding-bottom: 1px;
 }
 .repl-context {
   @include Spinner {
