@@ -40,7 +40,7 @@ export const SIDECAR_FULLSCREEN = (N: number, splitIndex = 1) => `${SIDECAR(N, s
 export const SIDECAR_WITH_FAILURE = (N: number, splitIndex = 1) =>
   `${SIDECAR_BASE(N, splitIndex)}.visible.activation-success-false`
 export const SIDECAR_ACTIVATION_TITLE = (N: number, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name-hash a`
+  `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name-hash`
 export const SIDECAR_TITLE = (N: number, splitIndex = 1, clickable = true) =>
   `${SIDECAR(N, splitIndex)} .kui--sidecar-entity-name` + (clickable ? ' a' : '')
 export const SIDECAR_HERO_TITLE = (N: number, splitIndex = 1) =>
