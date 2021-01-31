@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0-beta.12](https://github.com/IBM/kui/compare/v10.0.0-beta.11...v10.0.0-beta.12) (2021-01-31)
+
+**Note:** Version bump only for package kui-shell
+
 # [10.0.0-beta.11](https://github.com/IBM/kui/compare/v4.5.0...v10.0.0-beta.11) (2021-01-31)
 
 ### Bug Fixes
