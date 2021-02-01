@@ -262,7 +262,12 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             repl={this.props.repl}
             asGrid={this.state.asGrid}
             gridableColumn={gridableColumn}
-            setAsGrid={(asGrid: boolean) => this.setState({ asGrid })}
+            setAsGrid={(asGrid: boolean) => {
+              this.setState({ asGrid })
+              if (asGrid) {
+                this.props.response.defaultPresentation = 'grid'
+              }
+            }}
             paginate={this.isPaginated()}
             setPage={(page: number) => this.setState({ page })}
             page={this.state.page}
@@ -270,11 +275,21 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             pageSize={this.state.pageSize}
             hasSequenceButton={hasSequenceButton}
             asSequence={this.state.asSequence}
-            setAsSequence={(asSequence: boolean) => this.setState({ asSequence })}
+            setAsSequence={(asSequence: boolean) => {
+              this.setState({ asSequence })
+              if (asSequence) {
+                this.props.response.defaultPresentation = 'sequence-diagram'
+              }
+            }}
             hasTimelineButton={hasTimelineButton}
             asTimeline={this.state.asTimeline}
             caption={this.caption() || undefined}
-            setAsTimeline={(asTimeline: boolean) => this.setState({ asTimeline })}
+            setAsTimeline={(asTimeline: boolean) => {
+              this.setState({ asTimeline })
+              if (asTimeline) {
+                this.props.response.defaultPresentation = 'timeline'
+              }
+            }}
           />
         )}
       </React.Fragment>

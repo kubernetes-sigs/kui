@@ -26,6 +26,9 @@ import {
   deleteNS
 } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
+import { dirname } from 'path'
+const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
+
 describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -135,6 +138,40 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
         undefined,
         1 // replayed clicks currently don't support opening in a split; see https://github.com/IBM/kui/issues/6785
       )
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  deleteNS(this, ns, 'kubectl')
+})
+
+describe(`kubectl replay with grid table ${process.env.MOCHA_RUN_TARGET || ''}`, async function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const ns: string = createNS()
+  const inNamespace = `-n ${ns}`
+  const file = Util.uniqueFileForSnapshot()
+
+  allocateNS(this, ns, 'kubectl')
+
+  it(`should replay a kubectl get pods table with grid using snapshot file ${file}`, async () => {
+    try {
+      const res = await CLI.command(`kubectl create -f ${ROOT}/data/k8s/headless ${inNamespace}`, this.app)
+
+      const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
+
+      await waitForGreen(this.app, selector)
+
+      await this.app.client.$(Selectors.TABLE_SHOW_AS_GRID(res.count)).then(_ => _.click())
+      await this.app.client.$(Selectors.TABLE_AS_GRID(res.count)).then(_ => _.waitForDisplayed())
+
+      await CLI.command(`snapshot ${file}`, this.app).then(ReplExpect.justOK)
+
+      await CLI.command(`replay ${file}`, this.app)
+
+      await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors._TABLE_AS_GRID}`).then(_ => _.waitForDisplayed())
     } catch (err) {
       await Common.oops(this, true)(err)
     }
