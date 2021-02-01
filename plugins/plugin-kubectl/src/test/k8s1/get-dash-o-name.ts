@@ -16,6 +16,7 @@
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import {
+  remotePodYaml,
   waitForGreen,
   createNS,
   allocateNS,
@@ -41,10 +42,7 @@ describe(`kubectl get dash o name ${process.env.MOCHA_RUN_TARGET || ''}`, functi
     dashFs.forEach(dashF => {
       it(`should create sample pod from URL via "${kubectl} apply ${dashF}" for test: ${this.title}`, async () => {
         try {
-          const res = await CLI.command(
-            `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            this.app
-          )
+          const res = await CLI.command(`${kubectl} apply ${dashF} ${remotePodYaml} ${inNamespace}`, this.app)
           const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
 
           // wait for the badge to become green

@@ -22,7 +22,7 @@ import * as assert from 'assert'
 
 import { expandHomeDir } from '@kui-shell/core'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { remotePodYaml, waitForGreen, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
 
@@ -64,10 +64,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     /** create a pod in the given namespace */
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
-        return CLI.command(
-          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-          this.app
-        )
+        return CLI.command(`${kubectl} create -f ${remotePodYaml} -n ${ns}`, this.app)
           .then(
             ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
           )

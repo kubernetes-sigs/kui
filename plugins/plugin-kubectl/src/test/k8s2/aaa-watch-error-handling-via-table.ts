@@ -15,7 +15,7 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { remotePodYaml, createNS, waitForGreen, waitForRed } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
@@ -110,10 +110,7 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
 
       console.error('watch from non-existent namespace 2')
       // create a pod
-      await CLI.command(
-        `k create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-        this.app
-      )
+      await CLI.command(`k create -f ${remotePodYaml} -n ${ns}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )

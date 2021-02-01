@@ -15,7 +15,14 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  waitForRed,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
@@ -32,10 +39,7 @@ commands.forEach(command => {
     allocateNS(this, ns)
 
     it(`should create sample pod from URL via ${command}`, () => {
-      return CLI.command(
-        `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      )
+      return CLI.command(`${command} create -f ${remotePodYaml} ${inNamespace}`, this.app)
         .then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
         .then((selector: string) => waitForGreen(this.app, selector))
         .catch(Common.oops(this, true))

@@ -17,7 +17,13 @@
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import { tabby, tabbyWithOptions } from '@kui-shell/plugin-core-support/tests/lib/core-support/tab-completion-util'
 import { dirname } from 'path'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-kubectl/tests/package.json'))
 const synonyms = ['kubectl']
@@ -56,10 +62,7 @@ describe(`kubectl get tab completion ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     })
 
     it(`should create sample pod from URL via ${kubectl}`, () => {
-      return CLI.command(
-        `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-        this.app
-      )
+      return CLI.command(`${kubectl} create -f ${remotePodYaml} -n ${ns}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )

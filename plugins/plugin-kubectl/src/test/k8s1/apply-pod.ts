@@ -17,6 +17,7 @@
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import {
   openSidecarByList,
+  remotePodYaml,
   waitForRed,
   createNS,
   allocateNS,
@@ -45,7 +46,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
         try {
           res = await openSidecarByList(
             this,
-            `${kubectl} apply ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            `${kubectl} apply ${dashF} ${remotePodYaml} ${inNamespace}`,
             'nginx'
           ).then(SidecarExpect.yaml({ Status: 'Running' }))
         } catch (err) {
@@ -90,10 +91,7 @@ describe(`kubectl apply pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       })
 
       it(`should delete the sample pod from URL via ${kubectl}`, () => {
-        return CLI.command(
-          `${kubectl} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-          this.app
-        )
+        return CLI.command(`${kubectl} delete ${dashF} ${remotePodYaml} ${inNamespace}`, this.app)
           .then(
             ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
           )

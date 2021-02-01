@@ -17,6 +17,7 @@
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import {
   openSidecarByList,
+  remotePodYaml,
   waitForGreen,
   createNS,
   allocateNS,
@@ -37,7 +38,7 @@ describe(`kubectl top pod ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
     xit('should create a pod', async () => {
       try {
         const selector: string = await CLI.command(
-          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+          `${kubectl} create -f ${remotePodYaml} ${inNamespace}`,
           this.app
         ).then(ReplExpect.okWithCustom({ selector: Selectors.BY_NAME('nginx') }))
 

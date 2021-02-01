@@ -302,3 +302,7 @@ exports.waitForTerminalText = async function(res, checker) {
       : checker.test(text)
   }, CLI.waitTimeout)
 }
+
+/** URL of remote pod yaml */
+exports.remotePodYaml =
+  'https://raw.githubusercontent.com/IBM/kui/master/plugins/plugin-kubectl/tests/data/k8s/headless/pod.yaml'
