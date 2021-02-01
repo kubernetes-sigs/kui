@@ -15,7 +15,14 @@
  */
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  waitForRed,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const kubectl = 'k'
 
@@ -28,10 +35,7 @@ describe(`delete pod via click ${process.env.MOCHA_RUN_TARGET}`, function(this: 
   allocateNS(this, ns)
 
   it(`should create sample pod from URL via ${kubectl}`, () => {
-    return CLI.command(
-      `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-      this.app
-    )
+    return CLI.command(`${kubectl} create -f ${remotePodYaml} ${inNamespace}`, this.app)
       .then(
         ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
       )

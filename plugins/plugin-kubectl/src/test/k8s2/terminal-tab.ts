@@ -22,6 +22,7 @@ import {
   allocateNS,
   deleteNS,
   deletePodByName,
+  remotePodYaml,
   waitForGreen,
   getTerminalText,
   openSidecarByList,
@@ -161,10 +162,7 @@ describe(`${command} Terminal tab ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   Common.setDebugMode.bind(this)()
 
   it(`should create sample pod from URL via ${command}`, () => {
-    return CLI.command(
-      `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-      this.app
-    )
+    return CLI.command(`${command} create -f ${remotePodYaml} -n ${ns}`, this.app)
       .then(
         ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
       )

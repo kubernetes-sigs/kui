@@ -16,6 +16,7 @@
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import {
+  remotePodYaml,
   waitForGreen,
   waitForRed,
   defaultModeForGet,
@@ -103,10 +104,7 @@ commands.forEach(command => {
     })
 
     it(`should create sample pod from URL via ${command}`, () => {
-      return CLI.command(
-        `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-        this.app
-      )
+      return CLI.command(`${command} create -f ${remotePodYaml} -n ${ns}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )

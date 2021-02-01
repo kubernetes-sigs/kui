@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,13 @@
  */
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, waitTillNone } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  waitForRed,
+  createNS,
+  waitTillNone
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const ns1 = createNS()
 const ns2 = createNS()
@@ -155,10 +161,7 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     /** create a pod in the given namespace */
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
-        return CLI.command(
-          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-          this.app
-        )
+        return CLI.command(`${kubectl} create -f ${remotePodYaml} -n ${ns}`, this.app)
           .then(
             ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
           )

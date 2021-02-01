@@ -18,7 +18,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { Common, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  waitForRed,
+  createNS,
+  defaultModeForGet
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const wdescribe = process.env.USE_WATCH_PANE ? Common.localDescribe : xdescribe
 
@@ -120,14 +126,7 @@ wdescribe(`popup create pod creating namespace ${ns1}`, function(this: Common.IS
 wdescribe(`popup create pod creating pod in ${ns1}`, function(this: Common.ISuite) {
   before(
     Common.before(this, {
-      popup: [
-        kubectl,
-        'create',
-        '-f',
-        'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
-        '-n',
-        ns1
-      ]
+      popup: [kubectl, 'create', '-f', remotePodYaml, '-n', ns1]
     })
   )
   after(Common.after(this))
@@ -152,14 +151,7 @@ wdescribe(`popup create pod creating namespace ${ns2}`, function(this: Common.IS
 wdescribe(`popup create pod creating pod in ${ns2}`, function(this: Common.ISuite) {
   before(
     Common.before(this, {
-      popup: [
-        kubectl,
-        'create',
-        '-f',
-        'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
-        '-n',
-        ns2
-      ]
+      popup: [kubectl, 'create', '-f', remotePodYaml, '-n', ns2]
     })
   )
   after(Common.after(this))

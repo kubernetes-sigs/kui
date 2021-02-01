@@ -126,3 +126,6 @@ declare function getTerminalText(this: Common.ISuite, res: ReplExpect.AppAndCoun
 
 /** Wait for the given checker to be true, w.r.t. the log text in the view */
 declare function waitForTerminalText(this: Common.ISuite, res: ReplExpect.AppAndCount, checker: string | RegExp | ((text: string) => boolean)): Promise<void>
+
+/** URL of remote pod yaml */
+declare const remotePodYaml: string

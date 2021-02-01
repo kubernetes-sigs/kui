@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,13 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
 
@@ -28,10 +34,7 @@ wdescribe(`kubectl exec basic stuff via table ${process.env.MOCHA_RUN_TARGET || 
 
   const podName = 'nginx'
   it('should create sample pod from URL', () => {
-    return CLI.command(
-      `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-      this.app
-    )
+    return CLI.command(`kubectl create -f ${remotePodYaml} -n ${ns}`, this.app)
       .then(ReplExpect.okWithString(podName))
       .catch(Common.oops(this, true))
   })
@@ -47,7 +50,7 @@ wdescribe(`kubectl exec basic stuff via table ${process.env.MOCHA_RUN_TARGET || 
 
   it('should exec ls through pty', () => {
     return CLI.command(`kubectl exec ${podName} -n ${ns} -- ls`, this.app)
-      .then(ReplExpect.okWithString('bin'))
+      .then(ReplExpect.okWithString('index.html'))
       .catch(Common.oops(this, true))
   })
 
