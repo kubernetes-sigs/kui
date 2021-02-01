@@ -233,6 +233,10 @@ body[kui-theme-style] .kui--data-table-wrapper {
         padding-left: var(--pf-c-card--child--PaddingLeft);
       }
     }
+
+    .pf-m-wrap {
+      word-break: break-all;
+    }
   }
 
   &:not(.kui--data-table-as-grid) {
