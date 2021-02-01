@@ -207,7 +207,7 @@ export const TABLE_FOOTER_MESSAGE = (N: number, M: number) =>
   `${TABLE_FOOTER(N)} .kui--data-table-footer-message:nth-child(${M})`
 export const TABLE_FOOTER_MESSAGE_LINK = (N: number, M: number) => `${TABLE_FOOTER_MESSAGE(N, M)} a`
 
-const _TABLE_AS_GRID = '.kui--data-table-as-grid'
+export const _TABLE_AS_GRID = '.kui--data-table-as-grid'
 export const TABLE_AS_GRID = (N: number) => `${OUTPUT_N(N)} ${_TABLE_AS_GRID}`
 export const TABLE_AS_GRID_CELL = (N: number, name: string) =>
   `${TABLE_AS_GRID(N)} [data-tag="badge"][data-entity-name="${name}"]`
