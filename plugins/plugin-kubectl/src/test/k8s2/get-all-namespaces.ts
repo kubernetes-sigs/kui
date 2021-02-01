@@ -16,6 +16,7 @@
 
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import {
+  remotePodYaml,
   waitForGreen,
   waitForRed,
   defaultModeForGet,
@@ -47,10 +48,7 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
     /** create pod in the given namespace */
     const createPod = (ns: string) => {
       it(`should create sample pod in namespace ${ns} from URL via ${kubectl}`, () => {
-        return CLI.command(
-          `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-          this.app
-        )
+        return CLI.command(`${kubectl} create -f ${remotePodYaml} -n ${ns}`, this.app)
           .then(
             ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
           )

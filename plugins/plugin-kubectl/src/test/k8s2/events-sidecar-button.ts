@@ -15,14 +15,20 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
-import { createNS, allocateNS, deleteNS, openSidecarByList } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  createNS,
+  allocateNS,
+  deleteNS,
+  openSidecarByList
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
   commands.push('oc')
 }
 
-const file = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'
+const file = remotePodYaml
 const name = 'nginx'
 
 commands.forEach(command => {

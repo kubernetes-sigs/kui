@@ -16,6 +16,7 @@
 
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import {
+  remotePodYaml,
   defaultModeForGet,
   openSidecarByList,
   waitForGreen,
@@ -39,17 +40,10 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
     // here comes the tests
     try {
       console.error('creating')
-      await openSidecarByList(
-        this,
-        `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        'nginx'
-      )
+      await openSidecarByList(this, `kubectl create -f ${remotePodYaml} ${inNamespace}`, 'nginx')
 
       console.error('deleting')
-      const deleteRes = await CLI.command(
-        `kubectl delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      )
+      const deleteRes = await CLI.command(`kubectl delete -f ${remotePodYaml} ${inNamespace}`, this.app)
 
       const deleteSelector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(deleteRes)
       await waitForRed(this.app, deleteSelector)
@@ -83,10 +77,7 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
 
   it('should replay a kubectl get pods table with re-execution ', async () => {
     try {
-      const selector = await CLI.command(
-        `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      ).then(
+      const selector = await CLI.command(`kubectl create -f ${remotePodYaml} ${inNamespace}`, this.app).then(
         ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
       )
 
@@ -125,10 +116,7 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
   it(`should replay a kubectl get pods table with re-execution using snapshot file ${file}`, async () => {
     try {
-      const res = await CLI.command(
-        `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      )
+      const res = await CLI.command(`kubectl create -f ${remotePodYaml} ${inNamespace}`, this.app)
 
       const selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })(res)
 

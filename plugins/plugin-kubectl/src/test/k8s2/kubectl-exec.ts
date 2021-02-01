@@ -15,7 +15,7 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import { remotePodYaml, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const wdescribe = process.env.USE_WATCH_PANE ? describe : xdescribe
 
@@ -30,10 +30,7 @@ wdescribe(`kubectl exec basic stuff via watch pane ${process.env.MOCHA_RUN_TARGE
 
   const podName = 'nginx'
   it('should create sample pod from URL', () => {
-    return CLI.command(
-      `kubectl create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod -n ${ns}`,
-      this.app
-    )
+    return CLI.command(`kubectl create -f ${remotePodYaml} -n ${ns}`, this.app)
       .then(ReplExpect.okWithString(podName))
       .catch(Common.oops(this, true))
   })

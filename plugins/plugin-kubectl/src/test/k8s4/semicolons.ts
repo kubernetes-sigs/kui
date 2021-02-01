@@ -17,6 +17,7 @@
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 import {
   waitForGreen,
+  remotePodYaml,
   createNS,
   allocateNS,
   deleteNS,
@@ -43,11 +44,7 @@ xdescribe(`kubectl semicolons ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
 
       it(`should create sample pod from URL via ${kubectl}`, async () => {
         try {
-          await openSidecarByList(
-            this,
-            `${kubectl} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-            'nginx'
-          )
+          await openSidecarByList(this, `${kubectl} create ${dashF} ${remotePodYaml} ${inNamespace}`, 'nginx')
         } catch (err) {
           await Common.oops(this, true)(err)
         }

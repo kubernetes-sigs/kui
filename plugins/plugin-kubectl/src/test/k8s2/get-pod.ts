@@ -16,6 +16,7 @@
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
+  remotePodYaml,
   openSidecarByList,
   waitForGreen,
   waitForRed,
@@ -140,7 +141,7 @@ commands.forEach(command => {
         try {
           const selector: string = await CLI
             .command(
-              `${kubectl} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+              `${kubectl} create -f ${remotePodYaml} ${inNamespace}`,
               this.app
             )
             .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
@@ -162,7 +163,7 @@ commands.forEach(command => {
       it(`should delete the sample pod from URL via ${kubectl} iter=${idx}`, () => {
         return CLI
           .command(
-            `${kubectl} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            `${kubectl} delete -f ${remotePodYaml} ${inNamespace}`,
             this.app
           )
           .then(ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') }))
@@ -175,11 +176,9 @@ commands.forEach(command => {
     // NOTE: this is an alternative test for the click mid-creation test above, since sidecar table poller is not ready
     it(`should show summary tab if we click after creation`, async () => {
       try {
-        await openSidecarByList(
-          this,
-          `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-          'nginx'
-        ).then(SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false }))
+        await openSidecarByList(this, `${command} create -f ${remotePodYaml} ${inNamespace}`, 'nginx').then(
+          SidecarExpect.toolbarText({ type: 'info', text: 'Created on', exact: false })
+        )
 
         // await testContainersTab()
         // await testLogsTab()
@@ -213,10 +212,7 @@ commands.forEach(command => {
     })
 
     it(`should delete the sample pod from URL via ${command}`, () => {
-      return CLI.command(
-        `${command} delete -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      )
+      return CLI.command(`${command} delete -f ${remotePodYaml} ${inNamespace}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )
@@ -225,10 +221,7 @@ commands.forEach(command => {
     })
 
     it(`should create sample pod from URL via ${command}`, () => {
-      return CLI.command(
-        `${command} create -f https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-        this.app
-      )
+      return CLI.command(`${command} create -f ${remotePodYaml} ${inNamespace}`, this.app)
         .then(
           ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
         )

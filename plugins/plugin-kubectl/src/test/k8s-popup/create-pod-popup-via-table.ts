@@ -15,7 +15,7 @@
 //  */
 
 // import { Common, Selectors, SidecarExpect, ReplExpect } from '@kui-shell/test'
-// import { waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+// import { remotePodYaml, waitForGreen, waitForRed, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 // const wdescribe = Common.localDescribe
 
@@ -128,7 +128,7 @@
 //         kubectl,
 //         'create',
 //         '-f',
-//         'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
+//         remotePodYaml,
 //         '-n',
 //         ns1
 //       ]
@@ -160,7 +160,7 @@
 //         kubectl,
 //         'create',
 //         '-f',
-//         'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod',
+//         remotePodYaml,
 //         '-n',
 //         ns2
 //       ]

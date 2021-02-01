@@ -15,7 +15,13 @@
  */
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const commands = ['kubectl']
 if (process.env.NEEDS_OC) {
@@ -23,7 +29,7 @@ if (process.env.NEEDS_OC) {
 }
 
 /** source yaml for creating our pod */
-const yaml = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'
+const yaml = remotePodYaml
 
 /** the yaml file is expected to create a pod with this name */
 const podName = 'nginx'

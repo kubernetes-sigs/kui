@@ -16,6 +16,7 @@
 
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
 import {
+  remotePodYaml,
   waitForGreen,
   waitForRed,
   openSidecarByList,
@@ -48,7 +49,7 @@ commands.forEach(command => {
         try {
           const resAfter = await openSidecarByList(
             this,
-            `${command} create ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
+            `${command} create ${dashF} ${remotePodYaml} ${inNamespace}`,
             'nginx'
           ).then(SidecarExpect.button({ mode: 'show-node', label: 'Show Node' }))
 
@@ -64,10 +65,7 @@ commands.forEach(command => {
       })
 
       it(`should delete the sample pod from URL via ${command}`, () => {
-        return CLI.command(
-          `${command} delete ${dashF} https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod ${inNamespace}`,
-          this.app
-        )
+        return CLI.command(`${command} delete ${dashF} ${remotePodYaml} ${inNamespace}`, this.app)
           .then(
             ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
           )

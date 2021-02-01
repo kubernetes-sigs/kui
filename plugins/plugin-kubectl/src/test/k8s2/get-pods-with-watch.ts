@@ -15,14 +15,21 @@
  */
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
-import { waitForGreen, waitForRed, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  waitForRed,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 import * as assert from 'assert'
 
 /** name of the pod */
 const podName = 'nginx'
 
 /** source for the resource spec */
-const url = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'
+const url = remotePodYaml
 
 enum Status {
   Offline = 'red-background',

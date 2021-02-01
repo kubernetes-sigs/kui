@@ -16,7 +16,13 @@
 
 import * as assert from 'assert'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util, Keys } from '@kui-shell/test'
-import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
+import {
+  remotePodYaml,
+  waitForGreen,
+  createNS,
+  allocateNS,
+  deleteNS
+} from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 import { mode as lastAppliedMode } from '../../lib/view/modes/last-applied'
 
@@ -26,7 +32,7 @@ if (process.env.NEEDS_OC) {
 }
 
 const podName = 'nginx'
-const sourceFile = 'https://raw.githubusercontent.com/kubernetes/examples/master/staging/pod'
+const sourceFile = remotePodYaml
 
 commands.forEach(command => {
   // FIXME: Mengting: apply in place can't give us the success toolbar message
