@@ -46,6 +46,9 @@ interface Props {
 
   /** If true, don't provide scrollability */
   nested?: boolean
+
+  /** Base HTTP Url? */
+  baseUrl?: string
 }
 
 export default class Markdown extends React.PureComponent<Props> {
@@ -55,6 +58,10 @@ export default class Markdown extends React.PureComponent<Props> {
     navigator.clipboard.writeText(value)
   }
 
+  private allContentIsRemote(): boolean {
+    return typeof this.props.baseUrl === 'string'
+  }
+
   private anchorFrom(txt: string): string {
     return `${this._uuid}-${txt}`
   }
@@ -62,7 +69,10 @@ export default class Markdown extends React.PureComponent<Props> {
   /** @return markdown source, as string in application/markdown format */
   private source() {
     if (this.props.contentType === 'text/html') {
-      return new TurndownService().turndown(this.props.source)
+      const { gfm } = require('turndown-plugin-gfm')
+      const td = new TurndownService()
+      td.use(gfm)
+      return td.turndown(this.props.source)
     } else {
       return this.props.source
     }
@@ -73,10 +83,14 @@ export default class Markdown extends React.PureComponent<Props> {
     props: { width?: number | string; height?: number | string; align?: React.CSSProperties['float'] },
     key?: string
   ) {
-    const isLocal = !/^http/i.test(src)
+    const isHttp = /^http/i.test(src)
+    const isLocal = !isHttp && !this.allContentIsRemote()
     if (isLocal && this.props.fullpath) {
       const absoluteSrc = isAbsolute(src) ? src : join(dirname(this.props.fullpath), src)
       src = absoluteSrc
+    } else if (!isHttp && this.props.baseUrl) {
+      // then this is a relative path against
+      src = `${this.props.baseUrl}${src}`
     }
 
     const style = props ? { float: props.align } : undefined
@@ -224,8 +238,14 @@ export default class Markdown extends React.PureComponent<Props> {
           tableBody: props => (
             <tbody className={props.className + ' kui--structured-list-tbody'}>{props.children}</tbody>
           ),
-          tableRow: props => <tr {...props} />,
-          tableCell: props => React.createElement(props.isHeader ? 'th' : 'td', props)
+          tableRow: props => <tr>{props.children}</tr>, // TODO ignoring columnAlignment
+          tableCell: props => {
+            if (props.isHeader) {
+              return <th style={{ textAlign: props.align }}>{props.children}</th>
+            } else {
+              return <td>{props.children}</td>
+            }
+          }
         }}
       />
     )

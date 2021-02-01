@@ -427,11 +427,13 @@ body[kui-theme-style] {
   /** This group of rules override default user-agent stylings */
   ol,
   ul {
-    margin: 0;
-    padding-inline-start: 0;
-  }
-  li {
-    list-style-type: none;
+    &:not(.pf-c-list) {
+      margin: 0;
+      padding-inline-start: 0;
+      li {
+        list-style-type: none;
+      }
+    }
   }
   button {
     font-family: var(--font-sans-serif);
