@@ -117,7 +117,6 @@ export default class KuiContent extends React.Component<KuiMMRProps, State> {
           <Editor
             content={mode}
             readOnly={false}
-            sizeToFit
             willUpdateToolbar={willUpdateToolbar}
             response={response}
             repl={tab.REPL}
@@ -131,7 +130,6 @@ export default class KuiContent extends React.Component<KuiMMRProps, State> {
           contentType={mode.contentType}
           originalContent={mode.content.a}
           modifiedContent={mode.content.b}
-          sizeToFit
           response={response}
           renderSideBySide
           tabUUID={tab.uuid}
