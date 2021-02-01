@@ -69,7 +69,8 @@ export default async (registrar: PreloadRegistrar) => {
     [
       'plugin://plugin-kubectl/notebooks/create-jobs.json',
       'plugin://plugin-kubectl/notebooks/crud-operations.json',
-      'plugin://plugin-kubectl/notebooks/deploy-applications.json'
+      'plugin://plugin-kubectl/notebooks/deploy-applications.json',
+      'plugin://plugin-kubectl/notebooks/dashboard.json'
     ],
     '/kui/kubernetes/'
   )

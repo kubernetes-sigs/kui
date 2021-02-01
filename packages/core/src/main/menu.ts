@@ -79,16 +79,25 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         notebook('Welcome to Kui', '/kui/welcome.json'),
         { type: 'separator' },
         {
-          label: 'Kubernetes',
+          label: 'Learning Kubernetes',
           submenu: [
-            notebook('CRUD Operations', '/kui/kubernetes/crud-operations.json'),
-            notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json'),
-            notebook('Deploying Applications', '/kui/kubernetes/deploy-applications.json')
+            {
+              label: 'Kubernetes',
+              submenu: [
+                notebook('CRUD Operations', '/kui/kubernetes/crud-operations.json'),
+                notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json'),
+                notebook('Deploying Applications', '/kui/kubernetes/deploy-applications.json')
+              ]
+            },
+            {
+              label: 'iter8',
+              submenu: [notebook('Welcome to iter8', '/kui/iter8/welcome.json')]
+            }
           ]
         },
         {
-          label: 'iter8',
-          submenu: [notebook('Welcome to iter8', '/kui/iter8/welcome.json')]
+          label: 'Dashboard',
+          submenu: [notebook('Kubernetes Dashboard', '/kui/kubernetes/dashboard.json')]
         },
         { type: 'separator' },
         notebook('Make Your Own Notebook', '/kui/make-notebook.json')

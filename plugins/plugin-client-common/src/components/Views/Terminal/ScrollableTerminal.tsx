@@ -1147,7 +1147,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     4: [true, true, false, false],
     5: [true, true, true, false, false],
     6: [true, true, true, false, false, false],
-    7: [true, true, true, true, true, false, false],
+    7: [true, true, false, true, true, false, false],
     8: [true, true, true, true, true, true, true, false]
   }
 
