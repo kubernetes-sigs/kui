@@ -14,25 +14,10 @@ body[kui-theme-style] .kui--tab-content {
     word-break: break-all;
     height: auto; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
   }
-  /*.xterm-terminated.error .xterm-rows > div {
-disabled see https://github.com/IBM/kui/issues/3939
-  color: var(--color-error);
-}*/
-  /* .xterm-container .xterm-rows > div > span {
-  width: auto !important;
-}
-.xterm-container:not(.xterm-terminated) .xterm-rows > div > span {
-  white-space: pre;
-} */
 
   .repl-result-like > div.xterm-container {
     padding-right: 0;
   }
-
-  /* .xterm-screen,
-.xterm-container .xterm-rows > div {
-  transition: width 10ms ease-in-out, height 10ms ease-in-out;
-} */
 
   .kui--scrollback:not(.xterm-alt-buffer-mode) .xterm-container .xterm-screen {
     height: auto !important;
@@ -121,15 +106,11 @@ disabled see https://github.com/IBM/kui/issues/3939
   .xterm-container .xterm-rows .xterm-cursor.xterm-cursor-block {
     background-color: transparent;
     outline-color: transparent;
-    transition-property: background-color, outline-color;
-    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
   }
   .xterm-container .xterm-rows.xterm-focus .xterm-cursor.xterm-cursor-block {
     background-color: var(--color-processing);
     outline-color: transparent;
     color: var(--color-base06);
-    transition-property: background-color, outline-color;
-    transition-delay: 150ms; /* only show the spinner block if the command takes a bit longer */
   }
   .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
     background-color: var(--color-base03);
@@ -175,12 +156,7 @@ disabled see https://github.com/IBM/kui/issues/3939
     font-family: var(--font-monospace);
     background-color: var(--color-repl-background);
     color: var(--color-text-01);
-    transition: font-size 10ms ease-in-out, background 300ms ease-in-out;
   }
-  /* .xterm-rows > div > span {
-  transition: color 300ms ease-in-out;
-  color: var(--color-text-01);
-} */
   .xterm-rows .xterm-bg-0,
   .xterm-rows .xterm-bg-8 {
     background-color: var(--color-ui-01);
@@ -277,10 +253,6 @@ disabled see https://github.com/IBM/kui/issues/3939
   .xterm-invisible {
     display: none;
   }
-
-  /* .repl-block.processing .xterm-rows {
-  margin-bottom: 0.25em;
-} */
 
   /* we never want to see inner scrollbars */
   .xterm-container .xterm-viewport::-webkit-scrollbar {
