@@ -21,15 +21,16 @@
   "types": "mdist/index.d.ts",
   "dependencies": {
     "@patternfly/react-core": "4.90.2",
-    "@patternfly/react-table": "4.20.15",
     "@patternfly/react-styles": "4.7.29",
+    "@patternfly/react-table": "4.20.15",
     "monaco-editor": "0.22.2",
     "monaco-editor-webpack-plugin": "3.0.0",
     "react-markdown": "5.0.3",
     "remark-gfm": "1.0.0",
     "spinkit": "2.0.1",
     "tmp": "0.2.1",
-    "turndown": "7.0.0"
+    "turndown": "7.0.0",
+    "turndown-plugin-gfm": "1.0.2"
   },
   "kui": {
     "webpack": {

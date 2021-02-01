@@ -34,8 +34,11 @@ const strings = i18n('plugin-core-support')
 /** Releases page */
 const RELEASE = (tag: string) => `https://github.com/IBM/kui/releases/tag/v${tag}`
 
+/** Base URL for image references */
+const baseUrl = 'https://github.com'
+
 /** Releases feed */
-const FEED = 'https://github.com/IBM/kui/releases.atom'
+const FEED = `${baseUrl}/IBM/kui/releases.atom`
 
 /** By default, check for updates once a day */
 const DEFAULT_INTERVAL = 24 * 60 * 60 * 1000
@@ -239,7 +242,11 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
 
               bodyContent: (
                 <React.Fragment>
-                  <Markdown source={this.state.entryForLatestVersion.content} contentType="text/html" />
+                  <Markdown
+                    source={this.state.entryForLatestVersion.content}
+                    contentType="text/html"
+                    baseUrl={baseUrl}
+                  />
                 </React.Fragment>
               ),
               headerContent: (
