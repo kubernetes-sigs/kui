@@ -278,10 +278,13 @@ export function uniqueFileForSnapshot() {
 /** Click the close button on a block, and expect it to be gone */
 export async function removeBlock(res: AppAndCount) {
   const N = res.count
-  await res.app.client.$(Selectors.PROMPT_N(N)).then(_ => _.moveTo())
+  const prompt = await res.app.client.$(Selectors.PROMPT_N(N))
+  await prompt.scrollIntoView()
+  await prompt.moveTo()
 
   const removeButton = await res.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N))
-  await removeButton.waitForDisplayed()
+  await removeButton.scrollIntoView()
+  await removeButton.waitForDisplayed({ timeout: CLI.waitTimeout })
   await removeButton.click()
 }
 
