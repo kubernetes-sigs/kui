@@ -410,6 +410,7 @@ async function initOnMessage(
 
         if (flushAsync) {
           clearTimeout(flushAsync)
+          flushAsync = undefined
         }
         flushAsync = setTimeout(() => {
           if (queuedInput && ws.readyState === WebSocket.OPEN) {
@@ -417,7 +418,7 @@ async function initOnMessage(
             queuedInput = ''
             ws.send(JSON.stringify({ type: 'data', data, uuid: ourUUID }))
           }
-        }, 20)
+        }, 1)
       }
     })
   }
@@ -527,13 +528,17 @@ async function initOnMessage(
           : /no such/i.test(msg.data) || /not found/i.test(msg.data)
           ? 404
           : sawCode
-        terminal.write(msg.data, () => {
-          // at this point, xterm.js has populated its data model,
-          // though it may not yet have rendered the content to the
-          // live DOM
-          if (--pendingWrites <= 0 && cbAfterPendingWrites) {
-            cbAfterPendingWrites()
-          }
+
+        // setTimeout helps with batching
+        setTimeout(() => {
+          terminal.write(msg.data, () => {
+            // at this point, xterm.js has populated its data model,
+            // though it may not yet have rendered the content to the
+            // live DOM
+            if (--pendingWrites <= 0 && cbAfterPendingWrites) {
+              cbAfterPendingWrites()
+            }
+          })
         })
       }
     } else if (msg.type === 'data' && execOptions.stdout && execOptions.onInit) {
