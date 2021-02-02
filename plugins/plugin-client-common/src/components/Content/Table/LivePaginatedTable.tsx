@@ -117,7 +117,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   protected caption() {
     if (this.state.lastUpdatedMillis) {
       const icon = this.state.isWatching ? 'Eye' : 'EyeSlash'
-      const iconColor = this.state.isWatching ? 'green-text' : 'red-text'
+      const iconColor = this.state.isWatching ? 'green-text' : 'sub-text'
       const watchControlDescription = this.state.isWatching ? strings('Pause watcher') : strings('Resume watcher')
 
       return (
