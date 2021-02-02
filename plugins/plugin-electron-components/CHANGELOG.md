@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.0.2](https://github.com/IBM/kui/compare/v10.0.1...v10.0.2) (2021-02-02)
+
+### Bug Fixes
+
+- UpdateChecker does not render tables, lists, or relative image refs properly ([3a52d95](https://github.com/IBM/kui/commit/3a52d95)), closes [#6918](https://github.com/IBM/kui/issues/6918)
+
 ## [10.0.1](https://github.com/IBM/kui/compare/v4.5.0...v10.0.1) (2021-02-01)
 
 ### Bug Fixes

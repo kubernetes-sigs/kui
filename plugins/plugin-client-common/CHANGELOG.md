@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.0.2](https://github.com/IBM/kui/compare/v10.0.1...v10.0.2) (2021-02-02)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Sidecar sticks to a short height when switching from Yaml -> Summary -> Yaml tab ([4589346](https://github.com/IBM/kui/commit/4589346)), closes [#6913](https://github.com/IBM/kui/issues/6913)
+- UpdateChecker does not render tables, lists, or relative image refs properly ([3a52d95](https://github.com/IBM/kui/commit/3a52d95)), closes [#6918](https://github.com/IBM/kui/issues/6918)
+
+### Features
+
+- add Kubernetes Dashboard Notebook ([f0a199a](https://github.com/IBM/kui/commit/f0a199a)), closes [#5617](https://github.com/IBM/kui/issues/5617) [#6915](https://github.com/IBM/kui/issues/6915) [#6917](https://github.com/IBM/kui/issues/6917)
+- preserve changes of table view state in Notebook ([c6a06d7](https://github.com/IBM/kui/commit/c6a06d7)), closes [#5399](https://github.com/IBM/kui/issues/5399)
+
 ## [10.0.1](https://github.com/IBM/kui/compare/v4.5.0...v10.0.1) (2021-02-01)
 
 ### Bug Fixes
