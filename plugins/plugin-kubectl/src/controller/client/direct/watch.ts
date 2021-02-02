@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Abortable, Arguments, FlowControllable, Row, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
+import { Abortable, Arguments, Row, Suspendable, Table, Watchable, Watcher, WatchPusher } from '@kui-shell/core'
 
 import { Group, isObjectInGroup } from './group'
 import columnsOf from './columns'
@@ -42,12 +42,12 @@ interface WatchUpdate {
   object: MetaTable
 }
 
-export abstract class DirectWatcher implements Watcher, Abortable, Omit<FlowControllable, 'write'> {
+export abstract class DirectWatcher implements Watcher, Abortable, Suspendable {
   /** The table push API */
   protected pusher: WatchPusher
 
   /** The current stream jobs. These will be aborted/flow-controlled as directed by the associated view. */
-  protected jobs: (Abortable & FlowControllable)[] = []
+  protected jobs: (Abortable & Suspendable)[] = []
 
   abstract init(pusher: WatchPusher): void
 
@@ -274,7 +274,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   }
 
   /** The streamer is almost ready. We give it back a stream to push data to */
-  public onInitForBodyUpdates(job: Abortable & FlowControllable) {
+  public onInitForBodyUpdates(job: Abortable & Suspendable) {
     this.jobs.push(job)
     return this.onData.bind(this)
   }

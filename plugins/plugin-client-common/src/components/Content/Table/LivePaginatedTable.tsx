@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { i18n, Table as KuiTable, Row as KuiRow, Watchable } from '@kui-shell/core'
+import { i18n, Table as KuiTable, Row as KuiRow, Watchable, isSuspendable } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import kuiHeaderFromBody from './kuiHeaderFromBody'
@@ -91,14 +91,52 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     this.props.response.watch.init({ update, batchUpdateDone, offline, done, allOffline, header, footer })
   }
 
+  private pauseWatch() {
+    if (this.props.response.watch.xoff) {
+      this.props.response.watch.xoff()
+      this.setState({ isWatching: false })
+    }
+  }
+
+  private resumeWatch() {
+    if (this.props.response.watch.xon) {
+      this.props.response.watch.xon()
+      this.setState({ isWatching: true })
+    }
+  }
+
+  protected watchControll() {
+    if (this.state.isWatching) {
+      this.pauseWatch()
+    } else {
+      this.resumeWatch()
+    }
+  }
+
   /** E.g. last updated time for live tables */
   protected caption() {
     if (this.state.lastUpdatedMillis) {
       const icon = this.state.isWatching ? 'Eye' : 'EyeSlash'
       const iconColor = this.state.isWatching ? 'green-text' : 'red-text'
+      const watchControlDescription = this.state.isWatching ? strings('Pause watcher') : strings('Resume watcher')
+
       return (
         <React.Fragment>
-          <Icons icon={icon} className={'small-right-pad ' + iconColor} />
+          {!isSuspendable(this.props.response.watch) ? (
+            <Icons icon={icon} className={'small-right-pad ' + iconColor} />
+          ) : (
+            <a
+              href="#"
+              className="kui--toolbar-button-watch"
+              data-online={this.state.isWatching}
+              onClick={this.watchControll.bind(this)}
+              onMouseDown={evt => evt.preventDefault()}
+              title={watchControlDescription}
+              aria-label={watchControlDescription}
+            >
+              <Icons icon={icon} className={'small-right-pad ' + iconColor} />
+            </a>
+          )}
           {strings('Last updated', new Date(this.state.lastUpdatedMillis).toLocaleTimeString())}
         </React.Fragment>
       )

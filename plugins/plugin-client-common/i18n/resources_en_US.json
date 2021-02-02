@@ -59,5 +59,7 @@
   "Settings": "Settings",
   "Switch theme": "Switch theme",
   "Show as table in terminal": "Show as table in terminal",
+  "Pause watcher": "Pause this watcher",
+  "Resume watcher": "Resume this watcher",
   "Close watcher": "Close and terminate this watcher"
 }
