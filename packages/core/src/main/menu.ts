@@ -17,12 +17,12 @@
 // require('electron-is-dev');
 
 import { productName } from '@kui-shell/client/config.d/name.json'
-import { Menu, MenuItemConstructorOptions, webContents } from 'electron'
+import { Menu, MenuItemConstructorOptions } from 'electron'
 
 import open from './open'
 import saveAsNotebook from './save'
-import encodeComponent from '../repl/encode'
 import tellRendererToExecute from './tell'
+import { openNotebook, loadClientNotebooksMenuDefinition, clientNotebooksDefinitionToElectron } from './notebooks'
 
 const isDev = false
 
@@ -47,62 +47,10 @@ const closeTab = () => tellRendererToExecute('tab close')
 const isDarwin = process.platform === 'darwin'
 const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
 
-/** Open a new window or tab and replay the contents of the given `filepath` */
-export function replay(filepath: string, createWindow: (executeThisArgvPlease?: string[]) => void) {
-  try {
-    // if we have no open kui windows, open a new one; otherwise,
-    // use a tab in an existing window
-    if (webContents.getAllWebContents().length === 0) {
-      createWindow(['replay', filepath])
-    } else {
-      tellRendererToExecute(`replay ${encodeComponent(filepath)}`, 'pexec')
-    }
-  } catch (err) {
-    console.log(err)
-  }
-}
-
-/** @return a menu item that opens the given notebook */
-function openNotebook(createWindow: (executeThisArgvPlease?: string[]) => void, label: string, filepath: string) {
-  return {
-    label,
-    click: () => replay(filepath, createWindow)
-  }
-}
-
 export const install = (createWindow: (executeThisArgvPlease?: string[]) => void) => {
   if (!isDev) {
     const notebook = openNotebook.bind(undefined, createWindow)
-    const notebookMenuItem: MenuItemConstructorOptions = {
-      label: 'Notebooks',
-      submenu: [
-        notebook('Welcome to Kui', '/kui/welcome.json'),
-        { type: 'separator' },
-        {
-          label: 'Learning Kubernetes',
-          submenu: [
-            {
-              label: 'Kubernetes',
-              submenu: [
-                notebook('CRUD Operations', '/kui/kubernetes/crud-operations.json'),
-                notebook('Working with Jobs', '/kui/kubernetes/create-jobs.json'),
-                notebook('Deploying Applications', '/kui/kubernetes/deploy-applications.json')
-              ]
-            },
-            {
-              label: 'iter8',
-              submenu: [notebook('Welcome to iter8', '/kui/iter8/welcome.json')]
-            }
-          ]
-        },
-        {
-          label: 'Dashboard',
-          submenu: [notebook('Kubernetes Dashboard', '/kui/kubernetes/dashboard.json')]
-        },
-        { type: 'separator' },
-        notebook('Make Your Own Notebook', '/kui/make-notebook.json')
-      ]
-    }
+    const notebookMenuItem = clientNotebooksDefinitionToElectron(loadClientNotebooksMenuDefinition(), notebook)
 
     const fileMenuItems: MenuItemConstructorOptions[] = [
       {
