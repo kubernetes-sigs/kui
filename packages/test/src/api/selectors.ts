@@ -198,6 +198,10 @@ export const TABLE_CELL = (rowKey: string, cellKey: string) => `tbody [data-name
 export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-grid`
 export const TABLE_SHOW_AS_SEQUENCE = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-sequence`
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
+export const WATCH_LIVE_BUTTON = (N: number, splitIndex = 1) =>
+  `${OUTPUT_N(N, splitIndex)} .kui--toolbar-button-watch[data-online="true"]`
+export const WATCH_OFFLINE_BUTTON = (N: number, splitIndex = 1) =>
+  `${OUTPUT_N(N, splitIndex)} .kui--toolbar-button-watch[data-online="false"]`
 export const TABLE_PAGINATION_FORWARD = (N: number) =>
   `${OUTPUT_N(N)} .kui--data-table-toolbar-pagination button.bx--pagination__button--forward`
 export const TABLE_PAGINATION_BACKWARD = (N: number) =>

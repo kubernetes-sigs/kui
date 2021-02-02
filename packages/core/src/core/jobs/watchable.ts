@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Abortable } from './job'
+import { WatchableJob } from './job'
 import { Entity } from '../../models/entity'
 import { Row } from '../../webapp/models/table'
 
@@ -28,7 +28,7 @@ export interface Watcher {
 }
 
 export interface Watchable {
-  watch: Watcher & Abortable
+  watch: Watcher & WatchableJob
 }
 
 /** callbacks to indicate state changes */

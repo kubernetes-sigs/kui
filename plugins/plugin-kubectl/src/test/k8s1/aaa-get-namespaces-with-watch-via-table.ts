@@ -148,6 +148,19 @@ const watchNS = function(this: Common.ISuite, kubectl: string) {
 
         // and, conversely, that watch had better eventually show Offline
         await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist())
+
+        // hit the pause watcher button in get -w
+        await this.app.client.$(Selectors.WATCH_LIVE_BUTTON(testWatch.count)).then(_ => _.click())
+        await this.app.client.$(Selectors.WATCH_OFFLINE_BUTTON(testWatch.count))
+        // create again
+        await waitForOnline(await CLI.command(`${kubectl} create ns ${nsNameForIter}`, this.app))
+        // get -w should stay red
+        await this.app.client.$(watchBadgeButOffline).then(_ => _.waitForExist())
+        // hit the resume watcher button in get -w
+        await this.app.client.$(Selectors.WATCH_OFFLINE_BUTTON(testWatch.count)).then(_ => _.click())
+        await this.app.client.$(Selectors.WATCH_LIVE_BUTTON(testWatch.count))
+        // get -w should be green
+        await this.app.client.$(watchBadge).then(_ => _.waitForExist())
       } catch (err) {
         await Common.oops(this, true)(err)
       }
