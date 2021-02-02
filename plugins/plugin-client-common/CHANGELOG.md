@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.1.0](https://github.com/IBM/kui/compare/v10.0.2...v10.1.0) (2021-02-02)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** redirectToPlainSplitIfNeeded may favor smaller terminals ([7c4ab38](https://github.com/IBM/kui/commit/7c4ab38)), closes [#6930](https://github.com/IBM/kui/issues/6930)
+- **plugins/plugin-client-common:** The pause watching icon should be grey ([420a2cb](https://github.com/IBM/kui/commit/420a2cb)), closes [#6931](https://github.com/IBM/kui/issues/6931)
+- **plugins/plugin-client-common:** when there're 3 splits, clicking table in the first split will create the 4th split ([2c1dd02](https://github.com/IBM/kui/commit/2c1dd02)), closes [#6932](https://github.com/IBM/kui/issues/6932)
+
+### Features
+
+- pause and resume watchable jobs ([ec2fbfb](https://github.com/IBM/kui/commit/ec2fbfb)), closes [#1747](https://github.com/IBM/kui/issues/1747)
+
 ## [10.0.2](https://github.com/IBM/kui/compare/v10.0.1...v10.0.2) (2021-02-02)
 
 ### Bug Fixes
