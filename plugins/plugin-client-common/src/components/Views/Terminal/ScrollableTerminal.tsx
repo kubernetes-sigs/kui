@@ -1072,7 +1072,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       scrollback.facade.splitCount = () => this.state.splits.length
       scrollback.facade.hasSideBySideTerminals = () =>
         this.theseAreMiniSplits[this.state.splits.length].findIndex((isMini, idx, S) => {
-          return !isMini && idx < S.length - 1 && !S[idx + 1]
+          return (
+            (!isMini && idx < S.length - 1 && !S[idx + 1]) ||
+            (!isMini && idx === S.length - 1 && S[idx - 1] && S[idx - 2])
+          ) // e.g. 3 splits
         }) >= 0
 
       scrollback.facade.scrollToBottom = () => {
