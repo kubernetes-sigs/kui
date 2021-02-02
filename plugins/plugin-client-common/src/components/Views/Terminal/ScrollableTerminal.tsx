@@ -562,8 +562,23 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** @return a reasonable default split */
+  private findMainSplit(excludedIndex?: number) {
+    return this.state.splits
+      .slice()
+      .reverse()
+      .find((split, idx) => {
+        const originalIdx = this.state.splits.length - idx - 1
+        return (
+          split &&
+          !this.isMiniSplit(split, originalIdx) &&
+          (excludedIndex === undefined || originalIdx !== excludedIndex)
+        )
+      })
+  }
+
+  /** @return a reasonable default split */
   private get current() {
-    return this.state.splits.find((split, idx) => split && !this.isMiniSplit(split, idx))
+    return this.findMainSplit()
   }
 
   /** @return the uuid of a reasonable default split */
@@ -611,7 +626,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       // e.g. executing a command in another split
       if (idx >= 0 && this.isMiniSplit(this.state.splits[idx], idx)) {
         // <-- this is a minisplit
-        const plainSplit = this.state.splits.find((split, idx) => !this.isMiniSplit(split, idx))
+        const plainSplit = this.findMainSplit()
         if (plainSplit) {
           // <-- we found a plain split!
           return plainSplit.uuid
@@ -703,7 +718,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     insertIdx?: number
   ) {
     if (!uuid) return
-    else uuid = this.redirectToPlainSplitIfNeeded(uuid, event)
+    else {
+      uuid = this.redirectToPlainSplitIfNeeded(uuid, event)
+    }
 
     if (isTabLayoutModificationResponse(event.response)) {
       const updatedResponse = await this.onTabLayoutModificationRequest(event.response, uuid)
@@ -897,8 +914,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           : !(await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.ifnot).catch(() => true))
         if (!respIf || !respIfNot) {
           const { cmdline } = request.spec.options
-          const mainSplit =
-            this.state.splits.find((split, idx) => !this.isMiniSplit(split, idx) && idx !== thisSplitIdx) || thisSplit
+          const mainSplit = this.findMainSplit(thisSplitIdx)
           request.spec.options.cmdline = undefined // null this out, since we got it!
           mainSplit.facade.REPL.pexec(cmdline)
           return
