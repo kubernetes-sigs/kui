@@ -24,5 +24,11 @@ export interface FlowControllable {
   write(data: string): void
 }
 
+export type Suspendable = Omit<FlowControllable, 'write'>
+
 /** in the future, a WatchableJob may be more than Abortable, e.g. Suspendable */
-export type WatchableJob = Abortable
+export type WatchableJob = Abortable & Partial<Suspendable>
+
+export function isSuspendable(watch: Partial<Suspendable>) {
+  return watch.xon && watch.xoff
+}
