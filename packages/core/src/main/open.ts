@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { replay } from './menu'
+import { replay } from './notebooks'
 
 export const filters = [{ name: 'Kui snapshot', extensions: ['kui', 'json'] }]
 
