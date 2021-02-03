@@ -25,6 +25,7 @@ import { REPL, Tab as KuiTab, getPrimaryTabId } from '@kui-shell/core'
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
 
+import Tooltip from '../spi/Tooltip'
 import CodeSnippet from '../spi/CodeSnippet'
 const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 
@@ -176,7 +177,11 @@ export default class Markdown extends React.PureComponent<Props> {
             } else if (!isLocal && this.props.noExternalLinks) {
               return <span className={this.props.className}>{props.href}</span>
             } else {
-              return <a className="bx--link" {...props} target={target} onClick={onClick} />
+              return (
+                <Tooltip markdown={`### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``}>
+                  <a className="bx--link" {...props} target={target} onClick={onClick} />
+                </Tooltip>
+              )
             }
           },
           code: props => {

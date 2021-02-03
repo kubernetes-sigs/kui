@@ -48,6 +48,10 @@ $bgcolor: var(--color-base06);
       color: var(--color-base02);
       font-family: var(--font-sans-serif);
     }
+
+    a[href] {
+      color: var(--color-base0F);
+    }
   }
 
   & > div {
