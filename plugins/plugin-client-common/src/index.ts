@@ -58,6 +58,7 @@ export { default as Button } from './components/spi/Button'
 export { default as Card } from './components/spi/Card'
 export { default as Popover } from './components/spi/Popover'
 export { default as Tag } from './components/spi/Tag'
+export { default as Tooltip } from './components/spi/Tooltip'
 
 // Input components
 export {
