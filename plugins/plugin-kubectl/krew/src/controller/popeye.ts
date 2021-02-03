@@ -58,33 +58,14 @@ function formatIssueRow(group: string, message: string, level: number) {
     name: group,
     attributes: [
       {
-        key: 'Message',
-        value: message,
+        key: 'STATUS',
+        value: level === 3 ? 'Error' : level === 2 ? 'Warning' : 'OK',
         tag: 'badge',
         css: level === 3 ? 'red-background' : level === 2 ? 'yellow-background' : 'green-background'
-      }
-    ]
-  }
-}
-
-function formatSectionRow(
-  displayName: string,
-  resourceName: string,
-  command: string,
-  sanitizer: string,
-  maxLevel: number,
-  ns: string
-) {
-  return {
-    key: 'Name',
-    name: displayName, // e.g. split out the namespace in resourceName
-    onclick: `${command} popeye -s ${sanitizer} ${resourceName} -n ${ns}`,
-    attributes: [
+      },
       {
-        key: 'Max Level',
-        value: maxLevel.toString(),
-        tag: 'badge',
-        css: maxLevel === 3 ? 'red-background' : maxLevel === 2 ? 'yellow-background' : 'green-background'
+        key: 'Message',
+        value: message
       }
     ]
   }
@@ -165,16 +146,48 @@ export default (command: string) => async (args: Arguments) => {
      */
     const sectionTable = async () => {
       const body = []
-      fullReport.sanitizers.forEach(({ issues, sanitizer }) => {
+      fullReport.sanitizers.forEach(({ issues, sanitizer, tally }) => {
         if (issues) {
           Object.entries(issues).forEach(([resourceName, issueList]) => {
             if (resourceName) {
-              let maxLevel = 0
-              issueList.forEach(({ level }) => (maxLevel = level > maxLevel ? level : maxLevel))
-              body.push(formatSectionRow(resourceName.split(/\//)[1], resourceName, command, sanitizer, maxLevel, ns))
+              let status = 0
+              issueList.forEach(({ level }) => (status = level > status ? level : status))
+              const shortNames = resourceName.split(/\//)
+
+              body.push({
+                key: 'Name',
+                name: shortNames.length > 1 ? shortNames[1] : shortNames[0], // e.g. split out the namespace in resourceName
+                onclick: `${command} popeye -s ${sanitizer} ${resourceName} -n ${ns}`,
+                attributes: [
+                  {
+                    key: 'Status',
+                    value: status === 3 ? 'Error' : status === 2 ? 'Warning' : 'OK',
+                    tag: 'badge',
+                    css: status === 3 ? 'red-background' : status === 2 ? 'yellow-background' : 'green-background'
+                  }
+                ]
+              })
             } else {
               issueList.forEach(_ => body.push(formatIssueRow(_.group, _.message, _.level)))
             }
+          })
+        } else {
+          // no issues, return the tally of this sanitizer
+          body.push({
+            key: 'Name',
+            name: sanitizer,
+            attributes: [
+              {
+                key: 'Score',
+                value: tally.score.toString(),
+                tag: 'badge',
+                css: tally.score === 100 ? 'green-background' : 'red-background'
+              },
+              { key: 'Error', value: tally.error.toString() },
+              { key: 'Warning', value: tally.warning.toString() },
+              { key: 'Info', value: tally.info.toString() },
+              { key: 'Ok', value: tally.ok.toString() }
+            ]
           })
         }
       })
