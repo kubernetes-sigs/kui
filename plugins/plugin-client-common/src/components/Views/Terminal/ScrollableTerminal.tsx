@@ -900,27 +900,31 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private async onSplit(request: TabLayoutModificationResponse<NewSplitRequest>, sbuuid: string) {
     const nTerminals = this.state.splits.length
 
+    if (request.spec.options.cmdline && (request.spec.options.if || request.spec.options.ifnot)) {
+      const thisSplitIdx = this.findSplit(this.state, sbuuid)
+      const thisSplit = this.state.splits[thisSplitIdx]
+
+      const respIf = !request.spec.options.if
+        ? true
+        : await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.if).catch(() => false)
+
+      const respIfNot = !request.spec.options.ifnot
+        ? true
+        : !(await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.ifnot).catch(() => true))
+
+      if (!respIf || !respIfNot) {
+        const { cmdline } = request.spec.options
+        const mainSplit = this.findMainSplit(thisSplitIdx) || thisSplit
+        request.spec.options.cmdline = undefined // null this out, since we got it!
+        mainSplit.facade.REPL.pexec(cmdline)
+
+        return
+      }
+    }
+
     if (nTerminals === MAX_TERMINALS) {
       return new Error(strings('No more splits allowed'))
     } else {
-      if (request.spec.options.cmdline && (request.spec.options.if || request.spec.options.ifnot)) {
-        const thisSplitIdx = this.findSplit(this.state, sbuuid)
-        const thisSplit = this.state.splits[thisSplitIdx]
-        const respIf = !request.spec.options.if
-          ? true
-          : await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.if).catch(() => false)
-        const respIfNot = !request.spec.options.ifnot
-          ? true
-          : !(await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.ifnot).catch(() => true))
-        if (!respIf || !respIfNot) {
-          const { cmdline } = request.spec.options
-          const mainSplit = this.findMainSplit(thisSplitIdx) || thisSplit
-          request.spec.options.cmdline = undefined // null this out, since we got it!
-          mainSplit.facade.REPL.pexec(cmdline)
-          return
-        }
-      }
-
       const newScrollback = this.scrollback(undefined, request.spec.options)
 
       this.setState(({ splits }) => {

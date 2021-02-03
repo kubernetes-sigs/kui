@@ -386,4 +386,8 @@ describe('click and show in splits', function(this: Common.ISuite) {
   splitTheTerminalViaButton(7)
   count(7)
   clickAndValidate(7)
+
+  splitTheTerminalViaButton(8)
+  count(8)
+  clickAndValidate(8)
 })
