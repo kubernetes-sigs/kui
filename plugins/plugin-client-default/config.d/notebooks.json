@@ -22,7 +22,10 @@
     },
     {
       "label": "Dashboard",
-      "submenu": [{ "notebook": "Kubernetes Dashboard", "filepath": "/kui/kubernetes/dashboard.json" }]
+      "submenu": [
+        { "notebook": "Kubernetes Dashboard", "filepath": "/kui/kubernetes/dashboard.json" },
+        { "notebook": "Popeye Dashboard", "filepath": "/kui/kubernetes/popeye.json" }
+      ]
     },
     { "type": "separator" },
     { "notebook": "Make Your Own Notebook", "filepath": "/kui/make-notebook.json" }
