@@ -267,7 +267,7 @@ export async function fetchFileString(
   const files = await fetchFile(repl, url, { headers })
   return files.map(_ => {
     try {
-      return _ ? _.toString() : undefined
+      return _ ? (typeof _ === 'string' ? _ : Buffer.isBuffer(_) ? _.toString() : JSON.stringify(_)) : undefined
     } catch (err) {
       console.error('Unable to convert fetched file to string', err, _)
       return ''
