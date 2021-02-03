@@ -325,3 +325,65 @@ describe('split close and reopen', function(this: Common.ISuite) {
     }
   })
 })
+
+describe('click and show in splits', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  const splitTheTerminalViaButton = splitViaButton.bind(this)
+  const count = expectSplits.bind(this)
+
+  let selector: string
+
+  const doClickAndValidate = (splitIndex: number) => {
+    return this.app.client.waitUntil(async () => {
+      await this.app.client.$(selector).then(_ => _.click())
+
+      const text = await this.app.client.$(`${Selectors.OUTPUT_LAST_FOR_SPLIT(splitIndex)}`).then(_ => _.getText())
+
+      return text === 'hi'
+    })
+  }
+
+  const clickAndValidate = splitIndex => {
+    it(`should click in the first split and show in split: ${splitIndex}`, async () => {
+      try {
+        await doClickAndValidate(splitIndex)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  it('should click in the first split and show in the second split', async () => {
+    try {
+      await CLI.command('echo hi', this.app).then(ReplExpect.okWithPtyOutput('hi'))
+
+      selector = `${await Util.doList(this, 'history 1', 'echo hi')} [data-value="echo hi"].clickable`
+      await doClickAndValidate(2)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  splitTheTerminalViaButton(3)
+  count(3)
+  clickAndValidate(3)
+
+  splitTheTerminalViaButton(4)
+  count(4)
+  clickAndValidate(4)
+
+  splitTheTerminalViaButton(5)
+  count(5)
+  clickAndValidate(5)
+
+  splitTheTerminalViaButton(6)
+  count(6)
+  clickAndValidate(6)
+
+  splitTheTerminalViaButton(7)
+  count(7)
+  clickAndValidate(7)
+})
