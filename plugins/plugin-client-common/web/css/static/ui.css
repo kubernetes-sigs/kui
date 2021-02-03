@@ -430,7 +430,7 @@ body[kui-theme-style] {
     &:not(.pf-c-list) {
       margin: 0;
       padding-inline-start: 0;
-      li {
+      & > li {
         list-style-type: none;
       }
     }
