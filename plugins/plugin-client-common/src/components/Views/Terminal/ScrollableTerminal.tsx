@@ -914,7 +914,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           : !(await thisSplit.facade.REPL.qexec<boolean>(request.spec.options.ifnot).catch(() => true))
         if (!respIf || !respIfNot) {
           const { cmdline } = request.spec.options
-          const mainSplit = this.findMainSplit(thisSplitIdx)
+          const mainSplit = this.findMainSplit(thisSplitIdx) || thisSplit
           request.spec.options.cmdline = undefined // null this out, since we got it!
           mainSplit.facade.REPL.pexec(cmdline)
           return
