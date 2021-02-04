@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import { Table, Tab, REPL } from '@kui-shell/core'
+import { i18n, Table, Tab, REPL } from '@kui-shell/core'
 
 import React from 'react'
-import { Tbody, Tr } from '@patternfly/react-table'
+import { Tbody, Tr, Td } from '@patternfly/react-table'
+import { EmptyState, EmptyStateVariant, Bullseye, Title, EmptyStateIcon } from '@patternfly/react-core'
+import { SearchIcon } from '@patternfly/react-icons'
 
 import renderCell from './TableCell'
+
+const strings = i18n('plugin-client-common')
 
 /**
  * Render the TableBody part
@@ -34,24 +38,42 @@ export default function renderBody(
   repl: REPL,
   offset: number
 ) {
+  const emptyState = () => {
+    return (
+      <Tr>
+        <Td data-is-empty={true} colSpan={kuiTable.header ? kuiTable.header.attributes.length + 1 : 0}>
+          <Bullseye>
+            <EmptyState variant={EmptyStateVariant.small}>
+              <EmptyStateIcon icon={SearchIcon} />
+              <Title headingLevel="h2" size="lg">
+                {strings('No results found')}
+              </Title>
+            </EmptyState>
+          </Bullseye>
+        </Td>
+      </Tr>
+    )
+  }
   return (
     <Tbody>
-      {kuiTable.body.map((kuiRow, ridx) => {
-        const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
-        const cell = renderCell(kuiTable, kuiRow, updated, tab, repl)
+      {kuiTable.body.length === 0
+        ? emptyState()
+        : kuiTable.body.map((kuiRow, ridx) => {
+            const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
+            const cell = renderCell(kuiTable, kuiRow, updated, tab, repl)
 
-        const key = kuiRow.key || (kuiTable.header ? kuiTable.header.key || kuiTable.header.name : undefined)
+            const key = kuiRow.key || (kuiTable.header ? kuiTable.header.key || kuiTable.header.name : undefined)
 
-        return (
-          <Tr key={ridx} data-row-key={kuiRow.rowKey} data-name={kuiTable.body[offset + ridx].name}>
-            {cell(key, kuiRow.name, undefined, kuiRow.outerCSS, kuiRow.css, kuiRow.onclick, 0)}
-            {kuiRow.attributes &&
-              kuiRow.attributes.map((attr, idx) =>
-                cell(attr.key, attr.value, attr.tag, attr.outerCSS, attr.css, attr.onclick, idx + 1)
-              )}
-          </Tr>
-        )
-      })}
+            return (
+              <Tr key={ridx} data-row-key={kuiRow.rowKey} data-name={kuiTable.body[offset + ridx].name}>
+                {cell(key, kuiRow.name, undefined, kuiRow.outerCSS, kuiRow.css, kuiRow.onclick, 0)}
+                {kuiRow.attributes &&
+                  kuiRow.attributes.map((attr, idx) =>
+                    cell(attr.key, attr.value, attr.tag, attr.outerCSS, attr.css, attr.onclick, idx + 1)
+                  )}
+              </Tr>
+            )
+          })}
     </Tbody>
   )
 }
