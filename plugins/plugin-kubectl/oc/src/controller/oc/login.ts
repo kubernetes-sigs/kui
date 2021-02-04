@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,12 @@
  */
 
 import { Registrar } from '@kui-shell/core'
+import { doExecWithPty, commandPrefix, emitKubectlConfigChangeEvent } from '@kui-shell/plugin-kubectl'
 
-import raw from './controller/raw'
-import login from './controller/oc/login'
-import getProjects from './controller/oc/get/projects'
-import delegates from './controller/kubectl/delegates'
-import catchall from './controller/kubectl/catchall'
-
-export default (registrar: Registrar) => {
-  delegates(registrar)
-  getProjects(registrar)
-  raw(registrar)
-  login(registrar)
-  catchall(registrar)
+export default function registerOcLogin(registrar: Registrar) {
+  registrar.listen(`/${commandPrefix}/oc/login`, async args => {
+    const response = await doExecWithPty(args)
+    emitKubectlConfigChangeEvent('SetNamespaceOrContext')
+    return response
+  })
 }
