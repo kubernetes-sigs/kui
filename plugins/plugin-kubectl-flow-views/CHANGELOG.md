@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1](https://github.com/IBM/kui/compare/v4.5.0...v10.1.1) (2021-02-04)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl-flow-views:** `tekton flow` command does not support previewing a remote url ([214820f](https://github.com/IBM/kui/commit/214820f)), closes [#6274](https://github.com/IBM/kui/issues/6274)
+- **plugins/plugin-kubectl-flow-views:** `tekton flow` command fails ([21600cc](https://github.com/IBM/kui/commit/21600cc)), closes [#6272](https://github.com/IBM/kui/issues/6272)
+
+### Features
+
+- Expand kubectl direct watching to support heterogeneous use cases ([8df1ad3](https://github.com/IBM/kui/commit/8df1ad3)), closes [#6504](https://github.com/IBM/kui/issues/6504)
+- s3 plugin, and vfs ([970ba6e](https://github.com/IBM/kui/commit/970ba6e)), closes [#5319](https://github.com/IBM/kui/issues/5319)
+
 ## [10.0.1](https://github.com/IBM/kui/compare/v4.5.0...v10.0.1) (2021-02-01)
 
 ### Bug Fixes
