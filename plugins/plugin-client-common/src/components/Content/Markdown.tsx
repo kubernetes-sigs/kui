@@ -140,14 +140,16 @@ export default class Markdown extends React.PureComponent<Props> {
           },
 
           link: props => {
+            const isKuiCommand = props.href.startsWith('#kuiexec?command=')
             const isLocal = !/^http/i.test(props.href)
             const target = !isLocal ? '_blank' : undefined
+
             const onClick = !isLocal
               ? (evt: React.MouseEvent) => evt.stopPropagation()
               : async (evt: React.MouseEvent) => {
                   evt.stopPropagation()
                   let file = props.href
-                  if (props.href.startsWith('#kuiexec?command=')) {
+                  if (isKuiCommand) {
                     const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
                     if (raw) {
                       const cmdline = decodeURIComponent(raw[1])
@@ -177,9 +179,15 @@ export default class Markdown extends React.PureComponent<Props> {
             } else if (!isLocal && this.props.noExternalLinks) {
               return <span className={this.props.className}>{props.href}</span>
             } else {
+              const tip = isKuiCommand
+                ? `### Command Execution\n#### ${decodeURIComponent(
+                    props.href.slice(props.href.indexOf('=') + 1)
+                  )}\n\n\`Link will execute a command\``
+                : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
+
               return (
-                <Tooltip markdown={`### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``}>
-                  <a className="bx--link" {...props} target={target} onClick={onClick} />
+                <Tooltip markdown={tip}>
+                  <a {...props} target={target} onClick={onClick} />
                 </Tooltip>
               )
             }
