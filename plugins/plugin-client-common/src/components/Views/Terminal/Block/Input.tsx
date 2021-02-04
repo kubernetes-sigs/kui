@@ -610,7 +610,7 @@ export default class Input extends InputProvider {
 
   /** DropDown menu for completed blocks */
   private actions(command: string) {
-    if (isFinished(this.props.model) && !!this.props.tab && !!this.props.model) {
+    if ((isFinished(this.props.model) || isProcessing(this.props.model)) && !!this.props.tab && !!this.props.model) {
       return <Actions command={command} idx={this.props.idx} {...this.props} />
     }
   }
