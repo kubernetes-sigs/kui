@@ -38,6 +38,13 @@ $bgcolor: var(--color-base06);
     }
     h3 + h4 {
       padding-top: 0;
+
+      a:only-child {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
 
     p + p {
