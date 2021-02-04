@@ -223,6 +223,7 @@ export const TABLE_AS_SEQUENCE = (N: number) => `${OUTPUT_N(N)} .kui--data-table
 export const TABLE_AS_SEQUENCE_BAR = (N: number) => `${TABLE_AS_SEQUENCE(N)} .kui--bar`
 export const TABLE_AS_SEQUENCE_BAR_WIDTH = (N: number, width: string) =>
   `${TABLE_AS_SEQUENCE(N)} .kui--bar[data-width="${width}]`
+export const _TABLE_EMPTY = `.kui--table-like-wrapper tbody td[data-is-empty="true"]`
 
 const _TABLE_TITLE = `.kui--data-table-title`
 export const TABLE_TITLE = (N: number) => `${OUTPUT_N(N)} ${_TABLE_TITLE}`

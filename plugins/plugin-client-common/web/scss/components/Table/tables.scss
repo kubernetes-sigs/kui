@@ -232,6 +232,12 @@ body[kui-theme-style] .kui--data-table-wrapper {
       th {
         padding-left: var(--pf-c-card--child--PaddingLeft);
       }
+
+      td {
+        h2 {
+          margin: 0;
+        }
+      }
     }
 
     .pf-m-wrap {
