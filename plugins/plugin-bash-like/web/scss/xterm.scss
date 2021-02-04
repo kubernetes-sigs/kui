@@ -114,7 +114,7 @@ body[kui-theme-style] .kui--tab-content {
   }
   .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
     background-color: var(--color-base03);
-    outline-color: transparent;
+    outline-color: var(--color-base04);
   }
 
   /* rules for terminated xterm */
