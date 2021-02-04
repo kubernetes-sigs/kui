@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-18 IBM Corporation
+ * Copyright 2017-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
       }
     ]
 
-    const menuTemplate: MenuItemConstructorOptions[] = [
+    const fileMenu: MenuItemConstructorOptions[] = [
       {
         label: 'File',
         submenu: fileMenuItems
@@ -151,8 +151,10 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
           { role: 'delete' },
           { role: 'selectAll' }
         ]
-      },
+      }
+    ]
 
+    const viewMenu: MenuItemConstructorOptions[] = [
       {
         label: 'View',
         submenu: [
@@ -171,8 +173,10 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
           { type: 'separator' },
           { role: 'togglefullscreen' }
         ]
-      },
-      notebookMenuItem,
+      }
+    ]
+
+    const windowMenu: MenuItemConstructorOptions[] = [
       {
         role: 'window',
         submenu: [{ role: 'minimize' }, { role: 'close', accelerator: closeAccelerator }]
@@ -183,6 +187,11 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
         submenu: helpMenuItems
       }
     ]
+
+    const menuTemplate: MenuItemConstructorOptions[] = fileMenu
+      .concat(viewMenu)
+      .concat(notebookMenuItem ? [notebookMenuItem] : [])
+      .concat(windowMenu)
 
     const about: MenuItemConstructorOptions = {
       label: `About ${productName}`,
