@@ -16,30 +16,54 @@
 
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
+async function removeAndValidate(ctx: Common.ISuite, N: number) {
+  await ctx.app.client.$(Selectors.PROMPT_N(N)).then(_ => _.moveTo())
+  await ctx.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N)).then(_ => {
+    _.waitForDisplayed()
+    _.moveTo()
+    _.click()
+  })
+
+  await ctx.app.client.waitUntil(async () => {
+    const text = await ctx.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
+    return text === 'hi'
+  })
+}
+
 function doEchoThenRemove(this: Common.ISuite, idx: number) {
   it(`should echo ${idx} then remove that block`, async () => {
     try {
       const res = await CLI.command(`echo ${idx}`, this.app)
       await ReplExpect.okWithPtyOutput(idx.toString())(res)
 
-      const N = res.count
-      await this.app.client.$(Selectors.PROMPT_N(N)).then(_ => _.moveTo())
-      await this.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N)).then(_ => _.waitForDisplayed())
-      await this.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N)).then(_ => _.click())
-      await this.app.client.$(Selectors.OUTPUT_N(N)).then(_ => _.waitForExist({ timeout: 5000, reverse: true }))
+      await removeAndValidate(this, res.count)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
   })
 }
 
-describe(`remove command output ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`remove command block ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   const echo = doEchoThenRemove.bind(this)
 
   // here come the tests
+  it('should echo hi', () =>
+    CLI.command('echo hi', this.app)
+      .then(ReplExpect.okWithPtyOutput('hi'))
+      .catch(Common.oops(this)))
+
   echo(1)
   echo(2)
+
+  it(`should remove the block during sleep 30`, async () => {
+    try {
+      const res = await CLI.command('sleep 30', this.app)
+      await removeAndValidate(this, res.count)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
 })

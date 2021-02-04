@@ -20,7 +20,7 @@ import { Tab, i18n, isOfflineClient } from '@kui-shell/core'
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
-import BlockModel, { hasUUID, isOutputOnly } from './BlockModel'
+import BlockModel, { hasUUID, isOutputOnly, isRerunable } from './BlockModel'
 
 const strings = i18n('plugin-client-common')
 
@@ -53,6 +53,7 @@ export default class Actions extends React.PureComponent<Props> {
     if (
       !isOfflineClient() &&
       hasUUID(this.props.model) &&
+      isRerunable(this.props.model) &&
       !isOutputOnly(this.props.model) &&
       this.props.tab &&
       this.props.command
