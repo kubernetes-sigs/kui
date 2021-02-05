@@ -67,7 +67,7 @@ function prettyTime(ms: number): string {
   return dateFormatter(new Date(ms)).replace(/(\s)0/g, '$1 ')
 }
 
-interface LsOptions extends ParsedOptions {
+interface TheLsOptions {
   l: boolean // wide output
   a: boolean // list with dots except for . and ..
   A: boolean // list with dots
@@ -77,6 +77,8 @@ interface LsOptions extends ParsedOptions {
   t: boolean // sort by last modified time
   d: boolean // don't traverse directories
 }
+
+type LsOptions = TheLsOptions & ParsedOptions
 
 /** sort by size */
 const bySize = (rev: -1 | 1) => (a: GlobStats, b: GlobStats): number => {
@@ -236,6 +238,11 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
   }
 }
 
+/** Format a dash option, if specified */
+function opt(o: keyof TheLsOptions, opts: Arguments<LsOptions>) {
+  return opts.parsedOptions[o] ? ` -${o} ` : ''
+}
+
 /**
  * ls command handler
  *
@@ -257,7 +264,7 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
   //
   const srcs = opts.command.replace(/^\s*ls/, '').replace(/\s--?\S+/g, '')
 
-  const cmdline = 'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + srcs
+  const cmdline = 'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + opt('d', opts) + srcs
 
   if (cmd === 'lls') {
     opts.parsedOptions.l = true
