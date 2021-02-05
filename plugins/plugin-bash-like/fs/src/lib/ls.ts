@@ -117,8 +117,8 @@ function cssOf(glob: GlobStats): string {
  * Decorate the name according to its nature
  *
  */
-function nameOf(glob: GlobStats, wide: boolean): string {
-  return `${wide ? glob.nameForDisplay : glob.name}${
+function nameOf(glob: GlobStats): string {
+  return `${glob.nameForDisplay}${
     glob.dirent.isDirectory
       ? !glob.nameForDisplay.endsWith('/')
         ? '/'
@@ -200,7 +200,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
   const hasMtime = entries.some(_ => _.stats && _.stats.mtimeMs)
 
   const body = entries.sort(sorter).map(_ => ({
-    name: nameOf(_, args.parsedOptions.l),
+    name: nameOf(_),
     css: cssOf(_),
     onclickExec: 'pexec' as const,
     onclick: `${_.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : 'open'} ${encodeComponent(_.path)}`,
