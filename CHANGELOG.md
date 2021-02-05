@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.2](https://github.com/IBM/kui/compare/v10.1.1...v10.1.2) (2021-02-05)
+
+### Bug Fixes
+
+- **packages/core:** menu.ts assumes the client defines a list of notebooks ([91093ca](https://github.com/IBM/kui/commit/91093ca)), closes [#6962](https://github.com/IBM/kui/issues/6962)
+- **plugins/plugin-client-common:** blocks with Processing commands cannot be removed ([8cea01e](https://github.com/IBM/kui/commit/8cea01e)), closes [#6954](https://github.com/IBM/kui/issues/6954)
+- **plugins/plugin-client-common:** Tooltips for kuiexec markdown links have incorrect tooltip content ([f4ccf05](https://github.com/IBM/kui/commit/f4ccf05)), closes [#6958](https://github.com/IBM/kui/issues/6958)
+- **plugins/plugin-kubectl:** `oc login` does not invalidate the kubectl proxy ([57b0cdc](https://github.com/IBM/kui/commit/57b0cdc)), closes [#6955](https://github.com/IBM/kui/issues/6955)
+
+### Features
+
+- **plugins/plugin-client-common:** empty tables use PatternFly's "empty state" UI ([f54515a](https://github.com/IBM/kui/commit/f54515a)), closes [#6867](https://github.com/IBM/kui/issues/6867)
+
 ## [10.1.1](https://github.com/IBM/kui/compare/v4.5.0...v10.1.1) (2021-02-04)
 
 ### Bug Fixes

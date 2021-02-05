@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.2](https://github.com/IBM/kui/compare/v10.1.1...v10.1.2) (2021-02-05)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** blocks with Processing commands cannot be removed ([8cea01e](https://github.com/IBM/kui/commit/8cea01e)), closes [#6954](https://github.com/IBM/kui/issues/6954)
+
 ## [10.1.1](https://github.com/IBM/kui/compare/v4.5.0...v10.1.1) (2021-02-04)
 
 ### Bug Fixes

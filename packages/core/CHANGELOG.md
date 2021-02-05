@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.2](https://github.com/IBM/kui/compare/v10.1.1...v10.1.2) (2021-02-05)
+
+### Bug Fixes
+
+- **packages/core:** menu.ts assumes the client defines a list of notebooks ([91093ca](https://github.com/IBM/kui/commit/91093ca)), closes [#6962](https://github.com/IBM/kui/issues/6962)
+
 ## [10.1.1](https://github.com/IBM/kui/compare/v4.5.0...v10.1.1) (2021-02-04)
 
 ### Bug Fixes

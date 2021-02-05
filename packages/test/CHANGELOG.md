@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.2](https://github.com/IBM/kui/compare/v10.1.1...v10.1.2) (2021-02-05)
+
+### Features
+
+- **plugins/plugin-client-common:** empty tables use PatternFly's "empty state" UI ([f54515a](https://github.com/IBM/kui/commit/f54515a)), closes [#6867](https://github.com/IBM/kui/issues/6867)
+
 ## [10.1.1](https://github.com/IBM/kui/compare/v4.5.0...v10.1.1) (2021-02-04)
 
 ### Bug Fixes

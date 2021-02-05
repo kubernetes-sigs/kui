@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.2](https://github.com/IBM/kui/compare/v10.1.1...v10.1.2) (2021-02-05)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** `oc login` does not invalidate the kubectl proxy ([57b0cdc](https://github.com/IBM/kui/commit/57b0cdc)), closes [#6955](https://github.com/IBM/kui/issues/6955)
+
 ## [10.1.1](https://github.com/IBM/kui/compare/v4.5.0...v10.1.1) (2021-02-04)
 
 ### Bug Fixes
