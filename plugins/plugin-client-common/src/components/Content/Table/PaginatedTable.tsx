@@ -26,9 +26,9 @@ import {
 } from '@kui-shell/core'
 
 import React from 'react'
-import { TableComposable } from '@patternfly/react-table'
+import { SortByDirection, TableComposable } from '@patternfly/react-table'
 
-// import sortRow from './sort'
+import sortRow from './sort'
 import Card from '../../spi/Card'
 import Timeline from './Timeline'
 import renderBody from './TableBody'
@@ -90,6 +90,10 @@ export type State<T extends KuiTable = KuiTable> = ToolbarProps & {
 
   page: number
   pageSize: number
+
+  /* sorting */
+  activeSortIdx: number
+  activeSortDir: SortByDirection
 }
 
 export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: BreadcrumbView[]) {
@@ -165,6 +169,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         footer,
         header,
         asSequence,
+        activeSortIdx: -1,
+        activeSortDir: undefined,
         response: props.response,
         pageSize: props.pageSize || defaults.pageSize
       }
@@ -334,6 +340,17 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       : 'compact' */
 
     const isSortable = response.body.length > 1
+
+    const onSort = (key: string, cidx: number, clickColIdx: number, clickDir: SortByDirection) => {
+      response.body.sort((a, b) => sortRow(a, b, key, cidx, clickDir))
+
+      this.setState({
+        body,
+        activeSortDir: clickDir,
+        activeSortIdx: clickColIdx
+      })
+    }
+
     const dataTable = (visibleRows: KuiRow[], offset = 0) => (
       <div
         className={
@@ -347,7 +364,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         data-is-empty={response.body.length === 0}
       >
         <TableComposable className="kui--table-like-wrapper" variant={variant} isStickyHeader gridBreakPoint="">
-          {header && renderHeader(header)}
+          {header &&
+            renderHeader(header, isSortable, this.state.activeSortIdx, this.state.activeSortDir, onSort.bind(this))}
           {renderBody(response, this.justUpdatedMap(), tab, repl, offset)}
         </TableComposable>
       </div>
