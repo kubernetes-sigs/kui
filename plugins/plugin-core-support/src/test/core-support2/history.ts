@@ -93,7 +93,8 @@ describe('command history plain', function(this: Common.ISuite) {
     try {
       const res = await CLI.command('history 5 lls', this.app)
       const N = ((await ReplExpect.okWithCustom({ passthrough: true })(res)) as any) as number
-      const selector = `${Selectors.LIST_RESULTS_N(N)}:last-child .entity-name`
+      const selector = `${Selectors.LIST_RESULTS_N(N)}:last-child .entity-name .clickable`
+      await this.app.client.$(selector).then(_ => _.waitForDisplayed())
       await this.app.client.$(selector).then(_ => _.click())
       return ReplExpect.okWith('README.md')(await CLI.lastBlock(this.app, 2))
     } catch (err) {
