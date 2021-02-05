@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/* const byte = 1
+import { Row } from '@kui-shell/core'
+import { SortByDirection } from '@patternfly/react-table'
+
+const byte = 1
 const kilobyte = 1024 * byte
 const megabyte = 1024 * kilobyte
 const gigabyte = 1024 * megabyte
@@ -30,21 +33,26 @@ function toSize(val: string): number {
   return mult * parseInt(val.slice(0, val.length - 2), 10)
 }
 
-function sortBySize(cellA: string, cellB, dir: number): number {
+function sortBySize(rowA: Row, rowB: Row, cidx: number, dir: number): number {
+  const cellA = rowA.attributes[cidx - 1].value
+  const cellB = rowB.attributes[cidx - 1].value
+
   return (toSize(cellA) - toSize(cellB)) * dir
 }
 
-function sortRowWithDir(cellA: string, cellB: string, key: string, state: DataTableSortState): number {
-  const dir = state === 'ASC' ? 1 : state === 'NONE' ? 0 : -1
-
+function sortRowWithDir(rowA: Row, rowB: Row, key: string, cidx: number, direction: SortByDirection): number {
+  const dir = direction === 'asc' ? 1 : -1
   if (key === 'SIZE') {
-    return sortBySize(cellA, cellB, dir)
+    return sortBySize(rowA, rowB, cidx, dir)
   } else {
-    return cellA.localeCompare(cellB) * dir
+    return rowA.name.localeCompare(rowB.name) * dir
   }
 }
 
-export default function sortRow(cellA: string, cellB: string, data: SortRowData): number {
-  return sortRowWithDir(cellA, cellB, data.key, data.sortDirection)
+export default function sortRow(rowA: Row, rowB: Row, key: string, cidx: number, direction: SortByDirection): number {
+  return sortRowWithDir(rowA, rowB, key.toUpperCase(), cidx, direction)
 }
-*/
+
+export function isSortableCol(key: string) {
+  return /NAME|SIZE|NAMESPACE|OBJECT/i.test(key.toUpperCase())
+}
