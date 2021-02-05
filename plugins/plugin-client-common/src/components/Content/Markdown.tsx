@@ -20,7 +20,7 @@ import TurndownService from 'turndown'
 import ReactMarkdown from 'react-markdown'
 import { dirname, isAbsolute, join, relative } from 'path'
 import { List, ListComponent, ListItem } from '@patternfly/react-core'
-import { REPL, Tab as KuiTab, getPrimaryTabId } from '@kui-shell/core'
+import { REPL, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
@@ -144,35 +144,40 @@ export default class Markdown extends React.PureComponent<Props> {
             const isLocal = !/^http/i.test(props.href)
             const target = !isLocal ? '_blank' : undefined
 
-            const onClick = !isLocal
-              ? (evt: React.MouseEvent) => evt.stopPropagation()
-              : async (evt: React.MouseEvent) => {
-                  evt.stopPropagation()
-                  let file = props.href
-                  if (isKuiCommand) {
-                    const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
-                    if (raw) {
-                      const cmdline = decodeURIComponent(raw[1])
-                      const echo = !raw[2]
-                      return this.props.repl.pexec(cmdline, { echo })
-                    }
-                  } else if (props.href.charAt(0) === '#') {
-                    const elt = this.props.tab.querySelector(
-                      `[data-markdown-anchor="${this.anchorFrom(props.href.slice(1))}"]`
-                    )
-                    if (elt) {
-                      return elt.scrollIntoView()
-                    }
-                  } else if (file) {
-                    if (this.props.fullpath) {
-                      const absoluteHref = join(dirname(this.props.fullpath), props.href)
-                      const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
-                      file = relativeToCWD
-                    }
+            const onClick =
+              !isLocal && !isKuiCommand
+                ? (evt: React.MouseEvent) => evt.stopPropagation()
+                : async (evt: React.MouseEvent) => {
+                    evt.stopPropagation()
+                    let file = props.href
+                    if (isKuiCommand) {
+                      const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
+                      if (raw) {
+                        const cmdline = decodeURIComponent(raw[1])
+                        const echo = !raw[2]
+                        if (this.props.repl) {
+                          return this.props.repl.pexec(cmdline, { echo })
+                        } else {
+                          pexecInCurrentTab(cmdline, undefined, !echo)
+                        }
+                      }
+                    } else if (props.href.charAt(0) === '#') {
+                      const elt = this.props.tab.querySelector(
+                        `[data-markdown-anchor="${this.anchorFrom(props.href.slice(1))}"]`
+                      )
+                      if (elt) {
+                        return elt.scrollIntoView()
+                      }
+                    } else if (file) {
+                      if (this.props.fullpath) {
+                        const absoluteHref = join(dirname(this.props.fullpath), props.href)
+                        const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
+                        file = relativeToCWD
+                      }
 
-                    return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
+                      return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
+                    }
                   }
-                }
 
             if (!props.href) {
               return <a className={this.props.className}>{props.children}</a>
@@ -187,7 +192,7 @@ export default class Markdown extends React.PureComponent<Props> {
 
               return (
                 <Tooltip markdown={tip}>
-                  <a {...props} target={target} onClick={onClick} />
+                  <a {...props} href={isKuiCommand ? '#' : props.href} target={target} onClick={onClick} />
                 </Tooltip>
               )
             }
