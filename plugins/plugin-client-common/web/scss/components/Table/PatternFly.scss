@@ -26,6 +26,14 @@
 
   @include TableHeadCell {
     color: var(--color-text-01);
+    & .pf-c-table__button {
+      .pf-c-table__text {
+        color: var(--color-text-01);
+      }
+      .pf-c-table__sort-indicator {
+        color: var(--color-ui-05);
+      }
+    }
   }
   @include TableCell {
     color: var(--color-text-01);
