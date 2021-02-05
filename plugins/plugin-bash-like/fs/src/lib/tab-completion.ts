@@ -52,14 +52,17 @@ function findMatchingFilesFrom(files: GlobStats[], dirToScan: string, last: stri
   return {
     mode: 'raw',
     content: matches.map(matchStats => {
-      const match = matchStats.name
+      const match = matchStats.nameForDisplay
       const completion = lastIsDir ? match : match.substring(partial.length)
 
       // show a special label only if we have a dirname prefix
       const label = lastHasPath ? basename(matchStats.nameForDisplay) : undefined
 
       if (matchStats.dirent.isDirectory) {
-        return { completion: `${completion}/`, label: label ? `${label}/` : undefined }
+        return {
+          completion: !/\/$/.test(completion) ? `${completion}/` : completion,
+          label: label ? (!/\/$/.test(label) ? `${label}/` : label) : undefined
+        }
       } else {
         return { completion, addSpace: true, label }
       }
