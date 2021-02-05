@@ -17,31 +17,58 @@
 import { Table } from '@kui-shell/core'
 
 import React from 'react'
-import { Thead, Th, Tr } from '@patternfly/react-table'
+import { SortByDirection, Thead, Th, Tr } from '@patternfly/react-table'
 
-function th(key: string, value: string, outerCSS: string, css?: string) {
-  // nowrap seems to be needed to avoid PatternFly using a "truncate"
-  // mode; see TableCell, where we set "fitContent" as the modifier
-  // for the cells; but that alone seems to cause truncation in the
-  // header :( hence this "nowrap". A bit puzzling.
-  return (
-    <Th key={key || value} data-key={key || value} className={`kui--header-cell ${outerCSS || ''}`} modifier="nowrap">
-      {css ? <span className={css}>{value}</span> : value}
-    </Th>
-  )
-}
+import { isSortableCol } from './sort'
 
 /**
  * Render the TableHeader part
  *
  */
-export default function renderHeader(kuiHeader: Table['header']) {
-  // isSortable: cidx > 0 || kuiHeader.isSortable,
+export default function renderHeader(
+  kuiHeader: Table['header'],
+  isSortable: boolean,
+  activeSortIdx: number,
+  direction: SortByDirection,
+  onSort: (key: string, cidx: number, sortCIdx: number, sortDir: SortByDirection) => void
+) {
+  const th = (key: string, value: string, cidx: number, outerCSS: string, css?: string) => {
+    const dataKey = key || value
+
+    const sortParam =
+      isSortable && isSortableCol(dataKey)
+        ? {
+            sort: {
+              sortBy: { index: activeSortIdx, direction },
+              onSort: (_, clickColIdx: number, clickDir: SortByDirection) =>
+                onSort(dataKey, cidx, clickColIdx, clickDir),
+              columnIndex: cidx
+            }
+          }
+        : {}
+
+    // nowrap seems to be needed to avoid PatternFly using a "truncate"
+    // mode; see TableCell, where we set "fitContent" as the modifier
+    // for the cells; but that alone seems to cause truncation in the
+    // header :( hence this "nowrap". A bit puzzling.
+    return (
+      <Th
+        key={key || value}
+        data-key={key || value}
+        className={`kui--header-cell ${outerCSS || ''}`}
+        modifier="nowrap"
+        {...sortParam}
+      >
+        {css ? <span className={css}>{value}</span> : value}
+      </Th>
+    )
+  }
+
   return (
     <Thead>
       <Tr>
-        {th(kuiHeader.key, kuiHeader.name, kuiHeader.outerCSS, kuiHeader.css)}
-        {kuiHeader.attributes.map(attr => th(attr.key, attr.value, attr.outerCSS, attr.css))}
+        {th(kuiHeader.key, kuiHeader.name, 0, kuiHeader.outerCSS, kuiHeader.css)}
+        {kuiHeader.attributes.map((attr, cidx) => th(attr.key, attr.value, cidx + 1, attr.outerCSS, attr.css))}
       </Tr>
     </Thead>
   )
