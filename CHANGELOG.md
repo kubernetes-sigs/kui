@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.3](https://github.com/IBM/kui/compare/v10.1.2...v10.1.3) (2021-02-06)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** internal: ls should always use `nameForDisplay` ([a645bf9](https://github.com/IBM/kui/commit/a645bf9)), closes [#6971](https://github.com/IBM/kui/issues/6971)
+- **plugins/plugin-bash-like:** ls command does not pass some options to the VFS impl ([911325e](https://github.com/IBM/kui/commit/911325e)), closes [#6969](https://github.com/IBM/kui/issues/6969)
+- **plugins/plugin-bash-like:** tab completion sometimes adds double trailing slashes ([5bf638b](https://github.com/IBM/kui/commit/5bf638b)), closes [#6973](https://github.com/IBM/kui/issues/6973)
+- **plugins/plugin-client-common:** Markdown kuiexec drilldowns do not work if Markdown isn't passed a REPL controller ([d5959b7](https://github.com/IBM/kui/commit/d5959b7)), closes [#6977](https://github.com/IBM/kui/issues/6977)
+- **plugins/plugin-client-common:** restore Table sorting ([234fbe6](https://github.com/IBM/kui/commit/234fbe6)), closes [#6729](https://github.com/IBM/kui/issues/6729)
+
 ## [10.1.2](https://github.com/IBM/kui/compare/v10.1.1...v10.1.2) (2021-02-05)
 
 ### Bug Fixes

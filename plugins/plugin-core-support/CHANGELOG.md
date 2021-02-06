@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.3](https://github.com/IBM/kui/compare/v10.1.2...v10.1.3) (2021-02-06)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** restore Table sorting ([234fbe6](https://github.com/IBM/kui/commit/234fbe6)), closes [#6729](https://github.com/IBM/kui/issues/6729)
+
 ## [10.1.2](https://github.com/IBM/kui/compare/v10.1.1...v10.1.2) (2021-02-05)
 
 ### Bug Fixes
