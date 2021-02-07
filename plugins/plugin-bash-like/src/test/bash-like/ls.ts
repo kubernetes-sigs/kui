@@ -43,6 +43,36 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .then(ReplExpect.okWith('package.json'))
       .catch(Common.oops(this)))
 
+  // pipe to wc
+  it('should use ls ../../package.json | wc -l', () =>
+    CLI.command(`ls ../../package.json | wc -l`, this.app)
+      .then(ReplExpect.okWithString('1'))
+      .catch(Common.oops(this)))
+
+  // pipe to grep to wc
+  it('should use ls ../../ | grep package.json | wc -l', () =>
+    CLI.command(`ls ../../ | grep package.json | wc -l`, this.app)
+      .then(ReplExpect.okWithString('1'))
+      .catch(Common.oops(this)))
+
+  // pipe to grep
+  it('should use ls ../../ | grep package.json', () =>
+    CLI.command(`ls ../../ | grep package.json`, this.app)
+      .then(ReplExpect.okWithString('package.json'))
+      .catch(Common.oops(this)))
+  it('should use ls ../../ | grep p*', () =>
+    CLI.command(`ls ../../ | grep p*`, this.app)
+      .then(ReplExpect.okWithString('package.json'))
+      .catch(Common.oops(this)))
+  it('should use ls -l ../../ | grep package.json', () =>
+    CLI.command(`ls -l ../../ | grep package.json`, this.app)
+      .then(ReplExpect.okWith('package.json'))
+      .catch(Common.oops(this)))
+  it('should use ls -l ../../ | grep p*son', () =>
+    CLI.command(`ls -l ../../ | grep p*son`, this.app)
+      .then(ReplExpect.okWith('package.json'))
+      .catch(Common.oops(this)))
+
   const doListAndMetaClick = async () => {
     const holdDown = Keys.holdDownKey.bind(this)
     const release = Keys.releaseKey.bind(this)
