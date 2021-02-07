@@ -17,6 +17,7 @@
 import { UTC as speedDate } from 'speed-date'
 import {
   i18n,
+  split,
   encodeComponent,
   Arguments,
   CodedError,
@@ -247,8 +248,15 @@ function opt(o: keyof TheLsOptions, opts: Arguments<LsOptions>) {
  * ls command handler
  *
  */
-const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedResponse | Table> => {
-  if (/\|/.test(opts.command)) {
+const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<number | MixedResponse | Table> => {
+  const pipeToGrep = opts.command.match(/\|\s*grep\s+([^|]+)$/)
+  const pipeToWordcount = /\|\s*wc\s+[^|]*$/.test(opts.command)
+  const pipeToGrepToWordcount = opts.command.match(/\|\s*grep\s+([\w*.]+)\s*\|\s*wc\s+[^|]*$/)
+  const pipeTo = !!pipeToGrepToWordcount || !!pipeToWordcount || !!pipeToGrep
+  let command = opts.command
+  if (pipeTo) {
+    command = command.slice(0, command.indexOf('|'))
+  } else if (/\|/.test(opts.command)) {
     // conservatively send possibly piped output to the PTY
     return opts.REPL.qexec(`sendtopty ${opts.command}`, opts.block)
   }
@@ -262,7 +270,7 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
   //
   // NOTE 2: The 2nd regexp assumes that `ls` takes only boolean options.
   //
-  const srcs = opts.command.replace(/^\s*ls/, '').replace(/\s--?\S+/g, '')
+  const srcs = command.replace(/^\s*ls/, '').replace(/\s--?\S+/g, '')
 
   const cmdline = 'vfs ls ' + (opts.parsedOptions.l || cmd === 'lls' ? '-l ' : '') + opt('d', opts) + srcs
 
@@ -288,7 +296,22 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<MixedR
     }
   }
 
-  return toTable(entries, opts)
+  if (pipeToGrep || pipeToGrepToWordcount) {
+    const rest = pipeToGrepToWordcount ? pipeToGrepToWordcount[1] : pipeToGrep[1]
+    const grepFor = split(rest).filter(_ => !/^-/.test(_))[0]
+    const pattern = new RegExp(grepFor.replace(/\*/g, '.*'))
+    const filteredEntries = entries.filter(_ => pattern.test(_.name))
+    console.error('!!!!!!', filteredEntries, rest)
+    if (pipeToGrep) {
+      return toTable(filteredEntries, opts)
+    } else {
+      return filteredEntries.length
+    }
+  } else if (pipeToWordcount) {
+    return entries.length
+  } else {
+    return toTable(entries, opts)
+  }
 }
 
 const usage = (command: string) => ({
