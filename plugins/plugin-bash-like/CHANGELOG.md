@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.4](https://github.com/IBM/kui/compare/v10.1.3...v10.1.4) (2021-02-08)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** ls | grep or ls | wc do not work ([1614ad7](https://github.com/IBM/kui/commit/1614ad7)), closes [#6984](https://github.com/IBM/kui/issues/6984)
+- ctrl+c then clear results in wrong command being executed ([cf1144b](https://github.com/IBM/kui/commit/cf1144b)), closes [#6979](https://github.com/IBM/kui/issues/6979)
+
 ## [10.1.3](https://github.com/IBM/kui/compare/v10.1.2...v10.1.3) (2021-02-06)
 
 ### Bug Fixes

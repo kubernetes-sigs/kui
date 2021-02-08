@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.4](https://github.com/IBM/kui/compare/v10.1.3...v10.1.4) (2021-02-08)
+
+**Note:** Version bump only for package @kui-shell/plugin-wskflow
+
 ## [10.1.3](https://github.com/IBM/kui/compare/v10.1.2...v10.1.3) (2021-02-06)
 
 **Note:** Version bump only for package @kui-shell/plugin-wskflow
