@@ -14,39 +14,63 @@
  * limitations under the License.
  */
 
-import * as assert from 'assert'
-import { Application } from 'spectron'
-
+import { strictEqual } from 'assert'
 import { Common, CLI, Keys, ReplExpect, Selectors, Util } from '@kui-shell/test'
+
+function doCancel(this: Common.ISuite, cmd = '') {
+  return this.app.client
+    .$(Selectors.CURRENT_PROMPT_BLOCK)
+    .then(async _ => {
+      _.waitForExist()
+      return _.getAttribute('data-input-count')
+    })
+    .then(count => parseInt(count, 10))
+    .then(count =>
+      this.app.client
+        .keys(cmd)
+        .then(() => this.app.client.keys(Keys.ctrlC))
+        .then(() => ({ app: this.app, count: count }))
+        .then(ReplExpect.blank)
+        .then(() => this.app.client.$(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
+        .then(_ => _.getText())
+        .then(input => strictEqual(input, cmd))
+    )
+    .catch(Common.oops(this, true))
+}
+
+function doClear(this: Common.ISuite) {
+  it('should clear the terminal', () =>
+    CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app)))
+}
+
+/** This test covers https://github.com/IBM/kui/issues/6979 */
+describe(`Cancel via Ctrl+C then clear then execute ${process.env.MOCHA_RUN_TARGET ||
+  ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const clear = doClear.bind(this)
+  const cancel = doCancel.bind(this)
+
+  it('should type a command, but hit ctrl+c before executing it', () => cancel('echo XXXXXXXXXX'))
+  clear()
+
+  it('should execute a different command, and not see the first output', () =>
+    CLI.command('echo hello', this.app)
+      .then(ReplExpect.okWithString('hello'))
+      .catch(Common.oops(this, true)))
+})
 
 describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  const cancel = (app: Application, cmd = '') =>
-    app.client
-      .$(Selectors.CURRENT_PROMPT_BLOCK)
-      .then(async _ => {
-        _.waitForExist()
-        return _.getAttribute('data-input-count')
-      })
-      .then(count => parseInt(count, 10))
-      .then(count =>
-        app.client
-          .keys(cmd)
-          .then(() => app.client.keys(Keys.ctrlC))
-          .then(() => ({ app: app, count: count }))
-          .then(ReplExpect.blank)
-          .then(() => app.client.$(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
-          .then(_ => _.getText())
-          .then(input => assert.strictEqual(input, cmd))
-      )
-      .catch(Common.oops(this, true))
+  const clear = doClear.bind(this)
+  const cancel = doCancel.bind(this)
 
-  it('should hit ctrl+c', () => cancel(this.app))
-  it('should clear the terminal', () =>
-    CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app)))
-  it('should type foo and hit ctrl+c', () => cancel(this.app, 'foo'))
+  it('should hit ctrl+c', () => cancel())
+  clear()
+  it('should type foo and hit ctrl+c', () => cancel('foo'))
 
   it('should cancel a non-pty command via ctrl+c', async () => {
     try {

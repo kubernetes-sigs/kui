@@ -53,6 +53,7 @@ import {
   Finished,
   Announcement,
   Cancelled,
+  isCancelled,
   Rerun,
   isRerunable,
   isBeingRerun,
@@ -1249,7 +1250,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
                 return (
                   <Block
-                    key={hasUUID(_) ? _.execUUID : idx}
+                    key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
                     idx={idx}
                     displayedIdx={displayedIdx}
                     model={_}
