@@ -298,10 +298,12 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<number
 
   if (pipeToGrep || pipeToGrepToWordcount) {
     const rest = pipeToGrepToWordcount ? pipeToGrepToWordcount[1] : pipeToGrep[1]
-    const grepFor = split(rest).filter(_ => !/^-/.test(_))[0]
-    const pattern = new RegExp(grepFor.replace(/\*/g, '.*'))
+    const grepFor = split(rest)
+      .filter(_ => !/^-/.test(_))[0]
+      .replace(/\./g, '\\.')
+      .replace(/\*/g, '.*')
+    const pattern = new RegExp(/\*/.test(grepFor) ? `^${grepFor}$` : grepFor)
     const filteredEntries = entries.filter(_ => pattern.test(_.name))
-    console.error('!!!!!!', filteredEntries, rest)
     if (pipeToGrep) {
       return toTable(filteredEntries, opts)
     } else {
