@@ -35,7 +35,7 @@ export interface TabCompletionSpec {
   toBeCompletedIdx: number
 }
 
-export type CompletionResponse = string | { completion: string; addSpace: boolean; docs?: string; label?: string }
+export type CompletionResponse = string | { completion: string; addSpace?: boolean; docs?: string; label?: string }
 export function isStringResponse(response: CompletionResponse): response is string {
   return response === undefined || typeof response === 'string'
 }
