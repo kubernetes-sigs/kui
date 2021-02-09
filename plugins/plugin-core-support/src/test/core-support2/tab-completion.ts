@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ describe('Tab completion core', function(this: Common.ISuite) {
   const tmp2 = tmpDirSync()
   touch(join(tmp2.name, 'foo bar1'))
   touch(join(tmp2.name, 'foo bar2'))
+
+  Common.localIt('should tab complete the the /kui/ vfs', () => tabby(this, `ls /ku`, `ls /kui/`))
 
   Common.localIt('should tab complete the ../../packages/core directory', () =>
     tabby(this, `lls ${ROOT}/../../../packages/co`, `lls ${ROOT}/../../../packages/core/`)

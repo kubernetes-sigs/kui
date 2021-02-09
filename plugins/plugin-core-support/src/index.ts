@@ -16,4 +16,4 @@
 
 // this file defines the external API
 
-export { default as notebookVFS } from './notebooks/vfs'
+export { NotebookVFS, default as notebookVFS } from './notebooks/vfs'
