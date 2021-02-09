@@ -21,7 +21,7 @@ import {
   ScalarResponse,
   UsageError,
   isXtermErrorResponse,
-  inBrowser
+  cwd as kuiCwd
 } from '@kui-shell/core'
 
 export const enum BlockState {
@@ -95,7 +95,7 @@ export default BlockModel
 
 /** Capture the current working directory */
 function cwd() {
-  const dir = inBrowser() ? process.env.PWD : process.cwd()
+  const dir = kuiCwd()
   return dir ? dir.replace(process.env.HOME, '~') : undefined
 }
 

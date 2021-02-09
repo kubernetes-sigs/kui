@@ -23,14 +23,12 @@
 import Debug from 'debug'
 import { exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
-import { inBrowser, Arguments, ExecOptions, ExecType, Registrar, i18n } from '@kui-shell/core'
+import { Arguments, ExecOptions, ExecType, Registrar } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
-import { localFilepath } from '../util/usage-helpers'
 import { dispatchToShell } from './catchall'
 
-const strings = i18n('plugin-bash-like')
 const debug = Debug('plugins/bash-like/cmds/general')
 
 export const doExec = (
@@ -121,128 +119,6 @@ export const doExec = (
     })
   })
 
-const doShell = (argv: string[], args: Arguments) =>
-  // eslint-disable-next-line no-async-promise-executor
-  new Promise(async (resolve, reject) => {
-    const { execOptions, REPL } = args
-
-    if (inBrowser()) {
-      reject(new Error('Local file access not supported when running in a browser'))
-    }
-
-    // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
-    const shell = await import('shelljs')
-
-    if (argv.length < 2) {
-      reject(new Error('Please provide a bash command'))
-    }
-
-    const cmd = argv[1]
-    debug('argv', argv)
-    debug('cmd', cmd)
-
-    // shell.echo prints the the outer console, which we don't want
-    if (shell[cmd] && (inBrowser() || (cmd !== 'mkdir' && cmd !== 'echo'))) {
-      const args = argv.slice(2)
-
-      // remember OLDPWD, so that `cd -` works (shell issue #78)
-      if (process.env.OLDPWD === undefined) {
-        process.env.OLDPWD = ''
-      }
-      const OLDPWD = shell.pwd() // remember it for when we're done
-      if (cmd === 'cd' && args[0] === '-') {
-        // special case for "cd -"
-        args[0] = process.env.OLDPWD
-      }
-
-      // see if we should use the built-in shelljs support
-      if (
-        !args.find(arg => arg.charAt(0) === '-') && // any options? then no
-        !args.find(arg => arg === '>') && // redirection? then no
-        cmd !== 'ls'
-      ) {
-        // shelljs doesn't like dash args
-        // otherwise, shelljs has a built-in handler for this
-
-        debug('using internal shelljs', cmd, args)
-
-        const output = shell[cmd](args)
-        if (cmd === 'cd') {
-          const newDir = shell.pwd().toString()
-          process.env.OLDPWD = OLDPWD
-          process.env.PWD = newDir
-
-          if (output.code === 0) {
-            // special case: if the user asked to change working
-            // directory, respond with the new working directory
-            resolve(shell.pwd().toString())
-          } else {
-            reject(new Error(output.stderr))
-          }
-        } else {
-          // otherwise, respond with the output of the command;
-          if (output && output.length > 0) {
-            if (execOptions && execOptions['json']) {
-              resolve(JSON.parse(output))
-            } else {
-              resolve(output.toString())
-            }
-          } else {
-            resolve(true)
-          }
-        }
-      }
-    }
-
-    //
-    // otherwise, we use exec to implement the shell command; here, we
-    // cross our fingers that the platform implements the requested
-    // command
-    //
-    const rest = argv.slice(1) // skip over '!'
-    const cmdLine = rest.map(_ => REPL.encodeComponent(_)).join(' ')
-    debug('cmdline', cmdLine, rest)
-
-    doExec(cmdLine, execOptions).then(resolve, reject)
-  })
-
-const usage = {
-  cd: {
-    strict: 'cd',
-    command: 'cd',
-    title: strings('cdUsageTitle'),
-    header: strings('cdUsageHeader'),
-    optional: localFilepath
-  }
-}
-
-/**
- * cd command
- *
- */
-const cd = (args: Arguments) => {
-  const dir = args.REPL.split(args.command, true, true)[1] || ''
-  debug('cd dir', dir)
-  return doShell(['!', 'cd', dir], args)
-    .then(newDir => {
-      if (args.tab.state) {
-        args.tab.state.capture()
-      }
-      return newDir
-    })
-    .catch(err => {
-      err['code'] = 500
-      throw err
-    })
-}
-
-const bcd = async ({ command, execOptions, REPL }: Arguments) => {
-  const pwd: string = await REPL.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
-  debug('pwd', pwd)
-  process.env.PWD = pwd
-  return pwd
-}
-
 const specialHandler = (args: Arguments) => {
   if (args.execOptions.type === ExecType.TopLevel) {
     throw new Error('this command is intended for internal consumption only')
@@ -265,17 +141,5 @@ export default (commandTree: Registrar) => {
     hidden: true
   })
 
-  commandTree.listen('/kuicd', cd, {
-    requiresLocal: true
-  })
-
-  if (!inBrowser()) {
-    commandTree.listen('/cd', cd, {
-      usage: usage.cd
-    })
-  } else {
-    commandTree.listen('/cd', bcd, {
-      usage: usage.cd
-    })
-  }
+  commandTree.listen('/pwd', () => process.env.PWD)
 }

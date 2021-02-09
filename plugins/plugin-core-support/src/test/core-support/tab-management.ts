@@ -465,7 +465,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithPtyOutput(CWD1))
+      .then(ReplExpect.okWithString(CWD1))
       .catch(Common.oops(this, true)))
 
   it(`switch back to second tab via command`, () =>
@@ -476,7 +476,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD2 ${CWD2} now that we are back in tab2`, () =>
     CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithPtyOutput(CWD2))
+      .then(ReplExpect.okWithString(CWD2))
       .catch(Common.oops(this, true)))
 
   it(`switch back to first tab via command`, () =>
@@ -487,7 +487,7 @@ describe('core new tab from quiescent tab via command', function(this: Common.IS
 
   it(`pwd should show CWD1 ${CWD1} now that we are back in tab1`, () =>
     CLI.command('pwd', this.app)
-      .then(ReplExpect.okWithPtyOutput(CWD1))
+      .then(ReplExpect.okWithString(CWD1))
       .catch(Common.oops(this, true)))
 })
 

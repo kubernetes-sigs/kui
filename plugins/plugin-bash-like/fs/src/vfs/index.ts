@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import slash from 'slash'
 import { isAbsolute, join } from 'path'
-import { Arguments, ParsedOptions, REPL, Table, eventBus, getCurrentTab, inBrowser } from '@kui-shell/core'
+import { cwd, Arguments, ParsedOptions, REPL, Table, eventBus, getCurrentTab, inBrowser } from '@kui-shell/core'
 
 import { FStat } from '../lib/fstat'
 import { KuiGlobOptions, GlobStats } from '../lib/glob'
@@ -179,11 +179,6 @@ export async function mount(vfs: VFS | VFSProducingFunction) {
       mountAll(tab, vfs)
     }
   }
-}
-
-/** @return current working directory */
-function cwd() {
-  return inBrowser() ? process.env.PWD || '/' : process.cwd()
 }
 
 /** @return the absolute path to `filepath` */

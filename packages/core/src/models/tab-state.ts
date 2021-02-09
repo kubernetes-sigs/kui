@@ -18,6 +18,7 @@ import Debug from 'debug'
 
 import { WatchableJob } from '../core/jobs/job'
 import { inBrowser } from '../core/capabilities'
+import { cwd as kuiCwd } from '../util/home'
 import { eventBus, StatusStripeChangeEvent } from '../core/events'
 
 const debug = Debug('core/models/TabState')
@@ -81,7 +82,7 @@ export default class TabState {
   /** Capture contextual global state */
   public capture() {
     this._env = Object.assign({}, process.env)
-    this._cwd = inBrowser() ? process.env.PWD : process.cwd().slice(0) // just in case, copy the string
+    this._cwd = kuiCwd()
 
     debug('captured tab state', this.uuid, this.cwd)
   }
@@ -196,7 +197,7 @@ export default class TabState {
     process.env = this._env
 
     if (this._cwd !== undefined) {
-      if (inBrowser()) {
+      if (inBrowser() || process.env.VIRTUAL_CWD) {
         debug('changing cwd', process.env.PWD, this._cwd)
         process.env.PWD = this._cwd
       } else {
