@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,16 @@ const uid = -1
 const gid = -1
 const username = ''
 
-class NotebookVFS implements VFS {
-  public readonly mountPath = '/kui'
+export class NotebookVFS implements VFS {
   public readonly isLocal = false
   public readonly isVirtual = true
 
   protected readonly prefix = new RegExp(`^${this.mountPath}\\/?`)
 
   private readonly trie: TrieSearch<Directory | Leaf> = new TrieSearch()
+
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(public readonly mountPath = '/kui') {}
 
   /** Turn an ls-style glob into a nodejs-style regexp */
   private glob2RegExp(filepath: string): string {

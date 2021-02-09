@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-20 IBM Corporation
+ * Copyright 2017-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,15 @@ import {
 } from '@kui-shell/core'
 
 import { ls } from '../vfs/delegates'
+import { findMatchingMounts } from '../vfs/index'
 import { GlobStats } from '../lib/glob'
 
-function findMatchingFilesFrom(files: GlobStats[], dirToScan: string, last: string, lastIsDir: boolean) {
+function findMatchingFilesFrom(
+  files: GlobStats[],
+  dirToScan: string,
+  last: string,
+  lastIsDir: boolean
+): CompletionResponse[] {
   const partial = basename(last) + (lastIsDir ? '/' : '')
   const partialHasADot = partial.startsWith('.')
 
@@ -49,25 +55,22 @@ function findMatchingFilesFrom(files: GlobStats[], dirToScan: string, last: stri
 
   // add a trailing slash to any matched directory names
   const lastHasPath = /\//.test(last)
-  return {
-    mode: 'raw',
-    content: matches.map(matchStats => {
-      const match = matchStats.nameForDisplay
-      const completion = lastIsDir ? match : match.substring(partial.length)
+  return matches.map(matchStats => {
+    const match = matchStats.nameForDisplay
+    const completion = lastIsDir ? match : match.substring(partial.length)
 
-      // show a special label only if we have a dirname prefix
-      const label = lastHasPath ? basename(matchStats.nameForDisplay) : undefined
+    // show a special label only if we have a dirname prefix
+    const label = lastHasPath ? basename(matchStats.nameForDisplay) : undefined
 
-      if (matchStats.dirent.isDirectory) {
-        return {
-          completion: !/\/$/.test(completion) ? `${completion}/` : completion,
-          label: label ? (!/\/$/.test(label) ? `${label}/` : label) : undefined
-        }
-      } else {
-        return { completion, addSpace: true, label }
+    if (matchStats.dirent.isDirectory || matchStats.dirent.isSymbolicLink) {
+      return {
+        completion: !/\/$/.test(completion) ? `${completion}/` : completion,
+        label: label ? (!/\/$/.test(label) ? `${label}/` : label) : undefined
       }
-    })
-  }
+    } else {
+      return { completion, addSpace: true, label }
+    }
+  })
 }
 
 /**
@@ -80,6 +83,45 @@ async function completeLocalFiles(
   { toBeCompleted }: TabCompletionSpec
 ): Promise<CompletionResponse[]> {
   return (await tab.REPL.rexec<CompletionResponse[]>(`fscomplete -- "${toBeCompleted}"`)).content
+}
+
+function countSlashes(path: string) {
+  return path.split('/').length - 1
+}
+
+function cropToSlashDepth(path: string, depth: number) {
+  return path
+    .split('/')
+    .slice(0, depth + 1)
+    .join('/')
+}
+
+function removeDuplicates(paths: string[]) {
+  return paths.filter((path, idx) => paths.indexOf(path) === idx)
+}
+
+/**
+ * Tab completion handler for mounts
+ *
+ */
+async function doCompleteWithMounts(path: string, originalErr?: Error): Promise<CompletionResponse[]> {
+  const depthOfPath = countSlashes(path)
+  try {
+    const mounts = await findMatchingMounts(path)
+    if (mounts) {
+      return removeDuplicates(
+        mounts.filter(mount => !mount.isLocal).map(mount => cropToSlashDepth(mount.mountPath, depthOfPath))
+      ).map(mountPath => ({
+        completion: `${mountPath.slice(path.length)}/`,
+        label: `${basename(mountPath.replace(/^[\/]/, ''))}/` // eslint-disable-line no-useless-escape
+      }))
+    } else if (originalErr) {
+      throw originalErr
+    }
+  } catch (err) {
+    console.error('tab completion vfs match mounts error', err)
+    throw err
+  }
 }
 
 async function doComplete(args: Arguments) {
@@ -95,11 +137,27 @@ async function doComplete(args: Arguments) {
     try {
       // Note: by passing a: true, we effect an `ls -a`, which will give us dot files
       const dirToScan = expandHomeDir(dirname)
-      const fileList = await ls({ tab: args.tab, REPL: args.REPL, parsedOptions: { a: true } }, [dirToScan])
-      return findMatchingFilesFrom(fileList, dirToScan, last, lastIsDir)
+      const [fileList, fileListFromMounts] = await Promise.all([
+        ls({ tab: args.tab, REPL: args.REPL, parsedOptions: { a: true } }, [dirToScan]),
+        doCompleteWithMounts(last)
+      ])
+      const _matchingFiles = findMatchingFilesFrom(await fileList, dirToScan, last, lastIsDir)
+      const matchingFiles = _matchingFiles && _matchingFiles.length !== 0 ? _matchingFiles : []
+
+      return {
+        mode: 'raw',
+        content: fileListFromMounts.concat(matchingFiles).sort((a, b) => {
+          const aLabel = typeof a === 'string' ? a : a.label || a.completion
+          const bLabel = typeof b === 'string' ? b : b.label || b.completion
+          return aLabel.localeCompare(bLabel)
+        })
+      }
     } catch (err) {
       console.error('tab completion vfs.ls error', err)
-      throw err
+      return {
+        mode: 'raw',
+        content: doCompleteWithMounts(last, err)
+      }
     }
   }
 }

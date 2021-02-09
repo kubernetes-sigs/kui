@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 
 import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
+
+// mount a fake VFS to test tab completion
+import { mount } from '@kui-shell/plugin-bash-like/fs'
+import { NotebookVFS } from '@kui-shell/plugin-core-support'
 
 import {
   mode1,
@@ -33,6 +37,12 @@ export default async (registrar: PreloadRegistrar) => {
     registrar.registerModes(drilldownButtonWithString, drilldownButtonWithFunction, mode1, mode2, mode5, mode3)
     registrar.registerBadges(badge1, badge2, badge3)
   }
+
+  // make some a fake VFS (using NotebookVFS as the impl) for testing tab completion
+  const vfsfun = new NotebookVFS('/tmpo')
+  vfsfun.mkdir({ argvNoOptions: ['mkdir', '/tmpo/D1'] })
+  vfsfun.mkdir({ argvNoOptions: ['mkdir', '/tmpo/D2'] })
+  mount(vfsfun)
 
   // mount notebooks
   try {

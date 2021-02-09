@@ -191,6 +191,18 @@ function absolute(filepath: string): string {
   return isAbsolute(filepath) ? filepath : join(cwd(), filepath)
 }
 
+/** Lookup compiatible matching mount */
+export function findMatchingMounts(filepath: string, checkClient = false): VFS[] {
+  const isClient = inBrowser()
+  filepath = absolute(filepath)
+
+  const mounts = _currentMounts.filter(
+    mount => mount.mountPath.startsWith(filepath) && (!checkClient || !isClient || mount.isVirtual)
+  )
+
+  return mounts
+}
+
 /** Lookup compiatible mount */
 export function findMount(filepath: string, checkClient = false): VFS {
   const isClient = inBrowser()
