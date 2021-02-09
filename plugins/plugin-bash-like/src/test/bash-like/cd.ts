@@ -35,7 +35,7 @@ describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
     CLI.command('pwd', this.app)
       .then(ReplExpect.okWithAny)
       .then(async () => {
-        initialDirectory = await this.app.client.$(Selectors.OUTPUT_LAST_PTY).then(_ => _.getText())
+        initialDirectory = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
       })
       .catch(Common.oops(this, true))
   )
