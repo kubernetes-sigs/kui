@@ -76,16 +76,17 @@ describe('ls versus vfs', function(this: Common.ISuite) {
       .then(ReplExpect.okWith('kuifake'))
       .catch(Common.oops(this, true)))
 
-  // now try cd /kuifake and make sure ls works against PWD
-  /* requires the fix for https://github.com/IBM/kui/issues/6988
-  it('should cd /kuifake', () => CLI.command('cd /kuifake', this.app).then(ReplExpect.okWithString('/kuifake')).catch(Common.oops(this, true)))
-  it('should ls and show fake1', () =>
-    CLI.command('ls -l', this.app)
-      .then(ReplExpect.okWith('fake1'))
+  // now try cd /tmpo and make sure ls works against PWD
+  it('should cd /tmpo', () =>
+    CLI.command('cd /tmpo', this.app)
+      .then(ReplExpect.okWithString('/tmpo'))
       .catch(Common.oops(this, true)))
-  it('should ls and show fake2', () =>
+  it('should ls and show D1', () =>
     CLI.command('ls -l', this.app)
-      .then(ReplExpect.okWith('fake2'))
-     .catch(Common.oops(this, true)))
-  */
+      .then(ReplExpect.okWith('D1'))
+      .catch(Common.oops(this, true)))
+  it('should ls and show D2', () =>
+    CLI.command('ls -l', this.app)
+      .then(ReplExpect.okWith('D2'))
+      .catch(Common.oops(this, true)))
 })

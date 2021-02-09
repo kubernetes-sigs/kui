@@ -42,7 +42,7 @@ describe('export command', function(this: Common.ISuite) {
 
     return CLI.command('cd', this.app)
       .then(ReplExpect.okWithAny)
-      .then(() => CLI.command('pwd', this.app).then(ReplExpect.okWithPtyOutput(process.env.HOME)))
+      .then(() => CLI.command('pwd', this.app).then(ReplExpect.okWithString(process.env.HOME)))
       .then(() => CLI.command('printenv HOME', this.app).then(ReplExpect.okWithPtyOutput(home)))
       .catch(Common.oops(this))
   })
