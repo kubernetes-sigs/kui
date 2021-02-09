@@ -340,12 +340,25 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
   }
 
   private renderOneCompletion(completion: CompletionResponse, idx: number) {
-    const optLabel = typeof completion !== 'string' && completion.label ? completion.label : undefined
-    const completionText = typeof completion === 'string' ? completion : completion.label || completion.completion
-    const value = optLabel || this.completions.partial + completionText
+    let value: string
+    let preText: string
+    let postText: string
 
-    const preText = optLabel ? completionText : this.completions.partial
-    const postText = optLabel ? '' : completionText
+    if (typeof completion === 'string') {
+      value = this.completions.partial + completion
+      preText = this.completions.partial
+      postText = completion
+    } else {
+      if (completion.label) {
+        value = completion.label
+        preText = completion.label.replace(completion.completion, '')
+        postText = completion.completion
+      } else {
+        value = this.completions.partial + completion.completion
+        preText = this.completions.partial
+        postText = completion.completion
+      }
+    }
 
     return (
       <div className="kui--tab-completions--option" key={idx} data-value={value}>
