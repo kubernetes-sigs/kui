@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import cd from './lib/cd'
 import ls from './lib/ls'
 import edit from './lib/edit'
 import open from './lib/open'
@@ -30,6 +31,7 @@ import { Registrar } from '@kui-shell/core'
  */
 export default async (registrar: Registrar) => {
   await Promise.all([
+    cd(registrar),
     ls(registrar),
     edit(registrar),
     open(registrar),

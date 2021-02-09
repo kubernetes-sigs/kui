@@ -60,7 +60,7 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
     try {
       const pwdRes = await CLI.command('pwd', this.app)
       await ReplExpect.okWithAny(pwdRes)
-      const initialDirectory = await this.app.client.$(Selectors.OUTPUT_LAST_PTY).then(_ => _.getText())
+      const initialDirectory = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
 
       await CLI.command('cd /tmp', this.app).then(ReplExpect.okWithAny)
       const cdDirectory = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())

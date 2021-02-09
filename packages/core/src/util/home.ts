@@ -17,6 +17,8 @@
 import { join } from 'path'
 import { homedir as home } from 'os'
 
+import { inBrowser } from '../core/capabilities'
+
 const homedir = home()
 
 export const expandHomeDir = function(path: string): string {
@@ -32,3 +34,5 @@ export const expandHomeDir = function(path: string): string {
 }
 
 export default expandHomeDir
+
+export const cwd = () => process.env.VIRTUAL_CWD || (inBrowser() ? process.env.PWD || '/' : process.cwd().slice(0))

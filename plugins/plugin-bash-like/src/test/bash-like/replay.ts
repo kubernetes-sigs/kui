@@ -27,7 +27,7 @@ describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, 
     CLI.command('pwd', this.app)
       .then(ReplExpect.okWithAny)
       .then(async () => {
-        curentDirectory = await this.app.client.$(Selectors.OUTPUT_LAST_PTY).then(_ => _.getText())
+        curentDirectory = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
       })
       .catch(Common.oops(this, true)))
 
