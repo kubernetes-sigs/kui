@@ -28,7 +28,6 @@ import {
 } from '@kui-shell/core'
 
 import { ls } from '../vfs/delegates'
-import { findMatchingMounts } from '../vfs/index'
 import { GlobStats } from '../lib/glob'
 
 function findMatchingFilesFrom(
@@ -85,45 +84,6 @@ async function completeLocalFiles(
   return (await tab.REPL.rexec<CompletionResponse[]>(`fscomplete -- "${toBeCompleted}"`)).content
 }
 
-function countSlashes(path: string) {
-  return path.split('/').length - 1
-}
-
-function cropToSlashDepth(path: string, depth: number) {
-  return path
-    .split('/')
-    .slice(0, depth + 1)
-    .join('/')
-}
-
-function removeDuplicates(paths: string[]) {
-  return paths.filter((path, idx) => paths.indexOf(path) === idx)
-}
-
-/**
- * Tab completion handler for mounts
- *
- */
-async function doCompleteWithMounts(path: string, originalErr?: Error): Promise<CompletionResponse[]> {
-  const depthOfPath = countSlashes(path)
-  try {
-    const mounts = await findMatchingMounts(path)
-    if (mounts) {
-      return removeDuplicates(
-        mounts.filter(mount => !mount.isLocal).map(mount => cropToSlashDepth(mount.mountPath, depthOfPath))
-      ).map(mountPath => ({
-        completion: `${mountPath.slice(path.length)}/`,
-        label: `${basename(mountPath.replace(/^[\/]/, ''))}/` // eslint-disable-line no-useless-escape
-      }))
-    } else if (originalErr) {
-      throw originalErr
-    }
-  } catch (err) {
-    console.error('tab completion vfs match mounts error', err)
-    throw err
-  }
-}
-
 async function doComplete(args: Arguments) {
   const last = args.command.substring(args.command.indexOf('-- ') + '-- '.length).replace(/^"(.*)"$/, '$1')
 
@@ -137,27 +97,21 @@ async function doComplete(args: Arguments) {
     try {
       // Note: by passing a: true, we effect an `ls -a`, which will give us dot files
       const dirToScan = expandHomeDir(dirname)
-      const [fileList, fileListFromMounts] = await Promise.all([
-        ls({ tab: args.tab, REPL: args.REPL, parsedOptions: { a: true } }, [dirToScan]),
-        doCompleteWithMounts(last)
-      ])
+      const fileList = await ls({ tab: args.tab, REPL: args.REPL, parsedOptions: { a: true } }, [dirToScan])
       const _matchingFiles = findMatchingFilesFrom(await fileList, dirToScan, last, lastIsDir)
       const matchingFiles = _matchingFiles && _matchingFiles.length !== 0 ? _matchingFiles : []
 
       return {
         mode: 'raw',
-        content: fileListFromMounts.concat(matchingFiles).sort((a, b) => {
-          const aLabel = typeof a === 'string' ? a : a.label || a.completion
-          const bLabel = typeof b === 'string' ? b : b.label || b.completion
-          return aLabel.localeCompare(bLabel)
-        })
+        content: matchingFiles
       }
     } catch (err) {
       console.error('tab completion vfs.ls error', err)
-      return {
-        mode: 'raw',
-        content: doCompleteWithMounts(last, err)
-      }
+      throw err
+      //      return {
+      //        mode: 'raw',
+      //        content: doCompleteWithMounts(last, err)
+      //      }
     }
   }
 }

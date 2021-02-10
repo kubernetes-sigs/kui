@@ -20,6 +20,11 @@ describe(`notebook vfs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
   before(Common.before(this))
   after(Common.after(this))
 
+  it('ls -l / should show /kui', () =>
+    CLI.command('ls -l /', this.app)
+      .then(ReplExpect.okWith('kui'))
+      .catch(Common.oops(this, true)))
+
   it('should open /kui', () =>
     CLI.command('open /kui', this.app)
       .then(ReplExpect.okWithString('Welcome to Kui'))
