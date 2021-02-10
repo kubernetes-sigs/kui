@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,87 @@
  * limitations under the License.
  */
 
+import { basename } from 'path'
 import { Arguments, CodedError, Table, flatten } from '@kui-shell/core'
-import { VFS, findMount, multiFindMount } from '.'
+import { DirEntry, VFS, findMount, multiFindMount, findMatchingMounts } from '.'
+
+/** '/a/b/c' -> 3 */
+function countSlashes(path: string) {
+  let count = 0
+  for (let idx = 0; idx < path.length; idx++) {
+    if (path.charAt(idx) === '/') {
+      count++
+    }
+  }
+  return count
+}
+
+/** ('/a/b/c', 2) => '/a/b' */
+function cropToSlashDepth(path: string, depth: number) {
+  let count = 0
+  for (let idx = 0; idx < path.length; idx++) {
+    if (path.charAt(idx) === '/') {
+      if (count++ === depth) {
+        return path.slice(0, idx)
+      }
+    }
+  }
+  return path
+}
+
+/** Remove duplicates from an array of strings */
+function removeDuplicates(paths: string[]) {
+  return paths.filter((path, idx) => paths.indexOf(path) === idx)
+}
+
+/**
+ * `ls` handler for mounts
+ *
+ */
+async function lsMounts(path: string): Promise<DirEntry[]> {
+  if (!/[*/]$/.test(path)) {
+    path = path + '/'
+  }
+
+  const depthOfPath = countSlashes(path)
+  try {
+    const mounts = await findMatchingMounts(path)
+    if (mounts) {
+      return removeDuplicates(
+        mounts.filter(mount => !mount.isLocal).map(mount => cropToSlashDepth(mount.mountPath, depthOfPath))
+      ).map(mountPath => ({
+        name: basename(mountPath),
+        nameForDisplay: basename(mountPath),
+        path: mountPath,
+        stats: {
+          size: 0,
+          mtimeMs: 0,
+          uid: 0,
+          gid: 0,
+          mode: 0
+        },
+        dirent: {
+          isFile: false,
+          isDirectory: true,
+          isSymbolicLink: false,
+          isSpecial: false,
+          isExecutable: false,
+          permissions: '',
+          username: ''
+        }
+      }))
+    }
+  } catch (err) {
+    console.error('tab completion vfs match mounts error', err)
+    throw err
+  }
+}
 
 /**
  * ls delegate
  *
  */
-export async function ls(...parameters: Parameters<VFS['ls']>): Promise<ReturnType<VFS['ls']>> {
+export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry[]> {
   const mounts = multiFindMount(parameters[1], true)
   if (mounts.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
@@ -29,7 +102,18 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<ReturnTy
     throw err
   }
 
-  return flatten(await Promise.all(mounts.map(({ filepaths, mount }) => mount.ls(parameters[0], filepaths))))
+  const [mountContent, vfsContent] = await Promise.all([
+    Promise.all(parameters[1].map(lsMounts)).then(flatten),
+    Promise.all(mounts.map(({ filepaths, mount }) => mount.ls(parameters[0], filepaths))).then(flatten)
+  ])
+
+  if (mountContent.length > 0) {
+    return mountContent.concat(vfsContent).sort((a, b) => {
+      return a.name.localeCompare(b.name)
+    })
+  } else {
+    return vfsContent
+  }
 }
 
 /**
