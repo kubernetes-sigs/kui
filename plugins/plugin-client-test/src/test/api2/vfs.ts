@@ -65,4 +65,27 @@ describe('ls versus vfs', function(this: Common.ISuite) {
     CLI.command('ls -l /kuifake/fake2/', this.app)
       .then(ReplExpect.okWith('F2'))
       .catch(Common.oops(this, true)))
+
+  // now try cd / and make sure ls works against PWD
+  it('should cd /', () =>
+    CLI.command('cd /', this.app)
+      .then(ReplExpect.okWithString('/'))
+      .catch(Common.oops(this, true)))
+  it('should ls and show kuifake', () =>
+    CLI.command('ls -l', this.app)
+      .then(ReplExpect.okWith('kuifake'))
+      .catch(Common.oops(this, true)))
+
+  // now try cd /kuifake and make sure ls works against PWD
+  /* requires the fix for https://github.com/IBM/kui/issues/6988
+  it('should cd /kuifake', () => CLI.command('cd /kuifake', this.app).then(ReplExpect.okWithString('/kuifake')).catch(Common.oops(this, true)))
+  it('should ls and show fake1', () =>
+    CLI.command('ls -l', this.app)
+      .then(ReplExpect.okWith('fake1'))
+      .catch(Common.oops(this, true)))
+  it('should ls and show fake2', () =>
+    CLI.command('ls -l', this.app)
+      .then(ReplExpect.okWith('fake2'))
+     .catch(Common.oops(this, true)))
+  */
 })

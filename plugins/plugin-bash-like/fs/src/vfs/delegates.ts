@@ -103,7 +103,7 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
   }
 
   const [mountContent, vfsContent] = await Promise.all([
-    Promise.all(parameters[1].map(lsMounts)).then(flatten),
+    Promise.all((parameters[1].length === 0 ? [process.env.PWD] : parameters[1]).map(lsMounts)).then(flatten),
     Promise.all(mounts.map(({ filepaths, mount }) => mount.ls(parameters[0], filepaths))).then(flatten)
   ])
 
