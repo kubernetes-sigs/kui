@@ -73,12 +73,44 @@ export class NotebookVFS implements VFS {
     }
   }
 
+  /** Looks in the trie for any matches for the given filepath, handling the "contents of directory" case */
   private find(filepath: string): Entry[] {
     const dirPattern = this.dirPattern(filepath)
 
     return this.trie
       .get(filepath.replace(/\*.*$/, ''))
       .filter(_ => micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath))
+  }
+
+  /** Looks in the trie for a single precise match */
+  private findExact(filepath: string, withData: boolean): FStat {
+    const flexMatches = this.find(filepath) // all glob and/or directory matches
+    const possibleMatches = flexMatches.filter(_ => _.mountPath === filepath)
+
+    if (possibleMatches.length > 1) {
+      const msg = 'Multiple matches'
+      console.error(msg, possibleMatches)
+      throw new Error(msg)
+    } else if (possibleMatches.length === 0) {
+      if (filepath === this.mountPath || flexMatches.find(_ => _.mountPath.startsWith(filepath))) {
+        // then this is either a match against the mount position or an interior directory
+        return {
+          viewer: 'ls',
+          filepath,
+          fullpath: filepath,
+          isDirectory: true
+        }
+      }
+    } else {
+      const entry = possibleMatches[0]
+      return {
+        viewer: 'replay',
+        filepath: entry.mountPath,
+        fullpath: entry.mountPath,
+        isDirectory: !isLeaf(entry),
+        data: withData && isLeaf(entry) ? JSON.stringify(entry.data, undefined, 2) : undefined
+      }
+    }
   }
 
   private enumerate({ entries }: { entries: Entry[] }) {
@@ -170,27 +202,17 @@ export class NotebookVFS implements VFS {
     withData: boolean,
     enoentOk: boolean
   ): Promise<FStat> {
-    const entries = this.trie.get(filepath)
-    if (entries.length === 0) {
+    const entry = this.findExact(filepath, withData)
+    if (!entry) {
       if (enoentOk) {
-      } else {
-        const error: CodedError = new Error(`File not found: ${filepath}`)
-        error.code = 404
-        throw error
+        // i don't think it makes sense to ignore ENOENT for this VFS
       }
-    } else if (entries.length > 1) {
-      const msg = 'Multiple matches for fstat'
-      console.error(msg, entries)
-      throw new Error(msg)
+
+      const error: CodedError = new Error(`File not found: ${filepath}`)
+      error.code = 404
+      throw error
     } else {
-      const entry = entries[0]
-      return {
-        viewer: 'replay',
-        filepath: entry.mountPath,
-        fullpath: entry.mountPath,
-        isDirectory: !isLeaf(entry),
-        data: withData && isLeaf(entry) ? JSON.stringify(entry.data, undefined, 2) : undefined
-      }
+      return entry
     }
   }
 
