@@ -44,6 +44,16 @@ export default async (registrar: PreloadRegistrar) => {
   vfsfun.mkdir({ argvNoOptions: ['mkdir', '/tmpo/D2'] })
   mount(vfsfun)
 
+  // nested (still fake) VFS mounts
+  const vfsnest1 = new NotebookVFS('/kuifake/fake1')
+  vfsnest1.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake1/E1'] })
+  vfsnest1.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake1/E2'] })
+  const vfsnest2 = new NotebookVFS('/kuifake/fake2')
+  vfsnest2.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake2/F1'] })
+  vfsnest2.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake2/F2'] })
+  mount(vfsnest1)
+  mount(vfsnest2)
+
   // mount notebooks
   try {
     const { notebookVFS } = await import('@kui-shell/plugin-core-support')
