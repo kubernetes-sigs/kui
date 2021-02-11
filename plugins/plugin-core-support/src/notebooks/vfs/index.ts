@@ -30,6 +30,7 @@ interface Tutorial {
 
 interface BaseEntry {
   mountPath: string
+  isDirectory?: boolean
 }
 
 type Directory = BaseEntry
@@ -74,24 +75,32 @@ export class NotebookVFS implements VFS {
   }
 
   /** Looks in the trie for any matches for the given filepath, handling the "contents of directory" case */
-  private find(filepath: string): Entry[] {
+  private find(filepath: string, dashD = false, exact = false): Entry[] {
     const dirPattern = this.dirPattern(filepath)
-
-    return this.trie
+    const flexMatches = this.trie
       .get(filepath.replace(/\*.*$/, ''))
-      .filter(_ => micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath))
+      .filter(_ =>
+        exact ? _.mountPath === filepath : micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath)
+      )
+    if (dashD) {
+      return flexMatches.filter(_ => _.isDirectory)
+    } else if (exact) {
+      return flexMatches
+    } else {
+      return flexMatches.filter(_ => _.mountPath !== filepath)
+    }
   }
 
   /** Looks in the trie for a single precise match */
   private findExact(filepath: string, withData: boolean): FStat {
-    const flexMatches = this.find(filepath) // all glob and/or directory matches
-    const possibleMatches = flexMatches.filter(_ => _.mountPath === filepath)
+    const possibleMatches = this.find(filepath, false, true)
 
     if (possibleMatches.length > 1) {
       const msg = 'Multiple matches'
       console.error(msg, possibleMatches)
       throw new Error(msg)
     } else if (possibleMatches.length === 0) {
+      const flexMatches = this.find(filepath, false, false)
       if (filepath === this.mountPath || flexMatches.find(_ => _.mountPath.startsWith(filepath))) {
         // then this is either a match against the mount position or an interior directory
         return {
@@ -146,10 +155,10 @@ export class NotebookVFS implements VFS {
     })
   }
 
-  public async ls(_, filepaths: string[]) {
+  public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
     return flatten(
       filepaths
-        .map(filepath => ({ filepath, entries: this.find(filepath) }))
+        .map(filepath => ({ filepath, entries: this.find(filepath, parsedOptions.d) }))
         .filter(_ => _.entries.length > 0)
         .map(_ => this.enumerate(_))
     )
@@ -219,7 +228,7 @@ export class NotebookVFS implements VFS {
   /** Create a directory/bucket */
   public async mkdir(opts: Pick<Arguments, 'argvNoOptions'>): Promise<void> {
     const mountPath = opts.argvNoOptions[opts.argvNoOptions.indexOf('mkdir') + 1]
-    this.trie.map(mountPath, { mountPath })
+    this.trie.map(mountPath, { mountPath, isDirectory: true })
   }
 
   /** Remove a directory/bucket */
