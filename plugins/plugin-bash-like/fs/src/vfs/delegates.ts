@@ -16,7 +16,7 @@
 
 import { basename } from 'path'
 import { Arguments, CodedError, Table, flatten } from '@kui-shell/core'
-import { DirEntry, VFS, findMount, multiFindMount, findMatchingMounts } from '.'
+import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
 
 /** '/a/b/c' -> 3 */
 function countSlashes(path: string) {
@@ -95,24 +95,46 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
  *
  */
 export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry[]> {
-  const mounts = multiFindMount(parameters[1], true)
-  if (mounts.length === 0) {
-    const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
+  const filepaths = parameters[1].length === 0 ? [process.env.PWD] : parameters[1].map(absolute)
+
+  // the first maintains the mapping from input to mountContent: DirEntry[][]
+  // the second flattens this down to a DirEntry[]
+  const mountContentPerInput = await Promise.all(filepaths.map(lsMounts))
+  const mountContent = flatten(mountContentPerInput)
+
+  const mounts = multiFindMount(filepaths, true)
+  if (mounts.length === 0 && mountContent.length === 0) {
+    const err: CodedError = new Error(`VFS not mounted: ${filepaths}`)
     err.code = 404
     throw err
   }
 
-  const [mountContent, vfsContent] = await Promise.all([
-    Promise.all((parameters[1].length === 0 ? [process.env.PWD] : parameters[1]).map(lsMounts)).then(flatten),
-    Promise.all(mounts.map(({ filepaths, mount }) => mount.ls(parameters[0], filepaths))).then(flatten)
-  ])
+  const vfsContent = (
+    await Promise.all(
+      mounts.map(async ({ filepaths, mount }) => {
+        try {
+          return await mount.ls(parameters[0], filepaths)
+        } catch (err) {
+          if (err.code !== 404) {
+            console.error(err)
+            throw err
+          }
+        }
+      })
+    ).then(flatten)
+  ).filter(_ => _)
 
-  if (mountContent.length > 0) {
+  if (mountContent.length === 0) {
+    if (vfsContent.length === 0) {
+      // TODO: if no matches, we need to check whether the filepaths are
+      // all directories (and no -d); only then is an empty response valid.
+      // Otherwise, we need to report a 404.
+    }
+    return vfsContent
+  } else {
     return mountContent.concat(vfsContent).sort((a, b) => {
       return a.name.localeCompare(b.name)
     })
-  } else {
-    return vfsContent
   }
 }
 

@@ -182,7 +182,7 @@ export async function mount(vfs: VFS | VFSProducingFunction) {
 }
 
 /** @return the absolute path to `filepath` */
-function absolute(filepath: string): string {
+export function absolute(filepath: string): string {
   return isAbsolute(filepath) ? filepath : join(cwd(), filepath)
 }
 
@@ -198,17 +198,75 @@ export function findMatchingMounts(filepath: string, checkClient = false): VFS[]
   return mounts
 }
 
-/** Lookup compiatible mount */
-export function findMount(filepath: string, checkClient = false): VFS {
+/**
+ * Lookup compiatible mount. Returns one of:
+ * - a VFS mount, if it encloses the given filepath
+ *
+ * - true if `allowInner` and there exists a mount s.t. filepath
+ *     encloses it (i.e. filepath is a parent of some mount)
+ *
+ * - otherwise, the local VFS mount
+ */
+export function findMount(filepath: string, checkClient = false, allowInner = false): VFS {
   const isClient = inBrowser()
   filepath = absolute(filepath)
-  const mount =
-    _currentMounts.find(
-      mount => filepath.startsWith(mount.mountPath) && (!checkClient || !isClient || mount.isVirtual)
-    ) || _currentMounts.find(mount => mount.isLocal) // local fallback; see https://github.com/IBM/kui/issues/5898
 
-  debug(`findMount ${filepath}->${mount.mountPath}`)
-  return mount
+  // filepath: /kuifake   Possibilities limited to [/kuifake]
+  // mounts: ['/kuifake/fake1', '/tmpo', '/kuifake/fake2', '/kui', '/']
+  // first loop should find nothing
+  // if allowInner, second loop should return true; done!
+
+  // filepath: /kuifake/fake1  Possibilities limited to [/kuifake, /kuifake/fake1]
+  // mounts: ['/kuifake/fake1', '/tmpo', '/kuifake/fake2', '/kui', '/']
+  // first loop should find /kuifake/fake1; done!
+
+  // filepath: /kuifake/fake1/E1/f1  Possibilities limited to [/kuifake, /kuifake/fake1, /kuifake/fake1/E1, /kuifake/fake1/E1/f1]
+  // mounts: ['/kuifake/fake1', '/tmpo', '/kuifake/fake2', '/kui', '/']
+  // first loop should find /kuifake/fake1; done!
+
+  // filepath: /a/b/c/d
+  // mounts: ['/kuifake/fake1', '/tmpo', '/kuifake/fake2', '/kui', '/']
+  // first loop should find '/'; done!
+
+  // This loop checks if any mount **encloses** the given filepath (hence startsWith())
+  // Important: search from longest to shortest!! e.g. we don't want
+  // /aaa/b/c to match a mount /a when we also have a mount /aaa/b
+  const splitPath = filepath.split(/\//)
+  const possibilities: string[] = []
+  for (let idx = 1; idx < splitPath.length; idx++) {
+    if (splitPath[idx]) {
+      possibilities.push('/' + splitPath.slice(1, idx + 1).join('/'))
+    }
+  }
+
+  let foundMount: VFS
+  for (let idx = 0; idx < _currentMounts.length; idx++) {
+    const mount = _currentMounts[idx]
+    const { mountPath } = mount
+
+    if (possibilities.includes(mountPath) && (!checkClient || !isClient || mount.isVirtual)) {
+      foundMount = mount
+      break
+    }
+  }
+
+  if (!foundMount) {
+    if (allowInner) {
+      // ok, then look for a mount where the given filepath encloses the mount
+      for (let idx = 0; idx < _currentMounts.length; idx++) {
+        const mount = _currentMounts[idx]
+        if (mount.mountPath.startsWith(filepath) && (!checkClient || !isClient || mount.isVirtual)) {
+          return
+        }
+      }
+    }
+
+    // local fallback; see https://github.com/IBM/kui/issues/5898
+    foundMount = _currentMounts.find(mount => mount.isLocal)
+  }
+
+  debug(`findMount ${filepath}->${foundMount.mountPath}`)
+  return foundMount
 }
 
 /** Lookup compatible mounts */
