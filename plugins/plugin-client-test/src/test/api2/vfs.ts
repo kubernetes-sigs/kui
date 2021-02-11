@@ -75,6 +75,22 @@ describe('ls versus vfs', function(this: Common.ISuite) {
     CLI.command('ls -l', this.app)
       .then(ReplExpect.okWith('kuifake'))
       .catch(Common.oops(this, true)))
+  it('should ls kuifake from / and show fake1', () =>
+    CLI.command('ls -l kuifake', this.app)
+      .then(ReplExpect.okWith('fake1'))
+      .catch(Common.oops(this, true)))
+  it('should ls kuifake from / and show fake2', () =>
+    CLI.command('ls -l kuifake', this.app)
+      .then(ReplExpect.okWith('fake2'))
+      .catch(Common.oops(this, true)))
+  it('should ls kuifake/ from / and show fake1', () =>
+    CLI.command('ls -l kuifake/', this.app)
+      .then(ReplExpect.okWith('fake1'))
+      .catch(Common.oops(this, true)))
+  it('should ls kuifake/ from / and show fake2', () =>
+    CLI.command('ls -l kuifake/', this.app)
+      .then(ReplExpect.okWith('fake2'))
+      .catch(Common.oops(this, true)))
 
   // now try cd /tmpo and make sure ls works against PWD
   it('should cd /tmpo', () =>
@@ -88,5 +104,47 @@ describe('ls versus vfs', function(this: Common.ISuite) {
   it('should ls and show D2', () =>
     CLI.command('ls -l', this.app)
       .then(ReplExpect.okWith('D2'))
+      .catch(Common.oops(this, true)))
+
+  // now try cd /kuifake and make sure ls works against PWD
+  it('should cd /kuifake', () =>
+    CLI.command('cd /kuifake', this.app)
+      .then(ReplExpect.okWithString('/kuifake'))
+      .catch(Common.oops(this, true)))
+  it('should ls and show fake1', () =>
+    CLI.command('ls -l', this.app)
+      .then(ReplExpect.okWith('fake1'))
+      .catch(Common.oops(this, true)))
+  it('should ls and show fake2', () =>
+    CLI.command('ls -l', this.app)
+      .then(ReplExpect.okWith('fake2'))
+      .catch(Common.oops(this, true)))
+
+  // now try cd fake1 (relative cd!)
+  it('should cd fake1', () =>
+    CLI.command('cd fake1', this.app)
+      .then(ReplExpect.okWithString('fake1'))
+      .catch(Common.oops(this, true)))
+  it('should ls show E1', () =>
+    CLI.command('ls -l E1', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
+  it('should ls show E2', () =>
+    CLI.command('ls -l E2', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
+
+  // now try cd ../fake2 (relative cd!)
+  it('should cd ../fake2', () =>
+    CLI.command('cd ../fake2', this.app)
+      .then(ReplExpect.okWithString('fake2'))
+      .catch(Common.oops(this, true)))
+  it('should ls show F1', () =>
+    CLI.command('ls -l F1', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
+  it('should ls show F2', () =>
+    CLI.command('ls -l F2', this.app)
+      .then(ReplExpect.ok)
       .catch(Common.oops(this, true)))
 })

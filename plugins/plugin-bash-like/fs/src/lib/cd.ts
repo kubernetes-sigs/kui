@@ -20,15 +20,11 @@
  *
  */
 
-import Debug from 'debug'
-import { join } from 'path'
-
 import { cwd, inBrowser, Arguments, Registrar, i18n, expandHomeDir } from '@kui-shell/core'
 import { localFilepath } from './usage-helpers'
-import { findMount } from '../vfs'
+import { absolute, findMount } from '../vfs'
 
 const strings = i18n('plugin-bash-like')
-const debug = Debug('plugins/bash-like/cmds/general')
 
 const usage = {
   cd: {
@@ -52,28 +48,28 @@ const cd = async (args: Arguments) => {
 
   const dir = !dirAsProvided ? expandHomeDir('~') : dirAsProvided === '-' ? process.env.OLDPWD : dirAsProvided
 
-  const mount = findMount(dir)
+  const mount = findMount(dir, undefined, true)
   try {
-    const resolveDir =
-      mount.isLocal || dirAsProvided === '-' ? dir : process.env.VIRTUAL_CWD ? join(process.env.VIRTUAL_CWD, dir) : dir
-    debug('cd dir', resolveDir)
-    const stat = await mount.fstat(args, resolveDir)
+    const { isDirectory, fullpath } = !mount
+      ? { isDirectory: true, fullpath: absolute(dir) }
+      : await mount.fstat(args, absolute(dir))
+    const isLocal = mount && mount.isLocal
 
-    if (stat.isDirectory) {
+    if (isDirectory) {
       if (process.env.OLDPWD === undefined) {
         process.env.OLDPWD = ''
       }
 
       const OLDPWD = cwd() // remember it for when we're done
-      const newDir = expandHomeDir(stat.fullpath)
+      const newDir = expandHomeDir(fullpath)
 
-      if (mount.isLocal && !inBrowser()) {
+      if (isLocal && !inBrowser()) {
         process.chdir(newDir)
       }
 
       process.env.OLDPWD = OLDPWD
       process.env.PWD = newDir
-      if (mount.isLocal) {
+      if (isLocal) {
         delete process.env.VIRTUAL_CWD
       } else {
         process.env.VIRTUAL_CWD = newDir
