@@ -28,6 +28,16 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
       .catch(Common.oops(this, true))
   )
 
+  it('should touch a test file in ~', () =>
+    CLI.command(`touch ~/testls`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
+
+  it('should ls -l ~ and see ~/testls', () =>
+    CLI.command('ls -l ~', this.app)
+      .then(ReplExpect.okWith('testls'))
+      .catch(Common.oops(this)))
+
   it('should fail with 404 to ls a non-existing file', () =>
     CLI.command('ls fjdsioafjdsaioffsdaiofjdsaiofjdsaiofjdsaiofjdsaifjdsaiofsa', this.app)
       .then(ReplExpect.error(404))

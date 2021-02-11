@@ -147,4 +147,24 @@ describe('ls versus vfs', function(this: Common.ISuite) {
     CLI.command('ls -l F2', this.app)
       .then(ReplExpect.ok)
       .catch(Common.oops(this, true)))
+
+  // now try cd into ~
+  it('should cd ~', () =>
+    CLI.command('cd ~', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
+  it('should touch a testvfs file in ~', () =>
+    CLI.command(`touch testvfs`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
+  it('should ls -l ~ and see ~/testvfs', () =>
+    CLI.command('ls -l ~', this.app)
+      .then(ReplExpect.okWith('testvfs'))
+      .catch(Common.oops(this)))
+
+  // now try cd back to /kuifake/fake2
+  it('should cd /kuifake/fake2', () =>
+    CLI.command('cd /kuifake/fake2', this.app)
+      .then(ReplExpect.okWithString('/kuifake/fake2'))
+      .catch(Common.oops(this, true)))
 })
