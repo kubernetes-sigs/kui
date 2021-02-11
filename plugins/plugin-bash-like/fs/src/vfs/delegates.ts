@@ -97,33 +97,32 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
 export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry[]> {
   const filepaths = parameters[1].length === 0 ? [process.env.PWD] : parameters[1].map(absolute)
 
+  const mounts = multiFindMount(filepaths, true)
+  const vfsContentP = Promise.all(
+    mounts.map(async ({ filepaths, mount }) => {
+      try {
+        return await mount.ls(parameters[0], filepaths)
+      } catch (err) {
+        if (err.code !== 404) {
+          console.error(err)
+          throw err
+        }
+      }
+    })
+  ).then(flatten)
+
   // the first maintains the mapping from input to mountContent: DirEntry[][]
   // the second flattens this down to a DirEntry[]
-  const mountContentPerInput = await Promise.all(filepaths.map(lsMounts))
-  const mountContent = flatten(mountContentPerInput)
+  const mountContentPerInput = Promise.all(filepaths.map(lsMounts))
 
-  const mounts = multiFindMount(filepaths, true)
+  const mountContent = flatten(await mountContentPerInput)
   if (mounts.length === 0 && mountContent.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${filepaths}`)
     err.code = 404
     throw err
   }
 
-  const vfsContent = (
-    await Promise.all(
-      mounts.map(async ({ filepaths, mount }) => {
-        try {
-          return await mount.ls(parameters[0], filepaths)
-        } catch (err) {
-          if (err.code !== 404) {
-            console.error(err)
-            throw err
-          }
-        }
-      })
-    ).then(flatten)
-  ).filter(_ => _)
-
+  const vfsContent = (await vfsContentP).filter(_ => _)
   if (mountContent.length === 0) {
     if (vfsContent.length === 0) {
       // TODO: if no matches, we need to check whether the filepaths are
