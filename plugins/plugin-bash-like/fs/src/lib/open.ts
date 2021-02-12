@@ -37,7 +37,7 @@ const strings = i18n('plugin-bash-like')
 const debug = Debug('plugins/bash-like/cmds/open')
 
 /** Important for alignment to the Editor view component */
-function contentTypeOf(suffix: string): SupportedStringContent {
+export function contentTypeOf(suffix: string): SupportedStringContent {
   switch (suffix) {
     case 'sh':
       return 'shell'
