@@ -225,6 +225,21 @@ export class NotebookVFS implements VFS {
     }
   }
 
+  /** Fetch content slice */
+  public async fslice(filename: string, offset: number, length: number): Promise<string> {
+    const entry = this.findExact(filename, true)
+    if (entry.data) {
+      const buffer = Buffer.from(entry.data)
+      if (offset > buffer.length) {
+        throw new Error(`notebook fslice: reach file end`)
+      } else {
+        return buffer.slice(offset, length + offset).toString()
+      }
+    } else {
+      throw new Error(`fslice: data not found ${filename}`)
+    }
+  }
+
   /** Create a directory/bucket */
   public async mkdir(opts: Pick<Arguments, 'argvNoOptions'>): Promise<void> {
     const mountPath = opts.argvNoOptions[opts.argvNoOptions.indexOf('mkdir') + 1]

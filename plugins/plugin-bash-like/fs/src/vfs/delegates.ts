@@ -219,6 +219,54 @@ export async function fstat(...parameters: Parameters<VFS['fstat']>): ReturnType
 }
 
 /**
+ * fslice delegate
+ *
+ */
+export async function fslice(
+  filepath: string,
+  offsetAsProvided: number,
+  length: number,
+  unit: 'bytes' | 'lines'
+): ReturnType<VFS['fslice']> {
+  const mount = findMount(filepath, undefined, true)
+
+  if (!mount) {
+    throw new Error(`head: can not find ${filepath}`)
+  }
+
+  if (unit === 'bytes') {
+    return mount.fslice(filepath, offsetAsProvided, length)
+  } else {
+    let offset = offsetAsProvided
+    let dataRead = ''
+    while (true) {
+      try {
+        const data = await mount.fslice(filepath, offset, 1000000)
+        if (data) {
+          dataRead = dataRead.concat(data)
+          const lines = dataRead.split('\n')
+
+          if (lines.length >= length) {
+            dataRead = lines.slice(0, length).join('\n')
+            break
+          } else {
+            offset = Buffer.from(dataRead).length
+          }
+        } else {
+          console.error('bash-like fslice: no data read')
+          break
+        }
+      } catch (err) {
+        console.error(err)
+        break
+      }
+    }
+
+    return dataRead
+  }
+}
+
+/**
  * mkdir delegate
  *
  */
