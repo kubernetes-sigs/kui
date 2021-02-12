@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Arguments, encodeComponent } from '@kui-shell/core'
+import { open, read, stat } from 'fs'
+import { Arguments, encodeComponent, expandHomeDir, findFileWithViewer } from '@kui-shell/core'
 
 import { VFS, mount } from '.'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
@@ -64,6 +65,39 @@ class LocalVFS implements VFS {
     return fstat({
       argvNoOptions: ['fstat', filepath],
       parsedOptions: { 'with-data': withData, 'enoent-ok': enoentOk }
+    })
+  }
+
+  /** Fetch content slice */
+  public async fslice(filepath: string, offset: number, _length: number): Promise<string> {
+    const { resolved: fullpath } = findFileWithViewer(expandHomeDir(filepath))
+
+    return new Promise((resolve, reject) => {
+      open(fullpath, 'r', (err, fd) => {
+        if (err) {
+          reject(err)
+        } else {
+          stat(fullpath, (err, stats) => {
+            if (err) reject(err)
+            try {
+              if (offset >= stats.size) {
+                reject(new Error('local fslice: reach file end'))
+              } else {
+                const length = _length <= stats.size ? _length : stats.size
+                read(fd, Buffer.alloc(length), 0, length, offset, (_err, _, buff) => {
+                  if (_err) {
+                    reject(_err)
+                  } else {
+                    resolve(buff.toString())
+                  }
+                })
+              }
+            } catch (err) {
+              reject(err)
+            }
+          })
+        }
+      })
     })
   }
 

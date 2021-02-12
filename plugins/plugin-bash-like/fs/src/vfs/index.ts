@@ -97,6 +97,9 @@ export interface VFS {
     enoentOk?: boolean
   ): Promise<FStat>
 
+  /** Fetch content slice */
+  fslice(filename: string, offset: number, length: number): Promise<string>
+
   /** Create a directory/bucket */
   mkdir(
     opts: Pick<Arguments, 'command' | 'REPL' | 'argvNoOptions' | 'parsedOptions' | 'execOptions'>,

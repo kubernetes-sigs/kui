@@ -86,6 +86,8 @@ export const SIDECAR_TAB_CONTENT = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .kui--tab-content:not([hidden]) .custom-content`
 export const SIDECAR_CUSTOM_CONTENT = (N: number, splitIndex = 1) =>
   `${SIDECAR_TAB_CONTENT(N, splitIndex)} .code-highlighting`
+export const SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS = (N: number, splitIndex = 1) =>
+  `${SIDECAR_TAB_CONTENT(N, splitIndex)} .code-highlighting .line-numbers`
 
 // top nav sidecar
 export const SIDECAR_MODE_BUTTONS = (N: number, splitIndex = 1) =>
