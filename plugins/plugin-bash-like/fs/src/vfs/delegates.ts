@@ -241,7 +241,7 @@ export async function fslice(
     let dataRead = ''
     while (true) {
       try {
-        const data = await mount.fslice(filepath, offset, 1000000)
+        const data = await mount.fslice(filepath, offset, 4000)
         if (data) {
           dataRead = dataRead.concat(data)
           const lines = dataRead.split('\n')
