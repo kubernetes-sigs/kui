@@ -326,7 +326,7 @@ export const doGet = (command: string) =>
         ? getKindAndVersion(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
         : undefined
 
-    if (!isHeadless() && isWatchRequest(args) && /custom-columns|jsonpath|go-template/.test(formatOf(args))) {
+    if (!isHeadless() && isWatchRequest(args) && /jsonpath|go-template/.test(formatOf(args))) {
       // special case: get --watch/watch-only
 
       // special case of special case: kubectl -w get fails; even

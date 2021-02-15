@@ -29,14 +29,16 @@ import {
   getFileFromArgv,
   getNamespace,
   isEntityFormat,
+  isCustomColumns,
   isTableRequest,
   isWatchRequest
 } from '../../kubectl/options'
 
 import columnsOf from './columns'
 import { urlFormatterFor } from './url'
-import { headersForTableRequest } from './headers'
 import handleErrors, { tryParseAsStatus } from './errors'
+import toKuiTableFromCustomColumns from './custom-columns'
+import { headersForPlainRequest, headersForTableRequest } from './headers'
 import { isStatus, KubeItems, MetaTable } from '../../../lib/model/resource'
 
 export async function getTable(
@@ -56,49 +58,75 @@ export async function getTable(
   const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
   const fmt = format || 'default'
-  if (fmt === 'wide' || fmt === 'default') {
+  const isCusto = isCustomColumns(fmt)
+  if (fmt === 'wide' || fmt === 'default' || isCusto) {
     // first, fetch the data; we pass returnErrors=true here, so that we can assemble 404s properly
-    const responses = await fetchFile(args.REPL, urls, { headers: headersForTableRequest, returnErrors: true })
+    const responses = await fetchFile(args.REPL, urls, {
+      headers: isCusto ? headersForPlainRequest : headersForTableRequest,
+      returnErrors: true
+    })
 
     // then dissect it into errors and non-errors
     const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
 
-    // assemble the non-errors into a single table
-    const metaTable = ok.reduce<MetaTable>((metaTable, data) => {
-      const thisTable =
-        Buffer.isBuffer(data) || typeof data === 'string'
-          ? (JSON.parse(data.toString()) as MetaTable)
-          : (data as MetaTable)
+    if (isCusto) {
+      const list = ok.reduce<KubeItems>((list, data) => {
+        const thisList =
+          Buffer.isBuffer(data) || typeof data === 'string'
+            ? (JSON.parse(data.toString()) as KubeItems)
+            : (data as KubeItems)
 
-      if (!metaTable) {
-        // first table response
-        return thisTable
-      } else {
-        // accumulate table responses
-        metaTable.rows = metaTable.rows.concat(thisTable.rows)
-        return metaTable
-      }
-    }, undefined)
+        if (!list) {
+          // first table response
+          return thisList
+        } else {
+          // accumulate list responses
+          list.items = list.items.concat(thisList.items)
+          return list
+        }
+      }, undefined)
 
-    if (
-      args.execOptions.type === ExecType.TopLevel &&
-      metaTable &&
-      metaTable.rows.length === 0 &&
-      !isWatchRequest(args)
-    ) {
-      return `No resources found in **${namespace}** namespace.`
+      list.isKubeResource = true
+      const table = toKuiTableFromCustomColumns(list, args, drilldownCommand, kind, fmt)
+      return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, group, table, formatUrl)
     } else {
-      try {
-        // withNotFound will add error rows to the table for each error
-        const table = withNotFound(
-          await toKuiTable(metaTable, kind, args, drilldownCommand, needsStatusColumn, customColumns),
-          errors.map(_ => _.message).join('\n')
-        )
+      // assemble the non-errors into a single table
+      const metaTable = ok.reduce<MetaTable>((metaTable, data) => {
+        const thisTable =
+          Buffer.isBuffer(data) || typeof data === 'string'
+            ? (JSON.parse(data.toString()) as MetaTable)
+            : (data as MetaTable)
 
-        return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, group, table, formatUrl)
-      } catch (err) {
-        console.error('error formatting table', err)
-        throw new Error('Internal Error')
+        if (!metaTable) {
+          // first table response
+          return thisTable
+        } else {
+          // accumulate table responses
+          metaTable.rows = metaTable.rows.concat(thisTable.rows)
+          return metaTable
+        }
+      }, undefined)
+
+      if (
+        args.execOptions.type === ExecType.TopLevel &&
+        metaTable &&
+        metaTable.rows.length === 0 &&
+        !isWatchRequest(args)
+      ) {
+        return `No resources found in **${namespace}** namespace.`
+      } else {
+        try {
+          // withNotFound will add error rows to the table for each error
+          const table = withNotFound(
+            await toKuiTable(metaTable, kind, args, drilldownCommand, needsStatusColumn, customColumns),
+            errors.map(_ => _.message).join('\n')
+          )
+
+          return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, group, table, formatUrl)
+        } catch (err) {
+          console.error('error formatting table', err)
+          throw new Error('Internal Error')
+        }
       }
     }
   }

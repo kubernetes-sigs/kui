@@ -31,7 +31,7 @@ import { hideWithSidecar, showAlways } from '../../lib/view/formatTable'
 export async function doGetDeployment(args: Arguments<KubeOptions>) {
   const table = await doGet(getCommandFromArgs(args))(args)
 
-  if (isTable(table)) {
+  if (isTable(table) && table.header) {
     hideWithSidecar('up-to-date', table)
 
     const readyIdx = table.header.attributes.findIndex(_ => /Ready/i.test(_.key))
