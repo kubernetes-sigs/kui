@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 IBM Corporation
+ * Copyright 2019-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,10 +162,11 @@ class ProxyEvaluator implements ReplEval {
             raw += data
 
             if (data.endsWith(MARKER)) {
-              raw += data
-
               try {
-                raw
+                const toBeProcessed = raw
+                raw = ''
+
+                toBeProcessed
                   .split(MARKER)
                   .filter(_ => _)
                   .forEach(_ => {
