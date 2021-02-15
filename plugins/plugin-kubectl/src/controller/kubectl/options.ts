@@ -88,6 +88,10 @@ export function isEntityRequest(args: Arguments<KubeOptions>) {
   return isEntityFormat(formatOf(args))
 }
 
+export function isCustomColumns(format: OutputFormat): format is TableFormat {
+  return /^custom-columns=/.test(format)
+}
+
 /**
  * Notes: we interpret the lack of an output format designation as a
  * request for tabular output. This seems in keeping with the
@@ -97,7 +101,7 @@ export function isEntityRequest(args: Arguments<KubeOptions>) {
  *
  */
 function isTableFormat(format: OutputFormat): format is TableFormat {
-  return !format || format === 'wide' || /^custom-columns=/.test(format) || /^custom-columns-file=/.test(format)
+  return !format || format === 'wide' || isCustomColumns(format) || /^custom-columns-file=/.test(format)
 }
 
 export function isDashHelp(args: Arguments<KubeOptions>) {

@@ -47,7 +47,7 @@ synonyms.forEach(kubectl => {
 
     it('should list pods of job', async () => {
       try {
-        const res = await CLI.command(`${kubectl} get job`, this.app)
+        const res = await CLI.command(`${kubectl} get job ${inNamespace}`, this.app)
         await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())
@@ -59,7 +59,7 @@ synonyms.forEach(kubectl => {
 
     it('should list pods of job', async () => {
       try {
-        const res = await CLI.command(`${kubectl} get job ${jobName}`, this.app)
+        const res = await CLI.command(`${kubectl} get job ${jobName} ${inNamespace}`, this.app)
         await this.app.client.$(Selectors.TABLE_SHOW_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.waitForDisplayed())
         await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(res.count)).then(_ => _.click())

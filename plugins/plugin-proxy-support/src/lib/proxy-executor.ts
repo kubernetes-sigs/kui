@@ -157,7 +157,8 @@ class ProxyEvaluator implements ReplEval {
 
           const MARKER = '\n'
           let raw = ''
-          const onMessage = ({ data }: { data: string }) => {
+          const onMessage = (msg: { data: string }) => {
+            const { data } = msg
             // debug('raw', uuid, data)
             raw += data
 
