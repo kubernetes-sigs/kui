@@ -30,7 +30,7 @@ import {
 } from '@kui-shell/core'
 
 import TrafficLight from '../model/traffic-light'
-import { isClusterScoped, MetaTable } from '../model/resource'
+import { isClusterScoped, KubeResource, MetaTable } from '../model/resource'
 import { getCurrentDefaultNamespace } from '../../'
 import { RawResponse } from '../../controller/kubectl/response'
 import KubeOptions, {
@@ -41,6 +41,7 @@ import KubeOptions, {
 } from '../../controller/kubectl/options'
 
 import cssForValue from './css-for-value'
+export { cssForValue }
 
 const strings = i18n('plugin-kubectl')
 
@@ -54,7 +55,7 @@ const fillTo = (length: number, maxColumns: number): Cell[] => {
 }
 
 /** decorate certain columns specially */
-const outerCSSForKey = {
+export const outerCSSForKey = {
   NAME: 'entity-name-group',
   READY: 'a-few-numbers-wide kui--hide-in-narrower-windows',
   KIND: 'max-width-id-like entity-kind',
@@ -86,7 +87,7 @@ const outerCSSForKey = {
   SUBOBJECT: 'entity-name-group entity-name-group-extra-narrow' // helm ls
 }
 
-const cssForKey = {
+export const cssForKey = {
   // kubectl get events
   NAME: 'entity-name',
   SOURCE: 'lighter-text smaller-text',
@@ -100,7 +101,7 @@ const cssForKey = {
   UPDATED: 'slightly-deemphasize somewhat-smaller-text'
 }
 
-const tagForKey = {
+export const tagForKey = {
   // READY: 'badge', // e.g. deployments
   REASON: 'badge', // k get events
   Reason: 'badge', // k get events
@@ -108,7 +109,7 @@ const tagForKey = {
   Status: 'badge'
 }
 
-const tagsForKind = {
+export const tagsForKind = {
   Deployment: {
     READY: 'badge',
     Ready: 'badge'
@@ -178,7 +179,7 @@ export const preprocessTable = (raw: string[]): Pair[][][] => {
  * whehter n/m === 1.
  *
  */
-function cssForReadyCount(ready: string): string {
+export function cssForReadyCount(ready: string): string {
   if (ready) {
     const [nReady, nTotal] = ready.split(/\//)
     const isDone = nReady && nTotal && nReady === nTotal
@@ -603,6 +604,10 @@ export function showAlways(attr: number | string, table: Table) {
 
 /** Don't show this attribute with the sidecar open */
 export function hideWithSidecar(attr: number | string, table: Table) {
+  if (!table.header) {
+    return
+  }
+
   const pattern = typeof attr === 'string' ? new RegExp(`^${attr}$`, 'i') : undefined
   const idx = typeof attr === 'number' ? attr : table.header.attributes.findIndex(_ => pattern.test(_.key))
 
@@ -630,14 +635,20 @@ function addStatusColumnToRowIfNeeded(
 }
 
 function addStatusColumnIfNeeded(table: Table): Table {
-  const statusAttr = table.header.attributes.find(_ => /STATUS/i.test(_.key) || /READY/i.test(_.key))
-  if (!statusAttr) {
-    const Status = 'Status' // important: do not i18n
-    table.header.attributes.push({ key: Status, value: Status })
-    table.body.forEach(row => addStatusColumnToRowIfNeeded(row, true))
+  if (table.header) {
+    const statusAttr = table.header.attributes.find(_ => /STATUS/i.test(_.key) || /READY/i.test(_.key))
+    if (!statusAttr) {
+      const Status = 'Status' // important: do not i18n
+      table.header.attributes.push({ key: Status, value: Status })
+      table.body.forEach(row => addStatusColumnToRowIfNeeded(row, true))
+    }
   }
 
   return table
+}
+
+export function rowKeyFor(metadata: KubeResource['metadata'], kind: string) {
+  return `${metadata.name}_${kind}_${metadata.namespace}`
 }
 
 export function toKuiTable(
@@ -702,7 +713,7 @@ export function toKuiTable(
     return {
       object: row.object,
       key: forAllNamespaces ? row.object.metadata.namespace : columnDefinitions[0].name.toUpperCase(),
-      rowKey: `${row.object.metadata.name}_${drilldownKind}_${row.object.metadata.namespace}`,
+      rowKey: rowKeyFor(row.object.metadata, drilldownKind),
       name: forAllNamespaces ? row.object.metadata.namespace : cells[0].toString(),
 
       onclickIdempotent: true,

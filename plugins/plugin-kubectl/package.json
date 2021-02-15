@@ -32,6 +32,7 @@
     "debug": "4.3.1",
     "fs-extra": "9.1.0",
     "js-yaml": "3.14.1",
+    "jsonpath": "github:starpit/jsonpath#preparse",
     "needle": "2.6.0",
     "parse-duration": "0.4.4",
     "semver": "7.3.4",

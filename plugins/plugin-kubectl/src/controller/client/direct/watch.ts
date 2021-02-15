@@ -20,16 +20,17 @@ import { Abortable, Arguments, Row, Suspendable, Table, Watchable, Watcher, Watc
 import { Group, isObjectInGroup } from './group'
 import columnsOf from './columns'
 import URLFormatter from './url'
-import { headersForTableRequest } from './headers'
+import { toKuiTableForUpdateFromCustomColumns } from './custom-columns'
+import { headersForPlainRequest, headersForTableRequest } from './headers'
 
 import { FinalState } from '../../../lib/model/states'
 import { toKuiTable } from '../../../lib/view/formatTable'
 import { fetchFile, openStream } from '../../../lib/util/fetch-file'
-import { MetaTable, isMetaTable } from '../../../lib/model/resource'
+import { KubeResource, MetaTable, isMetaTable } from '../../../lib/model/resource'
 
 import { isResourceReady } from '../../kubectl/status'
 import { emitKubectlConfigChangeEvent } from '../../kubectl/config'
-import { KubeOptions, withKubeconfigFrom } from '../../kubectl/options'
+import { KubeOptions, withKubeconfigFrom, isCustomColumns, formatOf } from '../../kubectl/options'
 
 const debug = Debug('plugin-kubectl/client/direct/watch')
 
@@ -89,6 +90,8 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   /** Debouncer: the apiServer may send us DELETED or ADDED events multiple times for a given resource :( */
   private readonly readyDebouncer: Record<string, boolean>
 
+  private alreadySentHeaders = false
+
   /** We only seem to get these once, so we need to remember them */
   private bodyColumnDefinitions: MetaTable['columnDefinitions']
   private footerColumnDefinitions: {
@@ -133,11 +136,20 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     ])
   }
 
+  private isCustomColumns() {
+    return isCustomColumns(formatOf(this.args))
+  }
+
   /** Initialize the streamer for main body updates; i.e. for the rows of the table */
   private initBodyUpdates() {
     const url = this.formatUrl(true) + `?watch=true&resourceVersion=${this.resourceVersion.toString()}`
     const onInit = this.onInitForBodyUpdates.bind(this)
-    return openStream<WatchUpdate>(this.args, url, this.mgmt(onInit), headersForTableRequest)
+    return openStream<WatchUpdate>(
+      this.args,
+      url,
+      this.mgmt(onInit),
+      this.isCustomColumns() ? headersForPlainRequest : headersForTableRequest
+    )
   }
 
   private formatEventUrl(watchOpts?: { resourceVersion: Table['resourceVersion'] }) {
@@ -285,31 +297,44 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
       update.object.columnDefinitions = this.bodyColumnDefinitions
     }
 
-    if (!update.object.columnDefinitions) {
+    if (!update.object.columnDefinitions && !this.isCustomColumns()) {
       console.error('Missing column definitions in update', update)
       return
     }
 
-    let sendHeaders = false
-    if (!this.bodyColumnDefinitions) {
-      sendHeaders = true
-      this.bodyColumnDefinitions = update.object.columnDefinitions
+    const custo = isCustomColumns(formatOf(this.args))
+
+    let sendHeaders = !this.alreadySentHeaders
+    if (!custo) {
+      if (!this.bodyColumnDefinitions) {
+        sendHeaders = true
+        this.bodyColumnDefinitions = update.object.columnDefinitions
+      }
+
+      update.object.rows = update.object.rows.filter(row =>
+        isObjectInGroup(this.group, this.kind, row.object.metadata.name)
+      )
     }
 
-    update.object.rows = update.object.rows.filter(row =>
-      isObjectInGroup(this.group, this.kind, row.object.metadata.name)
-    )
-
-    const table = toKuiTable(
-      update.object,
-      this.kind,
-      this.args,
-      this.drilldownCommand,
-      this.needsStatusColumn,
-      columnsOf(this.kind, this.args)
-    )
+    const table = custo
+      ? toKuiTableForUpdateFromCustomColumns(
+          (update.object as any) as KubeResource,
+          this.args,
+          this.drilldownCommand,
+          this.kind,
+          formatOf(this.args)
+        )
+      : toKuiTable(
+          update.object,
+          this.kind,
+          this.args,
+          this.drilldownCommand,
+          this.needsStatusColumn,
+          columnsOf(this.kind, this.args)
+        )
 
     if (sendHeaders) {
+      this.alreadySentHeaders = true
       this.pusher.header(table.header)
     }
 

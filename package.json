@@ -79,6 +79,7 @@
     "@kui-shell/webpack": "file:packages/webpack",
     "@types/debug": "4.1.5",
     "@types/fs-extra": "9.0.6",
+    "@types/jsonpath": "^0.2.0",
     "@types/micromatch": "4.0.1",
     "@types/minio": "7.0.6",
     "@types/mkdirp": "1.0.1",
