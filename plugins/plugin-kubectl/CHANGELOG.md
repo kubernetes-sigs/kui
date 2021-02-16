@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210216-094031](https://github.com/IBM/kui/compare/v10.1.1-dev-20210215-213847...v10.1.1-dev-20210216-094031) (2021-02-16)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl watch commands that are sent to the CLI don't watch ([d4ea65b](https://github.com/IBM/kui/commit/d4ea65b)), closes [#7025](https://github.com/IBM/kui/issues/7025)
+
 ## [10.1.1-dev-20210215-213847](https://github.com/IBM/kui/compare/v10.1.1-dev-20210215-184959...v10.1.1-dev-20210215-213847) (2021-02-16)
 
 ### Bug Fixes
