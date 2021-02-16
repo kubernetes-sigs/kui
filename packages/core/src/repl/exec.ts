@@ -281,6 +281,7 @@ class InProcessExecutor implements Executor {
           (usage && usage.configuration) ||
           {}
       ),
+      string: commandFlags.string || [],
       boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
       alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
       narg: Object.assign(

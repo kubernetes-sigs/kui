@@ -53,6 +53,7 @@ export function flags(booleans: string[] = []): CommandOptions {
       },
       // Notes on narg: to prevent yargs-parser from processing "--watch true" into watch:true
       narg: { w: 0, watch: 0, 'watch-only': 0 },
+      string: ['_'], // enforce positional arguments to be parsed as string
       boolean: booleans.concat(defaultBooleans)
     }
   }
