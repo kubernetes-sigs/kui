@@ -265,7 +265,14 @@ async function rawGet(
   const isGetAll = args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1] === 'all'
   const requestWithoutKind = isGetAll || (!fileOf(args) && !_kind)
 
-  if ((command === 'oc' || command === 'kubectl') && !args.argvNoOptions.includes('|') && !requestWithoutKind) {
+  // re: context and kubeconfig, see https://github.com/IBM/kui/issues/7023
+  if (
+    (command === 'oc' || command === 'kubectl') &&
+    !args.argvNoOptions.includes('|') &&
+    !requestWithoutKind &&
+    !args.parsedOptions.context &&
+    !args.parsedOptions.kubeconfig
+  ) {
     // try talking to the apiServer directly
     const response = await getDirect(args, _kind)
     if (response) {

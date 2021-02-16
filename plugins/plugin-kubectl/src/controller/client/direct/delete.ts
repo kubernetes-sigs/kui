@@ -33,11 +33,14 @@ const debug = Debug('plugin-kubectl/controller/client/direct/delete')
 
 export default async function deleteDirect(args: Arguments<KubeOptions>, _kind?: Promise<Explained>) {
   // For now, we only handle delete-by-name
+  // re: context and kubeconfig, see https://github.com/IBM/kui/issues/7023
   if (
     !getFileFromArgv(args) &&
     !getLabel(args) &&
     !args.parsedOptions['dry-run'] &&
-    !args.parsedOptions['field-selector']
+    !args.parsedOptions['field-selector'] &&
+    !args.parsedOptions.context &&
+    !args.parsedOptions.kubeconfig
   ) {
     const explainedKind = await (_kind ||
       getKindAndVersion(getCommandFromArgs(args), args, args.argvNoOptions[args.argvNoOptions.indexOf('delete') + 1]))
