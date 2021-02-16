@@ -333,7 +333,12 @@ export const doGet = (command: string) =>
         ? getKindAndVersion(command, args, args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1])
         : undefined
 
-    if (!isHeadless() && isWatchRequest(args) && /jsonpath|go-template/.test(formatOf(args))) {
+    if (
+      !isHeadless() &&
+      isWatchRequest(args) &&
+      (/jsonpath|go-template/.test(formatOf(args)) || args.parsedOptions.context || args.parsedOptions.kubeconfig)
+    ) {
+      // ^^^ re: context and kubeconfig, see https://github.com/IBM/kui/issues/7023 and 7025
       // special case: get --watch/watch-only
 
       // special case of special case: kubectl -w get fails; even
