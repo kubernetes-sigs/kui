@@ -27,6 +27,8 @@ const ns1 = createNS()
 const ns2 = createNS()
 const ns3 = createNS()
 const ns4 = createNS()
+const ns5 = Math.floor(Math.random() * 100) + (1).toString()
+
 const synonyms = ['kubectl']
 
 describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -217,7 +219,9 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     createPod(ns2)
     createIt(ns3)
     createIt(ns4)
+    createIt(ns5)
     deleteIt([ns1, ns3, ns4])
     deleteViaButton(ns2)
+    deleteViaButton(ns5)
   })
 })

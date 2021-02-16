@@ -273,6 +273,7 @@ export default function enforceUsage<T extends KResponse, O extends ParsedOption
         (usage && usage.configuration) ||
         {}
     ),
+    string: Object.assign({}, commandFlags.string || {}),
     boolean: (commandFlags.boolean || []).concat(optionalBooleans || []),
     alias: Object.assign({}, commandFlags.alias || {}, optionalAliases || {}),
     narg: Object.assign(
