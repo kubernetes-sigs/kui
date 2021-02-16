@@ -19,9 +19,20 @@
 @import '../mixins';
 @import '../../Terminal/mixins';
 
+$status-size: 0.625em;
+
 @include PlainTerminal {
   @include SequenceDiagram {
     min-width: 50rem;
+  }
+}
+
+@include WidthConstrained {
+  @include SequenceDiagram {
+    @include StatusBadge {
+      width: $status-size;
+      height: $status-size;
+    }
   }
 }
 
@@ -153,9 +164,9 @@ body[kui-theme-style] {
       }
     }
 
-    [data-tag='badge-circle'] {
-      width: 0.75rem;
-      height: 0.75rem;
+    @include StatusBadge {
+      width: $status-size;
+      height: $status-size;
     }
 
     $loading1: var(--color-base03);
