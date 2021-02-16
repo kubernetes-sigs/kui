@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210215-213847](https://github.com/IBM/kui/compare/v10.1.1-dev-20210215-184959...v10.1.1-dev-20210215-213847) (2021-02-16)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** Kui fetches wrong content when command line specifies --context or --kubeconfig ([7d7d273](https://github.com/IBM/kui/commit/7d7d273)), closes [#7023](https://github.com/IBM/kui/issues/7023)
+
 ## [10.1.1-dev-20210215-184959](https://github.com/IBM/kui/compare/v10.1.1-dev-20210215-161454...v10.1.1-dev-20210215-184959) (2021-02-15)
 
 ### Bug Fixes
