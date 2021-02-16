@@ -39,7 +39,7 @@
 }
 
 @mixin SequenceDiagram {
-  .kui--data-table-container .kui--sequence-diagram {
+  .kui--data-table-wrapper .kui--data-table-container .kui--table-like-wrapper.kui--sequence-diagram {
     @include BarHeight;
     @content;
   }

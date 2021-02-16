@@ -65,3 +65,9 @@ $grid-cell-hover-filter: saturate(2) brightness(1.25);
     @content;
   }
 }
+
+@mixin StatusBadge {
+  [data-tag='badge'] [data-tag='badge-circle'] {
+    @content;
+  }
+}

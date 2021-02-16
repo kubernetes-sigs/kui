@@ -19,6 +19,7 @@ import prettyMillis from 'pretty-ms'
 import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
 
 import Bar from './Bar'
+import ErrorCell from './ErrorCell'
 import DefaultColoring from './Coloring'
 import trafficLight from './css-for-status'
 import { /* renderCell, */ onClickForCell, CellOnClickHandler } from './TableCell'
@@ -437,12 +438,8 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
               widthB = 1 - left
             }
 
-            const gap =
-              intervalIdx === 0 && rowIdx === 0
-                ? 0
-                : rowIdx === 0
-                ? 0 // startMillis - this.state.intervals[intervalIdx - 1].endMillis
-                : startMillis - new Date(interval.rows[0].attributes[idx1].value).getTime()
+            // time gap since the run
+            const gap = startMillis - interval.startMillis
 
             const gapText =
               (intervalIdx === 0 && rowIdx === 0) || gap === 0 || isNaN(gap)
@@ -458,6 +455,8 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
             // does this row represent scheduling overhead?
             const isOverheadRow = /Overhead/i.test(row.attributes[idx4].value)
+
+            const color = trafficLight(row.attributes[idx4])
 
             return interGroupGapRow.concat([
               <tr
@@ -490,16 +489,19 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                     titleOverlay={titleB}
                   />
                 </td>
-                <td className="kui--tertiary-text">{gapText}</td>
+                <td className="kui--tertiary-text pf-m-fit-content">{gapText}</td>
                 {colorByStatus && (
-                  <td className="kui--secondary-text pretty-narrow">
-                    <span className={'cell-inner ' + trafficLight(row.attributes[idx4])}>
-                      {!isOverheadRow && row.attributes[idx4].value}
-                    </span>
+                  <td className="kui--secondary-text pf-m-fit-content">
+                    <div data-tag="badge" className="cell-inner">
+                      <span data-tag="badge-circle" className={color}>
+                        {/red-background/.test(color) ? <ErrorCell /> : undefined}
+                      </span>
+                      <span className={'kui--cell-inner-text'}>{!isOverheadRow && row.attributes[idx4].value}</span>
+                    </div>
                   </td>
                 )}
                 {colorByStatus && (
-                  <td className="kui--tertiary-text pretty-narrow">
+                  <td className="kui--tertiary-text pf-m-fit-content">
                     <span className="cell-inner">{!isOverheadRow && prettyPrintDateDelta(row, idx1, idx2)}</span>
                   </td>
                 )}
@@ -544,7 +546,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return (
       <div className="kui--data-table-container kui--data-table-container">
         <table
-          className="kui--table-like-wrapper pf-m-compact kui--sequence-diagram"
+          className="kui--table-like-wrapper pf-c-table pf-m-compact kui--sequence-diagram"
           data-size={this.size()}
           data-color-by="duration"
         >
