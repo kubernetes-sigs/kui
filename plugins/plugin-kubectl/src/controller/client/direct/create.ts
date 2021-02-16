@@ -63,7 +63,16 @@ export default async function createDirect(
 
     const kindIdx = args.argvNoOptions.indexOf('create') + 1
     const names = args.argvNoOptions.slice(kindIdx + 1)
-    if (verb === 'create' && kind === 'Namespace' && version === 'v1' && names.length > 0) {
+
+    // re: context and kubeconfig, see https://github.com/IBM/kui/issues/7023
+    if (
+      verb === 'create' &&
+      kind === 'Namespace' &&
+      version === 'v1' &&
+      names.length > 0 &&
+      !args.parsedOptions.context &&
+      !args.parsedOptions.kubeconfig
+    ) {
       // WARNING: this is namespace-specific for now!
       const data = names.map(name => ({
         apiVersion: 'v1',
