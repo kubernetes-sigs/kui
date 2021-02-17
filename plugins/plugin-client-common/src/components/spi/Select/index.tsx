@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-21 IBM Corporation
+ * Copyright 2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,13 @@
  * limitations under the License.
  */
 
-@import 'common';
-@import 'mixins';
+import React from 'react'
+import Props from './model'
 
-@include Popover {
-  h6 {
-    margin-top: 0;
-  }
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 
-  &.kui--popover-select {
-    .pf-c-popover__content {
-      width: 22rem;
-      height: 20rem;
-    }
-  }
+export { Props }
 
-  .pf-c-popover__content {
-    width: $popover-width;
-    .pf-c-select__menu {
-      top: 4px;
-      position: relative;
-    }
-  }
-
-  .pf-c-button {
-    padding: 0;
-  }
+export default function PopoverSpi(props: Props): React.ReactElement {
+  return <PatternFly4 {...props} />
 }

@@ -69,7 +69,7 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
   public render() {
     return (
       <TextWithIconWidget
-        className={this.props.className}
+        className={['kui--half-popover-width', this.props.className].filter(_ => _).join(' ')}
         text={this.state.text}
         viewLevel={this.state.viewLevel}
         id="kui--plugin-client-common--current-working-directory"

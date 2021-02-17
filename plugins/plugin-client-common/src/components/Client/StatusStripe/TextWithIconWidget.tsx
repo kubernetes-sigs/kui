@@ -75,7 +75,7 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
       <div
         className={
           'kui--status-stripe-element' +
-          (this.props.textOnclick ? ' kui--status-stripe-element-clickable' : '') +
+          (this.props.textOnclick || this.props.popover ? ' kui--status-stripe-element-clickable' : '') +
           (!this.props.id ? '' : ' ' + this.props.id) +
           (this.props.className ? ' ' + this.props.className : '')
         }

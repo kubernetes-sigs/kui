@@ -108,14 +108,15 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
         try {
           await CLI.command(`kubectl config set-context --current --namespace=${ns1}`, this.app).then(ReplExpect.ok)
 
-          this.app.client.waitUntil(async () => {
-            console.error('1', Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
-            const actualNamespace = await this.app.client
-              .$(Selectors.STATUS_STRIPE_DROPDOWN_LABEL('kui--plugin-kubeui--current-namespace'))
-              .then(_ => _.getText())
-            console.error('2', actualNamespace)
-            return actualNamespace === ns1
-          })
+          this.app.client.waitUntil(
+            async () => {
+              const currentNamespace = await this.app.client
+                .$(Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-kubeui--current-namespace'))
+                .then(_ => _.getText())
+              return currentNamespace === ns1
+            },
+            { timeout: CLI.waitTimeout }
+          )
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -134,13 +135,40 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     const listItViaStatusStripe = () => {
       it('should list namespaces by clicking on status stripe widget', async () => {
         try {
-          const widget = await this.app.client.$('#kui--plugin-kubeui--current-namespace button')
-          await widget.click()
-
-          const menuItem = await this.app.client.$(
-            `${Selectors.STATUS_STRIPE} ${Selectors.DROPDOWN_MENU_ITEM_NAMED('default')}`
+          return this.app.client.waitUntil(
+            async () => {
+              const currentNamespace = await this.app.client
+                .$(Selectors.STATUS_STRIPE_WIDGET_LABEL('kui--plugin-kubeui--current-namespace'))
+                .then(_ => _.getText())
+              return currentNamespace === 'default'
+            },
+            { timeout: CLI.waitTimeout }
           )
-          await menuItem.waitForDisplayed()
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+    }
+
+    const switchNamespaceViaStatusStripe = (ns: string) => {
+      it('should switch to default namespace via status strip element', async () => {
+        try {
+          await this.app.client
+            .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
+            .then(_ => _.click())
+
+          await this.app.client.$(Selectors.POPOVER_SELECT_OPTION(ns)).then(_ => _.click())
+
+          return this.app.client.waitUntil(
+            async () => {
+              const newNamespace = await this.app.client
+                .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
+                .then(_ => _.getText())
+
+              return newNamespace === ns
+            },
+            { timeout: CLI.waitTimeout }
+          )
         } catch (err) {
           await Common.oops(this, true)(err)
         }
@@ -213,6 +241,8 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     listItViaStatusStripe()
     listIt(ns1)
     describeIt(ns1)
+    switchNamespaceViaStatusStripe(ns1)
+    switchNamespaceViaStatusStripe('default')
     createIt(ns2)
     describeIt(ns2)
     createPod(ns1)

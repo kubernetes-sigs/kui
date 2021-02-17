@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-21 IBM Corporation
+ * Copyright 2021 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-@import 'common';
-@import 'mixins';
+.kui--select .pf-c-select__menu {
+  max-width: 20rem;
+}
 
-@include Popover {
-  h6 {
-    margin-top: 0;
-  }
+.kui--popover .kui--select {
+  font-size: 0.75rem;
 
-  &.kui--popover-select {
-    .pf-c-popover__content {
-      width: 22rem;
-      height: 20rem;
-    }
-  }
-
-  .pf-c-popover__content {
-    width: $popover-width;
-    .pf-c-select__menu {
-      top: 4px;
-      position: relative;
-    }
-  }
-
-  .pf-c-button {
-    padding: 0;
+  button {
+    padding-top: 0.25em;
+    padding-bottom: 0.25em;
   }
 }

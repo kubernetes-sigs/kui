@@ -145,10 +145,10 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
     const statusModel = this.statusModel()
 
     return (
-      <React.Fragment>
+      <div className="top-pad bottom-pad">
         {this.summary(statusModel)}
         {this.changes(statusModel)}
-      </React.Fragment>
+      </div>
     )
   }
 
