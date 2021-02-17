@@ -458,6 +458,9 @@ body[kui-theme-style] {
   .top-pad {
     margin-top: 1em;
   }
+  .bottom-pad {
+    margin-bottom: 1em;
+  }
   .small-left-pad {
     margin-left: 1ex;
   }

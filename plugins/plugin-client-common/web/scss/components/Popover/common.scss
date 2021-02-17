@@ -16,6 +16,13 @@
 
 @import 'mixins';
 
+/** e.g. see CurrentWorkingDirectory.tsx; cases where we need to
+  reserve space for an adjoining Popover, because PatternFly as of
+  20210217 does not support NE/SE/etc. positioning of Popovers */
+.kui--half-popover-width {
+  min-width: $popover-width / 2;
+}
+
 body[kui-theme-style] {
   @include Popover {
     min-width: 5rem;
