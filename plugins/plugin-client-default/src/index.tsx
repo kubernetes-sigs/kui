@@ -85,9 +85,9 @@ export default function renderMain(props: KuiProps) {
     >
       <ContextWidgets>
         {!isPopup() && <CurrentWorkingDirectory />}
+        <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
         <CurrentNamespace />
-        <CurrentGitBranch className="kui--hide-in-narrower-windows" />
       </ContextWidgets>
 
       <SpaceFiller />

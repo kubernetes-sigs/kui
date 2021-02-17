@@ -195,6 +195,17 @@
   --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--dark-100);
   --pf-global--BackgroundColor--200: var(--pf-global--BackgroundColor--dark-200);
   --pf-global--BackgroundColor--300: var(--pf-global--BackgroundColor--dark-300);
+
+  .pf-c-select__toggle {
+    --pf-c-select__toggle--BackgroundColor: var(--pf-global--palette--black-100);
+    --pf-c-select__toggle--Color: var(--color-text-01);
+  }
+
+  .pf-c-select {
+    --pf-c-select__menu-item--Color: var(--color-text-01);
+    --pf-c-select__menu--BackgroundColor: var(--pf-global--palette--black-100);
+    --pf-c-select__menu-item--hover--BackgroundColor: var(--pf-global--BackgroundColor--light-300);
+  }
 }
 
 @mixin kui-patternfly-alignment-dark {

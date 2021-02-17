@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { Icons, ViewLevel, DropdownWidget } from '@kui-shell/plugin-client-common'
+import { Icons, ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import {
   i18n,
   eventChannelUnsafe,
@@ -94,7 +94,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
       if (currentNamespace) {
         this.setState({
           currentNamespace,
-          allNamespaces: allNamespaces.sort((a, b) => (a === currentNamespace ? 1 : b === currentNamespace ? -1 : 0)),
+          allNamespaces,
           viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
         })
       }
@@ -137,13 +137,71 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     }
   }
 
-  /** @return the dropdown items */
-  private items() {
-    return this.state.allNamespaces.map(ns => ({
-      label: ns,
-      isSelected: ns === this.state.currentNamespace,
-      handler: () => pexecInCurrentTab(`kubectl config set-context --current --namespace=${ns}`)
+  private listNamespace() {
+    return (
+      <a href="#" onClick={() => pexecInCurrentTab('kubectl get namespace')}>
+        {strings('Show Full Details')}
+      </a>
+    )
+  }
+
+  private popoverHeader() {
+    return (
+      <React.Fragment>
+        <div>{strings('Kubernetes Namespace')}</div>
+        <div className="do-not-overflow">
+          <strong>{this.state.currentNamespace}</strong>
+        </div>
+        <div className="sub-text even-smaller-text">{this.listNamespace()}</div>
+      </React.Fragment>
+    )
+  }
+
+  private switchNamespaceDescription() {
+    return (
+      <span className="sub-text bottom-pad">
+        {strings('To change, select from the following list of all known namespaces.')}
+      </span>
+    )
+  }
+
+  private switchNamespace() {
+    const options = this.state.allNamespaces.map(namespace => ({
+      label: namespace,
+      isSelected: namespace === this.state.currentNamespace,
+      command: `kubectl config set-context --current --namespace=${namespace}`
     }))
+
+    return (
+      <React.Suspense fallback={<div />}>
+        <Select
+          variant="single"
+          maxHeight="9rem"
+          className="small-top-pad"
+          selected={this.state.currentNamespace}
+          options={options}
+          isOpen
+          isClosable={false}
+        />
+      </React.Suspense>
+    )
+  }
+
+  private popoverBody() {
+    return (
+      <div className="top-pad bottom-pad">
+        {this.switchNamespaceDescription()}
+        {this.switchNamespace()}
+      </div>
+    )
+  }
+
+  private popover() {
+    return {
+      className: 'kui--popover-select',
+      bodyContent: this.popoverBody(),
+      headerContent: this.popoverHeader()
+    }
   }
 
   public render() {
@@ -152,13 +210,15 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     }
 
     return (
-      <DropdownWidget
-        position="left"
-        icon={<Icons icon="At" />}
+      <TextWithIconWidget
+        text={this.state.currentNamespace}
+        viewLevel={this.state.viewLevel}
         id="kui--plugin-kubeui--current-namespace"
         title={strings('Kubernetes namespace')}
-        actions={this.items()}
-      />
+        popover={this.popover()}
+      >
+        <Icons icon="At" />
+      </TextWithIconWidget>
     )
   }
 }

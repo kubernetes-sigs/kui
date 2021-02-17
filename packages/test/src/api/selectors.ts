@@ -292,6 +292,11 @@ export const STATUS_STRIPE_WIDGET_ICON_WITH_ATTR = (which: string, key: string, 
 export const STATUS_STRIPE_WIDGET_LABEL_WITH_ATTR = (which: string, key: string, value: string) =>
   `${STATUS_STRIPE_WIDGET_WITH_ATTR(which, key, value)} .kui--status-stripe-text`
 
+const _POPOVER = '.kui--popover'
+const _SELECT = '.kui--select'
+const SELECT_OPTION = `${_SELECT} .kui--select-option`
+export const POPOVER_SELECT_OPTION = (value: string) => `${_POPOVER} ${SELECT_OPTION}[data-value="${value}"]`
+
 /** Selectors of radio button (new RadioTable-based) */
 export const RADIO_BUTTON = '.kui--radio-table-body .kui--radio-table-row'
 export const RADIO_BUTTON_BY_NAME = (name: string) => `${RADIO_BUTTON}[data-name="${name}"]`

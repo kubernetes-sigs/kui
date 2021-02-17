@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { ViewLevel, DropdownWidget } from '@kui-shell/plugin-client-common'
+import { ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import {
   eventChannelUnsafe,
   getTab,
@@ -38,6 +38,7 @@ import {
 } from '@kui-shell/plugin-kubectl'
 
 interface State {
+  currentContext: string
   allContexts: KubeContext[]
   viewLevel: ViewLevel
 }
@@ -66,6 +67,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     super(props)
 
     this.state = {
+      currentContext: '',
       allContexts: [],
       viewLevel: 'hidden'
     }
@@ -119,8 +121,11 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
 
     try {
       const allContexts = await getAllContexts(tab)
+      const currentContext = allContexts.find(context => context.spec.isCurrent)
+
       this.setState({
         allContexts,
+        currentContext: currentContext && this.renderName(currentContext.metadata.name),
         viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
       })
     } catch (err) {
@@ -132,13 +137,73 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     }
   }
 
-  /** @return the dropdown items */
-  private items() {
-    return this.state.allContexts.map(context => ({
+  /** @return UI for listing full context table */
+  private listContext() {
+    return (
+      <a href="#" onClick={() => pexecInCurrentTab('contexts')}>
+        {strings('Show Full Details')}
+      </a>
+    )
+  }
+
+  /** @return the header for the Popover component */
+  private popoverHeader() {
+    return (
+      <React.Fragment>
+        <div>{strings('Kubernetes Context')}</div>
+        <div className="do-not-overflow">
+          <strong>{this.state.currentContext}</strong>
+        </div>
+        <div className="sub-text even-smaller-text">{this.listContext()}</div>
+      </React.Fragment>
+    )
+  }
+
+  private switchContext() {
+    const options = this.state.allContexts.map(context => ({
       label: this.renderName(context.metadata.name),
       isSelected: context.spec.isCurrent,
-      handler: () => pexecInCurrentTab(`kubectl config use-context ${encodeComponent(context.metadata.name)}`)
+      command: `kubectl config use-context ${encodeComponent(context.metadata.name)}`
     }))
+
+    return (
+      <React.Suspense fallback={<div />}>
+        <Select
+          variant={'single'}
+          maxHeight="9rem"
+          className="small-top-pad"
+          selected={this.state.currentContext}
+          options={options}
+          isOpen
+          isClosable={false}
+        />
+      </React.Suspense>
+    )
+  }
+
+  private switchContextDescription() {
+    return (
+      <span className="sub-text">{strings('To change, select from the following list of all known contexts.')}</span>
+    )
+  }
+
+  /** @return the body for the Popover component */
+  private popoverBody() {
+    return (
+      <div className="top-pad bottom-pad">
+        {this.switchContextDescription()}
+        {this.switchContext()}
+      </div>
+    )
+  }
+
+  /** @return desired Popover model */
+  private popover() {
+    return {
+      className: 'kui--popover-select',
+      bodyContent: this.popoverBody(),
+      headerContent: this.popoverHeader()
+    }
   }
 
   /**
@@ -174,13 +239,15 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     }
 
     return (
-      <DropdownWidget
-        position="left"
-        icon={<KubernetesIcon />}
+      <TextWithIconWidget
+        text={this.state.currentContext}
+        viewLevel={this.state.viewLevel}
         id="kui--plugin-kubeui--current-context"
         title={strings('Kubernetes context')}
-        actions={this.items()}
-      />
+        popover={this.popover()}
+      >
+        <KubernetesIcon />
+      </TextWithIconWidget>
     )
   }
 }
