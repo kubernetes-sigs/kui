@@ -21,6 +21,11 @@
 .kui--popover .kui--select {
   font-size: 0.75rem;
 
+  .pf-c-select__toggle-typeahead {
+    font-size: 0.75rem;
+    font-family: var(--font-sans-serif);
+  }
+
   button {
     padding-top: 0.25em;
     padding-bottom: 0.25em;

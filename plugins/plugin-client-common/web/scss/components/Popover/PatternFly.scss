@@ -24,20 +24,19 @@
 
   &.kui--popover-select {
     .pf-c-popover__content {
-      width: 22rem;
-      height: 20rem;
+      width: $popover-width;
+      .pf-c-select__menu {
+        top: 4px;
+        position: relative;
+      }
     }
   }
-
   .pf-c-popover__content {
-    width: $popover-width;
-    .pf-c-select__menu {
-      top: 4px;
-      position: relative;
-    }
+    max-height: 40rem; /* Neither PatternFly nor Carbon let us specify this via props */
+    overflow-y: auto;
   }
 
-  .pf-c-button {
+  .pf-c-button[aria-label='Close'] {
     padding: 0;
   }
 }
