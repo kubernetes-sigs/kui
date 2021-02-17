@@ -169,8 +169,8 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     return (
       <React.Suspense fallback={<div />}>
         <Select
-          variant={'single'}
-          maxHeight="9rem"
+          variant="typeahead"
+          maxHeight="11rem"
           className="small-top-pad"
           selected={this.state.currentContext}
           options={options}

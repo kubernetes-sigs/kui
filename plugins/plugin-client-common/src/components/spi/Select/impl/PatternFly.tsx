@@ -36,12 +36,14 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
   }
 
   private onToggle(expanded: boolean) {
-    if (expanded) {
-      if (!this.state.isOpen) {
-        this.setState({ isOpen: true })
+    if (this.props.isClosable !== false) {
+      if (expanded) {
+        if (!this.state.isOpen) {
+          this.setState({ isOpen: true })
+        }
+      } else {
+        this.setState({ isOpen: false })
       }
-    } else {
-      this.setState({ isOpen: false })
     }
   }
 
@@ -68,9 +70,10 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
         className={'kui--select' + (this.props.className ? ' ' + this.props.className : '')}
         isOpen={this.state.isOpen}
         variant={this.props.variant}
+        typeAheadAriaLabel="Select from the Options"
         selections={this.state.selected}
         maxHeight={this.props.maxHeight}
-        onToggle={this.props.isClosable !== false && this._onToggle}
+        onToggle={this._onToggle}
         onSelect={this._onSelect}
       >
         {this.props.options.map((option, index) => (

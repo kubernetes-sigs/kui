@@ -175,8 +175,8 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     return (
       <React.Suspense fallback={<div />}>
         <Select
-          variant="single"
-          maxHeight="9rem"
+          variant="typeahead"
+          maxHeight="11rem"
           className="small-top-pad"
           selected={this.state.currentNamespace}
           options={options}
