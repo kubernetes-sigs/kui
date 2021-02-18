@@ -75,6 +75,7 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
         maxHeight={this.props.maxHeight}
         onToggle={this._onToggle}
         onSelect={this._onSelect}
+        isDisabled={this.props.isDisabled}
       >
         {this.props.options.map((option, index) => (
           <SelectOption
@@ -85,6 +86,7 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
             isSelected={option.isSelected}
             description={option.description}
             onClick={this._onClicks[index]}
+            isDisabled={option.isDisabled}
           />
         ))}
       </Select>
