@@ -18,6 +18,7 @@ import { Arguments, ExecOptions, ParsedOptions } from '@kui-shell/core'
 
 import { FinalState } from '../../lib/model/states'
 import { getCurrentDefaultNamespace } from './contexts'
+import { getCommandFromArgs } from '../../lib/util/util'
 
 type EntityFormat = 'yaml' | 'json'
 type TableFormat = 'wide' | string // want: 'custom-columns-file=' | 'custom-columns='
@@ -342,6 +343,22 @@ export function withKubeconfigFrom(args: Pick<Arguments<KubeOptions>, 'parsedOpt
     return cmdline + extras
   } else {
     return cmdline.slice(0, insertionIndex) + extras + cmdline.slice(insertionIndex)
+  }
+}
+
+function execOptionsHasPrefix(data: Arguments['execOptions']['data']): data is { kubectlPrefix: string } {
+  return !Buffer.isBuffer(data) && typeof data === 'object' && typeof data.kubectlPrefix === 'string'
+}
+
+/** As with `withKubeconfigFrom`, and also copy over the leading command (e.g. `kubectl`) */
+export function withKubeconfigAndCommandFrom(
+  args: Pick<Arguments<KubeOptions>, 'argvNoOptions' | 'execOptions' | 'parsedOptions'>,
+  cmdline: string
+): string {
+  if (execOptionsHasPrefix(args.execOptions.data)) {
+    return withKubeconfigFrom(args, `${args.execOptions.data.kubectlPrefix} ${cmdline}`)
+  } else {
+    return withKubeconfigFrom(args, `${getCommandFromArgs(args)} ${cmdline}`)
   }
 }
 

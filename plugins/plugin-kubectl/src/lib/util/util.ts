@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
 import { Arguments } from '@kui-shell/core'
 
 import commandPrefix from '../../controller/command-prefix'
@@ -105,16 +104,16 @@ export class StatusError extends Error {}
 export class TryLaterError extends StatusError {}
 
 export class NotFoundError extends StatusError {
-  code: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  public code: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(message: string, code: any = 404) {
+  public constructor(message: string, code: any = 404) {
     super(message)
     this.code = code
   }
 }
 
-export const getCommandFromArgs = (args: { argvNoOptions: string[] }) => {
+export const getCommandFromArgs = (args: Pick<Arguments, 'argvNoOptions'>): string => {
   const cmd = args.argvNoOptions[0] === commandPrefix ? args.argvNoOptions[1] : args.argvNoOptions[0]
   return cmd === 'k' ? 'kubectl' : cmd
 }
