@@ -89,8 +89,10 @@ export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }): 
   }
 
   const cmdline = `kubectl config view --minify --output "jsonpath={..namespace}"`
-  const ns = await REPL.qexec<string>(cmdline)
-    .then(ns => {
+  const ns = await REPL.qexec<string | number>(cmdline)
+    .then(_ns => {
+      const ns = typeof _ns === 'number' ? _ns.toString() : _ns // ns might be number
+
       if (typeof ns !== 'string' || ns.length === 0) {
         // e.g. microk8s
         console.error('Suspicious return value for current namespace', ns, cmdline)

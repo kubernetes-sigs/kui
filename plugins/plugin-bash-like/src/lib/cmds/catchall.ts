@@ -70,7 +70,7 @@ export const dispatchToShell = async ({
       return response
     } else if (useRaw && typeof response === 'string') {
       try {
-        return JSON.parse(response)
+        return !isNaN(parseInt(response)) ? response : JSON.parse(response) // prevents numeric conversion e.g. JSON.parse('1') = 1
       } catch (err) {
         // debug('response maybe is not JSON', response)
       }
