@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 IBM Corporation
+ * Copyright 2020-21 IBM Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,11 @@ $status-size: 0.625em;
 }
 
 @include WidthConstrained {
+  @include SequenceDiagramCard {
+    /** otherwise, the bars seem to overflow a bit */
+    overflow: hidden;
+  }
+
   @include SequenceDiagram {
     @include StatusBadge {
       width: $status-size;
