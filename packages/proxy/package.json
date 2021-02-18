@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/proxy",
-  "version": "10.1.1-dev-20210218-131731",
+  "version": "10.1.1-dev-20210218-164854",
   "description": "Kui package that offers a proxy server",
   "author": "Nick Mitchell",
   "license": "Apache-2.0",

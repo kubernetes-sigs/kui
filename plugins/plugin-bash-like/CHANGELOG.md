@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210218-164854](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-131731...v10.1.1-dev-20210218-164854) (2021-02-18)
+
+### Bug Fixes
+
+- kui fails to show numeric namespace for kubectl config commands ([f424b5e](https://github.com/IBM/kui/commit/f424b5e)), closes [#7032](https://github.com/IBM/kui/issues/7032)
+
 ## [10.1.1-dev-20210218-131731](https://github.com/IBM/kui/compare/v10.1.1-dev-20210216-094031...v10.1.1-dev-20210218-131731) (2021-02-18)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like
