@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210218-131731](https://github.com/IBM/kui/compare/v10.1.1-dev-20210216-094031...v10.1.1-dev-20210218-131731) (2021-02-18)
+
+### Bug Fixes
+
+- `kubectl create ns 1` fails with status/direct ([e3d4a9c](https://github.com/IBM/kui/commit/e3d4a9c)), closes [#7016](https://github.com/IBM/kui/issues/7016)
+
 ## [10.1.1-dev-20210216-094031](https://github.com/IBM/kui/compare/v10.1.1-dev-20210215-213847...v10.1.1-dev-20210216-094031) (2021-02-16)
 
 **Note:** Version bump only for package @kui-shell/core
