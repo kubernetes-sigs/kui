@@ -16,8 +16,9 @@
 export type SelectOptions = {
   label: string
   command?: string
-  description?: string
+  description?: React.ReactNode
   isSelected?: boolean
+  isDisabled?: boolean
 }
 
 export type Props = {
@@ -44,6 +45,9 @@ export type Props = {
 
   /** Flag to indicate if select options are grouped */
   isGrouped?: boolean
+
+  /** Flag to indicate if select option is disabled */
+  isDisabled?: boolean
 }
 
 export default Props
