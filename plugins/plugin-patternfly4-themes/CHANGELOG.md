@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210218-131731](https://github.com/IBM/kui/compare/v10.1.1-dev-20210216-094031...v10.1.1-dev-20210218-131731) (2021-02-18)
+
+### Bug Fixes
+
+- missing some theme alignment rules for pf-t-dark ([60486a2](https://github.com/IBM/kui/commit/60486a2)), closes [#7036](https://github.com/IBM/kui/issues/7036)
+
+### Features
+
+- use Select Component for Kubernetes Context and Namespace status stripe widgets ([0e1c25e](https://github.com/IBM/kui/commit/0e1c25e)), closes [#6920](https://github.com/IBM/kui/issues/6920)
+
 ## [10.1.1-dev-20210216-094031](https://github.com/IBM/kui/compare/v10.1.1-dev-20210215-213847...v10.1.1-dev-20210216-094031) (2021-02-16)
 
 **Note:** Version bump only for package @kui-shell/plugin-patternfly4-themes

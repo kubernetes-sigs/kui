@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210218-131731](https://github.com/IBM/kui/compare/v10.1.1-dev-20210216-094031...v10.1.1-dev-20210218-131731) (2021-02-18)
+
+### Bug Fixes
+
+- missing some theme alignment rules for pf-t-dark ([60486a2](https://github.com/IBM/kui/commit/60486a2)), closes [#7036](https://github.com/IBM/kui/issues/7036)
+- **plugins/plugin-client-common:** "lost connection to your cluster" alert takes up the full window height ([71f2236](https://github.com/IBM/kui/commit/71f2236)), closes [#7018](https://github.com/IBM/kui/issues/7018)
+- **plugins/plugin-client-common:** improve SequenceDiagram layout of gap, status, and duration columns ([9341ec7](https://github.com/IBM/kui/commit/9341ec7)), closes [#7028](https://github.com/IBM/kui/issues/7028)
+
+### Features
+
+- add typeahead to kubernetes context and namespace select widget ([ff9d273](https://github.com/IBM/kui/commit/ff9d273)), closes [#7034](https://github.com/IBM/kui/issues/7034)
+- use Select Component for Kubernetes Context and Namespace status stripe widgets ([0e1c25e](https://github.com/IBM/kui/commit/0e1c25e)), closes [#6920](https://github.com/IBM/kui/issues/6920)
+
 ## [10.1.1-dev-20210216-094031](https://github.com/IBM/kui/compare/v10.1.1-dev-20210215-213847...v10.1.1-dev-20210216-094031) (2021-02-16)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common
