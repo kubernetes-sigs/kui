@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import { basename } from 'path'
 import prettyMillis from 'pretty-ms'
 import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
 
@@ -74,6 +75,45 @@ interface State {
   iter: number
 }
 
+/** @return pretty-printed bytes */
+function safePrettyPrintBytes(_bytes: string | number): string {
+  try {
+    const bytes = typeof _bytes === 'string' ? parseInt(_bytes, 10) : _bytes
+
+    if (bytes < 1024) {
+      return bytes.toFixed(2) + ' b'
+    } else if (bytes < 1024 * 1024) {
+      return (bytes / 1024).toFixed(0) + ' KB'
+    } else if (bytes < 1024 * 1024 * 1024) {
+      return (bytes / 1024 / 1024).toFixed(0) + ' MB'
+    } else if (bytes < 1024 * 1024 * 1024 * 1024) {
+      return (bytes / 1024 / 1024 / 1024).toFixed(0) + ' GB'
+    } else {
+      return (bytes / 1024 / 1024 / 1024 / 1024).toFixed(0) + ' TB'
+    }
+  } catch (err) {
+    return _bytes.toString()
+  }
+}
+
+/** @return pretty-printed bytes */
+function safePrettyPrintBytesWithPrefix(bytes: string | number, prefix: string): string {
+  return prefix + safePrettyPrintBytes(bytes)
+}
+
+/** @return bytes per second, formatted to a "N KBps" form */
+function prettyPrintThroughput(bytes: string, durationInMillis: number): string {
+  try {
+    const numerator = parseInt(bytes, 10) // bytes
+    const denominator = durationInMillis / 1000 // seconds
+    const ratio = numerator / denominator // bytes per second
+
+    return safePrettyPrintBytes(ratio) + 'ps'
+  } catch (err) {
+    return ''
+  }
+}
+
 function prettyPrintDuration(duration: number): string {
   try {
     return prettyMillis(duration)
@@ -83,7 +123,7 @@ function prettyPrintDuration(duration: number): string {
   }
 }
 
-function prettyPrintDateDelta(row: Row, idx1: number, idx2: number): string {
+function prettyPrintDateDelta(row: Row, idx1: number, idx2: number, numerator?: string): string {
   const cell1 = row.attributes[idx1]
   const cell2 = row.attributes[idx2]
 
@@ -95,11 +135,21 @@ function prettyPrintDateDelta(row: Row, idx1: number, idx2: number): string {
         return ''
       } else {
         // then print delta versus now
-        return prettyMillis(Date.now() - startMillis, { compact: true })
+        const delta = Date.now() - startMillis
+        if (numerator === undefined) {
+          return prettyMillis(delta, { compact: true })
+        } else {
+          return prettyPrintThroughput(numerator, delta)
+        }
       }
     } else {
       const endMillis = new Date(cell2.value).getTime()
-      return prettyMillis(endMillis - startMillis)
+      const delta = endMillis - startMillis
+      if (numerator === undefined) {
+        return prettyMillis(delta)
+      } else {
+        return prettyPrintThroughput(numerator, delta)
+      }
     }
   } catch (err) {
     console.error('error formatting delta', cell1, cell2, err)
@@ -374,10 +424,25 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return this.props.response.colorBy === 'status' && this.props.response.statusColumnIdx >= 0
   }
 
+  private findAttrIdx(key: string) {
+    if (this.props.response.body.length >= 0) {
+      const rowWithAttr = this.props.response.body.find(row =>
+        row.attributes ? row.attributes.find(_ => _.key === key) : false
+      )
+      if (rowWithAttr) {
+        return rowWithAttr.attributes.findIndex(_ => _.key === key)
+      }
+    }
+    return -1
+  }
+
   private rows() {
     const idx1 = this.props.response.startColumnIdx
     const idx2 = this.props.response.completeColumnIdx
     const idx4 = this.props.response.statusColumnIdx
+
+    const idx5 = this.findAttrIdx('InputFile')
+    const idx6 = this.findAttrIdx('InputFileSize')
 
     const colorByStatus = this.colorByStatus()
     const durationColoring = new DefaultColoring(this.props.response)
@@ -466,19 +531,22 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   (rowIdx === interval.rows.length - 1 ? ' kui--sequence-diagram-last-row-in-interval' : '')
                 }
               >
-                {false && colorByStatus && (
-                  <td className="kui--secondary-text">
+                {idx5 >= 0 && (
+                  <td className="kui--tertiary-text pf-m-fit-content text-right badge-width">
                     <span
-                      className={
-                        'kui--table-cell-is-name cell-inner ' + (row.onclick ? 'clickable' : '') + (row.css || '')
+                      title={
+                        (row.attributes[idx5] ? basename(row.attributes[idx5].value) : '') +
+                        (idx6 < 0 || !row.attributes[idx6]
+                          ? ''
+                          : safePrettyPrintBytesWithPrefix(row.attributes[idx6].value, ': '))
                       }
-                      onClick={onClick}
+                      className="cell-inner"
                     >
-                      {row.name}
+                      {row.attributes[idx5] ? basename(row.attributes[idx5].value) : ''}
                     </span>
                   </td>
                 )}
-                <td className="kui--sequence-diagram-bar-cell" onClick={onClick}>
+                <td className="kui--sequence-diagram-bar-cell pf-m-nowrap" onClick={onClick}>
                   <Bar
                     left={left}
                     width={width}
@@ -503,6 +571,16 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 {colorByStatus && (
                   <td className="kui--tertiary-text pf-m-fit-content">
                     <span className="cell-inner">{!isOverheadRow && prettyPrintDateDelta(row, idx1, idx2)}</span>
+                  </td>
+                )}
+                {idx6 >= 0 && (
+                  <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
+                    <span
+                      className="cell-inner"
+                      title={row.attributes[idx6] && safePrettyPrintBytes(row.attributes[idx6].value)}
+                    >
+                      {row.attributes[idx6] ? prettyPrintDateDelta(row, idx1, idx2, row.attributes[idx6].value) : ''}
+                    </span>
                   </td>
                 )}
                 {/* this.props.response.statusColumnIdx >= 0
