@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210218-164854](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-131731...v10.1.1-dev-20210218-164854) (2021-02-18)
+
+### Bug Fixes
+
+- kui fails to show numeric namespace for kubectl config commands ([f424b5e](https://github.com/IBM/kui/commit/f424b5e)), closes [#7032](https://github.com/IBM/kui/issues/7032)
+
+### Features
+
+- **plugins/plugin-kubectl:** CLI-based kubectl polling does not allow for flexible overrides of the command prefix ([1e3d60f](https://github.com/IBM/kui/commit/1e3d60f)), closes [#7042](https://github.com/IBM/kui/issues/7042)
+
 ## [10.1.1-dev-20210218-131731](https://github.com/IBM/kui/compare/v10.1.1-dev-20210216-094031...v10.1.1-dev-20210218-131731) (2021-02-18)
 
 ### Bug Fixes
