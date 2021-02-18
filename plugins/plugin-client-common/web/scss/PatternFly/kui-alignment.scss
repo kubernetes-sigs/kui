@@ -185,9 +185,10 @@
 }
 
 @mixin pf-t-dark {
+  --pf-global--Color--dark-100: var(--color-base06);
+  --pf-global--Color--dark-200: var(--color-base05);
   --pf-global--Color--100: var(--pf-global--Color--light-100);
   --pf-global--Color--200: var(--pf-global--Color--light-200);
-  --pf-global--Color--dark-100: var(--color-base00);
   --pf-global--BorderColor--100: var(--pf-global--BorderColor--light-100);
   --pf-global--primary-color--100: var(--pf-global--primary-color--light-100);
   --pf-global--link--Color: var(--pf-global--link--Color--light);
@@ -195,17 +196,6 @@
   --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--dark-100);
   --pf-global--BackgroundColor--200: var(--pf-global--BackgroundColor--dark-200);
   --pf-global--BackgroundColor--300: var(--pf-global--BackgroundColor--dark-300);
-
-  .pf-c-select__toggle {
-    --pf-c-select__toggle--BackgroundColor: var(--pf-global--palette--black-100);
-    --pf-c-select__toggle--Color: var(--color-text-01);
-  }
-
-  .pf-c-select {
-    --pf-c-select__menu-item--Color: var(--color-text-01);
-    --pf-c-select__menu--BackgroundColor: var(--pf-global--palette--black-100);
-    --pf-c-select__menu-item--hover--BackgroundColor: var(--pf-global--BackgroundColor--light-300);
-  }
 }
 
 @mixin kui-patternfly-alignment-dark {
