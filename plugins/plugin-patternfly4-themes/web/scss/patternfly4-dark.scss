@@ -80,15 +80,9 @@ body.kui--patternfly4[kui-theme='PatternFly4 Dark'][kui-theme-style] {
   --pf-global--link--Color: var(--pf-global--link--Color--light);
   --pf-global--link--Color--hover: var(--pf-global--link--Color--light);
   --pf-global--BackgroundColor--100: var(--pf-global--palette--black-850);
-
-  .pf-c-select__toggle {
-    --pf-c-select__toggle--BackgroundColor: var(--pf-global--BackgroundColor--dark-100);
-    --pf-c-select__toggle--Color: var(--color-text-01);
-  }
-
-  .pf-c-select {
-    --pf-c-select__menu-item--Color: var(--color-text-01);
-    --pf-c-select__menu--BackgroundColor: var(--pf-global--BackgroundColor--dark-100);
-    --pf-c-select__menu-item--hover--BackgroundColor: var(--pf-global--BackgroundColor--dark-300);
-  }
+  --pf-global--Color--dark-100: var(--pf-global--Color--light-100);
+  --pf-global--Color--dark-200: var(--pf-global--Color--light-200);
+  --pf-global--BackgroundColor--light-100: var(--pf-global--BackgroundColor--dark-100);
+  --pf-global--BackgroundColor--light-200: var(--pf-global--BackgroundColor--dark-200);
+  --pf-global--BackgroundColor--light-300: var(--pf-global--BackgroundColor--dark-300);
 }
