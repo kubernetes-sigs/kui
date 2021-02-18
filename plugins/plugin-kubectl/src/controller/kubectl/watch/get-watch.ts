@@ -40,6 +40,7 @@ import {
   getNamespace,
   getResourceNamesForArgv,
   withKubeconfigFrom,
+  withKubeconfigAndCommandFrom,
   KubeOptions,
   KubeExecOptions
 } from '../options'
@@ -337,9 +338,9 @@ class KubectlWatcher implements Abortable, Watcher {
     namespace: string,
     rowNames: string[]
   ): Promise<Table | void> {
-    const getCommand = withKubeconfigFrom(
+    const getCommand = withKubeconfigAndCommandFrom(
       this.args,
-      `${getCommandFromArgs(this.args)} get ${kindPart(apiVersion, kind)} ${rowNames.join(' ')} -n ${namespace} ${
+      `get ${kindPart(apiVersion, kind)} ${rowNames.join(' ')} -n ${namespace} ${
         this.output ? `-o ${this.output}` : ''
       }`
     )
