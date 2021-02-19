@@ -124,10 +124,6 @@ $grid-cell-size: 1.25rem;
 @mixin badge-only {
   .kui--data-table-container .kui--table-like-wrapper,
   .kui--table-like {
-    th[data-key='STATUS'],
-    td.kui--status-cell {
-      width: 5rem; /* leave from for "Status" in the header */
-    }
     [data-tag='badge'] {
       justify-content: center;
 
