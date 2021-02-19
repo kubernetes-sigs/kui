@@ -48,7 +48,10 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
    */
   private async reportCurrentDirectory() {
     const dir = cwd()
-    this.setState({ text: dir ? dir.replace(process.env.HOME, '~') : undefined, viewLevel: dir ? 'normal' : 'hidden' })
+    this.setState({
+      text: dir ? (dir === process.env.HOME ? dir : dir.replace(process.env.HOME, '~')) : undefined,
+      viewLevel: dir ? 'normal' : 'hidden'
+    })
   }
 
   /**
