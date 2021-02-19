@@ -4,7 +4,7 @@ metadata:
   name: vim
 spec:
   containers:
-  - image: jare/alpine-vim
+  - image: quay.io/starpit/alpine-vim
     command:
       - /bin/sh
       - "-c"
