@@ -297,7 +297,7 @@ export default class Input extends InputProvider {
   /** Owner wants us to focus on the current prompt */
   public doFocus() {
     if (this.props.isFocused && this.state.prompt && document.activeElement !== this.state.prompt) {
-      this.state.prompt.focus()
+      setTimeout(() => this.state.prompt.focus(), 50)
     }
   }
 
@@ -421,6 +421,23 @@ export default class Input extends InputProvider {
     this.willFocusBlock(evt)
   }
 
+  /** This is the onBLur property of the active prompt */
+  private readonly _onBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+    this.props.onInputBlur && this.props.onInputBlur(evt)
+
+    const valueNotChanged =
+      hasCommand(this.props.model) && this.state.prompt && this.props.model.command === this.state.prompt.value
+
+    this.setState(curState => {
+      if (curState.isReEdit && valueNotChanged) {
+        return {
+          isReEdit: false,
+          prompt: undefined
+        }
+      }
+    })
+  }
+
   /** This is the onClick property of the prompt for Active blocks */
   private readonly _onClickActive = (evt: React.MouseEvent<HTMLInputElement>) => {
     this.props.onInputClick && this.props.onInputClick(evt)
@@ -478,22 +495,7 @@ export default class Input extends InputProvider {
             placeholder={this.props.promptPlaceholder}
             data-scrollback-uuid={this.props.uuid}
             data-input-count={this.props.idx}
-            onBlur={evt => {
-              this.props.onInputBlur && this.props.onInputBlur(evt)
-
-              const valueNotChanged =
-                hasCommand(this.props.model) &&
-                this.state.prompt &&
-                this.props.model.command === this.state.prompt.value
-              this.setState(curState => {
-                if (curState.isReEdit && valueNotChanged) {
-                  return {
-                    isReEdit: false,
-                    prompt: undefined
-                  }
-                }
-              })
-            }}
+            onBlur={this._onBlur}
             onFocus={this._onFocus}
             onMouseDown={this.props.onInputMouseDown}
             onMouseMove={this.props.onInputMouseMove}

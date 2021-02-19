@@ -199,7 +199,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         }
 
     this.state = {
-      focusedIdx: this.props.snapshot && splits.length > 0 ? 0 : -1, // focus first split for replays
+      focusedIdx: 0,
       splits,
       notebookMetadata
     }
@@ -1247,7 +1247,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                   sbidx === this.state.focusedIdx &&
                   (idx === scrollback.focusedBlockIdx ||
                     (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
-
                 return (
                   <Block
                     key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
