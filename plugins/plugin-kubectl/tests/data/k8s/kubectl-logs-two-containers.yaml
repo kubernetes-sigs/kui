@@ -8,5 +8,5 @@ spec:
     image: quay.io/bitnami/nginx
     command: ["/bin/sh", "-c", "while true; do echo nginx-`date +'%M:%S'`; sleep 1; done"]
   - name: vim
-    image: jare/alpine-vim
+    image: quay.io/starpit/alpine-vim
     command: ["/bin/sh", "-c", "while true; do echo vim-`date +'%M:%S'`; sleep 1; done"]
