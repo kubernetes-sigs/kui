@@ -134,6 +134,12 @@ export async function _needle(
     const method = (opts && opts.method) || 'get'
     const headers = Object.assign({ connection: 'keep-alive' }, opts.headers)
     debug('fetch via needle', method, headers)
+
+    // internal usage: test kui's error handling of apiServer
+    if (process.env.TRAVIS_CHAOS_TESTING) {
+      throw new Error('nope')
+    }
+
     try {
       const { statusCode, body } = await needle(method, await rescheme(url), opts.data, {
         json: true,
@@ -212,14 +218,14 @@ async function fetchRemote(repl: REPL, url: string, opts?: FetchOptions<BodyData
 }
 
 export type ReturnedError = {
-  error: Error
+  error: string
 }
 
 export type FetchedFile = string | Buffer | object | ReturnedError
 
 export function isReturnedError(file: FetchedFile): file is ReturnedError {
   const err = file as ReturnedError
-  return typeof file !== 'string' && !Buffer.isBuffer(file) && typeof err.error === 'object'
+  return typeof file !== 'string' && !Buffer.isBuffer(file) && typeof err.error === 'string'
 }
 
 /**
@@ -245,7 +251,7 @@ export async function fetchFile(
           Object.assign({}, opts, { data: Array.isArray(opts.data) ? opts.data[idx] : opts.data })
         ).catch(err => {
           if (opts && opts.returnErrors) {
-            return { error: err }
+            return { error: err.message || JSON.stringify(err) }
           } else throw err
         })
       } else {

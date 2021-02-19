@@ -51,7 +51,7 @@ export default async function handleErrors(
 ): Promise<WithErrors> {
   const withErrors: (string | Buffer | object | CodedError)[] = await Promise.all(
     responses.map(async data => {
-      let errorData = isReturnedError(data) ? tryParseAsStatus(data.error.message) : isStatus(data) ? data : undefined
+      let errorData = isReturnedError(data) ? tryParseAsStatus(data.error) : isStatus(data) ? data : undefined
       if (errorData) {
         if (isStatus(errorData)) {
           // if we could not find the requested resource, do some

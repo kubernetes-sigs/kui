@@ -274,10 +274,19 @@ async function rawGet(
     !args.parsedOptions.kubeconfig
   ) {
     // try talking to the apiServer directly
-    const response = await getDirect(args, _kind)
-    if (response) {
-      // that worked!
-      return response
+    try {
+      const response = await getDirect(args, _kind)
+      if (response) {
+        // that worked!
+        return response
+      }
+    } catch (err) {
+      if (err.code !== 500) {
+        // expected apiServer error, i.e. Kubernetes Status errors
+        throw err
+      } else {
+        console.error('unexpected apiServer error, intentionally fallback to kubectl CLI', err)
+      }
     }
   }
 
