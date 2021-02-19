@@ -20,6 +20,9 @@ import { ChildProcess } from 'child_process'
 
 import { onKubectlConfigChangeEvents, offKubectlConfigChangeEvents } from '../../..'
 
+/** We know how to launch a kubectl proxy for... */
+type SupportedCommand = 'oc' | 'kubectl'
+
 const debug = Debug('plugin-kubectl/client/proxy')
 
 /** Maximum number of times we try start the kubectl proxy */
@@ -38,7 +41,10 @@ type State = {
 }
 
 /** State of current kubectl proxy */
-let currentProxyState: Promise<State>
+const currentProxyState: Record<SupportedCommand, Promise<State>> = {
+  oc: undefined,
+  kubectl: undefined
+}
 
 /**
  * Unregister onQuit handlers
@@ -95,13 +101,13 @@ function registerOnQuit(state: Omit<State, 'onQuitHandler'>): State {
  * @return the State of the kubectl proxy
  *
  */
-async function startProxy(): Promise<State> {
+async function startProxy(command: SupportedCommand): Promise<State> {
   const { spawn } = await import('child_process')
   return new Promise<State>((resolve, reject) => {
     const iter = (port = 8001, retryCount = 0) => {
       try {
         debug('attempting to spawn kubectl proxy on port', port)
-        const process = spawn('kubectl', ['proxy', '--keepalive=120s', '--port', port.toString()])
+        const process = spawn(command, ['proxy', '--keepalive=120s', '--port', port.toString()])
         let myState: State
 
         // to make sure we don't smash the global variable on exit
@@ -137,19 +143,19 @@ async function startProxy(): Promise<State> {
 
         process.on('exit', (code, signal) => {
           debug('kubectl proxy has exited with code', code || signal)
-          if (currentProxyState !== undefined && retryCount >= maxRetries) {
+          if (currentProxyState[command] !== undefined && retryCount >= maxRetries) {
             // then we are still trying to initialize, and haven't
             // exceeded our port retry loop count
             console.error(`kubectl proxy exited unexpectedly with exitCode=${code || signal}`)
             reject(new Error(stderr))
-          } else if (currentProxyState) {
+          } else if (currentProxyState[command]) {
             // then we thought we had a stable kubectl proxy process, but it went and died on its own
             debug('marking proxy as terminated')
             if (myState) {
               myState.process = undefined
             }
             if (!iGotRetried) {
-              currentProxyState = undefined
+              currentProxyState[command] = undefined
             }
           }
         })
@@ -165,10 +171,10 @@ async function startProxy(): Promise<State> {
 }
 
 /** Wrapper around `startProxy` that deals with the currentProxyState variable */
-function initProxyState() {
-  if (!currentProxyState) {
-    const myProxyState = startProxy()
-    currentProxyState = myProxyState
+function initProxyState(command: SupportedCommand) {
+  if (!currentProxyState[command]) {
+    const myProxyState = startProxy(command)
+    currentProxyState[command] = myProxyState
 
     myProxyState.then(state =>
       onKubectlConfigChangeEvents(type => {
@@ -179,12 +185,12 @@ function initProxyState() {
     )
   }
 
-  return currentProxyState
+  return currentProxyState[command]
 }
 
 /** Is the current kubectl proxy viable? */
-function isProxyActive() {
-  return currentProxyState !== undefined
+function isProxyActive(command: SupportedCommand) {
+  return currentProxyState[command] !== undefined
 }
 
 interface KubectlProxyInfo {
@@ -192,13 +198,13 @@ interface KubectlProxyInfo {
 }
 
 /** @return information about the current kubectl proxy */
-export default async function getProxyState(): Promise<KubectlProxyInfo> {
-  if (!isProxyActive()) {
+export default async function getProxyState(command: SupportedCommand): Promise<KubectlProxyInfo> {
+  if (!isProxyActive(command)) {
     debug('attempting to start proxy')
-    initProxyState()
+    initProxyState(command)
   }
 
   return {
-    baseUrl: !isProxyActive() ? undefined : `http://localhost:${(await currentProxyState).port}`
+    baseUrl: !isProxyActive(command) ? undefined : `http://localhost:${(await currentProxyState[command]).port}`
   }
 }
