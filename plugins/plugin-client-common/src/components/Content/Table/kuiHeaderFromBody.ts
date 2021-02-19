@@ -23,9 +23,10 @@ function capitalize(str: string): string {
 
 export default function kuiHeaderFromBody(body: KuiTable['body']): KuiTable['header'] {
   if (body.length > 0) {
-    const attributes = (body[0].attributes || []).map(({ key, value }) => ({
+    const attributes = (body[0].attributes || []).map(({ key, value, outerCSS }) => ({
       key: key || value,
-      value: key || value
+      value: key || value,
+      outerCSS
     }))
 
     const key = body[0].key || 'Name'
