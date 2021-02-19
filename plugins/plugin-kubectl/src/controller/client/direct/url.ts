@@ -17,6 +17,7 @@
 import { Arguments } from '@kui-shell/core'
 
 import { Explained } from '../../kubectl/explain'
+import { getCommandFromArgs } from '../../../lib/util/util'
 import { KubeOptions, getLabel, getNamespace, isForAllNamespaces } from '../../kubectl/options'
 
 export type URLFormatter = (
@@ -35,7 +36,14 @@ function kindOnPathFor(kind: string) {
   return `/${encodeURIComponent(kind.toLowerCase() + (/s$/.test(kind) ? '' : 's'))}`
 }
 
+/**
+ * @return a function that returns a URL string that can be used as a
+ * curl endpoint for accessing a kubernetes apiServer
+ *
+ * @param command e.g. kubectl or oc
+ */
 export function urlFormatterFor(
+  command: string,
   namespace: string,
   { parsedOptions }: Pick<Arguments<KubeOptions>, 'parsedOptions'>,
   { kind, version, isClusterScoped }: Explained
@@ -94,7 +102,9 @@ export function urlFormatterFor(
     const myApiOnPath = overrides && overrides.version ? apiOnPathFor(overrides.version) : apiOnPath
     const myKindOnPath = overrides && overrides.kind ? kindOnPathFor(overrides.kind) : kindOnPath
 
-    return `kubernetes:///${myApiOnPath}${namespaceOnPath}${!includeKind ? '' : myKindOnPath}${
+    const proto = command === 'oc' ? 'openshift' : 'kubernetes'
+
+    return `${proto}:///${myApiOnPath}${namespaceOnPath}${!includeKind ? '' : myKindOnPath}${
       !name ? '' : `/${encodeURIComponent(name)}`
     }${!includeQueries || queries.length === 0 ? '' : '?' + queries.join('&')}`
   }
@@ -104,7 +114,7 @@ export async function urlFormatterForArgs(
   args: Arguments<KubeOptions>,
   explainedKind: Explained
 ): Promise<URLFormatter> {
-  return urlFormatterFor(await getNamespace(args), args, explainedKind)
+  return urlFormatterFor(getCommandFromArgs(args), await getNamespace(args), args, explainedKind)
 }
 
 export default URLFormatter

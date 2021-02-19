@@ -31,13 +31,17 @@ const debug = Debug('plugin-kubectl/util/fetch-file')
 const MAX_ECONNREFUSED_RETRIES = 10
 
 const httpScheme = /http(s)?:\/\//
+const openshiftScheme = /^openshift:\/\//
 const kubernetesScheme = /^kubernetes:\/\//
 
 /** Instantiate a kubernetes:// scheme with the current kubectl proxy state */
 async function rescheme(url: string): Promise<string> {
   if (kubernetesScheme.test(url)) {
-    const { baseUrl } = await getProxyState()
+    const { baseUrl } = await getProxyState('kubectl')
     return url.replace(kubernetesScheme, baseUrl)
+  } else if (openshiftScheme.test(url)) {
+    const { baseUrl } = await getProxyState('oc')
+    return url.replace(openshiftScheme, baseUrl)
   } else {
     return url
   }
@@ -233,7 +237,7 @@ export async function fetchFile(
 
   const responses = await Promise.all(
     urls.map(async (url, idx) => {
-      if (httpScheme.test(url) || kubernetesScheme.test(url)) {
+      if (httpScheme.test(url) || kubernetesScheme.test(url) || openshiftScheme.test(url)) {
         debug('fetch remote', url)
         return fetchRemote(
           repl,

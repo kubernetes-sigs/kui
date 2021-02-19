@@ -53,7 +53,7 @@ export async function getTable(
 ): Promise<string | Table> {
   const { kind } = explainedKind
   const group = { explainedKind, names, namespace }
-  const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
+  const formatUrl = await urlFormatterFor(drilldownCommand, namespace, args, explainedKind)
 
   const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
@@ -181,7 +181,7 @@ export async function get(
     args.parsedOptions.context === undefined &&
     isEntityAndNameFormat
   ) {
-    const formatUrl = await urlFormatterFor(namespace, args, explainedKind)
+    const formatUrl = await urlFormatterFor(drilldownCommand, namespace, args, explainedKind)
     const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
     let response: string | Buffer | object

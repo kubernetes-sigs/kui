@@ -230,7 +230,7 @@ export default async function watchMulti(
           groups[0].explainedKind.kind,
           groups[0],
           tables[0].table,
-          urlFormatterFor(groups[0].namespace, myArgs, groups[0].explainedKind),
+          urlFormatterFor(drilldownCommand, groups[0].namespace, myArgs, groups[0].explainedKind),
           finalState,
           tables[0].table.body.map(row => ({ rowKey: row.rowKey, isReady: isResourceReady(row, finalState) })),
           nNotReady,
@@ -281,7 +281,7 @@ export default async function watchMulti(
         await Promise.all(
           tables.map(_ => {
             const group = groups[_.idx]
-            return urlFormatterFor(group.namespace, myArgs, group.explainedKind)
+            return urlFormatterFor(drilldownCommand, group.namespace, myArgs, group.explainedKind)
           })
         ),
         groups,
