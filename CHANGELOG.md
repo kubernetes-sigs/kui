@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210218-202429](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-164854...v10.1.1-dev-20210218-202429) (2021-02-19)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** make popover-select widget narrower ([82d27d1](https://github.com/IBM/kui/commit/82d27d1)), closes [#7046](https://github.com/IBM/kui/issues/7046)
+
 ## [10.1.1-dev-20210218-164854](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-131731...v10.1.1-dev-20210218-164854) (2021-02-18)
 
 ### Bug Fixes
