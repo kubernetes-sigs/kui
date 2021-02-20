@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210219-194602](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-202429...v10.1.1-dev-20210219-194602) (2021-02-20)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** header inference logic does not copy over hide-in-sidecar hints ([34b11ed](https://github.com/IBM/kui/commit/34b11ed)), closes [#7053](https://github.com/IBM/kui/issues/7053)
+- **plugins/plugin-client-common:** in browser clients, the prompt may not be initially focused ([76a4419](https://github.com/IBM/kui/commit/76a4419)), closes [#7056](https://github.com/IBM/kui/issues/7056)
+
 ## [10.1.1-dev-20210218-202429](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-164854...v10.1.1-dev-20210218-202429) (2021-02-19)
 
 ### Bug Fixes
