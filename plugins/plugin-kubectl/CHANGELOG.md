@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210219-194602](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-202429...v10.1.1-dev-20210219-194602) (2021-02-20)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** Kui should fall back to Kubectl CLI when kubernetes direct accesss fails ([82d842f](https://github.com/IBM/kui/commit/82d842f)), closes [#7050](https://github.com/IBM/kui/issues/7050)
+
+### Features
+
+- **plugins/plugin-kubectl:** use `oc proxy` when talking to openshift clusters ([c07e5a0](https://github.com/IBM/kui/commit/c07e5a0)), closes [#7048](https://github.com/IBM/kui/issues/7048)
+
 ## [10.1.1-dev-20210218-202429](https://github.com/IBM/kui/compare/v10.1.1-dev-20210218-164854...v10.1.1-dev-20210218-202429) (2021-02-19)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl
