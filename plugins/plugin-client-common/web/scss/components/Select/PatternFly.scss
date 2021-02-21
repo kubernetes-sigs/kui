@@ -21,13 +21,37 @@
 .kui--popover .kui--select {
   font-size: 0.75rem;
 
+  /** Groups with no label: don't show the empty label element */
+  .pf-c-select__menu-group-title:empty {
+    display: none;
+  }
+
+  /** For some reason, PatternFly doesn't seem to get the ellipsis right here; @patternfly/react-core@4.90.2 */
+  .pf-c-select__menu-item-main {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .pf-c-select__toggle-typeahead {
     font-size: 0.75rem;
     font-family: var(--font-sans-serif);
   }
 
+  .kui--select-option[aria-selected='true'] {
+    font-weight: 500;
+    color: var(--active-tab-color);
+  }
+  .pf-c-select__menu-item-description {
+    font-weight: normal;
+  }
+
+  .pf-c-select__menu-group-title,
+  .pf-c-select__menu-item-icon {
+    font-size: inherit;
+  }
+
   button {
-    padding-top: 0.25em;
-    padding-bottom: 0.25em;
+    padding-top: 0.375em;
+    padding-bottom: 0.375em;
   }
 }

@@ -21,10 +21,7 @@ export type SelectOptions = {
   isDisabled?: boolean
 }
 
-export type Props = {
-  /** select options */
-  options: SelectOptions[]
-
+type BaseProps = {
   /** Variant of rendered Select */
   variant: 'single' | 'checkbox' | 'typeahead' | 'typeaheadmulti'
 
@@ -48,6 +45,29 @@ export type Props = {
 
   /** Flag to indicate if select option is disabled */
   isDisabled?: boolean
+}
+
+type Divider = { divider: true }
+type Group = { label: string; options: SelectOptions[] }
+
+type GroupedProps = BaseProps & {
+  /** select groups */
+  groups: (Divider | Group)[]
+}
+
+export function isDivider(group: Divider | Group): group is Divider {
+  return (group as Divider).divider === true
+}
+
+type NonGroupedProps = BaseProps & {
+  /** select options */
+  options: SelectOptions[]
+}
+
+type Props = GroupedProps | NonGroupedProps
+
+export function isGrouped(props: Props): props is GroupedProps {
+  return Array.isArray((props as GroupedProps).groups)
 }
 
 export default Props
