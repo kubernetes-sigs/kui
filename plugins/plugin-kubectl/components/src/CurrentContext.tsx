@@ -163,6 +163,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
     const options = this.state.allContexts.map(context => ({
       label: this.renderName(context.metadata.name),
       isSelected: context.spec.isCurrent,
+      description: context.spec.isCurrent ? strings('This is your current context') : undefined,
       command: `kubectl config use-context ${encodeComponent(context.metadata.name)}`
     }))
 

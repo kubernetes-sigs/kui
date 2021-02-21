@@ -1,0 +1,43 @@
+/*
+ * Copyright 2021 IBM Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * This heuristic exports a map from Namespace-as-string to `true`
+ * that indicates whether the given-named namespace is a
+ * system/internal namespace.
+ *
+ * To extend, either add a new namespace name to one of the existing
+ * files, or create a new file and add it to the `isInternal` array below
+ *
+ */
+
+import ibm from './ibm'
+import kube from './kube'
+import istio from './istio'
+import calico from './calico'
+import knative from './knative'
+import openshift from './openshift'
+import operators from './operators'
+
+/** Make sure to add any new files to this array */
+const isInternal: string[] = [...ibm, ...kube, ...istio, ...calico, ...knative, ...openshift, ...operators]
+
+const isInternalMap = isInternal.reduce((M, ns) => {
+  M[ns] = true
+  return M
+}, {} as Record<string, true>)
+
+export default isInternalMap

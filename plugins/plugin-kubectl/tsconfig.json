@@ -16,6 +16,9 @@
       "path": "src"
     },
     {
+      "path": "heuristics"
+    },
+    {
       "path": "components"
     },
     {
