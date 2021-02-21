@@ -1,0 +1,19 @@
+{
+  "name": "@kui-shell/plugin-kubectl-heuristics",
+  "version": "1.0.1",
+  "description": "Heuristics for plugin-kubectl",
+  "author": "Nick Mitchell",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kui",
+    "plugin",
+    "sample",
+    "example"
+  ],
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  }
+}

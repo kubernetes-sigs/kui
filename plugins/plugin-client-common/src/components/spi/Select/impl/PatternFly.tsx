@@ -15,11 +15,11 @@
  */
 
 import React from 'react'
-import { Select, SelectOption } from '@patternfly/react-core'
+import { Divider, Select, SelectGroup, SelectOption } from '@patternfly/react-core'
 
-import { pexecInCurrentTab } from '@kui-shell/core'
+import { flatten, pexecInCurrentTab } from '@kui-shell/core'
 
-import Props, { SelectOptions } from '../model'
+import Props, { SelectOptions, isGrouped, isDivider } from '../model'
 
 interface State {
   isOpen: boolean
@@ -60,9 +60,52 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
     }
   }
 
-  private readonly _onClicks = this.props.options.map(option => this.onClick.bind(this, option))
+  private readonly _onClicks = isGrouped(this.props)
+    ? flatten(
+        this.props.groups.map(group =>
+          isDivider(group) ? [] : group.options.map(option => this.onClick.bind(this, option))
+        )
+      )
+    : this.props.options.map(option => this.onClick.bind(this, option))
+
   private readonly _onSelect = this.onSelect.bind(this)
   private readonly _onToggle = this.onToggle.bind(this)
+
+  /** @return UI for the given option */
+  private option(option: SelectOptions, index: number) {
+    return (
+      <SelectOption
+        className="kui--select-option"
+        data-value={option.label}
+        key={index}
+        value={option.label}
+        isSelected={option.isSelected}
+        description={option.description}
+        onClick={this._onClicks[index]}
+        isDisabled={option.isDisabled}
+      />
+    )
+  }
+
+  /** @return UI for all of the options */
+  private options() {
+    if (isGrouped(this.props)) {
+      let runningIdx = 0
+      const groups = this.props.groups.map((group, idx1) =>
+        isDivider(group) ? (
+          <Divider key={`divider-${idx1}`} />
+        ) : (
+          <SelectGroup label={group.label} key={`group-${idx1}`}>
+            {group.options.map(option => this.option(option, runningIdx++))}
+          </SelectGroup>
+        )
+      )
+
+      return groups
+    } else {
+      return this.props.options.map((option, idx) => this.option(option, idx))
+    }
+  }
 
   public render() {
     return (
@@ -72,23 +115,13 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
         variant={this.props.variant}
         typeAheadAriaLabel="Select from the Options"
         selections={this.state.selected}
+        isGrouped={isGrouped(this.props)}
         maxHeight={this.props.maxHeight}
         onToggle={this._onToggle}
         onSelect={this._onSelect}
         isDisabled={this.props.isDisabled}
       >
-        {this.props.options.map((option, index) => (
-          <SelectOption
-            className="kui--select-option"
-            data-value={option.label}
-            key={index}
-            value={option.label}
-            isSelected={option.isSelected}
-            description={option.description}
-            onClick={this._onClicks[index]}
-            isDisabled={option.isDisabled}
-          />
-        ))}
+        {this.options()}
       </Select>
     )
   }

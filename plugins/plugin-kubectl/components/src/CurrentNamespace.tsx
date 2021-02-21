@@ -17,6 +17,7 @@
 import React from 'react'
 
 import { Icons, ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+
 import {
   i18n,
   eventChannelUnsafe,
@@ -29,12 +30,15 @@ import {
   unwireToStandardEvents,
   inBrowser
 } from '@kui-shell/core'
+
 import {
   KubeContext,
   getCurrentDefaultNamespace,
   onKubectlConfigChangeEvents,
   offKubectlConfigChangeEvents
 } from '@kui-shell/plugin-kubectl'
+
+import { isInternalNamespace } from '@kui-shell/plugin-kubectl/heuristics'
 
 interface State {
   currentNamespace: string
@@ -165,12 +169,31 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     )
   }
 
+  /** @return the options model for the given namespace named `ns` */
+  private optionFor(ns: string) {
+    const isSelected = ns === this.state.currentNamespace
+
+    return {
+      label: ns,
+      isSelected,
+      description: isSelected ? strings('This is your current namespace') : undefined,
+      command: `kubectl config set-context --current --namespace=${ns}`
+    }
+  }
+
   private switchNamespace() {
-    const options = this.state.allNamespaces.map(namespace => ({
-      label: namespace,
-      isSelected: namespace === this.state.currentNamespace,
-      command: `kubectl config set-context --current --namespace=${namespace}`
-    }))
+    const internalNs = this.state.allNamespaces.filter(_ => isInternalNamespace[_]).map(_ => this.optionFor(_))
+    const regularNs = this.state.allNamespaces.filter(_ => !isInternalNamespace[_]).map(_ => this.optionFor(_))
+
+    const options = internalNs.length > 0 ? undefined : regularNs
+    const groups =
+      internalNs.length === 0
+        ? undefined
+        : [
+            { label: '', options: regularNs },
+            { divider: true as const },
+            { label: strings('System Namespaces'), options: internalNs }
+          ]
 
     return (
       <React.Suspense fallback={<div />}>
@@ -180,6 +203,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
           className="small-top-pad"
           selected={this.state.currentNamespace}
           options={options}
+          groups={groups}
           isOpen
           isClosable={false}
         />
