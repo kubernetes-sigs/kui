@@ -100,6 +100,7 @@
     "debug": "4.3.1",
     "electron": "10.3.0",
     "eslint": "6.8.0",
+    "eslint-plugin-header": "3.1.1",
     "eslint-config-prettier": "6.10.1",
     "eslint-config-standard": "14.1.1",
     "eslint-plugin-import": "2.20.1",
