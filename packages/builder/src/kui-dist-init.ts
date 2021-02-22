@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Copyright 2019 IBM Corporation
+ * Copyright 2019 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
