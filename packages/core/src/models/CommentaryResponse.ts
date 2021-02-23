@@ -27,6 +27,9 @@ export type CommentaryResponse = {
     /** Body of the Card. It will be passed through as the source <Markdown source="..." /> */
     children: string
 
+    /** Prefix for image URLs */
+    baseUrl?: string
+
     /** [Optional] REPL controller, but required if you want your Card
      * to have functional kuiexec?command=... links via Markdown */
     repl?: REPL

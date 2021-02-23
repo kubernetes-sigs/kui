@@ -29,9 +29,10 @@ import { FStat } from '@kui-shell/plugin-bash-like/fs'
  * commentary command parsedOptions type
  */
 interface CommentaryOptions extends ParsedOptions {
-  title: string
-  file: string
   f: string
+  file: string
+  title: string
+  'base-url': string
 }
 
 /**
@@ -47,6 +48,11 @@ const usage: UsageModel = {
       name: '--title',
       alias: '-t',
       docs: 'Title for the commentary'
+    },
+    {
+      name: '--base-url',
+      alias: '-b',
+      docs: 'Base URL for images'
     },
     {
       name: '--file',
@@ -100,7 +106,8 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
         kind: 'CommentaryResponse',
         props: {
           title,
-          children: ''
+          children: '',
+          baseUrl: args.parsedOptions['base-url']
         }
       }
     } else {
@@ -109,7 +116,8 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
         kind: 'CommentaryResponse',
         props: {
           title,
-          children: data
+          children: data,
+          baseUrl: args.parsedOptions['base-url']
         }
       }
     }

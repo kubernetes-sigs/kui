@@ -117,7 +117,12 @@ export class NotebookVFS implements VFS {
         filepath: entry.mountPath,
         fullpath: entry.mountPath,
         isDirectory: !isLeaf(entry),
-        data: withData && isLeaf(entry) ? JSON.stringify(entry.data, undefined, 2) : undefined
+        data:
+          withData && isLeaf(entry)
+            ? /\.json$/.test(entry.mountPath)
+              ? JSON.stringify(entry.data, undefined, 2)
+              : entry.data.toString()
+            : undefined
       }
     }
   }
@@ -170,20 +175,25 @@ export class NotebookVFS implements VFS {
       srcFilepaths.map(srcFilepath => {
         const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.json$/)
         const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.json$/)
-        const match = match1 || match2
+        const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
+        const match = match1 || match2 || match3
         if (match) {
           try {
             // require versus import to work with babelized headless
-            const file = match1 ? match1[2] : match2[1]
+            const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
             const data = match1
               ? require('@kui-shell/plugin-' + match1[1] + '/notebooks/' + file + '.json')
-              : require('@kui-shell/client/notebooks/' + file + '.json')
+              : match2
+              ? require('@kui-shell/client/notebooks/' + file + '.json')
+              : require('@kui-shell/client/' + file + '.md').default
+
+            const extension = match1 || match2 ? '.json' : '.md'
 
             const dir = dirname(dstFilepath)
             if (!this.trie.get(dir)) {
               throw new Error(`Directory does not exist: ${dir}`)
             } else {
-              const mountPath = join(dstFilepath, file + '.json')
+              const mountPath = join(dstFilepath, file + extension)
               this.trie.map(mountPath, { mountPath, data })
             }
 
