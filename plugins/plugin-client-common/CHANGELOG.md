@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.1.1-dev-20210223-062039](https://github.com/IBM/kui/compare/v10.1.1-dev-20210221-141404...v10.1.1-dev-20210223-062039) (2021-02-23)
+
+### Features
+
+- show placeholder text to explain that ctrl+d closes split ([065990d](https://github.com/IBM/kui/commit/065990d)), closes [#7060](https://github.com/IBM/kui/issues/7060)
+
 ## [10.1.1-dev-20210221-141404](https://github.com/IBM/kui/compare/v10.1.1-dev-20210219-194602...v10.1.1-dev-20210221-141404) (2021-02-21)
 
 ### Features
