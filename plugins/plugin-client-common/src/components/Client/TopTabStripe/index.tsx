@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { KeyCodes, inElectron } from '@kui-shell/core'
+import { KeyCodes, inElectron, isOfflineClient } from '@kui-shell/core'
 import { Nav, NavList, Page, PageHeader } from '@patternfly/react-core'
 
 import TabModel from '../TabModel'
@@ -131,10 +131,12 @@ export default class TopTabStripe extends React.PureComponent<Props> {
             ))}
           </NavList>
         </Nav>
-        <div className="kui--top-tab-buttons">
-          <NewTabButton onNewTab={this.props.onNewTab} />
-          <SplitTerminalButton />
-        </div>
+        {!isOfflineClient() && (
+          <div className="kui--top-tab-buttons">
+            <NewTabButton onNewTab={this.props.onNewTab} />
+            <SplitTerminalButton />
+          </div>
+        )}
       </React.Fragment>
     )
   }

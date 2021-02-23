@@ -51,7 +51,6 @@ function Action(props: { onClick: (evt: React.SyntheticEvent) => void; icon: Sup
 export default class Actions extends React.PureComponent<Props> {
   private rerunAction() {
     if (
-      !isOfflineClient() &&
       hasUUID(this.props.model) &&
       isRerunable(this.props.model) &&
       !isOutputOnly(this.props.model) &&
@@ -82,7 +81,6 @@ export default class Actions extends React.PureComponent<Props> {
 
   private removeAction() {
     return (
-      !isOfflineClient() &&
       this.props.willRemove && (
         <Action
           icon="WindowClose"
@@ -122,13 +120,15 @@ export default class Actions extends React.PureComponent<Props> {
 
   public render() {
     return (
-      <div className="kui--block-actions-buttons kui--inverted-color-context">
-        <div className="kui-block-actions-others">
-          {this.copyAction()}
-          {this.rerunAction()}
+      !isOfflineClient() && (
+        <div className="kui--block-actions-buttons kui--inverted-color-context">
+          <div className="kui-block-actions-others">
+            {this.copyAction()}
+            {this.rerunAction()}
+          </div>
+          {this.removeAction()}
         </div>
-        {this.removeAction()}
-      </div>
+      )
     )
   }
 }
