@@ -86,12 +86,14 @@ export default class Markdown extends React.PureComponent<Props> {
   ) {
     const isHttp = /^http/i.test(src)
     const isLocal = !isHttp && !this.allContentIsRemote()
-    if (isLocal && this.props.fullpath) {
-      const absoluteSrc = isAbsolute(src) ? src : join(dirname(this.props.fullpath), src)
+    if (isLocal) {
+      const absoluteSrc = isAbsolute(src)
+        ? src
+        : join(this.props.fullpath ? dirname(this.props.fullpath) : this.props.baseUrl || process.cwd(), src)
       src = absoluteSrc
     } else if (!isHttp && this.props.baseUrl) {
       // then this is a relative path against
-      src = `${this.props.baseUrl}${src}`
+      src = `${this.props.baseUrl}${!/\/$/.test(this.props.baseUrl) ? '/' : ''}${src}`
     }
 
     const style = props ? { float: props.align } : undefined
@@ -107,7 +109,7 @@ export default class Markdown extends React.PureComponent<Props> {
         className={
           this.props.className ||
           'padding-content marked-content page-content' +
-            (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : ' full-height')
+            (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
         }
         renderers={{
           html: props => {

@@ -126,7 +126,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
 
   private child(node: React.ReactNode) {
     if (typeof node === 'string') {
-      return <Markdown nested source={node} repl={this.props.repl} />
+      return <Markdown nested source={node} repl={this.props.repl} baseUrl={this.props.baseUrl} />
     } else {
       return node
     }

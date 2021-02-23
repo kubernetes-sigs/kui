@@ -16,7 +16,15 @@
 
 import React from 'react'
 
-import { ContextWidgets, Icons, Kui, KuiProps, MeterWidgets, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import {
+  ContextWidgets,
+  Icons,
+  Kui,
+  KuiProps,
+  MeterWidgets,
+  TextWithIconWidget,
+  SpaceFiller
+} from '@kui-shell/plugin-client-common'
 import { version } from '@kui-shell/client/package.json'
 
 /**
@@ -38,24 +46,26 @@ export default function renderMain(props: KuiProps) {
         title="Kui Github"
         className="kui--status-stripe-element-clickable kui--status-stripe-element"
       >
-        <Icons icon="Github" />
+        <Icons icon="Github" className="somewhat-larger-text" />
       </a>
     )
   }
 
   return (
     <Kui
-      productName="Kui Notebooks"
+      productName="Kui"
+      noHelp
+      noSettings
       splitTerminals
       lightweightTables
       {...props}
       commandLine={
-        props.commandLine || ['replay', '/kui/welcome.json', '--close-current-tab', '--status-stripe', 'default']
+        props.commandLine || ['replay', '/kui/readme.json', '--close-current-tab', '--status-stripe', 'default']
       }
       loadingDone={() => undefined}
     >
       <ContextWidgets>{kuiVersion()}</ContextWidgets>
-
+      <SpaceFiller />
       <MeterWidgets>{githubIcon()}</MeterWidgets>
     </Kui>
   )

@@ -33,3 +33,9 @@ $header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wr
     @content;
   }
 }
+
+@mixin CardBody {
+  .kui--card-body {
+    @content;
+  }
+}

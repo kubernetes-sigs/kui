@@ -35,6 +35,9 @@ interface Props {
   /** Body of the Card. If given a string, it will be passed through as the source <Markdown source="..." /> */
   children: string | ReactNode
 
+  /** Base HTTP Url? */
+  baseUrl?: string
+
   /* [Optional] Display title in header? */
   titleInHeader?: boolean
 
