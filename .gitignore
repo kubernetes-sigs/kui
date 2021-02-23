@@ -66,3 +66,6 @@ kui-stage
 packages/*/mdist
 plugins/*/mdist
 clients/**/mdist
+
+# webpack-dev-server report
+report.*.json
