@@ -33,6 +33,9 @@ import {
 } from './BlockModel'
 
 export type BlockViewTraits = {
+  /** number of splits currently in this tab */
+  nSplits?: number
+
   isExperimental?: boolean
   isFocused?: boolean
   isPartOfMiniSplit?: boolean
