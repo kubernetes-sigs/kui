@@ -38,6 +38,15 @@ $focus-color: var(--color-brand-01);
   }
 }
 
+/** Placeholder text styling */
+@include Input {
+  &::placeholder {
+    opacity: 0.3;
+    font-size: 0.875em;
+    color: var(--color-text-02);
+  }
+}
+
 /** We are using <li> for the blocks, but don't want any standard browser styling */
 @include Block {
   list-style: none;
