@@ -30,7 +30,10 @@ import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 const strings = i18n('plugin-client-common')
 
 type State = StatusStripeChangeEvent
-export type Props = Partial<State>
+export type Props = Partial<State> & {
+  noHelp?: boolean
+  noSettings?: boolean
+}
 
 /** see https://github.com/microsoft/TypeScript/issues/10485 */
 function hasType(evt: Partial<StatusStripeChangeEvent>): evt is Pick<Required<StatusStripeChangeEvent>, 'type'> {
@@ -118,25 +121,27 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
           {this.widgets()}
 
           <MeterWidgets className="kui--hide-in-narrower-windows">
-            <Settings />
+            {!this.props.noSettings && <Settings />}
           </MeterWidgets>
 
-          <div className="kui--status-stripe-button">
-            <a
-              href="#"
-              className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
-              id="help-button"
-              aria-label="Help"
-              tabIndex={0}
-              ref={this.helpRef}
-              onClick={() => this.doAbout()}
-            >
-              <Icons icon="Help" />
-            </a>
-            <Tooltip reference={this.helpRef} position="top">
-              {strings('Click for help')}
-            </Tooltip>
-          </div>
+          {!this.props.noHelp && (
+            <div className="kui--status-stripe-button">
+              <a
+                href="#"
+                className="kui--tab-navigatable kui--status-stripe-element-clickable kui--status-stripe-element"
+                id="help-button"
+                aria-label="Help"
+                tabIndex={0}
+                ref={this.helpRef}
+                onClick={() => this.doAbout()}
+              >
+                <Icons icon="Help" />
+              </a>
+              <Tooltip reference={this.helpRef} position="top">
+                {strings('Click for help')}
+              </Tooltip>
+            </div>
+          )}
         </div>
       </React.Suspense>
     )

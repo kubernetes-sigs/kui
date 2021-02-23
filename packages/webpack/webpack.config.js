@@ -498,8 +498,13 @@ module.exports = {
       { test: /AUTHORS/, use: 'ignore-loader' },
       { test: /LICENSE/, use: 'ignore-loader' },
       { test: /license.txt/, use: 'ignore-loader' },
-      { test: /\.md$/, use: 'file-loader' },
-      { test: /\.markdown$/, use: 'file-loader' },
+
+      // was: file-loader; but that loader does not allow for dynamic
+      // loading of markdown *content* in a browser-based client
+      { test: /\.md$/, use: 'raw-loader' },
+      { test: /\.markdown$/, use: 'raw-loader' },
+      { test: /CHANGELOG\.md$/, use: 'ignore-loader' }, // too big to pull in to the bundles
+
       { test: /~$/, use: 'ignore-loader' },
       { test: /Dockerfile$/, use: 'ignore-loader' },
       { test: /flycheck*\.js/, use: 'ignore-loader' },

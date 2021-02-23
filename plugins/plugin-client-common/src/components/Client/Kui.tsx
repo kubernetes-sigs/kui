@@ -74,6 +74,12 @@ export type Props = Partial<KuiConfiguration> & {
 
   /** initial tab title */
   initialTabTitle?: string
+
+  /** do not show <?> help widget */
+  noHelp?: boolean
+
+  /** do not show Settings/Themes widget */
+  noSettings?: boolean
 }
 
 type State = KuiConfiguration & {
@@ -322,7 +328,9 @@ export class Kui extends React.PureComponent<Props, State> {
                 onTabReady={this.state.commandLine && this._onTabReady}
               ></TabContainer>
               {this.props.toplevel}
-              <StatusStripe {...this.statusStripeProps()}>{this.props.children}</StatusStripe>
+              <StatusStripe noHelp={this.props.noHelp} noSettings={this.props.noSettings} {...this.statusStripeProps()}>
+                {this.props.children}
+              </StatusStripe>
             </div>
           </React.Suspense>
         </KuiContext.Provider>

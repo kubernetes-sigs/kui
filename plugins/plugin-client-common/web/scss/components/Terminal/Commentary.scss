@@ -124,8 +124,7 @@
   }
 
   @include Paragraphs {
-    font-size: 1em;
-    line-height: 1.5em;
+    font-size: inherit;
 
     /* see https://github.com/IBM/kui/issues/5981 */
     word-break: break-word;

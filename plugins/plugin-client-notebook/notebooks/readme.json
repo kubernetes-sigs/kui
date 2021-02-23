@@ -1,0 +1,113 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Notebook",
+  "metadata": {
+    "name": "Welcome to Kui",
+    "preferReExecute": true
+  },
+  "spec": {
+    "splits": [
+      {
+        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "# Kui: CLI-driven Graphics for Kubernetes\n\n[![GitHub Stars](https://badgen.net/github/stars/IBM/kui)](https://github.com/IBM/kui/stargazers)\n[![GitHub Forks](https://badgen.net/github/forks/IBM/kui)](https://github.com/IBM/kui/network/members)\n![ts](https://flat.badgen.net/badge/-/TypeScript?icon=typescript&label&labelColor=blue&color=555555)\n![Electron](https://flat.badgen.net/badge/Electron/10/orange)\n[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)\n[![Build Status](https://img.shields.io/travis/IBM/kui/master?style=flat-square)](https://travis-ci.com/IBM/kui)\n\nWe love CLIs, and think they are critical for interacting in a\nflexible way with the cloud. We need the power to go off the\nrails. But ASCII is tedious. Kui takes your normal `kubectl` command\nline requests and **responds with graphics**. Instead of ASCII tables,\nyou are presented with sortable ones. Instead of copying and pasting\nlong auto-generated resource names to drill down, in Kui **you just\nclick**. [Download Now!](#installation)\n\n<img width=\"600\" align=\"right\" src=\"docs/readme/images/kui-experience.gif\">\n\nWatch and `apply` requests present you with live tables. Instead of\nporing over complex YAML, you can browse the facets of your resources\nin a tabbed UI. Drill down, drill up, and view logs or the events\nrelated just to the resource of interest, again with Kui you can just\nclick.\n\nIterating through a table to find the needle in the haystack? With\nKui, you can click the rows in rapid succession, and Kui sends the\ndetails to a side terminal; the main table will not scroll out of\nview. If you are working with\n[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),\nyou can see a \"waterfall\" diagram by simply executing `k get jobs`.\n\n<img height=\"185\" src=\"docs/readme/images/grid-watch.gif\"><img height=\"185\" src=\"docs/readme/images/sequence-diagram.png\"><img height=\"185\" src=\"docs/readme/images/pod.png\">\n\n<img width=\"575\" align=\"right\" src=\"docs/readme/images/minisplits.png\">\n\nIn summary: Kui enhances your CLI experience, but is also fast. It\nlaunches in 1-2 seconds, and can process standard `kubectl` commands\n**2-3 times faster** than `kubectl` itself.\n\n### Next steps\n\n- [Download a prebuilt binary](#installation)\n- [Enhance Kui](#contributing)\n- Build your own [custom-branded Kui client](https://github.com/IBM/kui/wiki/5.-How-to-Customize-Your-Client)\n\n## Installation\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\nYou may launch Kui in two ways:\n\n- Open the Kui app, either by double clicking on the executable, or by launching the executable from your terminal, e.g. `open /path/to/Kui.app` on macOS.\n- As a `kubectl` plugin, via the `kubectl-kui` script that is bundled with the prebuilt images. Make sure the directory enclosing the script is on your PATH; e.g. for macOS:\n\n```bash\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\nkubectl kui get pods\n```\n\nAfter the final command, you should see a popup window listing pods in\nyour current namespace.\n\n### Rolling Your Own\n\nDon't trust the prebuilt binaries? We hear you. [Roll your own\nKui](https://github.com/IBM/kui/wiki#getting-started).\n\n## Contributing\n\nKui uses [Electron](https://electronjs.org), which allows for\ndistributing clients either as a local platform application, or as a\nhosted browser-based client. If you want to help, please take a look\nat the [developer guide](https://github.com/IBM/kui/wiki) and our\n[guidelines](CONTRIBUTING.md).\n\n## Code of Conduct\n\nParticipation in the Kubernetes community is governed by the [Kubernetes Code\nof Conduct](https://github.com/kubernetes-sigs/krew/blob/master/code-of-conduct.md).\n",
+                "baseUrl": "https://github.com/IBM/kui/raw/master/"
+              }
+            },
+            "historyIdx": 250,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "commentary -f /kui/README.md --base-url https://github.com/IBM/kui/raw/master/",
+            "startEvent": {
+              "route": "/commentary",
+              "startTime": 1614099448562,
+              "command": "commentary -f /kui/README.md --base-url https://github.com/IBM/kui/raw/master/",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--base-url",
+                      "alias": "-b",
+                      "docs": "Base URL for images"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "a9653213-b399-4de8-a216-56d1e3b61d28",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "a9653213-b399-4de8-a216-56d1e3b61d28",
+                "history": 250,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1614099448589,
+              "command": "commentary -f /kui/README.md --base-url https://github.com/IBM/kui/raw/master/",
+              "argvNoOptions": ["commentary"],
+              "parsedOptions": {
+                "_": ["commentary"],
+                "f": "README.md",
+                "file": "README.md",
+                "base-url": "https://github.com/IBM/kui/raw/master/",
+                "b": "https://github.com/IBM/kui/raw/master/"
+              },
+              "execUUID": "a9653213-b399-4de8-a216-56d1e3b61d28",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "a9653213-b399-4de8-a216-56d1e3b61d28",
+                "history": 250,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "# Kui: CLI-driven Graphics for Kubernetes\n\n[![GitHub Stars](https://badgen.net/github/stars/IBM/kui)](https://github.com/IBM/kui/stargazers)\n[![GitHub Forks](https://badgen.net/github/forks/IBM/kui)](https://github.com/IBM/kui/network/members)\n![ts](https://flat.badgen.net/badge/-/TypeScript?icon=typescript&label&labelColor=blue&color=555555)\n![Electron](https://flat.badgen.net/badge/Electron/10/orange)\n[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)\n[![Build Status](https://img.shields.io/travis/IBM/kui/master?style=flat-square)](https://travis-ci.com/IBM/kui)\n\nWe love CLIs, and think they are critical for interacting in a\nflexible way with the cloud. We need the power to go off the\nrails. But ASCII is tedious. Kui takes your normal `kubectl` command\nline requests and **responds with graphics**. Instead of ASCII tables,\nyou are presented with sortable ones. Instead of copying and pasting\nlong auto-generated resource names to drill down, in Kui **you just\nclick**. [Download Now!](#installation)\n\n<img width=\"600\" align=\"right\" src=\"docs/readme/images/kui-experience.gif\">\n\nWatch and `apply` requests present you with live tables. Instead of\nporing over complex YAML, you can browse the facets of your resources\nin a tabbed UI. Drill down, drill up, and view logs or the events\nrelated just to the resource of interest, again with Kui you can just\nclick.\n\nIterating through a table to find the needle in the haystack? With\nKui, you can click the rows in rapid succession, and Kui sends the\ndetails to a side terminal; the main table will not scroll out of\nview. If you are working with\n[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),\nyou can see a \"waterfall\" diagram by simply executing `k get jobs`.\n\n<img height=\"185\" src=\"docs/readme/images/grid-watch.gif\"><img height=\"185\" src=\"docs/readme/images/sequence-diagram.png\"><img height=\"185\" src=\"docs/readme/images/pod.png\">\n\n<img width=\"575\" align=\"right\" src=\"docs/readme/images/minisplits.png\">\n\nIn summary: Kui enhances your CLI experience, but is also fast. It\nlaunches in 1-2 seconds, and can process standard `kubectl` commands\n**2-3 times faster** than `kubectl` itself.\n\n### Next steps\n\n- [Download a prebuilt binary](#installation)\n- [Enhance Kui](#contributing)\n- Build your own [custom-branded Kui client](https://github.com/IBM/kui/wiki/5.-How-to-Customize-Your-Client)\n\n## Installation\n\n[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)\n\nYou may launch Kui in two ways:\n\n- Open the Kui app, either by double clicking on the executable, or by launching the executable from your terminal, e.g. `open /path/to/Kui.app` on macOS.\n- As a `kubectl` plugin, via the `kubectl-kui` script that is bundled with the prebuilt images. Make sure the directory enclosing the script is on your PATH; e.g. for macOS:\n\n```bash\ncurl -L https://macos-tarball.kui-shell.org/ | tar jxf -\nexport PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH\nkubectl kui get pods\n```\n\nAfter the final command, you should see a popup window listing pods in\nyour current namespace.\n\n### Rolling Your Own\n\nDon't trust the prebuilt binaries? We hear you. [Roll your own\nKui](https://github.com/IBM/kui/wiki#getting-started).\n\n## Contributing\n\nKui uses [Electron](https://electronjs.org), which allows for\ndistributing clients either as a local platform application, or as a\nhosted browser-based client. If you want to help, please take a look\nat the [developer guide](https://github.com/IBM/kui/wiki) and our\n[guidelines](CONTRIBUTING.md).\n\n## Code of Conduct\n\nParticipation in the Kubernetes community is governed by the [Kubernetes Code\nof Conduct](https://github.com/kubernetes-sigs/krew/blob/master/code-of-conduct.md).\n",
+                  "baseUrl": "https://github.com/IBM/kui/raw/master/"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 250
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "a9653213-b399-4de8-a216-56d1e3b61d28",
+            "startTime": 1614099448562,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      }
+    ]
+  }
+}
