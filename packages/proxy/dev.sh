@@ -24,6 +24,6 @@
 #
 
 # uncomment if you need extra logging from the proxy
-# DEBUG="-e DEBUG=*"
+DEBUG="-e DEBUG=*"
 
 docker run --name kui -e KUBECONFIG=${KUBECONFIG//$HOME/\/root} $DEBUG --rm -p 9080:80 kuishell/kui
