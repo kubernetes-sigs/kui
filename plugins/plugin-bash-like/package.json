@@ -23,7 +23,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
-    "@kui-shell/xterm-helpers": "1.0.0",
+    "@kui-shell/xterm-helpers": "1.0.1",
     "@types/cookie": "0.4.0",
     "@types/shelljs": "0.8.8",
     "cookie": "0.4.1",
