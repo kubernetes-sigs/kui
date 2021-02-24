@@ -60,6 +60,9 @@ function nginx {
     echo "nginx config"
     if [ ! -d "$BUILDDIR"/conf.d ]; then mkdir "$BUILDDIR"/conf.d; fi
     cp "$CLIENT_HOME"/node_modules/@kui-shell/proxy/conf.d/proxy.conf "$BUILDDIR"/conf.d/default.conf
+
+    # this is for configuring tzdata in the Dockerfile
+    cp "$CLIENT_HOME"/node_modules/@kui-shell/proxy/preseed.txt "$BUILDDIR"/
 }
 
 function proxy {
