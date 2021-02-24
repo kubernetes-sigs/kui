@@ -31,6 +31,7 @@ import {
   i18n
 } from '@kui-shell/core'
 import {
+  kubectl,
   getAllContexts,
   KubeContext,
   onKubectlConfigChangeEvents,
@@ -164,7 +165,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
       label: this.renderName(context.metadata.name),
       isSelected: context.spec.isCurrent,
       description: context.spec.isCurrent ? strings('This is your current context') : undefined,
-      command: `kubectl config use-context ${encodeComponent(context.metadata.name)}`
+      command: `${kubectl} config use-context ${encodeComponent(context.metadata.name)}`
     }))
 
     return (
