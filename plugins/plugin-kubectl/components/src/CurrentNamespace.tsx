@@ -32,6 +32,7 @@ import {
 } from '@kui-shell/core'
 
 import {
+  kubectl,
   KubeContext,
   getCurrentDefaultNamespace,
   onKubectlConfigChangeEvents,
@@ -90,7 +91,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
     try {
       const [currentNamespace, allNamespaces] = await Promise.all([
         getCurrentDefaultNamespace(tab),
-        tab.REPL.qexec<string>('kubectl get ns -o name').then(_ =>
+        tab.REPL.qexec<string>(`${kubectl} get ns -o name`).then(_ =>
           _.split(/\n/).map(_ => _.replace(/^namespace\//, ''))
         )
       ])
@@ -143,7 +144,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
 
   private listNamespace() {
     return (
-      <a href="#" onClick={() => pexecInCurrentTab('kubectl get namespace')}>
+      <a href="#" onClick={() => pexecInCurrentTab(`${kubectl} get namespace`)}>
         {strings('Show Full Details')}
       </a>
     )
@@ -177,7 +178,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
       label: ns,
       isSelected,
       description: isSelected ? strings('This is your current namespace') : undefined,
-      command: `kubectl config set-context --current --namespace=${ns}`
+      command: `${kubectl} config set-context --current --namespace=${ns}`
     }
   }
 
