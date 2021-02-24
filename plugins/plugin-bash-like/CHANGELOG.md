@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.2.0](https://github.com/IBM/kui/compare/v10.1.1-dev-20210223-062039...v10.2.0) (2021-02-24)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** remove `drrf.ts` in plugin-bash-like ([7ed98d9](https://github.com/IBM/kui/commit/7ed98d9)), closes [#7063](https://github.com/IBM/kui/issues/7063)
+
 ## [10.1.1-dev-20210223-062039](https://github.com/IBM/kui/compare/v10.1.1-dev-20210221-141404...v10.1.1-dev-20210223-062039) (2021-02-23)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like
