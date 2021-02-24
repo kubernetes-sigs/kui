@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-20 The Kubernetes Authors
+ * Copyright 2018 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -394,11 +394,6 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     fallback
-  },
-  resolveLoader: {
-    alias: {
-      'asar-friendly-node-loader': require.resolve('@kui-shell/webpack/asar-friendly-node-loader')
-    }
   },
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*' },

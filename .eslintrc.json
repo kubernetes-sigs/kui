@@ -20,7 +20,7 @@
       [
         "",
         {
-          "pattern": " * Copyright \\d{4}(-(\\d{2}|\\d{4}))|(, (\\d{4}|\\d{2}))? The Kubernetes Authors",
+          "pattern": " * Copyright \\d{4} The Kubernetes Authors",
           "template": " * Copyright 2021 The Kubernetes Authors"
         },
         " *",
