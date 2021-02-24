@@ -23,7 +23,9 @@ export CLIENT_HOME=${CLIENT_HOME-$(pwd)}
 BUILDDIR="$CLIENT_HOME"/dist/webpack
 
 # accepted environment variables
-KUBE_VERSION=${KUBE_VERSION-v1.15.7}
+KUBE_VERSION=${KUBE_VERSION-1.18.3}
+HELM_VERSION=${HELM_VERSION-3.3.4}
+OC_VERSION=${OC_VERSION-4.3.3}
 
 function kubeconfig {
     if [ -n "$INJECT_KUBECONFIG" ] && [ -n "$KUBECONFIG" ]; then
@@ -35,6 +37,15 @@ function kubeconfig {
             rm -rf "$BUILDDIR"/.kube
             cp -a ~/.kube "$BUILDDIR"
         fi
+        if [ -d ~/.bluemix ]; then
+            echo "$(tput setaf 1)!!!!!!!!!!!! WARNING: injecting your IBM Cloud config into the container !!!!!!!!!!!!$(tput sgr0)"
+            rm -rf "$BUILDDIR"/.bluemix
+            cp -a ~/.bluemix "$BUILDDIR"
+        fi            
+    elif [ ! -d "$BUILDDIR"/.kube ]; then
+        # avoid COPY failure in Dockerfile
+        mkdir "$BUILDDIR"/.kube
+        mkdir "$BUILDDIR"/.bluemix
     fi
 }
 
@@ -62,7 +73,7 @@ function ptyKui {
     echo "pty for kui"
     PTYDIR="$BUILDDIR"/kui/node_modules/node-pty-prebuilt-multiarch/build/Release
     mkdir -p "$PTYDIR" && \
-        cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty-prebuilt-multiarch/build/linux/electron/pty.node.gz "$PTYDIR" && \
+        cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty-prebuilt-multiarch/build/linux-x64/electron/pty.node.gz "$PTYDIR" && \
         gunzip "$PTYDIR"/pty.node.gz
     # ^^ travis does not seem to have gzcat, which would make the above command marginally more simple
 }
@@ -77,7 +88,7 @@ function copyKui {
 function installKui {
     echo "install kui"
     # we have to hack out dependencies manually because npm uninstall doesn't know how limit itself to just a scissor cut.
-    (cd "$BUILDDIR"/kui && node -e 'const pjson = require("./package.json"); const remove = ["@kui-shell/plugin-editor", "@kui-shell/plugin-wskflow", "@kui-shell/plugin-client-common", "@kui-shell/plugin-client-default", "@kui-shell/plugin-carbon-themes", "@kui-shell/plugin-core-themes"]; remove.forEach(_ => delete pjson.dependencies[_]); require("fs").writeFileSync("package.json", JSON.stringify(pjson, undefined, 2))')
+    # (cd "$BUILDDIR"/kui && node -e 'const pjson = require("./package.json"); const remove = ["@kui-shell/plugin-editor", "@kui-shell/plugin-wskflow", "@kui-shell/plugin-client-common", "@kui-shell/plugin-client-default", "@kui-shell/plugin-carbon-themes", "@kui-shell/plugin-core-themes"]; remove.forEach(_ => delete pjson.dependencies[_]); require("fs").writeFileSync("package.json", JSON.stringify(pjson, undefined, 2))')
     
     (cd "$BUILDDIR"/kui && npm ci --only=production --ignore-scripts)
 
@@ -124,7 +135,7 @@ function profiled {
 
 function image {
     echo "docker"
-    (cd "$BUILDDIR" && docker build . -t kuishell/kui --build-arg KUBE_VERSION=$KUBE_VERSION $KUBECONFIG_ARG)
+    (cd "$BUILDDIR" && docker build . -t kuishell/kui --build-arg KUBE_VERSION=$KUBE_VERSION --build-arg HELM_VERSION=$HELM_VERSION --build-arg OC_VERSION=$OC_VERSION $KUBECONFIG_ARG)
 }
 
 if [ "$1" != "dockeronly" ]; then
