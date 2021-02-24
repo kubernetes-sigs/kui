@@ -37,6 +37,10 @@ ENV KUBECONFIG=$KUBECONFIG
 # https://aur.archlinux.org/packages/kubectl-bin/
 ARG KUBE_VERSION
 ENV KUBE_VERSION=$KUBE_VERSION
+ARG HELM_VERSION
+ENV HELM_VERSION=$HELM_VERSION
+ARG OC_VERSION
+ENV OC_VERSION=$OC_VERSION
 # Note: Latest version of helm may be found at:
 # https://github.com/kubernetes/helm/releases
 
@@ -48,16 +52,19 @@ ENV KUBE_VERSION=$KUBE_VERSION
 # version in order to determine what version actually to use, for the
 # user (based on `helm --short --server version`)
 ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
-ENV HELM_LATEST_VERSION="${KUI_HELM_CLIENTS_DIR}"/helm-2.14
 
-RUN (apk add --no-cache ca-certificates bash git python make g++ && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl) & \
-    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.9.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.9 && chmod +x /usr/local/bin/helm-2.9) & \
-    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.10.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.10 && chmod +x /usr/local/bin/helm-2.10) & \
-    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.11.0-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.11 && chmod +x /usr/local/bin/helm-2.11) & \
-    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.12.2-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.12 && chmod +x /usr/local/bin/helm-2.12) & \
-    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.13.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.13 && chmod +x /usr/local/bin/helm-2.13) & \
-    (wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm-2.14 && chmod +x /usr/local/bin/helm-2.14); wait
+RUN echo "KUBE_VERSION=$KUBE_VERSION HELM_VERSION=$HELM_VERSION OC_VERSION=$OC_VERSION"
+RUN echo "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"
+RUN (apk add --no-cache ca-certificates bash git python make g++ && wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl) && \
+      wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar zxf - && cp linux-amd64/helm /usr/local/bin/helm && chmod +x /usr/local/bin/helm
 ###########
+
+#### OPENSHIFT tools
+RUN wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux.tar.gz -O - | tar zxf - && \
+      cp oc /usr/local/bin && \
+      chmod +x /usr/local/bin/oc
+RUN wget -q https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-linux-amd64 -O /usr/local/bin/odo && \
+      chmod +x /usr/local/bin/odo
 
 COPY conf.d/default.conf /etc/nginx/conf.d/default.conf
 
@@ -72,6 +79,7 @@ RUN cd /usr/share/nginx/html/kui/node_modules/node-pty-prebuilt-multiarch && npm
 
 # kubeconfig
 COPY .kube /root/.kube
+COPY .bluemix /root/.bluemix
 
 # krew
 RUN apk add --no-cache curl && \
