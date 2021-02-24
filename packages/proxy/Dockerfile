@@ -14,7 +14,15 @@
 # limitations under the License.
 #
 
-FROM mhart/alpine-node:12
+FROM node:12-buster-slim
+
+## preesed tzdata, update package index, upgrade packages and install needed software
+COPY preseed.txt /tmp/preseed.txt
+RUN debconf-set-selections /tmp/preseed.txt && \
+    rm -f /etc/timezone /etc/localtime && \
+    apt-get update && \
+    apt-get install -y tzdata
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # proxy ports (keep in sync with conf.d/proxy.conf)
 ENV PORT 3000
@@ -23,8 +31,10 @@ ENV KUI_PROXY_EXTERNAL_PORT 9080
 # nginx port
 EXPOSE 80/tcp
 
-RUN apk add --no-cache nginx
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
+RUN apt update
+RUN apt install -y nginx
+RUN rm /etc/nginx/sites-enabled/default \
+        && ln -sf /dev/stdout /var/log/nginx/access.log \
         && ln -sf /dev/stderr /var/log/nginx/error.log
 
 # for development, we inject the developer's kubeconfig into the container
@@ -53,9 +63,7 @@ ENV OC_VERSION=$OC_VERSION
 # user (based on `helm --short --server version`)
 ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
 
-RUN echo "KUBE_VERSION=$KUBE_VERSION HELM_VERSION=$HELM_VERSION OC_VERSION=$OC_VERSION"
-RUN echo "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"
-RUN (apk add --no-cache ca-certificates bash git python make g++ && wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl) && \
+RUN (apt install -y ca-certificates bash git python build-essential wget curl && wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl) && \
       wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar zxf - && cp linux-amd64/helm /usr/local/bin/helm && chmod +x /usr/local/bin/helm
 ###########
 
@@ -75,25 +83,25 @@ COPY . /usr/share/nginx/html
 RUN cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock
 
 # recompile pty
-RUN cd /usr/share/nginx/html/kui/node_modules/node-pty-prebuilt-multiarch && npm run install && apk del python make g++
+RUN cd /usr/share/nginx/html/kui/node_modules/node-pty-prebuilt-multiarch && npm run install
 
 # kubeconfig
 COPY .kube /root/.kube
 COPY .bluemix /root/.bluemix
 
 # krew
-RUN apk add --no-cache curl && \
-  set -x; cd "$(mktemp -d)" && \
+RUN set -x; cd "$(mktemp -d)" && \
   curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/krew.{tar.gz,yaml}" && \
   tar zxvf krew.tar.gz && \
   KREW=./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" && \
   "$KREW" install --manifest=krew.yaml --archive=krew.tar.gz && \
-  "$KREW" update && \
-   apk del curl
+  "$KREW" update
 ENV PATH=/root/.krew/bin:$PATH
 
 # profile.d
 COPY profile.d /tmp/profile.d
 RUN for i in /tmp/profile.d/*; do cat $i >> /etc/profile; done
+
+RUN apt remove -y curl wget python make g++ && apt -y auto-remove
 
 CMD [ "/usr/share/nginx/html/start-proxy-and-nginx.sh" ]
