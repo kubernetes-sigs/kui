@@ -23,4 +23,5 @@ export KUI_PROXY_COHOSTED=true
 (cd /usr/share/nginx/html/kui && npx start-proxy) &
 
 # start nginx
-exec nginx -g 'pid /tmp/nginx.pid; daemon off;'
+#exec nginx -g 'pid /tmp/nginx.pid; daemon off;'
+exec nginx -g 'daemon off;'
