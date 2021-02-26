@@ -226,7 +226,7 @@ export async function fslice(
   filepath: string,
   offsetAsProvided: number,
   length: number,
-  unit: 'bytes' | 'lines'
+  unit: 'bytes' | 'lines' = 'bytes'
 ): ReturnType<VFS['fslice']> {
   const mount = findMount(filepath, undefined, true)
 

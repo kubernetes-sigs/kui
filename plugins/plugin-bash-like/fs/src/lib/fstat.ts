@@ -23,12 +23,25 @@ export interface FStat {
   filepath: string
   fullpath: string
   isDirectory: boolean
+  size: number
   data?: string
 }
 
 export interface FStatOptions extends ParsedOptions {
   'enoent-ok': boolean
   'with-data': boolean
+}
+
+function readData(fullpath): Promise<string> {
+  return new Promise((resolve, reject) => {
+    readFile(fullpath, (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data.toString())
+      }
+    })
+  })
 }
 
 /**
@@ -54,6 +67,7 @@ export const fstat = ({
             filepath,
             fullpath: prettyFullPath,
             isDirectory: false,
+            size: 0,
             data: ''
           })
         }
@@ -67,34 +81,23 @@ export const fstat = ({
       }
     }
 
-    if (parsedOptions['with-data']) {
-      readFile(fullpath, (err, data) => {
-        if (err) {
-          return handleError(err)
-        } else {
-          resolve({
-            viewer,
-            filepath,
-            fullpath: prettyFullPath,
-            data: data.toString(),
-            isDirectory: false
-          })
-        }
-      })
-    } else {
-      // note: stat not lstat, because we want to follow the link
-      stat(fullpath, (err, stats) => {
-        if (err) {
-          return handleError(err)
-        } else {
-          resolve({
-            viewer,
-            filepath,
-            fullpath: prettyFullPath,
-            isDirectory: stats.isDirectory()
-          })
-        }
-      })
-    }
+    // note: stat not lstat, because we want to follow the link
+    stat(fullpath, async (err, stats) => {
+      if (err) {
+        handleError(err)
+      } else {
+        resolve({
+          viewer,
+          filepath,
+          fullpath: prettyFullPath,
+          isDirectory: stats.isDirectory(),
+          size: stats.size,
+          data:
+            !stats.isDirectory() && parsedOptions['with-data'] && !filepath.endsWith('.gz') && stats.size < 1024 * 1024
+              ? await readData(fullpath)
+              : ''
+        })
+      }
+    })
   })
 }

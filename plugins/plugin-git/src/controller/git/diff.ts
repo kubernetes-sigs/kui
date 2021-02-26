@@ -83,7 +83,8 @@ async function gitDiff(args: Arguments): Promise<KResponse> {
       modes: [mode],
       spec: {
         filepath,
-        fullpath
+        fullpath,
+        size: workingTree.content.size
       }
     }
 

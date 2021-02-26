@@ -28,6 +28,9 @@ export default interface File extends ResourceWithMetadata {
 
     /** absolute path to file */
     fullpath: string
+
+    /** file length */
+    size: number
   }
 }
 

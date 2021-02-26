@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { open, read, stat } from 'fs'
-import { Arguments, encodeComponent, expandHomeDir, findFileWithViewer } from '@kui-shell/core'
+import { createGunzip } from 'zlib'
+import { createReadStream } from 'fs'
+import { Arguments, CodedError, encodeComponent, expandHomeDir, findFileWithViewer } from '@kui-shell/core'
 
 import { VFS, mount } from '.'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
@@ -73,31 +74,30 @@ class LocalVFS implements VFS {
     const { resolved: fullpath } = findFileWithViewer(expandHomeDir(filepath))
 
     return new Promise((resolve, reject) => {
-      open(fullpath, 'r', (err, fd) => {
-        if (err) {
-          reject(err)
-        } else {
-          stat(fullpath, (err, stats) => {
-            if (err) reject(err)
-            try {
-              if (offset >= stats.size) {
-                reject(new Error('local fslice: reach file end'))
-              } else {
-                const length = _length <= stats.size ? _length : stats.size
-                read(fd, Buffer.alloc(length), 0, length, offset, (_err, _, buff) => {
-                  if (_err) {
-                    reject(_err)
-                  } else {
-                    resolve(buff.toString())
-                  }
-                })
-              }
-            } catch (err) {
+      let data = ''
+
+      // re: end = _length - 1, this is because the end option is inclusive and _length is not
+      if (filepath.endsWith('.gz')) {
+        createReadStream(fullpath, { start: offset, end: _length ? _length - 1 : Infinity })
+          .pipe(createGunzip())
+          .on('error', (err: CodedError<string>) => {
+            if (err.code === 'Z_BUF_ERROR') {
+              // this may happen when reading a part of a gzip file
+              resolve(data)
+            } else {
               reject(err)
             }
           })
-        }
-      })
+          .on('end', () => resolve(data))
+          .on('data', d => (data += d))
+      } else {
+        createReadStream(fullpath, { start: offset, end: _length ? _length - 1 : Infinity })
+          .on('error', reject)
+          .on('end', () => {
+            resolve(data)
+          })
+          .on('data', d => (data += d))
+      }
     })
   }
 
