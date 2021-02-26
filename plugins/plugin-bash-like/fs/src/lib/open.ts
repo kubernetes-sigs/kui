@@ -63,7 +63,9 @@ async function open(args: Arguments): Promise<KResponse> {
   debug('open', filepath)
 
   const fullpath = findFile(expandHomeDir(filepath))
-  const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
+
+  // suffix excluding gzip extension
+  const suffix = filepath.replace(/\.gz$/, '').replace(/^.+\.(\w+)/, '$1')
 
   if (
     suffix === 'png' ||
@@ -134,7 +136,8 @@ async function open(args: Arguments): Promise<KResponse> {
         modes: [mode],
         spec: {
           filepath,
-          fullpath
+          fullpath,
+          size: stats.size
         }
       }
       return response
