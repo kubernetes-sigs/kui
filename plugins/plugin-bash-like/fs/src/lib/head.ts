@@ -61,6 +61,7 @@ export function showResponseAsMMR(filepath: string, data: string): MultiModalRes
     modes: [mode],
     spec: {
       filepath,
+      size: 0,
       fullpath: findFile(expandHomeDir(filepath))
     }
   }

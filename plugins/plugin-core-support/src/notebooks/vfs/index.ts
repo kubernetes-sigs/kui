@@ -107,6 +107,7 @@ export class NotebookVFS implements VFS {
           viewer: 'ls',
           filepath,
           fullpath: filepath,
+          size: 0,
           isDirectory: true
         }
       }
@@ -116,6 +117,11 @@ export class NotebookVFS implements VFS {
         viewer: 'replay',
         filepath: entry.mountPath,
         fullpath: entry.mountPath,
+        size: isLeaf(entry)
+          ? /\.json$/.test(entry.mountPath)
+            ? JSON.stringify(entry.data, undefined, 2).length
+            : entry.data.toString().length
+          : 0,
         isDirectory: !isLeaf(entry),
         data:
           withData && isLeaf(entry)

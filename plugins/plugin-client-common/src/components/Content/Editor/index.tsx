@@ -22,11 +22,13 @@ import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
 import {
   Button,
   REPL,
+  EditableSpec,
   SaveError,
   StringContent,
   ToolbarText,
   ToolbarProps,
   MultiModalResponse,
+  encodeComponent,
   eventChannelUnsafe,
   eventBus,
   i18n
@@ -48,7 +50,7 @@ type Props = MonacoOptions &
   ToolbarProps & {
     tabUUID: string
     repl: REPL
-    content: StringContent
+    content: StringContent & Partial<EditableSpec>
     response: File | MultiModalResponse
 
     /** Use a light theme? Default: false */
@@ -59,7 +61,7 @@ type Props = MonacoOptions &
   }
 
 interface State {
-  content: StringContent
+  content: Props['content']
   editor: Monaco.ICodeEditor
   wrapper: HTMLDivElement
   subscription?: IDisposable
@@ -95,10 +97,10 @@ export default class Editor extends React.PureComponent<Props, State> {
    * since last save.
    *
    */
-  private static allClean(props: Props): ToolbarText {
+  private static allClean(readOnly: boolean): ToolbarText {
     return {
       type: 'info',
-      text: strings(!props.readOnly ? 'isUpToDate' : 'isUpToDateReadonly')
+      text: strings(!readOnly ? 'isUpToDate' : 'isUpToDateReadonly')
     }
   }
 
@@ -121,7 +123,7 @@ export default class Editor extends React.PureComponent<Props, State> {
     } else if (props.content !== state.content) {
       return {
         content: props.content,
-        subscription: Editor.reinitMonaco(props, state)
+        subscription: Editor.reinitMonaco(props, state, Editor.isReadOnly(props, state))
       }
     } else {
       return state
@@ -145,7 +147,7 @@ export default class Editor extends React.PureComponent<Props, State> {
     )
   }
 
-  private static onChange(props: Props, content: State['content'], editor: Monaco.ICodeEditor) {
+  private static onChange(props: Props, content: State['content'], readOnly: boolean, editor: Monaco.ICodeEditor) {
     let currentDecorations: string[]
 
     return () => {
@@ -162,9 +164,9 @@ export default class Editor extends React.PureComponent<Props, State> {
       if (isFile(props.response)) {
         const save = SaveFileButton(editor, props.repl, props.response, (success: boolean) => {
           if (success) {
-            props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
+            props.willUpdateToolbar(Editor.allClean(readOnly), !clearable ? undefined : [ClearButton(editor)])
           } else {
-            props.willUpdateToolbar(this.error(props, 'errorSaving'))
+            props.willUpdateToolbar(Editor.error(props, 'errorSaving'))
           }
         })
         buttons.push(save)
@@ -180,7 +182,7 @@ export default class Editor extends React.PureComponent<Props, State> {
               const save = await onSave(editor.getValue())
               if (!(save && save.noToolbarUpdate)) {
                 props.willUpdateToolbar(
-                  (save && save.toolbarText) || this.allClean(props),
+                  (save && save.toolbarText) || Editor.allClean(readOnly),
                   !clearable ? undefined : [ClearButton(editor)]
                 )
               }
@@ -229,9 +231,9 @@ export default class Editor extends React.PureComponent<Props, State> {
         const revert = RevertFileButton(editor, props.repl, props.response, (success: boolean, data?: string) => {
           if (success) {
             editor.setValue(data)
-            props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
+            props.willUpdateToolbar(Editor.allClean(readOnly), !clearable ? undefined : [ClearButton(editor)])
           } else {
-            props.willUpdateToolbar(this.error(props, 'errorReverting'))
+            props.willUpdateToolbar(Editor.error(props, 'errorReverting'))
           }
         })
         buttons.push(revert)
@@ -245,10 +247,10 @@ export default class Editor extends React.PureComponent<Props, State> {
             try {
               const data = await onRevert()
               editor.setValue(data)
-              props.willUpdateToolbar(this.allClean(props), !clearable ? undefined : [ClearButton(editor)])
+              props.willUpdateToolbar(Editor.allClean(readOnly), !clearable ? undefined : [ClearButton(editor)])
             } catch (err) {
               console.error(err)
-              props.willUpdateToolbar(this.error(props, 'errorReverting'))
+              props.willUpdateToolbar(Editor.error(props, 'errorReverting'))
             }
           }
         })
@@ -279,7 +281,7 @@ export default class Editor extends React.PureComponent<Props, State> {
     if (props.willUpdateToolbar) {
       // send an initial update; note how the initial toolbarText may
       // be governed by the response
-      const msg = (readOnly && props.response.toolbarText) || (!readOnly && this.allClean(props)) // <-- always use allClean if !readOnly
+      const msg = (readOnly && props.response.toolbarText) || (!readOnly && Editor.allClean(readOnly)) // <-- always use allClean if !readOnly
       const buttons = props.response.toolbarText
         ? []
         : !Editor.isClearable(props, content)
@@ -288,20 +290,36 @@ export default class Editor extends React.PureComponent<Props, State> {
       props.willUpdateToolbar(msg, buttons)
 
       // then subscribe to future model change events
-      return editor.onDidChangeModelContent(Editor.onChange(props, content, editor))
+      return editor.onDidChangeModelContent(Editor.onChange(props, content, readOnly, editor))
     }
   }
 
-  private static reinitMonaco(props: Props, state: State): IDisposable {
-    state.editor.setValue(props.content.content)
-    props.willUpdateToolbar(
-      Editor.allClean(props),
-      !Editor.isClearable(props, props.content) ? undefined : [ClearButton(state.editor)]
-    )
-
-    if (state.subscription) {
-      state.subscription.dispose()
+  private static async extractValue(
+    content: Props['content'],
+    response: Props['response'],
+    repl: REPL
+  ): Promise<string> {
+    try {
+      return (typeof content.content !== 'string' || content.content.length === 0) && isFile(response)
+        ? await repl.qexec<string>(`vfs fslice ${encodeComponent(response.spec.fullpath)} ${0} ${8192}`)
+        : content.content
+    } catch (err) {
+      console.error(err)
+      return err.message
     }
+  }
+
+  private static reinitMonaco(props: Props, state: State, readOnly: boolean): IDisposable {
+    setTimeout(async () => {
+      state.editor.setValue(await Editor.extractValue(props.content, props.response, props.repl))
+
+      const msg = (readOnly && props.response.toolbarText) || (!readOnly && Editor.allClean(readOnly)) // <-- always use allClean if !readOnly
+      props.willUpdateToolbar(msg, !Editor.isClearable(props, props.content) ? undefined : [ClearButton(state.editor)])
+
+      if (state.subscription) {
+        state.subscription.dispose()
+      }
+    })
 
     return Editor.subscribeToChanges(props, props.content, state.editor, Editor.isReadOnly(props, state))
   }
@@ -321,7 +339,7 @@ export default class Editor extends React.PureComponent<Props, State> {
     try {
       // here we instantiate an editor widget
       const providedOptions = {
-        value: state.content.content,
+        value: '',
         readOnly: Editor.isReadOnly(props, state),
         language:
           state.content.contentType === 'text/plain'
@@ -338,6 +356,9 @@ export default class Editor extends React.PureComponent<Props, State> {
         overrides
       )
       const editor = Monaco.create(state.wrapper, options)
+      setTimeout(async () => {
+        editor.setValue(await Editor.extractValue(state.content, props.response, props.repl))
+      })
 
       const onZoom = () => {
         editor.updateOptions({ fontSize: getKuiFontSize() })
