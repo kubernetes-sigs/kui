@@ -16,11 +16,22 @@
 
 import React from 'react'
 
-/** for html-formatted text, wrap it in a container with padding and scrolling */
+/**
+ * For html-formatted text, wrap it in an IFrame container with
+ * padding. We set the backgroundColor of the iframe to `white` in
+ * order to match the expectations of web pages vis-a-vis defaults.
+ *
+ * See https://github.com/IBM/kui/issues/7101 for why we use an iframe.
+ * The html content will not inherit Kui's stylings. This is not possible,
+ * and perhaps not desirable. Random HTML will have its own home-grown
+ * stylings. In any case, there is no good way to inject random Kui stylings
+ * into random iframes.
+ *
+ */
 export default function HTMLString({ content }: { content: string }) {
   return (
-    <div className="padding-content scrollable scrollable-auto page-content">
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+    <div className="padding-content">
+      <iframe srcDoc={content} width="100%" height="100%" style={{ backgroundColor: 'white' }} />
     </div>
   )
 }
