@@ -86,6 +86,10 @@ export class Logs extends Terminal<State> {
         message: 'Logs are live streaming.',
         type: 'info' as const
       },
+      Idle: {
+        message: 'Log streaming is idle.',
+        type: 'warning' as const
+      },
       Paused: {
         message: 'Log streaming is paused.',
         type: 'warning' as const
