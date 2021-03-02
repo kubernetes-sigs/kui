@@ -78,7 +78,7 @@ class LocalVFS implements VFS {
 
       // re: end = _length - 1, this is because the end option is inclusive and _length is not
       if (filepath.endsWith('.gz')) {
-        createReadStream(fullpath, { start: offset, end: _length ? _length - 1 : Infinity })
+        createReadStream(fullpath, { start: offset, end: _length ? offset + _length - 1 : Infinity })
           .pipe(createGunzip())
           .on('error', (err: CodedError<string>) => {
             if (err.code === 'Z_BUF_ERROR') {
@@ -91,7 +91,7 @@ class LocalVFS implements VFS {
           .on('end', () => resolve(data))
           .on('data', d => (data += d))
       } else {
-        createReadStream(fullpath, { start: offset, end: _length ? _length - 1 : Infinity })
+        createReadStream(fullpath, { start: offset, end: _length ? offset + _length - 1 : Infinity })
           .on('error', reject)
           .on('end', () => {
             resolve(data)
