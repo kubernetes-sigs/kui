@@ -507,6 +507,7 @@ class KubectlWatcher implements Abortable, Watcher {
           if (this.limit && remaining <= 0) {
             debug('Aborting PTY channel, due to having observed the expected number of completions')
             this.abort()
+            this.pusher.done()
           }
         }
       } else {
