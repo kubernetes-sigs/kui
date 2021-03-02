@@ -245,6 +245,17 @@ class KubectlWatcher implements Abortable, Watcher {
 
   private eventLeftover: string
 
+  /** In order to distinguish pty exit due to our abort request, from
+   * a spontaneous pty exit (kubectl get --watch may exit on its own,
+   * depending on the provider) */
+  private weRequestedAbort = false
+
+  /** In order to avoid a catastrophic tight look of pty re-inits, we
+   * keep track of how many times we have re-initialized the PTY due
+   * to a premature abort */
+  private nPTYReinits = 0
+  private static maxPTYReinits = 1000
+
   /** the pty job we spawned to capture --watch output */
   private ptyJob: Abortable[] = []
 
@@ -283,6 +294,8 @@ class KubectlWatcher implements Abortable, Watcher {
    *
    */
   public abort() {
+    this.weRequestedAbort = true
+
     // we abort the associated pty, if we have one
     if (this.ptyJob) {
       this.ptyJob.forEach(job => job.abort())
@@ -398,6 +411,22 @@ class KubectlWatcher implements Abortable, Watcher {
   }
 
   /**
+   * The underlying PTY has exited. If this wasn't at our request,
+   * then we need to restart the PTY.
+   *
+   */
+  private onPTYExit() {
+    if (!this.weRequestedAbort) {
+      if (this.nPTYReinits++ < KubectlWatcher.maxPTYReinits) {
+        debug('premature termination of the pty; refiring the pty', this.nPTYReinits)
+        this.init(this.pusher)
+      } else {
+        debug('premature termination of the pty; however, maximum reinit count exceeded!')
+      }
+    }
+  }
+
+  /**
    * Our impl of the `onInit` streaming PTY API: the PTY calls us with
    * the PTY job (so that we can abort it, if we want). In return, we
    * give it a stream into which it pump data.
@@ -406,7 +435,7 @@ class KubectlWatcher implements Abortable, Watcher {
   private onPTYInit(ptyJob: Abortable) {
     // in response, we return a consumer of Streamable output; we only
     // handle string data types in this case
-    debug('onPTYInit')
+    debug('onPTYInit', this.limit)
     this.ptyJob.push(ptyJob)
 
     // These help us with managing the countdown latch. See the comments for this.limit.
@@ -518,6 +547,7 @@ class KubectlWatcher implements Abortable, Watcher {
       quiet: true,
       replSilence: true,
       echo: false,
+      onExit: this.onPTYExit.bind(this),
       onInit: this.onPTYInit.bind(this) // <-- the PTY will call us back when it's ready to stream
     }).catch(err => {
       debug('pty error', err)
