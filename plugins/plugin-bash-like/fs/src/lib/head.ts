@@ -34,7 +34,7 @@ import { fslice } from '../vfs/delegates'
 const strings = i18n('plugin-bash-like')
 const debug = Debug('plugins/bash-like/cmds/head')
 
-interface HeadOptions extends ParsedOptions {
+export interface HeadOptions extends ParsedOptions {
   n: number // line counts
   c: number // bytes
 }

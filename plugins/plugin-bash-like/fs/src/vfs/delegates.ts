@@ -226,7 +226,8 @@ export async function fslice(
   filepath: string,
   offsetAsProvided: number,
   length: number,
-  unit: 'bytes' | 'lines' = 'bytes'
+  unit: 'bytes' | 'lines' = 'bytes',
+  end?: number
 ): ReturnType<VFS['fslice']> {
   const mount = findMount(filepath, undefined, true)
 
@@ -241,13 +242,13 @@ export async function fslice(
     let dataRead = ''
     while (true) {
       try {
-        const data = await mount.fslice(filepath, offset, 4000)
+        const data = await mount.fslice(filepath, offset, end !== undefined ? end - offset : 4000)
         if (data) {
           dataRead = dataRead.concat(data)
           const lines = dataRead.split('\n')
 
-          if (lines.length >= length) {
-            dataRead = lines.slice(0, length).join('\n')
+          if (lines.length >= Math.abs(length)) {
+            dataRead = (length < 0 ? lines.slice(length) : lines.slice(0, length)).join('\n')
             break
           } else {
             offset = Buffer.from(dataRead).length

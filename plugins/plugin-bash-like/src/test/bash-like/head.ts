@@ -20,90 +20,91 @@ import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-sh
 
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = (dir: string) => join(ROOT, dir)
+;['head', 'tail'].forEach(head => {
+  describe(`bash-like ${head} ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+    before(Common.before(this))
+    after(Common.after(this))
 
-describe(`bash-like head ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
-  before(Common.before(this))
-  after(Common.after(this))
+    it(`should ${head} package.json and see 10 lines`, () =>
+      CLI.command(`${head} ${rootRelative('package.json')}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(res =>
+          this.app.client.waitUntil(async () => {
+            const linesNumbers = await this.app.client.$$(
+              Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
+            )
+            return linesNumbers.length === 10
+          })
+        )
+        .catch(Common.oops(this)))
 
-  it('should head package.json and see 10 lines', () =>
-    CLI.command(`head ${rootRelative('package.json')}`, this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(res =>
-        this.app.client.waitUntil(async () => {
-          const linesNumbers = await this.app.client.$$(
-            Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
-          )
-          return linesNumbers.length === 10
-        })
-      )
-      .catch(Common.oops(this)))
+    it(`should ${head} -n 5 package.json and see 5 lines`, () =>
+      CLI.command(`${head} -n 5 ${rootRelative('package.json')}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(res =>
+          this.app.client.waitUntil(async () => {
+            const linesNumbers = await this.app.client.$$(
+              Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
+            )
+            return linesNumbers.length === 5
+          })
+        )
+        .catch(Common.oops(this)))
 
-  it('should head -n 5 package.json and see 5 lines', () =>
-    CLI.command(`head -n 5 ${rootRelative('package.json')}`, this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(res =>
-        this.app.client.waitUntil(async () => {
-          const linesNumbers = await this.app.client.$$(
-            Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
-          )
-          return linesNumbers.length === 5
-        })
-      )
-      .catch(Common.oops(this)))
+    it(`should ${head} -c 1 package.json and see 1 bytes`, () =>
+      CLI.command(`${head} -c 1 ${rootRelative('package.json')}`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(res =>
+          this.app.client.waitUntil(async () => {
+            const value = await Util.getValueFromMonaco(res)
+            const bufferSize = Buffer.from(value).length
+            return bufferSize === 1
+          })
+        )
+        .catch(Common.oops(this)))
 
-  it('should head -c 1 package.json and see 1 bytes', () =>
-    CLI.command(`head -c 1 ${rootRelative('package.json')}`, this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(res =>
-        this.app.client.waitUntil(async () => {
-          const value = await Util.getValueFromMonaco(res)
-          const bufferSize = Buffer.from(value).length
-          return bufferSize === 1
-        })
-      )
-      .catch(Common.oops(this)))
+    it(`should ${head} /kui/welcome.json and see 10 lines`, () =>
+      CLI.command(`${head} /kui/welcome.json`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(res =>
+          this.app.client.waitUntil(async () => {
+            const linesNumbers = await this.app.client.$$(
+              Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
+            )
+            return linesNumbers.length === 10
+          })
+        )
+        .catch(Common.oops(this)))
 
-  it('should head /kui/welcome.json and see 10 lines', () =>
-    CLI.command('head /kui/welcome.json', this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(res =>
-        this.app.client.waitUntil(async () => {
-          const linesNumbers = await this.app.client.$$(
-            Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
-          )
-          return linesNumbers.length === 10
-        })
-      )
-      .catch(Common.oops(this)))
+    it(`should ${head} -n 5 /kui/welcome.json and see 5 lines`, () =>
+      CLI.command(`${head} -n 5 /kui/welcome.json`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(res =>
+          this.app.client.waitUntil(async () => {
+            const linesNumbers = await this.app.client.$$(
+              Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
+            )
+            return linesNumbers.length === 5
+          })
+        )
+        .catch(Common.oops(this)))
 
-  it('should head -n 5 /kui/welcome.json and see 5 lines', () =>
-    CLI.command('head -n 5 /kui/welcome.json', this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(res =>
-        this.app.client.waitUntil(async () => {
-          const linesNumbers = await this.app.client.$$(
-            Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
-          )
-          return linesNumbers.length === 5
-        })
-      )
-      .catch(Common.oops(this)))
-
-  it('should head -c 1 /kui/welcome.json and see 1 bytes', () =>
-    CLI.command('head -c 1 /kui/welcome.json', this.app)
-      .then(ReplExpect.ok)
-      .then(SidecarExpect.open)
-      .then(res =>
-        this.app.client.waitUntil(async () => {
-          const value = await Util.getValueFromMonaco(res)
-          const bufferSize = Buffer.from(value).length
-          return bufferSize === 1
-        })
-      )
-      .catch(Common.oops(this)))
+    it(`should ${head} -c 1 /kui/welcome.json and see 1 bytes`, () =>
+      CLI.command(`${head} -c 1 /kui/welcome.json`, this.app)
+        .then(ReplExpect.ok)
+        .then(SidecarExpect.open)
+        .then(res =>
+          this.app.client.waitUntil(async () => {
+            const value = await Util.getValueFromMonaco(res)
+            const bufferSize = Buffer.from(value).length
+            return bufferSize === 1
+          })
+        )
+        .catch(Common.oops(this)))
+  })
 })

@@ -18,6 +18,7 @@ import cd from './lib/cd'
 import ls from './lib/ls'
 import edit from './lib/edit'
 import head from './lib/head'
+import tail from './lib/tail'
 import open from './lib/open'
 import fwrite from './lib/fwrite'
 import mkTemp from './lib/mkTemp'
@@ -36,6 +37,7 @@ export default async (registrar: Registrar) => {
     ls(registrar),
     edit(registrar),
     head(registrar),
+    tail(registrar),
     open(registrar),
     fwrite(registrar),
     mkTemp(registrar),
