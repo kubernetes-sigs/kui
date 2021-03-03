@@ -42,9 +42,9 @@ describe(`watch directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, functi
       .catch(Common.oops(this)))
 
   it('should watch ls -l /tmp', () =>
-    CLI.command(`watch ls /tmp`, this.app)
-      .then(ReplExpect.ok)
+    CLI.command(`watch ls -l /tmp`, this.app)
       .then(async res => {
+        await ReplExpect.okWith(names[0])(res)
         const fileName = names[1]
         await CLI.command(`touch /tmp/${fileName}`, this.app).then(ReplExpect.ok)
 

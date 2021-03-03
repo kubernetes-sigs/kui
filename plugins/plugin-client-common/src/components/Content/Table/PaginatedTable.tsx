@@ -255,6 +255,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     const hasTimelineButton = false // disabled for now, see https://github.com/IBM/kui/issues/5864
 
     const needsBottomToolbar =
+      this.caption() ||
       this.isPaginated() ||
       (gridableColumn >= 0 && (this.props.response.body.length > 1 || isWatchable(this.props.response))) ||
       isTableWithTimestamp(this.props.response)

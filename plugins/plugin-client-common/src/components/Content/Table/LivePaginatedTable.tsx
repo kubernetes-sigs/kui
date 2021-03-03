@@ -88,14 +88,18 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     const allOffline = this.allOffline.bind(this)
     const header = this.header.bind(this)
     const footer = this.footer.bind(this)
-    this.props.response.watch.init({ update, batchUpdateDone, offline, done, allOffline, header, footer })
+    const setBody = this.setBody.bind(this)
+    this.props.response.watch.init({ update, setBody, batchUpdateDone, offline, done, allOffline, header, footer })
   }
 
   private pauseWatch() {
     if (this.props.response.watch.xoff) {
       this.props.response.watch.xoff()
-      this.setState({ isWatching: false })
+    } else {
+      this.props.response.watch.abort()
     }
+
+    this.setState({ isWatching: false })
   }
 
   private resumeWatch() {
@@ -118,29 +122,39 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     if (this.state.lastUpdatedMillis) {
       const icon = this.state.isWatching ? 'Eye' : 'EyeSlash'
       const iconColor = this.state.isWatching ? 'green-text' : 'sub-text'
-      const watchControlDescription = this.state.isWatching ? strings('Pause watcher') : strings('Resume watcher')
+      const watchControlDescription = isSuspendable(this.props.response.watch)
+        ? this.state.isWatching
+          ? strings('Abort watcher')
+          : ''
+        : this.state.isWatching
+        ? strings('Pause watcher')
+        : strings('Resume watcher')
 
       return (
         <React.Fragment>
-          {!isSuspendable(this.props.response.watch) ? (
+          <a
+            href="#"
+            className="kui--toolbar-button-watch"
+            data-online={this.state.isWatching}
+            onClick={this.watchControll.bind(this)}
+            onMouseDown={evt => evt.preventDefault()}
+            title={watchControlDescription}
+            aria-label={watchControlDescription}
+          >
             <Icons icon={icon} className={'small-right-pad ' + iconColor} />
-          ) : (
-            <a
-              href="#"
-              className="kui--toolbar-button-watch"
-              data-online={this.state.isWatching}
-              onClick={this.watchControll.bind(this)}
-              onMouseDown={evt => evt.preventDefault()}
-              title={watchControlDescription}
-              aria-label={watchControlDescription}
-            >
-              <Icons icon={icon} className={'small-right-pad ' + iconColor} />
-            </a>
-          )}
+          </a>
           {strings('Last updated', new Date(this.state.lastUpdatedMillis).toLocaleTimeString())}
         </React.Fragment>
       )
     }
+  }
+
+  private setBody(rows: KuiRow[]) {
+    this.props.response.body = rows
+    this.setState({
+      lastUpdatedMillis: Date.now(),
+      body: rows
+    })
   }
 
   /**

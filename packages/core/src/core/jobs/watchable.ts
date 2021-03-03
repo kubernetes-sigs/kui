@@ -46,6 +46,9 @@ export interface WatchPusher {
    */
   update: (response: Row, batch?: boolean, changed?: boolean) => void
 
+  /** set table body */
+  setBody: (response: Row[]) => void
+
   /** A batch of calls to `update` is complete */
   batchUpdateDone: () => void
 

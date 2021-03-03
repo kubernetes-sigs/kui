@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import { KResponse, ParsedOptions, Registrar, ScalarResponse } from '@kui-shell/core'
+import {
+  Abortable,
+  Watcher,
+  WatchPusher,
+  isTable,
+  KResponse,
+  ParsedOptions,
+  Registrar,
+  ScalarResponse,
+  Arguments
+} from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   n: number
@@ -22,6 +32,32 @@ interface Options extends ParsedOptions {
 
   t: string
   'no-title': string
+}
+
+class TableWatcher implements Abortable, Watcher {
+  private timeout: ReturnType<typeof setInterval>
+
+  // eslint-disable-next-line no-useless-constructor
+  public constructor(
+    private readonly args: Arguments,
+    private readonly command: string,
+    private readonly interval: number
+  ) {}
+
+  public async init(pusher: WatchPusher) {
+    this.timeout = setInterval(async () => {
+      const table = await this.args.REPL.qexec(this.command)
+      if (isTable(table)) {
+        pusher.setBody(table.body)
+      } else {
+        this.abort()
+      }
+    }, this.interval)
+  }
+
+  public async abort() {
+    clearInterval(this.timeout)
+  }
 }
 
 export default function(registrar: Registrar) {
@@ -32,14 +68,18 @@ export default function(registrar: Registrar) {
       const response = await args.REPL.qexec(cmdline)
       const interval = args.parsedOptions.n || args.parsedOptions.interval || 2000
 
-      const timeout = setTimeout(async () => {
-        await args.REPL.reexec(args.command, { execUUID: args.execOptions.execUUID })
-      }, interval)
+      if (isTable(response)) {
+        return Object.assign(response, { watch: new TableWatcher(args, cmdline, interval) })
+      } else {
+        const timeout = setTimeout(async () => {
+          await args.REPL.reexec(args.command, { execUUID: args.execOptions.execUUID })
+        }, interval)
 
-      return {
-        response: response as ScalarResponse,
-        abort: () => {
-          clearTimeout(timeout)
+        return {
+          response: response as ScalarResponse,
+          abort: () => {
+            clearTimeout(timeout)
+          }
         }
       }
     },
