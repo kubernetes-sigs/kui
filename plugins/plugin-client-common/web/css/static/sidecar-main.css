@@ -120,6 +120,11 @@ $toolbar-height: 1.5rem;
     overflow: visible; /* for tooltip visibility */
   }
 
+  .sidecar-toolbar-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .sidecar-toolbar-text svg path {
     fill: var(--color-sidecar-toolbar-foreground);
     &[data-icon-path="inner-path"] {
@@ -165,6 +170,10 @@ $toolbar-height: 1.5rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    p {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
   .sidecar-bottom-stripe-button {
     display: flex;
