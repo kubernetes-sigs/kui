@@ -83,13 +83,13 @@ function safePrettyPrintBytes(_bytes: string | number): string {
     if (bytes < 1024) {
       return bytes.toFixed(2) + ' b'
     } else if (bytes < 1024 * 1024) {
-      return (bytes / 1024).toFixed(0) + ' KB'
+      return (bytes / 1024).toFixed(0) + ' KiB'
     } else if (bytes < 1024 * 1024 * 1024) {
-      return (bytes / 1024 / 1024).toFixed(0) + ' MB'
+      return (bytes / 1024 / 1024).toFixed(0) + ' MiB'
     } else if (bytes < 1024 * 1024 * 1024 * 1024) {
-      return (bytes / 1024 / 1024 / 1024).toFixed(0) + ' GB'
+      return (bytes / 1024 / 1024 / 1024).toFixed(0) + ' GiB'
     } else {
-      return (bytes / 1024 / 1024 / 1024 / 1024).toFixed(0) + ' TB'
+      return (bytes / 1024 / 1024 / 1024 / 1024).toFixed(0) + ' TiB'
     }
   } catch (err) {
     return _bytes.toString()
@@ -108,7 +108,7 @@ function prettyPrintThroughput(bytes: string, durationInMillis: number): string 
     const denominator = durationInMillis / 1000 // seconds
     const ratio = numerator / denominator // bytes per second
 
-    return safePrettyPrintBytes(ratio) + 'ps'
+    return safePrettyPrintBytes(ratio) + '/s'
   } catch (err) {
     return ''
   }
