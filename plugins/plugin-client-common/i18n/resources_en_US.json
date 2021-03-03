@@ -61,6 +61,7 @@
   "Switch theme": "Switch theme",
   "No results found": "No results found",
   "Show as table in terminal": "Show as table in terminal",
+  "Abort watcher": "Abort this watcher",
   "Pause watcher": "Pause this watcher",
   "Resume watcher": "Resume this watcher",
   "Close watcher": "Close and terminate this watcher"
