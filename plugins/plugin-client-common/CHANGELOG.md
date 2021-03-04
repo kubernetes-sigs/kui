@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.2.1](https://github.com/IBM/kui/compare/v10.2.0...v10.2.1) (2021-03-04)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** opening monaco-editor component causes 1px of vertical scrolling at the root level ([590ee40](https://github.com/IBM/kui/commit/590ee40)), closes [#7113](https://github.com/IBM/kui/issues/7113)
+- **plugins/plugin-client-common:** sidecar toolbar text can overflow ([0eb0555](https://github.com/IBM/kui/commit/0eb0555)), closes [#7114](https://github.com/IBM/kui/issues/7114)
+
 # [10.2.0](https://github.com/IBM/kui/compare/v10.1.1-dev-20210223-062039...v10.2.0) (2021-02-24)
 
 ### Bug Fixes
