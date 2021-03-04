@@ -48,6 +48,7 @@ class TableWatcher implements Abortable, Watcher {
     this.timeout = setInterval(async () => {
       const table = await this.args.REPL.qexec(this.command)
       if (isTable(table)) {
+        pusher.header(table.header)
         pusher.setBody(table.body)
       } else {
         this.abort()
