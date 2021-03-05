@@ -233,7 +233,16 @@ export { default as SymbolTable } from './core/symbol-table'
 
 // Tables
 export { default as CellShould } from './models/CellShould'
-export { Icon, TableStyle, Table, Row, Cell, isTable, isTableWithTimestamp } from './webapp/models/table'
+export {
+  Icon,
+  TableStyle,
+  Table,
+  Row,
+  Cell,
+  isTable,
+  isTableWithTimestamp,
+  isTableWithCount
+} from './webapp/models/table'
 export {
   default as RadioTable,
   isRadioTable,

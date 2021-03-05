@@ -21,6 +21,7 @@ import {
   Row as KuiRow,
   TableStyle,
   i18n,
+  isTableWithCount,
   isTableWithTimestamp,
   isWatchable
 } from '@kui-shell/core'
@@ -34,6 +35,7 @@ import Timeline from './Timeline'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
 import SequenceDiagram from './SequenceDiagram'
+import Histogram from './Histogram'
 import kuiHeaderFromBody from './kuiHeaderFromBody'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
 import Grid, { findGridableColumn } from './Grid'
@@ -156,6 +158,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       const asSequence =
         (!asGrid && PaginatedTable.hasSequenceButton(props) && props.response.body.length > 1) ||
         defaultPresentation === 'sequence-diagram'
+      const asHistogram =
+        defaultPresentation === 'histogram' &&
+        PaginatedTable.hasHistogramButton(props) &&
+        props.response.body.length >= 1
 
       const defaults = {
         page: 1,
@@ -169,6 +175,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         footer,
         header,
         asSequence,
+        asHistogram,
         activeSortIdx: -1,
         activeSortDir: undefined,
         response: props.response,
@@ -248,17 +255,23 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return isTableWithTimestamp(props.response)
   }
 
+  private static hasHistogramButton(props: Props) {
+    return isTableWithCount(props.response)
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private bottomToolbar(lightweightTables = false) {
     const gridableColumn = findGridableColumn(this.props.response)
     const hasSequenceButton = PaginatedTable.hasSequenceButton(this.props)
+    const hasHistogramButton = PaginatedTable.hasHistogramButton(this.props)
     const hasTimelineButton = false // disabled for now, see https://github.com/IBM/kui/issues/5864
 
     const needsBottomToolbar =
       this.caption() ||
       this.isPaginated() ||
       (gridableColumn >= 0 && (this.props.response.body.length > 1 || isWatchable(this.props.response))) ||
-      isTableWithTimestamp(this.props.response)
+      isTableWithTimestamp(this.props.response) ||
+      isTableWithCount(this.props.response)
 
     return (
       <React.Fragment>
@@ -286,6 +299,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
               this.setState({ asSequence })
               if (asSequence) {
                 this.props.response.defaultPresentation = 'sequence-diagram'
+              }
+            }}
+            hasHistogramButton={hasHistogramButton}
+            asHistogram={this.state.asHistogram}
+            setAsHistogram={(asHistogram: boolean) => {
+              this.setState({ asHistogram })
+              if (asHistogram) {
+                this.props.response.defaultPresentation = 'histogram'
               }
             }}
             hasTimelineButton={hasTimelineButton}
@@ -383,6 +404,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     return <SequenceDiagram {...this.props} isWatching={this.isWatching()} />
   }
 
+  private histogram() {
+    return <Histogram {...this.props} isWatching={this.isWatching()} />
+  }
+
   private timeline() {
     return <Timeline {...this.props} />
   }
@@ -400,6 +425,8 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
           ? this.grid(this.state.body)
           : this.state.asSequence
           ? this.sequence()
+          : this.state.asHistogram
+          ? this.histogram()
           : this.state.asTimeline
           ? this.timeline()
           : this.table()}
