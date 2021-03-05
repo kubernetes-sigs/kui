@@ -186,6 +186,18 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin Context {
+  .repl-context {
+    @content;
+  }
+}
+
+@mixin ContextInner {
+  .repl-context-inner {
+    @content;
+  }
+}
+
 /** The wrapper around the <input> element. This contains the <input> and the timestamp, duration, and block buttons. */
 @mixin InputWrapper {
   .repl-input-element-wrapper {

@@ -168,7 +168,11 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
         <Icons icon="Edit" className="clickable" />
       </a>
     ) : (
-      <React.Fragment>In[{insideBrackets}]</React.Fragment>
+      <span className="repl-context-inner">
+        {' '}
+        {/* Helps with vertical alignment */}
+        In[{insideBrackets}]
+      </span>
     ) // this.props.model.cwd
   }
 
@@ -562,7 +566,26 @@ export default class Input extends InputProvider {
             onClick={this._onClickFinished}
             data-input-count={this.props.idx}
           >
-            <span className="repl-input-element flex-fill">{value}</span>
+            <span className="repl-input-element flex-fill">
+              {value.split(/\|/).map((pipePart, pidx, parts) => (
+                <React.Fragment key={pidx}>
+                  {pidx > 0 && <strong className="left-pad sub-text">| </strong>}
+                  {pipePart
+                    .trim()
+                    .split(/\s/)
+                    .map((word, widx) =>
+                      widx === 0 ? (
+                        <span key={widx} className="color-base0D">
+                          {word}
+                        </span>
+                      ) : (
+                        ` ${word}`
+                      )
+                    )}
+                  {pidx < parts.length - 1 && <span className="kui--line-break">&nbsp;</span>}
+                </React.Fragment>
+              ))}
+            </span>
             {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
             {this.inputStatus(value)}
           </div>
