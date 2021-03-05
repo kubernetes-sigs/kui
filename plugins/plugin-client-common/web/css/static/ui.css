@@ -128,6 +128,16 @@ body.still-loading .repl {
 }
 
 /* generic */
+.kui--invisible-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
 .kui--line-break:after {
   /* Use this to introduce a line break in a way that avoids capturing
    the line break in copy-paste. E.g. see

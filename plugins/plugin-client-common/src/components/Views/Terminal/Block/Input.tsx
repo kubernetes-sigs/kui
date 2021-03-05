@@ -482,6 +482,27 @@ export default class Input extends InputProvider {
     )
   }
 
+  /** For Processing blocks, we use an overlay <input/> element. We need to manage focus, since it has pointer-events: none */
+  private readonly _restoreFocusToOverlayInput = whenNothingIsSelected((evt: React.SyntheticEvent) => {
+    ;(evt.currentTarget.querySelector('.kui--invisible-overlay') as HTMLInputElement).focus()
+  })
+
+  /** This is the input overlay for Processing blocks */
+  private inputOverlayForProcessingBlocks(value: string) {
+    return (
+      <input
+        className="kui--invisible-overlay"
+        readOnly
+        onKeyDown={evt => {
+          if (evt.key === 'c' && evt.ctrlKey) {
+            doCancel(this.props.tab, this.props._block, value)
+          }
+        }}
+        ref={c => c && c.focus()}
+      />
+    )
+  }
+
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
     const active = isActive(this.props.model) || this.state.isReEdit
@@ -538,60 +559,57 @@ export default class Input extends InputProvider {
       )
     } else {
       const value = Input.valueToBeDisplayed(this.props)
+      const isInProgress = isProcessing(this.props.model)
 
-      if (isProcessing(this.props.model)) {
-        // for processing blocks, we still need an input, albeit
-        // readOnly, to handle ctrl+C
-        return (
-          <span className="repl-input-element-wrapper flex-layout flex-fill">
-            <input
-              className="repl-input-element"
-              readOnly
-              value={value}
-              onKeyDown={evt => {
-                if (evt.key === 'c' && evt.ctrlKey) {
-                  doCancel(this.props.tab, this.props._block, value)
-                }
-              }}
-              ref={c => c && c.focus()}
-            />
-            {this.inputStatus(value)}
-          </span>
-        )
-      } else {
-        // for "done" blocks, render the value as a plain div
-        return (
-          <div
-            className="repl-input-element-wrapper flex-layout flex-fill"
-            onClick={this._onClickFinished}
-            data-input-count={this.props.idx}
-          >
-            <span className="repl-input-element flex-fill">
-              {value.split(/\|/).map((pipePart, pidx, parts) => (
-                <React.Fragment key={pidx}>
-                  {pidx > 0 && <strong className="left-pad sub-text">| </strong>}
-                  {pipePart
-                    .trim()
-                    .split(/\s/)
-                    .map((word, widx) =>
-                      widx === 0 ? (
-                        <span key={widx} className="color-base0D">
-                          {word}
-                        </span>
-                      ) : (
-                        ` ${word}`
-                      )
-                    )}
-                  {pidx < parts.length - 1 && <span className="kui--line-break">&nbsp;</span>}
-                </React.Fragment>
-              ))}
-            </span>
-            {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
-            {this.inputStatus(value)}
-          </div>
-        )
-      }
+      // for Processing or Done blocks, render the value as a plain div
+      // for Processing, though, we will need an inputOverlay... to capture ctrl+c
+      return (
+        <div
+          data-input-count={this.props.idx}
+          className="repl-input-element-wrapper flex-layout flex-fill"
+          onClick={isInProgress ? this._restoreFocusToOverlayInput : this._onClickFinished}
+        >
+          {this.fancyValue(value)}
+          {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
+          {isInProgress && this.inputOverlayForProcessingBlocks(value)}
+          {this.inputStatus(value)}
+        </div>
+      )
     }
+  }
+
+  /**
+   * Turn the value part of the input into a fancier form,
+   * e.g. rendering pipelines or command names in a better way.
+   *
+   */
+  private fancyValue(value: string) {
+    return (
+      <span className="repl-input-element flex-fill">
+        {value.split(/\|/).map((pipePart, pidx, parts) => (
+          <React.Fragment key={pidx}>
+            {pidx > 0 && <strong className="left-pad sub-text">| </strong>}
+            {pipePart
+              .trim()
+              .split(/\s/)
+              .map((word, widx) =>
+                widx === 0 ? (
+                  <span key={widx} className="color-base0D">
+                    {word}
+                  </span>
+                ) : (
+                  ` ${word}`
+                )
+              )}
+            {pidx < parts.length - 1 && <span className="kui--line-break">&nbsp;</span>}
+          </React.Fragment>
+        ))}
+      </span>
+    )
+  }
+
+  public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error(error, errorInfo)
   }
 
   /** render a tag for experimental command */
@@ -624,9 +642,13 @@ export default class Input extends InputProvider {
       const openParen = noParen ? '' : '('
       const closeParen = noParen ? '' : ')'
 
+      // re: key... when the block changes from Processing to Input, we get an insertBefore error from React.
       return (
         this.props.model.startTime && (
-          <span className="kui--repl-block-timestamp kui--repl-block-right-element">
+          <span
+            className="kui--repl-block-timestamp kui--repl-block-right-element"
+            key={isProcessing(this.props.model).toString()}
+          >
             {showingDate && new Date(this.props.model.startTime).toLocaleTimeString()}
             <span className="small-left-pad sub-text" ref={c => this.setState({ durationDom: c })}>
               {openParen}
