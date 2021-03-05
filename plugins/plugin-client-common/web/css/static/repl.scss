@@ -36,7 +36,6 @@
   /* repl right-hand decorations */
   .repl-prompt-right-elements {
     display: flex;
-    align-items: center;
     white-space: nowrap;
     overflow: hidden;
   }
@@ -50,11 +49,6 @@
     fill: var(--color-error);
     margin-right: 0.5rem;
   }
-}
-
-body[kui-theme-style] .kui--repl-block-right-element {
-  color: inherit;
-  font-size: 0.75rem;
 }
 
 .repl-result,

@@ -20,6 +20,10 @@
 /** Inset of the <input> element w.r.t. the bordered/backgrounded region */
 $inset: 0.375em;
 
+/** Font size of e.g. timestamp */
+$right-element-font-size-factor: 0.75;
+$right-element-font-size: $right-element-font-size-factor + rem;
+
 /** Padding for action buttons */
 $action-padding: 3px;
 
@@ -123,6 +127,18 @@ $focus-color: var(--color-brand-01);
 
   @include FinishedBlockWithInputAndOutput {
     margin-top: 0.5em;
+  }
+
+  @include FinishedBlock {
+    @include Context {
+      padding: $inset 0;
+      align-items: flex-start;
+    }
+
+    @include ContextInner {
+      display: flex;
+      align-items: center;
+    }
   }
 
   /** focus */
@@ -246,10 +262,9 @@ $focus-color: var(--color-brand-01);
       /* have buttons fit inside the input region */
       height: 1.125em;
     }
-    .repl-context {
+    @include Context {
       color: var(--color-text-02);
       display: flex;
-      align-items: center;
       justify-content: flex-end;
       text-align: end;
       position: relative;
@@ -335,10 +350,15 @@ $focus-color: var(--color-brand-01);
   @include HideIn;
 }
 
+body[kui-theme-style] .kui--repl-block-right-element {
+  color: inherit;
+  font-size: $right-element-font-size;
+}
+
 @mixin timestamp-like {
-  margin-right: 0.5em;
+  margin: $inset / $right-element-font-size-factor;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   transition-delay: $action-hover-delay;
 }
 
