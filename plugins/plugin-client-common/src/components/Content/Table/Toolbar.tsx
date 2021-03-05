@@ -27,6 +27,7 @@ import '../../../../web/scss/components/Table/Toolbar.scss'
 export type Props = Partial<GridProps> &
   Partial<SequenceProps> &
   Partial<TimelineProps> &
+  Partial<HistogramProps> &
   Partial<PaginationProps> &
   Partial<BreadcrumbProps> &
   Partial<CaptionProps> &
@@ -57,6 +58,12 @@ interface TimelineProps {
   setAsTimeline: (asTimeline: boolean) => void
 }
 
+interface HistogramProps {
+  hasHistogramButton?: boolean
+  asHistogram: boolean
+  setAsHistogram: (asHistogram: boolean) => void
+}
+
 interface PaginationProps {
   paginate: boolean
   page: number
@@ -75,22 +82,25 @@ export default class Toolbar extends React.PureComponent<Props> {
   }
 
   private hasButtons() {
-    return this.hasGridButtons() || this.props.hasSequenceButton
+    return this.hasGridButtons() || this.props.hasSequenceButton || this.props.hasHistogramButton
   }
 
   private viewController() {
-    if (this.hasGridButtons() || this.props.hasSequenceButton) {
+    if (this.hasGridButtons() || this.props.hasSequenceButton || this.props.hasHistogramButton) {
       return (
         <React.Fragment>
           <a
             role="presentation"
             href="#"
             className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-list"
-            data-enabled={!this.props.asGrid && !this.props.asSequence && !this.props.asTimeline}
+            data-enabled={
+              !this.props.asGrid && !this.props.asSequence && !this.props.asTimeline && !this.props.asHistogram
+            }
             onClick={() => {
               this.props.setAsGrid(false)
               this.props.setAsSequence(false)
               this.props.setAsTimeline(false)
+              this.props.setAsHistogram(false)
             }}
           >
             <Icons icon="List" />
@@ -123,6 +133,22 @@ export default class Toolbar extends React.PureComponent<Props> {
               }}
             >
               <Icons icon="Sequence" />
+            </a>
+          )}
+          {this.props.hasHistogramButton && (
+            <a
+              role="presentation"
+              href="#"
+              className="kui--table-navigatable kui--toolbar-button-with-icon kui--toolbar-button-as-histogram"
+              data-enabled={this.props.asHistogram}
+              onClick={() => {
+                this.props.setAsGrid(false)
+                this.props.setAsSequence(false)
+                this.props.setAsHistogram(true)
+                this.props.setAsTimeline(false)
+              }}
+            >
+              <Icons icon="ChartBar" />
             </a>
           )}
           {this.props.hasTimelineButton && (
