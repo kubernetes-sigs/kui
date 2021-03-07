@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+/** Inset of the <input> element w.r.t. the bordered/backgrounded region */
+$inset: 0.375em;
+
+/** Font size of e.g. timestamp */
+$right-element-font-size-factor: 0.75;
+$right-element-font-size: $right-element-font-size-factor + rem;
+
+/** Padding for action buttons */
+$action-padding: 3px;
+
+/** Color to indicate focused block */
+$focus-color: var(--color-brand-01);
+
 $input-bg: rgba(150, 150, 150, 0.1);
 $input-border: 1px solid hsla(0, 0%, 39.2%, 0.1);
 $input-border-editing: var(--color-brand-03);
