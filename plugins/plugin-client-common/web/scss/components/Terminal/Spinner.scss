@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@import 'mixins';
 
 @mixin Spinner {
   .kui--repl-block-spinner {
@@ -35,6 +35,9 @@
 
   /* see https://github.com/IBM/kui/issues/6885 */
   padding-bottom: 1px;
+
+  /* see https://github.com/IBM/kui/issues/7129 */
+  margin: $inset / $right-element-font-size-factor 0;
 }
 .repl-context {
   @include Spinner {
