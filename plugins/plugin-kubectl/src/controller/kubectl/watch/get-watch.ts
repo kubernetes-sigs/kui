@@ -464,6 +464,9 @@ class KubectlWatcher implements Abortable, Watcher {
     // keep track of the header we sent to the UI, so we don't continually re-send
     let previouslySentHeader: Table['header']
 
+    // collect a flurry of batch updates
+    let outstandingBatchUpdate: ReturnType<typeof setTimeout>
+
     return async (_: Streamable) => {
       if (typeof _ === 'string') {
         // <-- strings flowing out of the PTY
@@ -526,8 +529,15 @@ class KubectlWatcher implements Abortable, Watcher {
             }
           })
 
-          // batch update done!
-          this.pusher.batchUpdateDone()
+          // batch update done! we sometimes get a flurry of push
+          // updates from the apiServer... batch up the batch updates
+          if (outstandingBatchUpdate) {
+            clearTimeout(outstandingBatchUpdate)
+          }
+          outstandingBatchUpdate = setTimeout(() => {
+            outstandingBatchUpdate = undefined
+            this.pusher.batchUpdateDone()
+          }, 200)
 
           if (this.limit && remaining <= 0) {
             debug('Aborting PTY channel, due to having observed the expected number of completions')
