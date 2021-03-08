@@ -60,7 +60,7 @@ function expandTildes(args: Args, env: Arguments['execOptions']['env']) {
  * executable.
  *
  */
-export const doNativeExec = (args: Args): Promise<RawResponse> =>
+const doNativeExecOnce = (args: Args): Promise<RawResponse> =>
   new Promise((resolve, reject) => {
     const env = Object.assign({}, !inBrowser() ? process.env : {}, args.execOptions.env)
     delete env.DEBUG
@@ -131,6 +131,30 @@ export const doNativeExec = (args: Args): Promise<RawResponse> =>
       }
     })
   })
+
+export async function doNativeExec(args: Args): Promise<RawResponse> {
+  let delay = 1000
+  const maybeRetry = (err: Error) => {
+    if (/TLS handshake timeout/.test(err.message)) {
+      // retry
+      debug(`retrying after handshake timeout with delay=${delay}`)
+      console.error(err)
+      return new Promise((resolve, reject) => {
+        setTimeout(() => doNativeExecOnce(args).then(resolve, reject), delay)
+        delay += 1000
+      })
+    } else {
+      throw err
+    }
+  }
+
+  return doNativeExecOnce(args)
+    .catch(maybeRetry)
+    .catch(maybeRetry)
+    .catch(maybeRetry)
+    .catch(maybeRetry)
+    .catch(maybeRetry)
+}
 
 /**
  * A convenience wrapper over `doNativeExec` that extracts only
