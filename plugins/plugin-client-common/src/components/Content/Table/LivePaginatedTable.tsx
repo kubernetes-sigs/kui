@@ -211,51 +211,41 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
       }
     }
 
-    const existingRows = this._deferredUpdate || this.state.body
-    // const nRowsBefore = existingRows.length
-
     // the _.rowKey existence check here is important
     // because we didn't ask rowKey to be a required field
     // if both of the rowKey are undefined, we will get a wrong foundIndex
-    const foundIndex = existingRows.findIndex(_ =>
-      _.rowKey && newKuiRow.rowKey ? _.rowKey === newKuiRow.rowKey : _.name === newKuiRow.name
-    )
+    const lookup = (rows: KuiRow[]) =>
+      rows.findIndex(_ => (_.rowKey && newKuiRow.rowKey ? _.rowKey === newKuiRow.rowKey : _.name === newKuiRow.name))
 
-    // const insertionIndex = foundIndex === -1 ? nRowsBefore : foundIndex
-
-    const newRow = newKuiRow // TODO missing justUpdated kuiRow2carbonRow(this.state.headers, justUpdated)(newKuiRow, insertionIndex)
-
-    // Notes: since PaginatedTable is a React.PureComponent, we will
-    // need to create a new array, rather than mutating the existing
-    // array
-    const newRows =
-      foundIndex === -1
-        ? existingRows.concat([newRow])
-        : existingRows
-            .slice(0, foundIndex)
-            .concat([newRow])
-            .concat(existingRows.slice(foundIndex + 1))
-
-    // we also need to update the Kui model
+    // update props model
+    const foundIndex = lookup(this.props.response.body)
     if (foundIndex === -1) {
       this.props.response.body.push(newKuiRow)
     } else {
       this.props.response.body[foundIndex] = newKuiRow
     }
 
-    if (!batch) {
-      this.setState({ body: newRows, lastUpdatedMillis: Date.now() })
+    // deferred/batch update in progress?
+    if (batch) {
+      if (!this._deferredUpdate) {
+        this._deferredUpdate = []
+      }
+      const foundIndex = lookup(this._deferredUpdate)
+      if (foundIndex >= 0) {
+        this._deferredUpdate[foundIndex] = newKuiRow
+      } else {
+        this._deferredUpdate.push(newKuiRow)
+      }
     } else {
-      this._deferredUpdate = newRows
+      this.setState({ lastUpdatedMillis: Date.now() })
     }
   }
 
   /** End of a deferred batch of updates */
   private batchUpdateDone() {
     if (this._deferredUpdate) {
-      const body = this._deferredUpdate
       this._deferredUpdate = undefined
-      this.setState({ body, lastUpdatedMillis: Date.now() })
+      this.setState({ lastUpdatedMillis: Date.now() })
     }
   }
 
