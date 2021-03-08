@@ -179,7 +179,7 @@ body[kui-theme-style] {
     .kui--sequence-diagram-in-progress {
       background: linear-gradient(100deg, $loading1, $loading2 50%, $loading1 55%);
       background-size: 400%;
-      animation: kui--sequence-diagram-in-progress 1.2s ease-in-out infinite;
+      /*animation: kui--sequence-diagram-in-progress 1.2s ease-in-out infinite;*/
     }
   }
 
