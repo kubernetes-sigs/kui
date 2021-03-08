@@ -16,15 +16,21 @@
 
 @import 'mixins';
 
+$font-size: 0.5625;
+$vertical-margin: 0.3625em;
+
 @include Scrollback {
+  .kui--repl-block-experimental-tag-wrapper {
+    margin: $vertical-margin 0.5rem $vertical-margin 0;
+  }
+
   @include ExperimentalTag {
     background-color: var(--color-base05);
     font-family: var(--font-sans-serif);
     color: var(--color-base00);
-    font-size: 0.5625rem;
+    font-size: $font-size + rem;
     min-height: 1.5em;
     height: 1.125rem;
-    margin: 0 0.5rem 0 0;
     transition-delay: $action-hover-delay;
     display: flex;
     align-items: center;

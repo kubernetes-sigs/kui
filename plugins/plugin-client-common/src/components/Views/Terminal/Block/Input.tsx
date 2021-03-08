@@ -616,13 +616,11 @@ export default class Input extends InputProvider {
   private experimentalTag() {
     if (this.props.isExperimental) {
       return (
-        <Tag
-          spanclassname="kui--repl-block-experimental-tag kui--repl-block-right-element left-pad"
-          title={strings('HoverExperimentalTag')}
-          type="warning"
-        >
-          {strings('ExperimentalTag')}
-        </Tag>
+        <span className="kui--repl-block-right-element left-pad kui--repl-block-experimental-tag-wrapper">
+          <Tag spanclassname="kui--repl-block-experimental-tag" title={strings('HoverExperimentalTag')} type="warning">
+            {strings('ExperimentalTag')}
+          </Tag>
+        </span>
       )
     }
   }
