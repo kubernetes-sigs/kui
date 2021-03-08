@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Arguments, Row, Registrar, Table, UsageModel } from '@kui-shell/core'
-import { FStat } from '@kui-shell/plugin-bash-like/fs'
+import PromisePool from '@supercharge/promise-pool'
+
+import { Arguments, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
 
 /**
  * grammy command usage
@@ -35,12 +36,13 @@ async function doHistogram(args: Arguments): Promise<Table> {
       .content
 
     const histo: Record<string, number> = {}
-    await Promise.all(
-      files.map(async ({ path }) => {
-        const stat = (await REPL.rexec<FStat>(`vfs fstat ${path} --with-data`)).content
+    await PromisePool.withConcurrency(1024)
+      .for(files)
+      .process(async ({ path }) => {
+        const data = (await REPL.rexec<string>(`vfs fslice ${encodeComponent(path)} 0`)).content
 
-        if (stat.data) {
-          stat.data
+        if (data) {
+          data
             .split('\n')
             .map(_ => {
               const line = _.trim()
@@ -57,7 +59,6 @@ async function doHistogram(args: Arguments): Promise<Table> {
             .filter(_ => _)
         }
       })
-    )
 
     const body: Row[] = Object.entries(histo).map(([occurence, count]) => {
       return {
