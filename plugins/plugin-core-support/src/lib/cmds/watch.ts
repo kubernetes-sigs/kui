@@ -45,7 +45,13 @@ class TableWatcher implements Abortable, Watcher {
   ) {}
 
   public async init(pusher: WatchPusher) {
+    let inProgress = false
     this.timeout = setInterval(async () => {
+      if (inProgress) {
+        return
+      }
+
+      inProgress = true
       const table = await this.args.REPL.qexec(this.command)
       if (isTable(table)) {
         pusher.header(table.header)
@@ -53,6 +59,7 @@ class TableWatcher implements Abortable, Watcher {
       } else {
         this.abort()
       }
+      inProgress = false
     }, this.interval)
   }
 
