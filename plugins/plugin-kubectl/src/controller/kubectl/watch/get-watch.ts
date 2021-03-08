@@ -228,6 +228,25 @@ export class EventWatcher implements Abortable, Watcher {
   }
 }
 
+/** Compare to Table headers */
+function differentHeader(h1: Table['header'], h2: Table['header']): boolean {
+  if (!h1 || !h2) {
+    // if either one or the other is not defined, then they are different
+    return true
+  }
+
+  return (
+    h1.key !== h2.key ||
+    h1.rowKey !== h2.rowKey ||
+    h1.name !== h2.name ||
+    h1.attributes.length !== h2.attributes.length ||
+    !h1.attributes.every((a1, idx) => {
+      const a2 = h2.attributes[idx]
+      return a1.key === a2.key && a1.value === a2.value
+    })
+  )
+}
+
 class KubectlWatcher implements Abortable, Watcher {
   /**
    * We expect k columns; see the custom-columns below.
@@ -362,13 +381,13 @@ class KubectlWatcher implements Abortable, Watcher {
       return this.allNamespaceOverride(namespace, getCommand, kind)
     } else {
       return this.args.REPL.qexec<Table>(getCommand).catch((err: CodedError) => {
+        // mark as all offline, if we got a 404 for the bulk get
         if (err.code !== 404) {
           console.error(err)
-        }
-        // mark as all offline, if we got a 404 for the bulk get
-        if (typeof rowNames === 'string') {
+        } else if (typeof rowNames === 'string') {
           this.pusher.offline(rowNames)
         } else {
+          // mark as all offline, if we got a 404 for the bulk get
           rowNames.forEach(name => this.pusher.offline(name))
         }
       })
@@ -442,6 +461,9 @@ class KubectlWatcher implements Abortable, Watcher {
     let remaining = this.limit
     const markedAsDone: Record<string, boolean> = {}
 
+    // keep track of the header we sent to the UI, so we don't continually re-send
+    let previouslySentHeader: Table['header']
+
     return async (_: Streamable) => {
       if (typeof _ === 'string') {
         // <-- strings flowing out of the PTY
@@ -473,8 +495,11 @@ class KubectlWatcher implements Abortable, Watcher {
           // in case the initial get was empty, we add the header to the
           // table; see https://github.com/kui-shell/plugin-kubeui/issues/219
           if (table.header) {
-            // yup, we have a header; push it to the view
-            this.pusher.header(table.header)
+            // yup, we have a header; push it to the view?
+            if (differentHeader(table.header, previouslySentHeader)) {
+              previouslySentHeader = table.header
+              this.pusher.header(table.header)
+            }
           }
 
           // based on the information we got back, 1) we push updates to
