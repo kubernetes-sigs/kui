@@ -39,6 +39,9 @@ export default class Histogram extends React.PureComponent<Props, State> {
   private readonly axisLabelFontSize = 9
   private readonly minAxisLabelChars = 4
   private readonly maxAxisLabelChars = 13
+  private readonly barLabelFontSize = 6
+  private readonly minBarLabelChars = 1
+  private readonly maxBarLabelChars = 6
 
   public constructor(props: Props) {
     super(props)
@@ -81,6 +84,18 @@ export default class Histogram extends React.PureComponent<Props, State> {
     return leftPad
   }
 
+  /** heuristic to allow right space for bar labels */
+  private rightPad() {
+    const longestBarLabel = this.state.counts.reduce((maxLength, count) => Math.max(maxLength, `${count}`.length), 0)
+
+    const rightPad = Math.min(
+      this.maxBarLabelChars * this.barLabelFontSize,
+      Math.max(this.minBarLabelChars * this.barLabelFontSize, longestBarLabel * this.barLabelFontSize)
+    )
+
+    return rightPad
+  }
+
   private rows() {
     return (
       <Chart
@@ -90,7 +105,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
         horizontal={this.horizontal}
         padding={{
           left: this.leftPad(),
-          right: 0,
+          right: this.rightPad(),
           top: 0,
           bottom: 0
         }}
@@ -128,14 +143,14 @@ export default class Histogram extends React.PureComponent<Props, State> {
         scale={{ y: this.state.scale }}
         style={{
           data: { fill: 'var(--color-base05)', stroke: 'var(--color-base04)', strokeWidth: 0.5 },
-          labels: { fontFamily: 'var(--font-sans-serif)', fontSize: 6, fill: 'var(--color-base01)' }
+          labels: { fontFamily: 'var(--font-sans-serif)', fontSize: this.barLabelFontSize }
         }}
         data={this.state.rows.map((row, ridx) => ({
           x: row.rowKey || row.name,
           y: this.state.counts[ridx]
         }))}
         labels={_ => Math.round(_.datum.y)}
-        labelComponent={<ChartLabel dx={({ data, index }) => -(10 + (Math.log10(data[index].y) - 1) * 4)} />}
+        labelComponent={<ChartLabel />}
       />
     )
   }
