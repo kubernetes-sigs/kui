@@ -187,7 +187,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     if (this.props.isWatching && !this.poller) {
       this.poller = setInterval(() => {
         this.setState(curState => ({ iter: curState.iter + 1 }))
-      }, 1000)
+      }, 2000)
     } else if (!this.props.isWatching && this.poller) {
       clearInterval(this.poller)
     }
