@@ -62,7 +62,7 @@ async function renderSummary({ REPL }: Tab, resource: KubeResource) {
       : isReplicaSet(resource)
       ? ReplicaSetSummary(resource)
       : isNamespace(resource)
-      ? NamespaceSummary(resource)
+      ? NamespaceSummary(resource, REPL)
       : isNode(resource)
       ? NodeSummary(resource)
       : isJob(resource)

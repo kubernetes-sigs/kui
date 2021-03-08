@@ -20,16 +20,37 @@
  * Age: 562d
  *
  */
+import Debug from 'debug'
+
+import { REPL, Table, isTable } from '@kui-shell/core'
 
 import { age } from './Generic'
 import { Namespace } from '../../../../model/resource'
+import { withKubeconfigFrom } from '../../../../../controller/kubectl/options'
+import toMap from '../../table-to-map'
 
-export default function NamespaceSummary(ns: Namespace) {
+const debug = Debug('plugin-kubectl/view/modes/Summary')
+
+export default async function NamespaceSummary(ns: Namespace, repl: REPL) {
   const { metadata, status } = ns
-
-  return {
+  const summary = {
     Name: metadata.name,
     Status: status.phase,
     Age: age(ns)
   }
+
+  try {
+    const quota = await repl.qexec<Table>(
+      withKubeconfigFrom(ns.originatingCommand, `kubectl get quota -n ${ns.metadata.name}`)
+    )
+
+    if (isTable(quota) && quota.body.length >= 1) {
+      const map = quota.body.map(row => toMap({ body: [row] }))
+      Object.assign(summary, { quota: map })
+    }
+  } catch (err) {
+    debug('no quota found')
+  }
+
+  return summary
 }
