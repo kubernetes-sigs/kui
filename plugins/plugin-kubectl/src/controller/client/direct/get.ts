@@ -110,7 +110,7 @@ export async function getTable(
       if (
         args.execOptions.type === ExecType.TopLevel &&
         metaTable &&
-        metaTable.rows.length === 0 &&
+        (!metaTable.rows || metaTable.rows.length === 0) &&
         !isWatchRequest(args)
       ) {
         return `No resources found in **${namespace}** namespace.`
