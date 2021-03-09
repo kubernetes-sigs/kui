@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
 import slash from 'slash'
 import { isAbsolute, join } from 'path'
 import {
@@ -35,7 +34,7 @@ import { KuiGlobOptions, GlobStats } from '../lib/glob'
 type DirEntry = GlobStats
 export { DirEntry }
 
-const debug = Debug('plugin-bash-like/fs/vfs')
+// const debug = Debug('plugin-bash-like/fs/vfs')
 
 export interface ParallelismOptions extends ParsedOptions {
   /** Parallelism */
@@ -278,7 +277,7 @@ export function findMount(filepath: string, checkClient = false, allowInner = fa
     foundMount = _currentMounts.find(mount => mount.isLocal)
   }
 
-  debug(`findMount ${filepath}->${foundMount.mountPath}`)
+  // debug(`findMount ${filepath}->${foundMount.mountPath}`)
   return foundMount
 }
 
