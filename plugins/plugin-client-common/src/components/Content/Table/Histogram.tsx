@@ -101,7 +101,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
       <Chart
         animate={{ onLoad: { duration: 0 } }}
         domainPadding={10}
-        height={this.state.rows.length * this.barHeight * 1.2}
+        height={this.state.rows.length * this.barHeight * 1.375}
         horizontal={this.horizontal}
         padding={{
           left: this.leftPad(),
