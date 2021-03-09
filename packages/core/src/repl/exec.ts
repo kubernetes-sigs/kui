@@ -23,7 +23,6 @@
 
 import Debug from 'debug'
 const debug = Debug('core/repl')
-debug('loading')
 
 import { v4 as uuid } from 'uuid'
 import encodeComponent from './encode'
@@ -324,7 +323,7 @@ class InProcessExecutor implements Executor {
       .replace(patterns.prefixComments, '# $1')
     const argv = split(command)
 
-    debug('command', commandUntrimmed)
+    // debug('command', commandUntrimmed)
     const evaluator = await lookupCommandEvaluator<T, O>(argv, execOptions)
     if (isSuccessfulCommandResolution(evaluator)) {
       const { argvNoOptions, parsedOptions } = this.parseOptions(argv, evaluator)
