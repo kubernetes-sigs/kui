@@ -35,13 +35,18 @@
 
   /* see https://github.com/IBM/kui/issues/6885 */
   padding-bottom: 1px;
-
-  /* see https://github.com/IBM/kui/issues/7129 */
-  margin: $inset / $right-element-font-size-factor 0;
 }
-.repl-context {
+@include Context {
   @include Spinner {
     --sk-size: 0.625em;
+  }
+}
+
+@include InputWrapper {
+  @include Spinner {
+    /* see https://github.com/IBM/kui/issues/7129 */
+    /* also be careful: https://github.com/IBM/kui/issues/7155 */
+    margin: $inset / $right-element-font-size-factor 0;
   }
 }
 
