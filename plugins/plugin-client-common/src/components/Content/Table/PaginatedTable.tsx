@@ -158,10 +158,6 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
       const asSequence =
         (!asGrid && PaginatedTable.hasSequenceButton(props) && props.response.body.length > 1) ||
         defaultPresentation === 'sequence-diagram'
-      const asHistogram =
-        defaultPresentation === 'histogram' &&
-        PaginatedTable.hasHistogramButton(props) &&
-        props.response.body.length >= 1
 
       const defaults = {
         page: 1,
@@ -175,7 +171,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         footer,
         header,
         asSequence,
-        asHistogram,
+        asHistogram: defaultPresentation === 'histogram',
         activeSortIdx: -1,
         activeSortDir: undefined,
         response: props.response,

@@ -16,7 +16,8 @@
 
 import PromisePool from '@supercharge/promise-pool'
 
-import { Arguments, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
+import { Arguments, i18n, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
+const strings = i18n('plugin-client-common')
 
 /**
  * grammy command usage
@@ -103,7 +104,7 @@ async function doHistogram(args: Arguments): Promise<Table> {
     return {
       body,
       header,
-      title: args.command,
+      title: strings('Histogram'),
       defaultPresentation: 'histogram'
     }
   } else {

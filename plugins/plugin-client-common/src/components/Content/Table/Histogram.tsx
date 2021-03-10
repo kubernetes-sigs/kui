@@ -156,7 +156,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    if (!this.state) {
+    if (!this.state || !this.state.rows || this.state.rows.length === 0) {
       return <React.Fragment />
     }
 
