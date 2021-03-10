@@ -31,33 +31,55 @@ const usage: UsageModel = {
 async function doHistogram(args: Arguments): Promise<Table> {
   const { REPL, argvNoOptions } = args
   const filepath = argvNoOptions[1]
+
   if (filepath) {
+    const histo: Record<string, number> = {}
     const files = (await REPL.rexec<{ name: string; path: string }[]>(`vfs ls ${REPL.encodeComponent(filepath)}`))
       .content
 
-    const histo: Record<string, number> = {}
+    const pushToHistogram = (content: string) => {
+      if (content) {
+        content
+          .split('\n')
+          .map(_ => {
+            const line = _.trim()
+            const count = line.slice(0, line.indexOf(' '))
+            const occurence = line.replace(count, '').trim()
+
+            if (count && occurence) {
+              if (histo[occurence]) {
+                histo[occurence] += parseInt(count)
+              } else {
+                histo[occurence] = parseInt(count)
+              }
+            }
+          })
+          .filter(_ => _)
+      }
+    }
+
+    const fetchFile = async (path: string) => {
+      return (await REPL.rexec<string>(`vfs fslice ${encodeComponent(path)} 0`)).content
+    }
+
+    const fetchAndCache = async (path: string) => {
+      const data = await fetchFile(path)
+      if (args.execOptions.watch) {
+        args.execOptions.watch.accumulator[path] = { data }
+      }
+      return data
+    }
+
+    const getOrCreate = async (path: string): Promise<string> => {
+      return args.execOptions.watch && args.execOptions.watch.accumulator[path]
+        ? args.execOptions.watch.accumulator[path].data
+        : await fetchAndCache(path)
+    }
+
     await PromisePool.withConcurrency(1024)
       .for(files)
       .process(async ({ path }) => {
-        const data = (await REPL.rexec<string>(`vfs fslice ${encodeComponent(path)} 0`)).content
-
-        if (data) {
-          data
-            .split('\n')
-            .map(_ => {
-              const line = _.trim()
-              const count = line.slice(0, line.indexOf(' '))
-              const occurence = line.replace(count, '').trim()
-              if (count && occurence) {
-                if (histo[occurence]) {
-                  histo[occurence] += parseInt(count)
-                } else {
-                  histo[occurence] = parseInt(count)
-                }
-              }
-            })
-            .filter(_ => _)
-        }
+        pushToHistogram(await getOrCreate(path))
       })
 
     const body: Row[] = Object.entries(histo).map(([occurence, count]) => {
