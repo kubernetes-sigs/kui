@@ -16,6 +16,7 @@
 
 import {
   Abortable,
+  ExecOptions,
   Watcher,
   WatchPusher,
   isTable,
@@ -41,18 +42,23 @@ class TableWatcher implements Abortable, Watcher {
   public constructor(
     private readonly args: Arguments,
     private readonly command: string,
-    private readonly interval: number
+    private readonly interval: number,
+    private readonly watchState: ExecOptions['watch']
   ) {}
 
   public async init(pusher: WatchPusher) {
     let inProgress = false
+
     this.timeout = setInterval(async () => {
       if (inProgress) {
         return
       }
 
       inProgress = true
-      const table = await this.args.REPL.qexec(this.command)
+      const table = await this.args.REPL.qexec(this.command, undefined, undefined, {
+        watch: { iteration: this.watchState.iteration++, accumulator: this.watchState.accumulator }
+      })
+
       if (isTable(table)) {
         pusher.header(table.header)
         pusher.setBody(table.body)
@@ -73,11 +79,12 @@ export default function(registrar: Registrar) {
     '/watch',
     async args => {
       const cmdline = args.command.slice(args.argvNoOptions[0].length + 1)
-      const response = await args.REPL.qexec(cmdline)
+      const watchState = { accumulator: {}, iteration: 1 }
+      const response = await args.REPL.qexec(cmdline, undefined, undefined, { watch: watchState })
       const interval = args.parsedOptions.n || args.parsedOptions.interval || 2000
 
       if (isTable(response)) {
-        return Object.assign(response, { watch: new TableWatcher(args, cmdline, interval) })
+        return Object.assign(response, { watch: new TableWatcher(args, cmdline, interval, watchState) })
       } else {
         const timeout = setTimeout(async () => {
           await args.REPL.reexec(args.command, { execUUID: args.execOptions.execUUID })

@@ -30,6 +30,12 @@ export interface ExecOptions {
   /** pass through uninterpreted data */
   data?: number | string | Buffer | Record<string, any>
 
+  /** pass watch state variables to subcommands being watched  */
+  watch?: {
+    iteration: number
+    accumulator: Record<string, any>
+  }
+
   /** environment variable map */
   env?: Record<string, string>
 
