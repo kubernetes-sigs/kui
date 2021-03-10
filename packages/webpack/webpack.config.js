@@ -396,7 +396,7 @@ module.exports = {
     fallback
   },
   devServer: {
-    headers: { 'Access-Control-Allow-Origin': '*' },
+    headers: { 'Access-Control-Allow-Origin': '*', 'Set-Cookie': 'KUI_PROXY_COHOSTED=false' },
     compress: true,
     clientLogLevel: 'silent',
     watchOptions: {
