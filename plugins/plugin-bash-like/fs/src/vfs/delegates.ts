@@ -104,7 +104,11 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
         return await mount.ls(parameters[0], filepaths)
       } catch (err) {
         if (err.code !== 404) {
-          console.error(err)
+          // re: the regexp test, this is an imperfect solution to
+          // https://github.com/IBM/kui/issues/7168
+          if (!/globby is not defined/.test(err.message)) {
+            console.error(err)
+          }
           throw err
         }
       }
