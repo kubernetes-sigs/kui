@@ -282,7 +282,7 @@ class ProxyEvaluator implements ReplEval {
             xhr.addEventListener('load', () => {
               resolve({
                 statusCode: xhr.status,
-                body: xhr.response.response
+                body: xhr.response ? xhr.response.response : xhr.statusText
               })
             })
             // proxyServerConfig.needleOptions
