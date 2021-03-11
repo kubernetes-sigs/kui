@@ -15,8 +15,9 @@
  */
 
 import React from 'react'
-import { Chart, ChartAxis, ChartBar, ChartLabel, ChartVoronoiContainer } from '@patternfly/react-charts'
+import stringColoring from 'string-similarity-coloring'
 import { REPL, Row, Tab, Table } from '@kui-shell/core'
+import { Chart, ChartAxis, ChartBar, ChartLabel, ChartVoronoiContainer } from '@patternfly/react-charts'
 
 interface Props {
   response: Table
@@ -31,6 +32,7 @@ interface State {
   rows: Row[]
   animate: boolean
   counts: number[]
+  colors: string[]
   scale: 'linear' | 'log'
 }
 
@@ -62,16 +64,17 @@ function sameState(A: State, B: State): boolean {
 export default class Histogram extends React.PureComponent<Props, State> {
   private readonly horizontal = true
   private readonly barHeight = 10
-  private readonly axisLabelFontSize = 9
+  private readonly barSpacing = 0.1 // 10% of barHeight spacing between bars
+  private readonly axisLabelFontSize = 0.9 * this.barHeight
   private readonly minAxisLabelChars = 4
   private readonly maxAxisLabelChars = 13
-  private readonly barLabelFontSize = 6
+  private readonly barLabelFontSize = 0.65 * this.barHeight
   private readonly minBarLabelChars = 1
   private readonly maxBarLabelChars = 6
 
   public constructor(props: Props) {
     super(props)
-    this.state = Histogram.filterRows(props.response.body)
+    this.state = Histogram.filterRows(props.response.body, props.response.colorBy !== undefined)
   }
 
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
@@ -79,7 +82,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    const newState = Histogram.filterRows(props.response.body)
+    const newState = Histogram.filterRows(props.response.body, props.response.colorBy !== undefined)
 
     // to avoid re-renders when nothing has changed...
     if (state && sameState(state, newState)) {
@@ -94,17 +97,42 @@ export default class Histogram extends React.PureComponent<Props, State> {
     }
   }
 
-  private static filterRows(rows: Props['response']['body']): State {
+  private static filterRows(rows: Props['response']['body'], useFancyColoring: boolean): State {
     const countOf = (row: Row) => parseInt(row.attributes.find(_ => _.key && /^count$/i.test(_.key)).value, 10)
     const counts = rows.map(countOf)
     const yMax = counts.reduce((yMax, count) => Math.max(yMax, count), 0)
-    const filteredRows = rows.filter((row, ridx) => (!Histogram.isTiny(counts[ridx], yMax) ? 1 : 0))
 
-    return {
-      animate: true,
-      rows: filteredRows,
-      counts: filteredRows.map(countOf),
-      scale: filteredRows.length === rows.length ? 'linear' : 'log'
+    const filteredRowsPriorToSorting = rows.filter((row, ridx) => (!Histogram.isTiny(counts[ridx], yMax) ? 1 : 0))
+
+    if (!useFancyColoring) {
+      const filteredRows = filteredRowsPriorToSorting
+      return {
+        animate: true,
+        rows: filteredRows,
+        counts: filteredRows.map(countOf),
+        scale: filteredRows.length === rows.length ? 'linear' : 'log',
+        colors: undefined
+      }
+    } else {
+      // assign colors to the rows, and then sort the rows to group
+      // nearby colors(in the color space) so that they are also close
+      // geographically
+      const sortedByCount = filteredRowsPriorToSorting.slice().sort((a, b) => countOf(b) - countOf(a))
+      const colors = stringColoring(sortedByCount.map(_ => _.rowKey || _.name))
+
+      const filteredRowsForSorting = sortedByCount
+        .map((row, idx) => ({ row, color: colors[idx] }))
+        .sort((a, b) => b.color.primary - a.color.primary || b.color.secondary - a.color.secondary)
+
+      const filteredRows = filteredRowsForSorting.map(_ => _.row)
+
+      return {
+        animate: true,
+        rows: filteredRows,
+        counts: filteredRows.map(countOf),
+        scale: filteredRows.length === rows.length ? 'linear' : 'log',
+        colors: filteredRowsForSorting.map(_ => _.color.color)
+      }
     }
   }
 
@@ -140,7 +168,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
       <Chart
         animate={this.state.animate && { onLoad: { duration: 0 }, duration: 200 }}
         domainPadding={10}
-        height={this.state.rows.length * this.barHeight * 1.375}
+        height={this.state.rows.length * this.barHeight * (1 + this.barSpacing)}
         horizontal={this.horizontal}
         padding={{
           left: this.leftPad(),
@@ -148,7 +176,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
           top: 0,
           bottom: 0
         }}
-        containerComponent={<ChartVoronoiContainer labels={_ => `${_.datum.x}: ${_.datum.y}`} constrainToVisibleArea />}
+        containerComponent={<ChartVoronoiContainer constrainToVisibleArea />}
       >
         {this.axis()}
         {this.bars()}
@@ -181,7 +209,13 @@ export default class Histogram extends React.PureComponent<Props, State> {
         barWidth={this.barHeight}
         scale={{ y: this.state.scale }}
         style={{
-          data: { fill: 'var(--color-base05)', stroke: 'var(--color-base04)', strokeWidth: 0.5 },
+          data: {
+            fill: !this.state.colors
+              ? 'var(--color-base05)'
+              : ({ index }) => this.state.colors[index] || 'var(--color-base05)',
+            stroke: !this.state.colors ? 'var(--color-base04)' : undefined,
+            strokeWidth: 0.5
+          },
           labels: { fontFamily: 'var(--font-sans-serif)', fontSize: this.barLabelFontSize }
         }}
         data={this.state.rows.map((row, ridx) => ({

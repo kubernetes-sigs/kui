@@ -175,8 +175,8 @@ export class Table<RowType extends Row = Row> {
   /** Column index to be interpreted as a complete timestamp column */
   completeColumnIdx?: number
 
-  /** Coloring strategy for e.g. 'grid' and 'sequence-diagram' */
-  colorBy?: 'status' | 'duration'
+  /** Coloring strategy for e.g. 'grid' and 'sequence-diagram' and 'histogram' */
+  colorBy?: 'status' | 'duration' | 'default'
 
   style?: TableStyle
 
