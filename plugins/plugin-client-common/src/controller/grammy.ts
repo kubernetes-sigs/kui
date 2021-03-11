@@ -16,7 +16,7 @@
 
 import PromisePool from '@supercharge/promise-pool'
 
-import { Arguments, i18n, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
+import { Arguments, ParsedOptions, i18n, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
 const strings = i18n('plugin-client-common')
 
 /**
@@ -26,10 +26,15 @@ const usage: UsageModel = {
   command: 'grammy',
   strict: 'grammy',
   example: 'grammy filepath',
-  docs: 'Grammy'
+  docs: 'Grammy',
+  optional: [{ name: '--color', alias: '-c', boolean: true }]
 }
 
-async function doHistogram(args: Arguments): Promise<Table> {
+interface Options extends ParsedOptions {
+  color: boolean
+}
+
+async function doHistogram(args: Arguments<Options>): Promise<Table> {
   const { REPL, argvNoOptions } = args
   const filepath = argvNoOptions[1]
 
@@ -109,7 +114,8 @@ async function doHistogram(args: Arguments): Promise<Table> {
       body,
       header,
       title: strings('Histogram'),
-      defaultPresentation: 'histogram'
+      defaultPresentation: 'histogram',
+      colorBy: args.parsedOptions.color ? 'default' : undefined
     }
   } else {
     throw new Error('grammy: file not provided')
@@ -121,5 +127,5 @@ async function doHistogram(args: Arguments): Promise<Table> {
  *
  */
 export default async (commandTree: Registrar) => {
-  commandTree.listen('/grammy', doHistogram, { usage })
+  commandTree.listen('/grammy', doHistogram, { usage, flags: { boolean: ['color', 'c'] } })
 }
