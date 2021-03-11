@@ -27,14 +27,28 @@ describe(`grammy table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
   it('should do grammy in the test file', async () => {
     try {
       const res = await CLI.command(`grammy ${ROOT}/data/grammy1.txt`, this.app)
+      const validRecordsInGrammy1 = 6
+
       await this.app.client.$(Selectors.TABLE_SHOW_AS_HISTOGRAM(res.count)).then(_ => _.waitForDisplayed())
+      await this.app.client.waitUntil(
+        async () => {
+          const labels = await this.app.client.$$(Selectors.TABLE_HISTOGRAM_TEXT(res.count))
+          return labels.length === validRecordsInGrammy1 * 2
+        },
+        { timeout: CLI.waitTimeout }
+      )
+
       await this.app.client
-        .$(Selectors.TABLE_HISTOGRAM_TEXT('chart-axis-0-tickLabels-0', res.count))
+        .$(Selectors.TABLE_HISTOGRAM_TEXT_WITH_ID('chart-axis-0-tickLabels-0', res.count))
         .then(text => assert.strictEqual(text, 'prepublish', `expect: prepublish; actual: ${text}`))
 
       await this.app.client
-        .$(Selectors.TABLE_HISTOGRAM_TEXT('chart-bar-1-labels-0', res.count))
+        .$(Selectors.TABLE_HISTOGRAM_TEXT_WITH_ID('chart-bar-1-labels-0', res.count))
         .then(text => assert.strictEqual(text, '205', `expect: 205; actual: ${text}`))
+
+      await this.app.client
+        .$(Selectors.TABLE_HISTOGRAM_TEXT_WITH_ID('chart-axis-0-tickLabels-1', res.count))
+        .then(text => assert.strictEqual(text, 'publish suffix', `expect: publish suffix; actual: ${text}`))
     } catch (err) {
       return Common.oops(this, true)
     }
@@ -45,7 +59,7 @@ describe(`grammy table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
       const res = await CLI.command(`grammy ${ROOT}/data/grammy*`, this.app)
       await this.app.client.$(Selectors.TABLE_SHOW_AS_HISTOGRAM(res.count)).then(_ => _.waitForDisplayed())
       await this.app.client
-        .$(Selectors.TABLE_HISTOGRAM_TEXT('chart-bar-1-labels-0', res.count))
+        .$(Selectors.TABLE_HISTOGRAM_TEXT_WITH_ID('chart-bar-1-labels-0', res.count))
         .then(text => assert.strictEqual(text, '410', `expect: 410; actual: ${text}`))
     } catch (err) {
       return Common.oops(this, true)

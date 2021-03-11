@@ -217,7 +217,8 @@ export const TABLE_SHOW_AS_GRID = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-b
 export const TABLE_SHOW_AS_SEQUENCE = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-sequence`
 export const TABLE_SHOW_AS_LIST = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-list`
 export const TABLE_SHOW_AS_HISTOGRAM = (N: number) => `${OUTPUT_N(N)} .kui--toolbar-button-as-histogram`
-export const TABLE_HISTOGRAM_TEXT = (id: string, N: number) => `${OUTPUT_N(N)} .kui--histogram svg text#${id}`
+export const TABLE_HISTOGRAM_TEXT = (N: number) => `${OUTPUT_N(N)} .kui--histogram svg text`
+export const TABLE_HISTOGRAM_TEXT_WITH_ID = (id: string, N: number) => `${TABLE_HISTOGRAM_TEXT(N)}#${id}`
 export const WATCH_LIVE_BUTTON = (N: number, splitIndex = 1) =>
   `${OUTPUT_N(N, splitIndex)} .kui--toolbar-button-watch[data-online="true"]`
 export const WATCH_OFFLINE_BUTTON = (N: number, splitIndex = 1) =>
