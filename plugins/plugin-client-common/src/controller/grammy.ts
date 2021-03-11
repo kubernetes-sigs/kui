@@ -44,14 +44,18 @@ async function doHistogram(args: Arguments): Promise<Table> {
           .split('\n')
           .map(_ => {
             const line = _.trim()
-            const count = line.slice(0, line.indexOf(' '))
-            const occurence = line.replace(count, '').trim()
+            const separator = line.indexOf(' ')
 
-            if (count && occurence) {
-              if (histo[occurence]) {
-                histo[occurence] += parseInt(count)
-              } else {
-                histo[occurence] = parseInt(count)
+            if (separator !== -1) {
+              const count = line.slice(0, separator)
+              const occurence = line.replace(count, '').trim()
+
+              if (count && occurence) {
+                if (histo[occurence]) {
+                  histo[occurence] += parseInt(count)
+                } else {
+                  histo[occurence] = parseInt(count)
+                }
               }
             }
           })
