@@ -29,8 +29,34 @@ interface Props {
 
 interface State {
   rows: Row[]
+  animate: boolean
   counts: number[]
   scale: 'linear' | 'log'
+}
+
+/** Are the two Rows the same? */
+function sameRow(A: Row, B: Row): boolean {
+  return (
+    A.key === B.key &&
+    A.rowKey === B.rowKey &&
+    A.name === B.name &&
+    A.attributes.length === B.attributes.length &&
+    A.attributes.every((a, cidx) => {
+      const b = B.attributes[cidx]
+      return a.key === b.key && a.value === b.value && a.css === b.css && a.outerCSS === b.outerCSS && a.tag === b.tag
+    })
+  )
+}
+
+function sameState(A: State, B: State): boolean {
+  return (
+    A.scale === B.scale &&
+    A.counts &&
+    A.counts.length === B.counts.length &&
+    A.counts.every((countBefore, idx) => countBefore === B.counts[idx]) &&
+    A.rows &&
+    A.rows.every((rowBefore, idx) => sameRow(rowBefore, B.rows[idx]))
+  )
 }
 
 export default class Histogram extends React.PureComponent<Props, State> {
@@ -45,24 +71,37 @@ export default class Histogram extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-    this.state = Histogram.getDerivedStateFromProps(props)
+    this.state = Histogram.filterRows(props.response.body)
   }
 
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error(error, errorInfo)
   }
 
-  public static getDerivedStateFromProps(props: Props, state?: State) {
-    return Object.assign({}, state, Histogram.filterRows(props.response.body))
+  public static getDerivedStateFromProps(props: Props, state: State) {
+    const newState = Histogram.filterRows(props.response.body)
+
+    // to avoid re-renders when nothing has changed...
+    if (state && sameState(state, newState)) {
+      // nothing has changed, disable animation
+      // see https://github.com/IBM/kui/issues/7175
+      return {
+        animate: false
+      }
+    } else {
+      // otherwise, we have changes to the state
+      return newState
+    }
   }
 
-  private static filterRows(rows: Props['response']['body']): Pick<State, 'rows' | 'counts' | 'scale'> {
+  private static filterRows(rows: Props['response']['body']): State {
     const countOf = (row: Row) => parseInt(row.attributes.find(_ => _.key && /^count$/i.test(_.key)).value, 10)
     const counts = rows.map(countOf)
     const yMax = counts.reduce((yMax, count) => Math.max(yMax, count), 0)
     const filteredRows = rows.filter((row, ridx) => (!Histogram.isTiny(counts[ridx], yMax) ? 1 : 0))
 
     return {
+      animate: true,
       rows: filteredRows,
       counts: filteredRows.map(countOf),
       scale: filteredRows.length === rows.length ? 'linear' : 'log'
@@ -99,7 +138,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
   private rows() {
     return (
       <Chart
-        animate={{ onLoad: { duration: 0 } }}
+        animate={this.state.animate && { onLoad: { duration: 0 }, duration: 200 }}
         domainPadding={10}
         height={this.state.rows.length * this.barHeight * 1.375}
         horizontal={this.horizontal}
