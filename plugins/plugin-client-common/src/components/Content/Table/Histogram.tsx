@@ -118,7 +118,10 @@ export default class Histogram extends React.PureComponent<Props, State> {
       // nearby colors(in the color space) so that they are also close
       // geographically
       const sortedByCount = filteredRowsPriorToSorting.slice().sort((a, b) => countOf(b) - countOf(a))
-      const colors = stringColoring(sortedByCount.map(_ => _.rowKey || _.name))
+      const colors = stringColoring(
+        sortedByCount.map(_ => _.rowKey || _.name),
+        { theme: 'patternfly4' }
+      )
 
       const filteredRowsForSorting = sortedByCount
         .map((row, idx) => ({ row, color: colors[idx] }))
