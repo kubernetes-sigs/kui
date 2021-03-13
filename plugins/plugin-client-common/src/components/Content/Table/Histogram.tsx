@@ -125,7 +125,18 @@ export default class Histogram extends React.PureComponent<Props, State> {
 
       const filteredRowsForSorting = sortedByCount
         .map((row, idx) => ({ row, color: colors[idx] }))
-        .sort((a, b) => b.color.primary - a.color.primary || b.color.secondary - a.color.secondary)
+        .sort((a, b) => {
+          // note how we move the "random" color assignments to the
+          // bottom; these are color assignments due to running out of
+          // primary colors; they should only affect the smaller buckets
+          return a.color.isRandomAssignment
+            ? -1
+            : b.color.isRandomAssignment
+            ? 1
+            : b.color.primary - a.color.primary ||
+              countOf(a.row) - countOf(b.row) ||
+              b.color.secondary - a.color.secondary
+        })
 
       const filteredRows = filteredRowsForSorting.map(_ => _.row)
 
