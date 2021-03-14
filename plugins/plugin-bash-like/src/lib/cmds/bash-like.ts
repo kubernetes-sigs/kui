@@ -38,85 +38,89 @@ export const doExec = (
 ): Promise<string | number | boolean | Record<string, any>> =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
-    // purposefully imported lazily, so that we don't spoil browser mode (where shell is not available)
-
-    const options: ChildProcessExecOptions = {
-      maxBuffer: 1 * 1024 * 1024,
-      env: Object.assign({}, process.env, execOptions['env'] || {})
-    }
-    if (process.env.SHELL) {
-      options.shell = process.env.SHELL
-    }
-
-    const proc = exec(cmdLine, options)
-
-    // accumulate doms from the output of the subcommand
-    let rawOut = ''
-    let rawErr = ''
-
-    proc.stdout.on('data', async data => {
-      const out = data.toString()
-
-      if (execOptions.stdout) {
-        execOptions.stdout(data)
-      } else {
-        rawOut += out
+    try {
+      const options: ChildProcessExecOptions = {
+        maxBuffer: 1 * 1024 * 1024,
+        env: Object.assign({}, process.env, execOptions['env'] || {})
       }
-    })
-
-    proc.stderr.on('data', data => {
-      rawErr += data
-
-      if (execOptions.stderr) {
-        execOptions.stderr(data.toString())
-        // stderrLines += data.toString()
+      if (process.env.SHELL) {
+        options.shell = process.env.SHELL
       }
-    })
 
-    proc.on('close', async exitCode => {
-      if (exitCode === 0) {
-        // great, the process exited normally. resolve!
-        if (execOptions && execOptions['json']) {
-          // caller expects JSON back
-          try {
-            resolve(JSON.parse(rawOut))
-          } catch (err) {
-            const error = new Error('unexpected non-JSON')
-            error['value'] = rawOut
-            reject(error)
-          }
-        } else if (execOptions && execOptions.raw) {
-          // caller just wants the raw textual output
-          resolve(rawOut)
-        } else if (!rawOut && !rawErr) {
-          // in this case, the command produced nothing, but it did exit
-          // with a 0 exit code
-          resolve(true)
+      const proc = exec(cmdLine, options)
+
+      // accumulate doms from the output of the subcommand
+      let rawOut = ''
+      let rawErr = ''
+
+      proc.stdout.on('data', async data => {
+        const out = data.toString()
+
+        if (execOptions.stdout) {
+          execOptions.stdout(data)
         } else {
-          // else, we pass back a formatted form of the output
-          const json = extractJSON(rawOut)
+          rawOut += out
+        }
+      })
 
-          if (json && typeof json === 'object') {
-            json['type'] = 'shell'
-            json['verb'] = 'get'
-            resolve(json)
-          } else {
+      proc.stderr.on('data', data => {
+        rawErr += data
+
+        if (execOptions.stderr) {
+          execOptions.stderr(data.toString())
+          // stderrLines += data.toString()
+        }
+      })
+
+      proc.on('error', reject)
+
+      proc.on('close', async exitCode => {
+        if (exitCode === 0) {
+          // great, the process exited normally. resolve!
+          if (execOptions && execOptions['json']) {
+            // caller expects JSON back
+            try {
+              resolve(JSON.parse(rawOut))
+            } catch (err) {
+              const error = new Error('unexpected non-JSON')
+              error['value'] = rawOut
+              reject(error)
+            }
+          } else if (execOptions && execOptions.raw) {
+            // caller just wants the raw textual output
             resolve(rawOut)
+          } else if (!rawOut && !rawErr) {
+            // in this case, the command produced nothing, but it did exit
+            // with a 0 exit code
+            resolve(true)
+          } else {
+            // else, we pass back a formatted form of the output
+            const json = extractJSON(rawOut)
+
+            if (json && typeof json === 'object') {
+              json['type'] = 'shell'
+              json['verb'] = 'get'
+              resolve(json)
+            } else {
+              resolve(rawOut)
+            }
+          }
+        } else {
+          // oops, non-zero exit code. reject!
+          debug('non-zero exit code', exitCode)
+
+          // strip off e.g. /bin/sh: line 0:
+          const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
+          try {
+            handleNonZeroExitCode(cmdLine, exitCode, rawOut, cleanErr, execOptions)
+          } catch (err) {
+            reject(err)
           }
         }
-      } else {
-        // oops, non-zero exit code. reject!
-        debug('non-zero exit code', exitCode)
-
-        // strip off e.g. /bin/sh: line 0:
-        const cleanErr = rawErr.replace(/(^\/[^/]+\/[^:]+: )(line \d+: )?/, '')
-        try {
-          handleNonZeroExitCode(cmdLine, exitCode, rawOut, cleanErr, execOptions)
-        } catch (err) {
-          reject(err)
-        }
-      }
-    })
+      })
+    } catch (err) {
+      reject(err)
+    }
   })
 
 const specialHandler = (args: Arguments) => {
