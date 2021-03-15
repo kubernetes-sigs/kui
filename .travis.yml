@@ -33,8 +33,8 @@ before_script:
   - export DISPLAY=:5; Xvfb $DISPLAY -screen 0 ${WINDOW_WIDTH}x${WINDOW_HEIGHT}x24 $DISPLAY -ac > /dev/null &
   - ${TRAVIS_BUILD_DIR}/tools/travis/cleanupNvm.sh
 
-# upload codecov
-after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov/report.sh; fi
+# upload codecov (disabled)
+# after_script: if [ -n "$NYC" ]; then cd "${TRAVIS_BUILD_DIR}" && ./tools/codecov/report.sh; fi
 
 # default install script
 install:
