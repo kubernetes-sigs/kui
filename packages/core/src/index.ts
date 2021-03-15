@@ -239,6 +239,7 @@ export {
   Table,
   Row,
   Cell,
+  sameRow,
   isTable,
   isTableWithTimestamp,
   isTableWithCount

@@ -224,6 +224,25 @@ export function isTable<C>(model: MetadataBearing<C> | Entity): model is Table {
   )
 }
 
+/** Are the two Rows the same? */
+export function sameRow(A: Row, B: Row): boolean {
+  if (!A || !B) {
+    // if either one or the other is not defined, then they are different
+    return false
+  }
+
+  return (
+    A.key === B.key &&
+    A.rowKey === B.rowKey &&
+    A.name === B.name &&
+    A.attributes.length === B.attributes.length &&
+    A.attributes.every((a, cidx) => {
+      const b = B.attributes[cidx]
+      return a.key === b.key && a.value === b.value && a.css === b.css && a.outerCSS === b.outerCSS && a.tag === b.tag
+    })
+  )
+}
+
 export class Icon {
   fontawesome: string
 

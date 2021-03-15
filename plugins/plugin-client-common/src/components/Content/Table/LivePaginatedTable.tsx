@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { i18n, Table as KuiTable, Row as KuiRow, Watchable, isSuspendable } from '@kui-shell/core'
+import { i18n, Table as KuiTable, Row as KuiRow, sameRow, Watchable, isSuspendable } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import kuiHeaderFromBody from './kuiHeaderFromBody'
@@ -33,6 +33,8 @@ interface LiveState extends State {
 export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
   /** To allow for batch updates, the setState can be deferred until a call to updateDone() */
   private _deferredUpdate: KuiRow[]
+  // keep track of the header we received, so we don't continually re-render
+  private previouslyReceivedHeader: KuiTable['header']
 
   public constructor(props: LiveProps) {
     super(props)
@@ -150,11 +152,32 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   }
 
   private setBody(rows: KuiRow[]) {
-    this.props.response.body = rows
-    this.setState({
-      lastUpdatedMillis: Date.now(),
-      body: rows
+    let doOffline = false
+    let doUpdate = false
+    const lookup = (rows: KuiRow[], row: KuiRow) =>
+      rows.findIndex(({ rowKey, name }) => (rowKey && row.rowKey ? rowKey === row.rowKey : name === row.name))
+
+    this.props.response.body.forEach((old, originalIdx) => {
+      const foundIndex = lookup(rows, old)
+      if (foundIndex === -1) {
+        doOffline = true
+        this.props.response.body.splice(originalIdx, 1)
+      }
     })
+
+    rows.forEach(newKuiRow => {
+      const foundIndex = lookup(this.props.response.body, newKuiRow)
+      if (foundIndex === -1 || !sameRow(newKuiRow, this.props.response.body[foundIndex])) {
+        doUpdate = true
+        this.update(newKuiRow, true, foundIndex)
+      }
+    })
+
+    if (doUpdate) {
+      this.batchUpdateDone()
+    } else if (doOffline) {
+      this.setState({ lastUpdatedMillis: Date.now() })
+    }
   }
 
   /**
@@ -203,7 +226,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    * update consumes the update notification and apply it to the table view
    *
    */
-  private update(newKuiRow: KuiRow, batch = false /*, justUpdated = true */) {
+  private update(newKuiRow: KuiRow, batch = false, idxToUpdate?: number) {
     if (!this.props.response.header) {
       const header = kuiHeaderFromBody([newKuiRow])
       if (header) {
@@ -218,7 +241,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
       rows.findIndex(_ => (_.rowKey && newKuiRow.rowKey ? _.rowKey === newKuiRow.rowKey : _.name === newKuiRow.name))
 
     // update props model
-    const foundIndex = lookup(this.props.response.body)
+    const foundIndex = idxToUpdate !== undefined ? idxToUpdate : lookup(this.props.response.body)
     if (foundIndex === -1) {
       this.props.response.body.push(newKuiRow)
     } else {
@@ -254,8 +277,11 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    *
    */
   private header(newKuiHeader: KuiRow) {
-    this.props.response.header = newKuiHeader
-    this.setState({ header: newKuiHeader, lastUpdatedMillis: Date.now() })
+    if (!sameRow(newKuiHeader, this.previouslyReceivedHeader)) {
+      this.previouslyReceivedHeader = newKuiHeader
+      this.props.response.header = newKuiHeader
+      this.setState({ header: newKuiHeader, lastUpdatedMillis: Date.now() })
+    }
   }
 
   /**
