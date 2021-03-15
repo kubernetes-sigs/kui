@@ -28,6 +28,8 @@ export interface CommandStartEvent {
   execOptions: ExecOptions
   echo: boolean
   evaluatorOptions: CommandOptions
+  pipeStages: string[][]
+  pipeStagesNoOptions: string[][]
 }
 
 export type ResponseType = 'MultiModalResponse' | 'NavResponse' | 'ScalarResponse' | 'Incomplete' | 'Error'
@@ -40,6 +42,8 @@ export interface CommandCompleteEvent<R extends KResponse = KResponse, T extends
   argvNoOptions: string[]
   parsedOptions: ParsedOptions
   execOptions: ExecOptions
+  pipeStages: string[][]
+  pipeStagesNoOptions: string[][]
 
   execUUID: string
   execType: ExecType

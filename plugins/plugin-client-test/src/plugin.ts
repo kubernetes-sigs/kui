@@ -27,6 +27,7 @@ import mmrModeViaRegistration from './lib/cmds/mmr-mode-via-registration'
 import nav from './lib/cmds/NavResponse'
 import noSemi from './lib/cmds/semicolon'
 import table from './lib/cmds/table'
+import pipeStageParsing from './lib/cmds/pipe-stage-parsing'
 
 export default async (registrar: Registrar) => {
   // commands
@@ -41,6 +42,7 @@ export default async (registrar: Registrar) => {
     mmrModeViaRegistration(registrar),
     nav(registrar),
     noSemi(registrar),
+    pipeStageParsing(registrar),
     table(registrar)
   ])
 }

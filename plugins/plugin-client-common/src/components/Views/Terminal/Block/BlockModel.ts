@@ -54,7 +54,7 @@ export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithResponse<ScalarResponse> &
   WithCWD &
   WithAnnouncement
-type EmptyBlock = WithState<BlockState.Empty> & WithCWD & Partial<WithCommand>
+type EmptyBlock = WithState<BlockState.Empty> & WithCWD & Partial<WithCommand> & Partial<WithCommandComplete>
 type ErrorBlock = WithState<BlockState.Error> &
   WithCommand &
   WithResponse<Error> &
@@ -208,16 +208,21 @@ export function Processing(
 }
 
 /** Transform to Empty */
-export function Empty(block: BlockModel, typedSoFar?: string): EmptyBlock {
+export function Empty(block: BlockModel, typedSoFar?: string, completeEvent?: CommandCompleteEvent): EmptyBlock {
   return {
     cwd: block.cwd,
     command: typedSoFar,
+    completeEvent,
     state: BlockState.Empty
   }
 }
 
 /** Transform to Cancelled */
-export function Cancelled(block: BlockModel, typedSoFar?: string): CancelledBlock | EmptyBlock {
+export function Cancelled(
+  block: BlockModel,
+  typedSoFar?: string,
+  completeEvent?: CommandCompleteEvent
+): CancelledBlock | EmptyBlock {
   if (isProcessing(block)) {
     return {
       cwd: block.cwd,
@@ -227,7 +232,7 @@ export function Cancelled(block: BlockModel, typedSoFar?: string): CancelledBloc
       state: BlockState.Cancelled
     }
   } else {
-    return Empty(block, typedSoFar)
+    return Empty(block, typedSoFar, completeEvent)
   }
 }
 
@@ -299,7 +304,15 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
 
 /** @return whether the block has a completeEvent trait */
 export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
-  return (isOk(block) || isOops(block)) && block.completeEvent !== undefined
+  return (isOk(block) || isOops(block) || isEmpty(block)) && block.completeEvent !== undefined
+}
+
+/** @return whether the block has pipeStages information; older snapshots may not */
+export function hasPipeStages(block: BlockModel) {
+  return (
+    (hasStartEvent(block) && block.startEvent.pipeStages !== undefined) ||
+    (isWithCompleteEvent(block) && block.completeEvent.pipeStages !== undefined)
+  )
 }
 
 /** @return whether the block is from replay */

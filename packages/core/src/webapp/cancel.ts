@@ -26,6 +26,8 @@ import { eventBus } from '../core/events'
 import { Tab } from './tab'
 import { Block } from './models/block'
 import { ExecType } from '../models/command'
+
+import { split } from '../repl/split'
 import { CommandCompleteEvent } from '../repl/events'
 
 export default function doCancel(tab: Tab, block: Block, valueTypedSoFar: string) {
@@ -43,6 +45,8 @@ export default function doCancel(tab: Tab, block: Block, valueTypedSoFar: string
     argvNoOptions: undefined,
     execOptions: undefined,
     parsedOptions: undefined,
+    pipeStages: split(valueTypedSoFar, undefined, undefined, '|').map(_ => split(_)),
+    pipeStagesNoOptions: undefined,
     echo: true,
     evaluatorOptions: undefined,
     response: undefined,

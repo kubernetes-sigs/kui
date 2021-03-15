@@ -145,6 +145,16 @@ export interface CommandLine<Options = ParsedOptions> {
   argvNoOptions: string[]
 
   /**
+   * pipeline stages, e.g. if command='a b|c', the pipeStages=[['a','b'],'c']
+   */
+  pipeStages: string[][]
+
+  /**
+   * pipeline stages without options, e.g. if command='a b --foo|c', the pipeStagesNoOptions=[['a','b'],'c']
+   */
+  pipeStagesNoOptions: string[][]
+
+  /**
    * the dash options parsed out in a way that pays attention to n-ary
    * options such as `--option key value`
    */

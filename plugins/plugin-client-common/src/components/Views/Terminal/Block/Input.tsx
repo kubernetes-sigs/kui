@@ -16,7 +16,7 @@
 
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
-import { Tab as KuiTab, doCancel, i18n } from '@kui-shell/core'
+import { Arguments, Tab as KuiTab, doCancel, i18n } from '@kui-shell/core'
 
 import Actions from './Actions'
 import onPaste from './OnPaste'
@@ -36,6 +36,8 @@ import {
   isFinished,
   hasCommand,
   isEmpty,
+  hasPipeStages,
+  hasStartEvent,
   isWithCompleteEvent,
   isReplay,
   hasUUID,
@@ -578,34 +580,42 @@ export default class Input extends InputProvider {
     }
   }
 
+  /** Pretty-print the command line with `pipeStages` */
+  private fancyValueForPipeStages(pipeStages: Arguments['pipeStages']) {
+    return (
+      <span className="repl-input-element flex-fill">
+        {pipeStages.map((pipePart, pidx, parts) => (
+          <React.Fragment key={pidx}>
+            {pidx > 0 && <strong className="left-pad sub-text">| </strong>}
+            {pipePart.map((word, widx) =>
+              widx === 0 ? (
+                <span key={widx} className="color-base0D">
+                  {word}
+                </span>
+              ) : (
+                ` ${word}`
+              )
+            )}
+            {pidx < parts.length - 1 && <span className="kui--line-break">&nbsp;</span>}
+          </React.Fragment>
+        ))}
+      </span>
+    )
+  }
+
   /**
    * Turn the value part of the input into a fancier form,
    * e.g. rendering pipelines or command names in a better way.
    *
    */
   private fancyValue(value: string) {
-    return (
-      <span className="repl-input-element flex-fill">
-        {value.split(/\|/).map((pipePart, pidx, parts) => (
-          <React.Fragment key={pidx}>
-            {pidx > 0 && <strong className="left-pad sub-text">| </strong>}
-            {pipePart
-              .trim()
-              .split(/\s/)
-              .map((word, widx) =>
-                widx === 0 ? (
-                  <span key={widx} className="color-base0D">
-                    {word}
-                  </span>
-                ) : (
-                  ` ${word}`
-                )
-              )}
-            {pidx < parts.length - 1 && <span className="kui--line-break">&nbsp;</span>}
-          </React.Fragment>
-        ))}
-      </span>
-    )
+    if (isWithCompleteEvent(this.props.model) && hasPipeStages(this.props.model)) {
+      return this.fancyValueForPipeStages(this.props.model.completeEvent.pipeStages)
+    } else if (hasStartEvent(this.props.model) && hasPipeStages(this.props.model)) {
+      return this.fancyValueForPipeStages(this.props.model.startEvent.pipeStages)
+    } else {
+      return <span className="repl-input-element flex-fill">{value}</span>
+    }
   }
 
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {

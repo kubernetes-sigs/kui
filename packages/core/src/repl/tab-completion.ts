@@ -48,7 +48,7 @@ export function isStringResponse(response: CompletionResponse): response is stri
  */
 type Enumerator = (
   tab: { REPL: REPL },
-  commandLine: CommandLine,
+  commandLine: Omit<CommandLine, 'pipeStages' | 'pipeStagesNoOptions'>,
   spec: TabCompletionSpec
 ) => CompletionResponse[] | Promise<CompletionResponse[]>
 
@@ -69,7 +69,7 @@ export function registerEnumerator(enumerator: Enumerator, priority = 0) {
  */
 export async function applyEnumerator(
   tab: { REPL: REPL },
-  commandLine: CommandLine,
+  commandLine: Omit<CommandLine, 'pipeStages' | 'pipeStagesNoOptions'>,
   spec: TabCompletionSpec
 ): Promise<CompletionResponse[]> {
   // this is a list of all offered completions, paired with the
