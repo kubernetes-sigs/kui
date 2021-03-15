@@ -62,7 +62,8 @@ export const _split = (
   str: string,
   removeOuterQuotes = true,
   returnIndices = false,
-  removeInlineOuterQuotes = false
+  removeInlineOuterQuotes = false,
+  splitBy = ' '
 ): Split | string[] => {
   const A: string[] = []
   const endIndices: number[] = []
@@ -77,7 +78,7 @@ export const _split = (
   for (let idx = 0; idx < str.length; idx++) {
     let char = str.charAt(idx)
 
-    if (char === ' ') {
+    if (char === splitBy) {
       if (
         process.platform === 'win32' &&
         idx < str.length - 3 &&
@@ -100,7 +101,7 @@ export const _split = (
       escapeActive = false
     } else if (char === '#' && cur.length === 0 && stack.length === 0) {
       // stop parsing till end of line
-      if (idx < str.length - 2 && str[idx + 1] === ' ') {
+      if (idx < str.length - 2 && str[idx + 1] === splitBy) {
         // e.g. "kubectl get pod#comment"
         A.push(char)
         cur = str.slice(idx + 1)
@@ -111,7 +112,7 @@ export const _split = (
       break
     }
 
-    if (stack.length === 0 && !escapeActive && patterns.whitespace.test(char)) {
+    if (stack.length === 0 && !escapeActive && char === splitBy) {
       if (cur.length > 0) {
         A.push(resolveEnvVar(cur))
         endIndices.push(idx)
@@ -143,8 +144,7 @@ export const _split = (
         const removeQuote =
           removeOuterQuotes &&
           endsWithQuoteSpace(str, idx, char) &&
-          (idx === 0 ||
-            (stack.length === 0 && (removeInlineOuterQuotes || patterns.whitespace.test(str.charAt(idx - 1)))))
+          (idx === 0 || (stack.length === 0 && (removeInlineOuterQuotes || str.charAt(idx - 1) === splitBy)))
 
         removedLastOpenQuote.push(removeQuote)
 
@@ -178,8 +178,13 @@ export const _split = (
   }
 }
 
-export const split = (str: string, removeOuterQuotes = true, removeInlineOuterQuotes = false): string[] => {
-  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes) as string[]
+export const split = (
+  str: string,
+  removeOuterQuotes = true,
+  removeInlineOuterQuotes = false,
+  splitBy?: string
+): string[] => {
+  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes, splitBy) as string[]
 }
 
 /** Look for cmd1; cmd2 patterns */

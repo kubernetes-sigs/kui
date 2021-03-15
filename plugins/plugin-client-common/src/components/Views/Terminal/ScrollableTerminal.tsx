@@ -335,6 +335,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             argvNoOptions: ['welcome'],
             parsedOptions: {},
             execOptions: {},
+            pipeStages: [['welcome']],
+            pipeStagesNoOptions: [['welcome']],
             execUUID: '',
             execType: ExecType.TopLevel,
             cancelled: false,
@@ -770,7 +772,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const inProcess = curState.blocks[inProcessIdx]
         const blocks = curState.blocks
           .slice(0, inProcessIdx)
-          .concat([Cancelled(inProcess, event.command)]) // mark as cancelled
+          .concat([Cancelled(inProcess, event.command, event)]) // mark as cancelled
           .concat(curState.blocks.slice(inProcessIdx + 1))
           .concat(inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block if needed
         return {

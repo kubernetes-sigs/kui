@@ -323,6 +323,9 @@ class InProcessExecutor implements Executor {
       .replace(patterns.prefixComments, '# $1')
     const argv = split(command)
 
+    // pipeline splits, e.g. if command='a b|c', the pipeStages=[['a','b'],'c']
+    const pipeStages = split(command, undefined, undefined, '|').map(_ => split(_))
+
     // debug('command', commandUntrimmed)
     const evaluator = await lookupCommandEvaluator<T, O>(argv, execOptions)
     if (isSuccessfulCommandResolution(evaluator)) {
@@ -340,11 +343,15 @@ class InProcessExecutor implements Executor {
       execOptions.execUUID = execUUID
       const evaluatorOptions = evaluator.options
 
+      const pipeStagesNoOptions = pipeStages.map(stage => this.parseOptions(stage, evaluator)).map(_ => _.argvNoOptions)
+
       this.emitStartEvent({
         tab,
         route: evaluator.route,
         startTime,
         command,
+        pipeStages,
+        pipeStagesNoOptions,
         evaluatorOptions,
         execType,
         execUUID,
@@ -361,6 +368,8 @@ class InProcessExecutor implements Executor {
           command: commandUntrimmed,
           argvNoOptions,
           parsedOptions,
+          pipeStages,
+          pipeStagesNoOptions,
           execOptions,
           execUUID,
           cancelled: true,
@@ -385,6 +394,8 @@ class InProcessExecutor implements Executor {
             command: commandUntrimmed,
             argvNoOptions,
             parsedOptions,
+            pipeStages,
+            pipeStagesNoOptions,
             execOptions,
             cancelled: false,
             echo: execOptions.echo,
@@ -412,6 +423,8 @@ class InProcessExecutor implements Executor {
         command,
         execOptions,
         argvNoOptions,
+        pipeStages,
+        pipeStagesNoOptions,
         parsedOptions: parsedOptions as O,
         createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID))
       }
@@ -475,6 +488,8 @@ class InProcessExecutor implements Executor {
           command: commandUntrimmed,
           argvNoOptions,
           parsedOptions,
+          pipeStages,
+          pipeStagesNoOptions,
           execUUID,
           cancelled: false,
           echo: execOptions.echo,
