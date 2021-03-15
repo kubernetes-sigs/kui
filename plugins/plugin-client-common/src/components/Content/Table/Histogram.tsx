@@ -16,7 +16,7 @@
 
 import React from 'react'
 import stringColoring from 'string-similarity-coloring'
-import { REPL, Row, Tab, Table } from '@kui-shell/core'
+import { REPL, Row, sameRow, Tab, Table } from '@kui-shell/core'
 import { Chart, ChartAxis, ChartBar, ChartLabel, ChartVoronoiContainer } from '@patternfly/react-charts'
 
 interface Props {
@@ -34,20 +34,6 @@ interface State {
   counts: number[]
   colors: string[]
   scale: 'linear' | 'log'
-}
-
-/** Are the two Rows the same? */
-function sameRow(A: Row, B: Row): boolean {
-  return (
-    A.key === B.key &&
-    A.rowKey === B.rowKey &&
-    A.name === B.name &&
-    A.attributes.length === B.attributes.length &&
-    A.attributes.every((a, cidx) => {
-      const b = B.attributes[cidx]
-      return a.key === b.key && a.value === b.value && a.css === b.css && a.outerCSS === b.outerCSS && a.tag === b.tag
-    })
-  )
 }
 
 function sameState(A: State, B: State): boolean {
