@@ -17,7 +17,7 @@
 import React from 'react'
 import stringColoring from 'string-similarity-coloring'
 import { REPL, Row, sameRow, Tab, Table } from '@kui-shell/core'
-import { Chart, ChartAxis, ChartBar, ChartLabel, ChartVoronoiContainer } from '@patternfly/react-charts'
+import { Chart, ChartAxis, ChartBar, ChartLabel } from '@patternfly/react-charts'
 
 interface Props {
   response: Table
@@ -166,7 +166,6 @@ export default class Histogram extends React.PureComponent<Props, State> {
   private rows() {
     return (
       <Chart
-        animate={this.state.animate && { onLoad: { duration: 0 }, duration: 200 }}
         domainPadding={10}
         height={this.state.rows.length * this.barHeight * (1 + this.barSpacing)}
         horizontal={this.horizontal}
@@ -176,7 +175,6 @@ export default class Histogram extends React.PureComponent<Props, State> {
           top: 0,
           bottom: 0
         }}
-        containerComponent={<ChartVoronoiContainer constrainToVisibleArea />}
       >
         {this.axis()}
         {this.bars()}
@@ -206,6 +204,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
   private bars() {
     return (
       <ChartBar
+        animate={this.state.animate && { onLoad: { duration: 0 }, duration: 200 }}
         barWidth={this.barHeight}
         scale={{ y: this.state.scale }}
         style={{
