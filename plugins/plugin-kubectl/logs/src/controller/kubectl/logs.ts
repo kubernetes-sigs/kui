@@ -71,7 +71,7 @@ function getOrPty(verb: string) {
       return doExecWithStdout(args, undefined, cmd)
     }
 
-    if (args.execOptions.type === ExecType.TopLevel) {
+    if (args.execOptions.type !== ExecType.Nested) {
       if (verb === 'exec') {
         // special case for kubectl exec cat, ls, pwd, etc.
         const idx = args.argvNoOptions.indexOf('exec')
