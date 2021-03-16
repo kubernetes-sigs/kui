@@ -16,7 +16,9 @@
 
 import PromisePool from '@supercharge/promise-pool'
 
+import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, ParsedOptions, i18n, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
+
 const strings = i18n('plugin-client-common')
 
 /**
@@ -40,8 +42,7 @@ async function doHistogram(args: Arguments<Options>): Promise<Table> {
 
   if (filepath) {
     const histo: Record<string, number> = {}
-    const files = (await REPL.rexec<{ name: string; path: string }[]>(`vfs ls ${REPL.encodeComponent(filepath)}`))
-      .content
+    const files = (await REPL.rexec<GlobStats[]>(`vfs ls -l ${REPL.encodeComponent(filepath)}`)).content
 
     const pushToHistogram = (content: string) => {
       if (content) {
@@ -68,28 +69,30 @@ async function doHistogram(args: Arguments<Options>): Promise<Table> {
       }
     }
 
+    const accumulatorKey = (path: string, mtimeMs: number) => `${path}-${mtimeMs}`
+
     const fetchFile = async (path: string) => {
       return (await REPL.rexec<string>(`vfs fslice ${encodeComponent(path)} 0`)).content
     }
 
-    const fetchAndCache = async (path: string) => {
+    const fetchAndCache = async (path: string, mtimeMs: number) => {
       const data = await fetchFile(path)
       if (args.execOptions.watch) {
-        args.execOptions.watch.accumulator[path] = { data }
+        args.execOptions.watch.accumulator[accumulatorKey(path, mtimeMs)] = { data }
       }
       return data
     }
 
-    const getOrCreate = async (path: string): Promise<string> => {
-      return args.execOptions.watch && args.execOptions.watch.accumulator[path]
-        ? args.execOptions.watch.accumulator[path].data
-        : await fetchAndCache(path)
+    const getOrCreate = async (path: string, mtimeMs: number): Promise<string> => {
+      return args.execOptions.watch && args.execOptions.watch.accumulator[accumulatorKey(path, mtimeMs)]
+        ? args.execOptions.watch.accumulator[accumulatorKey(path, mtimeMs)].data
+        : await fetchAndCache(path, mtimeMs)
     }
 
     await PromisePool.withConcurrency(1024)
       .for(files)
-      .process(async ({ path }) => {
-        pushToHistogram(await getOrCreate(path))
+      .process(async ({ path, stats }) => {
+        pushToHistogram(await getOrCreate(path, stats.mtimeMs))
       })
 
     const body: Row[] = Object.entries(histo).map(([occurence, count]) => {
