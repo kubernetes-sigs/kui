@@ -60,13 +60,28 @@ describe(`pipe stage parsing ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .then(ReplExpect.okWithString('d --stage 3'))
       .catch(Common.oops(this, true)))
 
-  it('should show the second pipe stage no options', () =>
-    CLI.command('kuiPipeStageParsingNoOptions | b --yo yo | c | d --stage 1', this.app)
-      .then(ReplExpect.okWithString('b'))
+  it('should show the prefix variant 1', () =>
+    CLI.command('kuiPipeStageParsing --prefix -- | b | c | d > bar', this.app)
+      .then(ReplExpect.okWithString('kuiPipeStageParsing --prefix'))
       .catch(Common.oops(this, true)))
 
-  it('should show the fourth pipe stage no options', () =>
-    CLI.command('kuiPipeStageParsingNoOptions | b --yo yo | c | d --stage 3', this.app)
-      .then(ReplExpect.okWithString('d'))
+  it('should show the prefix variant 2', () =>
+    CLI.command('kuiPipeStageParsing -- --prefix | b | c | d > bar', this.app)
+      .then(ReplExpect.okWithString('--prefix')) // because the -- blocks further option parsing
+      .catch(Common.oops(this, true)))
+
+  it('should show the redirect', () =>
+    CLI.command('kuiPipeStageParsing --redirect | b | c | d > bar', this.app)
+      .then(ReplExpect.okWithString('bar'))
+      .catch(Common.oops(this, true)))
+
+  it('should show no redirect due to quoting', () =>
+    CLI.command('kuiPipeStageParsing --redirect | b | c | d ">" bar', this.app)
+      .then(ReplExpect.okWithString('nope'))
+      .catch(Common.oops(this, true)))
+
+  it('should show no redirect due to backslash escape', () =>
+    CLI.command('kuiPipeStageParsing --redirect | b | c | d \\> bar', this.app)
+      .then(ReplExpect.okWithString('nope'))
       .catch(Common.oops(this, true)))
 })

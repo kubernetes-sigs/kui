@@ -18,15 +18,20 @@ import { ParsedOptions, Registrar } from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   stage: number
+  prefix: boolean
+  redirect: boolean
 }
 
 export default function(registrar: Registrar) {
   registrar.listen<string, Options>('/kuiPipeStageParsing', args => {
-    const { stage = 0 } = args.parsedOptions
-    return args.pipeStages[stage].join(' ')
-  })
-  registrar.listen<string, Options>('/kuiPipeStageParsingNoOptions', args => {
-    const { stage = 0 } = args.parsedOptions
-    return args.pipeStagesNoOptions[stage].join(' ')
+    const { stage = 0, prefix, redirect } = args.parsedOptions
+
+    if (prefix) {
+      return args.pipeStages.prefix || 'nope'
+    } else if (redirect) {
+      return args.pipeStages.redirect || 'nope'
+    } else {
+      return args.pipeStages.stages[stage].join(' ')
+    }
   })
 }

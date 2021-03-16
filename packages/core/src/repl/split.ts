@@ -63,7 +63,9 @@ export const _split = (
   removeOuterQuotes = true,
   returnIndices = false,
   removeInlineOuterQuotes = false,
-  splitBy = ' '
+  splitBy = ' ',
+  startIdx = 0,
+  endIdx = str.length
 ): Split | string[] => {
   const A: string[] = []
   const endIndices: number[] = []
@@ -75,7 +77,7 @@ export const _split = (
 
   const removedLastOpenQuote: boolean[] = []
   let escapeActive = false
-  for (let idx = 0; idx < str.length; idx++) {
+  for (let idx = startIdx; idx < endIdx; idx++) {
     let char = str.charAt(idx)
 
     if (char === splitBy) {
@@ -92,6 +94,9 @@ export const _split = (
       if (!escapeActive) {
         escapeActive = true
         char = str.charAt(++idx)
+        if (!removeOuterQuotes) {
+          cur += '\\'
+        }
       } else {
         escapeActive = false
         cur += '\\'
@@ -182,9 +187,11 @@ export const split = (
   str: string,
   removeOuterQuotes = true,
   removeInlineOuterQuotes = false,
-  splitBy?: string
+  splitBy?: string,
+  startIdx = 0,
+  endIdx = str.length
 ): string[] => {
-  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes, splitBy) as string[]
+  return _split(str, removeOuterQuotes, undefined, removeInlineOuterQuotes, splitBy, startIdx, endIdx) as string[]
 }
 
 /** Look for cmd1; cmd2 patterns */
