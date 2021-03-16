@@ -16,7 +16,7 @@
 
 import Tab from '../webapp/tab'
 import ExecOptions from '../models/execOptions'
-import { CommandOptions, ExecType, KResponse, ParsedOptions } from '../models/command'
+import { CommandLine, CommandOptions, ExecType, KResponse, ParsedOptions } from '../models/command'
 
 export interface CommandStartEvent {
   tab: Tab
@@ -28,8 +28,7 @@ export interface CommandStartEvent {
   execOptions: ExecOptions
   echo: boolean
   evaluatorOptions: CommandOptions
-  pipeStages: string[][]
-  pipeStagesNoOptions: string[][]
+  pipeStages: CommandLine['pipeStages']
 }
 
 export type ResponseType = 'MultiModalResponse' | 'NavResponse' | 'ScalarResponse' | 'Incomplete' | 'Error'
@@ -42,8 +41,7 @@ export interface CommandCompleteEvent<R extends KResponse = KResponse, T extends
   argvNoOptions: string[]
   parsedOptions: ParsedOptions
   execOptions: ExecOptions
-  pipeStages: string[][]
-  pipeStagesNoOptions: string[][]
+  pipeStages: CommandLine['pipeStages']
 
   execUUID: string
   execType: ExecType

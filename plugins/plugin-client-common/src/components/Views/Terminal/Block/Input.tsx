@@ -580,13 +580,38 @@ export default class Input extends InputProvider {
     }
   }
 
-  /** Pretty-print the command line with `pipeStages` */
-  private fancyValueForPipeStages(pipeStages: Arguments['pipeStages']) {
+  private linebreak() {
+    return <span className="kui--line-break">&nbsp;</span>
+  }
+
+  private pipe(c: string) {
+    return <strong className="pre-wrap left-pad sub-text">{c} </strong>
+  }
+
+  /**
+   * Pretty-print the command line with `pipeStages`
+   * e.g. somePrefix -- foo | bar > baz
+   */
+  private fancyValueForPipeStages({ prefix, stages, redirect }: Arguments['pipeStages']) {
     return (
       <span className="repl-input-element flex-fill">
-        {pipeStages.map((pipePart, pidx, parts) => (
+        {/* somePrefix -- */}
+        {prefix && (
+          <React.Fragment>
+            <span className="pre-wrap">{prefix} -- </span>
+            {(stages.length > 0 || redirect) && (
+              <React.Fragment>
+                {this.linebreak()}
+                {this.pipe('\u00a0')}
+              </React.Fragment>
+            )}
+          </React.Fragment>
+        )}
+
+        {/* bar | baz */}
+        {stages.map((pipePart, pidx, parts) => (
           <React.Fragment key={pidx}>
-            {pidx > 0 && <strong className="left-pad sub-text">| </strong>}
+            {pidx > 0 && this.pipe('|')}
             {pipePart.map((word, widx) =>
               widx === 0 ? (
                 <span key={widx} className="color-base0D">
@@ -596,9 +621,18 @@ export default class Input extends InputProvider {
                 ` ${word}`
               )
             )}
-            {pidx < parts.length - 1 && <span className="kui--line-break">&nbsp;</span>}
+            {pidx < parts.length - 1 && this.linebreak()}
           </React.Fragment>
         ))}
+        {redirect && (
+          <React.Fragment>
+            {this.linebreak()}
+            {this.pipe('>')}
+            <span className="clickable" onClick={() => this.props.tab.REPL.pexec(`ls ${redirect}`)}>
+              {redirect}
+            </span>
+          </React.Fragment>
+        )}
       </span>
     )
   }
