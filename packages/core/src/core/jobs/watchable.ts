@@ -44,7 +44,7 @@ export interface WatchPusher {
    * update should be visualized as a change to the model [default:
    * true]
    */
-  update: (response: Row, batch?: boolean, changed?: boolean) => void
+  update: (response: Row, batch?: boolean, changed?: boolean, idxToUpdate?: number) => void
 
   /** set table body */
   setBody: (response: Row[]) => void
