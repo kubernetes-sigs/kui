@@ -169,7 +169,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
       const foundIndex = lookup(this.props.response.body, newKuiRow)
       if (foundIndex === -1 || !sameRow(newKuiRow, this.props.response.body[foundIndex])) {
         doUpdate = true
-        this.update(newKuiRow, true, foundIndex)
+        this.update(newKuiRow, true, undefined, foundIndex)
       }
     })
 
@@ -226,7 +226,8 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    * update consumes the update notification and apply it to the table view
    *
    */
-  private update(newKuiRow: KuiRow, batch = false, idxToUpdate?: number) {
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+  private update(newKuiRow: KuiRow, batch = false, justUpdated = true, idxToUpdate?: number) {
     if (!this.props.response.header) {
       const header = kuiHeaderFromBody([newKuiRow])
       if (header) {
