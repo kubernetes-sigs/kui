@@ -65,4 +65,15 @@ describe(`grammy table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
       return Common.oops(this, true)
     }
   })
+
+  it('should do grammy against pacakge.json and expect an empty table', async () => {
+    try {
+      const res = await CLI.command(`grammy ${ROOT}/package.json`, this.app)
+      await this.app.client
+        .$(Selectors.TABLE_SHOW_AS_HISTOGRAM(res.count))
+        .then(_ => _.waitForDisplayed({ timeout: 8000, reverse: true }))
+    } catch (err) {
+      return Common.oops(this, true)
+    }
+  })
 })

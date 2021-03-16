@@ -53,14 +53,15 @@ async function doHistogram(args: Arguments<Options>): Promise<Table> {
             const separator = line.indexOf(' ')
 
             if (separator !== -1) {
-              const count = line.slice(0, separator)
-              const occurence = line.replace(count, '').trim()
+              const countPart = line.slice(0, separator)
+              const occurence = line.replace(countPart, '').trim()
+              const count = parseInt(countPart)
 
-              if (count && occurence) {
+              if (countPart && !isNaN(count) && occurence) {
                 if (histo[occurence]) {
-                  histo[occurence] += parseInt(count)
+                  histo[occurence] += count
                 } else {
-                  histo[occurence] = parseInt(count)
+                  histo[occurence] = count
                 }
               }
             }
