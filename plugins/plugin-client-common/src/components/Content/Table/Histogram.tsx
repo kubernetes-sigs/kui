@@ -57,6 +57,7 @@ export default class Histogram extends React.PureComponent<Props, State> {
   private readonly barLabelFontSize = 0.65 * this.barHeight
   private readonly minBarLabelChars = 1
   private readonly maxBarLabelChars = 6
+  private static readonly maxAnimatableRows = 50 // Victory doesn't seem to animate well when a great many rows; too much lag
 
   public constructor(props: Props) {
     super(props)
@@ -93,9 +94,9 @@ export default class Histogram extends React.PureComponent<Props, State> {
     if (!useFancyColoring) {
       const filteredRows = filteredRowsPriorToSorting
       return {
-        animate: true,
         rows: filteredRows,
         counts: filteredRows.map(countOf),
+        animate: filteredRows.length < Histogram.maxAnimatableRows,
         scale: filteredRows.length === rows.length ? 'linear' : 'log',
         colors: undefined
       }
@@ -127,9 +128,9 @@ export default class Histogram extends React.PureComponent<Props, State> {
       const filteredRows = filteredRowsForSorting.map(_ => _.row)
 
       return {
-        animate: true,
         rows: filteredRows,
         counts: filteredRows.map(countOf),
+        animate: filteredRows.length < Histogram.maxAnimatableRows,
         scale: filteredRows.length === rows.length ? 'linear' : 'log',
         colors: filteredRowsForSorting.map(_ => _.color.color)
       }
