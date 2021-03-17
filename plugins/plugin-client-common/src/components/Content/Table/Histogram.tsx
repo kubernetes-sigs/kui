@@ -48,9 +48,10 @@ function sameState(A: State, B: State): boolean {
 }
 
 export default class Histogram extends React.PureComponent<Props, State> {
+  private static readonly domainPadding = 10
   private readonly horizontal = true
   private readonly barHeight = 10
-  private readonly barSpacing = 0.1 // 10% of barHeight spacing between bars
+  private readonly barSpacing = 0.15 // 15% of barHeight spacing between bars
   private readonly axisLabelFontSize = 0.9 * this.barHeight
   private readonly minAxisLabelChars = 4
   private readonly maxAxisLabelChars = 13
@@ -165,10 +166,13 @@ export default class Histogram extends React.PureComponent<Props, State> {
   }
 
   private rows() {
+    // re: 0.375, see https://github.com/IBM/kui/issues/7209
     return (
       <Chart
-        domainPadding={10}
-        height={this.state.rows.length * this.barHeight * (1 + this.barSpacing)}
+        domainPadding={Histogram.domainPadding}
+        height={
+          0.375 * Histogram.domainPadding + this.state.rows.length * this.barHeight * (1 + this.barSpacing) + 10 * 2
+        }
         horizontal={this.horizontal}
         padding={{
           left: this.leftPad(),
