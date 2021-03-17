@@ -73,7 +73,10 @@ export default function(registrar: Registrar) {
 
   on(
     'rm',
-    args => rm(args, args.argvNoOptions[1], !!(args.parsedOptions.r || args.parsedOptions.R)).then(() => true),
+    args =>
+      rm(args, args.argvNoOptions[1], !!(args.parsedOptions.r || args.parsedOptions.R)).then(response =>
+        typeof response === 'string' ? response : true
+      ),
     'frRidPvw'
   )
 
