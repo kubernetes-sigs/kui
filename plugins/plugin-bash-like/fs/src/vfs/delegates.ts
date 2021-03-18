@@ -43,8 +43,8 @@ function cropToSlashDepth(path: string, depth: number) {
 }
 
 /** Remove duplicates from an array of strings */
-function removeDuplicates(paths: string[]) {
-  return paths.filter((path, idx) => paths.indexOf(path) === idx)
+function removeDuplicates(args: { mountPath: string; isLocal: VFS['isLocal']; tags: VFS['tags'] }[]) {
+  return args.filter(({ mountPath }, idx) => args.findIndex(_ => _.mountPath === mountPath) === idx)
 }
 
 /**
@@ -61,8 +61,14 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
     const mounts = await findMatchingMounts(path)
     if (mounts) {
       return removeDuplicates(
-        mounts.filter(mount => !mount.isLocal).map(mount => cropToSlashDepth(mount.mountPath, depthOfPath))
-      ).map(mountPath => ({
+        mounts
+          .filter(mount => !mount.isLocal)
+          .map(mount => ({
+            mountPath: cropToSlashDepth(mount.mountPath, depthOfPath),
+            isLocal: mount.isLocal,
+            tags: mount.tags
+          }))
+      ).map(({ mountPath, isLocal, tags }) => ({
         name: basename(mountPath),
         nameForDisplay: basename(mountPath),
         path: mountPath,
@@ -74,6 +80,7 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
           mode: 0
         },
         dirent: {
+          mount: { isLocal, tags },
           isFile: false,
           isDirectory: true,
           isSymbolicLink: false,

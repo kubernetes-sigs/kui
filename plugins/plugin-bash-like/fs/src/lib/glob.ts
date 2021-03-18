@@ -16,6 +16,7 @@
 
 import { userInfo } from 'os'
 import { stat, Stats, constants } from 'fs'
+import { VFS } from '../vfs'
 
 import { i18n, isHeadless, expandHomeDir, CodedError, Arguments, ParsedOptions } from '@kui-shell/core'
 
@@ -46,6 +47,7 @@ interface DirentStats {
   isExecutable: boolean
   permissions: string
   username: string
+  mount: Pick<VFS, 'isLocal' | 'tags'>
 }
 
 interface RawGlobStats extends BaseStats {
@@ -241,6 +243,7 @@ export async function kuiglob({
         isSymbolicLink,
         isExecutable,
         isSpecial,
+        mount: { isLocal: true },
         permissions: parsedOptions.l ? formatPermissions(stats, isFile, isDirectory, isSymbolicLink) : '',
         username: stats && user.uid === stats.uid ? user.username : ''
       }
