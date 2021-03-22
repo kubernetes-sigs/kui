@@ -33,6 +33,7 @@ import { getHistoryForTab } from '../models/history'
 import { Executor, ReplEval, DirectReplEval } from './types'
 import { isMultiModalResponse } from '../models/mmr/is'
 import { isNavResponse } from '../models/NavResponse'
+import expandHomeDir from '../util/home'
 import { CommandStartEvent, CommandCompleteEvent } from './events'
 
 import {
@@ -64,6 +65,7 @@ import { Block } from '../webapp/models/block'
 
 import { Stream, Streamable } from '../models/streamable'
 import enforceUsage from './enforce-usage'
+import { isXtermResponse } from '../models/XtermResponse'
 
 // TODO esModuleInterop to allow for import
 // import * as minimist from 'yargs-parser'
@@ -318,7 +320,7 @@ class InProcessExecutor implements Executor {
 
     // trim suffix comments, e.g. "kubectl get pods # comments start here"
     // insert whitespace for whitespace-free prefix comments, e.g. "#comments" -> "# comments"
-    const command = (commandUntrimmed || '')
+    let command = (commandUntrimmed || '')
       .trim()
       .replace(patterns.suffixComments, '$1')
       .replace(patterns.prefixComments, '# $1')
@@ -326,6 +328,14 @@ class InProcessExecutor implements Executor {
 
     // pipeline splits, e.g. if command='a b|c', the pipeStages=[['a','b'],'c']
     const pipeStages = splitIntoPipeStages(command)
+
+    const originalCommand = command // remember the original command for history
+    if (!execOptions.noCoreRedirect && pipeStages.redirect) {
+      // If core handles redirect, argv and command shouldn't contain the redirect part;
+      // otherwise, controllers may use argv and command incorrectly e.g. kuiecho hi > file will print "hi > file" instead of "hi"
+      argv.splice(argv.indexOf('>'), 2)
+      command = command.replace(new RegExp(`\\s*>\\s*${pipeStages.redirect}\\s*$`), '')
+    }
 
     // debug('command', commandUntrimmed)
     const evaluator = await lookupCommandEvaluator<T, O>(argv, execOptions)
@@ -376,7 +386,7 @@ class InProcessExecutor implements Executor {
         return
       }
 
-      const historyIdx = this.pushHistory(command, execOptions, tab)
+      const historyIdx = this.pushHistory(originalCommand, execOptions, tab)
 
       try {
         enforceUsage(argv, evaluator, execOptions)
@@ -493,7 +503,12 @@ class InProcessExecutor implements Executor {
         historyIdx || -1
       )
 
-      return response
+      if (pipeStages.redirect) {
+        await redirectResponse(response, pipeStages.redirect, execOptions)
+        return response
+      } else {
+        return response
+      }
     } else {
       const err = new Error('Command not found') as CommandEvaluationError
       err.code = 404 // http not acceptable
@@ -698,4 +713,30 @@ export function getImpl(tab: Tab): REPL {
   const impl = { qexec, rexec, pexec, reexec, click, encodeComponent, split } as REPL
   tab.REPL = impl
   return impl
+}
+
+/**
+ * redirect a string response
+ *
+ */
+async function redirectResponse<T extends KResponse>(
+  _response: MixedResponse | T | Promise<T>,
+  filepath: string,
+  execOptions: ExecOptions
+) {
+  if (!execOptions.noCoreRedirect) {
+    const response = await _response
+
+    if (typeof response === 'string' || isXtermResponse(response)) {
+      await rexec<{ data: string }>(`vfs fwrite ${encodeComponent(expandHomeDir(filepath))}`, {
+        data: isXtermResponse(response) ? response.rows.map(i => i.map(j => j.innerText)).join(' ') : response
+      })
+
+      debug(`redirected response to ${filepath}`)
+    } else {
+      throw new Error('Kui only supports redirecting a string or xterm response')
+    }
+  } else {
+    debug('let controller handle redirect')
+  }
 }

@@ -62,6 +62,7 @@ export interface ExecOptions {
   quiet?: boolean
   intentional?: boolean
   noHistory?: boolean
+  noCoreRedirect?: boolean // controller wants to handle redirect
   pip?: { container: string; returnTo: string }
   history?: number
   echo?: boolean

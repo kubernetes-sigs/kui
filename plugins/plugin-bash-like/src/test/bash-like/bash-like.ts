@@ -155,6 +155,22 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
 
+  Common.pit('should kuiecho ho to a file', () =>
+    CLI.command(`kuiecho ho > "${dirname}"/testTmp2`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
+  )
+  Common.pit('should cat that file', () =>
+    CLI.command(`cat "${dirname}"/testTmp2`, this.app)
+      .then(ReplExpect.okWithPtyOutput('ho'))
+      .catch(Common.oops(this, true))
+  )
+  Common.pit('should rm that file', () =>
+    CLI.command(`rm "${dirname}"/testTmp2`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
+  )
+
   Common.pit('should mkdir a subdir with spaces', () =>
     CLI.command(`mkdir "${dirname}"/"foo2 bar2"`, this.app)
       .then(ReplExpect.ok)

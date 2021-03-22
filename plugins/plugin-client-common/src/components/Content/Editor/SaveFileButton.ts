@@ -37,7 +37,7 @@ export default function SaveFileButton(
 
     command: async () => {
       try {
-        await repl.rexec(`fwrite ${repl.encodeComponent(response.spec.fullpath)}`, { data: editor.getValue() })
+        await repl.rexec(`vfs fwrite ${repl.encodeComponent(response.spec.fullpath)}`, { data: editor.getValue() })
         onSave(true)
       } catch (err) {
         onSave(false)
