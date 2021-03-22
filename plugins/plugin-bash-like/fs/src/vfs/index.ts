@@ -99,6 +99,9 @@ export interface VFS {
   /** Fetch content slice */
   fslice(filename: string, offset: number, length: number): Promise<string>
 
+  /** write data to file */
+  fwrite(opts: Pick<Arguments, 'REPL'>, fullpath: string, data: string | Buffer): Promise<boolean>
+
   /** Create a directory/bucket */
   mkdir(
     opts: Pick<Arguments, 'command' | 'REPL' | 'argvNoOptions' | 'parsedOptions' | 'execOptions'>,

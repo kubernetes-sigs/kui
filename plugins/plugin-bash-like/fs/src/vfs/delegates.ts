@@ -230,6 +230,16 @@ export async function fstat(...parameters: Parameters<VFS['fstat']>): ReturnType
 }
 
 /**
+ * fwrite delegate
+ *
+ */
+ export async function fwrite(...parameters: Parameters<VFS['fwrite']>): ReturnType<VFS['fwrite']> {
+  const mount = findMount(parameters[1])
+  return mount.fwrite(parameters[0], parameters[1], parameters[2])
+}
+
+
+/**
  * fslice delegate
  *
  */

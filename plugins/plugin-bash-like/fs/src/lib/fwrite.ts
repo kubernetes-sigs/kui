@@ -15,25 +15,37 @@
  */
 
 import { Arguments, CodedError, RawResponse, Registrar } from '@kui-shell/core'
+import { dirname } from 'path'
 
-async function _fwrite(fullpath: string, data: string | Buffer) {
-  const { writeFile } = await import('fs')
+export async function _fwrite(_fullpath: string, data: string | Buffer) {
+  const { mkdir, writeFile } = await import('fs')
+  const fullpath = _fullpath.replace(/"/g, '') // trim double quotes
 
   return new Promise<boolean>((resolve, reject) => {
-    writeFile(fullpath, data, err => {
-      if (err) {
-        if (err.code === 'ENOENT') {
-          const error: CodedError = new Error(err.message)
-          error.stack = err.stack
-          error.code = 404
-          reject(error)
+    const write = (path: string, data: string | Buffer) =>
+      writeFile(path, data, err => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            const error: CodedError = new Error(err.message)
+            error.stack = err.stack
+            error.code = 404
+            reject(error)
+          } else {
+            reject(err)
+          }
         } else {
-          reject(err)
+          resolve(true)
         }
-      } else {
-        resolve(true)
-      }
-    })
+      })
+
+    const dir = dirname(fullpath)
+    if (dir !== '.') {
+      mkdir(dir, { recursive: true }, () => {
+        return write(fullpath, data)
+      })
+    } else {
+      write(fullpath, data)
+    }
   })
 }
 

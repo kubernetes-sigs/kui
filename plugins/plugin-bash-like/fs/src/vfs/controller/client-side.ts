@@ -16,7 +16,7 @@
 
 import { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 
-import { fstatImpl, lsImpl } from './server-side'
+import { fstatImpl, fwriteImpl, lsImpl } from './server-side'
 import { cp, grep, gzip, gunzip, rm, mkdir, rmdir } from '../delegates'
 
 /**
@@ -69,6 +69,22 @@ export default function(registrar: Registrar) {
       }
     },
     ['with-data', 'enoent-ok']
+  )
+
+  on(
+    'vfs/fwrite',
+    async args => {
+      try {
+        return await fwriteImpl(args)
+      } catch (err) {
+        // no virtual (client-only) mount found; try contacting the
+        // proxy server
+        return args.REPL.qexec(args.command.replace('vfs fwrite', 'vfs _fwrite'), undefined, undefined, {
+          data: args.execOptions.data
+        })
+      }
+    },
+    'data'
   )
 
   on(

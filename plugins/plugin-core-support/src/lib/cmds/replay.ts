@@ -153,7 +153,7 @@ export default function(registrar: Registrar) {
             cb: async (snapshot: Buffer) => {
               try {
                 const filepath = expandHomeDir(argvNoOptions[argvNoOptions.indexOf('snapshot') + 1])
-                await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(filepath)}`, {
+                await REPL.rexec<{ data: string }>(`vfs fwrite ${REPL.encodeComponent(filepath)}`, {
                   data: Buffer.from(snapshot).toString()
                 })
                 resolve(true)
