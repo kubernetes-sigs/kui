@@ -21,6 +21,7 @@ import { Arguments, CodedError, encodeComponent, expandHomeDir, findFileWithView
 import { VFS, mount } from '.'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
 import { fstat, FStat } from '../lib/fstat'
+import { _fwrite } from '../lib/fwrite'
 
 class LocalVFS implements VFS {
   public readonly mountPath = '/'
@@ -67,6 +68,15 @@ class LocalVFS implements VFS {
       argvNoOptions: ['fstat', filepath],
       parsedOptions: { 'with-data': withData, 'enoent-ok': enoentOk }
     })
+  }
+
+  /** Write data to a files */
+  public async fwrite(
+    opts: Pick<Arguments, 'REPL'>,
+    filepath: string,
+    data: string | Buffer
+  ): Promise<boolean> {
+    return _fwrite(filepath, data)
   }
 
   /** Fetch content slice */

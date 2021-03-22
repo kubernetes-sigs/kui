@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Util } from '@kui-shell/test'
 
 describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
@@ -78,5 +78,64 @@ describe(`echo command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
     CLI.command('echo   "hi  hi" hi        "hi   hi"               ', this.app)
       .then(ReplExpect.okWithPtyOutput('hi  hi hi hi   hi'))
       .catch(Common.oops(this))
+  )
+
+  const redirectFile1 = 'testKuiEchoRedirect1'
+  const redirectFile2 = 'testKuiEchoRedirect2'
+
+  Common.pit('should echo "hi hi" and redirect the output to local file', () =>
+    CLI.command(`echo "hi hi" > ${redirectFile1}`, this.app)
+      .then(ReplExpect.okWithPtyOutput('hi hi'))
+      .catch(Common.oops(this))
+  )
+
+  Common.pit(`should open ${redirectFile1}`, () =>
+    CLI.command(`open ${redirectFile1}`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(res =>
+        this.app.client.waitUntil(async () => {
+          const value = await Util.getValueFromMonaco(res)
+          return value === 'hi hi'
+        })
+      )
+      .catch(Common.oops(this, true))
+  )
+
+  Common.pit(`should execute 'cd /tmp'`, () =>
+    CLI.command('cd /tmp', this.app)
+      .then(ReplExpect.okWithString('/tmp'))
+      .catch(Common.oops(this, true))
+  )
+
+  Common.pit('should kuiecho "hi hi" and redirect the output to local file', () =>
+    CLI.command(`kuiecho "hi hi" > ${redirectFile2}`, this.app)
+      .then(ReplExpect.okWithPtyOutput('hi hi'))
+      .catch(Common.oops(this))
+  )
+
+  Common.pit(`should open testKuiEchoRedirect`, () =>
+    CLI.command(`open ${redirectFile2}`, this.app)
+      .then(ReplExpect.ok)
+      .then(SidecarExpect.open)
+      .then(res =>
+        this.app.client.waitUntil(async () => {
+          const value = await Util.getValueFromMonaco(res)
+          return value === 'hi hi'
+        })
+      )
+      .catch(Common.oops(this, true))
+  )
+
+  Common.pit('should remove test file1', () =>
+    CLI.command(`rm -f ${redirectFile1}`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
+  )
+
+  Common.pit('should remove test file2', () =>
+    CLI.command(`rm -f ${redirectFile2}`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
   )
 })

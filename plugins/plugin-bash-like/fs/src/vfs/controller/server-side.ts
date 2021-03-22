@@ -16,7 +16,7 @@
 
 import { Arguments, RawResponse, Registrar } from '@kui-shell/core'
 
-import { ls, fslice, fstat } from '../delegates'
+import { ls, fslice, fstat, fwrite } from '../delegates'
 import { KuiGlobOptions, GlobStats } from '../../lib/glob'
 
 export async function lsImpl(args: Arguments<KuiGlobOptions>): Promise<RawResponse<GlobStats[]>> {
@@ -25,6 +25,18 @@ export async function lsImpl(args: Arguments<KuiGlobOptions>): Promise<RawRespon
     content: await ls(args, args.argvNoOptions.slice(2))
   }
 }
+
+export async function fwriteImpl(args: Arguments) {
+  return {
+    mode: 'raw',
+    content: await fwrite(
+      args,
+      args.argvNoOptions[2],
+      args.execOptions.data as string | Buffer
+    )
+  }
+}
+
 
 export async function fstatImpl(args: Arguments) {
   return {
@@ -51,6 +63,10 @@ export default function(registrar: Registrar) {
     flags: {
       boolean: ['with-data', 'enoent-ok']
     }
+  })
+
+  registrar.listen('/vfs/_fwrite', fwriteImpl, {
+    requiresLocal: true
   })
 
   registrar.listen(

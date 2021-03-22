@@ -242,6 +242,15 @@ export class NotebookVFS implements VFS {
     }
   }
 
+  public async fwrite(
+    opts: Pick<Arguments, 'REPL'>,
+    filepath: string,
+    data: string | Buffer
+  ) {
+    console.error('Unsupported operation')
+    return false
+  }
+
   /** Fetch content slice */
   public async fslice(filename: string, offset: number, length: number): Promise<string> {
     const entry = this.findExact(filename, true)
