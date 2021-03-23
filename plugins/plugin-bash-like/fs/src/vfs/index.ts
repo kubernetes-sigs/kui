@@ -211,7 +211,7 @@ export async function mount(vfs: VFS | VFSProducingFunction) {
 
 /** @return the absolute path to `filepath` */
 export function absolute(filepath: string): string {
-  return isAbsolute(expandHomeDir(filepath)) ? filepath : join(cwd(), filepath)
+  return isAbsolute(expandHomeDir(filepath.toString())) ? filepath : join(cwd(), filepath.toString())
 }
 
 /** Lookup compiatible matching mount */
