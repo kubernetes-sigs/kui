@@ -34,6 +34,17 @@ import { localFilepath } from './usage-helpers'
 const dateFormatter = speedDate('MMM DD HH:mm')
 const strings = i18n('plugin-bash-like')
 
+/** Heading names */
+const Key = {
+  UID: 'UID',
+  GID: 'GID',
+  Size: 'Size',
+  User: 'User',
+  Group: 'Group',
+  Permissions: 'Permissions',
+  LastModified: 'Last Modified'
+}
+
 /**
  * Mimic ls -lh
  *
@@ -161,17 +172,23 @@ function attrs(
   // const language = withLanguage(args.execOptions).language
 
   const wide = args.parsedOptions.l
-  const perms = wide && hasPermissions ? [{ value: formatPermissions(entry), outerCSS: outerCSSSecondary }] : []
-  const uid = wide && hasUid ? [{ value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
-  const gid = wide && hasGid ? [{ value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
+  const perms =
+    wide && hasPermissions
+      ? [{ key: Key.Permissions, value: formatPermissions(entry), outerCSS: outerCSSSecondary }]
+      : []
+  const uid =
+    wide && hasUid ? [{ key: Key.UID, value: formatUid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
+  const gid =
+    wide && hasGid ? [{ key: Key.GID, value: formatGid(entry), outerCSS: outerCSSSecondary, css: cssSecondary }] : []
   const size =
     wide && hasSize
-      ? [{ value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: '', css: 'yellow-text' }]
+      ? [{ key: Key.Size, value: prettyBytes(entry.stats.size).replace(/\s/g, ''), outerCSS: '', css: 'yellow-text' }]
       : []
   const lastMod =
     wide && hasMtime
       ? [
           {
+            key: Key.LastModified,
             value: prettyTime(entry.stats.mtimeMs),
             outerCSS: outerCSSLesser,
             css: `${cssLesser} ${cssSecondary} pre-wrap sub-text`
@@ -209,11 +226,15 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
   }))
 
   const wide = args.parsedOptions.l
-  const perms = wide && hasPermissions ? [{ value: 'Permissions', outerCSS: outerCSSSecondary }] : []
-  const uid = wide && hasUid ? [{ value: 'User', outerCSS: outerCSSSecondary }] : []
-  const gid = wide && hasGid ? [{ value: 'Group', outerCSS: outerCSSSecondary }] : []
-  const size = wide && hasSize ? [{ value: 'Size', outerCSS: '' }] : []
-  const lastMod = wide && hasMtime ? [{ value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }] : []
+  const perms =
+    wide && hasPermissions ? [{ key: Key.Permissions, value: 'Permissions', outerCSS: outerCSSSecondary }] : []
+  const uid = wide && hasUid ? [{ key: Key.User, value: 'User', outerCSS: outerCSSSecondary }] : []
+  const gid = wide && hasGid ? [{ key: Key.Group, value: 'Group', outerCSS: outerCSSSecondary }] : []
+  const size = wide && hasSize ? [{ key: Key.Size, value: 'Size', outerCSS: '' }] : []
+  const lastMod =
+    wide && hasMtime
+      ? [{ key: Key.LastModified, value: 'Last Modified', outerCSS: outerCSSLesser, css: cssLesser }]
+      : []
 
   const header = {
     name: 'Name',

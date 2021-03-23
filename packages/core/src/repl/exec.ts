@@ -23,6 +23,7 @@
 
 import Debug from 'debug'
 const debug = Debug('core/repl')
+const debugCommandErrors = Debug('core/repl/errors')
 
 import { v4 as uuid } from 'uuid'
 import encodeComponent from './encode'
@@ -456,6 +457,7 @@ class InProcessExecutor implements Executor {
             return response
           })
         } catch (err) {
+          debugCommandErrors(err)
           evaluator.error(command, tab, execType, err)
           if (execType === ExecType.Nested) {
             throw err
