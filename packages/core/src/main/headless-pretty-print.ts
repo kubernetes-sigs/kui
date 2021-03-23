@@ -19,7 +19,7 @@ const debug = Debug('main/headless-pretty-print')
 debug('loading')
 
 import { Writable } from 'stream'
-import * as colors from 'colors/safe'
+import colors from 'colors/safe'
 
 import ElementMimic from '../util/element-mimic'
 import { isTable, Row } from '../webapp/models/table'

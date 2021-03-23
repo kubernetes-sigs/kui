@@ -36,7 +36,7 @@ function getPrefsFromEnv(env: typeof process.env, defaultPrefs: ISubwindowPrefs)
  */
 export const main = async (argv: string[], env = process.env, execOptions?: ExecOptions) => {
   const N = argv.length
-  const isRunningHeadless = argv[N - 3] === 'bash' && argv[N - 2] === 'websocket'
+  const isRunningHeadless = !!process.env.KUI_HEADLESS || (argv[N - 3] === 'bash' && argv[N - 2] === 'websocket')
 
   if (!isRunningHeadless) {
     // then spawn the electron graphics

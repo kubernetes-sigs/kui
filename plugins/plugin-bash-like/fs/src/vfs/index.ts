@@ -179,19 +179,32 @@ async function mountAll({ REPL }: Pick<Arguments, 'REPL'>, vfsFn: VFSProducingFu
  */
 export async function mount(vfs: VFS | VFSProducingFunction) {
   if (typeof vfs !== 'function') {
-    _mount(vfs)
+    await _mount(vfs)
   } else {
     const tab = getCurrentTab()
     if (!tab) {
-      let debounce = false
-      eventBus.on('/tab/new', tab => {
-        if (!debounce) {
-          debounce = true
-          mountAll(tab, vfs)
+      return new Promise((resolve, reject) => {
+        try {
+          let debounce = false
+          eventBus.on('/tab/new', async tab => {
+            try {
+              if (!debounce) {
+                debounce = true
+                await mountAll(tab, vfs)
+                resolve(undefined)
+              }
+            } catch (err) {
+              console.error('Error in mount 1', err)
+              reject(err)
+            }
+          })
+        } catch (err) {
+          console.error('Error in mount 2', err)
+          reject(err)
         }
       })
     } else {
-      mountAll(tab, vfs)
+      await mountAll(tab, vfs)
     }
   }
 }
