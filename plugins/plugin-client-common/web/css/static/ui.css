@@ -146,7 +146,7 @@ body.still-loading .repl {
   white-space: pre;
 }
 .kui--ignore-if-empty {
-  display: flex;
+  display: span;
   flex: 1;
   &:empty {
     display: none;
@@ -342,6 +342,15 @@ code.fancy-code.hljs {
 }
 body[kui-theme-style] .sub-text {
   color: var(--color-text-02);
+}
+.strikethrough {
+  text-decoration: line-through;
+}
+.underline {
+  text-decoration: underline;
+}
+.italic {
+  font-style: italic;
 }
 .lighter-text {
   font-weight: 300;

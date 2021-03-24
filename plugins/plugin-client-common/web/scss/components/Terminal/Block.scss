@@ -365,3 +365,10 @@ body[kui-theme-style] .kui--repl-block-right-element {
     }
   }
 }
+
+@include StreamingOutput {
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+  }
+}
