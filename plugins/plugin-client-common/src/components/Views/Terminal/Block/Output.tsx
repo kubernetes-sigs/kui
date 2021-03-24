@@ -60,6 +60,7 @@ import Actions from './Actions'
 import Scalar from '../../../Content/Scalar/' // !! DO NOT MAKE LAZY. See https://github.com/IBM/kui/issues/6758
 import KuiContext from '../../../Client/context'
 import { Maximizable } from '../../Sidecar/width'
+const Ansi = React.lazy(() => import('../../../Content/Scalar/Ansi'))
 
 const strings = i18n('plugin-client-common')
 
@@ -91,6 +92,7 @@ interface State {
   assertHasContent?: boolean
   isResultRendered: boolean
 
+  nStreamingOutputs: number
   streamingOutput: Streamable[]
   streamingConsumer: Stream
 }
@@ -107,6 +109,7 @@ export default class Output extends React.PureComponent<Props, State> {
     this.state = {
       alreadyListen: false,
       isResultRendered: false,
+      nStreamingOutputs: 0,
       streamingOutput: [],
       streamingConsumer
     }
@@ -116,9 +119,21 @@ export default class Output extends React.PureComponent<Props, State> {
   private async streamingConsumer(part: Streamable) {
     if (hasUUID(this.props.model)) {
       // part === null: the controller wants to clear any prior output
-      this.setState(curState => ({
-        streamingOutput: part === null ? [] : curState.streamingOutput.concat([part])
-      }))
+      this.setState(curState => {
+        if (part === null) {
+          return {
+            // remove all output
+            nStreamingOutputs: 0,
+            streamingOutput: []
+          }
+        } else {
+          curState.streamingOutput.push(part)
+          return {
+            nStreamingOutputs: curState.nStreamingOutputs + 1,
+            streamingOutput: curState.streamingOutput
+          }
+        }
+      })
       this.props.onRender()
       eventChannelUnsafe.emit(`/command/stdout/done/${this.props.uuid}/${this.props.model.execUUID}`)
     }
@@ -159,7 +174,7 @@ export default class Output extends React.PureComponent<Props, State> {
   private readonly _onRender = this.onRender.bind(this)
 
   private hasStreamingOutput() {
-    return this.state.streamingOutput.length > 0
+    return this.state.nStreamingOutputs > 0
   }
 
   private outputWillOverflow() {
@@ -169,6 +184,15 @@ export default class Output extends React.PureComponent<Props, State> {
 
   private stream() {
     if (this.hasStreamingOutput()) {
+      if (this.state.streamingOutput.every(_ => typeof _ === 'string')) {
+        const combined = this.state.streamingOutput.join('')
+        return (
+          <div className="repl-result-like result-vertical" data-stream>
+            <Ansi>{combined}</Ansi>
+          </div>
+        )
+      }
+
       return (
         <div className="repl-result-like result-vertical" data-stream>
           {this.state.streamingOutput.map((part, idx) => (

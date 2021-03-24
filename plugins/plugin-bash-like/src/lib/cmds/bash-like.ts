@@ -53,28 +53,53 @@ export const doExec = (
       let rawOut = ''
       let rawErr = ''
 
+      let stdout: Promise<ExecOptions['stdout']>
+
+      // caller has requested a callback to set up the stdout stream
+      if (execOptions.onInit) {
+        debug('setting up stdout via onInit', cmdLine.slice(0, 10))
+        stdout = Promise.resolve(
+          execOptions.onInit({
+            abort: () => proc.kill(),
+            xon: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+            xoff: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+            write: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
+          })
+        )
+      }
+
       proc.stdout.on('data', async data => {
         const out = data.toString()
 
-        if (execOptions.stdout) {
-          execOptions.stdout(data)
+        if (stdout) {
+          ;(await stdout)(data)
         } else {
           rawOut += out
         }
       })
 
-      proc.stderr.on('data', data => {
+      proc.stderr.on('data', async data => {
         rawErr += data
 
         if (execOptions.stderr) {
           execOptions.stderr(data.toString())
           // stderrLines += data.toString()
+        } else if (stdout) {
+          ;(await stdout)(data.toString())
+        } else {
+          debug(data.toString())
         }
       })
 
       proc.on('error', reject)
 
       proc.on('close', async exitCode => {
+        if (execOptions.onExit) {
+          debug('onExit', exitCode, cmdLine.slice(0, 10))
+          execOptions.onExit(exitCode)
+          return
+        }
+
         if (exitCode === 0) {
           // great, the process exited normally. resolve!
           if (execOptions && execOptions['json']) {

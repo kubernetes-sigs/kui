@@ -379,6 +379,9 @@ export const print = (
         debug('printing promise')
         return msg.then(msg => print(msg, logger, stream, colorFn, ok))
       } else if (isTable(msg)) {
+        if (msg.body.length === 0) {
+          return
+        }
         debug('printing table')
 
         // strip off header row, as we'll make our own

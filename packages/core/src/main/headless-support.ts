@@ -44,7 +44,9 @@ export const streamTo = async () => {
     print(response)
 
     if (!killLine) {
-      process.stdout.write('\n')
+      if (typeof response !== 'string' || !/\n$/.test(response)) {
+        process.stdout.write('\n')
+      }
     }
 
     return Promise.resolve()

@@ -281,3 +281,10 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+/** Streaming output from jobs */
+@mixin StreamingOutput {
+  .repl-result-like[data-stream] {
+    @content;
+  }
+}

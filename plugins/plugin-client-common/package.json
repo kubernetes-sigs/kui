@@ -25,6 +25,7 @@
     "@patternfly/react-styles": "4.7.29",
     "@patternfly/react-table": "4.20.15",
     "@supercharge/promise-pool": "1.6.0",
+    "anser": "2.0.1",
     "monaco-editor": "0.22.2",
     "monaco-editor-webpack-plugin": "3.0.0",
     "react-markdown": "5.0.3",
