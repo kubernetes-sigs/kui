@@ -89,6 +89,9 @@ export interface CommandOptions extends CapabilityRequirements {
   plugin?: string
   okOptions?: string[]
 
+  /** controller wants to handle redirect */
+  noCoreRedirect?: boolean
+
   /** model to view transformer */
   viewTransformer?: ViewTransformer<KResponse, ParsedOptions>
 

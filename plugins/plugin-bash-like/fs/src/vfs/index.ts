@@ -100,7 +100,7 @@ export interface VFS {
   fslice(filename: string, offset: number, length: number): Promise<string>
 
   /** write data to file */
-  fwrite(opts: Pick<Arguments, 'REPL'>, fullpath: string, data: string | Buffer): Promise<boolean>
+  fwrite(opts: Pick<Arguments, 'REPL'>, fullpath: string, data: string | Buffer): Promise<void>
 
   /** Create a directory/bucket */
   mkdir(

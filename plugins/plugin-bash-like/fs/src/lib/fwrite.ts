@@ -21,7 +21,7 @@ export async function _fwrite(_fullpath: string, data: string | Buffer) {
   const { mkdir, writeFile } = await import('fs')
   const fullpath = _fullpath.replace(/"/g, '') // trim double quotes
 
-  return new Promise<boolean>((resolve, reject) => {
+  await new Promise<boolean>((resolve, reject) => {
     const write = (path: string, data: string | Buffer) =>
       writeFile(path, data, err => {
         if (err) {
@@ -57,7 +57,8 @@ const fwrite = async ({ argvNoOptions, execOptions }: Arguments) => {
   const fullpath = argvNoOptions[1]
   const data = execOptions.data as string | Buffer
 
-  return _fwrite(fullpath, data)
+  await _fwrite(fullpath, data)
+  return true
 }
 
 async function fwriteTemp(args: Arguments): Promise<RawResponse<string>> {

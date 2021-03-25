@@ -330,17 +330,18 @@ class InProcessExecutor implements Executor {
     // pipeline splits, e.g. if command='a b|c', the pipeStages=[['a','b'],'c']
     const pipeStages = splitIntoPipeStages(command)
 
-    const originalCommand = command // remember the original command for history
-    if (!execOptions.noCoreRedirect && pipeStages.redirect) {
-      // If core handles redirect, argv and command shouldn't contain the redirect part;
-      // otherwise, controllers may use argv and command incorrectly e.g. kuiecho hi > file will print "hi > file" instead of "hi"
-      argv.splice(argv.indexOf('>'), 2)
-      command = command.replace(new RegExp(`\\s*>\\s*${pipeStages.redirect}\\s*$`), '')
-    }
-
     // debug('command', commandUntrimmed)
     const evaluator = await lookupCommandEvaluator<T, O>(argv, execOptions)
     if (isSuccessfulCommandResolution(evaluator)) {
+      // If core handles redirect, argv and command shouldn't contain the redirect part;
+      // otherwise, controllers may use argv and command incorrectly e.g. kuiecho hi > file will print "hi > file" instead of "hi"
+      const noCoreRedirect = execOptions.noCoreRedirect || (evaluator.options && evaluator.options.noCoreRedirect)
+      const originalCommand = command
+      if (!noCoreRedirect && pipeStages.redirect) {
+        argv.splice(argv.indexOf('>'), 2)
+        command = command.replace(new RegExp(`\\s*>\\s*${pipeStages.redirect}\\s*$`), '')
+      }
+
       const { argvNoOptions, parsedOptions } = this.parseOptions(argv, evaluator)
 
       if (evaluator.options && evaluator.options.requiresLocal && !hasLocalAccess()) {
@@ -486,6 +487,14 @@ class InProcessExecutor implements Executor {
         }
       }
 
+      if (!noCoreRedirect && pipeStages.redirect) {
+        try {
+          await redirectResponse(response, pipeStages.redirect)
+        } catch (err) {
+          response = err
+        }
+      }
+
       this.emitCompletionEvent(
         response || true,
         {
@@ -505,12 +514,7 @@ class InProcessExecutor implements Executor {
         historyIdx || -1
       )
 
-      if (pipeStages.redirect) {
-        await redirectResponse(response, pipeStages.redirect, execOptions)
-        return response
-      } else {
-        return response
-      }
+      return response
     } else {
       const err = new Error('Command not found') as CommandEvaluationError
       err.code = 404 // http not acceptable
@@ -721,24 +725,21 @@ export function getImpl(tab: Tab): REPL {
  * redirect a string response
  *
  */
-async function redirectResponse<T extends KResponse>(
-  _response: MixedResponse | T | Promise<T>,
-  filepath: string,
-  execOptions: ExecOptions
-) {
-  if (!execOptions.noCoreRedirect) {
-    const response = await _response
+async function redirectResponse<T extends KResponse>(_response: MixedResponse | T | Promise<T>, filepath: string) {
+  const response = await _response
 
-    if (typeof response === 'string' || isXtermResponse(response)) {
+  if (typeof response === 'string' || isXtermResponse(response)) {
+    try {
       await rexec<{ data: string }>(`vfs fwrite ${encodeComponent(expandHomeDir(filepath))}`, {
         data: isXtermResponse(response) ? response.rows.map(i => i.map(j => j.innerText)).join(' ') : response
       })
 
       debug(`redirected response to ${filepath}`)
-    } else {
-      throw new Error('Kui only supports redirecting a string or xterm response')
+    } catch (err) {
+      console.error(err)
+      throw new Error(`Error Redirect: ${err.message}`)
     }
   } else {
-    debug('let controller handle redirect')
+    throw new Error('Error: invalid response \n redirect only supports string or xterm responses')
   }
 }

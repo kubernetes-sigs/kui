@@ -134,5 +134,5 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
  */
 export default async (commandTree: Registrar) => {
   commandTree.listen('/commentary', addComment, { usage, outputOnly: true })
-  commandTree.listen('/#', addComment, { usage, outputOnly: true })
+  commandTree.listen('/#', addComment, { usage, outputOnly: true, noCoreRedirect: true })
 }

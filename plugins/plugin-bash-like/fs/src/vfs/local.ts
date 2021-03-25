@@ -71,11 +71,7 @@ class LocalVFS implements VFS {
   }
 
   /** Write data to a files */
-  public async fwrite(
-    opts: Pick<Arguments, 'REPL'>,
-    filepath: string,
-    data: string | Buffer
-  ): Promise<boolean> {
+  public async fwrite(opts: Pick<Arguments, 'REPL'>, filepath: string, data: string | Buffer): Promise<void> {
     return _fwrite(filepath, data)
   }
 
