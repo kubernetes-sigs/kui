@@ -23,15 +23,19 @@ interface Options extends ParsedOptions {
 }
 
 export default function(registrar: Registrar) {
-  registrar.listen<string, Options>('/kuiPipeStageParsing', args => {
-    const { stage = 0, prefix, redirect } = args.parsedOptions
+  registrar.listen<string, Options>(
+    '/kuiPipeStageParsing',
+    args => {
+      const { stage = 0, prefix, redirect } = args.parsedOptions
 
-    if (prefix) {
-      return args.pipeStages.prefix || 'nope'
-    } else if (redirect) {
-      return args.pipeStages.redirect || 'nope'
-    } else {
-      return args.pipeStages.stages[stage].join(' ')
-    }
-  })
+      if (prefix) {
+        return args.pipeStages.prefix || 'nope'
+      } else if (redirect) {
+        return args.pipeStages.redirect || 'nope'
+      } else {
+        return args.pipeStages.stages[stage].join(' ')
+      }
+    },
+    { noCoreRedirect: true }
+  )
 }

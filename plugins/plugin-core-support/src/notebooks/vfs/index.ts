@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import TrieSearch from 'trie-search'
 import micromatch from 'micromatch'
 import { basename, dirname, join } from './posix'
@@ -242,13 +243,8 @@ export class NotebookVFS implements VFS {
     }
   }
 
-  public async fwrite(
-    opts: Pick<Arguments, 'REPL'>,
-    filepath: string,
-    data: string | Buffer
-  ) {
-    console.error('Unsupported operation')
-    return false
+  public async fwrite(opts: Pick<Arguments, 'REPL'>, filepath: string, data: string | Buffer) {
+    throw new Error('Unsupported operation')
   }
 
   /** Fetch content slice */
