@@ -31,7 +31,6 @@ import { isHTML, isPromise } from '../util/types'
 const log = console.log
 const error = console.error
 
-const verbose = process.argv.find(_ => _ === '-v')
 const colorAlways = process.argv.find(_ => _ === '--color=always')
 const neverColor = process.argv.find(_ => _ === '--no-color' || _ === '--no-colors')
 const rawOutput = process.argv.find(_ => _ === '--raw-output') // don't try to pretty-print the JSON; c.f. jq's --raw-output
@@ -347,12 +346,6 @@ export const print = (
   if (ok === 'error') {
     colorFn = colors.red
   }
-  if (verbose && typeof msg === 'string') {
-    debug('printing raw JSON, due to -v')
-    prettyJSON(msg, logger)
-    return
-  }
-
   if (msg && !graphicalShellIsOpen) {
     try {
       if (msg === true) {
