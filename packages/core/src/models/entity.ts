@@ -16,6 +16,7 @@
 
 import { isHTML } from '../util/types'
 import { Abortable } from '../core/jobs/job'
+import { isHeadless } from '../core/capabilities'
 import { Table, Row, isTable } from '../webapp/models/table'
 import { ToolbarText } from '../webapp/views/toolbar-text'
 import { UsageModel } from '../core/usage-error'
@@ -25,7 +26,7 @@ import { NavResponse, isNavResponse } from './NavResponse'
 import { CommentaryResponse } from './CommentaryResponse'
 import RadioTable from './RadioTable'
 import Presentation from '../webapp/views/presentation'
-import { ReactNode, isValidElement } from 'react'
+import { ReactNode } from 'react'
 import TabLayoutModificationResponse from './TabLayoutModificationResponse'
 import { isXtermResponse, XtermResponse } from './XtermResponse'
 
@@ -138,8 +139,13 @@ export function isMarkdownResponse(entity: Entity): entity is MarkdownResponse {
 export type ReactResponse = { react: ReactNode }
 
 export function isReactResponse(entity: Entity): entity is ReactResponse {
-  const response = entity as ReactResponse
-  return response && response.react && isValidElement(response.react)
+  if (isHeadless()) {
+    return false
+  } else {
+    const { isValidElement } = require('react')
+    const response = entity as ReactResponse
+    return response && response.react && isValidElement(response.react)
+  }
 }
 
 /**
