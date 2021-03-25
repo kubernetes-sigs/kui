@@ -185,6 +185,12 @@ $ScriptDir = Split-Path $script:MyInvocation.MyCommand.Path
 $argv = "kubectl " + $args
 Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-kui.ps1)
 
+        # copy in optional custom launcher from custom clients
+        if [ -f "$KUI_LAUNCHER" ]; then
+            echo "Copying in custom launcher"
+            cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH"
+        fi
+
         #
         # deal with win32 packaging
         #
@@ -268,6 +274,12 @@ else
 fi
 ' >> kubectl-kui)
 
+            # copy in optional custom launcher from custom clients
+            if [ -f "$KUI_LAUNCHER" ]; then
+                echo "Copying in custom launcher"
+                cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH"
+            fi
+
             echo "TGZ build for darwin"
             tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH.tar.bz2" "${CLIENT_NAME}-darwin-$ARCH" &
             MAC_TAR_PID=$!
@@ -304,6 +316,12 @@ function linux {
 export KUI_POPUP_WINDOW_RESIZE=true
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 "$SCRIPTDIR"/Kui kubectl $@ &' >> kubectl-kui)
+
+        # copy in optional custom launcher from custom clients
+        if [ -f "$KUI_LAUNCHER" ]; then
+            echo "Copying in custom launcher"
+            cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH"
+        fi
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
