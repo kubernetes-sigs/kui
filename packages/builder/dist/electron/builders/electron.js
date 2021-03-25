@@ -123,7 +123,7 @@ const args = {
   ignore: process.env.IGNORE,
 
   // default settings
-  asar: platform !== 'win32', // node-pty loading native modules versus asar :(
+  asar: !process.env.NO_ASAR && platform !== 'win32', // node-pty loading native modules versus asar :(
   overwrite: true,
 
   // and finally, this is the reason we are here:
