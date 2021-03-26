@@ -18,7 +18,17 @@ import Debug from 'debug'
 import { join } from 'path'
 import needle, { BodyData } from 'needle'
 import { DirEntry } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, ExecOptions, REPL, inBrowser, hasProxy, encodeComponent, i18n } from '@kui-shell/core'
+import {
+  Arguments,
+  CodedError,
+  ExecOptions,
+  REPL,
+  isHeadless,
+  inBrowser,
+  hasProxy,
+  encodeComponent,
+  i18n
+} from '@kui-shell/core'
 
 import JSONStream from './json'
 import getProxyState from '../../controller/client/proxy'
@@ -28,7 +38,7 @@ const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
 
 /** Maximum number of times to retry on ECONNREFUSED */
-const MAX_ECONNREFUSED_RETRIES = 10
+const MAX_ECONNREFUSED_RETRIES = isHeadless ? 0 : 10
 
 const httpScheme = /http(s)?:\/\//
 const openshiftScheme = /^openshift:\/\//
