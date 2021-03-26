@@ -112,7 +112,7 @@ export const init = async (): Promise<boolean> => {
         prescan = unify(prescan, userInstalledPrescan)
         // debug('prescan', prescan)
       }
-      debug('user-installed prescan loaded', prescan)
+      debug('user-installed prescan loaded')
     } catch (err) {
       console.error('error loading user-installed prescan', err)
     }
