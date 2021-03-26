@@ -107,6 +107,14 @@ export const assertHasProxy = () => {
 }
 
 /**
+ * Are we the Kui proxy?
+ *
+ */
+export const inProxy = () => {
+  return process.env.KUI_REPL_MODE !== undefined
+}
+
+/**
  * Yes, we are running in a sandbox
  *
  */
