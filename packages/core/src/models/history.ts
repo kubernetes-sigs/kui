@@ -16,6 +16,7 @@
 
 import Debug from 'debug'
 import store from './store'
+import { isHeadless } from '../core/capabilities'
 
 /** Legacy localStorage key for long-time Kui users */
 const legacyKey = 'openwhisk.history'
@@ -49,7 +50,7 @@ export class HistoryModel {
   // doesn't seem to allow for this, by default.
   // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
   constructor(private readonly uuid: string) {
-    let lines = typeof window !== 'undefined' && this.restore()
+    let lines = typeof window !== 'undefined' && !isHeadless() ? this.restore() : undefined
     if (!lines && typeof window !== 'undefined') {
       const raw = store().getItem(legacyKey)
       lines = JSON.parse(raw)
