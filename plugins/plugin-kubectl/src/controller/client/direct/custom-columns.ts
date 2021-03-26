@@ -134,7 +134,7 @@ export function toKuiTableForUpdateFromCustomColumns(
 }
 
 /** See ./get.ts; it will send full table (as KubeItems) here for parsing */
-export default function toKuiTable(
+export function toKuiTableFromCustomColumns(
   list: KubeResource | KubeItems,
   args: Pick<Arguments<KubeOptions>, 'parsedOptions'>,
   drilldownCommand: string,
@@ -158,3 +158,5 @@ export default function toKuiTable(
     resourceVersion: list.metadata.resourceVersion
   })
 }
+
+export default toKuiTableFromCustomColumns

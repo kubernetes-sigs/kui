@@ -20,7 +20,6 @@ import { Abortable, Arguments, Row, Suspendable, Table, Watchable, Watcher, Watc
 import { Group, isObjectInGroup } from './group'
 import columnsOf from './columns'
 import URLFormatter from './url'
-import { toKuiTableForUpdateFromCustomColumns } from './custom-columns'
 import { headersForPlainRequest, headersForTableRequest } from './headers'
 
 import { FinalState } from '../../../lib/model/states'
@@ -292,7 +291,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   }
 
   /** This will be called whenever the streamer has data for us. */
-  private onData(update: WatchUpdate) {
+  private async onData(update: WatchUpdate) {
     if (!update.object.columnDefinitions && this.bodyColumnDefinitions) {
       update.object.columnDefinitions = this.bodyColumnDefinitions
     }
@@ -317,7 +316,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
     }
 
     const table = custo
-      ? toKuiTableForUpdateFromCustomColumns(
+      ? (await import('./custom-columns')).toKuiTableForUpdateFromCustomColumns(
           (update.object as any) as KubeResource,
           this.args,
           this.drilldownCommand,

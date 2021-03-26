@@ -37,7 +37,6 @@ import {
 import columnsOf from './columns'
 import { urlFormatterFor } from './url'
 import handleErrors, { tryParseAsStatus } from './errors'
-import toKuiTableFromCustomColumns from './custom-columns'
 import { headersForPlainRequest, headersForTableRequest } from './headers'
 import { isStatus, KubeItems, MetaTable } from '../../../lib/model/resource'
 
@@ -87,7 +86,13 @@ export async function getTable(
       }, undefined)
 
       list.isKubeResource = true
-      const table = toKuiTableFromCustomColumns(list, args, drilldownCommand, kind, fmt)
+      const table = (await import('./custom-columns')).toKuiTableFromCustomColumns(
+        list,
+        args,
+        drilldownCommand,
+        kind,
+        fmt
+      )
       return !isWatchRequest(args) ? table : makeWatchable(drilldownCommand, args, kind, group, table, formatUrl)
     } else {
       // assemble the non-errors into a single table
