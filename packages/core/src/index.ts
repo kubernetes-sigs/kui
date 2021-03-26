@@ -22,6 +22,7 @@ export {
   inElectron,
   isHeadless,
   inSandbox,
+  inProxy,
   assertInSandbox,
   assertLocalAccess,
   assertHasProxy,
