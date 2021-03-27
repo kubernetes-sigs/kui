@@ -35,6 +35,7 @@ import {
 
 import Card from '../spi/Card'
 import KuiContext from './context'
+import CommonClientProps from './props/Common'
 import KuiConfiguration from './KuiConfiguration'
 import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
 import { TabContainer, Loading, Alert } from '../..'
@@ -53,34 +54,26 @@ const defaultThemeProperties: ThemeProperties = {
   topTabNames: 'fixed'
 }
 
-export type Props = Partial<KuiConfiguration> & {
-  /** no Kui bootstrap needed? */
-  noBootstrap?: boolean
+export type Props = Partial<KuiConfiguration> &
+  CommonClientProps & {
+    /** no Kui bootstrap needed? */
+    noBootstrap?: boolean
 
-  /** operate in bottom Input mode? rather than as a conventional Input/Output terminal */
-  bottomInput?: true | React.ReactNode
+    /** operate in bottom Input mode? rather than as a conventional Input/Output terminal */
+    bottomInput?: true | React.ReactNode
 
-  /** Elements to place between TabContainer and StatusStripe */
-  toplevel?: React.ReactNode | React.ReactNode[]
+    /** Elements to place between TabContainer and StatusStripe */
+    toplevel?: React.ReactNode | React.ReactNode[]
 
-  /** Operate in popup mode? */
-  isPopup?: boolean
+    /** Operate in popup mode? */
+    isPopup?: boolean
 
-  /** If in popup mode, execute the given command line */
-  commandLine?: string[]
+    /** do not echo the command? */
+    quietExecCommand?: boolean
 
-  /** do not echo the command? */
-  quietExecCommand?: boolean
-
-  /** initial tab title */
-  initialTabTitle?: string
-
-  /** do not show <?> help widget */
-  noHelp?: boolean
-
-  /** do not show Settings/Themes widget */
-  noSettings?: boolean
-}
+    /** initial tab title */
+    initialTabTitle?: string
+  }
 
 type State = KuiConfiguration & {
   userOverrides?: KuiConfiguration
@@ -311,7 +304,9 @@ export class Kui extends React.PureComponent<Props, State> {
       return (
         <KuiContext.Provider value={this.state}>
           <React.Suspense fallback={<div />}>
-            <Popup commandLine={this.state.commandLine}>{this.props.children}</Popup>
+            <Popup commandLine={this.state.commandLine} noHelp={this.props.noHelp} noSettings={this.props.noSettings}>
+              {this.props.children}
+            </Popup>
           </React.Suspense>
         </KuiContext.Provider>
       )
