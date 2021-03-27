@@ -352,6 +352,21 @@ class InProcessExecutor implements Executor {
         return err
       }
 
+      // if we don't have a head (yet), but this command requires one,
+      // then ask for a head and try again. note that we ignore this
+      // needsUI constraint if the user is asking for help
+      if (
+        isHeadless() &&
+        !parsedOptions.cli &&
+        ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) || (evaluator.options && evaluator.options.needsUI))
+      ) {
+        import('../main/headless').then(({ createWindow }) =>
+          createWindow(argv, evaluator.options.fullscreen, evaluator.options)
+        )
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (true as any) as T
+      }
+
       const execUUID = execOptions.execUUID || uuid()
       execOptions.execUUID = execUUID
       const evaluatorOptions = evaluator.options
