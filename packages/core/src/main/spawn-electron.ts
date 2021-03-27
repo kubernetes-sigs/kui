@@ -559,6 +559,8 @@ export async function initElectron(
       // DEBUG=* or DEBUG=main
       const env = Object.assign({}, process.env, windowOptions)
       delete env.KUI_HEADLESS
+      delete env.ELECTRON_RUN_AS_NODE
+
       const child = spawn(Electron.toString(), args, {
         stdio: debug.enabled ? 'inherit' : 'ignore',
         env,
