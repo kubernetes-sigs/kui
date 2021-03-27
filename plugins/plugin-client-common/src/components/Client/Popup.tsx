@@ -20,13 +20,13 @@
 import React from 'react'
 import { eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
 
+import CommonClientProps from './props/Common'
 import InputStripe from '../Client/InputStripe'
 import { ContextWidgets, StatusStripe, TabContent, TabModel } from '../..'
 
 import '../../../web/css/static/Popup.scss'
 
-interface Props {
-  commandLine: string[]
+type Props = CommonClientProps & {
   children?: React.ReactNode
 }
 
@@ -90,7 +90,7 @@ export default class Popup extends React.PureComponent<Props, State> {
           state={this.state.model.state}
           onTabReady={this.onTabReady.bind(this)}
         ></TabContent>
-        <StatusStripe>
+        <StatusStripe noHelp={this.props.noHelp} noSettings={this.props.noSettings}>
           <ContextWidgets className="kui--input-stripe-in-status-stripe">
             {this.state.tab && (
               <InputStripe
