@@ -581,13 +581,25 @@ export async function initElectron(
 
   // deal with multiple processes
   if (!process.env.RUNNING_SHELL_TEST) {
+    const widthFromCaller = subwindowPrefs && subwindowPrefs.width
+    const heightFromCaller = subwindowPrefs && subwindowPrefs.height
+
     app.on('second-instance', (event: Electron.Event, commandLine: string[]) => {
       // Someone tried to run a second instance, open a new window
       // to handle it
+
       const { argv, subwindowPlease, subwindowPrefs } = getCommand(
         commandLine,
         async () => (await import('electron')).screen
       )
+
+      if (widthFromCaller) {
+        subwindowPrefs.width = widthFromCaller
+      }
+      if (heightFromCaller) {
+        subwindowPrefs.height = heightFromCaller
+      }
+
       debug('opening window for second instance', commandLine, subwindowPlease, subwindowPrefs)
       createWindow(true, argv, subwindowPlease, subwindowPrefs)
     })
