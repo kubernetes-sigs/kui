@@ -68,8 +68,14 @@ const colorMap: Record<string, ColorFunction> = {
 }
 
 let graphicalShellIsOpen = false
+/** @return whether the state has changed as a result of this call */
 export const setGraphicalShellIsOpen = () => {
-  graphicalShellIsOpen = true
+  if (!graphicalShellIsOpen) {
+    graphicalShellIsOpen = true
+    return true
+  } else {
+    return false
+  }
 }
 
 /**

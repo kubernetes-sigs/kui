@@ -177,7 +177,10 @@ export const createWindow = async (argv: string[], subwindowPlease: boolean, sub
   try {
     graphicalShellIsOpen = true
     const { setGraphicalShellIsOpen } = await import('./headless-pretty-print')
-    setGraphicalShellIsOpen()
+    if (!setGraphicalShellIsOpen()) {
+      debug('probably a bug somewhere; detected loop in opening window from headless mode')
+      return
+    }
 
     const commandLine = argv
     if (commandContext) {
