@@ -77,7 +77,7 @@ export default async (prescan: PrescanModel) => {
         const registrationRef =
           module.path.charAt(0) === '/'
             ? await import(/* webpackIgnore: true */ module.path)
-            : isHeadless()
+            : isHeadless() && !process.env.KUI_HEADLESS_WEBPACK
             ? await import(/* webpackIgnore: true */ mainPath(module.path))
             : module.route === 'client'
             ? require(/* webpackMode: "lazy" */ '@kui-shell/client/' + 'mdist/preload')
@@ -120,7 +120,7 @@ export default async (prescan: PrescanModel) => {
             const registrationRef =
               module.path.charAt(0) === '/'
                 ? await import(/* webpackIgnore: true */ module.path)
-                : isHeadless()
+                : isHeadless() && !process.env.KUI_HEADLESS_WEBPACK
                 ? await import(/* webpackIgnore: true */ mainPath(module.path))
                 : module.route === 'client'
                 ? require(/* webpackMode: "lazy" */ '@kui-shell/client/' + 'mdist/preload')

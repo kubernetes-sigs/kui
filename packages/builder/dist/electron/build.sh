@@ -37,6 +37,7 @@ CORE_HOME="$STAGING"/node_modules/@kui-shell/core
 THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
 export BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME"/dist/electron
+export HEADLESS_BUILDDIR="$STAGING"/dist/headless
 
 #
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
@@ -191,6 +192,11 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-ku
             cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH"
         fi
 
+        # copy in the headless build
+        if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
+            cp -a "$HEADLESS_BUILDDIR" "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH"
+        fi
+
         #
         # deal with win32 packaging
         #
@@ -280,6 +286,11 @@ fi
                 cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH"
             fi
 
+            # copy in the headless build
+            if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
+                cp -a "$HEADLESS_BUILDDIR" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources"
+            fi
+
             echo "TGZ build for darwin"
             tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH.tar.bz2" "${CLIENT_NAME}-darwin-$ARCH" &
             MAC_TAR_PID=$!
@@ -321,6 +332,11 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
         if [ -f "$KUI_LAUNCHER" ]; then
             echo "Copying in custom launcher"
             cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH"
+        fi
+
+        # copy in the headless build
+        if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
+            cp -a "$HEADLESS_BUILDDIR" "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH"
         fi
 
         if [ -z "$NO_INSTALLER" ]; then
@@ -402,7 +418,16 @@ function initWebpack {
 function webpack {
     pushd "$STAGING" > /dev/null
     rm -f "$BUILDDIR"/*.js*
-    TARGET=electron-renderer MODE=${MODE-production} CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli
+
+    if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
+        echo "Building headless bundles via webpack"
+        MODE=${MODE-production} CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js --mode=${MODE-production} &
+    fi
+
+    # echo "Building electron bundles via webpack"                                                                     
+    TARGET=electron-renderer MODE=${MODE-production} CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode=${MODE-production}
+
+    wait
     popd > /dev/null
 }
 

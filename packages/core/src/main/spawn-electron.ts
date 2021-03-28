@@ -18,7 +18,14 @@ import Debug from 'debug'
 const debug = Debug('main/spawn-electron')
 debug('loading')
 
-import { BrowserWindow, BrowserWindowConstructorOptions, Event, IpcMainEvent, Rectangle, Screen } from 'electron'
+import {
+  BrowserWindow as BrowserWindowType,
+  BrowserWindowConstructorOptions,
+  Event,
+  IpcMainEvent,
+  Rectangle,
+  Screen
+} from 'electron'
 
 import windowDefaults, { popupWindowDefaults } from '../webapp/defaults'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
@@ -51,11 +58,15 @@ interface App extends EventEmitter {
  */
 let app: App
 
+type BW = {
+  getAllWindows: () => any[]
+}
+
 /**
  * Screen coordinates for regular window
  *
  */
-function getPositionForRegularWindow(screen: Screen) {
+function getPositionForRegularWindow({ screen, BrowserWindow }: { screen: Screen; BrowserWindow: BW }) {
   if (screen) {
     const nWindows = BrowserWindow.getAllWindows().length
     const { bounds } = screen.getPrimaryDisplay()
@@ -71,7 +82,7 @@ function getPositionForRegularWindow(screen: Screen) {
  * Screen coordinates for popup window
  *
  */
-function getPositionForPopup(screen: Screen) {
+function getPositionForPopup({ screen, BrowserWindow }: { screen: Screen; BrowserWindow: BW }) {
   if (screen) {
     const nWindows = BrowserWindow.getAllWindows().length
     const { bounds } = screen.getPrimaryDisplay()
@@ -145,10 +156,11 @@ export function createWindow(
       '@kui-shell/client/config.d/icons.json'
     )
 
+    const { screen, BrowserWindow } = await import('electron')
     const position =
       subwindowPrefs && subwindowPrefs.position
         ? await subwindowPrefs.position()
-        : getPositionForRegularWindow((await import('electron')).screen)
+        : getPositionForRegularWindow({ screen, BrowserWindow })
     const opts: BrowserWindowConstructorOptions = Object.assign(
       {
         title: productName,
@@ -192,7 +204,7 @@ export function createWindow(
       opts.y = parseInt(process.env.KUI_POSITION_Y, 10)
     }
     debug('createWindow::new BrowserWindow')
-    interface KuiBrowserWindow extends BrowserWindow {
+    interface KuiBrowserWindow extends BrowserWindowType {
       executeThisArgvPlease?: string[]
       subwindow?: ISubwindowPrefs
     }
@@ -209,7 +221,7 @@ export function createWindow(
     // remember certain classes of windows, so we don't have multiple
     // open; e.g. one for docs, one for videos...
     interface Win {
-      window?: BrowserWindow
+      window?: BrowserWindowType
       url?: string
     }
     const fixedWindows: Record<string, Win> = {}
@@ -467,7 +479,7 @@ interface Command {
   subwindowPlease: boolean
   subwindowPrefs: ISubwindowPrefs
 }
-export const getCommand = (argv: string[], screen: () => Promise<Screen>): Command => {
+export const getCommand = (argv: string[], screen: () => Promise<{ screen: Screen; BrowserWindow: BW }>): Command => {
   debug('getCommand', argv)
   const dashDash = argv.lastIndexOf('--')
   argv = dashDash === -1 ? argv.slice(1) : argv.slice(dashDash + 1)
@@ -525,22 +537,16 @@ export async function initElectron(
 ) {
   debug('initElectron', command, subwindowPlease, subwindowPrefs)
 
-  if (!app) {
-    debug('loading electron')
-    const Electron = await import('electron')
-    app = Electron.app
-    if (app) {
-      app.allowRendererProcessReuse = false
-    }
-
-    if (!app) {
+  if (process.env.KUI_HEADLESS) {
+    if (!process.env.KUI_ELECTRON_HOME) {
+      throw new Error('Unable to locate graphics components')
+    } else {
       // then we're still in pure headless mode; we'll need to fork ourselves to spawn electron
-      const path = await import('path')
-      const { spawn } = await import('child_process')
-      const appHome = path.resolve(path.join(__dirname, 'main'))
+      const childProcess = import('child_process')
+      const appHome = '.'
 
       const args = [appHome, '--', ...command]
-      debug('spawning electron', appHome, args)
+      debug('spawning electron', process.env.KUI_ELECTRON_HOME, args)
 
       // pass through any window options, originating from the command's usage model, on to the subprocess
       const windowOptions: Record<string, string> = {}
@@ -561,7 +567,7 @@ export async function initElectron(
       delete env.KUI_HEADLESS
       delete env.ELECTRON_RUN_AS_NODE
 
-      const child = spawn(Electron.toString(), args, {
+      const child = (await childProcess).spawn(process.env.KUI_ELECTRON_HOME, args, {
         stdio: debug.enabled ? 'inherit' : 'ignore',
         env,
         detached: true // needed on windows to separate this process into its own process group
@@ -576,8 +582,13 @@ export async function initElectron(
 
       debug('spawning electron done, this process will soon exit')
       process.exit(0)
-    } else {
-      debug('loading electron done')
+    }
+  } else {
+    debug('loading electron')
+    const Electron = await import('electron')
+    app = Electron.app
+    if (app) {
+      app.allowRendererProcessReuse = false
     }
   }
 
@@ -590,10 +601,7 @@ export async function initElectron(
       // Someone tried to run a second instance, open a new window
       // to handle it
 
-      const { argv, subwindowPlease, subwindowPrefs } = getCommand(
-        commandLine,
-        async () => (await import('electron')).screen
-      )
+      const { argv, subwindowPlease, subwindowPrefs } = getCommand(commandLine, async () => import('electron'))
 
       if (widthFromCaller) {
         subwindowPrefs.width = widthFromCaller

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
+import { isHeadless, inProxy } from '@kui-shell/core'
+
 /**
  * Register the welcome notebook
  *
  */
 export default async () => {
-  const { notebookVFS } = await import('@kui-shell/plugin-core-support')
-  notebookVFS.cp(
-    undefined,
-    [
-      'plugin://plugin-client-common/notebooks/welcome.json',
-      'plugin://plugin-client-common/notebooks/settings.json',
-      'plugin://plugin-client-common/notebooks/make-notebook.json'
-    ],
-    '/kui'
-  )
+  if (!isHeadless() || inProxy()) {
+    const { notebookVFS } = await import('@kui-shell/plugin-core-support')
+    notebookVFS.cp(
+      undefined,
+      [
+        'plugin://plugin-client-common/notebooks/welcome.json',
+        'plugin://plugin-client-common/notebooks/settings.json',
+        'plugin://plugin-client-common/notebooks/make-notebook.json'
+      ],
+      '/kui'
+    )
+  }
 }

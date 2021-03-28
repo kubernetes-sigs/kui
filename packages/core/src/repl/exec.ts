@@ -403,7 +403,7 @@ class InProcessExecutor implements Executor {
         return
       }
 
-      const historyIdx = this.pushHistory(originalCommand, execOptions, tab)
+      const historyIdx = isHeadless() ? -1 : this.pushHistory(originalCommand, execOptions, tab)
 
       try {
         enforceUsage(argv, evaluator, execOptions)

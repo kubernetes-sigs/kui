@@ -64,7 +64,17 @@ export KUI_BUILDER_HOME="$BUILDER_HOME"
 function webpack {
     pushd "$STAGING" > /dev/null
     rm -f "$BUILDDIR"/*.js*
+
+    if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
+        echo "Building headless bundles via webpack"
+        npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js  --mode=production &
+    fi
+
+    echo "Building electron bundles via webpack"
     npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/webpack.config.js --mode production
+
+    wait
+
     popd > /dev/null
 }
 
