@@ -42,10 +42,7 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
     // then spawn the electron graphics
     debug('shortcut to graphics')
     const { getCommand, initElectron } = await import('./spawn-electron')
-    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(
-      argv,
-      async () => (await import('electron')).screen
-    )
+    const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv, async () => import('electron'))
     initElectron(
       strippedArgv,
       { isRunningHeadless },

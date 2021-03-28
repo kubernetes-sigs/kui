@@ -18,7 +18,7 @@ import Debug from 'debug'
 const debug = Debug('plugins/core-support/preload')
 debug('loading')
 
-import { isHeadless, PreloadRegistration } from '@kui-shell/core'
+import { isHeadless, inProxy, PreloadRegistration } from '@kui-shell/core'
 
 /**
  * This is the module
@@ -31,7 +31,10 @@ const registration: PreloadRegistration = () => {
     asyncs.push(import('./lib/cmds/zoom').then(_ => _.preload()))
   }
 
-  asyncs.push(import('./notebooks/vfs').then(_ => _.preload()))
+  if (!isHeadless() || inProxy()) {
+    asyncs.push(import('./notebooks/vfs').then(_ => _.preload()))
+  }
+
   return Promise.all(asyncs)
 }
 

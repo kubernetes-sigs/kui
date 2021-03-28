@@ -1,8 +1,81 @@
-#!/usr/bin/env node
+#!/usr/bin/env sh
+# -*- mode: shell-script
 
-// get node off the argv
-process.argv.shift()
+# export KUI_HEADLESS=true
+export NODE_NO_WARNINGS=1
+# export ELECTRON_RUN_AS_NODE=true
+export NODE_OPTIONS="--no-warnings"
 
-process.env.KUI_HEADLESS = true
+# This tells the core Kui plugin resolver that we are using webpack to
+# build our headless bundles, not the old headless hacks
+# export KUI_HEADLESS_WEBPACK=true
 
-require('@kui-shell/core').main(process.argv)
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)                                                              
+
+if [ -f ./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
+    # development mode
+    NODE=./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron
+    HEADLESS=./dist/headless
+elif [ -f /Applications/Kui.app/Contents/MacOS/Kui ]; then
+    # Kui installed in /Applications on macOS
+    BASE=/Applications/Kui.app
+    NODE="$BASE/Contents/MacOS/Kui"
+    HEADLESS=$BASE/Contents/Resources/headless
+elif [ -f ./Kui.app/Contents/MacOS/Kui ]; then
+    # Kui installed in CWD on macOS
+    BASE="$PWD/Kui.app"
+    NODE="$BASE/Contents/MacOS/Kui"
+    HEADLESS="$BASE/Contents/Resources/headless"
+elif [ -f /usr/local/bin/Kui/Kui ]; then
+    # Kui installed in /usr/local/bin on Linux or Windows
+    BASE=/usr/local/bin/Kui
+    NODE="$BASE/Kui"
+    HEADLESS="$BASE/headless"
+elif [ -f ./Kui/Kui ]; then
+    # Kui installed in CWD on Linux or Windows
+    BASE="$PWD/Kui"
+    NODE="$BASE/Kui"
+    HEADLESS="$BASE/headless"
+elif [ -f ./Kui ]; then
+    # Kui installed in CWD on Linux or Windows (variant)
+    BASE="$PWD"
+    NODE="$BASE/Kui"
+    HEADLESS="$BASE/headless"
+elif [ -f "$SCRIPTDIR/Kui.app/Contents/MacOS/Kui" ]; then
+    # Kui installed in SCRIPTDIR on macOS
+    BASE="$SCRIPTDIR/Kui.app"
+    NODE="$BASE/Contents/MacOS/Kui"
+    HEADLESS="$BASE/Contents/Resources/headless"
+elif [ -f "$SCRIPTDIR/Kui/Kui" ]; then
+    # Kui installed in SCRIPTDIR on Linux or Windows
+    BASE="$SCRIPTDIR/Kui"
+    NODE="$BASE/Kui"
+    HEADLESS="$BASE/headless"
+elif [ -f "$SCRIPTDIR/Kui" ]; then
+    # Kui installed in SCRIPTDIR on Linux or Windows (variant)
+    BASE="$SCRIPTDIR"
+    NODE="$BASE/Kui"
+    HEADLESS="$BASE/headless"
+elif [ -f "$KUI_HOME/Kui.app/Contents/MacOS/Kui" ]; then
+    # Kui installed in KUI_HOME on macOS
+    BASE="$KUI_HOME/Kui.app"
+    NODE="$BASE/Contents/MacOS/Kui"
+    HEADLESS="$BASE/Contents/Resources/headless"
+elif [ -f "$KUI_HOME/Kui" ]; then
+    # Kui installed in KUI_HOME on Linux or Windows
+    BASE="$KUI_HOME"
+    NODE="$BASE/Kui"
+    HEADLESS="$BASE/headless"
+else
+    echo "Error: Could not find Kui. Try setting KUI_HOME=/path/to/Kui"
+    exit 1
+fi
+
+# This points the headless->electron launcher to our Electron
+export KUI_ELECTRON_HOME="${KUI_ELECTRON_HOME-$NODE}"
+
+# for when we switch over to webpack headless builds:
+# exec "$NODE" -e 'require("'$HEADLESS'/kui.min.js").kiwi.main(process.argv)' . shell
+
+# for now:
+exec "$NODE" . shell

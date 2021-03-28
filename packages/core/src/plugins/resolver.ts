@@ -81,7 +81,7 @@ const prequire = async (
             const registrationRef =
               module.path.charAt(0) === '/'
                 ? await import(/* webpackIgnore: true */ module.path)
-                : isHeadless()
+                : isHeadless() && !process.env.KUI_HEADLESS_WEBPACK
                 ? await import(/* webpackIgnore: true */ mainPath(module.path))
                 : module.route === 'client'
                 ? await import(

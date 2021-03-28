@@ -33,6 +33,7 @@ fi
 BUILDER_HOME="$MODULE_HOME"/builder
 
 CONFIG="$MODULE_HOME"/webpack/webpack.config.js
+HEADLESS_CONFIG="$MODULE_HOME"/webpack/headless-webpack.config.js
 
 THEME="${MODULE_HOME}"/client
 
@@ -45,16 +46,29 @@ if [ -n "$OPEN" ]; then
 else
     # we use this to tell the dev server to touch a lock file when it is
     # done; below, we will poll until that is the case
-    export LOCKFILE=/tmp/kui-build-lock.${PORT_OFFSET-0}
+    LOCKFILE=/tmp/kui-build-lock.${PORT_OFFSET-0}
     rm -f $LOCKFILE
 fi
 
-npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
+LOCKFILE=$LOCKFILE npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
+
+if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
+    LOCKFILE2=/tmp/kui-build-lock2.${PORT_OFFSET-0}
+    rm -f $LOCKFILE2
+
+    LOCKFILE=$LOCKFILE2 npx --no-install webpack watch --progress --config "$HEADLESS_CONFIG" &
+fi
 
 if [ -n "$LOCKFILE" ]; then
     # don't exit until the dev server is ready
     until [ -f $LOCKFILE ]; do sleep 1; done
     rm -f $LOCKFILE
+fi
+
+if [ -n "$LOCKFILE2" ]; then
+    # don't exit until the dev server is ready
+    until [ -f $LOCKFILE2 ]; do sleep 1; done
+    rm -f $LOCKFILE2
 fi
 
 if [ "$WATCH_ARGS" = "open" ]; then

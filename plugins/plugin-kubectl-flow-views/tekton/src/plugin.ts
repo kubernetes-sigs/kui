@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import { isHeadless, inProxy, Registrar } from '@kui-shell/core'
 
 import getStep from './controller/get/step'
 import getTask from './controller/get/task'
 import preview from './controller/preview'
 
 export default async (registrar: Registrar) => {
-  return Promise.all([getStep(registrar), getTask(registrar), preview(registrar)])
+  if (!isHeadless() || inProxy()) {
+    return Promise.all([getStep(registrar), getTask(registrar), preview(registrar)])
+  }
 }

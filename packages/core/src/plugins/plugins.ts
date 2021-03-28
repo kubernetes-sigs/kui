@@ -24,7 +24,7 @@ import { PrescanModel, unify } from './prescan'
 
 import { KuiPlugin } from '../models/plugin'
 import { userDataDir } from '../core/userdata'
-import { isHeadless } from '../core/capabilities'
+// import { isHeadless } from '../core/capabilities'
 import { setPluginResolver } from '../core/command-tree'
 import { registerTypeahead } from '../commands/typeahead'
 
@@ -101,7 +101,7 @@ export const init = async (): Promise<boolean> => {
   // pre-installed plugins
   basePrescan = prescan
 
-  if (isHeadless() && prescan) {
+  /* if (isHeadless() && prescan) {
     try {
       const [{ existsSync }, { join }] = await Promise.all([import('fs'), import('path')])
       const userPath = join(await userInstalledHome(), 'node_modules/@kui-shell/prescan.json')
@@ -114,9 +114,9 @@ export const init = async (): Promise<boolean> => {
       }
       debug('user-installed prescan loaded')
     } catch (err) {
-      console.error('error loading user-installed prescan', err)
+      debug('error loading user-installed prescan', err)
     }
-  }
+  } */
 
   /* const { default: eventChannelUnsafe } = await import('../core/events')
   eventChannelUnsafe.on('/plugin/compile/request', async (pluginToBeRemoved?: string) => {
