@@ -48,7 +48,7 @@ const cd = async (args: Arguments) => {
 
   const dir = !dirAsProvided ? expandHomeDir('~') : dirAsProvided === '-' ? process.env.OLDPWD : dirAsProvided
 
-  const mount = findMount(dir, undefined, true)
+  const mount = await findMount(dir, undefined, true)
   try {
     const { isDirectory, fullpath } = !mount
       ? { isDirectory: true, fullpath: absolute(dir) }

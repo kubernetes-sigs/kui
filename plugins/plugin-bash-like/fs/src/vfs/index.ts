@@ -30,6 +30,7 @@ import {
 
 import { FStat } from '../lib/fstat'
 import { KuiGlobOptions, GlobStats } from '../lib/glob'
+import { pushInitDone, waitForMountsToFinish } from './initDone'
 
 type DirEntry = GlobStats
 export { DirEntry }
@@ -157,8 +158,10 @@ function orient(A: VFS, B: VFS) {
 function _mount(vfs: VFS) {
   const existingIdx = _currentMounts.findIndex(mount => mount.mountPath === vfs.mountPath)
   if (existingIdx >= 0) {
+    // replace existing mount
     _currentMounts.splice(existingIdx, 1, vfs)
   } else {
+    // add new mount
     _currentMounts.push(vfs)
     _currentMounts.sort(orient)
   }
@@ -177,35 +180,45 @@ async function mountAll({ REPL }: Pick<Arguments, 'REPL'>, vfsFn: VFSProducingFu
  * Mount a VFS
  *
  */
-export async function mount(vfs: VFS | VFSProducingFunction) {
+export function mount(vfs: VFS | VFSProducingFunction, placeholderMountPath?: string): void {
   if (typeof vfs !== 'function') {
-    await _mount(vfs)
+    _mount(vfs)
   } else {
-    const tab = getCurrentTab()
-    if (!tab) {
-      return new Promise((resolve, reject) => {
-        try {
-          let debounce = false
-          eventBus.on('/tab/new', async tab => {
-            try {
-              if (!debounce) {
-                debounce = true
-                await mountAll(tab, vfs)
+    pushInitDone(
+      // eslint-disable-next-line no-async-promise-executor
+      new Promise(async (resolve, reject) => {
+        const tab = getCurrentTab()
+        if (!tab) {
+          try {
+            let debounce = false
+            eventBus.on('/tab/new', async tab => {
+              try {
+                if (!debounce) {
+                  debounce = true
+                  await mountAll(tab, vfs)
+                }
                 resolve(undefined)
+              } catch (err) {
+                console.error('Error in mount 1', err)
+                reject(err)
               }
-            } catch (err) {
-              console.error('Error in mount 1', err)
-              reject(err)
-            }
-          })
-        } catch (err) {
-          console.error('Error in mount 2', err)
-          reject(err)
+            })
+          } catch (err) {
+            console.error('Error in mount 2', err)
+            reject(err)
+          }
+        } else {
+          try {
+            await mountAll(tab, vfs)
+            resolve(undefined)
+          } catch (err) {
+            console.error('Error in mount 3', err)
+            reject(err)
+          }
         }
-      })
-    } else {
-      await mountAll(tab, vfs)
-    }
+      }),
+      placeholderMountPath
+    )
   }
 }
 
@@ -235,7 +248,9 @@ export function findMatchingMounts(filepath: string, checkClient = false): VFS[]
  *
  * - otherwise, the local VFS mount
  */
-export function findMount(filepath: string, checkClient = false, allowInner = false): VFS {
+export async function findMount(filepath: string, checkClient = false, allowInner = false): Promise<VFS> {
+  await waitForMountsToFinish(filepath)
+
   const isClient = inBrowser()
   filepath = absolute(filepath)
 
@@ -298,16 +313,22 @@ export function findMount(filepath: string, checkClient = false, allowInner = fa
 }
 
 /** Lookup compatible mounts */
-export function multiFindMount(filepaths: string[], checkClient = false): { filepaths: string[]; mount: VFS }[] {
+export async function multiFindMount(
+  filepaths: string[],
+  checkClient = false
+): Promise<{ filepaths: string[]; mount: VFS }[]> {
   if (filepaths.length === 0) {
     return multiFindMount([cwd()], checkClient)
   }
 
-  return filepaths
-    .map(filepath => ({
-      filepaths: [slash(filepath)],
-      mount: findMount(filepath, checkClient)
-    }))
+  return (
+    await Promise.all(
+      filepaths.map(async filepath => ({
+        filepaths: [slash(filepath)],
+        mount: await findMount(filepath, checkClient)
+      }))
+    )
+  )
     .filter(_ => _.mount !== undefined)
     .reduce((mounts, mount) => {
       if (mounts.length === 0 || mounts[mounts.length - 1].mount.mountPath !== mount.mount.mountPath) {
@@ -323,7 +344,7 @@ export function multiFindMount(filepaths: string[], checkClient = false): { file
  * Does the filepath specify a local file?
  *
  */
-export function isLocal(filepath: string): boolean {
-  const mount = findMount(filepath)
+export async function isLocal(filepath: string): Promise<boolean> {
+  const mount = await findMount(filepath)
   return mount && mount.isLocal
 }

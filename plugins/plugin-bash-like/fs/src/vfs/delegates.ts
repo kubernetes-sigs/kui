@@ -104,7 +104,7 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
 export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry[]> {
   const filepaths = parameters[1].length === 0 ? [process.env.PWD] : parameters[1].map(absolute)
 
-  const mounts = multiFindMount(filepaths, true)
+  const mounts = await multiFindMount(filepaths, true)
   const vfsContentP = Promise.all(
     mounts.map(async ({ filepaths, mount }) => {
       try {
@@ -157,8 +157,8 @@ export async function cp(
   srcFilepaths: string[],
   dstFilepath: string
 ): ReturnType<VFS['cp']> {
-  const mount1 = srcFilepaths.map(_ => findMount(_))
-  const mount2 = findMount(dstFilepath)
+  const mount1 = await Promise.all(srcFilepaths.map(_ => findMount(_)))
+  const mount2 = await findMount(dstFilepath)
 
   if (mount2.isLocal) {
     // pull out the local-to-local copies
@@ -216,7 +216,7 @@ export async function cp(
  *
  */
 export async function rm(...parameters: Parameters<VFS['rm']>): ReturnType<VFS['rm']> {
-  const mount = findMount(parameters[1])
+  const mount = await findMount(parameters[1])
   return mount.rm(parameters[0], parameters[1], parameters[2])
 }
 
@@ -225,7 +225,7 @@ export async function rm(...parameters: Parameters<VFS['rm']>): ReturnType<VFS['
  *
  */
 export async function fstat(...parameters: Parameters<VFS['fstat']>): ReturnType<VFS['fstat']> {
-  const mount = findMount(parameters[1])
+  const mount = await findMount(parameters[1])
   return mount.fstat(parameters[0], parameters[1], parameters[2], parameters[3])
 }
 
@@ -233,11 +233,10 @@ export async function fstat(...parameters: Parameters<VFS['fstat']>): ReturnType
  * fwrite delegate
  *
  */
- export async function fwrite(...parameters: Parameters<VFS['fwrite']>): ReturnType<VFS['fwrite']> {
-  const mount = findMount(parameters[1])
+export async function fwrite(...parameters: Parameters<VFS['fwrite']>): ReturnType<VFS['fwrite']> {
+  const mount = await findMount(parameters[1])
   return mount.fwrite(parameters[0], parameters[1], parameters[2])
 }
-
 
 /**
  * fslice delegate
@@ -250,7 +249,7 @@ export async function fslice(
   unit: 'bytes' | 'lines' = 'bytes',
   end?: number
 ): ReturnType<VFS['fslice']> {
-  const mount = findMount(filepath, undefined, true)
+  const mount = await findMount(filepath, undefined, true)
 
   if (!mount) {
     throw new Error(`head: can not find ${filepath}`)
@@ -293,7 +292,7 @@ export async function fslice(
  *
  */
 export async function mkdir(...parameters: Parameters<VFS['mkdir']>): ReturnType<VFS['mkdir']> {
-  const mount = findMount(parameters[1])
+  const mount = await findMount(parameters[1])
   return mount.mkdir(parameters[0], parameters[1])
 }
 
@@ -302,7 +301,7 @@ export async function mkdir(...parameters: Parameters<VFS['mkdir']>): ReturnType
  *
  */
 export async function rmdir(...parameters: Parameters<VFS['rmdir']>): ReturnType<VFS['rmdir']> {
-  const mount = findMount(parameters[1])
+  const mount = await findMount(parameters[1])
   return mount.rmdir(parameters[0], parameters[1])
 }
 
@@ -311,7 +310,7 @@ export async function rmdir(...parameters: Parameters<VFS['rmdir']>): ReturnType
  *
  */
 export async function grep(...parameters: Parameters<VFS['grep']>): ReturnType<VFS['grep']> {
-  const mounts = multiFindMount(parameters[2], false)
+  const mounts = await multiFindMount(parameters[2], false)
   if (mounts.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${parameters[2]}`)
     err.code = 404
@@ -351,7 +350,7 @@ function collectTables(responses: (void | Table)[]): void | Table {
  *
  */
 export async function gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
-  const mounts = multiFindMount(parameters[1], true)
+  const mounts = await multiFindMount(parameters[1], true)
   if (mounts.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
     err.code = 404
@@ -367,7 +366,7 @@ export async function gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<V
  *
  */
 export async function gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
-  const mounts = multiFindMount(parameters[1], true)
+  const mounts = await multiFindMount(parameters[1], true)
   if (mounts.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
     err.code = 404
