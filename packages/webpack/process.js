@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+const proc = require('process/browser')
+
+module.exports = proc
+
 /**
  * Browser-oriented shims for 'process'
  *
