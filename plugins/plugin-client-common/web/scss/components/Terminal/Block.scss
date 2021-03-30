@@ -336,6 +336,9 @@
 @include SideBySide {
   @include HideIn;
 }
+@include WidthConstrained {
+  @include HideIn;
+}
 
 body[kui-theme-style] .kui--repl-block-right-element {
   color: inherit;
