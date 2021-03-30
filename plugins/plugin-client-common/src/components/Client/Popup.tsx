@@ -49,7 +49,7 @@ export default class Popup extends React.PureComponent<Props, State> {
       tab.REPL.qexec('window close', undefined, undefined, { tab })
     })
 
-    eventBus.onCommandComplete(tabModel.uuid, async ({ command, response }) => {
+    eventBus.onCommandComplete(tabModel.uuid, async ({ tab, command, response }) => {
       if (process.env.KUI_TEE_TO_FILE) {
         // tee the response to a file
         // maybe in the future we could do this better
@@ -59,6 +59,10 @@ export default class Popup extends React.PureComponent<Props, State> {
 
       this.setState({ promptPlaceholder: command })
       this.doFocusInput()
+
+      // see https://github.com/kubernetes-sigs/kui/issues/7268
+      setTimeout(() => tab.scrollToBottom(), 50)
+      setTimeout(() => tab.scrollToBottom(), 150)
     })
 
     this.state = {
