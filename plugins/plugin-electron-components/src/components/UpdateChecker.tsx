@@ -31,14 +31,23 @@ import '../../web/scss/components/UpdateChecker/_index.scss'
 
 const strings = i18n('plugin-core-support')
 
-/** Releases page */
-const RELEASE = (tag: string) => `https://github.com/IBM/kui/releases/tag/v${tag}`
+/** Default repo/org */
+const repo = 'kubernetes-sigs/kui'
 
-/** Base URL for image references */
-const baseUrl = 'https://github.com'
+/** Base URL for feeds */
+const baseUrl = () => {
+  try {
+    return require('@kui-shell/client/config.d/repo.json').url
+  } catch (err) {
+    return `https://github.com/${repo}`
+  }
+}
+
+/** Releases page */
+const RELEASE = (tag: string) => `${baseUrl()}/releases/tag/v${tag}`
 
 /** Releases feed */
-const FEED = `${baseUrl}/IBM/kui/releases.atom`
+const FEED = () => `${baseUrl()}/releases.atom`
 
 /** By default, check for updates once a day */
 const DEFAULT_INTERVAL = 24 * 60 * 60 * 1000
@@ -123,7 +132,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
 
   /** Ping the release feed to check for the latest release */
   private checkForUpdates() {
-    needle('get', FEED, { json: true })
+    needle('get', FEED(), { json: true })
       .then(res => {
         const entryForLatestVersion = res.body.children
           .filter(_ => _.name === 'entry')
@@ -245,7 +254,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
                   <Markdown
                     source={this.state.entryForLatestVersion.content}
                     contentType="text/html"
-                    baseUrl={baseUrl}
+                    baseUrl={baseUrl()}
                   />
                 </React.Fragment>
               ),
