@@ -1086,19 +1086,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return blocks.findIndex(b => isActive(b))
   }
 
+  private isASideBySide(sbidx: number) {
+    return this.theseAreSideBySide[this.state.splits.length][sbidx]
+  }
+
   private tabRefFor(scrollback: ScrollbackState, ref: HTMLElement) {
     if (ref) {
       ref['facade'] = scrollback.facade
       scrollback.facade.getSize = getSize.bind(ref)
 
       scrollback.facade.splitCount = () => this.state.splits.length
-      scrollback.facade.hasSideBySideTerminals = () =>
-        this.theseAreMiniSplits[this.state.splits.length].findIndex((isMini, idx, S) => {
-          return (
-            (!isMini && idx < S.length - 1 && !S[idx + 1]) ||
-            (!isMini && idx === S.length - 1 && S[idx - 1] && S[idx - 2])
-          ) // e.g. 3 splits
-        }) >= 0
+      scrollback.facade.hasSideBySideTerminals = () => {
+        return !!this.state.splits.find((_, sbidx) => this.isASideBySide(sbidx))
+      }
 
       scrollback.facade.scrollToBottom = () => {
         ref.scrollTop = ref.scrollHeight
@@ -1176,6 +1176,22 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     8: [true, true, true, true, true, true, true, false]
   }
 
+  /**
+   * Same, but keeping track of when we have two splits arranged
+   * horizontally side-by-side.
+   *
+   */
+  private readonly theseAreSideBySide = {
+    1: [false], // 1 split, not-minisplit
+    2: [true, true], // 2 splits, both not-minisplit
+    3: [true, true, false], // etc.
+    4: [true, true, true, true],
+    5: [true, true, true, true, true],
+    6: [true, true, true, true, true, true],
+    7: [true, true, true, true, true, true, true],
+    8: [true, true, true, true, true, true, true, true]
+  }
+
   /** Present the given scrollback as a minisplit? */
   private isMiniSplit(scrollback: ScrollbackState, sbidx: number) {
     return scrollback.forceMiniSplit || this.theseAreMiniSplits[this.state.splits.length][sbidx] || undefined
@@ -1183,10 +1199,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Is this scrollback not-100% width? */
   private isWidthConstrained(scrollback: ScrollbackState, sbidx: number) {
-    return (
-      this.isMiniSplit(scrollback, sbidx) ||
-      (scrollback.facade && scrollback.facade.hasSideBySideTerminals && scrollback.facade.hasSideBySideTerminals())
-    )
+    return isPopup() || this.isMiniSplit(scrollback, sbidx) || this.isASideBySide(sbidx)
   }
 
   public render() {
