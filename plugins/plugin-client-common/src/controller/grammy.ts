@@ -131,5 +131,5 @@ async function doHistogram(args: Arguments<Options>): Promise<Table> {
  *
  */
 export default async (commandTree: Registrar) => {
-  commandTree.listen('/grammy', doHistogram, { usage, flags: { boolean: ['color', 'c'] } })
+  commandTree.listen('/grammy', doHistogram, { needsUI: true, usage, flags: { boolean: ['color', 'c'] } })
 }
