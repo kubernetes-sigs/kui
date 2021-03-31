@@ -35,7 +35,7 @@ const span = (text: string): HTMLElement => {
  */
 export const prettyPrintTime = (
   timestamp: Date | string | number,
-  fmt = 'long',
+  fmt: 'delta' | 'long' | 'short' | 'narrow' = 'long',
   previousTimestamp?: Date | string | number,
   execOptions: LanguageBearing = new DefaultExecOptions()
 ) => {
@@ -94,8 +94,8 @@ export const prettyPrintTime = (
       } else {
         return span(
           then.toLocaleString(execOptions.language, {
-            weekday: fmt,
-            month: fmt,
+            weekday: fmt === 'delta' ? 'short' : fmt,
+            month: fmt === 'delta' ? 'short' : fmt,
             day: 'numeric',
             hour: 'numeric',
             minute: 'numeric',
@@ -107,8 +107,8 @@ export const prettyPrintTime = (
   } else if (now.getFullYear() === then.getFullYear()) {
     return span(
       then.toLocaleString(execOptions.language, {
-        weekday: fmt,
-        month: fmt,
+        weekday: fmt === 'delta' ? 'short' : fmt,
+        month: fmt === 'delta' ? 'short' : fmt,
         day: 'numeric',
         hour: 'numeric',
         minute: 'numeric',
