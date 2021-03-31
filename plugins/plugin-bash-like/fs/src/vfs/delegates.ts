@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { basename } from 'path'
 import { Arguments, CodedError, Table, flatten } from '@kui-shell/core'
 import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
+
+const debug = Debug('plugin/bash-like/fs/vfs/delegates')
 
 /** '/a/b/c' -> 3 */
 function countSlashes(path: string) {
@@ -114,7 +117,7 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
           // re: the regexp test, this is an imperfect solution to
           // https://github.com/IBM/kui/issues/7168
           if (!/globby is not defined/.test(err.message)) {
-            console.error(err)
+            debug(err)
           }
           throw err
         }
