@@ -358,6 +358,7 @@ class InProcessExecutor implements Executor {
       if (
         isHeadless() &&
         !parsedOptions.cli &&
+        !(parsedOptions.h || parsedOptions.help) &&
         ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) || (evaluator.options && evaluator.options.needsUI))
       ) {
         import('../main/headless').then(({ createWindow }) =>
