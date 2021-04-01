@@ -23,6 +23,7 @@
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "dependencies": {
+    "@supercharge/promise-pool": "1.6.1",
     "colors": "1.4.0",
     "debug": "4.3.1",
     "micromatch": "4.0.2",
