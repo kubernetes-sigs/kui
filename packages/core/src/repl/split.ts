@@ -80,7 +80,7 @@ export const _split = (
   for (let idx = startIdx; idx < endIdx; idx++) {
     let char = str.charAt(idx)
 
-    if (char === splitBy) {
+    if (splitBy === ' ' && char === splitBy) {
       if (
         process.platform === 'win32' &&
         idx < str.length - 3 &&
