@@ -78,10 +78,11 @@ export const _split = (
   const removedLastOpenQuote: boolean[] = []
   let escapeActive = false
   for (let idx = startIdx; idx < endIdx; idx++) {
-    let char = str.charAt(idx)
+    const char = str.charAt(idx)
 
-    if (splitBy === ' ' && char === splitBy) {
+    if (char === splitBy) {
       if (
+        splitBy === ' ' &&
         process.platform === 'win32' &&
         idx < str.length - 3 &&
         /\w/.test(str.charAt(idx + 1)) &&
@@ -90,13 +91,16 @@ export const _split = (
       ) {
         isWindowsDrivePath = true
       }
-    } else if (!isWindowsDrivePath && char === '\\') {
+    } else if (!isWindowsDrivePath && char === '\\' && (idx === endIdx - 1 || str.charAt(idx + 1) !== '0')) {
+      // careful about \0 for octal escape
+
       if (!escapeActive) {
         escapeActive = true
-        char = str.charAt(++idx)
-        if (!removeOuterQuotes) {
-          cur += '\\'
-        }
+        continue
+        // char = str.charAt(++idx)
+        // if (!removeOuterQuotes) {
+        // cur += '\\'
+        // }
       } else {
         escapeActive = false
         cur += '\\'

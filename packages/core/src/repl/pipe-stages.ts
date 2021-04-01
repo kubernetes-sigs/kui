@@ -41,7 +41,9 @@ export function splitIntoPipeStages(command: string): CommandLine['pipeStages'] 
         .replace(/^\s*>/, '')
         .trim()
 
-  const stages = split(command, false, undefined, '|', pipeStartIdx, pipeEndIdx).map(_ => split(_, false))
+  const stages = split(command, false, undefined, '|', pipeStartIdx, pipeEndIdx).map(_ =>
+    split(_, false).map(_ => _.replace(/\\\s/g, ''))
+  )
 
   return { prefix, stages, redirect }
 }
