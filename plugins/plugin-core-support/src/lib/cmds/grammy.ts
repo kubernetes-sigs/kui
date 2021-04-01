@@ -19,7 +19,7 @@ import PromisePool from '@supercharge/promise-pool'
 import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, ParsedOptions, i18n, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
 
-const strings = i18n('plugin-client-common')
+const strings = i18n('plugin-core-support')
 
 /**
  * grammy command usage
@@ -131,5 +131,5 @@ async function doHistogram(args: Arguments<Options>): Promise<Table> {
  *
  */
 export default async (commandTree: Registrar) => {
-  commandTree.listen('/grammy', doHistogram, { needsUI: true, usage, flags: { boolean: ['color', 'c'] } })
+  commandTree.listen('/grammy', doHistogram, { usage, flags: { boolean: ['color', 'c'] } })
 }
