@@ -244,7 +244,6 @@ export const main = async (
       arg =>
         !commandContextPattern.test(arg) &&
         arg !== '--kui-headless' &&
-        arg !== '-v' &&
         arg !== '--raw-output' &&
         arg !== '--no-color' &&
         arg !== '--no-colors' &&
