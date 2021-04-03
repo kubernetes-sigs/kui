@@ -23,6 +23,7 @@ import {
   Row as KuiRow,
   Tab,
   REPL,
+  isPopup,
   eventBus,
   pexecInCurrentTab
 } from '@kui-shell/core'
@@ -77,7 +78,7 @@ export function onClickForCell(
       return whenNothingIsSelected((evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
-        if (drilldownTo === 'side-split' && !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
+        if (!isPopup() && drilldownTo === 'side-split' && !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
           pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
         } else {
           repl.pexec(handler, opts)
