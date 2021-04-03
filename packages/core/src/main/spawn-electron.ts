@@ -105,7 +105,8 @@ export function createWindow(
   executeThisArgvPlease?: string[],
   subwindowPlease?: boolean,
   subwindowPrefs?: ISubwindowPrefs,
-  secondary = false
+  secondary = false,
+  isForPopup = false
 ) {
   debug('createWindow', executeThisArgvPlease)
 
@@ -137,7 +138,7 @@ export function createWindow(
     debug('we need to spawn electron', subwindowPlease, subwindowPrefs)
     delete subwindowPrefs.synonymFor // circular JSON
     // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    promise = initElectron(['--'].concat(executeThisArgvPlease), {}, subwindowPlease, subwindowPrefs)
+    promise = initElectron(['--'].concat(executeThisArgvPlease), {}, subwindowPlease, subwindowPrefs, isForPopup)
       .then(async () => {
         app = (await import('electron')).app as App
       })
@@ -533,7 +534,8 @@ export async function initElectron(
   command: string[] = [],
   { isRunningHeadless = false } = {},
   subwindowPlease?: boolean,
-  subwindowPrefs?: ISubwindowPrefs
+  subwindowPrefs?: ISubwindowPrefs,
+  isForPopup = false
 ) {
   debug('initElectron', command, subwindowPlease, subwindowPrefs)
 
@@ -581,7 +583,9 @@ export async function initElectron(
       }
 
       debug('spawning electron done, this process will soon exit')
-      process.exit(0)
+      if (!isForPopup) {
+        process.exit(0)
+      }
     }
   } else {
     debug('loading electron')
