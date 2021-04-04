@@ -362,7 +362,7 @@ class InProcessExecutor implements Executor {
         ((process.env.DEFAULT_TO_UI && !parsedOptions.cli) || (evaluator.options && evaluator.options.needsUI))
       ) {
         import('../main/headless').then(({ createWindow }) =>
-          createWindow(argv, evaluator.options.fullscreen, evaluator.options)
+          createWindow(argv, evaluator.options.fullscreen, evaluator.options, true)
         )
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         return (true as any) as T

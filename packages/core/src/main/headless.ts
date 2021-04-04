@@ -173,11 +173,16 @@ type CreateWindowFunction = (commandLine: string[], subwindowPlease: boolean, su
  *
  */
 let electronCreateWindowFn: CreateWindowFunction
-export const createWindow = async (argv: string[], subwindowPlease: boolean, subwindowPrefs: ISubwindowPrefs) => {
+export const createWindow = async (
+  argv: string[],
+  subwindowPlease: boolean,
+  subwindowPrefs: ISubwindowPrefs,
+  isPopup: boolean
+) => {
   try {
     graphicalShellIsOpen = true
     const { setGraphicalShellIsOpen } = await import('./headless-pretty-print')
-    if (!setGraphicalShellIsOpen()) {
+    if (!setGraphicalShellIsOpen(isPopup)) {
       debug('probably a bug somewhere; detected loop in opening window from headless mode')
       return
     }
