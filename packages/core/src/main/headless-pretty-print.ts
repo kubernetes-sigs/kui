@@ -67,8 +67,11 @@ const colorMap: Record<string, ColorFunction> = {
 }
 
 let graphicalShellIsOpen = false
+let graphicalShellIsPopup = false
 /** @return whether the state has changed as a result of this call */
-export const setGraphicalShellIsOpen = () => {
+export const setGraphicalShellIsOpen = (isPopup: boolean) => {
+  graphicalShellIsPopup = isPopup
+
   if (!graphicalShellIsOpen) {
     graphicalShellIsOpen = true
     return true
@@ -352,7 +355,7 @@ export const print = (
   if (ok === 'error') {
     colorFn = colors.red
   }
-  if (msg && !graphicalShellIsOpen) {
+  if (msg && (!graphicalShellIsOpen || graphicalShellIsPopup)) {
     try {
       if (msg === true) {
         // true is the graphical shell's way of telling the repl to print 'ok'
