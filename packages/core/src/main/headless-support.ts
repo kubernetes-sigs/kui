@@ -46,7 +46,11 @@ export const streamTo = async (which: 'stdout' | 'stderr') => {
 
     if (!killLine) {
       if (typeof response !== 'string' || !/\n$/.test(response)) {
-        stdout.write('\n')
+        if (which === 'stdout') {
+          // why only stdout? a legacy of an earlier bad decision.
+          // see https://github.com/kubernetes-sigs/kui/issues/7297
+          stdout.write('\n')
+        }
       }
     }
 
