@@ -41,6 +41,10 @@ import {
 
 import { isInternalNamespace } from '@kui-shell/plugin-kubectl/heuristics'
 
+interface Props {
+  className?: string
+}
+
 interface State {
   currentNamespace: string
   allNamespaces: string[]
@@ -49,10 +53,10 @@ interface State {
 
 const strings = i18n('plugin-kubectl')
 
-export default class CurrentNamespace extends React.PureComponent<{}, State> {
+export default class CurrentNamespace extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentNamespace.bind(this)
 
-  public constructor(props = {}) {
+  public constructor(props: Props) {
     super(props)
 
     this.state = {
@@ -236,6 +240,7 @@ export default class CurrentNamespace extends React.PureComponent<{}, State> {
 
     return (
       <TextWithIconWidget
+        className={this.props.className}
         text={this.state.currentNamespace}
         viewLevel={this.state.viewLevel}
         id="kui--plugin-kubeui--current-namespace"
