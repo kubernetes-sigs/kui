@@ -85,6 +85,7 @@ export interface ExecOptions {
   showHeader?: boolean
   alreadyWatching?: boolean
 
+  createErrorStream?: StreamableFactory
   createOutputStream?: StreamableFactory
   stdout?: (str: Streamable) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   stderr?: (str: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
