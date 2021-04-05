@@ -27,25 +27,26 @@ import { Streamable } from '../models/streamable'
  * @see cli.ts for the webapp implementation
  *
  */
-export const streamTo = async () => {
+export const streamTo = async (which: 'stdout' | 'stderr') => {
   const [{ clearLine, cursorTo }, { print }] = await Promise.all([
     import('readline'),
     import('./headless-pretty-print')
   ])
 
+  const stdout = process[which]
   return (response: Streamable, killLine?: boolean) => {
     debug('streaming response', killLine)
 
     if (killLine) {
-      clearLine(process.stdout, 0)
-      cursorTo(process.stdout, 0, null)
+      clearLine(stdout, 0)
+      cursorTo(stdout, 0, null)
     }
 
-    print(response)
+    print(response, which === 'stdout' ? console.log : console.error, process[which])
 
     if (!killLine) {
       if (typeof response !== 'string' || !/\n$/.test(response)) {
-        process.stdout.write('\n')
+        stdout.write('\n')
       }
     }
 

@@ -449,7 +449,8 @@ class InProcessExecutor implements Executor {
         argvNoOptions,
         pipeStages,
         parsedOptions: parsedOptions as O,
-        createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID))
+        createErrorStream: execOptions.createErrorStream || (() => this.makeStream(getTabId(tab), execUUID, 'stderr')),
+        createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID, 'stdout'))
       }
 
       let response: T | Promise<T> | MixedResponse
@@ -555,10 +556,10 @@ class InProcessExecutor implements Executor {
     }
   }
 
-  private async makeStream(tabUUID: string, execUUID: string): Promise<Stream> {
+  private async makeStream(tabUUID: string, execUUID: string, which: 'stdout' | 'stderr'): Promise<Stream> {
     if (isHeadless()) {
       const { streamTo: headlessStreamTo } = await import('../main/headless-support')
-      return headlessStreamTo()
+      return headlessStreamTo(which)
     } else {
       const stream = (response: Streamable) =>
         new Promise<void>(resolve => {

@@ -185,6 +185,11 @@ export interface EvaluatorArgs<Options = ParsedOptions> extends CommandLine<Opti
   createOutputStream: StreamableFactory
 
   /**
+   * Same as createOutputStream, but for stderr
+   */
+  createErrorStream: StreamableFactory
+
+  /**
    * EXPERT MODE: The REPL block in which this command was initiated
    * (rarely used, but useful for more complex UI extensions)
    */
