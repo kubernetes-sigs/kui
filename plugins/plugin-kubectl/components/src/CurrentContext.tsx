@@ -38,6 +38,10 @@ import {
   offKubectlConfigChangeEvents
 } from '@kui-shell/plugin-kubectl'
 
+interface Props {
+  className?: string
+}
+
 interface State {
   currentContext: string
   allContexts: KubeContext[]
@@ -61,10 +65,10 @@ function KubernetesIcon() {
   )
 }
 
-export default class CurrentContext extends React.PureComponent<{}, State> {
+export default class CurrentContext extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentContext.bind(this)
 
-  public constructor(props = {}) {
+  public constructor(props: Props) {
     super(props)
 
     this.state = {
@@ -242,6 +246,7 @@ export default class CurrentContext extends React.PureComponent<{}, State> {
 
     return (
       <TextWithIconWidget
+        className={this.props.className}
         text={this.state.currentContext}
         viewLevel={this.state.viewLevel}
         id="kui--plugin-kubeui--current-context"
