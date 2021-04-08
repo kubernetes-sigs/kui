@@ -269,7 +269,8 @@ export const main = async (
    * Evaluate the given command
    *
    */
-  const evaluate = (cmd: string) => Promise.resolve(exec(cmd, execOptions)).then(success(quit))
+  const eOptions = Object.assign({ rethrowErrors: true }, execOptions)
+  const evaluate = (cmd: string) => Promise.resolve(exec(cmd, eOptions)).then(success(quit))
 
   /** main work starts here */
   debug('bootstrap')

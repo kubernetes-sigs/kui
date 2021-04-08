@@ -477,7 +477,7 @@ class InProcessExecutor implements Executor {
         } catch (err) {
           debugCommandErrors(err)
           evaluator.error(command, tab, execType, err)
-          if (execType === ExecType.Nested) {
+          if (execType === ExecType.Nested || execOptions.rethrowErrors) {
             throw err
           }
           response = err
@@ -547,7 +547,7 @@ class InProcessExecutor implements Executor {
     try {
       return await this.execUnsafe(commandUntrimmed, execOptions)
     } catch (err) {
-      if (execOptions.type !== ExecType.Nested) {
+      if (execOptions.type !== ExecType.Nested && !execOptions.rethrowErrors) {
         console.error('Internal Error: uncaught exception in exec', err)
         return err
       } else {
