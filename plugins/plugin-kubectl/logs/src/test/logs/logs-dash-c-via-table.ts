@@ -29,7 +29,7 @@ const inputEncoded = inputBuffer.toString('base64')
 /** The number of seconds to sleep while we wait for more log entries
  * to accumulate. Making this value larger will provide more test
  * stability, but also increase test time. */
-const sleepTime = 4
+const sleepTime = 12
 
 function getTextContent(app: Application, selector: string) {
   return app.client.$(selector).then(_ => _.getText())
