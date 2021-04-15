@@ -24,6 +24,9 @@ type FeatureFlags = {
   /** [Optional] Enable Split Terminals? */
   splitTerminals?: boolean
 
+  /** Operate in popup mode? */
+  isPopup?: boolean
+
   /** [Optional] automatically pin watchable command ouptut to the WatchPane? */
   enableWatcherAutoPin?: boolean
 

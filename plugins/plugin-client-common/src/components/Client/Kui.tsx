@@ -65,9 +65,6 @@ export type Props = Partial<KuiConfiguration> &
     /** Elements to place between TabContainer and StatusStripe */
     toplevel?: React.ReactNode | React.ReactNode[]
 
-    /** Operate in popup mode? */
-    isPopup?: boolean
-
     /** do not echo the command? */
     quietExecCommand?: boolean
 

@@ -94,6 +94,11 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         return this.app.client.$(lastRowSelector).then(_ => _.getText())
       }
 
+      sleep(3)
+
+      // click the sidecar tab content
+      await this.app.client.$(focusArea).then(_ => _.click())
+
       // wait for vi to come up
       await this.app.client.waitUntil(
         async () => {
@@ -102,8 +107,6 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         },
         { timeout: CLI.waitTimeout }
       )
-
-      sleep(3)
 
       // enter insert mode, and wait for INSERT to appear at the bottom
       let iter = 0
