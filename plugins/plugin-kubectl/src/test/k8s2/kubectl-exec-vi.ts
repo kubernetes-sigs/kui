@@ -94,15 +94,16 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
         return this.app.client.$(lastRowSelector).then(_ => _.getText())
       }
 
-      sleep(3)
-
-      // click the sidecar tab content
-      await this.app.client.$(focusArea).then(_ => _.click())
+      await sleep(3)
 
       // wait for vi to come up
+      await this.app.client.$(rows).then(_ => _.waitForExist())
+
+      // click the sidecar tab content
+      await this.app.client.$(rows).then(_ => _.click())
+
       await this.app.client.waitUntil(
         async () => {
-          await this.app.client.$(rows).then(_ => _.waitForExist())
           return this.app.client.$(focusArea).then(_ => _.isFocused())
         },
         { timeout: CLI.waitTimeout }
@@ -114,7 +115,7 @@ describe(`kubectl exec vi ${process.env.MOCHA_RUN_TARGET || ''}`, function(this:
       await this.app.client.waitUntil(async () => {
         const txt = await lastRow()
         if (++iter > 5) {
-          console.error('kubectl exec vi still waiting for Insert mode', txt)
+          console.error(`kubectl exec vi still waiting for Insert mode; actualText='${txt}'`)
         }
         return /INSERT/i.test(txt)
       })

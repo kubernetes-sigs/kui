@@ -79,12 +79,12 @@ wdescribe(`kubectl logs dashC follow via table ${process.env.MOCHA_RUN_TARGET ||
       await sleep(sleepTime)
       const text1 = await getTextContent(this.app, rows)
       const nRows1 = text1.split(/\n/).length
-      console.log('nRows1', nRows1)
+      console.log('nRows1', nRows1, text1)
 
       await sleep(sleepTime)
       const text2 = await getTextContent(this.app, rows)
       const nRows2 = text2.split(/\n/).length
-      console.log('nRows2', nRows2)
+      console.log('nRows2', nRows2, text2)
       assert.ok(nRows2 > nRows1, `${nRows2} is not > ${nRows1}`)
 
       /* await sleep(sleepTime)
