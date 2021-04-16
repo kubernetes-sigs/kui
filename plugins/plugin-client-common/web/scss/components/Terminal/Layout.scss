@@ -57,18 +57,18 @@
 .kui--terminal-split-container {
   /* two terminals */
   &[data-split-count='2'] {
-    @include Rows(2);
+    @include Rows(1);
     @include Columns(2);
-    grid-template-areas:
-      'T1 T2'
-      'T1 T2';
+    grid-template-areas: 'T1 T2';
   }
 
   /* three terminals */
   &[data-split-count='3'] {
-    @include Rows(3);
+    @include Rows(5);
     @include Columns(2);
     grid-template-areas:
+      'T1 T2'
+      'T1 T2'
       'T1 T2'
       'T3 T3'
       'T3 T3';
@@ -76,12 +76,11 @@
 
   /* four terminals */
   &[data-split-count='4'] {
-    @include Rows(3);
-    @include Columns(4);
+    @include Rows(2);
+    @include Columns(2);
     grid-template-areas:
-      'T1 T1 T2 T2'
-      'T3 T3 T4 T4'
-      'T3 T3 T4 T4';
+      'T1 T2'
+      'T3 T4';
   }
 
   /* five terminals */
