@@ -40,9 +40,7 @@ function sleep(N: number) {
   return new Promise(resolve => setTimeout(resolve, N * 1000))
 }
 
-const wdescribe = !process.env.USE_WATCH_PANE ? describe : xdescribe
-
-wdescribe(`kubectl logs follow via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+xdescribe(`kubectl logs follow via table ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
