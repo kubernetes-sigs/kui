@@ -21,9 +21,9 @@
  */
 
 import Debug from 'debug'
-import { exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
+import { spawn, SpawnOptions, exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
-import { Arguments, ExecOptions, ExecType, Registrar } from '@kui-shell/core'
+import { isHeadless, inProxy, Arguments, ExecOptions, ExecType, Registrar } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -31,13 +31,52 @@ import { dispatchToShell } from './catchall'
 
 const debug = Debug('plugins/bash-like/cmds/general')
 
-export const doExec = (
-  cmdLine: string,
+function doSpawn(
+  argv: string[],
   execOptions: ExecOptions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): Promise<string | number | boolean | Record<string, any>> =>
+): Promise<string | number | boolean | Record<string, any>> {
   // eslint-disable-next-line no-async-promise-executor
-  new Promise(async (resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const options: SpawnOptions = {
+        env: Object.assign({}, process.env, execOptions['env'] || {})
+      }
+      if (process.env.SHELL) {
+        options.shell = process.env.SHELL
+      }
+
+      if (!execOptions.onInit && !execOptions.onExit && isHeadless() && !inProxy()) {
+        options.stdio = 'inherit'
+      }
+
+      const proc = spawn(argv[0], argv.slice(1), options)
+      proc.on('error', reject)
+      proc.on('close', async exitCode => {
+        if (exitCode === 0) {
+          resolve(true)
+        } else {
+          reject(new Error(`non-zero exit code: ${exitCode}`))
+        }
+      })
+    } catch (err) {
+      reject(err)
+    }
+  })
+}
+
+export const doExec = (
+  cmdLine: string,
+  argv: string[],
+  execOptions: ExecOptions
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<string | number | boolean | Record<string, any>> => {
+  if (!execOptions.onInit && !execOptions.onExit && isHeadless() && !inProxy()) {
+    return doSpawn(argv, execOptions)
+  }
+
+  // eslint-disable-next-line no-async-promise-executor
+  return new Promise(async (resolve, reject) => {
     try {
       const options: ChildProcessExecOptions = {
         maxBuffer: 1 * 1024 * 1024,
@@ -147,6 +186,7 @@ export const doExec = (
       reject(err)
     }
   })
+}
 
 const specialHandler = (args: Arguments) => {
   if (args.execOptions.type === ExecType.TopLevel) {
