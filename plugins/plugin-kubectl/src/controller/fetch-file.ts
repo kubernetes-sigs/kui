@@ -17,7 +17,6 @@
 import Debug from 'debug'
 import { Arguments, ParsedOptions, Registrar, REPL } from '@kui-shell/core'
 
-import commandPrefix from './command-prefix'
 import { openStream, fetchFile, fetchFileString } from '../lib/util/fetch-file'
 
 const debug = Debug('plugin-kubectl/controller/fetch-file')
@@ -72,7 +71,7 @@ async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: st
  */
 export default (registrar: Registrar) => {
   registrar.listen(
-    `/${commandPrefix}/_openstream`,
+    `/_openstream`,
     async (args: Arguments<Options>) => {
       const uri = args.argvNoOptions[args.argvNoOptions.indexOf('_openstream') + 1]
       const headers =
@@ -113,7 +112,7 @@ export default (registrar: Registrar) => {
   )
 
   registrar.listen(
-    `/${commandPrefix}/_fetchfile`,
+    `/_fetchfile`,
     async ({ argvNoOptions, parsedOptions, REPL, execOptions }: Arguments<Options>) => {
       const uri = argvNoOptions[argvNoOptions.indexOf('_fetchfile') + 1]
       const opts =

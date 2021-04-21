@@ -28,8 +28,6 @@ import {
 } from '@kui-shell/core'
 import { File } from '@kui-shell/plugin-bash-like/fs'
 
-import commandPrefix from '../command-prefix'
-
 import { getFileFromArgv, getFileForArgv, KubeOptions, withKubeconfigFrom } from './options'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { removeLastAppliedConfig } from '../../lib/util/util'
@@ -102,7 +100,7 @@ const doDiff = (command: string) =>
 
 /** Register a command listener */
 export function describer(registrar: Registrar, command: string, cli = command) {
-  registrar.listen(`/${commandPrefix}/${command}/diff`, doDiff(cli))
+  registrar.listen(`/${command}/diff`, doDiff(cli))
 }
 
 export default (registrar: Registrar) => {

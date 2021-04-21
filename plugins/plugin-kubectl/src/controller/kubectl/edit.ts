@@ -27,7 +27,6 @@ import {
 
 import flags from './flags'
 import { doExecWithStdout } from './exec'
-import commandPrefix from '../command-prefix'
 import { doGetAsMMR as getView } from './get'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, getNamespace } from './options'
@@ -278,7 +277,7 @@ export const editFlags = (cmd: string) =>
   Object.assign({}, flags, { viewTransformer: viewTransformer.bind(undefined, cmd) })
 
 export function register(registrar: Registrar, cmd: string) {
-  registrar.listen(`/${commandPrefix}/${cmd}/edit`, doEdit.bind(undefined, cmd), editFlags(cmd))
+  registrar.listen(`/${cmd}/edit`, doEdit.bind(undefined, cmd), editFlags(cmd))
 }
 
 export default function registerForKubectl(registrar: Registrar) {

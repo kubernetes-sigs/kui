@@ -17,7 +17,6 @@
 import { Registrar, isTable, flatten } from '@kui-shell/core'
 
 import { doGet, getFlags } from '../get'
-import commandPrefix from '../../command-prefix'
 import { capitalize } from '../../../lib/view/modes/table-to-map'
 import { formatOf, watchRequestFrom, withKubeconfigFrom } from '../options'
 
@@ -44,7 +43,7 @@ export default function(registrar: Registrar) {
 
     variantsOf('job', 'v1', 'batch').forEach(job => {
       registrar.listen(
-        `/${commandPrefix}/${kubectl}/get/${job}`,
+        `/${kubectl}/get/${job}`,
         async args => {
           if (formatOf(args)) {
             // user asked for a specific output format, use the standard get handler

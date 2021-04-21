@@ -20,7 +20,6 @@ import { doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 import isUsage from './usage'
 import doExecWithStdout from './exec'
 import apiVersion from './apiVersion'
-import commandPrefix from '../command-prefix'
 import { HelmRelease } from '../../models/release'
 
 // TODO: this needs to be updated to parse out helm v3 responses
@@ -77,5 +76,5 @@ async function doGet(
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/get`, doGet)
+  registrar.listen('/helm/get', doGet)
 }

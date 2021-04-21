@@ -18,7 +18,6 @@ import { Arguments, Registrar, eventChannelUnsafe } from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithPty } from './exec'
-import commandPrefix from '../command-prefix'
 import { KubeOptions, getNamespaceAsExpressed } from './options'
 
 const kubectlConfigChangeChannel = '/kubectl/config/change'
@@ -82,7 +81,7 @@ async function doConfig(args: Arguments<KubeOptions>) {
 
 export function register(registrar: Registrar, cmd: string) {
   mutators.forEach(verb => {
-    registrar.listen(`/${commandPrefix}/${cmd}/config/${verb}`, doConfig, flags)
+    registrar.listen(`/${cmd}/config/${verb}`, doConfig, flags)
   })
 }
 

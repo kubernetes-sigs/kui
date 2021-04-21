@@ -32,7 +32,6 @@ import {
 
 import { getCommandFromArgs } from './util'
 import { KubeOptions, isHelpRequest, isDashHelp } from '../../controller/kubectl/options'
-import commandPrefix from '../../controller/command-prefix'
 import { doExecWithoutPty, Prepare, NoPrepare } from '../../controller/kubectl/exec'
 
 const debug = Debug('kubectl/help')
@@ -461,9 +460,7 @@ export const renderHelp = <O extends KubeOptions>(
 const kubeLike = /^k(ubectl)?$/
 
 /** is the given string `str` the `kubectl` command? */
-const isKubectl = (args: Arguments<KubeOptions>) =>
-  (args.argv.length === 1 && kubeLike.test(args.argv[0])) ||
-  (args.argv.length === 2 && args.argv[0] === commandPrefix && kubeLike.test(args.argv[1]))
+const isKubectl = (args: Arguments<KubeOptions>) => args.argv.length === 1 && kubeLike.test(args.argv[0])
 
 export const isUsage = (args: Arguments<KubeOptions>) => isHelpRequest(args) || isKubectl(args)
 

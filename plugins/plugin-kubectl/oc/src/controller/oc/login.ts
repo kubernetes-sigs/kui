@@ -15,10 +15,10 @@
  */
 
 import { Registrar } from '@kui-shell/core'
-import { doExecWithPty, commandPrefix, emitKubectlConfigChangeEvent } from '@kui-shell/plugin-kubectl'
+import { doExecWithPty, emitKubectlConfigChangeEvent } from '@kui-shell/plugin-kubectl'
 
 export default function registerOcLogin(registrar: Registrar) {
-  registrar.listen(`/${commandPrefix}/oc/login`, async args => {
+  registrar.listen('/oc/login', async args => {
     const response = await doExecWithPty(args)
     emitKubectlConfigChangeEvent('SetNamespaceOrContext')
     return response

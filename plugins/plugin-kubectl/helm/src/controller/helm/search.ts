@@ -19,7 +19,6 @@ import { doHelp, preprocessTable, formatTable, KubeOptions } from '@kui-shell/pl
 
 import isUsage from './usage'
 import doExecWithStdout from './exec'
-import commandPrefix from '../command-prefix'
 
 async function doSearch(args: Arguments<KubeOptions>) {
   if (isUsage(args, 'search')) {
@@ -33,5 +32,5 @@ async function doSearch(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/search`, doSearch)
+  registrar.listen('/helm/search', doSearch)
 }

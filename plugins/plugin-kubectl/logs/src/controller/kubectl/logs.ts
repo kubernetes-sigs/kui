@@ -38,8 +38,6 @@ import {
   isPod
 } from '@kui-shell/plugin-kubectl'
 
-import commandPrefix from '../command-prefix'
-
 const strings = i18n('plugin-kubectl', 'logs')
 
 interface LogOptions extends KubeOptions {
@@ -182,11 +180,11 @@ const doExec = getOrPty('exec')
 const execFlags = Object.assign({}, defaultFlags, { viewTransformer: viewTransformer('terminal') })
 
 export function registerLogs(registrar: Registrar, cmd: string) {
-  registrar.listen(`/${commandPrefix}/${cmd}/logs`, doLogs, logsFlags)
+  registrar.listen(`/${cmd}/logs`, doLogs, logsFlags)
 }
 
 export function registerExec(registrar: Registrar, cmd: string) {
-  registrar.listen(`/${commandPrefix}/${cmd}/exec`, doExec, execFlags)
+  registrar.listen(`/${cmd}/exec`, doExec, execFlags)
 }
 
 export default (registrar: Registrar) => {

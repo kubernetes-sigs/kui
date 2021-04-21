@@ -18,7 +18,6 @@ import { Arguments, Registrar, isTable } from '@kui-shell/core'
 
 import { KubeOptions } from './options'
 import expound from '../../lib/util/expound'
-import commandPrefix from '../command-prefix'
 import { doGet, getFlags as flags } from './get'
 import TrafficLight from '../../lib/model/traffic-light'
 import { getCommandFromArgs } from '../../lib/util/util'
@@ -62,7 +61,7 @@ export async function doGetDeployment(args: Arguments<KubeOptions>) {
 export default (commandTree: Registrar) => {
   expound('deployment', 'deploy', 'v1', 'apps').forEach(deployment => {
     ;['k', 'kubectl', 'oc'].forEach(kubectl => {
-      commandTree.listen(`/${commandPrefix}/${kubectl}/get/${deployment}`, doGetDeployment, flags)
+      commandTree.listen(`/${kubectl}/get/${deployment}`, doGetDeployment, flags)
     })
   })
 }

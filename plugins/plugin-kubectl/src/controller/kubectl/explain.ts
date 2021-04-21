@@ -20,7 +20,6 @@ import { Arguments, Breadcrumb, Registrar, i18n } from '@kui-shell/core'
 import flags from './flags'
 import { split } from './fqn'
 import { doExecWithStdout } from './exec'
-import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, withKubeconfigFrom } from './options'
 
@@ -332,6 +331,6 @@ export async function getKind(command: string, args: Arguments, kindAsProvidedBy
 
 export default (registrar: Registrar) => {
   const handler = doExplain()
-  registrar.listen(`/${commandPrefix}/kubectl/explain`, handler, flags)
-  registrar.listen(`/${commandPrefix}/k/explain`, handler, flags)
+  registrar.listen('/kubectl/explain', handler, flags)
+  registrar.listen('/k/explain', handler, flags)
 }

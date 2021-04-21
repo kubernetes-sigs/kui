@@ -15,9 +15,9 @@
  */
 
 import { Arguments } from '@kui-shell/core'
-import { doExecWithStdout, KubeOptions, commandPrefix } from '@kui-shell/plugin-kubectl'
+import { doExecWithStdout, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 export default function doExec<O extends KubeOptions>(args: Arguments<O>) {
-  const cmd = args.argv[0] === commandPrefix ? args.argv[1] : args.argv[0]
+  const cmd = args.argv[0]
   return doExecWithStdout(args, undefined, cmd)
 }

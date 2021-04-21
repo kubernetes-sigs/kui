@@ -20,7 +20,6 @@ import { Registrar, Arguments } from '@kui-shell/core'
 import defaultFlags from './flags'
 import { isDryRun, isEntityFormat, KubeOptions, formatOf } from './options'
 import { doExecWithStatus, exec } from './exec'
-import commandPrefix from '../command-prefix'
 import createDirect from '../client/direct/create'
 
 import { FinalState } from '../../lib/model/states'
@@ -72,7 +71,7 @@ export const applyFlag = Object.assign({}, defaultFlags, { viewTransformer })
 export default (registrar: Registrar) => {
   verbs.forEach(verb => {
     const handler = doCreate(verb)
-    registrar.listen(`/${commandPrefix}/kubectl/${verb}`, handler, applyFlag)
-    registrar.listen(`/${commandPrefix}/k/${verb}`, handler, applyFlag)
+    registrar.listen(`/kubectl/${verb}`, handler, applyFlag)
+    registrar.listen(`/k/${verb}`, handler, applyFlag)
   })
 }

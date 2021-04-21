@@ -17,7 +17,6 @@
 import { Registrar } from '@kui-shell/core'
 
 import {
-  commandPrefix,
   defaultFlags,
   doCreate,
   getter,
@@ -34,10 +33,10 @@ import { registerLogs, registerExec } from '@kui-shell/plugin-kubectl/logs'
 const command = 'oc'
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/${command}/apply`, doCreate('apply', command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/create`, doCreate('create', command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/delete`, doDelete(command), defaultFlags)
-  registrar.listen(`/${commandPrefix}/${command}/run`, doRun(command), defaultFlags)
+  registrar.listen(`/${command}/apply`, doCreate('apply', command), defaultFlags)
+  registrar.listen(`/${command}/create`, doCreate('create', command), defaultFlags)
+  registrar.listen(`/${command}/delete`, doDelete(command), defaultFlags)
+  registrar.listen(`/${command}/run`, doRun(command), defaultFlags)
 
   getter(registrar, command)
   describer(registrar, command)
