@@ -15,17 +15,11 @@
  */
 
 import { Registrar } from '@kui-shell/core'
-import {
-  defaultFlags,
-  commandPrefix,
-  doGet,
-  doExecWithStdout,
-  emitKubectlConfigChangeEvent
-} from '@kui-shell/plugin-kubectl'
+import { defaultFlags, doGet, doExecWithStdout, emitKubectlConfigChangeEvent } from '@kui-shell/plugin-kubectl'
 
 // we use the fetcher from 'kubectl get', and the viewTransformer from 'kubectl get namespaces'
 export default function registerOcProjectGet(registrar: Registrar) {
-  registrar.listen(`/${commandPrefix}/oc/project`, async args => {
+  registrar.listen('/oc/project', async args => {
     const response = await doExecWithStdout(args, undefined, 'oc')
 
     const newNamespace = args.argvNoOptions[args.argvNoOptions.indexOf('project') + 1]
@@ -37,13 +31,13 @@ export default function registerOcProjectGet(registrar: Registrar) {
   })
 
   registrar.listen(
-    `/${commandPrefix}/oc/projects`,
+    '/oc/projects',
     args => args.REPL.qexec('oc get projects', undefined, undefined, args.execOptions),
     defaultFlags
   )
 
   const aliases = ['project', 'projects', 'ns', 'namespace', 'namespaces']
   aliases.forEach(ns => {
-    registrar.listen(`/${commandPrefix}/oc/get/${ns}`, doGet('oc'), defaultFlags)
+    registrar.listen(`/oc/get/${ns}`, doGet('oc'), defaultFlags)
   })
 }

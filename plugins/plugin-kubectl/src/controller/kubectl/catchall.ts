@@ -17,7 +17,6 @@
 import { inBrowser, hasProxy, Registrar, Arguments } from '@kui-shell/core'
 
 import { doExecWithPty } from './exec'
-import commandPrefix from '../command-prefix'
 import { KubeOptions } from './options'
 import { isUsage, doHelp } from '../../lib/util/help'
 
@@ -35,9 +34,7 @@ export default (registrar: Registrar) => {
   // found exceptions to the outer shell
   //
   registrar.catchall(
-    (argv: string[]) => {
-      return isKubectl(argv[0]) || (argv[0] === commandPrefix && isKubectl(argv[1]))
-    },
+    (argv: string[]) => isKubectl(argv[0]),
     (args: Arguments<KubeOptions>) => (isUsage(args) ? doHelp('kubectl', args) : doExecWithPty(args)),
     1 // priority
   )

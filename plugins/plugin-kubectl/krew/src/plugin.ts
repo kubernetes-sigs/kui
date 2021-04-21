@@ -15,7 +15,7 @@
  */
 
 import { Registrar } from '@kui-shell/core'
-import { defaultFlags, commandPrefix } from '@kui-shell/plugin-kubectl'
+import { defaultFlags } from '@kui-shell/plugin-kubectl'
 
 import help from './controller/krew/help'
 import info from './controller/krew/info'
@@ -29,12 +29,12 @@ const canonical = 'kubectl'
 
 export default async (registrar: Registrar) => {
   aliases.forEach(command => {
-    registrar.listen(`/${commandPrefix}/${command}/krew/help`, help(canonical), defaultFlags)
-    registrar.listen(`/${commandPrefix}/${command}/krew/info`, info(canonical), defaultFlags)
-    registrar.listen(`/${commandPrefix}/${command}/krew/list`, list(canonical), defaultFlags)
-    registrar.listen(`/${commandPrefix}/${command}/krew/search`, genericTable(canonical), defaultFlags)
-    registrar.listen(`/${commandPrefix}/${command}/krew/version`, genericTable(canonical), defaultFlags)
+    registrar.listen(`/${command}/krew/help`, help(canonical), defaultFlags)
+    registrar.listen(`/${command}/krew/info`, info(canonical), defaultFlags)
+    registrar.listen(`/${command}/krew/list`, list(canonical), defaultFlags)
+    registrar.listen(`/${command}/krew/search`, genericTable(canonical), defaultFlags)
+    registrar.listen(`/${command}/krew/version`, genericTable(canonical), defaultFlags)
 
-    registrar.listen(`/${commandPrefix}/${command}/popeye`, popeye(canonical), defaultFlags)
+    registrar.listen(`/${command}/popeye`, popeye(canonical), defaultFlags)
   })
 }

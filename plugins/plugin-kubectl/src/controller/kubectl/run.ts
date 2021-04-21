@@ -18,7 +18,6 @@ import { Arguments, Registrar, KResponse } from '@kui-shell/core'
 
 import defaultFlags from './flags'
 import { doExecWithStatus } from './exec'
-import commandPrefix from '../command-prefix'
 import { KubeOptions } from './options'
 
 import { FinalState } from '../../lib/model/states'
@@ -52,6 +51,6 @@ export const doRun = (command = 'kubectl') => (args: Arguments<KubeOptions>): Pr
 
 export default (registrar: Registrar) => {
   const handler = doRun()
-  registrar.listen(`/${commandPrefix}/kubectl/run`, handler, defaultFlags)
-  registrar.listen(`/${commandPrefix}/k/run`, handler, defaultFlags)
+  registrar.listen('/kubectl/run', handler, defaultFlags)
+  registrar.listen('/k/run', handler, defaultFlags)
 }

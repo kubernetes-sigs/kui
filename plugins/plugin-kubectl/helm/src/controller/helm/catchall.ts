@@ -18,7 +18,6 @@ import { inBrowser, hasProxy, Arguments, Registrar } from '@kui-shell/core'
 import { isUsage, doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import doExecWithPty from './exec'
-import commandPrefix from '../command-prefix'
 
 /** is the given string `str` the `helm` command? */
 const isHelm = (str: string) => /^helm$/.test(str)
@@ -34,15 +33,9 @@ export default (registrar: Registrar) => {
   // found exceptions to the outer shell
   //
   registrar.catchall(
-    (argv: string[]) => {
-      return isHelm(argv[0]) || (argv[0] === commandPrefix && isHelm(argv[1]))
-    },
+    (argv: string[]) => isHelm(argv[0]),
     (args: Arguments<KubeOptions>) =>
-      isUsage(args) ||
-      (args.argv.length === 1 && args.argv[0] === 'helm') ||
-      (args.argv.length === 2 && args.argv[1] === 'helm' && args.argv[0] === commandPrefix)
-        ? doHelp('helm', args)
-        : doExecWithPty(args),
+      isUsage(args) || (args.argv.length === 1 && args.argv[0] === 'helm') ? doHelp('helm', args) : doExecWithPty(args),
     1 // priority
   )
 }

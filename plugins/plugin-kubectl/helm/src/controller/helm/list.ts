@@ -18,7 +18,6 @@ import { Arguments, Registrar } from '@kui-shell/core'
 import { isUsage, doHelp, preprocessTable, formatTable, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import doExecWithStdout from './exec'
-import commandPrefix from '../command-prefix'
 
 async function doList(args: Arguments<KubeOptions>) {
   if (isUsage(args)) {
@@ -37,7 +36,6 @@ async function doList(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/list`, doList)
-
-  registrar.listen(`/${commandPrefix}/helm/ls`, doList)
+  registrar.listen('/helm/ls', doList)
+  registrar.listen('/helm/list', doList)
 }

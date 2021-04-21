@@ -17,7 +17,6 @@
 import { Arguments, Registrar, KResponse } from '@kui-shell/core'
 
 import { exec } from './exec'
-import commandPrefix from '../command-prefix'
 
 import { doGetAsEntity, getFlags as flags } from './get'
 import { KubeOptions } from './options'
@@ -47,7 +46,7 @@ const doDescribe = (command: string) =>
 
 /** Register a command listener */
 export function describer(registrar: Registrar, command: string, cli = command) {
-  registrar.listen(`/${commandPrefix}/${command}/describe`, doDescribe(cli), flags)
+  registrar.listen(`/${command}/describe`, doDescribe(cli), flags)
 }
 
 export default (registrar: Registrar) => {

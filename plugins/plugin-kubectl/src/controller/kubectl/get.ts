@@ -29,7 +29,6 @@ import {
 import flags from './flags'
 import { exec } from './exec'
 import RawResponse from './response'
-import commandPrefix from '../command-prefix'
 import doGetWatchTable from './watch/get-watch'
 import extractAppAndName from '../../lib/util/name'
 import { kindAndNamespaceOf, kindPart } from './fqn'
@@ -462,7 +461,7 @@ export const getFlags = Object.assign({}, flags, { viewTransformer: viewTransfor
 
 /** Register a command listener */
 export function getter(registrar: Registrar, command: string, cli = command) {
-  registrar.listen(`/${commandPrefix}/${command}/get`, doGet(cli), getFlags)
+  registrar.listen(`/${command}/get`, doGet(cli), getFlags)
 }
 
 export default (registrar: Registrar) => {

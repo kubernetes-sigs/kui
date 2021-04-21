@@ -27,7 +27,6 @@ import { Arguments, CodedError, CommandOptions, ViewTransformer, Registrar, i18n
 
 import { flags } from './flags'
 import { doExecWithPty } from './exec'
-import commandPrefix from '../command-prefix'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { getCommandFromArgs } from '../../lib/util/util'
 import { doGetAsMMR as getTransformer } from './get'
@@ -108,18 +107,18 @@ function withTransformer(viewTransformer: ViewTransformer<KubeResource, KubeOpti
 
 export function registerApplySubcommands(registrar: Registrar, cmd: string) {
   registrar.listen(
-    `/${commandPrefix}/${cmd}/apply/view-last-applied`,
+    `/${cmd}/apply/view-last-applied`,
     get.bind(undefined, 'view-last-applied'),
     withTransformer(viewLastApplied('view-last-applied'))
   )
 
   registrar.listen(
-    `/${commandPrefix}/${cmd}/apply/edit-last-applied`,
+    `/${cmd}/apply/edit-last-applied`,
     get.bind(undefined, 'edit-last-applied'),
     withTransformer(viewLastApplied('edit-last-applied'))
   )
 
-  registrar.listen(`/${commandPrefix}/${cmd}/apply/set-last-applied`, doExecWithPty)
+  registrar.listen(`/${cmd}/apply/set-last-applied`, doExecWithPty)
 }
 
 export default function registerForKubectl(registrar: Registrar) {

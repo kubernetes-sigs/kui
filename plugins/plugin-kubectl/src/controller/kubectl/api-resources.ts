@@ -18,7 +18,6 @@ import { Arguments, Registrar, KResponse, isTable, isXtermResponse } from '@kui-
 
 import flags from './flags'
 import { exec } from './exec'
-import commandPrefix from '../command-prefix'
 import { KubeOptions } from './options'
 import { stringToTable } from '../../lib/view/formatTable'
 import { isUsage, doHelp } from '../../lib/util/help'
@@ -55,6 +54,6 @@ export const doGet = (command: string) => async (args: Arguments<KubeOptions>): 
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/kubectl/api-resources`, doGet('kubectl'), flags)
-  registrar.listen(`/${commandPrefix}/k/api-resources`, doGet('kubectl'), flags)
+  registrar.listen('/kubectl/api-resources', doGet('kubectl'), flags)
+  registrar.listen('/k/api-resources', doGet('kubectl'), flags)
 }

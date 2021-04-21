@@ -16,7 +16,6 @@
 
 import { Arguments } from '@kui-shell/core'
 
-import commandPrefix from '../../controller/command-prefix'
 import { isRecursive, KubeOptions } from '../../controller/kubectl/options'
 
 export interface TypedEntityName {
@@ -114,7 +113,7 @@ export class NotFoundError extends StatusError {
 }
 
 export const getCommandFromArgs = (args: Pick<Arguments, 'argvNoOptions'>): string => {
-  const cmd = args.argvNoOptions[0] === commandPrefix ? args.argvNoOptions[1] : args.argvNoOptions[0]
+  const cmd = args.argvNoOptions[0]
   return cmd === 'k' ? 'kubectl' : cmd
 }
 
@@ -124,11 +123,7 @@ export const getCommandFromArgs = (args: Pick<Arguments, 'argvNoOptions'>): stri
  *
  */
 export const commandWithoutResource = (args: Arguments<KubeOptions>) => {
-  if (args.argvNoOptions[0] === commandPrefix) {
-    return args.argvNoOptions.length === 3
-  } else {
-    return args.argvNoOptions.length === 2
-  }
+  return args.argvNoOptions.length === 2
 }
 /**
  * formulate a `apply -f` or `get -f` command based on args

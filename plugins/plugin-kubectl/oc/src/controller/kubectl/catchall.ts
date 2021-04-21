@@ -15,14 +15,7 @@
  */
 
 import { inBrowser, hasProxy, Arguments, Registrar, i18n } from '@kui-shell/core'
-import {
-  doExecWithPty,
-  doExecWithMarkdown,
-  commandPrefix,
-  isUsage,
-  doHelp,
-  KubeOptions
-} from '@kui-shell/plugin-kubectl'
+import { doExecWithPty, doExecWithMarkdown, isUsage, doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 const strings = i18n('plugin-kubectl')
 
@@ -40,11 +33,9 @@ export default (registrar: Registrar) => {
   // found exceptions to the outer shell
   //
   registrar.catchall(
-    (argv: string[]) => {
-      return isOc(argv[0]) || (argv[0] === commandPrefix && isOc(argv[1]))
-    },
+    (argv: string[]) => isOc(argv[0]),
     async (args: Arguments<KubeOptions>) => {
-      const cmd = args.argv[0] === commandPrefix ? args.argv[1] : args.argv[0]
+      const cmd = args.argv[0]
 
       if (args.argv.length === 1 || (args.argv.length === 2 && args.argv[1] === cmd)) {
         // `oc` or `odo` on their own

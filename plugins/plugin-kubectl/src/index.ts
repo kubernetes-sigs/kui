@@ -60,8 +60,6 @@ export {
 
 export { doExecRaw, doNativeExec } from './controller/kubectl/raw'
 
-export { default as commandPrefix } from './controller/command-prefix'
-
 export { default as kubectl } from './controller/cli'
 
 export { default as defaultFlags, flags } from './controller/kubectl/flags'

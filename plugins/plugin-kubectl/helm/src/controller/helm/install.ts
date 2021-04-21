@@ -19,7 +19,6 @@ import { doHelp, getNamespaceForArgv, KubeOptions } from '@kui-shell/plugin-kube
 
 import isUsage from './usage'
 import doExecWithStdout from './exec'
-import commandPrefix from '../command-prefix'
 
 const name = /^NAME:\s+([\w-]+)/
 
@@ -41,5 +40,5 @@ async function doInstall(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/install`, doInstall)
+  registrar.listen('/helm/install', doInstall)
 }

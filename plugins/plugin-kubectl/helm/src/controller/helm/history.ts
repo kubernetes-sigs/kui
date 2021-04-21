@@ -19,7 +19,6 @@ import { doHelp, preprocessTable, formatTable, KubeOptions } from '@kui-shell/pl
 
 import isUsage from './usage'
 import doExecWithStdout from './exec'
-import commandPrefix from '../command-prefix'
 
 async function doHistory(args: Arguments<KubeOptions>) {
   if (isUsage(args, 'history')) {
@@ -33,5 +32,5 @@ async function doHistory(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/history`, doHistory)
+  registrar.listen('/helm/history', doHistory)
 }

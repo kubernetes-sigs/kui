@@ -16,7 +16,7 @@
 
 import { Arguments, KResponse, Registrar } from '@kui-shell/core'
 
-import { isUsage, doHelp, commandPrefix, defaultFlags, KubeOptions } from '@kui-shell/plugin-kubectl'
+import { isUsage, doHelp, defaultFlags, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import raw from './controller/raw'
 
@@ -39,11 +39,11 @@ export default (registrar: Registrar) => {
   raw(registrar)
 
   registrar.listen(
-    `/${commandPrefix}/odo/project/list`,
+    '/odo/project/list',
     withHelp(projectList),
     Object.assign({}, defaultFlags, { viewTransformer: projectListView })
   )
 
-  registrar.listen(`/${commandPrefix}/odo/catalog/list/components`, withHelp(catalogListComponents), defaultFlags)
-  registrar.listen(`/${commandPrefix}/odo/catalog/list/services`, withHelp(catalogListServices), defaultFlags)
+  registrar.listen('/odo/catalog/list/components', withHelp(catalogListComponents), defaultFlags)
+  registrar.listen('/odo/catalog/list/services', withHelp(catalogListServices), defaultFlags)
 }

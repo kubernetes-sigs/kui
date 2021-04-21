@@ -15,8 +15,8 @@
  */
 
 import { Registrar } from '@kui-shell/core'
-import { doNativeExec, defaultFlags, commandPrefix } from '@kui-shell/plugin-kubectl'
+import { doNativeExec, defaultFlags } from '@kui-shell/plugin-kubectl'
 
 export default async (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/_odo`, doNativeExec, Object.assign({}, defaultFlags, { requiresLocal: true }))
+  registrar.listen('/_odo', doNativeExec, Object.assign({}, defaultFlags, { requiresLocal: true }))
 }

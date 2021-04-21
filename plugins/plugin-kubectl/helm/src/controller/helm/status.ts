@@ -20,7 +20,6 @@ import { doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import isUsage from './usage'
 import doExecWithStdout from './exec'
-import commandPrefix from '../command-prefix'
 
 const strings = i18n('plugin-kubectl')
 const strings2 = i18n('plugin-kubectl', 'helm')
@@ -202,5 +201,5 @@ async function doStatus(args: Arguments<KubeOptions>) {
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/helm/status`, doStatus)
+  registrar.listen('/helm/status', doStatus)
 }

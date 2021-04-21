@@ -19,7 +19,6 @@ import { REPL as REPLType, Table, Row, RawResponse, Arguments, Registrar, UsageM
 import flags from './flags'
 import apiVersion from './apiVersion'
 import { doExecWithTable } from './exec'
-import commandPrefix from '../command-prefix'
 import { KubeContext } from '../../lib/model/resource'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { onKubectlConfigChangeEvents } from './config'
@@ -154,14 +153,14 @@ const listContexts = async (args: Arguments): Promise<RawResponse<KubeContext[]>
  */
 export default (commandTree: Registrar) => {
   commandTree.listen(
-    `/${commandPrefix}/kubectl/config/get-contexts`,
+    '/kubectl/config/get-contexts',
     (args: Arguments): Promise<KResponse> =>
       isUsage(args) ? doHelp('kubectl', args) : doExecWithTable(args, undefined, undefined, { entityType: 'Context' }),
     flags
   )
 
   commandTree.listen(
-    `/${commandPrefix}/context`,
+    '/context',
     async ({ REPL }) => {
       return (await REPL.qexec<string>('kubectl config current-context')).trim()
     },
@@ -174,7 +173,7 @@ export default (commandTree: Registrar) => {
   )
 
   commandTree.listen(
-    `/${commandPrefix}/contexts`,
+    '/contexts',
     listContexts,
     Object.assign(
       {

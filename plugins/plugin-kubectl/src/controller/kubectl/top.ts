@@ -18,7 +18,6 @@ import { Arguments, Registrar, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
 import { exec } from './exec'
-import commandPrefix from '../command-prefix'
 import { KubeOptions } from './options'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { doGetAsTable } from './get'
@@ -42,8 +41,8 @@ const doTop = (command: string) =>
   }
 
 export default (commandTree: Registrar) => {
-  commandTree.listen(`/${commandPrefix}/kubectl/${verb}/node`, doTop('kubectl'), flags)
-  commandTree.listen(`/${commandPrefix}/k/${verb}/node`, doTop('k'), flags)
-  commandTree.listen(`/${commandPrefix}/kubectl/${verb}/pod`, doTop('kubectl'), flags)
-  commandTree.listen(`/${commandPrefix}/k/${verb}/pod`, doTop('k'), flags)
+  commandTree.listen(`/kubectl/${verb}/node`, doTop('kubectl'), flags)
+  commandTree.listen(`/k/${verb}/node`, doTop('k'), flags)
+  commandTree.listen(`/kubectl/${verb}/pod`, doTop('kubectl'), flags)
+  commandTree.listen(`/k/${verb}/pod`, doTop('k'), flags)
 }

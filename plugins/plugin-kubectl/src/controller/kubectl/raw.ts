@@ -21,7 +21,6 @@ import { Arguments, expandHomeDir, split, CodedError, inBrowser, ExecOptions, Re
 
 import flags from './flags'
 import RawResponse from './response'
-import commandPrefix from '../command-prefix'
 import { KubeOptions, FilepathOption } from './options'
 
 const debug = Debug('plugin-kubeui/controller/kubectl/raw')
@@ -170,5 +169,5 @@ export async function doExecRaw(
 }
 
 export default async (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/_kubectl`, doNativeExec, Object.assign({}, flags, { requiresLocal: true }))
+  registrar.listen('/_kubectl', doNativeExec, Object.assign({}, flags, { requiresLocal: true }))
 }

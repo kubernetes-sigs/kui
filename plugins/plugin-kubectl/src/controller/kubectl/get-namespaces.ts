@@ -17,7 +17,6 @@
 import { Arguments, Registrar, Tab, Table } from '@kui-shell/core'
 
 import { getCurrentContext } from './contexts'
-import commandPrefix from '../command-prefix'
 import { getFlags as flags } from './get'
 import { KubeOptions } from './options'
 
@@ -82,6 +81,6 @@ async function doGetCurrentNamespace({ tab }: Arguments<KubeOptions>) {
 }
 
 export default (commandTree: Registrar) => {
-  commandTree.listen(`/${commandPrefix}/namespace/current`, doGetCurrentNamespace, flags)
-  commandTree.listen(`/${commandPrefix}/namespace/summarize`, doSummarizeNamespace, flags)
+  commandTree.listen('/namespace/current', doGetCurrentNamespace, flags)
+  commandTree.listen('/namespace/summarize', doSummarizeNamespace, flags)
 }

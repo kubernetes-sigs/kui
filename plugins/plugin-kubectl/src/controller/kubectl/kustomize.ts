@@ -21,7 +21,6 @@ import flags from './flags'
 import { kindPartOf } from './fqn'
 import { KubeOptions } from './options'
 import { doExecWithStdout } from './exec'
-import commandPrefix from '../command-prefix'
 import { KubeResource } from '../../lib/model/resource'
 
 import { isUsage, doHelp } from '../../lib/util/help'
@@ -100,6 +99,6 @@ export const doKustomize = (command = 'kubectl') => async (args: Arguments<KubeO
 }
 
 export default (registrar: Registrar) => {
-  registrar.listen(`/${commandPrefix}/kubectl/kustomize`, doKustomize(), flags)
-  registrar.listen(`/${commandPrefix}/k/kustomize`, doKustomize(), flags)
+  registrar.listen('/kubectl/kustomize', doKustomize(), flags)
+  registrar.listen('/k/kustomize', doKustomize(), flags)
 }
