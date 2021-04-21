@@ -34,7 +34,7 @@
     "js-yaml": "3.14.1",
     "jsonpath": "github:starpit/jsonpath#preparse",
     "needle": "2.6.0",
-    "parse-duration": "0.4.4",
+    "parse-duration": "1.0.0",
     "semver": "7.3.5",
     "tmp": "0.2.1",
     "uuid": "8.3.2"
