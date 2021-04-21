@@ -52,6 +52,15 @@ export VERSION=$(node -e 'console.log(require((process.env.CLIENT_HOME || ".") +
 if [ $? != 0 ]; then VERSION=0.0.1; fi
 echo "Using VERSION=$VERSION"
 
+# make a bin/ directory inside of $1 and return the full path
+function makeBinDirectory {
+    local dir="$1/bin"
+    if [ ! -d "$dir" ]; then
+        mkdir "$dir"
+    fi
+    echo "$dir"
+}
+
 function tarCopy {
   if [[ `uname` == Darwin ]]; then
       which gtar || brew install gnu-tar
@@ -189,7 +198,8 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-ku
         # copy in optional custom launcher from custom clients
         if [ -f "$KUI_LAUNCHER" ]; then
             echo "Copying in custom launcher"
-            cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH"
+            bindir=$(makeBinDirectory "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH")
+            cp "$KUI_LAUNCHER" "$bindir"
         fi
 
         # copy in the headless build
@@ -283,7 +293,8 @@ fi
             # copy in optional custom launcher from custom clients
             if [ -f "$KUI_LAUNCHER" ]; then
                 echo "Copying in custom launcher"
-                cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH"
+                bindir=$(makeBinDirectory "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH")
+                cp "$KUI_LAUNCHER" "$bindir"
             fi
 
             # copy in the headless build
@@ -331,7 +342,8 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
         # copy in optional custom launcher from custom clients
         if [ -f "$KUI_LAUNCHER" ]; then
             echo "Copying in custom launcher"
-            cp "$KUI_LAUNCHER" "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH"
+            bindir=$(makeBinDirectory "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH")
+            cp "$KUI_LAUNCHER" "$bindir"
         fi
 
         # copy in the headless build
