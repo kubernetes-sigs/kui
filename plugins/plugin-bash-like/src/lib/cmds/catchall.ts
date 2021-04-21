@@ -36,6 +36,7 @@ const debug = Debug('plugins/bash-like/cmds/catchall')
 export const dispatchToShell = async ({
   tab,
   command,
+  argv,
   argvNoOptions,
   execOptions,
   parsedOptions,
@@ -65,7 +66,8 @@ export const dispatchToShell = async ({
 
   if (isHeadless() || (!inBrowser() && useRaw)) {
     const { doExec } = await import('./bash-like')
-    const response = await doExec(actualCommand, eOptions).catch(cleanUpError)
+    const actualArgv = argv[0] === 'sendtopty' ? argv.slice(1) : argv
+    const response = await doExec(actualCommand, actualArgv, eOptions).catch(cleanUpError)
     if (useRaw && (typeof response === 'number' || typeof response === 'boolean')) {
       return response
     } else if (useRaw && typeof response === 'string') {
