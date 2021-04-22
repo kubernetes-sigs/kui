@@ -443,6 +443,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
     const idx5 = this.findAttrIdx('InputFile')
     const idx6 = this.findAttrIdx('InputFileSize')
+    const idx7 = this.findAttrIdx('Message')
 
     const colorByStatus = this.colorByStatus()
     const durationColoring = new DefaultColoring(this.props.response)
@@ -568,18 +569,25 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                     </div>
                   </td>
                 )}
-                {colorByStatus && (
+                {colorByStatus && idx7 < 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content">
                     <span className="cell-inner">{!isOverheadRow && prettyPrintDateDelta(row, idx1, idx2)}</span>
                   </td>
                 )}
-                {idx6 >= 0 && (
+                {idx6 >= 0 && idx7 < 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
                     <span
                       className="cell-inner"
                       title={row.attributes[idx6] && safePrettyPrintBytes(row.attributes[idx6].value)}
                     >
                       {row.attributes[idx6] ? prettyPrintDateDelta(row, idx1, idx2, row.attributes[idx6].value) : ''}
+                    </span>
+                  </td>
+                )}
+                {idx7 >= 0 && (
+                  <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
+                    <span className="cell-inner" title={row.attributes[idx7] ? row.attributes[idx7].value : ''}>
+                      {row.attributes[idx7] ? row.attributes[idx7].value : ''}
                     </span>
                   </td>
                 )}
