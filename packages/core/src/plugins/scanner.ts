@@ -351,13 +351,12 @@ export const scanForModules = async (dir: string, quiet = false, filter: Filter 
           }
 
           if (fs.statSync(modulePath).isDirectory()) {
-            const subDirs = fs
-              .readdirSync(modulePath)
-              .filter(
-                _ =>
-                  !/(^m?dist)|(bin)|(web)|(src)|(samples)|(i18n)|(tests)|(node_modules)$/.test(_) &&
-                  fs.statSync(path.join(modulePath, _)).isDirectory()
-              )
+            const subDirs = fs.readdirSync(modulePath).filter(
+              _ =>
+                !/(^m?dist)|(bin)|(web)|(src)|(samples)|(i18n)|(tests)|(node_modules)$/.test(_) &&
+                fs.existsSync(path.join(modulePath, _)) && // see https://github.com/kubernetes-sigs/kui/issues/7326
+                fs.statSync(path.join(modulePath, _)).isDirectory()
+            )
 
             if (subDirs.length > 0) {
               doScan({
