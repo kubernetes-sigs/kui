@@ -67,11 +67,11 @@ function webpack {
 
     if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
         echo "Building headless bundles via webpack"
-        npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js  --mode=production &
+        npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js --mode=$MODE &
     fi
 
     echo "Building electron bundles via webpack"
-    npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/webpack.config.js --mode production
+    npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/webpack.config.js --mode $MODE
 
     wait
 
