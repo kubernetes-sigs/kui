@@ -374,7 +374,7 @@ const fallback = !inBrowser
       stream: require.resolve('stream-browserify'),
       timers: require.resolve('timers-browserify'),
       util: require.resolve('util'),
-      zlib: require.resolve('stream-browserify')
+      zlib: require.resolve('browserify-zlib')
     }
 
 module.exports = {
