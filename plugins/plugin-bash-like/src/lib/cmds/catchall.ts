@@ -135,10 +135,18 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
     const myArgs = Object.assign({}, args, { execOptions: myExecOptions })
 
     await dispatchToShell(myArgs).catch(err => {
-      console.error(err)
-
       // if the PTY emitted anything on stdout, use this as the message
-      err.message = stdout || err.message
+      const message = stdout || err.message
+
+      if (stdout && isHeadless()) {
+        // avoid stack traces to our own code? see
+        // https://github.com/kubernetes-sigs/kui/issues/7334
+        console.error(message)
+      } else {
+        console.error(err)
+      }
+
+      err.message = message
 
       reject(err)
     })
