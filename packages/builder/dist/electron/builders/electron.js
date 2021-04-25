@@ -41,17 +41,19 @@
  *
  */
 
-const { join } = require('path')
 const { arch: osArch } = require('os')
 const { createGunzip } = require('zlib')
-const { createReadStream, createWriteStream, readdir } = require('fs')
+const { basename, join } = require('path')
 const packager = require('electron-packager')
+const { copy, emptyDir } = require('fs-extra')
+const { createReadStream, createWriteStream, readdir } = require('fs')
 
 process.argv.shift()
 process.argv.shift()
 
 const nodePty = 'node-pty-prebuilt-multiarch'
 
+/** afterCopy hook to copy in the platform-specific node-pty build */
 async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArch, callback) {
   if (process.platform === targetPlatform && targetArch === osArch()) {
     // if the current platform matches the target platform, there is
@@ -98,6 +100,20 @@ async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArc
   }
 }
 
+/** afterCopy hook to copy in headless build, etc. things that need to be codesigned */
+async function copySignableBits(buildPath, electronVersion, targetPlatform, targetArch, callback) {
+  // copy in the headless build?
+  if (process.env.KUI_HEADLESS_WEBPACK) {
+    const source = process.env.HEADLESS_BUILDDIR
+    const target = join(buildPath, '..', basename(source)) // buildPath is Contents/Resources/app on macOS
+    console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
+    await emptyDir(target)
+    await copy(source, target)
+  }
+
+  callback()
+}
+
 // required positional arguments to our main:
 const dir = process.argv[0]
 const name = process.argv[1]
@@ -127,7 +143,57 @@ const args = {
   overwrite: true,
 
   // and finally, this is the reason we are here:
-  afterCopy: [copyNodePty]
+  afterCopy: [copyNodePty, copySignableBits]
+}
+
+//
+// macOS signing:
+//
+// Create a signing certificate In the lower-left corner of the
+// signing certificates sheet, click the Add button (+) , and choose a
+// certificate type from the pop-up menu.
+//
+if (process.env.OSX_SIGNING_IDENTITY) {
+  args.osxSign = {
+    identity: process.env.OSX_SIGNING_IDENTITY,
+    'no-pre-auto-entitlements': process.env.NO_PRE_AUTO_ENTITLEMENTS === 'true',
+    'provisioning-profile': process.env.PROVISIONING_PROFILE,
+    platform: process.env.OSX_PLATFORM || 'darwin',
+    'hardened-runtime': true,
+    entitlements: join(__dirname, 'entitlements.plist'),
+    'entitlements-inherit': join(__dirname, 'entitlements.plist'),
+    'signature-flags': 'library',
+    'gatekeeper-assess': false // see https://github.com/electron/electron-osx-sign/issues/196
+  }
+} else {
+  console.error(
+    'Not signing the macOS binary. Make sure to set these environment variables: OSX_SIGNING_IDENTITY, PROVISIONING_PROFILE'
+  )
+}
+
+//
+// macOS notarization: needs an AppleId, an app-specific password, a
+// team short name, and an app bundle ID
+//
+// To generate an app-specific password: Sign in to your Apple ID
+// account page. In the Security section, click Generate Password
+// below App-Specific Passwords.
+//
+if (process.env.APPLEID && process.env.APPLEID_PASSWORD && process.env.APP_BUNDLE_ID && process.env.ASC_PROVIDER) {
+  args.osxNotarize = {
+    ascProvider: process.env.ASC_PROVIDER, // team short name
+    appBundleId: process.env.APP_BUNDLE_ID, // app bundle id
+    appleId: process.env.APPLEID, // login ID for your AppleID account
+    appleIdPassword: process.env.APPLEID_PASSWORD // NOT the password for that account; this is an app-specific password
+  }
+} else {
+  console.error(
+    'Not notarizing the macOS binary. Make sure to set these environment variables: APPLEID, APPLEID_PASSWORD, APP_BUNDLE_ID, ASC_PROVIDER'
+  )
+}
+
+if (process.env.APP_BUNDLE_ID) {
+  args.appBundleId = process.env.APP_BUNDLE_ID // app bundle id
 }
 
 //

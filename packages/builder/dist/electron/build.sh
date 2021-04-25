@@ -38,6 +38,7 @@ THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
 export BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
 export BUILDDIR="$CLIENT_HOME"/dist/electron
 export HEADLESS_BUILDDIR="$STAGING"/dist/headless
+export KUI_HEADLESS_WEBPACK
 
 #
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
@@ -202,11 +203,6 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-ku
             cp "$KUI_LAUNCHER" "$bindir"
         fi
 
-        # copy in the headless build
-        if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
-            cp -a "$HEADLESS_BUILDDIR" "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH"
-        fi
-
         #
         # deal with win32 packaging
         #
@@ -248,18 +244,8 @@ function mac {
         #node ./builders/zip.js
 
         if [ -z "$NO_INSTALLER" ]; then
-            if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
-                echo "DMG build for darwin"
-                (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
-	            "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app" \
-	            "${CLIENT_NAME}" \
-	            --out="$BUILDDIR" \
-	            --icon="$ICON_MAC" \
-	            --icon-size=128 \
-	            --overwrite) &
-                MAC_DMG_PID=$!
-            fi
 
+            if [ ! -f "$KUI_LAUNCHER" ]; then
             echo "Add kubectl-kui to electron build darwin $ARCH"
             (cd "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/" \
             && touch kubectl-kui && chmod +x kubectl-kui \
@@ -289,6 +275,7 @@ else
     "$APP_RESOURCES_DIR/../MacOS/Kui" kubectl $@
 fi
 ' >> kubectl-kui)
+            fi
 
             # copy in optional custom launcher from custom clients
             if [ -f "$KUI_LAUNCHER" ]; then
@@ -297,9 +284,16 @@ fi
                 cp "$KUI_LAUNCHER" "$bindir"
             fi
 
-            # copy in the headless build
-            if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
-                cp -a "$HEADLESS_BUILDDIR" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources"
+            if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
+                echo "DMG build for darwin"
+                (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
+	            "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app" \
+	            "${CLIENT_NAME}" \
+	            --out="$BUILDDIR" \
+	            --icon="$ICON_MAC" \
+	            --icon-size=128 \
+	            --overwrite) &
+                MAC_DMG_PID=$!
             fi
 
             echo "TGZ build for darwin"
@@ -344,11 +338,6 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
             echo "Copying in custom launcher"
             bindir=$(makeBinDirectory "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH")
             cp "$KUI_LAUNCHER" "$bindir"
-        fi
-
-        # copy in the headless build
-        if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
-            cp -a "$HEADLESS_BUILDDIR" "$BUILDDIR/${CLIENT_NAME}-linux-$ARCH"
         fi
 
         if [ -z "$NO_INSTALLER" ]; then
