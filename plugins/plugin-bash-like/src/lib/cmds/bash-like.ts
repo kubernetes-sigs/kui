@@ -42,9 +42,6 @@ function doSpawn(
       const options: SpawnOptions = {
         env: Object.assign({}, process.env, execOptions['env'] || {})
       }
-      if (process.env.SHELL) {
-        options.shell = process.env.SHELL
-      }
 
       if (!execOptions.onInit && !execOptions.onExit && isHeadless() && !inProxy()) {
         options.stdio = 'inherit'
