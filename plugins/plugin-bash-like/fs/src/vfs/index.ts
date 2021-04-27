@@ -111,15 +111,6 @@ export interface VFS {
 
   /** remove a directory/bucket */
   rmdir(opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>, filepath: string): Promise<void>
-
-  /** grep for file content */
-  grep(opts: Arguments<ParallelismOptions>, pattern: string, filepaths: string[]): Promise<true | number | string[]>
-
-  /** zip a set of files */
-  gzip(opts: Arguments<ParallelismOptions>, filepaths: string[]): Promise<void | Table>
-
-  /** unzip a set of files */
-  gunzip(opts: Arguments<ParallelismOptions>, filepaths: string[]): Promise<void | Table>
 }
 
 /**

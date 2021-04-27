@@ -17,7 +17,7 @@
 import { CommandHandler, KResponse, ParsedOptions, Registrar } from '@kui-shell/core'
 
 import { fstatImpl, fwriteImpl, lsImpl } from './server-side'
-import { cp, grep, gzip, gunzip, rm, mkdir, rmdir } from '../delegates'
+import { cp, rm, mkdir, rmdir } from '../delegates'
 
 /**
  * Generic registration for commands with boolean flags.
@@ -99,29 +99,6 @@ export default function(registrar: Registrar) {
   on('mkdir', args => mkdir(args, args.argvNoOptions[1]).then(() => true), 'pv')
   on('rmdir', args => rmdir(args, args.argvNoOptions[1]).then(() => true), 'p')
 
-  on('gzip', args => gzip(args, args.argvNoOptions.slice(1)).then(_ => _ || true), 'cdfhkLlNnqrtVv')
-
-  on('gunzip', args => gunzip(args, args.argvNoOptions.slice(1)).then(_ => _ || true), 'cfhkLNqrtVv', [
-    'fast',
-    'best',
-    'stdout',
-    'to-stdout',
-    'decompress',
-    'uncompress',
-    'force',
-    'help',
-    'keep',
-    'license',
-    'list',
-    'name',
-    'quiet',
-    'recursive',
-    'suffix',
-    'test',
-    'version',
-    'verbose'
-  ])
-
   on(
     'cp',
     args => {
@@ -131,13 +108,5 @@ export default function(registrar: Registrar) {
       return cp(args, srcs, dst)
     },
     'acfHiLnPpRvXs'
-  )
-
-  on(
-    'grep',
-    args => {
-      return grep(args, args.argvNoOptions[1], args.argvNoOptions.slice(2))
-    },
-    'alcEFHIJLnOqrsUVvwxyZz'
   )
 }
