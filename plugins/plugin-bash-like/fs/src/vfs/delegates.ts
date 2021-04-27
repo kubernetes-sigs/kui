@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { basename } from 'path'
-import { Arguments, CodedError, Table, flatten } from '@kui-shell/core'
+import { Arguments, CodedError, flatten } from '@kui-shell/core'
 import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
 
 const debug = Debug('plugin/bash-like/fs/vfs/delegates')
@@ -306,76 +306,4 @@ export async function mkdir(...parameters: Parameters<VFS['mkdir']>): ReturnType
 export async function rmdir(...parameters: Parameters<VFS['rmdir']>): ReturnType<VFS['rmdir']> {
   const mount = await findMount(parameters[1])
   return mount.rmdir(parameters[0], parameters[1])
-}
-
-/*
- * grep delegate
- *
- */
-export async function grep(...parameters: Parameters<VFS['grep']>): ReturnType<VFS['grep']> {
-  const mounts = await multiFindMount(parameters[2], false)
-  if (mounts.length === 0) {
-    const err: CodedError = new Error(`VFS not mounted: ${parameters[2]}`)
-    err.code = 404
-    throw err
-  }
-
-  const matches = (
-    await Promise.all(mounts.map(({ filepaths, mount }) => mount.grep(parameters[0], parameters[1], filepaths)))
-  ).filter(_ => _ !== true)
-
-  if (matches.length > 0) {
-    if (parameters[0].parsedOptions.c) {
-      const N = (matches as number[]).reduce((sum, count) => sum + count, 0)
-      return N
-    } else {
-      return flatten(matches as string[][])
-    }
-  }
-}
-
-/** Collect an array of tables into a single table */
-function collectTables(responses: (void | Table)[]): void | Table {
-  if (responses) {
-    return responses.reduce((T, t) => {
-      if (!T) {
-        return t
-      } else if (t) {
-        T.body.splice(T.body.length - 1, 0, ...t.body)
-        return T
-      }
-    }, undefined as Table)
-  }
-}
-
-/*
- * gzip delegate
- *
- */
-export async function gzip(...parameters: Parameters<VFS['gzip']>): ReturnType<VFS['gzip']> {
-  const mounts = await multiFindMount(parameters[1], true)
-  if (mounts.length === 0) {
-    const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
-    err.code = 404
-    throw err
-  }
-
-  const responses = await Promise.all(mounts.map(({ filepaths, mount }) => mount.gzip(parameters[0], filepaths)))
-  return collectTables(responses)
-}
-
-/*
- * gunzip delegate
- *
- */
-export async function gunzip(...parameters: Parameters<VFS['gunzip']>): ReturnType<VFS['gunzip']> {
-  const mounts = await multiFindMount(parameters[1], true)
-  if (mounts.length === 0) {
-    const err: CodedError = new Error(`VFS not mounted: ${parameters[1]}`)
-    err.code = 404
-    throw err
-  }
-
-  const responses = await Promise.all(mounts.map(({ filepaths, mount }) => mount.gunzip(parameters[0], filepaths)))
-  return collectTables(responses)
 }
