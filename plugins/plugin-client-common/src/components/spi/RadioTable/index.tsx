@@ -36,7 +36,7 @@ export default class RadioTableSpi extends React.PureComponent<Props, State> {
       <DropDown
         toggle="caret"
         actions={this.props.table.body.map((_, idx) => ({
-          label: radioTableCellToString(_.cells[_.nameIdx]),
+          label: radioTableCellToString(_.cells[_.nameIdx || 0]),
           isSelected: this.state.selectedIdx === idx,
           handler: () => pexecInCurrentTab(_.onSelect)
         }))}
