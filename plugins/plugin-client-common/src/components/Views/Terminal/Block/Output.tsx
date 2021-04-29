@@ -93,13 +93,14 @@ interface State {
   isResultRendered: boolean
 
   nStreamingOutputs: number
-  streamingOutput: Streamable[]
   streamingConsumer: Stream
 }
 
 export default class Output extends React.PureComponent<Props, State> {
   private readonly _willRemove = () => this.props.willRemove(undefined, this.props.idx)
   private readonly _willUpdateCommand = (command: string) => this.props.willUpdateCommand(this.props.idx, command)
+
+  private streamingOutput: Streamable[] = []
 
   public constructor(props: Props) {
     super(props)
@@ -110,7 +111,6 @@ export default class Output extends React.PureComponent<Props, State> {
       alreadyListen: false,
       isResultRendered: false,
       nStreamingOutputs: 0,
-      streamingOutput: [],
       streamingConsumer
     }
   }
@@ -119,21 +119,20 @@ export default class Output extends React.PureComponent<Props, State> {
   private async streamingConsumer(part: Streamable) {
     if (hasUUID(this.props.model)) {
       // part === null: the controller wants to clear any prior output
-      this.setState(curState => {
-        if (part === null) {
-          return {
-            // remove all output
-            nStreamingOutputs: 0,
-            streamingOutput: []
-          }
-        } else {
-          curState.streamingOutput.push(part)
-          return {
-            nStreamingOutputs: curState.nStreamingOutputs + 1,
-            streamingOutput: curState.streamingOutput
-          }
+      if (part === null) {
+        this.streamingOutput = []
+        return {
+          // remove all output
+          nStreamingOutputs: 0
         }
-      })
+      } else {
+        this.streamingOutput.push(part)
+        setTimeout(() => {
+          this.setState({
+            nStreamingOutputs: this.streamingOutput.length
+          })
+        }, 10)
+      }
       this.props.onRender()
       eventChannelUnsafe.emit(`/command/stdout/done/${this.props.uuid}/${this.props.model.execUUID}`)
     }
@@ -184,8 +183,8 @@ export default class Output extends React.PureComponent<Props, State> {
 
   private stream() {
     if (this.hasStreamingOutput()) {
-      if (this.state.streamingOutput.every(_ => typeof _ === 'string')) {
-        const combined = this.state.streamingOutput.join('')
+      if (this.streamingOutput.every(_ => typeof _ === 'string')) {
+        const combined = this.streamingOutput.join('')
         return (
           <div className="repl-result-like result-vertical" data-stream>
             <Ansi>{combined}</Ansi>
@@ -195,7 +194,7 @@ export default class Output extends React.PureComponent<Props, State> {
 
       return (
         <div className="repl-result-like result-vertical" data-stream>
-          {this.state.streamingOutput.map((part, idx) => (
+          {this.streamingOutput.map((part, idx) => (
             <React.Suspense fallback={<div />} key={idx}>
               <Scalar
                 tab={this.props.tab}
