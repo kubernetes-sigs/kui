@@ -187,8 +187,8 @@ export function mount(vfs: VFS | VFSProducingFunction, placeholderMountPath?: st
                 if (!debounce) {
                   debounce = true
                   await mountAll(tab, vfs)
+                  resolve(undefined)
                 }
-                resolve(undefined)
               } catch (err) {
                 console.error('Error in mount 1', err)
                 reject(err)
