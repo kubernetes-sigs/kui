@@ -48,8 +48,8 @@ const packager = require('electron-packager')
 const { copy, emptyDir } = require('fs-extra')
 const { createReadStream, createWriteStream, readdir } = require('fs')
 
-process.argv.shift()
-process.argv.shift()
+const sign = require('./sign')
+const notarize = require('./notarize')
 
 const nodePty = 'node-pty-prebuilt-multiarch'
 
@@ -114,92 +114,68 @@ async function copySignableBits(buildPath, electronVersion, targetPlatform, targ
   callback()
 }
 
+/**
+ * Use electron-packager to create the application package
+ *
+ */
+function package(baseArgs /*: { dir: string, name: string, platform: string, arch: string, icon: string } */) {
+  const args = Object.assign(baseArgs, {
+    // where to store the builds
+    out: process.env.BUILDDIR,
+
+    // version settings
+    appVersion: process.env.VERSION,
+    buildVersion: process.env.VERSION,
+    electronVersion: process.env.ELECTRON_VERSION,
+
+    // do we want electron-packager to do an npm prune -o production?
+    prune: !process.env.NO_PRUNE,
+
+    // a regexp that will let us exclude specified files from the
+    // final tarball
+    ignore: process.env.IGNORE,
+
+    // default settings
+    overwrite: true,
+
+    // asar is desirable, as it packs the zillions of node_modules
+    // files into a single file; faster installation on users'
+    // machines; but we have to be careful w.r.t. native modules
+    asar: {
+      unpack: '*.{node,dll}' // <-- avoids loading/signing issues with native modules
+    },
+
+    // lifecycle hooks to copy in our extra bits
+    afterCopy: [copyNodePty, copySignableBits]
+  })
+
+  if (process.env.APP_BUNDLE_ID) {
+    // this part of electron-packager seems weird; we need to set the
+    // macOS bundleID here (i.e. HERE ALSO!! we of course need to pass
+    // it to the osx signer, below), otherwise the packager places a generic
+    // bundleId in the macOS App (something like
+    // com.electron.<myElectronAppName>)
+    args.appBundleId = process.env.APP_BUNDLE_ID
+  }
+
+  return packager(args)
+}
+
 // required positional arguments to our main:
+process.argv.shift()
+process.argv.shift()
 const dir = process.argv[0]
 const name = process.argv[1]
 const platform = process.argv[2]
 const arch = process.argv[3]
 const icon = process.argv[4]
 
-const args = {
-  dir,
-  name,
-  platform,
-  arch,
-  icon,
-
-  // required environmental parameters:
-  appVersion: process.env.VERSION,
-  buildVersion: process.env.VERSION,
-  electronVersion: process.env.ELECTRON_VERSION,
-  out: process.env.BUILDDIR,
-
-  // optional environmental parameters
-  prune: !process.env.NO_PRUNE,
-  ignore: process.env.IGNORE,
-
-  // default settings
-  asar: !process.env.NO_ASAR && platform !== 'win32', // node-pty loading native modules versus asar :(
-  overwrite: true,
-
-  // and finally, this is the reason we are here:
-  afterCopy: [copyNodePty, copySignableBits]
-}
-
-//
-// macOS signing:
-//
-// Create a signing certificate In the lower-left corner of the
-// signing certificates sheet, click the Add button (+) , and choose a
-// certificate type from the pop-up menu.
-//
-if (process.env.OSX_SIGNING_IDENTITY) {
-  args.osxSign = {
-    identity: process.env.OSX_SIGNING_IDENTITY,
-    'no-pre-auto-entitlements': process.env.NO_PRE_AUTO_ENTITLEMENTS === 'true',
-    'provisioning-profile': process.env.PROVISIONING_PROFILE,
-    platform: process.env.OSX_PLATFORM || 'darwin',
-    'hardened-runtime': true,
-    entitlements: join(__dirname, 'entitlements.plist'),
-    'entitlements-inherit': join(__dirname, 'entitlements.plist'),
-    'signature-flags': 'library',
-    'gatekeeper-assess': false // see https://github.com/electron/electron-osx-sign/issues/196
-  }
-} else {
-  console.error(
-    'Not signing the macOS binary. Make sure to set these environment variables: OSX_SIGNING_IDENTITY, PROVISIONING_PROFILE'
-  )
-}
-
-//
-// macOS notarization: needs an AppleId, an app-specific password, a
-// team short name, and an app bundle ID
-//
-// To generate an app-specific password: Sign in to your Apple ID
-// account page. In the Security section, click Generate Password
-// below App-Specific Passwords.
-//
-if (process.env.APPLEID && process.env.APPLEID_PASSWORD && process.env.APP_BUNDLE_ID && process.env.ASC_PROVIDER) {
-  args.osxNotarize = {
-    ascProvider: process.env.ASC_PROVIDER, // team short name
-    appBundleId: process.env.APP_BUNDLE_ID, // app bundle id
-    appleId: process.env.APPLEID, // login ID for your AppleID account
-    appleIdPassword: process.env.APPLEID_PASSWORD // NOT the password for that account; this is an app-specific password
-  }
-} else {
-  console.error(
-    'Not notarizing the macOS binary. Make sure to set these environment variables: APPLEID, APPLEID_PASSWORD, APP_BUNDLE_ID, ASC_PROVIDER'
-  )
-}
-
-if (process.env.APP_BUNDLE_ID) {
-  args.appBundleId = process.env.APP_BUNDLE_ID // app bundle id
-}
-
 //
 // invoke electron-packager, catching any errors it might throw
 //
-packager(args)
+package({ dir, name, platform, arch, icon })
+  .then(sign(name, platform))
+  .then(notarize(name, platform))
   .then(() => {
     console.log('success')
     process.exit(0)

@@ -12,7 +12,8 @@
     "debug": "4.3.1",
     "electron": "10.4.3",
     "electron-packager": "15.2.0",
-    "glob": "7.1.6"
+    "glob": "7.1.6",
+    "globby": "^11.0.3"
   },
   "optionalDependencies": {
     "electron-installer-debian": "3.1.0",
