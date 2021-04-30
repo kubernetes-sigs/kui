@@ -680,9 +680,16 @@ export class ImplForPlugins implements CommandRegistrar {
     overrideHandler: CommandOverrideHandler<T, O>,
     options?: CommandOptions
   ): Promise<Command<T, O>> {
-    const currentHandler = (await this.find<T, O>(route, fromPlugin)).$
+    let currentHandler = (await this.find<T, O>(route, fromPlugin)).$
     if (!currentHandler) {
-      throw new Error(`Cannot find desired command handler for ${route} from plugin ${fromPlugin}`)
+      if (resolver) {
+        await resolver.resolveOne(fromPlugin)
+      }
+
+      currentHandler = (await this.find<T, O>(route, fromPlugin)).$
+      if (!currentHandler) {
+        throw new Error(`Cannot find desired command handler for ${route} from plugin ${fromPlugin}`)
+      }
     }
 
     const handler = (args: EvaluatorArgs<O>) => overrideHandler(args, currentHandler)
