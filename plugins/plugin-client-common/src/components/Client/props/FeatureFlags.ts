@@ -24,6 +24,9 @@ type FeatureFlags = {
   /** [Optional] Enable Split Terminals? */
   splitTerminals?: boolean
 
+  /** [Optional] Show bottom status stripe? [default: true] */
+  statusStripe?: boolean
+
   /** Operate in popup mode? */
   isPopup?: boolean
 

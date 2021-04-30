@@ -320,9 +320,15 @@ export class Kui extends React.PureComponent<Props, State> {
                 onTabReady={this.state.commandLine && this._onTabReady}
               ></TabContainer>
               {this.props.toplevel}
-              <StatusStripe noHelp={this.props.noHelp} noSettings={this.props.noSettings} {...this.statusStripeProps()}>
-                {this.props.children}
-              </StatusStripe>
+              {this.props.statusStripe !== false && (
+                <StatusStripe
+                  noHelp={this.props.noHelp}
+                  noSettings={this.props.noSettings}
+                  {...this.statusStripeProps()}
+                >
+                  {this.props.children}
+                </StatusStripe>
+              )}
             </div>
           </React.Suspense>
         </KuiContext.Provider>
