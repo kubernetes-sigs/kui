@@ -16,16 +16,17 @@
 
 /** Scrollback styling */
 
+@import 'mixins';
 @import './Block';
 
-.kui--terminal-split-container {
+@include SplitContainer {
   display: grid;
   grid-gap: 6px;
   overflow: hidden;
   background-color: var(--color-stripe-01);
 }
 
-.kui--scrollback {
+@include Scrollback {
   padding: 0.5em 0;
   background-color: var(--color-repl-background);
 }

@@ -314,7 +314,7 @@ export class Kui extends React.PureComponent<Props, State> {
           <React.Suspense fallback={<div />}>
             <div className="kui--full-height">
               <TabContainer
-                noActiveInput={!!this.props.bottomInput}
+                noActiveInput={this.props.noActiveInput || !!this.props.bottomInput}
                 bottom={bottom}
                 title={this.props.initialTabTitle}
                 onTabReady={this.state.commandLine && this._onTabReady}

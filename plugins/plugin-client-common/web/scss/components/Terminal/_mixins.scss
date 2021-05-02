@@ -53,6 +53,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin SplitContainer {
+  .kui--terminal-split-container {
+    @content;
+  }
+}
+
 @mixin MiniSplit {
   @include Scrollback {
     &[data-is-minisplit] {
@@ -286,5 +292,38 @@ $action-hover-delay: 210ms;
 @mixin StreamingOutput {
   .repl-result-like[data-stream] {
     @content;
+  }
+}
+
+/** Commentary section in a block */
+@mixin Commentary {
+  .kui--commentary {
+    @content;
+  }
+}
+
+/** Commentary card wrapper for the Commentary section */
+@mixin Card {
+  .kui--commentary-card {
+    @content;
+  }
+}
+
+/** Specify a number of columns in the SplitContainer */
+@mixin Columns($N) {
+  grid-template-columns: repeat(#{$N}, 1fr);
+}
+
+/** Specify a number of rows in the SplitContainer */
+@mixin Rows($N) {
+  grid-template-rows: repeat(#{$N}, 1fr);
+}
+
+/** Two, three, etc. Splits in the current Tab */
+@mixin Split($N) {
+  @include SplitContainer {
+    &[data-split-count='#{$N}'] {
+      @content;
+    }
   }
 }

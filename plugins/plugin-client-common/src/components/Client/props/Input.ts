@@ -15,6 +15,9 @@
  */
 
 type InputProps = {
+  /** Don't display the active input element */
+  noActiveInput?: boolean
+
   /** [Optional] do not display any extra information beside the > prompt. Default: false */
   noPromptContext?: boolean
 

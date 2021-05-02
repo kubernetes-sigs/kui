@@ -20,7 +20,7 @@
 $height: 2.75rem;
 $tab-label-font-size: 0.875rem;
 
-@include TopTabStripe {
+@include TopTabStripeAbsolute {
   --tab-shadow: inset 0 -3px 0 0;
   --pf-c-page__header--BackgroundColor: var(--color-stripe-01);
 
