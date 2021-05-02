@@ -18,18 +18,6 @@
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
 
-@mixin Commentary {
-  .kui--commentary {
-    @content;
-  }
-}
-
-@mixin Card {
-  .kui--commentary-card {
-    @content;
-  }
-}
-
 @mixin h1 {
   @include Card {
     h1 {

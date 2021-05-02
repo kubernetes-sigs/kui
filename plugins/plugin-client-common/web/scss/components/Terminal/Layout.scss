@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@import 'mixins';
+
 /** Grid assignments for terminals */
 .kui--scrollback:nth-of-type(1) {
   grid-area: T1;
@@ -40,13 +42,6 @@
   grid-area: T8;
 }
 
-@mixin Columns($N) {
-  grid-template-columns: repeat(#{$N}, 1fr);
-}
-@mixin Rows($N) {
-  grid-template-rows: repeat(#{$N}, 1fr);
-}
-
 /** Case: no splits */
 .kui--terminal-split-container[data-split-count='1'] {
   @include Rows(1);
@@ -54,72 +49,63 @@
   grid-template-areas: 'T1';
 }
 
-.kui--terminal-split-container {
-  /* two terminals */
-  &[data-split-count='2'] {
-    @include Rows(1);
-    @include Columns(2);
-    grid-template-areas: 'T1 T2';
-  }
+@include Split(2) {
+  @include Rows(1);
+  @include Columns(2);
+  grid-template-areas: 'T1 T2';
+}
 
-  /* three terminals */
-  &[data-split-count='3'] {
-    @include Rows(5);
-    @include Columns(2);
-    grid-template-areas:
-      'T1 T2'
-      'T1 T2'
-      'T1 T2'
-      'T3 T3'
-      'T3 T3';
-  }
+@include Split(3) {
+  @include Rows(5);
+  @include Columns(2);
+  grid-template-areas:
+    'T1 T2'
+    'T1 T2'
+    'T1 T2'
+    'T3 T3'
+    'T3 T3';
+}
 
-  /* four terminals */
-  &[data-split-count='4'] {
-    @include Rows(2);
-    @include Columns(2);
-    grid-template-areas:
-      'T1 T2'
-      'T3 T4';
-  }
+@include Split(4) {
+  @include Rows(2);
+  @include Columns(2);
+  grid-template-areas:
+    'T1 T2'
+    'T3 T4';
+}
 
-  /* five terminals */
-  &[data-split-count='5'] {
-    @include Rows(3);
-    @include Columns(6);
-    grid-template-areas:
-      'T1 T1 T2 T2 T3 T3'
-      'T4 T4 T4 T5 T5 T5'
-      'T4 T4 T4 T5 T5 T5';
-  }
+@include Split(5) {
+  @include Rows(3);
+  @include Columns(6);
+  grid-template-areas:
+    'T1 T1 T2 T2 T3 T3'
+    'T4 T4 T4 T5 T5 T5'
+    'T4 T4 T4 T5 T5 T5';
+}
 
-  /* six terminals */
-  &[data-split-count='6'] {
-    @include Rows(3);
-    @include Columns(4);
-    grid-template-areas:
-      'T1 T2 T3 T3'
-      'T4 T4 T6 T6'
-      'T5 T5 T6 T6';
-  }
+@include Split(6) {
+  @include Rows(3);
+  @include Columns(4);
+  grid-template-areas:
+    'T1 T2 T3 T3'
+    'T4 T4 T6 T6'
+    'T5 T5 T6 T6';
+}
 
-  /* seven terminals */
-  &[data-split-count='7'] {
-    @include Rows(3);
-    @include Columns(4);
-    grid-template-areas:
-      'T1 T2 T3 T3'
-      'T4 T5 T7 T7'
-      'T6 T6 T7 T7';
-  }
+@include Split(7) {
+  @include Rows(3);
+  @include Columns(4);
+  grid-template-areas:
+    'T1 T2 T3 T3'
+    'T4 T5 T7 T7'
+    'T6 T6 T7 T7';
+}
 
-  /* eight terminals */
-  &[data-split-count='8'] {
-    @include Rows(3);
-    @include Columns(4);
-    grid-template-areas:
-      'T1 T2 T3 T3'
-      'T4 T5 T8 T8'
-      'T6 T7 T8 T8';
-  }
+@include Split(8) {
+  @include Rows(3);
+  @include Columns(4);
+  grid-template-areas:
+    'T1 T2 T3 T3'
+    'T4 T5 T8 T8'
+    'T6 T7 T8 T8';
 }

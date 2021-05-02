@@ -15,8 +15,15 @@
  */
 
 @mixin TopTabStripe {
-  body[kui-theme-style] .kui--top-tab-stripe {
+  .kui--top-tab-stripe {
     @content;
+  }
+}
+@mixin TopTabStripeAbsolute {
+  body[kui-theme-style] {
+    @include TopTabStripe {
+      @content;
+    }
   }
 }
 

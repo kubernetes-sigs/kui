@@ -71,3 +71,9 @@ $grid-cell-hover-filter: saturate(2) brightness(1.25);
     @content;
   }
 }
+
+@mixin TableToolbarButtons {
+  .kui--data-table-toolbar-buttons {
+    @content;
+  }
+}
