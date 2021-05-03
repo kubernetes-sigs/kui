@@ -16,7 +16,7 @@
 
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
-import { Arguments, Tab as KuiTab, doCancel, i18n } from '@kui-shell/core'
+import { Tab as KuiTab, doCancel, i18n } from '@kui-shell/core'
 
 import Actions from './Actions'
 import onPaste from './OnPaste'
@@ -44,6 +44,8 @@ import {
   hasValue
 } from './BlockModel'
 import { BlockViewTraits, BlockOperationTraits } from './'
+
+import FancyPipeline from './FancyPipeline'
 
 const Tag = React.lazy(() => import('../../../spi/Tag'))
 const SourceRef = React.lazy(() => import('../SourceRef'))
@@ -580,63 +582,6 @@ export default class Input extends InputProvider {
     }
   }
 
-  private linebreak() {
-    return <span className="kui--line-break">&nbsp;</span>
-  }
-
-  private pipe(c: string) {
-    return <strong className="pre-wrap left-pad sub-text">{c} </strong>
-  }
-
-  /**
-   * Pretty-print the command line with `pipeStages`
-   * e.g. somePrefix -- foo | bar > baz
-   */
-  private fancyValueForPipeStages({ prefix, stages, redirect }: Arguments['pipeStages']) {
-    return (
-      <span className="repl-input-element flex-fill">
-        {/* somePrefix -- */}
-        {prefix && (
-          <React.Fragment>
-            <span className="pre-wrap">{prefix} -- </span>
-            {(stages.length > 0 || redirect) && (
-              <React.Fragment>
-                {this.linebreak()}
-                {this.pipe('\u00a0')}
-              </React.Fragment>
-            )}
-          </React.Fragment>
-        )}
-
-        {/* bar | baz */}
-        {stages.map((pipePart, pidx, parts) => (
-          <React.Fragment key={pidx}>
-            {pidx > 0 && this.pipe('|')}
-            {pipePart.map((word, widx) =>
-              widx === 0 ? (
-                <span key={widx} className="color-base0D">
-                  {word}
-                </span>
-              ) : (
-                ` ${word}`
-              )
-            )}
-            {pidx < parts.length - 1 && this.linebreak()}
-          </React.Fragment>
-        ))}
-        {redirect && (
-          <React.Fragment>
-            {this.linebreak()}
-            {this.pipe('>')}
-            <span className="clickable" onClick={() => this.props.tab.REPL.pexec(`ls ${redirect}`)}>
-              {redirect}
-            </span>
-          </React.Fragment>
-        )}
-      </span>
-    )
-  }
-
   /**
    * Turn the value part of the input into a fancier form,
    * e.g. rendering pipelines or command names in a better way.
@@ -644,9 +589,9 @@ export default class Input extends InputProvider {
    */
   private fancyValue(value: string) {
     if (isWithCompleteEvent(this.props.model) && hasPipeStages(this.props.model)) {
-      return this.fancyValueForPipeStages(this.props.model.completeEvent.pipeStages)
+      return <FancyPipeline REPL={this.props.tab.REPL} {...this.props.model.completeEvent.pipeStages} />
     } else if (hasStartEvent(this.props.model) && hasPipeStages(this.props.model)) {
-      return this.fancyValueForPipeStages(this.props.model.startEvent.pipeStages)
+      return <FancyPipeline REPL={this.props.tab.REPL} {...this.props.model.startEvent.pipeStages} />
     } else {
       return <span className="repl-input-element flex-fill">{value}</span>
     }

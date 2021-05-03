@@ -70,6 +70,7 @@ export {
 export { default as defaultOnKeyDown } from './components/Views/Terminal/Block/OnKeyDown'
 export { default as defaultOnKeyPress } from './components/Views/Terminal/Block/OnKeyPress'
 export { onKeyUp as defaultOnKeyUp } from './components/Views/Terminal/Block/ActiveISearch'
+export { default as FancyPipeline } from './components/Views/Terminal/Block/FancyPipeline'
 
 // spi
 export { default as Icons } from './components/spi/Icons'

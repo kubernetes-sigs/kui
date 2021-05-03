@@ -143,6 +143,7 @@ export { PluginRegistration, PreloadRegistration, PreloadRegistrar } from './mod
 // REPL utils
 export { default as REPL } from './models/repl'
 export { split, _split, Split } from './repl/split'
+export { splitIntoPipeStages } from './repl/pipe-stages'
 export { ReplEval, DirectReplEval } from './repl/types'
 export { default as encodeComponent } from './repl/encode'
 export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl, doEval } from './repl/exec'
