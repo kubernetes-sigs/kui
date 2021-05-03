@@ -17,7 +17,7 @@
 import React from 'react'
 import { basename } from 'path'
 import prettyMillis from 'pretty-ms'
-import { REPL, Row, Tab, Table, flatten, i18n } from '@kui-shell/core'
+import { REPL, Row, Tab, Table, flatten, i18n, prettyPrintBytes as safePrettyPrintBytes } from '@kui-shell/core'
 
 import Bar from './Bar'
 import ErrorCell from './ErrorCell'
@@ -73,27 +73,6 @@ interface State {
 
   /** force a refresh, for the poller */
   iter: number
-}
-
-/** @return pretty-printed bytes */
-function safePrettyPrintBytes(_bytes: string | number): string {
-  try {
-    const bytes = typeof _bytes === 'string' ? parseInt(_bytes, 10) : _bytes
-
-    if (bytes < 1024) {
-      return bytes.toFixed(2) + ' b'
-    } else if (bytes < 1024 * 1024) {
-      return (bytes / 1024).toFixed(0) + ' KiB'
-    } else if (bytes < 1024 * 1024 * 1024) {
-      return (bytes / 1024 / 1024).toFixed(0) + ' MiB'
-    } else if (bytes < 1024 * 1024 * 1024 * 1024) {
-      return (bytes / 1024 / 1024 / 1024).toFixed(0) + ' GiB'
-    } else {
-      return (bytes / 1024 / 1024 / 1024 / 1024).toFixed(0) + ' TiB'
-    }
-  } catch (err) {
-    return _bytes.toString()
-  }
 }
 
 /** @return pretty-printed bytes */

@@ -120,6 +120,7 @@ export { HistoryModel, HistoryLine } from './models/history'
 
 // pretty printing
 export { prettyPrintTime } from './webapp/util/time'
+export { default as prettyPrintBytes } from './webapp/util/bytes'
 
 // registrars
 export {
