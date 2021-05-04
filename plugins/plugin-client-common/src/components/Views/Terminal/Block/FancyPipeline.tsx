@@ -40,7 +40,7 @@ export default class FancyPipeline extends React.PureComponent<Props> {
         {/* somePrefix -- */}
         {prefix && (
           <React.Fragment>
-            <span className="pre-wrap">prefix -- </span>
+            <span className="pre-wrap">{prefix} -- </span>
             {(stages.length > 0 || redirect) && (
               <React.Fragment>
                 {this.linebreak()}
