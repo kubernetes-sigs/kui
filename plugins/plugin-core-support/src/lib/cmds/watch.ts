@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
+
 import {
   Abortable,
   ExecOptions,
@@ -27,27 +29,34 @@ import {
   Arguments
 } from '@kui-shell/core'
 
+const debug = Debug('plugins/plugin-core-support/watch')
+
 interface Options extends ParsedOptions {
   n: number
   interval: number
 
   t: string
   'no-title': string
+
+  until: string // keep watching until this command return true
 }
 
 class TableWatcher implements Abortable, Watcher {
   private timeout: ReturnType<typeof setInterval>
+  private pusher: WatchPusher
 
   // eslint-disable-next-line no-useless-constructor
   public constructor(
     private readonly args: Arguments,
     private readonly command: string,
     private readonly interval: number,
-    private readonly watchState: ExecOptions['watch']
+    private readonly watchState: ExecOptions['watch'],
+    private readonly until?: string
   ) {}
 
   public async init(pusher: WatchPusher) {
     let inProgress = false
+    this.pusher = pusher
 
     this.timeout = setInterval(async () => {
       if (inProgress) {
@@ -66,11 +75,22 @@ class TableWatcher implements Abortable, Watcher {
         this.abort()
       }
       inProgress = false
+
+      if (this.until) {
+        try {
+          if (await this.args.REPL.qexec<boolean>(this.until)) {
+            this.abort()
+          }
+        } catch (err) {
+          debug(`watch-until failed exeuting ${this.until}`, err)
+        }
+      }
     }, this.interval)
   }
 
   public async abort() {
     clearInterval(this.timeout)
+    this.pusher.done()
   }
 }
 
@@ -78,16 +98,29 @@ export default function(registrar: Registrar) {
   registrar.listen<KResponse, Options>(
     '/watch',
     async args => {
-      const cmdline = args.command.slice(args.argvNoOptions[0].length + 1)
+      const until = args.parsedOptions.until
+      const endOfCmd = !until ? args.command.length : args.command.indexOf('--until')
+      const cmdline = args.command.slice(args.argvNoOptions[0].length + 1, endOfCmd)
       const watchState = { accumulator: {}, iteration: 1 }
+
       const response = await args.REPL.qexec(cmdline, undefined, undefined, { watch: watchState })
       const interval = args.parsedOptions.n || args.parsedOptions.interval || 2000
 
       if (isTable(response)) {
-        return Object.assign(response, { watch: new TableWatcher(args, cmdline, interval, watchState) })
+        return Object.assign(response, { watch: new TableWatcher(args, cmdline, interval, watchState, until) })
       } else {
         const timeout = setTimeout(async () => {
           await args.REPL.reexec(args.command, { execUUID: args.execOptions.execUUID })
+
+          if (until) {
+            try {
+              if (await args.REPL.qexec<boolean>(until)) {
+                clearTimeout(timeout)
+              }
+            } catch (err) {
+              debug(`watch-until failed exeuting ${until}`, err)
+            }
+          }
         }, interval)
 
         return {
