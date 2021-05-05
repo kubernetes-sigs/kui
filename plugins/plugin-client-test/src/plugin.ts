@@ -28,6 +28,7 @@ import nav from './lib/cmds/NavResponse'
 import noSemi from './lib/cmds/semicolon'
 import table from './lib/cmds/table'
 import pipeStageParsing from './lib/cmds/pipe-stage-parsing'
+import watchUntil from './lib/cmds/watch-until'
 
 export default async (registrar: Registrar) => {
   // commands
@@ -43,6 +44,7 @@ export default async (registrar: Registrar) => {
     nav(registrar),
     noSemi(registrar),
     pipeStageParsing(registrar),
+    watchUntil(registrar),
     table(registrar)
   ])
 }
