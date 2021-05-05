@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.10.18](https://github.com/IBM/kui/compare/v8.10.17...v8.10.18) (2021-05-05)
+
+**Note:** Version bump only for package kui-shell
+
 ## [8.10.17](https://github.com/IBM/kui/compare/v8.10.16...v8.10.17) (2020-10-01)
 
 ### Bug Fixes
