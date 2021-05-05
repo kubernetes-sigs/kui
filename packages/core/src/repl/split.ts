@@ -132,7 +132,7 @@ export const _split = (
 
     const last = stack.length > 0 && stack[stack.length - 1]
 
-    if (char === '{') {
+    if (char === '{' && stack.length === 0) {
       stack.push(char)
     } else if (char === '}' && last === '{') {
       stack.pop()
@@ -148,8 +148,8 @@ export const _split = (
           // add the outer quotes?
           cur += char
         }
-      } else {
-        // found open quote
+      } else if (stack.length === 0 || stack[stack.length - 1] !== "'") {
+        // found open quote, but double quotes inside of single quotes don't count
         const removeQuote =
           removeOuterQuotes &&
           endsWithQuoteSpace(str, idx, char) &&
@@ -163,6 +163,9 @@ export const _split = (
         }
 
         stack.push(char)
+      } else {
+        // not to be treated as an open quote
+        cur += char
       }
     } else {
       // not a quote
