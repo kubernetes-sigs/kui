@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
+import { Table } from '@kui-shell/core'
+
 type FeatureFlags = {
   /** [Optional] disable table title? */
   disableTableTitle?: boolean
+
+  /** [Optional] when drilling down a table cell, open a new window to execute the comamnd?  */
+  drilldownTo?: Table['drilldownTo']
 
   /** [Optional] show sidecar name as breadcrumb or hero text, default: 'breadcrumb' */
   sidecarName?: 'breadcrumb' | 'heroText'

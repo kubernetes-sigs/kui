@@ -152,7 +152,7 @@ export class Table<RowType extends Row = Row> {
    * `side-split`, unless the user chords the click with the Meta key
    * (which is Command on macOS, and Option on Linux/Windows
    */
-  drilldownTo?: 'side-split' | 'this-split'
+  drilldownTo?: 'side-split' | 'this-split' | 'new-window'
 
   /** Default presentation? */
   defaultPresentation?: PresentationStyle

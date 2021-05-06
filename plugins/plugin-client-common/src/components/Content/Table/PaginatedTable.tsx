@@ -40,6 +40,7 @@ import kuiHeaderFromBody from './kuiHeaderFromBody'
 import Toolbar, { Props as ToolbarProps } from './Toolbar'
 import Grid, { findGridableColumn } from './Grid'
 import { BreadcrumbView } from '../../spi/Breadcrumb'
+import KuiConfiguration from '../../Client/KuiConfiguration'
 
 /** import the kui theme alignment */
 import '../../../../web/scss/components/Table/PatternFly.scss'
@@ -54,6 +55,7 @@ interface PaginationConfiguration {
 /** parameters to PaginatedTable component */
 export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
   tab: Tab
+  config: KuiConfiguration
   repl: REPL
   response: T
 
@@ -149,6 +151,9 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     try {
       const { header = kuiHeaderFromBody(props.response.body), body, footer, defaultPresentation } = props.response
       props.response.header = header
+      if (props.config && props.config.drilldownTo) {
+        props.response.drilldownTo = props.config.drilldownTo
+      }
 
       const asGrid =
         ((!defaultPresentation || defaultPresentation === 'grid') &&
