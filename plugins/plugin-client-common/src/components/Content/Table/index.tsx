@@ -40,6 +40,7 @@ export default function renderTable(
             <LivePaginatedTable
               tab={tab}
               repl={repl}
+              config={config}
               response={response}
               paginate={paginate}
               title={!config.disableTableTitle}
@@ -62,6 +63,7 @@ export default function renderTable(
               <PaginatedTable
                 tab={tab}
                 repl={repl}
+                config={config}
                 response={response}
                 paginate={paginate}
                 title={!config.disableTableTitle}

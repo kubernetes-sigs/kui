@@ -18,6 +18,7 @@ import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
 import { Td } from '@patternfly/react-table'
 import {
+  split,
   Table as KuiTable,
   Cell as KuiCell,
   Row as KuiRow,
@@ -25,7 +26,8 @@ import {
   REPL,
   isPopup,
   eventBus,
-  pexecInCurrentTab
+  pexecInCurrentTab,
+  isHeadless
 } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
@@ -75,11 +77,20 @@ export function onClickForCell(
   } else if (handler) {
     const opts = { tab }
     if (!row.onclickExec || row.onclickExec === 'pexec') {
-      return whenNothingIsSelected((evt: React.MouseEvent) => {
+      return whenNothingIsSelected(async (evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
         if (!isPopup() && drilldownTo === 'side-split' && !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
           pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
+        } else if (!isHeadless() && drilldownTo === 'new-window') {
+          const { ipcRenderer } = await import('electron')
+          ipcRenderer.send(
+            'synchronous-message',
+            JSON.stringify({
+              operation: 'new-window',
+              argv: split(handler)
+            })
+          )
         } else {
           repl.pexec(handler, opts)
         }

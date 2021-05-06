@@ -21,6 +21,7 @@ interface SubwindowPrefs {
   width?: number
   height?: number
   initialTabTitle?: string
+  quietExecCommand?: boolean
   position?: () => Promise<{ x: number; y: number }>
   bringYourOwnWindow?: () => void
 }

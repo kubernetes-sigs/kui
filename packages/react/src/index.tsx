@@ -29,11 +29,23 @@ import Client from '@kui-shell/client'
  * Format the body view
  *
  */
-function renderMain(container: Element, isPopup: boolean, commandLine?: string[], initialTabTitle?: string) {
+function renderMain(
+  container: Element,
+  isPopup: boolean,
+  commandLine?: string[],
+  initialTabTitle?: string,
+  quietExecCommand?: boolean
+) {
   // re: noBootstrap; since we do the bootstrapping here, we don't
   // need the Client to do anything more
   ReactDomRender(
-    <Client noBootstrap isPopup={isPopup} commandLine={commandLine} initialTabTitle={initialTabTitle} />,
+    <Client
+      noBootstrap
+      isPopup={isPopup}
+      commandLine={commandLine}
+      initialTabTitle={initialTabTitle}
+      quietExecCommand={quietExecCommand}
+    />,
     container
   )
 }

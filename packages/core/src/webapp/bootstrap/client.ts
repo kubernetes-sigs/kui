@@ -19,6 +19,12 @@ export function inBrowser() {
 }
 
 /** client-provided renderer of the main content */
-type ClientRender = (root: Element, isPopup: boolean, commandLine?: string[], initialTabTitle?: string) => void
+type ClientRender = (
+  root: Element,
+  isPopup: boolean,
+  commandLine?: string[],
+  initialTabTitle?: string,
+  quietExecCommand?: boolean
+) => void
 
 export default ClientRender

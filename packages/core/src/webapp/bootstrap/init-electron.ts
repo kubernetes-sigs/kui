@@ -23,6 +23,7 @@ interface KuiWindow extends BrowserWindow {
     viewName?: string
     title?: string
     initialTabTitle?: string
+    quietExecCommand?: boolean
     partialExec?: string
     noEcho?: boolean
     theme?: string
@@ -99,6 +100,7 @@ export async function render(client: Client, root: Element) {
     root,
     !!prefs && prefs.fullscreen,
     !fullShell ? maybeExecuteThis : undefined,
-    prefs ? prefs.initialTabTitle : undefined
+    prefs ? prefs.initialTabTitle : undefined,
+    prefs ? prefs.quietExecCommand : undefined
   )
 }
