@@ -54,6 +54,19 @@ class TableWatcher implements Abortable, Watcher {
     private readonly until?: string
   ) {}
 
+  private async poll() {
+    const table = await this.args.REPL.qexec(this.command, undefined, undefined, {
+      watch: { iteration: this.watchState.iteration++, accumulator: this.watchState.accumulator }
+    })
+
+    if (isTable(table)) {
+      this.pusher.header(table.header)
+      this.pusher.setBody(table.body)
+    } else {
+      this.abort()
+    }
+  }
+
   public async init(pusher: WatchPusher) {
     let inProgress = false
     this.pusher = pusher
@@ -64,21 +77,16 @@ class TableWatcher implements Abortable, Watcher {
       }
 
       inProgress = true
-      const table = await this.args.REPL.qexec(this.command, undefined, undefined, {
-        watch: { iteration: this.watchState.iteration++, accumulator: this.watchState.accumulator }
-      })
-
-      if (isTable(table)) {
-        pusher.header(table.header)
-        pusher.setBody(table.body)
-      } else {
-        this.abort()
-      }
+      this.poll()
       inProgress = false
 
       if (this.until) {
         try {
           if (await this.args.REPL.qexec<boolean>(this.until)) {
+            // poll one more time after the until condition is reached
+            // to pick up any leftover information that appeared
+            // between the last poll and the time the condition was met
+            await this.poll()
             this.abort()
           }
         } catch (err) {
@@ -109,12 +117,15 @@ export default function(registrar: Registrar) {
       if (isTable(response)) {
         return Object.assign(response, { watch: new TableWatcher(args, cmdline, interval, watchState, until) })
       } else {
+        const poll = () => args.REPL.reexec(args.command, { execUUID: args.execOptions.execUUID })
+
         const timeout = setTimeout(async () => {
-          await args.REPL.reexec(args.command, { execUUID: args.execOptions.execUUID })
+          await poll()
 
           if (until) {
             try {
               if (await args.REPL.qexec<boolean>(until)) {
+                await poll()
                 clearTimeout(timeout)
               }
             } catch (err) {
