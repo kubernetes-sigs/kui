@@ -142,10 +142,13 @@ export default class Output extends React.PureComponent<Props, State> {
     if ((isProcessing(props.model) || isBeingRerun(props.model)) && !state.alreadyListen) {
       const tabUUID = props.uuid
       eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+
+      // reset the rendering state
+      this.streamingOutputs = []
       return {
         alreadyListen: true,
         isResultRendered: false,
-        streamingOutput: []
+        nStreamingOutput: 0
       }
     } else if (isFinished(props.model) && !state.isResultRendered) {
       const tabUUID = props.uuid
