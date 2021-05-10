@@ -77,8 +77,7 @@ class TableWatcher implements Abortable, Watcher {
       }
 
       inProgress = true
-      this.poll()
-      inProgress = false
+      await this.poll()
 
       if (this.until) {
         try {
@@ -93,6 +92,8 @@ class TableWatcher implements Abortable, Watcher {
           debug(`watch-until failed exeuting ${this.until}`, err)
         }
       }
+
+      inProgress = false
     }, this.interval)
   }
 
