@@ -42,7 +42,7 @@
     "readline": "1.3.0",
     "slash": "3.0.0",
     "tmp": "0.2.1",
-    "trie-search": "1.3.4",
+    "trie-search": "1.3.5",
     "uuid": "8.3.2",
     "word-wrap": "1.2.3",
     "yargs-parser": "20.2.7"
