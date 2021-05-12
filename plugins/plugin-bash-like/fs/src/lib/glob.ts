@@ -178,7 +178,7 @@ export async function kuiglob({
           dot: parsedOptions.a || parsedOptions.all,
           stats: needStats,
           objectMode: !needStats,
-          cwd: isHeadless() ? process.cwd() : tab.state.cwd
+          cwd: isHeadless() ? process.cwd() : tab.state.getState('plugins/plugin-bash-like', 'v1', 'cwd')
         })) as any) as RawGlobStats[])
   //  ^^^^^^ re: type conversion; globby type declaration issue #139
 

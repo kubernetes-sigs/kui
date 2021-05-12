@@ -20,6 +20,7 @@ debug('loading')
 
 import { inBrowser, isHeadless, inProxy, CapabilityRegistration, PreloadRegistrar } from '@kui-shell/core'
 
+import registerPluginTabState from './tab-state'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
 export const registerCapability: CapabilityRegistration = async (registrar: PreloadRegistrar) => {
@@ -41,6 +42,7 @@ export const registerCapability: CapabilityRegistration = async (registrar: Prel
  *
  */
 export default async (registrar: PreloadRegistrar) => {
+  registerPluginTabState()
   return registerCatchAll(registrar)
 }
 
