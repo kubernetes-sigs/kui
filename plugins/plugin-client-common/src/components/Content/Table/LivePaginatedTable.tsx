@@ -78,10 +78,6 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
    *
    */
   private initWatch() {
-    // attach job to tab; TODO figure out the proper ownership context
-    // for the job
-    this.props.tab.state.captureJob(this.props.response.watch)
-
     // initiate the pusher watch
     const update = this.update.bind(this)
     const batchUpdateDone = this.batchUpdateDone.bind(this)

@@ -16,25 +16,24 @@
 
 import Debug from 'debug'
 
-import { WatchableJob } from '../core/jobs/job'
-import { inBrowser } from '../core/capabilities'
-import { cwd as kuiCwd } from '../util/home'
 import { eventBus, StatusStripeChangeEvent } from '../core/events'
 
 const debug = Debug('core/models/TabState')
 
-interface TabStateConfig {
-  maxWatchersPerTab?: number
+type CaptureFn = (tabState: TabState) => void
+type RestoreFn = (tabState: TabState) => void
+
+interface TabStateRegistration {
+  name: string
+  apiVersion: string
+  capture: CaptureFn
+  restore: RestoreFn
 }
 
-let tabStateConfig: TabStateConfig
-try {
-  tabStateConfig = require('@kui-shell/client/config.d/limits.json')
-} catch (err) {
-  debug('using default TabStateConfig')
-  tabStateConfig = {
-    maxWatchersPerTab: 10
-  }
+const registrar: TabStateRegistration[] = []
+
+export function registerTabState(registration: TabStateRegistration) {
+  registrar.push(registration)
 }
 
 /**
@@ -48,122 +47,84 @@ export default class TabState {
   /** is the tab closed? */
   public closed: boolean
 
-  /** environment variables */
-  private _env: Record<string, string>
+  /** state map
+   * outer key is `TabStateRegistrar.name`, inner key is `TabStateRegistrar.apiVersion`
+   * e.g. { 'plugins/plugin-core': {'v1': {'cwd': '/'}}}
+   */
+  private _state: Record<string, Record<string, any>> = {}
 
-  /** current working directory */
-  private _cwd: string
+  /** functions to capture the states of tab */
+  private captures: CaptureFn[] = []
 
-  /** jobs attached to this tab */
-  private _jobs: WatchableJob[]
+  /** functions to restore the states of the tab */
+  private restores: RestoreFn[] = []
 
-  private _age: number[]
-
-  private _ageCounter = 0
-
-  /** is there a drilldown in progress for this tab? */
-  public drilldownInProgress: Promise<void>
-
-  // eslint-disable-next-line no-useless-constructor
   public constructor(
     public readonly uuid: string,
     private _desiredStatusStripeDecoration: StatusStripeChangeEvent = { type: 'default' },
     private _parent?: TabState
-  ) {}
-
-  public get env() {
-    return this._env
+  ) {
+    registrar.forEach(_ => {
+      this.register(_.name, _.apiVersion, _.capture, _.restore)
+    })
   }
 
-  public get cwd() {
-    return this._cwd
+  public get state() {
+    return this._state
+  }
+
+  private checkExistence(name: string, apiVersion: string) {
+    if (!this.state[name]) {
+      throw new Error(`${name} doesn't exist in tab state`)
+    } else if (!this.state[name][apiVersion]) {
+      throw new Error(`${name} doesn't have version ${apiVersion}`)
+    } else {
+      return true
+    }
+  }
+
+  public register(name: string, apiVersion: string, capture: CaptureFn, restore: RestoreFn) {
+    // initialize the state
+    if (!this.state[name]) {
+      this.state[name] = { [apiVersion]: {} }
+    } else if (!this.state[name][apiVersion]) {
+      this._state[name][apiVersion] = {}
+    } else {
+      throw new Error(`${name} ${apiVersion} already registered`)
+    }
+
+    this.captures.push(capture)
+    this.restores.push(restore)
+  }
+
+  public getState(name: string, apiVersion: string, key: string) {
+    if (this.checkExistence(name, apiVersion)) {
+      if (this.state[name][apiVersion][key] === undefined) {
+        throw new Error(`${name} ${apiVersion} doesn't have state ${key}`)
+      } else {
+        return this.state[name][apiVersion][key]
+      }
+    }
+  }
+
+  public async setState(name: string, apiVersion: string, key: string, value: any) {
+    if (this.checkExistence(name, apiVersion)) {
+      this.state[name][apiVersion][key] = value
+    }
   }
 
   /** Capture contextual global state */
   public capture() {
-    this._env = Object.assign({}, process.env)
-    this._cwd = kuiCwd()
-
-    debug('captured tab state', this.uuid, this.cwd)
+    this.captures.forEach(capture => capture(this))
   }
 
   /** Clone the captured state */
   public cloneWithUUID(uuid: string) {
-    this.capture()
+    this.capture() // keep the function name, and mean capture all
     const clone = new TabState(uuid, this.desiredStatusStripeDecoration, this)
-    clone._env = Object.assign({}, this.env)
-    clone._cwd = this.cwd
-    debug('cloned tab state', clone.uuid, clone.cwd)
+    clone.capture()
+    debug('cloned tab state', clone.uuid, clone._state)
     return clone
-  }
-
-  /**
-   * @return the number of attached jobs
-   */
-  public get jobs(): number {
-    return !this._jobs ? 0 : this._jobs.filter(_ => _ !== undefined).length
-  }
-
-  /** INTERNAL: abort the oldest job, and return the index of its slot */
-  private abortOldestJob(): number {
-    const oldestSlot = this._age.reduce((minAgeIdx, age, idx, ages) => {
-      if (minAgeIdx === -1) {
-        return idx
-      } else if (ages[minAgeIdx] > age) {
-        return idx
-      } else {
-        return minAgeIdx
-      }
-    }, -1)
-
-    this._jobs[oldestSlot].abort()
-    return oldestSlot
-  }
-
-  /** INTERNAL: find a free job slot, aborting the oldest job if necessary to free up a slot */
-  private findFreeJobSlot(): number {
-    const idx = this._jobs.findIndex(_ => _ === undefined)
-    if (idx === -1) {
-      return this.abortOldestJob()
-    } else {
-      return idx
-    }
-  }
-
-  /** attach a job to this tab */
-  public captureJob(job: WatchableJob) {
-    if (!this._jobs) {
-      const maxJobs = tabStateConfig.maxWatchersPerTab
-      this._jobs = new Array<WatchableJob>(maxJobs)
-      this._age = new Array<number>(maxJobs)
-    }
-    const slot = this.findFreeJobSlot()
-    this._jobs[slot] = job
-    this._age[slot] = this._ageCounter++
-  }
-
-  /**
-   * Abort all jobs attached to this tab
-   *
-   */
-  public abortAllJobs() {
-    if (this._jobs) {
-      this._jobs.forEach((job, idx) => {
-        this.abortAt(idx)
-      })
-    }
-  }
-
-  /** INTERNAL: abort the job at the given index */
-  private abortAt(idx: number) {
-    this._jobs[idx].abort()
-    this.clearAt(idx)
-  }
-
-  /** INTERNAL: clear the references to the job at the given index */
-  private clearAt(idx: number) {
-    this._jobs[idx] = undefined
-    this._age[idx] = undefined
   }
 
   /** Enforce our desired status stripe decorations */
@@ -192,20 +153,8 @@ export default class TabState {
    * Restore tab state
    *
    */
-  public restore() {
-    debug('restoring state', this.cwd)
-    process.env = this._env
-
-    if (this._cwd !== undefined) {
-      if (inBrowser() || process.env.VIRTUAL_CWD) {
-        debug('changing cwd', process.env.PWD, this._cwd)
-        process.env.PWD = this._cwd
-      } else {
-        debug('changing cwd', process.cwd(), this._cwd)
-        process.chdir(this._cwd)
-      }
-    }
-
+  public async restore() {
+    this.restores.forEach(restore => restore(this))
     this.updateStatusStripe()
   }
 }

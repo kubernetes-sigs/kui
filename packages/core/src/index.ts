@@ -151,7 +151,7 @@ export { CommandStartEvent, CommandCompleteEvent, Notebook, isNotebook, Snapshot
 
 // Tabs
 export { Tab, getTab, getCurrentTab, pexecInCurrentTab, getTabId, getPrimaryTabId, sameTab } from './webapp/tab'
-export { default as TabState } from './models/tab-state'
+export { default as TabState, registerTabState } from './models/tab-state'
 
 // Themes
 export { default as Theme, ThemeProperties } from './webapp/themes/Theme'
