@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { promiseEach, Table, Tab, Row } from '@kui-shell/core'
+import { promiseEach, Table, Row } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -44,7 +44,6 @@ interface Tests {
   exec?: { command: string; expectTable: Table; validation?: TableValidation }
   drilldown?: { expectTable: Table }
   status?: { expectRow: RowWithBadgeAndMessage[]; command: string; statusDescription?: string }
-  job?: { finalJobCount: number }
 }
 
 export class TestTable {
@@ -68,12 +67,9 @@ export class TestTable {
 
       self.ctx = this
 
-      // when the app is refreshed, it should have 0 running job
-      self.hasJobs(0)
-
       // execute the tests accordingly
       if (self.tests) {
-        const { exec, drilldown, status, job } = self.tests
+        const { exec, drilldown, status } = self.tests
 
         if (exec) {
           self.executeAndValidate(exec.command, exec.expectTable, exec.validation)
@@ -84,27 +80,6 @@ export class TestTable {
         if (status) {
           self.evalStatus(status)
         }
-        if (job) {
-          self.hasJobs(job.finalJobCount || 0)
-        }
-      }
-    })
-  }
-
-  /** check the number of running jobs in the tab */
-  private hasJobs(jobCount: number, _ctx?: Common.ISuite) {
-    const ctx = _ctx || this.ctx
-    it(`should have ${jobCount} jobs in the tab`, async () => {
-      try {
-        await ctx.app.client.waitUntil(async () => {
-          const actualJobCount = await ctx.app.client.execute(() => {
-            const tab = document.querySelector('.kui--tab-content.visible') as Tab
-            return tab && tab.state && tab.state.jobs
-          })
-          return actualJobCount === jobCount
-        })
-      } catch (err) {
-        await Common.oops(ctx, true)(err)
       }
     })
   }
