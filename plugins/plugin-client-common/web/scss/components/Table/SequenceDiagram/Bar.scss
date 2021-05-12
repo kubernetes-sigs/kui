@@ -26,9 +26,7 @@
   min-width: 25rem;
   position: relative;
   background-color: $bgcolor;
-  border: 1px solid transparent;
-  border-left: none;
-  border-right: none;
+  border: none;
 }
 
 .kui--sequence-diagram {
