@@ -18,14 +18,11 @@ import React from 'react'
 
 import { ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import {
+  eventBus,
   eventChannelUnsafe,
   getTab,
   Tab,
-  wireToTabEvents,
-  wireToStandardEvents,
-  unwireToTabEvents,
-  unwireToStandardEvents,
-  inBrowser,
+  TabState,
   encodeComponent,
   pexecInCurrentTab,
   i18n
@@ -33,6 +30,7 @@ import {
 import {
   kubectl,
   getAllContexts,
+  getTabState,
   KubeContext,
   onKubectlConfigChangeEvents,
   offKubectlConfigChangeEvents
@@ -67,6 +65,7 @@ function KubernetesIcon() {
 
 export default class CurrentContext extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentContext.bind(this)
+  private readonly handlerNotCallingKubectl = this.getCurrentContextFromTab.bind(this)
 
   public constructor(props: Props) {
     super(props)
@@ -139,6 +138,19 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
       this.setState({
         viewLevel: 'hidden'
       })
+    }
+  }
+
+  private getCurrentContextFromTab(args: { idx: number; tab: TabState }) {
+    const { tab } = args
+    if (tab) {
+      const currentContext = getTabState(tab, 'context')
+      if (currentContext) {
+        this.setState({
+          currentContext: currentContext && this.renderName(currentContext),
+          viewLevel: 'normal'
+        })
+      }
     }
   }
 
@@ -219,24 +231,19 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
    */
   public componentDidMount() {
     this.handler()
-    if (inBrowser()) {
-      wireToTabEvents(this.handler)
-      onKubectlConfigChangeEvents(this.handler)
-    } else {
-      wireToStandardEvents(this.handler)
-      onKubectlConfigChangeEvents(this.handler)
-    }
+    eventBus.on('/tab/new', this.handler)
+    eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
+
+    eventBus.onAnyCommandComplete(this.handler)
+    onKubectlConfigChangeEvents(this.handler)
   }
 
   /** Bye! */
   public componentWillUnmount() {
-    if (inBrowser()) {
-      unwireToTabEvents(this.handler)
-      offKubectlConfigChangeEvents(this.handler)
-    } else {
-      unwireToStandardEvents(this.handler)
-      offKubectlConfigChangeEvents(this.handler)
-    }
+    eventBus.off('/tab/new', this.handler)
+    eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
+    eventBus.offAnyCommandComplete(this.handler)
+    offKubectlConfigChangeEvents(this.handler)
   }
 
   public render() {

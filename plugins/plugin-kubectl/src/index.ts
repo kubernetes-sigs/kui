@@ -134,3 +134,6 @@ export {
 
 /** memory and cpu parsing */
 export { default as Parser } from './lib/util/parse'
+
+/** get plugin-kubectl's tab-state */
+export { getTabState } from './tab-state'
