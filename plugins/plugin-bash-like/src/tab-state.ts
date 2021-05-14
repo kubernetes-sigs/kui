@@ -54,6 +54,11 @@ const restore = (tab: TabState) => {
   }
 }
 
+const switchTo = (currentTabState: TabState, nextTabState: TabState) => {
+  capture(currentTabState)
+  restore(nextTabState)
+}
+
 export default function() {
-  return registerTabState({ name, apiVersion, capture, restore })
+  return registerTabState({ name, apiVersion, capture, restore, switchTo })
 }

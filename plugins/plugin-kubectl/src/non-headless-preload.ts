@@ -17,6 +17,7 @@
 import Debug from 'debug'
 import { PreloadRegistrar } from '@kui-shell/core'
 
+import registerPluginTabState from './tab-state'
 import podMode from './lib/view/modes/pods'
 import yamlMode from './lib/view/modes/yaml'
 import summaryMode from './lib/view/modes/Summary'
@@ -39,6 +40,8 @@ import tabCompletionProvider from './lib/tab-completion'
 import { notebookVFS } from '@kui-shell/plugin-core-support'
 
 export default async (registrar: PreloadRegistrar) => {
+  registerPluginTabState()
+
   // register modes
   const p1 = registrar.registerModes(
     podMode,

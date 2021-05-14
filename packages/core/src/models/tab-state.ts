@@ -17,17 +17,20 @@
 import Debug from 'debug'
 
 import { eventBus, StatusStripeChangeEvent } from '../core/events'
+import { promiseEach } from '../util/async'
 
 const debug = Debug('core/models/TabState')
 
-type CaptureFn = (tabState: TabState) => void
-type RestoreFn = (tabState: TabState) => void
+type CaptureFn = (tabState: TabState) => void | Promise<void>
+type RestoreFn = (tabState: TabState) => void | Promise<void>
+type SwitchToFn = (currentTabState: TabState, nextTabState: TabState) => void | Promise<void>
 
 interface TabStateRegistration {
   name: string
   apiVersion: string
   capture: CaptureFn
   restore: RestoreFn
+  switchTo: SwitchToFn
 }
 
 const registrar: TabStateRegistration[] = []
@@ -59,13 +62,16 @@ export default class TabState {
   /** functions to restore the states of the tab */
   private restores: RestoreFn[] = []
 
+  /** functions to capture this tab state and restore another tab state */
+  private switchTos: SwitchToFn[] = []
+
   public constructor(
     public readonly uuid: string,
     private _desiredStatusStripeDecoration: StatusStripeChangeEvent = { type: 'default' },
     private _parent?: TabState
   ) {
     registrar.forEach(_ => {
-      this.register(_.name, _.apiVersion, _.capture, _.restore)
+      this.register(_.name, _.apiVersion, _.capture, _.restore, _.switchTo)
     })
   }
 
@@ -83,7 +89,7 @@ export default class TabState {
     }
   }
 
-  public register(name: string, apiVersion: string, capture: CaptureFn, restore: RestoreFn) {
+  public register(name: string, apiVersion: string, capture: CaptureFn, restore: RestoreFn, switchTo: SwitchToFn) {
     // initialize the state
     if (!this.state[name]) {
       this.state[name] = { [apiVersion]: {} }
@@ -95,6 +101,7 @@ export default class TabState {
 
     this.captures.push(capture)
     this.restores.push(restore)
+    this.switchTos.push(switchTo)
   }
 
   public getState(name: string, apiVersion: string, key: string) {
@@ -116,6 +123,14 @@ export default class TabState {
   /** Capture contextual global state */
   public capture() {
     this.captures.forEach(capture => capture(this))
+  }
+
+  /** Capture contextual global state and then restore `nextTabState` */
+  public async switchTo(nextTabState: TabState) {
+    await promiseEach(this.switchTos, async switchTo => {
+      await switchTo(this, nextTabState)
+    })
+    nextTabState.updateStatusStripe()
   }
 
   /** Clone the captured state */

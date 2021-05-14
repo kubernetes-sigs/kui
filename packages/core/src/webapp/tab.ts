@@ -48,11 +48,11 @@ export function isTab(node: Element | Tab): node is Tab {
  * Return the unique identifier for the given tab
  *
  */
-export function getTabId(tab: Tab) {
+export function getTabId(tab: Pick<Tab, 'uuid'>) {
   return tab.uuid
 }
 
-export function getTabIds(tab: Tab) {
+export function getTabIds(tab: Pick<Tab, 'uuid'>) {
   const uuid = getTabId(tab)
   if (uuid) {
     const [u1] = uuid.split(/_/)
@@ -62,8 +62,12 @@ export function getTabIds(tab: Tab) {
   }
 }
 
-export function getPrimaryTabId(tab: Tab) {
+export function getPrimaryTabId(tab: Pick<Tab, 'uuid'>) {
   return getTabIds(tab)[0]
+}
+
+export function isTopLevelTab(tab: Pick<Tab, 'uuid'>) {
+  return getPrimaryTabId(tab) === getTabId(tab)
 }
 
 export const sameTab = (tab1: Tab, tab2: Tab): boolean => {
