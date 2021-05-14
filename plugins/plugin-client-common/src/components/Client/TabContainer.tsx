@@ -87,10 +87,11 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * Switch Tab event: update state so that activeIdx=idx
    *
    */
-  private onSwitchTab(idx: number) {
+  private async onSwitchTab(idx: number) {
     // capture current state, restore state of the switched-to tab
-    this.captureState()
-    this.restoreState(idx)
+    const currentTabState = this.state.tabs[this.state.activeIdx].state
+    const nextTabState = this.state.tabs[idx].state
+    await currentTabState.switchTo(nextTabState)
 
     if (idx >= 0 && idx < this.state.tabs.length) {
       this.setState({
@@ -98,7 +99,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       })
     }
 
-    setTimeout(() => eventBus.emit('/tab/switch/request/done', idx))
+    setTimeout(() => eventBus.emit('/tab/switch/request/done', { idx, tab: nextTabState }))
   }
 
   private readonly _onSwitchTab = this.onSwitchTab.bind(this)
