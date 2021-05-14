@@ -21,7 +21,7 @@ import * as path from 'path'
 import * as assert from 'assert'
 
 import { expandHomeDir } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, SidecarExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import { remotePodYaml, waitForGreen, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
 const synonyms = ['kubectl']
@@ -224,10 +224,67 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       })
     }
 
+    const showCurrentNamespace = (ns: string) => {
+      it(`should show ${ns} as current namespace`, () => {
+        return CLI.command(`namespace current`, this.app)
+          .then(ReplExpect.okWithString(ns))
+          .catch(Common.oops(this, true))
+      })
+    }
+
+    const createNewTab = () => {
+      it('should create a new tab via command', () =>
+        CLI.command('tab new', this.app)
+          .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+          .then(_ => _.waitForDisplayed())
+          .then(() => CLI.waitForSession(this)) // should have an active repl
+          .catch(Common.oops(this, true)))
+    }
+
+    const switchToTab1 = () => {
+      it(`switch back to first tab via command`, () =>
+        CLI.command('tab switch 1', this.app)
+          .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
+          .then(_ => _.waitForDisplayed())
+          .catch(Common.oops(this, true)))
+    }
+
+    const switchNamespaceViaCommand = (ns: string) => {
+      it(`should switch to the namespace ${ns} by command`, async () => {
+        try {
+          await CLI.command(`${kubectl} config set-context --current --namespace=${ns}`, this.app).then(ReplExpect.ok)
+          await CLI.command(`namespace current`, this.app).then(ReplExpect.okWithString(ns))
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+    }
+
+    const showCurrentNamespaceViaWidget = (ns: string) => {
+      it(`should show namespace ${ns} in status strip widget`, async () => {
+        try {
+          await this.app.client.waitUntil(
+            async () => {
+              const namespaceText = await this.app.client
+                .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
+                .then(_ => _.getText())
+
+              return namespaceText === ns
+            },
+            { timeout: CLI.waitTimeout }
+          )
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
+    }
+
     //
     // now start the tests
     //
+    Util.closeAllExceptFirstTab.bind(this)()
     const ns: string = createNS()
+    const ns2: string = createNS()
     const initialKubeConfig = getKUBECONFIGFilepath()
     listContextsAndExpectDefault()
     createIt(ns)
@@ -240,6 +297,21 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     getPodInSidecar('nginx', ns, `--kubeconfig ${initialKubeConfig}`)
     switchToContextByCommand('holla')
     listPodsAndExpectOne('nginx')
+
+    // now start tab-state tests
+    switchToContextByCommand(initialContext)
+    createIt(ns2)
+    switchNamespaceViaCommand(ns2)
+    createNewTab()
+    switchToContextByCommand('holla')
+    showCurrentNamespace(ns)
+    showCurrentNamespaceViaWidget(ns)
+    switchToTab1()
+    listContextsAndExpectDefault()
+    showCurrentNamespace(ns2)
+    showCurrentNamespaceViaWidget(ns2)
+
     deleteIt(ns, initialContext, initialKubeConfig)
+    deleteIt(ns2, initialContext, initialKubeConfig)
   })
 })

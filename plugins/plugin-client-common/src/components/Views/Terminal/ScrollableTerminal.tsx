@@ -829,18 +829,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this._focusDebouncer = ourDebouncer
   }
 
-  private setFocusOnScrollback(scrollback: ScrollbackState, focusedBlockIdx?: number) {
-    this.setState(curState => {
-      const focusedIdx = this.findSplit(curState, scrollback.uuid)
-      if (curState.focusedIdx !== focusedIdx) {
-        const currentSplit = curState.splits[curState.focusedIdx]
-        if (currentSplit && currentSplit.facade) {
-          currentSplit.facade.state.capture()
-        }
+  private async setFocusOnScrollback(scrollback: ScrollbackState, focusedBlockIdx?: number) {
+    const focusedIdx = this.findSplit(this.state, scrollback.uuid)
+    if (this.state.focusedIdx !== focusedIdx) {
+      const currentSplit = this.state.splits[this.state.focusedIdx]
+      if (currentSplit && currentSplit.facade) {
+        await currentSplit.facade.state.switchTo(scrollback.facade.state)
+      } else {
         scrollback.facade.state.restore()
-        eventBus.emitSplitSwitch(scrollback.facade)
       }
+      eventBus.emitSplitSwitch(scrollback.facade)
+    }
 
+    this.setState(curState => {
       return Object.assign(
         this.spliceMutate(curState, scrollback.uuid, ({ blocks }) => ({
           blocks,

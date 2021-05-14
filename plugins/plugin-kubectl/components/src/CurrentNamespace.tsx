@@ -18,22 +18,12 @@ import React from 'react'
 
 import { Icons, ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
-import {
-  i18n,
-  eventChannelUnsafe,
-  getTab,
-  Tab,
-  pexecInCurrentTab,
-  wireToTabEvents,
-  wireToStandardEvents,
-  unwireToTabEvents,
-  unwireToStandardEvents,
-  inBrowser
-} from '@kui-shell/core'
+import { eventBus, i18n, eventChannelUnsafe, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
 
 import {
   kubectl,
   KubeContext,
+  getTabState,
   getCurrentDefaultNamespace,
   onKubectlConfigChangeEvents,
   offKubectlConfigChangeEvents
@@ -55,6 +45,7 @@ const strings = i18n('plugin-kubectl')
 
 export default class CurrentNamespace extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentNamespace.bind(this)
+  private readonly handlerNotCallingKubectl = this.getCurrentNamespaceFromTab.bind(this)
 
   public constructor(props: Props) {
     super(props)
@@ -119,6 +110,19 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     }
   }
 
+  private getCurrentNamespaceFromTab(args: { idx: number; tab: TabState }) {
+    const { tab } = args
+    if (tab) {
+      const currentNamespace = getTabState(tab, 'namespace')
+      if (currentNamespace) {
+        this.setState({
+          currentNamespace,
+          viewLevel: 'normal'
+        })
+      }
+    }
+  }
+
   /**
    * Once we have mounted, we immediately check the current branch,
    * and schedule an update based on standard REPL events.
@@ -126,24 +130,20 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
    */
   public componentDidMount() {
     this.handler()
-    if (inBrowser()) {
-      wireToTabEvents(this.handler)
-      onKubectlConfigChangeEvents(this.handler)
-    } else {
-      wireToStandardEvents(this.handler)
-      onKubectlConfigChangeEvents(this.handler)
-    }
+    eventBus.on('/tab/new', this.handler)
+    eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
+
+    eventBus.onAnyCommandComplete(this.handler)
+    onKubectlConfigChangeEvents(this.handler)
   }
 
   /** Bye! */
   public componentWillUnmount() {
-    if (inBrowser()) {
-      unwireToTabEvents(this.handler)
-      offKubectlConfigChangeEvents(this.handler)
-    } else {
-      unwireToStandardEvents(this.handler)
-      offKubectlConfigChangeEvents(this.handler)
-    }
+    eventBus.off('/tab/new', this.handler)
+    eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
+
+    eventBus.offAnyCommandComplete(this.handler)
+    offKubectlConfigChangeEvents(this.handler)
   }
 
   private listNamespace() {
