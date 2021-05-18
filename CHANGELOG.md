@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.1](https://github.com/IBM/kui/compare/v10.3.0...v10.3.1) (2021-05-18)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Add sass mixins for Grid cells and Card Footer ([b1f3b53](https://github.com/IBM/kui/commit/b1f3b53)), closes [#7410](https://github.com/IBM/kui/issues/7410)
+- **plugins/plugin-client-common:** SequenceDiagram bars have odd transparent 1px border ([95fb07c](https://github.com/IBM/kui/commit/95fb07c)), closes [#7397](https://github.com/IBM/kui/issues/7397)
+- **plugins/plugin-kubectl:** redirection of output on a get resource command is ignored ([976027b](https://github.com/IBM/kui/commit/976027b))
+
+### Features
+
+- **plugins/plugin-client-common:** Allow Grid provider to specify css attributes for cell UI ([4326c07](https://github.com/IBM/kui/commit/4326c07)), closes [#7408](https://github.com/IBM/kui/issues/7408)
+- **plugins/plugin-kubectl:** allow for pinning a Kubernetes Context or Namespace to a tab ([91507c5](https://github.com/IBM/kui/commit/91507c5))
+
 # [10.3.0](https://github.com/IBM/kui/compare/v4.5.0...v10.3.0) (2021-05-11)
 
 ### Bug Fixes

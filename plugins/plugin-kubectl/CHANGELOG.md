@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.1](https://github.com/IBM/kui/compare/v10.3.0...v10.3.1) (2021-05-18)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** redirection of output on a get resource command is ignored ([976027b](https://github.com/IBM/kui/commit/976027b))
+
+### Features
+
+- **plugins/plugin-kubectl:** allow for pinning a Kubernetes Context or Namespace to a tab ([91507c5](https://github.com/IBM/kui/commit/91507c5))
+
 # [10.3.0](https://github.com/IBM/kui/compare/v4.5.0...v10.3.0) (2021-05-11)
 
 ### Bug Fixes
