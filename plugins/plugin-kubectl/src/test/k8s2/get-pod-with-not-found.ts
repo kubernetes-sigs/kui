@@ -59,6 +59,18 @@ commands.forEach(command => {
         .catch(Common.oops(this, true))
     })
 
+    it(`should get storageclass and returns non error ${command}`, () => {
+      return CLI.command(`${command} get storageclass ${inNamespace}`, this.app)
+        .then(ReplExpect.okWithAny)
+        .catch(Common.oops(this, true))
+    })
+
+    it(`should get storageclasses and returns non error ${command}`, () => {
+      return CLI.command(`${command} get storageclasses ${inNamespace}`, this.app)
+        .then(ReplExpect.okWithAny)
+        .catch(Common.oops(this, true))
+    })
+
     deleteNS(this, ns)
   })
 })
