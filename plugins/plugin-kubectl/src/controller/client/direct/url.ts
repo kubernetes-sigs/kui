@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isPlural, plural } from 'pluralize'
+
 import { Arguments } from '@kui-shell/core'
 
 import { Explained } from '../../kubectl/explain'
@@ -32,8 +34,16 @@ function apiOnPathFor(version: string) {
   return version === 'v1' ? 'api/v1' : `apis/${encodeURIComponent(version)}`
 }
 
-function kindOnPathFor(kind: string) {
-  return `/${encodeURIComponent(kind.toLowerCase() + (/s$/.test(kind) ? '' : 's'))}`
+/**
+ *  The curl endpoint for accessing kubernetes apiServer needs the resource kind
+ *  to be plural and lowercase, so here we transform the user specified kind
+ *  to plural and lowercase.
+ *  e.g. Pod -> /pods, Ingress -> /ingresses
+ *
+ */
+function kindOnPathFor(_kind: string) {
+  const kind = _kind.toLowerCase()
+  return `/${encodeURIComponent(isPlural(kind) ? kind : plural(kind))}`
 }
 
 /**
