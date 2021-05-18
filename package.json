@@ -86,6 +86,7 @@
     "@types/mocha": "8.2.2",
     "@types/needle": "2.5.1",
     "@types/node": "12.12.31",
+    "@types/pluralize": "0.0.29",
     "@types/react": "17.0.5",
     "@types/react-dom": "17.0.3",
     "@types/resize-observer-browser": "0.1.5",
