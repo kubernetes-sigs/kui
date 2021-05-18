@@ -55,7 +55,8 @@ export function flags(booleans: string[] = []): CommandOptions {
       narg: { w: 0, watch: 0, 'watch-only': 0 },
       string: ['_'], // enforce positional arguments to be parsed as string
       boolean: booleans.concat(defaultBooleans)
-    }
+    },
+    noCoreRedirect: true
   }
 }
 
