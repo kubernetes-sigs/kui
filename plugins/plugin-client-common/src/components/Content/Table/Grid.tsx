@@ -150,9 +150,12 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
           }
 
           const title = tooltipContent(this.props.response.title, kuiRow.name, badgeCell ? badgeCell.value : undefined)
+          const classNameForCell =
+            'kui--grid-cell ' +
+            (kuiRow.rowCSS ? (typeof kuiRow.rowCSS === 'string' ? kuiRow.rowCSS : kuiRow.rowCSS.join(' ')) : '')
 
           return (
-            <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name} className="kui--grid-cell">
+            <span key={kidx} data-tag="badge" data-entity-name={kuiRow.name} className={classNameForCell}>
               <Tooltip markdown={title} {...tooltipProps}>
                 <span {...props}>{/red-background/.test(css) ? <ErrorCell /> : label}</span>
               </Tooltip>
