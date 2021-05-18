@@ -115,6 +115,9 @@ export async function doExecWithPty<
       args.execOptions.echo = false // do not even echo "ok"
     }
 
+    // let pty handle redirection
+    args.execOptions.noCoreRedirect = true
+
     return args.REPL.qexec<string | Response>(
       `sendtopty ${commandToPTY}`,
       args.block,
@@ -189,7 +192,7 @@ export async function exec<O extends KubeOptions>(
   prepare: Prepare<O> = NoPrepare,
   exec = 'kubectl'
 ): Promise<RawResponse> {
-  if (args.argvNoOptions.includes('|')) {
+  if (args.argvNoOptions.includes('|') || args.argvNoOptions.includes('>') || args.argvNoOptions.includes('>>')) {
     return Promise.resolve({
       content: {
         code: 0,
