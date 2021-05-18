@@ -16,6 +16,8 @@
 
 @import './sizing';
 @import '../common/narrow-window';
+@import './mixins';
+@import '../Card/mixins';
 
 body[kui-theme-style] {
   .bx--select--inline .bx--select-input {
@@ -199,6 +201,12 @@ body .bx--data-table {
   }
 }
 
+@include Table {
+  @include CardFooterNotEmpty {
+    border-top: 1px solid var(--color-base03);
+  }
+}
+
 body[kui-theme-style] .kui--data-table-wrapper {
   overflow-x: auto;
 
@@ -211,10 +219,7 @@ body[kui-theme-style] .kui--data-table-wrapper {
     display: flex;
   }
 
-  .kui--card-footer {
-    &:not(:empty) {
-      border-top: 1px solid var(--color-base03);
-    }
+  @include CardFooter {
     padding: 0;
     .kui--data-table-toolbar-bottom {
       padding-left: var(--pf-c-card--child--PaddingLeft);
@@ -222,7 +227,7 @@ body[kui-theme-style] .kui--data-table-wrapper {
     }
   }
 
-  .kui--card-body {
+  @include CardBody {
     table {
       td,
       th {
