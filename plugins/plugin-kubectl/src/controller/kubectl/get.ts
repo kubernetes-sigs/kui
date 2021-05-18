@@ -268,6 +268,8 @@ async function rawGet(
   if (
     (command === 'oc' || command === 'kubectl') &&
     !args.argvNoOptions.includes('|') &&
+    !args.argvNoOptions.includes('>') &&
+    !args.argvNoOptions.includes('>>') &&
     !requestWithoutKind &&
     !args.parsedOptions.context &&
     !args.parsedOptions.kubeconfig
@@ -457,7 +459,7 @@ function viewTransformerForGet(args: Arguments<KubeOptions>, response: KubeResou
   }
 }
 
-export const getFlags = Object.assign({}, flags, { viewTransformer: viewTransformerForGet })
+export const getFlags = Object.assign({}, flags, { viewTransformer: viewTransformerForGet, noCoreRedirect: true })
 
 /** Register a command listener */
 export function getter(registrar: Registrar, command: string, cli = command) {
