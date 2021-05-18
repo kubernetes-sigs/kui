@@ -39,3 +39,17 @@ $header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wr
     @content;
   }
 }
+
+@mixin CardFooter {
+  .kui--card-footer {
+    @content;
+  }
+}
+
+@mixin CardFooterNotEmpty {
+  @include CardFooter {
+    &:not(:empty) {
+      @content;
+    }
+  }
+}
