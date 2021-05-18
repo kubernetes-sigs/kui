@@ -24,6 +24,12 @@ $bar-height-huge: 0.5em; /* e.g. 8px */
 
 $grid-cell-hover-filter: saturate(2) brightness(1.25);
 
+@mixin TableOuter {
+  .kui--data-table-wrapper {
+    @content;
+  }
+}
+
 @mixin Table {
   table.kui--table-like-wrapper {
     @content;
@@ -66,14 +72,35 @@ $grid-cell-hover-filter: saturate(2) brightness(1.25);
   }
 }
 
-@mixin StatusBadge {
-  [data-tag='badge'] [data-tag='badge-circle'] {
+@mixin BadgeColoredPart {
+  [data-tag='badge-circle'] {
     @content;
+  }
+}
+
+@mixin StatusBadge {
+  [data-tag='badge'] {
+    @include BadgeColoredPart {
+      @content;
+    }
   }
 }
 
 @mixin TableToolbarButtons {
   .kui--data-table-toolbar-buttons {
+    @content;
+  }
+}
+
+@mixin TableAsGrid {
+  @include TableOuter {
+    &.kui--data-table-as-grid {
+      @content;
+    }
+  }
+}
+@mixin Grid {
+  .kui--table-like-wrapper.kui--data-table-as-grid {
     @content;
   }
 }
