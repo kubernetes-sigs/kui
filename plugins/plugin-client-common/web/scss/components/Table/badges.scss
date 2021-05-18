@@ -21,6 +21,29 @@
 
 $grid-cell-size: 1.25rem;
 
+@mixin GrayBadge {
+  color: $color-fg--bar-gray;
+  background: $color-bg--bar-gray;
+}
+@mixin RedBadge {
+  --color1: var(--color-light-red);
+  --color2: var(--color-red);
+  --color3: transparent;
+  @include kui--crosshatch;
+}
+@mixin GreenBadge {
+  color: $color-fg--bar-green;
+  background-color: $color-bg--bar-green;
+}
+@mixin BlueBadge {
+  color: $color-fg--bar-blue;
+  background-color: $color-bg--bar-blue;
+}
+@mixin YellowBadge {
+  color: $color-fg--bar-yellow;
+  background: $color-bg--bar-yellow;
+}
+
 .kui--grid-cell:hover {
   filter: $grid-cell-hover-filter;
   cursor: pointer;
@@ -32,7 +55,7 @@ $grid-cell-size: 1.25rem;
     display: flex;
     align-items: center;
   }
-  [data-tag='badge-circle'] {
+  @include BadgeColoredPart {
     margin-right: 1ex;
     width: 0.875rem;
     height: 0.875rem;
@@ -40,31 +63,25 @@ $grid-cell-size: 1.25rem;
     [data-color-by='status'] {
       background-color: var(--color-ui-05);
     }
-  }
-  [data-tag='badge-circle'].green-background {
-    color: $color-fg--bar-green;
-    background-color: $color-bg--bar-green;
-  }
-  [data-tag='badge-circle'].blue-background {
-    background-color: $color-bg--bar-blue;
-    color: $color-fg--bar-blue;
-  }
-  [data-tag='badge-circle'].yellow-background,
-  button.yellow-background {
-    color: $color-fg--bar-yellow;
-    background: $color-bg--bar-yellow;
-  }
-  [data-tag='badge-circle'].red-background {
-    --color1: var(--color-light-red);
-    --color2: var(--color-red);
-    --color3: transparent;
-    @include kui--crosshatch;
-  }
-  [data-tag='badge-circle'] {
+
+    &.green-background {
+      @include GreenBadge;
+    }
+    &.blue-background {
+      @include BlueBadge;
+    }
+    &.yellow-background {
+      @include YellowBadge;
+    }
+    button.yellow-background {
+      @include YellowBadge;
+    }
+    &.red-background {
+      @include RedBadge;
+    }
     &.gray-background,
     &.kui--status-unknown {
-      color: $color-fg--bar-gray;
-      background: $color-bg--bar-gray;
+      @include GrayBadge;
     }
   }
 }
