@@ -61,13 +61,13 @@ commands.forEach(command => {
 
     it(`should get storageclass and returns non error ${command}`, () => {
       return CLI.command(`${command} get storageclass ${inNamespace}`, this.app)
-        .then(ReplExpect.okWithAny)
+        .then(ReplExpect.error(404, 'No resources found')) // should not return "no resource type"
         .catch(Common.oops(this, true))
     })
 
     it(`should get storageclasses and returns non error ${command}`, () => {
       return CLI.command(`${command} get storageclasses ${inNamespace}`, this.app)
-        .then(ReplExpect.okWithAny)
+        .then(ReplExpect.error(404, 'No resources found')) // should not return "no resource type"
         .catch(Common.oops(this, true))
     })
 
