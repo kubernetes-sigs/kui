@@ -57,17 +57,17 @@ wdescribe(`kubectl watch error handler via table ${process.env.MOCHA_RUN_TARGET 
   const wrongFlags = ['--watch true', '-w true']
   wrongFlags.forEach(watch => {
     testResourceNotFound(`k get pod ${watch}`, 'pods', 'true') // the command is parsed as `kubectl get pod true`
-    testWrongCommand(`k get ${watch} pod`, 404, 'error: the server doesn\'t have a resource type "true"') // the command is parsed as `kubectl get true pod`
+    testWrongCommand(`k get ${watch} pod`, 404, 'the server doesn\'t have a resource type "true"') // the command is parsed as `kubectl get true pod`
   })
 
   testWrongCommand(`k -w get pod`, 500)
 
   // test wrong resource type
-  testWrongCommand(`k get shouldNotExist -w`, 404, 'error: the server doesn\'t have a resource type "shouldNotExist"')
+  testWrongCommand(`k get shouldNotExist -w`, 404, 'the server doesn\'t have a resource type "shouldNotExist"')
   testWrongCommand(
     `k get shouldNotExist --watch -n shouldNotExist`,
     404,
-    'error: the server doesn\'t have a resource type "shouldNotExist"'
+    'the server doesn\'t have a resource type "shouldNotExist"'
   )
 
   const resultHasEmptyWatchText = async (count: number, positive = true) => {
