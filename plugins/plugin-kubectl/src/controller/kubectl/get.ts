@@ -262,7 +262,8 @@ async function rawGet(
 ) {
   const command = _command === 'k' ? 'kubectl' : _command
   const isGetAll = args.argvNoOptions[args.argvNoOptions.indexOf('get') + 1] === 'all'
-  const requestWithoutKind = isGetAll || (!fileOf(args) && !_kind)
+  const explainedKind = await _kind
+  const requestWithoutKind = isGetAll || (!fileOf(args) && !(explainedKind && explainedKind.kind))
 
   // re: context and kubeconfig, see https://github.com/IBM/kui/issues/7023
   if (

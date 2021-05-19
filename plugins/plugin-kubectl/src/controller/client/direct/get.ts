@@ -118,7 +118,10 @@ export async function getTable(
         (!metaTable.rows || metaTable.rows.length === 0) &&
         !isWatchRequest(args)
       ) {
-        return `No resources found in **${namespace}** namespace.`
+        // throw error so UI can render an error block for this response
+        const err: CodedError = new Error(`No resources found in **${namespace}** namespace.`)
+        err.code = 404
+        throw err
       } else {
         try {
           // withNotFound will add error rows to the table for each error

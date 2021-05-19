@@ -125,7 +125,7 @@ commands.forEach(command => {
 
     it('should error out when getting pods with incorrect comments', () => {
       return CLI.command(`${command} get pod# comment #comment`, this.app)
-        .then(ReplExpect.error(404, 'error: the server doesn\'t have a resource type "pod#"'))
+        .then(ReplExpect.error(404, 'the server doesn\'t have a resource type "pod#"'))
         .catch(Common.oops(this, true))
     })
     /** error handling ends */

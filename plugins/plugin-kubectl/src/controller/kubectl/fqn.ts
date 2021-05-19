@@ -54,8 +54,23 @@ export function versionOf(apiVersion: string): { group: string; version: string 
  *
  */
 export function split(fqn: string): Pick<Required<ResourceRef>, 'kind' | 'group' | 'version'> {
-  const [kind, group, version] = fqn.split(/\./)
-  return { kind, group, version }
+  const [kind, version, ...group] = fqn.split(/\./)
+  return { kind, group: group.join('.'), version }
+}
+
+/**
+ * format apiversion: `group`/`version` or `version`
+ * e.g. v1 or apps/v1
+ *
+ */
+export function apiVersionString(version: string, group: string) {
+  if (version && group) {
+    return `${group}/${version}`
+  } else if (!group) {
+    return version
+  } else {
+    return ''
+  }
 }
 
 function versionString(apiVersion: string): string {
