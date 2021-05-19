@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
 import { Arguments, Breadcrumb, Registrar, i18n } from '@kui-shell/core'
 
 import flags from './flags'
-import { split } from './fqn'
+import { split, apiVersionString } from './fqn'
 import { doExecWithStdout } from './exec'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { KubeOptions, withKubeconfigFrom } from './options'
@@ -26,7 +25,6 @@ import { KubeOptions, withKubeconfigFrom } from './options'
 import fastPathCases from './explain-fastpath'
 
 const strings = i18n('plugin-kubectl')
-const debug = Debug('plugin-kubectl/controller/kubectl/explain')
 
 function formatHref(href: string) {
   if (/api-conventions/.test(href) && !/sig-architecture/.test(href)) {
@@ -268,17 +266,14 @@ const isClusterScoped = {
 /** Handle cache miss */
 async function fetch(command: string, args: Arguments, kindAsProvidedByUser: string): Promise<Explained> {
   try {
+    const { kind, group, version } = split(kindAsProvidedByUser)
+    const apiVersion = apiVersionString(version, group)
     const ourArgs = Object.assign({}, args, {
       // Note: explain does not seem to like a FQN such as HorizontalPodAutoscaler.v1.autoscaling
       // hence we split and extract just the kind
-      command: withKubeconfigFrom(args, `${command} explain ${split(kindAsProvidedByUser).kind}`)
+      command: withKubeconfigFrom(args, `${command} explain ${kind}${apiVersion ? ` --api-version=${apiVersion}` : ''}`)
     })
-    const explained = await doExecWithStdout(ourArgs, undefined, command).catch(err => {
-      // e.g. trying to explain CustomResourceDefinition.v1beta1.apiextensions.k8s.io
-      // or a resource kind that does not exist
-      debug(err)
-      return `KIND: ${kindAsProvidedByUser}\nVERSION: v1`
-    })
+    const explained = await doExecWithStdout(ourArgs, undefined, command)
 
     const match = explained.match(/^KIND:\s+(.*)\nVERSION:\s+(.*)/)
     if (match) {
@@ -298,9 +293,11 @@ async function fetch(command: string, args: Arguments, kindAsProvidedByUser: str
       }
     }
   } catch (err) {
-    if (!/does not exist/i.test(err.message)) {
+    if (!/does not exist/i.test(err.message) && !/couldn't find resource/i.test(err.message)) {
       console.error(`error explaining kind ${kindAsProvidedByUser}`, args, err)
       throw err
+    } else {
+      return { kind: '', version: '', isClusterScoped: undefined }
     }
   }
 }

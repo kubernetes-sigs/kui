@@ -536,19 +536,23 @@ export const doStatus = async (
         return groups
       }, [] as Group[])
 
-      const response = await statusDirect(args, groups, finalState, command, file, isWatchRequest)
-      if (response) {
-        // then direct/status obliged!
-        debug('using direct/status response')
-        if (isTable(response)) {
-          if (verb !== 'delete') {
-            return Object.assign(response, { kuiSourceRef })
+      const everyGroupHasKind = groups.every(({ explainedKind }) => explainedKind && explainedKind.kind)
+
+      if (everyGroupHasKind) {
+        const response = await statusDirect(args, groups, finalState, command, file, isWatchRequest)
+        if (response) {
+          // then direct/status obliged!
+          debug('using direct/status response')
+          if (isTable(response)) {
+            if (verb !== 'delete') {
+              return Object.assign(response, { kuiSourceRef })
+            } else {
+              // no source refs for deletes
+              return response
+            }
           } else {
-            // no source refs for deletes
-            return response
+            return response.join('\n')
           }
-        } else {
-          return response.join('\n')
         }
       }
     } catch (err) {

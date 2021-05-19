@@ -52,7 +52,7 @@ export default async function deleteDirect(args: Arguments<KubeOptions>, _kind?:
 
     const kindIdx = args.argvNoOptions.indexOf('delete') + 1
     const names = args.argvNoOptions.slice(kindIdx + 1)
-    if (names.length > 0) {
+    if (kind && names.length > 0) {
       const urls = names.map(formatUrl.bind(undefined, true, false)).join(',')
       debug('attempting delete direct', urls)
 
