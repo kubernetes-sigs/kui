@@ -20,7 +20,7 @@
  * The Read-Eval-Print Loop (REPL)
  *
  */
-
+import minimist from 'yargs-parser'
 import Debug from 'debug'
 const debug = Debug('core/repl')
 const debugCommandErrors = Debug('core/repl/errors')
@@ -67,10 +67,6 @@ import { Block } from '../webapp/models/block'
 import { Stream, Streamable } from '../models/streamable'
 import enforceUsage from './enforce-usage'
 import { isXtermResponse } from '../models/XtermResponse'
-
-// TODO esModuleInterop to allow for import
-// import * as minimist from 'yargs-parser'
-const minimist = require('yargs-parser')
 
 let currentEvaluatorImpl: ReplEval = new DirectReplEval()
 
