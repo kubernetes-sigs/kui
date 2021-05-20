@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export default ['ibm-cert-store', 'ibm-operators', 'ibm-system']
+export default ['^ibm$', '^ibm-.+']

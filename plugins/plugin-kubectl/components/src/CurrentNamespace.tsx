@@ -187,8 +187,8 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   }
 
   private switchNamespace() {
-    const internalNs = this.state.allNamespaces.filter(_ => isInternalNamespace[_]).map(_ => this.optionFor(_))
-    const regularNs = this.state.allNamespaces.filter(_ => !isInternalNamespace[_]).map(_ => this.optionFor(_))
+    const internalNs = this.state.allNamespaces.filter(_ => isInternalNamespace(_)).map(_ => this.optionFor(_))
+    const regularNs = this.state.allNamespaces.filter(_ => !isInternalNamespace(_)).map(_ => this.optionFor(_))
 
     const options = internalNs.length > 0 ? undefined : regularNs
     const groups =
