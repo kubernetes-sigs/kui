@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.2](https://github.com/IBM/kui/compare/v10.3.1...v10.3.2) (2021-05-20)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** --kubeconfig path in commands are not always expanded ([79e9594](https://github.com/IBM/kui/commit/79e9594))
+- **plugins/plugin-kubectl:** "get ingress" failed with resource type not found ([1d3c1da](https://github.com/IBM/kui/commit/1d3c1da))
+- **plugins/plugin-kubectl:** direct get fails when user specifies fully/partially qualified name of a crd ([e4357ad](https://github.com/IBM/kui/commit/e4357ad))
+- **plugins/plugin-kubectl:** regular namespace list includes a number of openshift namespaces ([49d17e0](https://github.com/IBM/kui/commit/49d17e0))
+
 ## [10.3.1](https://github.com/IBM/kui/compare/v10.3.0...v10.3.1) (2021-05-18)
 
 ### Bug Fixes
