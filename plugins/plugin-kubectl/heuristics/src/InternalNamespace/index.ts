@@ -35,9 +35,25 @@ import operators from './operators'
 /** Make sure to add any new files to this array */
 const isInternal: string[] = [...ibm, ...kube, ...istio, ...calico, ...knative, ...openshift, ...operators]
 
-const isInternalMap = isInternal.reduce((M, ns) => {
-  M[ns] = true
-  return M
-}, {} as Record<string, true>)
+/** Format a regex string from the internal namespaces list e.g. /(kube-node-lease|kube-public)/ */
 
-export default isInternalMap
+const internalRegex = new RegExp(
+  isInternal.reduce((regex, str, idx, array) => {
+    if (idx === 0) {
+      regex = `(${str}`
+    } else {
+      regex = `${regex}|${str}`
+    }
+
+    if (idx === array.length - 1) {
+      regex += ')'
+    }
+    return regex
+  }, '')
+)
+
+export function matchInternalRegex(ns: string) {
+  return internalRegex.test(ns)
+}
+
+export default matchInternalRegex
