@@ -804,7 +804,7 @@ interface TitledContent {
   content: string
 }
 
-type YargsParserConfigurationValue = string | boolean | number
+type YargsParserConfigurationValue = boolean
 export interface YargsParserConfiguration {
   'camel-case-expansion'?: YargsParserConfigurationValue
   'short-option-groups'?: YargsParserConfigurationValue
