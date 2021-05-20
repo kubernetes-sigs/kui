@@ -60,7 +60,9 @@ async function capture(tabState: TabState) {
 
       debug('captured tab state', tab.uuid, currentContext, currentNamespace)
     } catch (err) {
-      console.error(`plugin-kubectl: failed to capture tab-state`, err, tabState)
+      if (!/command not found/.test(err)) {
+        console.error(`plugin-kubectl: failed to capture tab-state`, err, tabState)
+      }
 
       // clear state
       setTabState(tabState, 'context', '')
@@ -86,7 +88,9 @@ async function restore(tabState: TabState) {
 
     debug('restored tab state', tab.uuid, context, namespace)
   } catch (err) {
-    console.error(`plugin-kubectl: failed to restore tab-state`, err, tabState)
+    if (!/command not found/.test(err)) {
+      console.error(`plugin-kubectl: failed to restore tab-state`, err, tabState)
+    }
   }
 }
 
