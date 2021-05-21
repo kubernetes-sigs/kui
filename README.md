@@ -62,6 +62,8 @@ kubectl kui get pods
 After the final command, you should see a popup window listing pods in
 your current namespace.
 
+> **Windows Warnings**: Kui currently has some bugs in its treatment of backslashes in filepaths. Please use forward slashes for now. Thanks!
+
 ### Rolling Your Own
 
 Don't trust the prebuilt binaries? We hear you. [Roll your own
