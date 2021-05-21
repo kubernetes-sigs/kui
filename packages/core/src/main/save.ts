@@ -16,6 +16,7 @@
 
 import { filters } from './open'
 import tellRendererToExecute from './tell'
+import encodeComponent from '../repl/encode'
 
 let previousChoice: string
 
@@ -35,6 +36,6 @@ export default async function saveAsNotebook() {
   if (!resp.canceled) {
     const thisChoice = resp.filePath
     previousChoice = thisChoice
-    tellRendererToExecute(`snapshot "${thisChoice}"`, 'pexec')
+    tellRendererToExecute(`snapshot ${encodeComponent(thisChoice)}`, 'pexec')
   }
 }
