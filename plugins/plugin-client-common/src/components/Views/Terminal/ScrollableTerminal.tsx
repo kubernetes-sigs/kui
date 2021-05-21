@@ -57,6 +57,7 @@ import {
   Rerun,
   isRerunable,
   isBeingRerun,
+  hasOriginalUUID,
   Processing,
   isActive,
   isAnnouncement,
@@ -676,8 +677,29 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
         const rerunIdx =
           event.execType === ExecType.Rerun
-            ? curState.blocks.findIndex(_ => hasUUID(_) && _.execUUID === event.execUUID)
+            ? curState.blocks.findIndex(_ => {
+                return (
+                  (hasOriginalUUID(_) && _.originalExecUUID === event.execUUID) ||
+                  (hasUUID(_) && _.execUUID === event.execUUID)
+                )
+              })
             : -1
+
+        if (event.execType === ExecType.Rerun) {
+          if (rerunIdx < 0) {
+            console.error(
+              'Cannot find block for rerun',
+              event.execType === ExecType.Rerun,
+              event,
+              curState.blocks.map(_ => {
+                return (hasOriginalUUID(_) && _.originalExecUUID) || (hasUUID(_) && _.execUUID)
+              }),
+              curState.blocks
+            )
+          } else if (isBeingRerun(curState.blocks[rerunIdx])) {
+            console.error('Block already being rerun', event)
+          }
+        }
 
         if (rerunIdx >= 0) {
           const block = curState.blocks[rerunIdx]
@@ -734,9 +756,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     if (event.execOptions && event.execOptions.echo === false) return
 
     this.splice(uuid, curState => {
-      const inProcessIdx = curState.blocks.findIndex(
-        _ => (isProcessing(_) || isBeingRerun(_)) && _.execUUID === event.execUUID
-      )
+      const inProcessIdx = curState.blocks.findIndex(_ => {
+        return (
+          (isBeingRerun(_) && _.originalExecUUID === event.execUUID) ||
+          ((isBeingRerun(_) || isProcessing(_)) && _.execUUID === event.execUUID)
+        )
+      })
 
       if (inProcessIdx >= 0) {
         const inProcess = curState.blocks[inProcessIdx]
