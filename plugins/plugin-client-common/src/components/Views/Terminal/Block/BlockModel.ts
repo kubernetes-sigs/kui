@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { v4 as uuid } from 'uuid'
+
 import {
   CommandStartEvent,
   CommandCompleteEvent,
@@ -36,6 +38,7 @@ export const enum BlockState {
 /** Traits that Blocks might have */
 type WithCWD = { cwd: string }
 type WithUUID = { execUUID: string }
+type WithOriginalExecUUID = { originalExecUUID: string } // for rerun/rexec in place, we need to remember the first execUUID
 type WithCommand = { command: string; isExperimental?: boolean } & WithCWD
 type WithStartTime = { startTime: number }
 type WithState<S extends BlockState> = { state: S }
@@ -45,7 +48,7 @@ type WithAnnouncement = { isAnnouncement: boolean }
 type WithPreferences = { outputOnly?: boolean }
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
-type WithRerun = { isRerun: true }
+type WithRerun = { isRerun: true; newExecUUID: string } & WithOriginalExecUUID
 type WithReplay = { isReplay: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
@@ -78,6 +81,7 @@ export type ProcessingBlock = WithState<BlockState.Processing> &
   WithCommand &
   WithUUID &
   WithStartTime &
+  Partial<WithOriginalExecUUID> &
   WithReplay &
   WithCommandStart
 type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
@@ -188,6 +192,18 @@ export function Announcement(response: ScalarResponse): AnnouncementBlock {
   }
 }
 
+export function isRerunable(block: BlockModel): block is RerunableBlock {
+  return isOk(block) || isOops(block)
+}
+
+export function isBeingRerun(block: BlockModel): block is BlockBeingRerun {
+  return (block as WithRerun).isRerun === true
+}
+
+export function hasOriginalUUID(block: BlockModel | WithOriginalExecUUID): block is WithOriginalExecUUID {
+  return typeof (block as WithOriginalExecUUID).originalExecUUID === 'string'
+}
+
 /** Transform to Processing */
 export function Processing(
   block: BlockModel,
@@ -200,6 +216,7 @@ export function Processing(
     isExperimental,
     cwd: block.cwd,
     execUUID: startEvent.execUUID,
+    originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || startEvent.execUUID,
     isReplay,
     startEvent,
     startTime: startEvent.startTime,
@@ -247,6 +264,17 @@ export function Finished(
   const { historyIdx } = event
   const { startEvent } = block
 
+  // see Rerun() below; when re-executing a block (which means we
+  // re-evaluate a potentially changed command, and want to splice the
+  // updated response into an existing block --- in this scenario, we
+  // still need a new execUUID so that the view components can know
+  // whether or not a re-render is needed; Rerun() which is called
+  // onExecStart allocates the execUUID, and then when we get here,
+  // onExecEnd, we can swap that new execUUID into place
+  if (isBeingRerun(block)) {
+    block.execUUID = block.newExecUUID
+  }
+
   if (event.cancelled) {
     if (!event.command) {
       return Empty(block)
@@ -265,6 +293,7 @@ export function Finished(
       isReplay,
       state: BlockState.Error,
       execUUID: block.execUUID,
+      originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
       startTime: block.startTime
     }
   } else {
@@ -278,6 +307,7 @@ export function Finished(
       isExperimental: block.isExperimental,
       isReplay,
       execUUID: block.execUUID,
+      originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
       startTime: block.startTime,
       outputOnly,
       state: BlockState.ValidResponse
@@ -335,14 +365,8 @@ export function Rerun(
     isRerun: true as const,
     startEvent: newStartEvent,
     command: newCommand,
+    newExecUUID: uuid(),
+    originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
     startTime: newStartTime
   })
-}
-
-export function isRerunable(block: BlockModel): block is RerunableBlock {
-  return isOk(block) || isOops(block)
-}
-
-export function isBeingRerun(block: BlockModel): block is BlockBeingRerun {
-  return (block as WithRerun).isRerun === true
 }

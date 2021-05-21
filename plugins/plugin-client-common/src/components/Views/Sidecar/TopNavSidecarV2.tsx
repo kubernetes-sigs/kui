@@ -55,7 +55,9 @@ const debug = Debug('plugin-sidecar/components/TopNavSidecar')
 interface HistoryEntry {
   currentTabIndex: number
 
-  buttons: Button[]
+  viewButtons: Button[]
+  drilldownButtons: Button[]
+
   tabs: Readonly<MultiModalMode[]>
   toolbarText: ToolbarText
   defaultMode: number
@@ -102,7 +104,8 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Hist
     defaultMode,
     tabs,
     toolbarText,
-    buttons
+    viewButtons: buttons.filter(_ => !(_.kind === 'drilldown' && _.showRelatedResource)),
+    drilldownButtons: buttons.filter(_ => _.kind === 'drilldown' && _.showRelatedResource)
   }
 }
 
@@ -110,6 +113,11 @@ type TopNavState = HistoryEntry &
   State & {
     response: MultiModalResponse
     toolbarText: MultiModalResponse['toolbarText']
+    args: {
+      argsForMode: MultiModalResponse['argsForMode']
+      argvNoOptions: Props<MultiModalResponse>['argvNoOptions']
+      parsedOptions: Props<MultiModalResponse>['parsedOptions']
+    }
   }
 
 /**
@@ -139,12 +147,20 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
   }
 
   /** @return a `HistoryEntry` for the given `Response` */
-  public static getDerivedStateFromProps(
-    { tab, response }: Props<MultiModalResponse>,
-    state?: TopNavState
-  ): TopNavState {
+  public static getDerivedStateFromProps(props: Props<MultiModalResponse>, state?: TopNavState): TopNavState {
+    const { tab, response } = props
+
     if (!state || state.response !== response) {
-      return Object.assign(state || {}, { response, toolbarText: response.toolbarText }, getStateFromMMR(tab, response))
+      const args = {
+        argsForMode: response.argsForMode,
+        argvNoOptions: props.argvNoOptions,
+        parsedOptions: props.parsedOptions
+      }
+      return Object.assign(
+        state || {},
+        { response, toolbarText: response.toolbarText, args },
+        getStateFromMMR(tab, response)
+      )
     } else {
       return state
     }
@@ -266,11 +282,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
         tab={this.props.tab}
         mode={mode}
         isActive={idx === this.current.currentTabIndex}
-        args={{
-          argsForMode: this.state.response.argsForMode,
-          argvNoOptions: this.props.argvNoOptions,
-          parsedOptions: this.props.parsedOptions
-        }}
+        args={this.state.args}
         response={this.state.response}
         execUUID={this.props.execUUID}
       />
@@ -288,11 +300,11 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
             tab={this.props.tab}
             execUUID={this.props.execUUID}
             response={this.state.response}
-            args={{ argvNoOptions: this.props.argvNoOptions, parsedOptions: this.props.parsedOptions }}
+            args={this.state.args}
             didUpdateToolbar={this._didUpdateToolbar}
             toolbarText={this.state.toolbarText}
             noAlerts={this.current.currentTabIndex !== this.current.defaultMode}
-            buttons={this.current.buttons.filter(_ => !(_.kind === 'drilldown' && _.showRelatedResource))}
+            buttons={this.current.viewButtons}
           >
             {this.bodyContent(idx)}
           </ToolbarContainer>
@@ -355,8 +367,8 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
         tab={this.props.tab}
         execUUID={this.props.execUUID}
         response={this.state.response}
-        args={{ argvNoOptions: this.props.argvNoOptions, parsedOptions: this.props.parsedOptions }}
-        buttons={this.current.buttons.filter(_ => _.kind === 'drilldown' && _.showRelatedResource)}
+        args={this.state.args}
+        buttons={this.current.drilldownButtons}
       />
     )
   }
