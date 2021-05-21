@@ -22,6 +22,9 @@ const target = process.env.HEADLESS_TARGET || 'node'
 const TerserJSPlugin = require('terser-webpack-plugin')
 const { IgnorePlugin } = require('webpack')
 
+// this lets us create a headless.zip file
+const ZipPlugin = require('zip-webpack-plugin')
+
 // in case the client has some oddities that require classnames to be preserved
 const terserOptions = process.env.KEEP_CLASSNAMES
   ? {
@@ -153,6 +156,15 @@ plugins.push({
     })
   }
 })
+
+// zip after emit, so we get a dist/headless.zip
+plugins.push(
+  new ZipPlugin({
+    filename: 'headless.zip', // ZipPlugin by default names it based on the name of the main bundle
+    path: '..', // ZipPlugin seems to treat this as relative to the output path specified below
+    include: /.*/ // ZipPlugin by default only includes the main bundle file
+  })
+)
 
 // console.log('webpack plugins', plugins)
 
