@@ -68,7 +68,8 @@
     "util": "0.12.3",
     "webpack": "5.35.0",
     "webpack-cli": "4.6.0",
-    "webpack-dev-server": "3.11.2"
+    "webpack-dev-server": "3.11.2",
+    "zip-webpack-plugin": "4.0.1"
   },
   "kui": {
     "headless": false,
