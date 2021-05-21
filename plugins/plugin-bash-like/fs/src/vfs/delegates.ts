@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { basename } from 'path'
-import { Arguments, CodedError, flatten } from '@kui-shell/core'
+import { Arguments, CodedError, cwd, flatten } from '@kui-shell/core'
 import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
 
 const debug = Debug('plugin/bash-like/fs/vfs/delegates')
@@ -105,7 +105,7 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
  *
  */
 export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry[]> {
-  const filepaths = parameters[1].length === 0 ? [process.env.PWD] : parameters[1].map(absolute)
+  const filepaths = parameters[1].length === 0 ? [cwd()] : parameters[1].map(absolute)
 
   const mounts = await multiFindMount(filepaths, true)
   const vfsContentP = Promise.all(
