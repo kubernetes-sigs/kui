@@ -120,7 +120,11 @@ export default class Editor extends React.PureComponent<Props, State> {
     if (!state.editor && state.wrapper) {
       // then we are ready to render monaco into the wrapper
       return Editor.initMonaco(props, state)
-    } else if (props.content !== state.content) {
+    } else if (
+      !state.content ||
+      props.content.content !== state.content.content ||
+      props.content.contentType !== state.content.contentType
+    ) {
       return {
         content: props.content,
         subscription: Editor.reinitMonaco(props, state, Editor.isReadOnly(props, state))
@@ -150,7 +154,16 @@ export default class Editor extends React.PureComponent<Props, State> {
   private static onChange(props: Props, content: State['content'], readOnly: boolean, editor: Monaco.ICodeEditor) {
     let currentDecorations: string[]
 
-    return () => {
+    return (evt: Monaco.IModelContentChangedEvent) => {
+      // See initMonaco(): note how we first set `value: ''`, then we
+      // asynchronously update the text, which results in an onChange
+      // callback. Thus, we can safely ignore the first change, which
+      // corresponds to a versionId of 2, since we first set `value:
+      // ''`. https://github.com/kubernetes-sigs/kui/issues/7426
+      if (evt.versionId === 2) {
+        return
+      }
+
       if (currentDecorations) {
         editor.deltaDecorations(currentDecorations, [])
         currentDecorations = undefined

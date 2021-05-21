@@ -61,36 +61,20 @@ export type KuiMMRProps = ToolbarProps & {
 
 interface State {
   mode: Content
-  isRendered: boolean
+  execUUID: string
 }
 
-export default class KuiContent extends React.Component<KuiMMRProps, State> {
+export default class KuiContent extends React.PureComponent<KuiMMRProps, State> {
   public constructor(props: KuiMMRProps) {
     super(props)
-
-    this.state = {
-      mode: props.mode,
-      isRendered: false
-    }
+    this.state = KuiContent.getDerivedStateFromProps(props)
   }
 
-  public static getDerivedStateFromProps(props: KuiMMRProps, state: State) {
-    if (state && state.isRendered && state.mode === props.mode) {
-      return state
+  public static getDerivedStateFromProps(props: KuiMMRProps, state?: State) {
+    if (!state || state.mode !== props.mode || state.execUUID !== props.execUUID) {
+      return Object.assign(state || {}, { mode: props.mode, execUUID: props.execUUID })
     } else {
-      return Object.assign(state || {}, { isRendered: false, mode: props.mode })
-    }
-  }
-
-  public shouldComponentUpdate(nextProps: KuiMMRProps) {
-    return nextProps.isActive && (!this.state || !this.state.isRendered)
-  }
-
-  public componentDidUpdate() {
-    if (this.props.isActive) {
-      this.setState({
-        isRendered: true
-      })
+      return state
     }
   }
 
@@ -148,9 +132,11 @@ export default class KuiContent extends React.Component<KuiMMRProps, State> {
         />
       )
     } else if (isCommandStringContent(mode)) {
-      return <Eval {...this.props} command={mode.contentFrom} contentType={mode.contentType} />
+      const key = `${mode.contentFrom} ${mode.contentType}`
+      return <Eval {...this.props} key={key} command={mode.contentFrom} contentType={mode.contentType} />
     } else if (isFunctionContent(mode)) {
-      return <Eval {...this.props} command={mode.content} />
+      const command = mode.content
+      return <Eval {...this.props} key={command.toString()} command={command} />
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })

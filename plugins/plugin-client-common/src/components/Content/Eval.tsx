@@ -33,11 +33,13 @@ import { Loading } from '../../'
 import KuiMMRContent, { KuiMMRProps } from './KuiContent'
 
 interface EvalProps extends Omit<KuiMMRProps, 'mode'> {
+  execUUID: string
   command: string | FunctionThatProducesContent
   contentType?: SupportedStringContent
 }
 
 interface EvalState {
+  execUUID: string
   isLoading: boolean
   command: string | FunctionThatProducesContent
   react: ReactProvider
@@ -63,17 +65,24 @@ interface EvalState {
 export default class Eval extends React.PureComponent<EvalProps, EvalState> {
   public constructor(props: EvalProps) {
     super(props)
-
-    this.state = {
-      isLoading: true,
-      command: props.command,
-      react: undefined,
-      spec: undefined,
-      content: undefined,
-      contentType: props.contentType
-    }
-
+    this.state = Eval.getDerivedStateFromProps(props)
     this.startLoading()
+  }
+
+  public static getDerivedStateFromProps(props: EvalProps, state?: EvalState) {
+    if (!state || state.execUUID !== props.execUUID) {
+      return {
+        execUUID: props.execUUID,
+        isLoading: true,
+        command: props.command,
+        react: undefined,
+        spec: undefined,
+        content: undefined,
+        contentType: props.contentType
+      }
+    } else {
+      return state
+    }
   }
 
   private startLoading() {
