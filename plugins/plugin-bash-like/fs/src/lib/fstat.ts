@@ -16,7 +16,7 @@
 
 import { readFile, stat } from 'fs'
 
-import { Arguments, ParsedOptions, CodedError, findFileWithViewer, expandHomeDir } from '@kui-shell/core'
+import { Arguments, ParsedOptions, CodedError, expandHomeDir } from '@kui-shell/core'
 
 export interface FStat {
   viewer: string
@@ -53,7 +53,8 @@ export const fstat = ({
   parsedOptions
 }: Pick<Arguments<FStatOptions>, 'argvNoOptions' | 'parsedOptions'>) => {
   const filepath = argvNoOptions[1]
-  const { resolved: fullpath, viewer = 'open' } = findFileWithViewer(expandHomeDir(filepath))
+  const viewer = 'open'
+  const fullpath = expandHomeDir(filepath)
 
   const prettyFullPath = fullpath.replace(new RegExp(`^${process.env.HOME}`), '~')
 
