@@ -187,7 +187,9 @@ export default class Output extends React.PureComponent<Props, State> {
         const combined = this.streamingOutput.join('')
         return (
           <div className="repl-result-like result-vertical" data-stream>
-            <Ansi>{combined}</Ansi>
+            <React.Suspense fallback={<div />}>
+              <Ansi>{combined}</Ansi>
+            </React.Suspense>
           </div>
         )
       }
