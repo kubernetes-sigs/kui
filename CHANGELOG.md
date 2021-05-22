@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.3](https://github.com/IBM/kui/compare/v10.3.2...v10.3.3) (2021-05-22)
+
+### Bug Fixes
+
+- **packages/core:** File->Save does not properly handle backslash paths ([df8e0ef](https://github.com/IBM/kui/commit/df8e0ef))
+- **plugins/plugin-bash-like:** on windows ls with no arguments results in Cannot read property 'replace' of undefined ([71c9892](https://github.com/IBM/kui/commit/71c9892))
+- **plugins/plugin-bash-like:** stop resolve to absolute path in fstat and fslice ([fb43e23](https://github.com/IBM/kui/commit/fb43e23))
+- **plugins/plugin-client-common:** clicking on YAML tab incorrectly shows "You are in edit mode" even if you aren't ([1525724](https://github.com/IBM/kui/commit/1525724)), closes [#7426](https://github.com/IBM/kui/issues/7426) [#7385](https://github.com/IBM/kui/issues/7385)
+- **plugins/plugin-client-common:** the first time PTY output appears, Kui flashes briefly ([8178967](https://github.com/IBM/kui/commit/8178967))
+- **plugins/plugin-kubectl:** tab state manager shoud not log "command not found" errors for systems without kubectl ([603da4f](https://github.com/IBM/kui/commit/603da4f))
+
+### Features
+
+- **packages/webpack:** when building a headless bundle set via webpack, also create a zip file ([114e438](https://github.com/IBM/kui/commit/114e438)), closes [#7427](https://github.com/IBM/kui/issues/7427)
+
 ## [10.3.2](https://github.com/IBM/kui/compare/v10.3.1...v10.3.2) (2021-05-20)
 
 ### Bug Fixes

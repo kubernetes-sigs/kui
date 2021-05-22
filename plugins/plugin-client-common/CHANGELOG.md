@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.3](https://github.com/IBM/kui/compare/v10.3.2...v10.3.3) (2021-05-22)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** clicking on YAML tab incorrectly shows "You are in edit mode" even if you aren't ([1525724](https://github.com/IBM/kui/commit/1525724)), closes [#7426](https://github.com/IBM/kui/issues/7426) [#7385](https://github.com/IBM/kui/issues/7385)
+- **plugins/plugin-client-common:** the first time PTY output appears, Kui flashes briefly ([8178967](https://github.com/IBM/kui/commit/8178967))
+
 ## [10.3.2](https://github.com/IBM/kui/compare/v10.3.1...v10.3.2) (2021-05-20)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common

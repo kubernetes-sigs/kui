@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.3](https://github.com/IBM/kui/compare/v10.3.2...v10.3.3) (2021-05-22)
+
+### Features
+
+- **packages/webpack:** when building a headless bundle set via webpack, also create a zip file ([114e438](https://github.com/IBM/kui/commit/114e438)), closes [#7427](https://github.com/IBM/kui/issues/7427)
+
 ## [10.3.2](https://github.com/IBM/kui/compare/v10.3.1...v10.3.2) (2021-05-20)
 
 **Note:** Version bump only for package @kui-shell/webpack

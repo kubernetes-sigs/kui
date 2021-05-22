@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.3](https://github.com/IBM/kui/compare/v10.3.2...v10.3.3) (2021-05-22)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** tab state manager shoud not log "command not found" errors for systems without kubectl ([603da4f](https://github.com/IBM/kui/commit/603da4f))
+
 ## [10.3.2](https://github.com/IBM/kui/compare/v10.3.1...v10.3.2) (2021-05-20)
 
 ### Bug Fixes
