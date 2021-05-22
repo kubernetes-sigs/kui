@@ -713,11 +713,11 @@ export function isStatus(resource: string | Buffer | object | KubeResource): res
 }
 
 /** Kubernetes Secret */
-export interface Secret extends KubeResource {
+export interface Secret<T = Record<string, any>> extends KubeResource {
   apiVersion: 'v1'
   kind: 'Secret'
   type: string
-  data: Record<string, any>
+  data: T
 }
 
 export function isSecret(resource: KubeResource): resource is Secret {

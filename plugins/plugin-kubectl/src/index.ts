@@ -38,6 +38,8 @@ export {
   PodList,
   isPodList,
   KubeContext,
+  Secret,
+  isSecret,
   Job,
   isJob,
   Resource
