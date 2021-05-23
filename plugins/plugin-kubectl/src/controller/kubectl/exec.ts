@@ -92,6 +92,15 @@ export function doExecWithStdout<O extends KubeOptions>(
 }
 
 /**
+ * Do we see anything in the given command that indicates a PTY is
+ * required? That is, versus a plain nodejs spawn/exec.
+ *
+ */
+export function reallyNeedsPty({ argvNoOptions }: Pick<Arguments, 'argvNoOptions'>) {
+  return argvNoOptions.includes('|') || argvNoOptions.includes('>') || argvNoOptions.includes('>>')
+}
+
+/**
  * Execute the given command using a pty
  *
  */
@@ -100,7 +109,7 @@ export async function doExecWithPty<
   Response extends KResponse<Content> = KResponse<Content>,
   O extends KubeOptions = KubeOptions
 >(args: Arguments<O>, prepare: Prepare<O> = NoPrepare): Promise<string | Response> {
-  if (isHeadless() || (!inBrowser() && args.execOptions.raw)) {
+  if (!reallyNeedsPty(args) && (isHeadless() || (!inBrowser() && args.execOptions.raw))) {
     return doExecWithStdout(args, prepare)
   } else {
     //
@@ -192,7 +201,7 @@ export async function exec<O extends KubeOptions>(
   prepare: Prepare<O> = NoPrepare,
   exec = 'kubectl'
 ): Promise<RawResponse> {
-  if (args.argvNoOptions.includes('|') || args.argvNoOptions.includes('>') || args.argvNoOptions.includes('>>')) {
+  if (reallyNeedsPty(args)) {
     return Promise.resolve({
       content: {
         code: 0,
