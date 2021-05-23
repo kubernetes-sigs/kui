@@ -19,7 +19,7 @@ import { Registrar, Arguments } from '@kui-shell/core'
 
 import defaultFlags from './flags'
 import { isDryRun, isEntityFormat, KubeOptions, formatOf } from './options'
-import { doExecWithStatus, exec } from './exec'
+import { doExecWithStatus, exec, reallyNeedsPty } from './exec'
 import createDirect from '../client/direct/create'
 
 import { FinalState } from '../../lib/model/states'
@@ -37,7 +37,7 @@ export const doCreate = (verb: 'create' | 'apply', command = 'kubectl') => async
   } else {
     if (isDryRun(args)) {
       const raw = await exec(args, undefined, command)
-      if (isEntityFormat(formatOf(args))) {
+      if (isEntityFormat(formatOf(args)) && !reallyNeedsPty(args)) {
         const entity = await doGetAsEntity(args, raw)
         return entity
       } else {
