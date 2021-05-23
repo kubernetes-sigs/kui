@@ -25,6 +25,7 @@ import {
 
 const kubectl = 'kubectl'
 const name = 'foo-secret'
+const pipeSecret = 'pipe-secret'
 
 describe('kubectl secrets', function(this: Common.ISuite) {
   before(Common.before(this))
@@ -34,6 +35,21 @@ describe('kubectl secrets', function(this: Common.ISuite) {
   const inNamespace = `-n ${ns}`
 
   allocateNS(this, ns)
+
+  // test for create --dry-run -o yaml | kubectl apply -f, i.e. the pipe part
+  it('should create pipe to kubectl apply -f', async () => {
+    return CLI.command(
+      `kubectl create secret generic ${pipeSecret} ${inNamespace} -o yaml --dry-run=client --save-config --from-literal=foo=bar | kubectl apply -f - ${inNamespace}`,
+      this.app
+    )
+      .then(ReplExpect.okWithString(`${pipeSecret} created`))
+      .catch(Common.oops(this, true))
+  })
+  it('should list the pipe secret', async () => {
+    return CLI.command(`kubectl get secret ${pipeSecret} ${inNamespace}`, this.app)
+      .then(ReplExpect.okWith(pipeSecret))
+      .catch(Common.oops(this, true))
+  })
 
   it('should create a generic secret', async () => {
     try {
