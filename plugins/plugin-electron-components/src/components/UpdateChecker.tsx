@@ -34,20 +34,17 @@ const strings = i18n('plugin-core-support')
 /** Default repo/org */
 const repo = 'kubernetes-sigs/kui'
 
-/** Base URL for feeds */
+/** Base URL for get */
 const baseUrl = () => {
   try {
     return require('@kui-shell/client/config.d/repo.json').url
   } catch (err) {
-    return `https://github.com/${repo}`
+    return `https://api.github.com/repos/${repo}`
   }
 }
 
-/** Releases page */
-const RELEASE = (tag: string) => `${baseUrl()}/releases/tag/v${tag}`
-
 /** Releases feed */
-const FEED = () => `${baseUrl()}/releases.atom`
+const FEED = () => `${baseUrl()}/releases/latest`
 
 /** By default, check for updates once a day */
 const DEFAULT_INTERVAL = 24 * 60 * 60 * 1000
@@ -88,6 +85,7 @@ interface State {
     updated: string
     version: string
     content: string
+    download: string
   }
 }
 
@@ -122,37 +120,23 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
     }, this.props.interval || DEFAULT_INTERVAL)
   }
 
-  /** Extract the `value` field from an atom `entry` */
-  private atomValueFor(name: string, entry: { children: { name: string; value: string }[] }) {
-    const pair = entry.children.find(_ => _.name === name)
-    if (pair) {
-      return pair.value
-    }
-  }
-
   /** Ping the release feed to check for the latest release */
   private checkForUpdates() {
     needle('get', FEED(), { json: true })
       .then(res => {
-        const entryForLatestVersion = res.body.children
-          .filter(_ => _.name === 'entry')
-          .find(_ =>
-            _.children.find(
-              _ =>
-                _.name === 'title' && !_.value.includes('beta') && !_.value.includes('alpha') && !_.value.includes('rc')
-            )
-          )
+        const version = res.body.tag_name
 
         this.setState({
           entryForLatestVersion: {
-            title: this.atomValueFor('title', res.body),
-            updated: this.atomValueFor('updated', res.body),
-            version: this.atomValueFor('title', entryForLatestVersion),
-            content: this.atomValueFor('content', entryForLatestVersion)
+            title: 'Release Notes from Kui',
+            updated: res.body.published_at,
+            version: res.body.tag_name,
+            content: res.body.body,
+            download: res.body.html_url
           }
         })
 
-        return entryForLatestVersion.children.find(_ => _.name === 'title').value
+        return version
       })
       .then(stripOffPrefixV) // see https://github.com/IBM/kui/issues/4918
       .then(latestVersion =>
@@ -265,7 +249,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
                     <strong>{this.state.entryForLatestVersion.version}</strong>
                   </div>
                   <div className="sub-text even-smaller-text">
-                    <a href={RELEASE(this.state.latestVersion)}>Download</a>
+                    <a href={this.state.entryForLatestVersion.download}>Download</a>
                   </div>
                 </React.Fragment>
               )
