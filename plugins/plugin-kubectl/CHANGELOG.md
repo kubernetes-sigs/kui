@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.4](https://github.com/IBM/kui/compare/v10.3.3...v10.3.4) (2021-05-24)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl create --dry-run | kubectl apply -f - does not work ([2eeabf7](https://github.com/IBM/kui/commit/2eeabf7)), closes [#7443](https://github.com/IBM/kui/issues/7443)
+- **plugins/plugin-kubectl:** plugin-kubectl should expose Secret type ([23f2dee](https://github.com/IBM/kui/commit/23f2dee)), closes [#7441](https://github.com/IBM/kui/issues/7441)
+
 ## [10.3.3](https://github.com/IBM/kui/compare/v10.3.2...v10.3.3) (2021-05-22)
 
 ### Bug Fixes
