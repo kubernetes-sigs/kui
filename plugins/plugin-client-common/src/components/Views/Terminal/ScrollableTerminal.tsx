@@ -703,6 +703,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
         if (rerunIdx >= 0) {
           const block = curState.blocks[rerunIdx]
+          this.removeWatchableBlock(block)
           // The use case here is that the user clicked the Rerun
           // button in the UI or clicked on an Input and hit Enter. In
           // either case, the command execution will reuse the
