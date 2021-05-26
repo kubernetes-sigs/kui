@@ -74,7 +74,9 @@ class ElectronMainSideChannel extends EventEmitter implements Channel {
   /** Send a message over the channel */
   public send(msg: string | Buffer) {
     try {
-      this.otherSide.send(this.messageChannel, msg)
+      if (!this.otherSide.isDestroyed()) {
+        this.otherSide.send(this.messageChannel, msg)
+      }
     } catch (err) {
       console.error('Error sending PTY output to renderer', err)
     }
