@@ -64,13 +64,15 @@ class ElectronMainSideChannel extends EventEmitter implements Channel {
     this.messageChannel = messageChannel(args.execUUID)
     ipcMain.on(this.messageChannel, this.handleMessage)
 
-    await onConnection(await disableBashSessions())(this)
+    await disableBashSessions()
+    await onConnection(() => {
+      this.ipcMain.off(this.messageChannel, this.handleMessage)
+    })(this)
   }
 
   /** Forcibly close the channel */
   public close() {
     this.emit('exit')
-    this.ipcMain.off(this.messageChannel, this.handleMessage)
   }
 
   /** Send a message over the channel */

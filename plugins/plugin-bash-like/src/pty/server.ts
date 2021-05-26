@@ -419,7 +419,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
                 shell = undefined
                 if (msg.uuid) delete shells[msg.uuid]
                 ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
-                // exitNow(exitCode)
+                exitNow(exitCode)
               })
 
               ws.send(JSON.stringify({ type: 'state', state: 'ready', uuid: msg.uuid }))
