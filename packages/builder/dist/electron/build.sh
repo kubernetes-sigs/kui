@@ -40,7 +40,7 @@ export KUI_HEADLESS_WEBPACK
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(bak\.json)|(packages/.*/mdist)|(@kui-shell/.*/mdist)|(node_modules/.*/fonts/)|(\.scss$)|(\.woff$)|(/node_modules/@carbon)|(/node_modules/@patternfly)|(/node_modules/@emotion)|(/node_modules/babel-plugin-emotion)|(/node_modules/core-js)|(/node_modules/cssstyle)|(/node_modules/lodash)|(/node_modules/carbon-icons)|(/node_modules/@fortawesome)|(/node_modules/@babel)|(/node_modules/carbon-components)|(/node_modules/@kui-shell/plugin-.*/node_modules/)|(node_modules/trie-search/dictionary.json)|(node_modules/apexcharts/src)|(node_modules/victory-*)|(packages/builder)|(packages/test)|(tmp/)'
+export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(bak\.json)|(packages/.*/mdist)|(plugins/.*/mdist)|(plugins/.*/web)|(@kui-shell/.*/mdist)|(node_modules/.*/fonts/)|(\.scss$)|(\.woff$)|(/node_modules/@carbon)|(/node_modules/@patternfly)|(/node_modules/@emotion)|(/node_modules/babel-plugin-emotion)|(/node_modules/core-js)|(/node_modules/cssstyle)|(/node_modules/lodash)|(/node_modules/carbon-icons)|(/node_modules/@fortawesome)|(/node_modules/@babel)|(/node_modules/carbon-components)|(/node_modules/node-pty/deps)|(/node_modules/@kui-shell/plugin-.*/node_modules/)|(node_modules/trie-search/dictionary.json)|(node_modules/react-dom)|(node_modules/ramda)|(node_modules/underscore)|(node_modules/esprima)|(node_modules/micromark)|(node_modules/readline/test)|(node_modules/apexcharts)|(node_modules/victory-*)|(packages/builder)|(packages/test)|(tmp/)|(CHANGELOG.md)|(tsconfig.*)|(package-lock.json)|(/plugins/.*/src)|(/plugins/.*/dist/test)|(/packages/.*/src)|(/plugins/.*/notebooks)|(/plugins/.*/components)|(/docs)|(/packages/proxy)'
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
@@ -103,8 +103,7 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-ku
         #
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for win32"
-            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-win32-$ARCH" "${CLIENT_NAME}-win32-$ARCH" -x \*~) &
-            WIN_ZIP_PID=$!
+            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-win32-$ARCH" "${CLIENT_NAME}-win32-$ARCH" -x \*~)
 
             # build squirrel and msi installers
             # SETUP_ICON=$ICON_WIN32 node builders/squirrel.js
@@ -118,9 +117,13 @@ Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-ku
 # deal with darwin/macOS packaging
 #
 function mac {
+    DESIRED_ARCH=$ARCH
     local ARCH=$1
 
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ] || [ "$PLATFORM" == "osx" ]; then
+        if [ -n "$DESIRED_ARCH" ] && [ "$ARCH" != "$DESIRED_ARCH" ]; then
+            return
+        fi
         echo "Electron build darwin $ARCH"
 
         if [ ! -f "$KUI_LAUNCHER" ]; then
@@ -183,10 +186,8 @@ fi
             # fi
 
             echo "TGZ build for darwin"
-            tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH.tar.bz2" "${CLIENT_NAME}-darwin-$ARCH" &
-            MAC_TAR_PID=$!
+            tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH.tar.bz2" "${CLIENT_NAME}-darwin-$ARCH"
         fi
-
     fi
 }
 
@@ -228,64 +229,13 @@ SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
         if [ -z "$NO_INSTALLER" ]; then
             echo "Zip build for linux"
-            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-linux-$ARCH" "${CLIENT_NAME}-linux-$ARCH" -x \*~) &
-            LINUX_ZIP_PID=$!
+            (cd $BUILDDIR && zip -q -r "${CLIENT_NAME}-linux-$ARCH" "${CLIENT_NAME}-linux-$ARCH" -x \*~)
 
             echo "DEB build for linux"
-            ARCH=$ARCH "$BUILDER_HOME"/dist/electron/builders/deb.sh &
-            LINUX_DEB_PID=$!
+            # ARCH=$ARCH "$BUILDER_HOME"/dist/electron/builders/deb.sh &
+            # LINUX_DEB_PID=$!
         fi
     fi
-}
-
-function tarball {
-    # exit code; we'll check the builders in a second, and possibly alter
-    # the exit code based on their exit codes
-    CODE=0
-
-    # check to see if any of the builders failed; we backgrounded them, so
-    # this is a bit convulated, in bash
-    if [ -n "$WIN_ZIP_PID" ]; then
-        wait $WIN_ZIP_PID
-        if [ $? != 0 ]; then
-            echo "Error with windows zip build"
-            CODE=1
-        fi
-    fi
-
-    if [ -n "$MAC_DMG_PID" ]; then
-        wait $MAC_DMG_PID
-        if [ $? != 0 ]; then
-            echo "Error with mac dmg build"
-            CODE=1
-        fi
-    fi
-
-    if [ -n "$MAC_TAR_PID" ]; then
-        wait $MAC_TAR_PID
-        if [ $? != 0 ]; then
-            echo "Error with mac tar build"
-            CODE=1
-        fi
-    fi
-
-    if [ -n "$LINUX_ZIP_PID" ]; then
-        wait $LINUX_ZIP_PID
-        if [ $? != 0 ]; then
-            echo "Error with linux zip build"
-            CODE=1
-        fi
-    fi
-
-    if [ -n "$LINUX_DMG_PID" ]; then
-        wait $LINUX_DMG_PID
-        if [ $? != 0 ]; then
-            echo "Error with linux dmg build"
-            CODE=1
-        fi
-    fi
-
-    wait
 }
 
 # install the electron-packager dependencies
@@ -306,18 +256,24 @@ function builddeps {
 # this is the main routine
 function build {
     echo "builddeps" && builddeps
-    echo "win32" && win32 x64
-    echo "mac" && mac x64
+
+    win32 x64
+
+    if [ -z "$ARCH" ] || [ "$ARCH" = "all" ]; then
+	echo "Building all arch for mac"
+        mac x64
+        mac arm64
+    else
+        mac ${ARCH-x64}
+    fi
 
     if [ -z "$ARCH" ] || [ "$ARCH" = "all" ]; then
 	echo "Building all arch for linux"
-	echo "linux x64" && linux x64
-	echo "linux arm64" && linux arm64
+	linux x64
+	linux arm64
     else
-	echo "linux" && linux ${ARCH-x64}
+	linux ${ARCH-x64}
     fi
-
-    echo "tarball" && tarball
 }
 
 # line up the work

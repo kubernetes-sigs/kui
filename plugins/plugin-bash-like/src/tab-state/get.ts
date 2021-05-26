@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui-shell/core'
-// import { notebookVFS } from '@kui-shell/plugin-core-support'
+import { TabState } from '@kui-shell/core'
 
-export default async function preloadS3Plugin() {
-  const vfsPromise = inBrowser()
-    ? import('./vfs/browser').then(_ => _.default())
-    : import('./vfs').then(_ => _.default())
+import { apiVersion, name } from './key'
 
-  /* if (!isHeadless()) {
-    // mount notebooks
-    notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/s3'] })
-    notebookVFS.cp(undefined, ['plugin://plugin-s3/notebooks/welcome.json'], '/kui/s3/')
-  } */
-
-  await vfsPromise
+export default function getTabState(tab: TabState, key: string) {
+  return tab.getState(name, apiVersion, key)
 }

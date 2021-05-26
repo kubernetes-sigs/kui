@@ -305,7 +305,7 @@ plugins.push({
 console.log('webpack plugins', plugins)
 
 // Notes: when !inBrowser, we want electron to pull
-// node-pty-prebuilt-multiarch in as a commonjs external module; this
+// node-pty in as a commonjs external module; this
 // is because node-pty has binary bits, and we are building one set of
 // bundles for all electron platforms. If, in the future, we decide to
 // rebuild the bundles for each platform, we can remove this 'commonjs
@@ -319,7 +319,7 @@ console.log('webpack plugins', plugins)
 // the 'commonjs node-pty' syntax, see
 // https://github.com/webpack/webpack/issues/4238
 const externals = !inBrowser
-  ? { 'node-pty-prebuilt-multiarch': 'commonjs node-pty-prebuilt-multiarch' }
+  ? { 'node-pty': 'commonjs node-pty' }
   : [
       'tape', // modules/composer/node_modules/safer-buffer
       'dns', // modules/openwhisk/node_modules/retry/example/dns.js
@@ -328,7 +328,7 @@ const externals = !inBrowser
       'request', // needed by some apache-composer samples
       'babel-core/register', // wskflow
       'aws-sdk', // wskflow
-      'node-pty-prebuilt-multiarch', // bash-like
+      'node-pty', // bash-like
       './es6/crc9_1wire', // k8s
       './es6/crc17_xmodem', // k8s, openwhisk
       './es6/crc17_modbus', // k8s, openwhisk

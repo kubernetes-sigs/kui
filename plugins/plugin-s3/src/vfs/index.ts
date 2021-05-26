@@ -15,14 +15,14 @@
  */
 
 import Debug from 'debug'
+import { Client } from 'minio'
 import minimatch from 'minimatch'
 import { createGunzip } from 'zlib'
 import { createWriteStream } from 'fs'
-import { Client, CopyConditions } from 'minio'
 import { basename, dirname, join } from 'path'
 
-import { Arguments, CodedError, REPL, encodeComponent, expandHomeDir, flatten, i18n } from '@kui-shell/core'
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
+import { Arguments, CodedError, REPL, encodeComponent, expandHomeDir, flatten, i18n } from '@kui-shell/core'
 
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider } from '../providers'
@@ -71,11 +71,16 @@ function cropToSlashDepth(path: string, depth: number, segment: boolean) {
 }
 
 class S3VFSResponder extends S3VFS implements VFS {
-  private readonly client: Client
-  private readonly listBucketsClient: Client
+  private client: Client
+  private listBucketsClient: Client
 
   public constructor(private readonly options: Provider) {
     super(options.mountName, options.error, options.publicOnly)
+  }
+
+  public async init() {
+    const { options } = this
+    const { Client } = await import('minio')
 
     if (options.error) {
       this.client = undefined
@@ -105,6 +110,8 @@ class S3VFSResponder extends S3VFS implements VFS {
       }
     }
     debug('new s3 vfs responder', options.mountName, options.endPoint)
+
+    return this
   }
 
   private dirEntryForDirectory(name: string, path: string): DirEntry {
@@ -603,12 +610,7 @@ class S3VFSResponder extends S3VFS implements VFS {
           debug('intra-client copy src', srcFilepath, srcBucket, srcFile)
           debug('intra-client copy dst', dstFilepath, dstBucket, dstName)
 
-          const { etag } = await this.client.copyObject(
-            dstBucket,
-            dstName,
-            `/${srcBucket}/${srcFile}`,
-            new CopyConditions()
-          )
+          const { etag } = await this.client.copyObject(dstBucket, dstName, `/${srcBucket}/${srcFile}`, null)
           return etag
         })
     )
@@ -981,26 +983,28 @@ export default function initS3Mounts() {
         resolveA()
       }
 
-      mount(async (repl: REPL) => {
-        try {
-          const providers = await findAvailableProviders(repl, init)
-          debug(
-            'available s3 providers',
-            providers.map(_ => _.mountName)
-          )
+      setTimeout(() => {
+        mount(async (repl: REPL) => {
+          try {
+            const providers = await findAvailableProviders(repl, init)
+            debug(
+              'available s3 providers',
+              providers.map(_ => _.mountName)
+            )
 
-          const vfses = setResponders(
-            providers,
-            providers.map(provider => new S3VFSResponder(provider))
-          )
+            const vfses = setResponders(
+              providers,
+              await Promise.all(providers.map(provider => new S3VFSResponder(provider).init()))
+            )
 
-          resolveB()
-          return vfses
-        } catch (err) {
-          console.error('Error initializing s3 vfs', err)
-          reject(err)
-        }
-      }, baseMountPath)
+            resolveB()
+            return vfses
+          } catch (err) {
+            console.error('Error initializing s3 vfs', err)
+            reject(err)
+          }
+        }, baseMountPath)
+      })
     })
   }
 

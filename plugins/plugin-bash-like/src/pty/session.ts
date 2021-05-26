@@ -23,6 +23,8 @@ import { eventBus, inBrowser, CodedError, i18n, Tab, PreloadRegistrar } from '@k
 import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
 
+import { getSessionForTab, invalidateCache, isExiting } from './sessionCache'
+
 const strings = i18n('plugin-bash-like')
 const debug = Debug('plugins/bash-like/pty/session')
 
@@ -30,45 +32,14 @@ const debug = Debug('plugins/bash-like/pty/session')
  * Return the cached websocket for the given tab
  *
  */
-let _singleChannel: Promise<Channel> // share session across tabs see https://github.com/IBM/kui/issues/6453
-let _exiting = false
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getChannelForTab(tab: Tab): Promise<Channel> {
-  if (_exiting) {
+  if (isExiting()) {
     // prevent any stagglers re-establishing a channel
     throw new Error('Exiting')
-  } else {
-    return _singleChannel
+  } else if (inBrowser()) {
+    return getSessionForTab(tab)
   }
-}
-
-/**
- * Set it
- *
- */
-export function setChannelForTab(tab: Tab, channel: Promise<Channel>) {
-  debug('initializing pty channel: set')
-  _singleChannel = channel
-
-  // listen for the end of the world
-  channel.then(chan => {
-    debug('initializing pty channel: success')
-    window.addEventListener('beforeunload', () => {
-      _exiting = true // prevent any stagglers re-establishing a channel
-      chan.close()
-    })
-  })
-
-  return _singleChannel
-}
-
-/**
- * Return the session for the given tab
- *
- */
-export function getSessionForTab(tab: Tab): Promise<Channel> {
-  debug('pty channel: get', tab.uuid)
-  return _singleChannel
 }
 
 /**
@@ -101,7 +72,7 @@ export function pollUntilOnline(tab: Tab) {
           if (err.code !== 503) {
             // don't bother complaining too much about connection refused
             console.error('error establishing session', err.code, err.statusCode, err)
-            _singleChannel = undefined
+            invalidateCache(tab)
           }
           setTimeout(() => once(iter + 1), iter < 10 ? 2000 : iter < 100 ? 4000 : 10000)
           return strings('Could not establish a new session')
@@ -119,7 +90,7 @@ export function pollUntilOnline(tab: Tab) {
  */
 async function newSessionForTab(tab: Tab) {
   const thisSession =
-    _singleChannel ||
+    getSessionForTab(tab) ||
     new Promise(async (resolve, reject) => {
       try {
         await pollUntilOnline(tab)
@@ -137,7 +108,7 @@ async function newSessionForTab(tab: Tab) {
 
 /** Connection to Kui proxy has been severed */
 export function invalidateSession(tab: Tab) {
-  _singleChannel = undefined
+  invalidateCache(tab)
   eventBus.emit('/tab/offline', tab)
   eventBus.emitWithTabId(`/tab/offline`, tab.state.uuid)
 }

@@ -15,17 +15,7 @@
  */
 
 import Debug from 'debug'
-import {
-  CodedError,
-  ExecType,
-  Streamable,
-  isHeadless,
-  inBrowser,
-  hasProxy,
-  Arguments,
-  ParsedOptions,
-  Registrar
-} from '@kui-shell/core'
+import { CodedError, Streamable, Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
@@ -51,6 +41,7 @@ export const dispatchToShell = async ({
     }
   }
 
+  const { ExecType } = await import('@kui-shell/core')
   const useRaw =
     (execOptions.raw || execOptions.type === ExecType.Nested) &&
     execOptions.quiet === undefined &&
@@ -63,6 +54,8 @@ export const dispatchToShell = async ({
       : Object.assign({}, { stdout: await createOutputStream() }, execOptions)
 
   const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
+
+  const { isHeadless, inBrowser } = await import('@kui-shell/core')
 
   if (isHeadless() || (!inBrowser() && useRaw)) {
     const { doExec } = await import('./bash-like')
@@ -110,6 +103,7 @@ export const dispatchToShell = async ({
 export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOptions>(
   args: Arguments<O>
 ): Promise<string> {
+  const { isHeadless } = await import('@kui-shell/core')
   // eslint-disable-next-line no-async-promise-executor
   return new Promise<string>(async (resolve, reject) => {
     let stdout = ''
@@ -159,7 +153,9 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
  * On preload, register the catchall handler
  *
  */
-export const preload = (commandTree: Registrar) => {
+export const preload = async (commandTree: Registrar) => {
+  const { inBrowser, hasProxy } = await import('@kui-shell/core')
+
   if (inBrowser() && !hasProxy()) {
     debug('skipping catchall registration: in browser and no remote proxy to support it')
     return
