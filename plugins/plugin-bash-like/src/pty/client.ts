@@ -791,13 +791,18 @@ const getOrCreateChannel = async (
     ws.on('open', () => doExec(ws))
 
     // when the websocket has closed, notify the user
-    const onClose = function(evt) {
-      debug('channel has closed', evt.target, uuid)
-      ws.removeEventListener('close', onClose)
-      debug('attempting to reestablish connection, because the tab is still open')
-      invalidateSession(tab)
+
+    if (inBrowser()) {
+      const onClose = function(evt) {
+        debug('channel has closed', evt.target, uuid)
+        ws.removeEventListener('close', onClose)
+        if (!tab.state.closed) {
+          debug('attempting to reestablish connection, because the tab is still open')
+          invalidateSession(tab)
+        }
+      }
+      ws.on('close', onClose)
     }
-    ws.on('close', onClose)
 
     return ws
   } else {
