@@ -39,7 +39,8 @@ import Options from './options'
 import ChannelId from './channel-id'
 import { cleanupTerminalAfterTermination } from './util'
 import { getChannelForTab, setChannelForTab, invalidateSession } from './session'
-import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
+import { Channel, WebViewChannelRendererSide } from './channel'
+import ElectronRendererSideChannel from './electron-main-channel'
 
 const debug = Debug('plugins/bash-like/pty/client')
 
@@ -682,7 +683,7 @@ const injectFont = (terminal: XTerminal, flush = false) => {
   }
 }
 
-type ChannelFactory = (tab: Tab) => Promise<Channel>
+type ChannelFactory = (tab: Tab, execUUID: string) => Promise<Channel>
 
 /**
  * Create a websocket channel to a remote bash
@@ -717,9 +718,9 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab): Promise<Channel> 
   }
 }
 
-const electronChannelFactory: ChannelFactory = async () => {
-  const channel = new InProcessChannel()
-  channel.init()
+const electronChannelFactory: ChannelFactory = async (tab: Tab, execUUID: string) => {
+  const channel = new ElectronRendererSideChannel()
+  await channel.init(execUUID)
   return channel
 }
 
