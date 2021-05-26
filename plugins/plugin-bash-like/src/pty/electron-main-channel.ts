@@ -34,7 +34,7 @@ interface Args {
 const debugMain = Debug('plugin-bash-like/pty/electron/main')
 const debugRenderer = Debug('plugin-bash-like/pty/electron/renderer')
 
-function messageChannel(execUUID) {
+function messageChannelFor(execUUID: string) {
   return `/plugin-bash-like/pty/message/${execUUID}`
 }
 
@@ -61,23 +61,30 @@ class ElectronMainSideChannel extends EventEmitter implements Channel {
     this.ipcMain = ipcMain
     this.otherSide = otherSide
 
-    this.messageChannel = messageChannel(args.execUUID)
+    this.messageChannel = messageChannelFor(args.execUUID)
     ipcMain.on(this.messageChannel, this.handleMessage)
 
     await disableBashSessions()
     await onConnection(() => {
-      this.ipcMain.off(this.messageChannel, this.handleMessage)
+      try {
+        this.ipcMain.off(this.messageChannel, this.handleMessage)
+      } catch (err) {
+        console.error('Error turning off PTY events', err)
+      }
     })(this)
   }
 
   /** Forcibly close the channel */
-  public close() {
-    this.emit('exit')
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public close() {}
 
   /** Send a message over the channel */
   public send(msg: string | Buffer) {
-    this.otherSide.send(this.messageChannel, msg)
+    try {
+      this.otherSide.send(this.messageChannel, msg)
+    } catch (err) {
+      console.error('Error sending PTY output to renderer', err)
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -104,7 +111,12 @@ export default class ElectronRendererSideChannel extends EventEmitter implements
     this.ipcRenderer = ipcRenderer
     debugRenderer('renderer side init')
 
-    this.messageChannel = messageChannel(execUUID)
+    this.messageChannel = messageChannelFor(execUUID)
+
+    window.addEventListener('beforeunload', () => {
+      this.send(JSON.stringify({ type: 'kill', uuid: execUUID }))
+      this.ipcRenderer.off(this.messageChannel, this.handleMessage)
+    })
 
     ipcRenderer.once(`/exec/response/${execUUID}`, (_, _msg: string) => {
       const msg = JSON.parse(_msg)
@@ -129,14 +141,16 @@ export default class ElectronRendererSideChannel extends EventEmitter implements
   }
 
   /** Forcibly close the channel */
-  public close() {
-    this.send('exit')
-    this.ipcRenderer.off(this.messageChannel, this.handleMessage)
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  public close() {}
 
   /** Send a message over the channel */
   public send(msg: string | Buffer) {
-    this.ipcRenderer.send(this.messageChannel, msg.toString())
+    try {
+      this.ipcRenderer.send(this.messageChannel, msg.toString())
+    } catch (err) {
+      console.error('Error sending PTY message to main process', err)
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
