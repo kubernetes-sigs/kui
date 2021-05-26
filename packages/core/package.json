@@ -30,7 +30,7 @@
     "kui": "bin/kui"
   },
   "dependencies": {
-    "ansi-to-html": "0.6.14",
+    "ansi-to-html": "0.6.15",
     "colors": "1.4.0",
     "columnify": "1.5.4",
     "debug": "4.3.1",
