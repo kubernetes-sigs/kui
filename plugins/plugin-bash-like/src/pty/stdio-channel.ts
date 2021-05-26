@@ -183,11 +183,13 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
 export class StdioChannelKuiSide extends EventEmitter implements Channel {
   public readyState = ReadyState.OPEN
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async init(onExit: ExitHandler) {
     debugK('StdioChannelKuiSide.init')
 
     // await onConnection(await disableBashSessions())(this)
-    await onConnection(onExit)(this)
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    await onConnection(() => {})(this)
 
     // leftover helps us manage message chunking/fragmentation:
     // https://github.com/IBM/kui/issues/5631
