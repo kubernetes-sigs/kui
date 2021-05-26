@@ -101,17 +101,35 @@ async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArc
 }
 
 /** afterCopy hook to copy in headless build, etc. things that need to be codesigned */
-async function copySignableBits(buildPath, electronVersion, targetPlatform, targetArch, callback) {
-  // copy in the headless build?
-  if (process.env.KUI_HEADLESS_WEBPACK) {
-    const source = process.env.HEADLESS_BUILDDIR
-    const target = join(buildPath, '..', basename(source)) // buildPath is Contents/Resources/app on macOS
-    console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
-    await emptyDir(target)
-    await copy(source, target)
-  }
+function copySignableBits(baseArgs /*: { dir: string, name: string, platform: string, arch: string, icon: string } */) {
+  return async (buildPath, electronVersion, targetPlatform, targetArch, callback) => {
+    // copy in launcher? it is important to copy this in before
+    // signing and notarizing, otherwise macOS/windows, when launching
+    // the app, will see unsigned content in the application bundle
+    try {
+      if (baseArgs.launcher) {
+        const source = baseArgs.launcher
+        const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
+        console.log(`Copying in launcher for ${targetPlatform} ${targetArch} from ${source} to ${target}`)
+        await copy(source, target)
+      }
+    } catch (err) {
+      console.error(`Error copying in launcher for ${targetPlatform} ${targetArch}`)
+      console.error(err)
+      callback(err)
+    }
 
-  callback()
+    // copy in the headless build?
+    if (process.env.KUI_HEADLESS_WEBPACK) {
+      const source = process.env.HEADLESS_BUILDDIR
+      const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
+      console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
+      await emptyDir(target)
+      await copy(source, target)
+    }
+
+    callback()
+  }
 }
 
 /**
@@ -146,7 +164,7 @@ function package(baseArgs /*: { dir: string, name: string, platform: string, arc
     },
 
     // lifecycle hooks to copy in our extra bits
-    afterCopy: [copyNodePty, copySignableBits]
+    afterCopy: [copyNodePty, copySignableBits(baseArgs)]
   })
 
   if (process.env.APP_BUNDLE_ID) {
@@ -169,11 +187,12 @@ const name = process.argv[1]
 const platform = process.argv[2]
 const arch = process.argv[3]
 const icon = process.argv[4]
+const launcher = process.argv[5]
 
 //
 // invoke electron-packager, catching any errors it might throw
 //
-package({ dir, name, platform, arch, icon })
+package({ dir, name, platform, arch, icon, launcher })
   .then(sign(name, platform))
   .then(notarize(name, platform))
   .then(() => {
