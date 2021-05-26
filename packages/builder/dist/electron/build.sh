@@ -228,27 +228,9 @@ function mac {
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "mac" ] || [ "$PLATFORM" == "macos" ] || [ "$PLATFORM" == "darwin" ] || [ "$PLATFORM" == "osx" ]; then
         echo "Electron build darwin $ARCH"
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" darwin $ARCH $ICON_MAC)
-
-        # use a custom icon for mac
-        cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
-
-        # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
-	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
-	    rm -rf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/"
-            mv "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/"
-	fi
-
-        # create the installers
-        #if [ -n "$ZIP_INSTALLER" ]; then
-        #node ./builders/zip.js
-
-        if [ -z "$NO_INSTALLER" ]; then
-
-            if [ ! -f "$KUI_LAUNCHER" ]; then
+        if [ ! -f "$KUI_LAUNCHER" ]; then
             echo "Add kubectl-kui to electron build darwin $ARCH"
-            (cd "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/" \
-            && touch kubectl-kui && chmod +x kubectl-kui \
+            (touch kubectl-kui && chmod +x kubectl-kui \
             && echo '#!/usr/bin/env bash
 export KUI_POPUP_WINDOW_RESIZE=true
 
@@ -275,15 +257,27 @@ else
     "$APP_RESOURCES_DIR/../MacOS/Kui" kubectl $@
 fi
 ' >> kubectl-kui)
-            fi
+            KUI_LAUNCHER="$PWD/kubectl-kui"
+            echo "!!!YOYOYO"
+            ls -l "$KUI_LAUNCHER"
+        fi
 
-            # copy in optional custom launcher from custom clients
-            if [ -f "$KUI_LAUNCHER" ]; then
-                echo "Copying in custom launcher"
-                bindir=$(makeBinDirectory "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH")
-                cp "$KUI_LAUNCHER" "$bindir"
-            fi
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" darwin $ARCH $ICON_MAC "$KUI_LAUNCHER")
 
+        # use a custom icon for mac
+        # cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
+
+        # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
+	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
+	    rm -rf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/"
+            mv "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/" "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/"
+	fi
+
+        # create the installers
+        #if [ -n "$ZIP_INSTALLER" ]; then
+        #node ./builders/zip.js
+
+        if [ -z "$NO_INSTALLER" ]; then
             if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
                 echo "DMG build for darwin"
                 (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
