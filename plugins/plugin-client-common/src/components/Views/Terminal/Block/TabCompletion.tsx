@@ -244,11 +244,12 @@ class TabCompletionInitialState extends TabCompletionState {
  *
  */
 function setPromptValue(prompt: HTMLInputElement, newValue: string, selectionStart: number) {
+  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
+  nativeInputValueSetter.call(prompt, newValue)
+
   prompt.selectionStart = selectionStart
   prompt.selectionEnd = selectionStart
 
-  const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
-  nativeInputValueSetter.call(prompt, newValue)
   setTimeout(() => prompt.dispatchEvent(new Event('change', { bubbles: true })))
 }
 
