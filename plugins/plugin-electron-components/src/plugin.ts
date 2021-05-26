@@ -26,7 +26,7 @@ export default function(registrar: Registrar) {
         'synchronous-message',
         JSON.stringify({
           operation: 'new-window',
-          argv: ['replay', filepath, '--status-stripe', 'blue']
+          argv: ['replay', filepath, '--close-current-tab', '--status-stripe', 'blue']
         })
       )
       return true

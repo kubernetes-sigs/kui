@@ -24,6 +24,7 @@ import {
   NavResponse,
   isNavResponse,
   isLink,
+  isPopup,
   Table,
   isStringWithOptionalContentType
 } from '@kui-shell/core'
@@ -222,9 +223,14 @@ export default (commandTree: Registrar) => {
    * Open a graphical window displaying more detail about the tool
    *
    */
-  commandTree.listen('/about', ({ REPL }) => REPL.qexec('replay /kui/welcome.json'), {
-    hidden: true // don't list about in the help menu
-  })
+  commandTree.listen(
+    '/about',
+    ({ REPL }) =>
+      isPopup() ? REPL.qexec('replay --new-window /kui/welcome.json') : REPL.qexec('replay /kui/welcome.json'),
+    {
+      hidden: true // don't list about in the help menu
+    }
+  )
 
   // getting started shortcut
   commandTree.listen('/getting/started', ({ REPL }) => REPL.qexec('about'))
