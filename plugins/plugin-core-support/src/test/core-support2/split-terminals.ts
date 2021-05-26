@@ -218,7 +218,7 @@ describe(`split terminals general ${process.env.MOCHA_RUN_TARGET || ''}`, functi
   clean1()
   clean2()
 
-  it('should refresh', () => Common.refresh(this))
+  it('should refresh', () => Common.restart(this))
 
   count(1)
   showVersion(1)

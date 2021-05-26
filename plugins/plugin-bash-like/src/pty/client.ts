@@ -38,8 +38,10 @@ import {
 import Options from './options'
 import ChannelId from './channel-id'
 import { cleanupTerminalAfterTermination } from './util'
-import { getChannelForTab, setChannelForTab, invalidateSession } from './session'
-import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
+import { setChannelForTab } from './sessionCache'
+import { getChannelForTab, invalidateSession } from './session'
+import { Channel, WebViewChannelRendererSide } from './channel'
+import ElectronRendererSideChannel from './electron-main-channel'
 
 const debug = Debug('plugins/bash-like/pty/client')
 
@@ -684,7 +686,7 @@ const injectFont = (terminal: XTerminal, flush = false) => {
   }
 }
 
-type ChannelFactory = (tab: Tab) => Promise<Channel>
+type ChannelFactory = (tab: Tab, execUUID: string) => Promise<Channel>
 
 /**
  * Create a websocket channel to a remote bash
@@ -719,9 +721,9 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab): Promise<Channel> 
   }
 }
 
-const electronChannelFactory: ChannelFactory = async () => {
-  const channel = new InProcessChannel()
-  channel.init()
+const electronChannelFactory: ChannelFactory = async (tab: Tab, execUUID: string) => {
+  const channel = new ElectronRendererSideChannel()
+  await channel.init(execUUID)
   return channel
 }
 
@@ -784,7 +786,7 @@ const getOrCreateChannel = async (
     // reference to the channelFactory promise. see
     // https://github.com/kubernetes-sigs/kui/issues/7465
     debug('initializing pty channel')
-    const ws = await setChannelForTab(tab, channelFactory(tab))
+    const ws = await setChannelForTab(tab, channelFactory(tab, uuid))
 
     // when the websocket is ready, handle any queued input; only then
     // do we focus the terminal (till then, the CLI module will handle
@@ -792,13 +794,18 @@ const getOrCreateChannel = async (
     ws.on('open', () => doExec(ws))
 
     // when the websocket has closed, notify the user
-    const onClose = function(evt) {
-      debug('channel has closed', evt.target, uuid)
-      ws.removeEventListener('close', onClose)
-      debug('attempting to reestablish connection, because the tab is still open')
-      invalidateSession(tab)
+
+    if (inBrowser()) {
+      const onClose = function(evt) {
+        debug('channel has closed', evt.target, uuid)
+        ws.removeEventListener('close', onClose)
+        if (!tab.state.closed) {
+          debug('attempting to reestablish connection, because the tab is still open')
+          invalidateSession(tab)
+        }
+      }
+      ws.on('close', onClose)
     }
-    ws.on('close', onClose)
 
     return ws
   } else {

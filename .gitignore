@@ -69,3 +69,6 @@ clients/**/mdist
 
 # webpack-dev-server report
 report.*.json
+
+# packages/builder/dist/electron currently generates this and does not remove it
+/kubectl-kui

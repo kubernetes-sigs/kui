@@ -53,7 +53,7 @@ const { exec } = require('child_process')
 const sign = require('./sign')
 const notarize = require('./notarize')
 
-const nodePty = 'node-pty-prebuilt-multiarch'
+const nodePty = 'node-pty'
 
 /**
  * afterCopy hook to build webpack bundles.
@@ -209,7 +209,7 @@ function package(baseArgs /*: { dir: string, name: string, platform: string, arc
     // files into a single file; faster installation on users'
     // machines; but we have to be careful w.r.t. native modules
     asar: {
-      unpack: '*.{node,dll}' // <-- avoids loading/signing issues with native modules
+      unpack: '*.{node,dll,exe}' // <-- avoids loading/signing issues with native modules
     },
 
     // lifecycle hooks to copy in our extra bits

@@ -19,6 +19,7 @@ import * as fs from 'fs'
 import { promisify } from 'util'
 import { join } from 'path'
 import { exec } from 'child_process'
+import { homedir as home } from 'os'
 import { createServer, Server } from 'https'
 import { parse as parseCookie } from 'cookie'
 import { Server as WebSocketServer } from 'ws'
@@ -30,7 +31,7 @@ import { IncomingMessage } from 'http'
 import { Channel } from './channel'
 import { StdioChannelKuiSide } from './stdio-channel'
 
-import { Abortable, CodedError, ExecOptions, FlowControllable, Registrar, expandHomeDir } from '@kui-shell/core'
+import { Abortable, CodedError, ExecOptions, FlowControllable, Registrar } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/pty/server')
 
@@ -39,6 +40,21 @@ const servers = []
 
 /** handler for shell/pty exit */
 export type ExitHandler = (exitCode: number) => void
+
+/** to avoid dynamic import of @kui-shell/core, due to electron-packager limitations */
+const expandHomeDir = function(path: string): string {
+  const homedir = home()
+
+  if (!path) {
+    return path
+  } else if (path === '~') {
+    return homedir
+  } else if (path.slice(0, 2) !== '~/' && path.slice(0, 2) !== '~\\') {
+    return path
+  } else {
+    return join(homedir, path.slice(2))
+  }
+}
 
 /**
  * Verify a session's validity
@@ -229,13 +245,13 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
   // compiler does not work versus node-pty's eager loading of the
   // native modules -- we compile the native modules against electron,
   // but the plugin compiler uses the platform nodejs :(
-  const { spawn } = await import('node-pty-prebuilt-multiarch')
+  const { spawn } = await import('node-pty')
 
   // re: importing node-pty twice: this is clumsy because typescript
   // doesn't support module imports for dynamic imports, and node-pty
   // exports IPty under a module of its creation
   // @see https://github.com/microsoft/TypeScript/issues/22445
-  const shells: Record<string, Promise<import('node-pty-prebuilt-multiarch').IPty>> = {}
+  const shells: Record<string, Promise<import('node-pty').IPty>> = {}
 
   /** Active streaming jobs */
   const jobs: Record<string, Abortable & FlowControllable> = {}
@@ -419,7 +435,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
                 shell = undefined
                 if (msg.uuid) delete shells[msg.uuid]
                 ws.send(JSON.stringify({ type: 'exit', exitCode, uuid: msg.uuid }))
-                // exitNow(exitCode)
+                exitNow(exitCode)
               })
 
               ws.send(JSON.stringify({ type: 'state', state: 'ready', uuid: msg.uuid }))

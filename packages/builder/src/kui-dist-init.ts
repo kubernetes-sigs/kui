@@ -120,11 +120,11 @@ export const main = async (argv: string[]) => {
   pjson.scripts.compile = 'kui-compile'
   pjson.scripts.watch = 'tsc --build . --watch'
   pjson.scripts['watch:webpack'] = 'kui-watch-webpack'
-  pjson.scripts['pty:rebuild'] = 'cd node_modules/node-pty-prebuilt-multiarch && npm run install'
+  pjson.scripts['pty:rebuild'] = 'cd node_modules/node-pty && npm run install'
   pjson.scripts['pty:electron'] =
-    'if [ ! -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then cp node_modules/@kui-shell/builder/npmrc node_modules/node-pty-prebuilt-multiarch/.npmrc && npm run pty:rebuild; fi'
+    'if [ ! -e node_modules/node-pty/.npmrc ]; then cp node_modules/@kui-shell/builder/npmrc node_modules/node-pty/.npmrc && npm run pty:rebuild; fi'
   pjson.scripts['pty:nodejs'] =
-    'if [ -e node_modules/node-pty-prebuilt-multiarch/.npmrc ]; then rm -f node_modules/node-pty-prebuilt-multiarch/.npmrc; npm run pty:rebuild; fi'
+    'if [ -e node_modules/node-pty/.npmrc ]; then rm -f node_modules/node-pty/.npmrc; npm run pty:rebuild; fi'
   pjson.scripts.start = 'npm run -s init && npm run -s pty:electron && electron . shell'
   await writeFile('package.json', JSON.stringify(pjson, undefined, 2))
 

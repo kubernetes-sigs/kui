@@ -27,12 +27,17 @@ import {
 } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
-import { S3Mounts } from '@kui-shell/plugin-s3/components'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
-import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
 import { Screenshot, Search, UpdateChecker } from '@kui-shell/plugin-electron-components'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
+
+const CurrentContext = React.lazy(() =>
+  import('@kui-shell/plugin-kubectl/components').then(_ => ({ default: _.CurrentContext }))
+)
+const CurrentNamespace = React.lazy(() =>
+  import('@kui-shell/plugin-kubectl/components').then(_ => ({ default: _.CurrentNamespace }))
+)
 
 const strings = i18n('plugin-client-default')
 
@@ -107,7 +112,6 @@ export default function renderMain(props: KuiProps) {
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
         <CurrentNamespace />
-        <S3Mounts />
       </ContextWidgets>
 
       {!isPopup && <SpaceFiller />}

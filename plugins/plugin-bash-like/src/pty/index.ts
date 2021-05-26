@@ -18,7 +18,7 @@ import { Tab, ExecOptions } from '@kui-shell/core'
 
 import Options from './options'
 export { main } from './server'
-export { getSessionForTab } from './session'
+export { getSessionForTab } from './sessionCache'
 export { StdioChannelWebsocketSide } from './stdio-channel'
 
 export const doExec = (

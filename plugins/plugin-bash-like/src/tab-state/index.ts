@@ -15,17 +15,12 @@
  */
 
 import Debug from 'debug'
-
 import { TabState, cwd as kuiCwd, registerTabState, inBrowser } from '@kui-shell/core'
 
+import getTabState from './get'
+import { apiVersion, name } from './key'
+
 const debug = Debug('plugins/bash-like/tab-state')
-
-const name = 'plugins/plugin-bash-like'
-const apiVersion = 'v1'
-
-export function getTabState(tab: TabState, key: string) {
-  return tab.getState(name, apiVersion, key)
-}
 
 function setTabState(tab: TabState, key: string, value: any) {
   tab.setState(name, apiVersion, key, value)
