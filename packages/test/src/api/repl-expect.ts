@@ -291,11 +291,15 @@ export const okWithPtyOutputEventually = (expect: string, exact = false) => (res
   )
 }
 
-export const okWithDropDownList = (openAndExpectLabel: string, click = false) => (res: AppAndCount) => {
-  return okWithCustom<string>({
+export const okWithDropDownList = (openAndExpectLabel: string, click = false, closeAfterOpen = true) => async (
+  res: AppAndCount
+) => {
+  const toggler = await okWithCustom<string>({
     selector: Selectors.DROPDOWN
   })(res)
-    .then(selector => res.app.client.$(selector))
+
+  return res.app.client
+    .$(toggler)
     .then(_ => _.click())
     .then(() => res.app.client.$(Selectors.DROPDOWN_N_MENU_ITEM(res.count, openAndExpectLabel, res.splitIndex)))
     .then(async _ => {
@@ -303,6 +307,11 @@ export const okWithDropDownList = (openAndExpectLabel: string, click = false) =>
         await _.waitForDisplayed()
         await _.click()
       }
+
+      if (closeAfterOpen) {
+        await res.app.client.$(toggler).then(_ => _.click())
+      }
+
       return res
     })
 }
