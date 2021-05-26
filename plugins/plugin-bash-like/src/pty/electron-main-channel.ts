@@ -20,7 +20,6 @@
  *
  */
 
-import Debug from 'debug'
 import { EventEmitter } from 'events'
 import { IpcMain, IpcRenderer, WebContents } from 'electron'
 
@@ -30,9 +29,6 @@ import { onConnection, disableBashSessions } from './server'
 interface Args {
   execUUID: string
 }
-
-const debugMain = Debug('plugin-bash-like/pty/electron/main')
-const debugRenderer = Debug('plugin-bash-like/pty/electron/renderer')
 
 function messageChannelFor(execUUID: string) {
   return `/plugin-bash-like/pty/message/${execUUID}`
@@ -50,13 +46,10 @@ class ElectronMainSideChannel extends EventEmitter implements Channel {
   private messageChannel: string
 
   private handleMessage = (_, msg: string) => {
-    // debugMain('got message', msg)
     this.emit('message', msg)
   }
 
   public async init(args: Args, otherSide: WebContents) {
-    debugMain('main side init', args.execUUID)
-
     const { ipcMain } = await import('electron')
     this.ipcMain = ipcMain
     this.otherSide = otherSide
@@ -109,7 +102,7 @@ export default class ElectronRendererSideChannel extends EventEmitter implements
   public async init(execUUID: string) {
     const { ipcRenderer } = await import('electron')
     this.ipcRenderer = ipcRenderer
-    debugRenderer('renderer side init')
+    console.error('renderer side init', execUUID)
 
     this.messageChannel = messageChannelFor(execUUID)
 
@@ -120,7 +113,7 @@ export default class ElectronRendererSideChannel extends EventEmitter implements
 
     ipcRenderer.once(`/exec/response/${execUUID}`, (_, _msg: string) => {
       const msg = JSON.parse(_msg)
-      debugRenderer('renderer side init exec response', msg)
+      console.error('renderer side init exec response', msg)
       if (msg.returnValue === true) {
         this.ipcRenderer.on(this.messageChannel, this.handleMessage)
         this.emit('open')
@@ -160,7 +153,6 @@ export default class ElectronRendererSideChannel extends EventEmitter implements
 }
 
 export async function initMainPty(args: Args, otherSide: WebContents) {
-  debugMain('initMainPty', args)
   try {
     await new ElectronMainSideChannel().init(args, otherSide)
     return true
