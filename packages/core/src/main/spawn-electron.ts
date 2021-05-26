@@ -29,6 +29,7 @@ import {
 
 import windowDefaults, { popupWindowDefaults } from '../webapp/defaults'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
+import { webpackPath } from '../plugins/path'
 
 /**
  * Keep a global reference of the window object, if you don't, the window will
@@ -442,10 +443,10 @@ export function createWindow(
         debug('invoke', message)
 
         try {
-          const mod = await import(message.module)
+          const mod = await import('@kui-shell/plugin-' + webpackPath(message.module) + '/dist/index.js')
           debug('invoke got module')
 
-          const returnValue = await mod[message.main || 'main'](message.args)
+          const returnValue = await mod[message.main || 'main'](message.args, event.sender)
           debug('invoke got returnValue', returnValue)
 
           event.sender.send(
@@ -600,9 +601,6 @@ export async function initElectron(
     debug('loading electron')
     const Electron = await import('electron')
     app = Electron.app
-    if (app) {
-      app.allowRendererProcessReuse = false
-    }
   }
 
   // deal with multiple processes
