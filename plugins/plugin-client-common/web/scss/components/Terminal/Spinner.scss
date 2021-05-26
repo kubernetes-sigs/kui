@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+@use 'sass:math';
 @import 'mixins';
 
 @mixin Spinner {
@@ -46,7 +47,7 @@
   @include Spinner {
     /* see https://github.com/IBM/kui/issues/7129 */
     /* also be careful: https://github.com/IBM/kui/issues/7155 */
-    margin: $inset / $right-element-font-size-factor 0;
+    margin: math.div($inset, $right-element-font-size-factor) 0;
   }
 }
 

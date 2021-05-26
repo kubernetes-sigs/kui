@@ -258,7 +258,6 @@ else
 fi
 ' >> kubectl-kui)
             KUI_LAUNCHER="$PWD/kubectl-kui"
-            echo "!!!YOYOYO"
             ls -l "$KUI_LAUNCHER"
         fi
 
