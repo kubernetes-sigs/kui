@@ -16,18 +16,19 @@
 
 const proc = require('process/browser')
 
-module.exports = proc
+const HOME = '~'
+let cwd = HOME
 
 /**
  * Browser-oriented shims for 'process'
  *
  */
+module.exports = Object.assign(proc, {
+  env: {
+    HOME
+  },
 
-exports.env = {
-  HOME: '~'
-}
+  cwd: () => cwd,
 
-let cwd = exports.env.HOME
-exports.cwd = () => cwd
-
-exports.chdir = dir => (cwd = dir)
+  chdir: dir => (cwd = dir)
+})

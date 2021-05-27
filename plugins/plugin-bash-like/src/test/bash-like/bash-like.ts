@@ -99,7 +99,9 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
 
-  Common.pit('should change working directory', () =>
+  // re: localIt, ~/bin may not exist in browser mode, and we start in
+  // with PWD=~ there
+  Common.localIt('should change working directory', () =>
     CLI.command(`cd bin`, this.app)
       .then(ReplExpect.ok)
       .catch(Common.oops(this, true))

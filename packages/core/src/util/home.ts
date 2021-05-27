@@ -35,4 +35,5 @@ export const expandHomeDir = function(path: string): string {
 
 export default expandHomeDir
 
-export const cwd = () => process.env.VIRTUAL_CWD || (inBrowser() ? process.env.PWD || '/' : process.cwd().slice(0))
+export const cwd = () =>
+  process.env.VIRTUAL_CWD || (inBrowser() ? process.env.PWD || process.env.HOME || '/' : process.cwd().slice(0))

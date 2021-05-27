@@ -404,7 +404,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
                 name: 'xterm-color',
                 rows: msg.rows,
                 cols: msg.cols,
-                cwd: msg.cwd || process.cwd(),
+                cwd: expandHomeDir(msg.cwd) || process.cwd(),
                 env
               })
 
