@@ -20,7 +20,7 @@ import Debug from 'debug'
 import { encodeComponent, getTab, isTopLevelTab, TabState, registerTabState } from '@kui-shell/core'
 
 import kubectl from './controller/cli'
-import { getCurrentContextName, getCurrentDefaultNamespace } from './controller/kubectl/contexts'
+import { getCurrentDefaultContextName, getCurrentDefaultNamespace } from './controller/kubectl/contexts'
 
 const debug = Debug('plugins/plugin-kubectl/tab-state')
 
@@ -44,7 +44,7 @@ async function capture(tabState: TabState) {
   if (tab) {
     try {
       const [currentContext, currentNamespace] = await Promise.all([
-        getCurrentContextName(tab),
+        getCurrentDefaultContextName(tab),
         getCurrentDefaultNamespace(tab)
       ])
       const context = getTabState(tabState, 'context')
@@ -77,7 +77,7 @@ async function restore(tabState: TabState) {
   const context = getTabState(tabState, 'context')
   try {
     const [currentContext, currentNamespace] = await Promise.all([
-      getCurrentContextName(tab),
+      getCurrentDefaultContextName(tab),
       getCurrentDefaultNamespace(tab)
     ])
 

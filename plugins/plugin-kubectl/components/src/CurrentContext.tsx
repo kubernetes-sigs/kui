@@ -20,6 +20,7 @@ import { ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-
 import {
   eventBus,
   eventChannelUnsafe,
+  getCurrentTab,
   getTab,
   Tab,
   TabState,
@@ -30,6 +31,7 @@ import {
 import {
   kubectl,
   getAllContexts,
+  getCurrentDefaultContextName,
   getTabState,
   KubeContext,
   onKubectlConfigChangeEvents,
@@ -65,6 +67,7 @@ function KubernetesIcon() {
 
 export default class CurrentContext extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentContext.bind(this)
+  private readonly handlerForConfigChange = this.getCurrentContextFromChange.bind(this)
   private readonly handlerNotCallingKubectl = this.getCurrentContextFromTab.bind(this)
 
   public constructor(props: Props) {
@@ -110,6 +113,14 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     this.last = now
 
     return last && now - last < 250
+  }
+
+  private async getCurrentContextFromChange() {
+    const tab = getCurrentTab()
+    const defaultCurrentContext = await getCurrentDefaultContextName(tab)
+    this.setState({
+      currentContext: this.renderName(defaultCurrentContext)
+    })
   }
 
   private async reportCurrentContext(idx?: Tab | number | string) {
@@ -235,7 +246,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.onAnyCommandComplete(this.handler)
-    onKubectlConfigChangeEvents(this.handler)
+    onKubectlConfigChangeEvents(this.handlerForConfigChange)
   }
 
   /** Bye! */
@@ -243,7 +254,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     eventBus.off('/tab/new', this.handler)
     eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
     eventBus.offAnyCommandComplete(this.handler)
-    offKubectlConfigChangeEvents(this.handler)
+    offKubectlConfigChangeEvents(this.handlerForConfigChange)
   }
 
   public render() {
