@@ -63,7 +63,9 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
       ws.on('message', (data: string) => {
         debugW('forwarding message downstream')
         try {
-          child.stdin.write(`${data}${MARKER}`)
+          if (!child.stdin.destroyed) {
+            child.stdin.write(`${data}${MARKER}`)
+          }
         } catch (err) {
           console.error('error in child write', err)
         }
@@ -74,7 +76,15 @@ export class StdioChannelWebsocketSide extends EventEmitter implements Channel {
 
       ws.on('close', () => {
         debugW('killing child process, because client connection is dead')
-        child.kill()
+        try {
+          if (!child.stdin.destroyed) {
+            const data = JSON.stringify({ type: 'exit' })
+            child.stdin.write(`${data}${MARKER}`)
+          }
+        } catch (err) {
+          console.error('error in child write', err)
+        }
+        // no: child.kill()  <-- instead, send an exit event, to allow subprocess to clean up
       })
     })
 
