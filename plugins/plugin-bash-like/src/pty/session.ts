@@ -37,7 +37,7 @@ export function getChannelForTab(tab: Tab): Promise<Channel> {
   if (_exiting) {
     // prevent any stagglers re-establishing a channel
     throw new Error('Exiting')
-  } else {
+  } else if (inBrowser()) {
     return _singleChannel
   }
 }
