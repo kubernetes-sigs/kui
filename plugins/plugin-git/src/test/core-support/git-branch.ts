@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+// TODO pty-main restore remove
+
 import { join } from 'path'
-import { remove } from 'fs-extra'
+// import { remove } from 'fs-extra'
 import { exec } from 'child_process'
 import { dir as createTemporaryDirectory } from 'tmp'
 
@@ -155,5 +157,5 @@ describe(suiteName, function(this: Common.ISuite) {
   listAndClick(branch2)
   listAndClick(branch1)
 
-  pit('should clean up temporary directory', () => remove(tmpdir))
+  // pit('should clean up temporary directory', () => remove(tmpdir))
 })
