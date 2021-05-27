@@ -22,7 +22,7 @@ import { KubeOptions, getNamespaceAsExpressed } from './options'
 
 const kubectlConfigChangeChannel = '/kubectl/config/change'
 type Change = 'NewContext' | 'AlteredContext'
-type Handler = (type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace', namespace?: string) => void
+type Handler = (type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace', namespace?: string, context?: string) => void
 
 const mutators = [
   'delete-cluster',
@@ -38,10 +38,11 @@ const mutators = [
 
 export function emitKubectlConfigChangeEvent(
   type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace',
-  namespace?: string
+  namespace?: string,
+  context?: string
 ) {
   try {
-    eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace)
+    eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace, context)
   } catch (err) {
     console.error('Error in onKubectlConfigChangeEvent handler', err)
   }
@@ -73,7 +74,11 @@ async function doConfig(args: Arguments<KubeOptions>) {
       : undefined
 
   if (change) {
-    emitKubectlConfigChangeEvent('SetNamespaceOrContext', getNamespaceAsExpressed(args))
+    emitKubectlConfigChangeEvent(
+      'SetNamespaceOrContext',
+      getNamespaceAsExpressed(args),
+      verb === 'use-context' ? args.argvNoOptions[idx + 2] : undefined
+    )
   }
 
   return response
