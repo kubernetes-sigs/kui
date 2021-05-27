@@ -56,13 +56,16 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
   return new Promise(async (resolve, reject) => {
     const { uid, gid, HOME } = existingSession || (await allocateUser())
 
+    const cwd = (execOptions.cwd === '~' ? HOME : execOptions.cwd) || HOME || '/'
+
     const options = {
       uid,
       gid,
-      cwd: execOptions.cwd || '/',
+      cwd,
       env: Object.assign(execOptions.env || {}, {
         TRAVIS_HOME: process.env.TRAVIS_HOME,
         HOME,
+        PWD: cwd,
         LOCALE: locale,
         DEBUG: process.env.DEBUG,
         DEVMODE: true,
