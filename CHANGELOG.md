@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.5](https://github.com/IBM/kui/compare/v10.3.4...v10.3.5) (2021-05-27)
+
+### Bug Fixes
+
+- using / for division is deprecated for sass ([d3e51a4](https://github.com/IBM/kui/commit/d3e51a4))
+- **plugins/plugin-bash-like:** new tab in browser-based clients may result in multiple new sessions ([5044461](https://github.com/IBM/kui/commit/5044461)), closes [#7465](https://github.com/IBM/kui/issues/7465)
+- in browser+proxy mode, initial directory is / but \$HOME shows the correct value ([3bd40dd](https://github.com/IBM/kui/commit/3bd40dd)), closes [#7467](https://github.com/IBM/kui/issues/7467)
+- **packages/builder:** macOS sign+notarize does not sign the kubectl-kui launcher ([9724aad](https://github.com/IBM/kui/commit/9724aad)), closes [#7449](https://github.com/IBM/kui/issues/7449)
+- **plugins/plugin-client-common:** In Popup mode, clicking Help button will show the welcome notebook in a new window ([2812eeb](https://github.com/IBM/kui/commit/2812eeb))
+- **plugins/plugin-client-common:** input cursor will move to the end after tab-completes ([3aa474c](https://github.com/IBM/kui/commit/3aa474c))
+
 ## [10.3.4](https://github.com/IBM/kui/compare/v10.3.3...v10.3.4) (2021-05-24)
 
 ### Bug Fixes

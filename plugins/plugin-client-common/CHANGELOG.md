@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.5](https://github.com/IBM/kui/compare/v10.3.4...v10.3.5) (2021-05-27)
+
+### Bug Fixes
+
+- using / for division is deprecated for sass ([d3e51a4](https://github.com/IBM/kui/commit/d3e51a4))
+- **plugins/plugin-bash-like:** new tab in browser-based clients may result in multiple new sessions ([5044461](https://github.com/IBM/kui/commit/5044461)), closes [#7465](https://github.com/IBM/kui/issues/7465)
+- **plugins/plugin-client-common:** input cursor will move to the end after tab-completes ([3aa474c](https://github.com/IBM/kui/commit/3aa474c))
+
 ## [10.3.4](https://github.com/IBM/kui/compare/v10.3.3...v10.3.4) (2021-05-24)
 
 ### Bug Fixes
