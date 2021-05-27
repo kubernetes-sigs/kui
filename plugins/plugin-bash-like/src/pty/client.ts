@@ -783,7 +783,7 @@ const getOrCreateChannel = async (
     // reference to the channelFactory promise. see
     // https://github.com/kubernetes-sigs/kui/issues/7465
     debug('initializing pty channel')
-    const ws = await setChannelForTab(tab, channelFactory(tab))
+    const ws = await setChannelForTab(tab, channelFactory(tab, uuid))
 
     // when the websocket is ready, handle any queued input; only then
     // do we focus the terminal (till then, the CLI module will handle
