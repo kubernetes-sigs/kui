@@ -283,7 +283,7 @@ async function rawGet(
         return response
       }
     } catch (err) {
-      if (err.code !== 500) {
+      if (err.code !== 500 && err.code !== undefined) {
         // expected apiServer error, i.e. Kubernetes Status errors
         throw err
       } else {
