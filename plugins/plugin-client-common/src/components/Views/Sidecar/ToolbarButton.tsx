@@ -80,11 +80,11 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
           (button.icon ? ' kui--toolbar-button-with-icon' : '')
         }
       >
-        <button role="presentation" onClick={this._buttonOnclick} data-mode={button.mode}>
+        <div role="presentation" onClick={this._buttonOnclick} data-mode={button.mode}>
           <span role="tab" title={button.label || button.mode}>
             {button.icon ? button.icon : button.label || button.mode}
           </span>
-        </button>
+        </div>
       </span>
     )
   }
