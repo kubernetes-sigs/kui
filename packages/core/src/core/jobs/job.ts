@@ -18,6 +18,14 @@ export interface Abortable {
   abort(): void
 }
 
+export interface Resizable {
+  resize(rows: number, cols: number): void
+}
+
+export function isResizable(job: Partial<Resizable>): job is Resizable {
+  return typeof job.resize === 'function'
+}
+
 export interface FlowControllable {
   xon(): void
   xoff(): void
@@ -32,3 +40,5 @@ export type WatchableJob = Abortable & Partial<Suspendable>
 export function isSuspendable(watch: Partial<Suspendable>) {
   return watch.xon && watch.xoff
 }
+
+export type Job = Abortable & FlowControllable & Partial<Resizable>

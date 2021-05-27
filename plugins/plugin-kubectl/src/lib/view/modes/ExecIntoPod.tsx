@@ -20,6 +20,8 @@ import { v4 as uuid } from 'uuid'
 import {
   Arguments,
   ModeRegistration,
+  Job,
+  isResizable,
   Streamable,
   Tab,
   ToolbarProps,
@@ -39,7 +41,7 @@ import { getCommandFromArgs } from '../../util/util'
 import { KubeResource, Pod, isPod } from '../../model/resource'
 import { KubeOptions, getContainer, withKubeconfigFrom } from '../../../controller/kubectl/options'
 
-import { ContainerProps, ContainerState, ContainerComponent, HYSTERESIS, Job, StreamingStatus } from './ContainerCommon'
+import { ContainerProps, ContainerState, ContainerComponent, HYSTERESIS, StreamingStatus } from './ContainerCommon'
 
 import '../../../../web/scss/components/Terminal/Terminal.scss'
 
@@ -450,6 +452,27 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
             return
           }
 
+          if (isResizable(job)) {
+            xterm.onResize(({ rows, cols }) => {
+              job.resize(rows, cols)
+            })
+
+            const { doResize } = this.state
+            if (doResize) {
+              // resize once on init
+              this.state.doResize()
+
+              const observer = new ResizeObserver(function observer(observed) {
+                // re: the if guard, see https://github.com/IBM/kui/issues/6585
+                if (observed.every(_ => _.contentRect.width > 0 && _.contentRect.height > 0)) {
+                  setTimeout(doResize)
+                }
+              })
+              observer.observe(this.state.dom)
+              this.state.perTerminalCleaners.push(() => observer.disconnect())
+            }
+          }
+
           xterm.onData((data: string) => {
             if (!this._unmounted && this.state.streamUUID === streamUUID) {
               job.write(data)
@@ -544,18 +567,6 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
         console.error(err)
       }
     }
-
-    // resize once on init
-    doResize()
-
-    const observer = new ResizeObserver(function observer(observed) {
-      // re: the if guard, see https://github.com/IBM/kui/issues/6585
-      if (observed.every(_ => _.contentRect.width > 0 && _.contentRect.height > 0)) {
-        setTimeout(doResize)
-      }
-    })
-    observer.observe(dom)
-    perTerminalCleaners.push(() => observer.disconnect())
 
     return {
       xterm,

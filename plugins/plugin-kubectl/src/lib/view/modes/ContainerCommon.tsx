@@ -16,17 +16,7 @@
 
 import React from 'react'
 import { DropDown, Icons } from '@kui-shell/plugin-client-common'
-import {
-  Abortable,
-  Arguments,
-  Button,
-  FlowControllable,
-  ParsedOptions,
-  Tab,
-  ToolbarProps,
-  ToolbarText,
-  i18n
-} from '@kui-shell/core'
+import { Arguments, Button, ParsedOptions, Job, Tab, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
 
 import { Pod } from '../../model/resource'
 
@@ -38,8 +28,6 @@ const strings = i18n('plugin-kubectl')
  *
  */
 export const HYSTERESIS = 1500
-
-export type Job = Abortable & FlowControllable
 
 export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error' | 'Idle'
 

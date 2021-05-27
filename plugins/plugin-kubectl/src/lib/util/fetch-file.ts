@@ -103,6 +103,9 @@ export async function openStream<T extends object>(
       },
       xon: () => stream.resume(),
       xoff: () => stream.pause(),
+      resize: () => {
+        console.error('Unsupported Operation: resize')
+      },
       write: () => {
         console.error('Unsupported Operation: write')
       }
