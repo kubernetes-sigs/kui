@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { TabState, cwd as kuiCwd, registerTabState, inBrowser } from '@kui-shell/core'
+import { TabState, cwd as kuiCwd, registerTabState, inBrowser, expandHomeDir } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/tab-state')
 
@@ -40,7 +40,9 @@ const capture = (tab: TabState) => {
 
 const restore = (tab: TabState) => {
   const env = getTabState(tab, 'env')
-  const cwd = getTabState(tab, 'cwd')
+  const _cwd = getTabState(tab, 'cwd')
+  const cwd = _cwd === '~' ? expandHomeDir(_cwd) : _cwd
+
   debug('restoring state', tab.uuid, cwd)
   process.env = env
   if (cwd !== undefined) {

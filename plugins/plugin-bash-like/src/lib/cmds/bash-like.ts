@@ -213,5 +213,5 @@ export default (commandTree: Registrar) => {
     hidden: true
   })
 
-  commandTree.listen('/pwd', () => process.env.PWD || '/')
+  commandTree.listen('/pwd', () => process.env.PWD || process.env.HOME || '/')
 }
