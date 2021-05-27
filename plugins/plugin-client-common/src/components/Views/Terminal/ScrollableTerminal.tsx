@@ -420,11 +420,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
     }
 
-    state.onClick = (evt: React.FocusEvent) => {
+    state.onClick = () => {
       if (getSelectionText().length === 0) {
         const sbidx = this.findSplit(this.state, sbuuid)
         if (sbidx >= 0) {
-          evt.stopPropagation()
           const scrollback = this.state.splits[sbidx]
           this.doFocus(scrollback)
         }
