@@ -72,13 +72,22 @@ export async function getCurrentContextName({ REPL }: { REPL: REPLType }): Promi
 
 /** Extract the namespace from the current context */
 let currentDefaultNamespaceCache: string
-onKubectlConfigChangeEvents((type, namespace) => {
+let currentDefaultContextCache: string
+
+onKubectlConfigChangeEvents((type, namespace, context) => {
   if (type === 'SetNamespaceOrContext') {
     if (typeof namespace === 'string' && namespace.length > 0) {
       currentDefaultNamespaceCache = namespace
     } else {
       // invalidate cache
       currentDefaultNamespaceCache = undefined
+    }
+
+    if (typeof context === 'string' && context.length > 0) {
+      currentDefaultContextCache = context
+    } else {
+      // invalidate cache
+      currentDefaultContextCache = undefined
     }
   }
 })
@@ -112,6 +121,26 @@ export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }): 
     })
 
   return ns ? ns.trim() : ns
+}
+
+export async function getCurrentDefaultContextName({ REPL }: { REPL: REPLType }): Promise<string> {
+  if (currentDefaultContextCache) {
+    return currentDefaultContextCache
+  }
+
+  const context = await getCurrentContextName({ REPL })
+    .then(context => {
+      currentDefaultContextCache = context
+      return context
+    })
+    .catch(err => {
+      if (err.code !== 404 && !/command not found/.test(err.message)) {
+        console.error('error determining default context', err)
+      }
+      return ''
+    })
+
+  return context
 }
 
 /**
