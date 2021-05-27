@@ -109,7 +109,7 @@ export const SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS = (N: number, splitIndex = 1) =
 export const SIDECAR_MODE_BUTTONS = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .sidecar-bottom-stripe-mode-bits .sidecar-bottom-stripe-button` // all mode buttons in the bottom stripe
 export const SIDECAR_MODE_BUTTON = (N: number, mode: string, splitIndex = 1) =>
-  `${SIDECAR_MODE_BUTTONS(N, splitIndex)} > button[data-mode="${mode}"]` // specific mode button in the bottom stripe
+  `${SIDECAR_MODE_BUTTONS(N, splitIndex)} > [data-mode="${mode}"]` // specific mode button in the bottom stripe
 export const SIDECAR_MODE_BUTTON_SELECTED = (N: number, mode: string, splitIndex = 1) =>
   `${SIDECAR_MODE_BUTTON(N, mode, splitIndex)}[data-is-selected]`
 
