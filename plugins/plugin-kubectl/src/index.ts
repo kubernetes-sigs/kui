@@ -70,6 +70,7 @@ export {
   getAllContexts,
   getCurrentContext,
   getCurrentContextName,
+  getCurrentDefaultContextName,
   getCurrentDefaultNamespace
 } from './controller/kubectl/contexts'
 
