@@ -18,7 +18,7 @@ import { ExecType } from './command'
 import { Tab } from '../webapp/tab'
 import { Stream, Streamable, StreamableFactory } from './streamable'
 import { Block } from '../webapp/models/block'
-import { Abortable, FlowControllable } from '../core/jobs/job'
+import { Job } from '../core/jobs/job'
 
 export interface ExecOptions {
   /** force execution in a given tab? */
@@ -91,10 +91,10 @@ export interface ExecOptions {
   stderr?: (str: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
 
   /** on job init, pass the job, and get back a stdout; i.e. just before the PTY is brought up */
-  onInit?: (job: Abortable & FlowControllable) => Stream | Promise<Stream>
+  onInit?: (job: Job) => Stream | Promise<Stream>
 
   /** on job ready, i.e. after the PTY is up, but before any data has been processed */
-  onReady?: (job: Abortable & FlowControllable) => void | Promise<void>
+  onReady?: (job: Job) => void | Promise<void>
 
   /** on job exit, pass the exitCode */
   onExit?: (exitCode: number) => void
