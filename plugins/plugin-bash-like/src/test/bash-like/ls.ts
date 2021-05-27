@@ -22,11 +22,10 @@ describe(`directory listing ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   before(Common.before(this))
   after(Common.after(this))
 
-  Common.proxyIt('should cd to the test dir', () =>
+  it('should cd to the test dir', () =>
     CLI.command(`cd ${process.env.TEST_ROOT}`, this.app)
       .then(ReplExpect.okWithString('packages/test'))
-      .catch(Common.oops(this, true))
-  )
+      .catch(Common.oops(this, true)))
 
   it('should touch a test file in ~', () =>
     CLI.command(`touch ~/testls`, this.app)
