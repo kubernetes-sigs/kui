@@ -913,6 +913,9 @@ export const doExec = (
               debug('xoff requested')
               ws.send(JSON.stringify({ type: 'xoff', uuid: ourUUID }))
             },
+            resize: (rows: number, cols: number) => {
+              ws.send(JSON.stringify({ type: 'resize', rows, cols, uuid: ourUUID }))
+            },
             abort: () => {
               debug('abort requested')
               ws.send(JSON.stringify({ type: 'kill', uuid: ourUUID }))
