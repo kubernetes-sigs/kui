@@ -294,7 +294,7 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
           const shell = msg.uuid && (await shells[msg.uuid])
           if (shell) {
             shell.kill(msg.signal || 'SIGHUP')
-            return exitNow(msg.exitCode || 0)
+            shells[msg.uuid] = undefined
           }
 
           const job = msg.uuid && jobs[msg.uuid]
@@ -307,6 +307,18 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
         }
 
         case 'exit':
+          for (const uuid in shells) {
+            if (shells[uuid]) {
+              ;(await shells[uuid]).kill('SIGHUP')
+              shells[uuid] = undefined
+            }
+          }
+          for (const uuid in jobs) {
+            if (jobs[uuid]) {
+              jobs[uuid].abort()
+              jobs[uuid] = undefined
+            }
+          }
           return exitNow(msg.exitCode || 0)
 
         case 'request': {
@@ -565,9 +577,10 @@ export default (commandTree: Registrar) => {
       // eslint-disable-next-line no-async-promise-executor
       new Promise(async (resolve, reject) => {
         try {
-          await new StdioChannelKuiSide().init(() => {
+          await new StdioChannelKuiSide().init((exitCode: number) => {
             debug('done with stdiochannel')
-            resolve(true)
+            process.exit(exitCode)
+            // resolve(true)
           })
         } catch (err) {
           reject(err)

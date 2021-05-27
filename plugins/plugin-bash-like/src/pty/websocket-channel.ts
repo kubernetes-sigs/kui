@@ -43,7 +43,7 @@ class WebSocketChannel implements Channel {
   close() {
     try {
       debug('closing websocket channel')
-      this.ws.close()
+      this.ws.send(JSON.stringify({ type: 'exit' }))
     } catch (err) {
       console.error('Error in WebSocketChannel.close', err)
     }
