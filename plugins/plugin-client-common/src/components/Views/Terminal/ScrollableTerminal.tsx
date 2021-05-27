@@ -915,6 +915,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       eventChannelUnsafe.off(`/terminal/clear/${state.uuid}`, clear)
     })
 
+    // terminate watchable jobs when the window is closed
+    const termAll = this.terminateAllWatchables.bind(this)
+    window.addEventListener('beforeunload', termAll)
+    this.cleaners.push(() => window.removeEventListener('beforeunload', termAll))
+
     return state
   }
 
@@ -995,6 +1000,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public componentWillUnmount() {
     this.uninitEvents()
+    this.terminateAllWatchables()
   }
 
   /**
@@ -1018,7 +1024,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return availableSplitIdx
   }
 
-  // If the block has watchable response, abort the job
+  /** If the block has watchable response, abort the job */
   private removeWatchableBlock(block: BlockModel) {
     if (isOk(block)) {
       if (isWatchable(block.response)) {
@@ -1027,6 +1033,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         block.response.abort()
       }
     }
+  }
+
+  /** As per `removeWatchableBlock`, but for all blocks */
+  private terminateAllWatchables() {
+    this.state.splits.forEach(scrollback => {
+      scrollback.blocks.forEach(_ => this.removeWatchableBlock(_))
+    })
   }
 
   /**

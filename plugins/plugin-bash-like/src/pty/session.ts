@@ -30,8 +30,34 @@ const debug = Debug('plugins/bash-like/pty/session')
  * Return the cached websocket for the given tab
  *
  */
-export function getChannelForTab(tab: Tab): Channel {
-  return tab['ws'] as Channel
+let _singleChannel: Promise<Channel> // share session across tabs see https://github.com/IBM/kui/issues/6453
+let _exiting = false
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function getChannelForTab(tab: Tab): Promise<Channel> {
+  if (_exiting) {
+    // prevent any stagglers re-establishing a channel
+    throw new Error('Exiting')
+  } else {
+    return _singleChannel
+  }
+}
+
+/**
+ * Set it
+ *
+ */
+export function setChannelForTab(tab: Tab, channel: Promise<Channel>) {
+  _singleChannel = channel
+
+  // listen for the end of the world
+  channel.then(chan => {
+    window.addEventListener('beforeunload', () => {
+      _exiting = true // prevent any stagglers re-establishing a channel
+      chan.close()
+    })
+  })
+
+  return _singleChannel
 }
 
 /**
@@ -80,6 +106,7 @@ export function pollUntilOnline(tab: Tab) {
           if (err.code !== 503) {
             // don't bother complaining too much about connection refused
             console.error('error establishing session', err.code, err.statusCode, err)
+            _singleChannel = undefined
           }
           setTimeout(() => once(iter + 1), iter < 10 ? 2000 : iter < 100 ? 4000 : 10000)
           return strings('Could not establish a new session')
@@ -95,7 +122,6 @@ export function pollUntilOnline(tab: Tab) {
  * given tab
  *
  */
-let _singleChannel: Promise<Channel> // share session across tabs see https://github.com/IBM/kui/issues/6453
 async function newSessionForTab(tab: Tab) {
   const thisSession =
     _singleChannel ||
@@ -104,15 +130,12 @@ async function newSessionForTab(tab: Tab) {
         await pollUntilOnline(tab)
         tab.classList.add('kui--session-init-done')
 
-        resolve(getChannelForTab(tab))
+        resolve(await getChannelForTab(tab))
       } catch (err) {
         reject(err)
       }
     })
 
-  if (!_singleChannel) {
-    _singleChannel = thisSession
-  }
   tab['_kui_session'] = thisSession
 
   await thisSession
@@ -138,24 +161,6 @@ export async function init(registrar: PreloadRegistrar) {
 
   if (inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
     debug('initializing pty sessions')
-
-    const { eventBus } = await import('@kui-shell/core')
-
     registrar.registerSessionInitializer(newSessionForTab)
-
-    // listen for closed tabs
-    eventBus.on('/tab/close', async (tab: Tab) => {
-      try {
-        debug('closing session for tab')
-        const channel = getChannelForTab(tab)
-        if (channel) {
-          // the user may have asked to close the tab before we have
-          // finished initializing the channel
-          channel.close()
-        }
-      } catch (err) {
-        console.error('error terminating session for closed tab', err)
-      }
-    })
   }
 }

@@ -38,7 +38,7 @@ import {
 import Options from './options'
 import ChannelId from './channel-id'
 import { cleanupTerminalAfterTermination } from './util'
-import { getChannelForTab, invalidateSession } from './session'
+import { getChannelForTab, setChannelForTab, invalidateSession } from './session'
 import { Channel, InProcessChannel, WebViewChannelRendererSide } from './channel'
 
 const debug = Debug('plugins/bash-like/pty/client')
@@ -770,10 +770,12 @@ const getOrCreateChannel = async (
 
   const cachedws = getChannelForTab(tab)
 
-  if (!cachedws || cachedws.readyState === WebSocket.CLOSING || cachedws.readyState === WebSocket.CLOSED) {
-    // allocating new channel
-    const ws = await channelFactory(tab)
-    tab['ws'] = ws
+  if (!cachedws) {
+    // Then we need to allocate a new channel. BE CAREFUL: avoid races
+    // here by ensure that any `await` comes *after* grabbing a
+    // reference to the channelFactory promise. see
+    // https://github.com/kubernetes-sigs/kui/issues/7465
+    const ws = await setChannelForTab(tab, channelFactory(tab))
 
     // when the websocket is ready, handle any queued input; only then
     // do we focus the terminal (till then, the CLI module will handle
@@ -784,17 +786,15 @@ const getOrCreateChannel = async (
     const onClose = function(evt) {
       debug('channel has closed', evt.target, uuid)
       ws.removeEventListener('close', onClose)
-      if (!tab.state.closed) {
-        debug('attempting to reestablish connection, because the tab is still open')
-        invalidateSession(tab)
-      }
+      debug('attempting to reestablish connection, because the tab is still open')
+      invalidateSession(tab)
     }
     ws.on('close', onClose)
 
     return ws
   } else {
     // reusing existing websocket
-    doExec(cachedws)
+    doExec(await cachedws)
     if (terminal) {
       focus(terminal)
     }
