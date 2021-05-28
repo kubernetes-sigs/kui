@@ -27,6 +27,7 @@ export default function PatternFlyModal(props: Props): React.ReactElement {
       title={props.title}
       titleIconVariant={props.titleIconVariant}
       variant="small"
+      onClose={props.onClose}
       actions={[
         <Button key="confirm" variant="primary" className="kui--modal-btn--primary" onClick={props.onSubmit}>
           {props.primaryButtonText}
