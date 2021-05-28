@@ -42,7 +42,7 @@ const newSplit = () => tellRendererToExecute('split')
  * tell the current window to close the current tab
  *
  */
-const closeTab = () => tellRendererToExecute('tab close')
+const closeTab = () => tellRendererToExecute('tab close -A')
 
 const isDarwin = process.platform === 'darwin'
 const closeAccelerator = isDarwin ? 'Command+W' : 'Control+Shift+W'
