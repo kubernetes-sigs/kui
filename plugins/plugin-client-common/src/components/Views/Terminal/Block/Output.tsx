@@ -118,9 +118,17 @@ export default class Output extends React.PureComponent<Props, State> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private async streamingConsumer(part: Streamable) {
     if (hasUUID(this.props.model)) {
+      const tabUUID = this.props.uuid
+      const execUUID = this.props.model.execUUID
+      const done = () => {
+        this.props.onRender()
+        eventChannelUnsafe.emit(`/command/stdout/done/${tabUUID}/${execUUID}`)
+      }
+
       // part === null: the controller wants to clear any prior output
       if (part === null) {
         this.streamingOutput = []
+        done()
         return {
           // remove all output
           nStreamingOutputs: 0
@@ -131,10 +139,9 @@ export default class Output extends React.PureComponent<Props, State> {
           this.setState({
             nStreamingOutputs: this.streamingOutput.length
           })
+          setTimeout(done, 10)
         }, 10)
       }
-      this.props.onRender()
-      eventChannelUnsafe.emit(`/command/stdout/done/${this.props.uuid}/${this.props.model.execUUID}`)
     }
   }
 
