@@ -31,10 +31,6 @@ const usage = (command: string) => ({
 
 export default (commandTree: Registrar) => {
   if (!inBrowser()) {
-    commandTree.listen('/quit', doQuit, {
-      usage: usage('quit')
-    })
-
     // register a window close command handler
     commandTree.listen('/window/close', () => {
       const remote = require('electron').remote
@@ -44,7 +40,6 @@ export default (commandTree: Registrar) => {
     })
   }
 
-  // just for fun, make /exit a synonym for /quit
   commandTree.listen('/exit', doQuit, {
     usage: usage('exit')
   })
