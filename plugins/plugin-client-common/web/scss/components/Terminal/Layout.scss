@@ -56,10 +56,9 @@
 }
 
 @include Split(3) {
-  @include Rows(5);
+  @include Rows(4);
   @include Columns(2);
   grid-template-areas:
-    'T1 T2'
     'T1 T2'
     'T1 T2'
     'T3 T3'
