@@ -26,6 +26,8 @@ import { Terminal, TerminalState } from './ExecIntoPod'
 import { ContainerProps, StreamingStatus } from './ContainerCommon'
 import { KubeOptions, getContainer, hasLabel, withKubeconfigFrom } from '../../../controller/kubectl/options'
 
+import '../../../../web/scss/components/LogsSearch.scss'
+
 const debug = Debug('plugin-kubectl/Logs')
 const strings = i18n('plugin-kubectl', 'logs')
 
@@ -37,6 +39,8 @@ const strings = i18n('plugin-kubectl', 'logs')
 const defaultTail = 1000
 
 interface State extends TerminalState {
+  nLines: number
+  filter: Partial<string>
   showingPrevious: boolean
 }
 
@@ -49,6 +53,8 @@ export class Logs extends Terminal<State> {
     super(props)
 
     this.state = Object.assign(this.state, {
+      nLines: 0,
+      filter: undefined,
       showingPrevious: showingPrevious(this.props.args.argsForMode),
       container: this.defaultContainer()
     })
@@ -267,6 +273,68 @@ export class Logs extends Terminal<State> {
         <div className="kui--hero-text">{strings('No log data')}</div>
       </div>
     )
+  }
+
+  private readonly loglines: string[] = []
+  private delay: ReturnType<typeof setTimeout>
+  protected write(line: string) {
+    this.loglines.push(line)
+    if (!this.state.filter && this.state.xterm) {
+      this.state.xterm.write(line)
+    } else {
+      if (this.delay) clearTimeout(this.delay)
+      this.delay = setTimeout(() => this.setState({ nLines: this.loglines.length }), 20)
+    }
+  }
+
+  private refill(filter: string) {
+    this.setState(curState => {
+      curState.xterm.clear()
+      const pattern = new RegExp(filter, /^[a-z0-9]+$/.test(filter) ? 'i' : undefined)
+      this.loglines
+        .join()
+        .split(/\n/)
+        .forEach(_ => {
+          if (pattern.test(_)) {
+            curState.xterm.writeln(_)
+          }
+        })
+      return { filter }
+    })
+  }
+
+  private delay2: ReturnType<typeof setTimeout>
+  private onFilterChange(evt: React.ChangeEvent<HTMLInputElement>) {
+    if (this.delay2) clearTimeout(this.delay2)
+    const filter = evt.currentTarget.value
+    this.delay2 = setTimeout(() => this.refill(filter), 20)
+  }
+
+  private readonly _onFilterChange = this.onFilterChange.bind(this)
+
+  private filterPane() {
+    return (
+      <div className="flex-layout kui--sidecar-filter-area">
+        <input
+          className="flex-fill kui--sidecar-filter-input"
+          placeholder="Enter filter string or regular expression"
+          onChange={this._onFilterChange}
+        />
+      </div>
+    )
+  }
+
+  public render() {
+    if (this.notReady()) {
+      return super.render()
+    } else {
+      return (
+        <React.Fragment>
+          <div className="flex-fill">{super.render()}</div>
+          {this.filterPane()}
+        </React.Fragment>
+      )
+    }
   }
 }
 

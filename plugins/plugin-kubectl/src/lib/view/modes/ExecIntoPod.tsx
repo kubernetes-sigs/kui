@@ -363,6 +363,13 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     return { command }
   }
 
+  /** Write to the UI */
+  protected write(line: string) {
+    if (this.state.xterm) {
+      this.state.xterm.write(line)
+    }
+  }
+
   /** Indicate that we have received some data */
   private gotSomeData(streamUUID: string) {
     if (!this.state.gotSomeData) {
@@ -442,7 +449,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
             if (typeof _ === 'string' && this.state.streamUUID === streamUUID) {
               this.gotSomeData(streamUUID)
-              xterm.write(_)
+              this.write(_)
             }
           }
         },
@@ -596,8 +603,13 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
     }
   }
 
+  /** Not ready to render? */
+  protected notReady() {
+    return this.state.dom && !this.state.xterm
+  }
+
   public render() {
-    if (this.state.dom && !this.state.xterm) {
+    if (this.notReady()) {
       return <Loading />
     } else {
       return (
