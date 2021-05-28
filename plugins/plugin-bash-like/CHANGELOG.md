@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.6](https://github.com/IBM/kui/compare/v10.3.5...v10.3.6) (2021-05-28)
+
+### Bug Fixes
+
+- PTY jobs are not resizable ([b4c9cbc](https://github.com/IBM/kui/commit/b4c9cbc)), closes [#7473](https://github.com/IBM/kui/issues/7473)
+- vi doesn't take up the full dimensions of the viewport ([cc884a5](https://github.com/IBM/kui/commit/cc884a5)), closes [#7482](https://github.com/IBM/kui/issues/7482)
+
 ## [10.3.5](https://github.com/IBM/kui/compare/v10.3.4...v10.3.5) (2021-05-27)
 
 ### Bug Fixes

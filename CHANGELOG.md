@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.6](https://github.com/IBM/kui/compare/v10.3.5...v10.3.6) (2021-05-28)
+
+### Bug Fixes
+
+- 3-way split should probably have equal-height ([70045bb](https://github.com/IBM/kui/commit/70045bb))
+- in electron mode, ctrl/cmd+w should always close kui tab ([dcf084a](https://github.com/IBM/kui/commit/dcf084a))
+- **plugins/plugin-client-common:** Close button in confirm dialog does not work ([0712ab6](https://github.com/IBM/kui/commit/0712ab6))
+- **plugins/plugin-client-common:** Popover and Dropdowns require double-click to close ([0eaac09](https://github.com/IBM/kui/commit/0eaac09))
+- **plugins/plugin-client-common:** sidecar Kebab menu has nested <button> ([9488ea5](https://github.com/IBM/kui/commit/9488ea5))
+- **plugins/plugin-client-common:** sidecar toolbar buttons are not vertically centered ([a4802c5](https://github.com/IBM/kui/commit/a4802c5)), closes [#7488](https://github.com/IBM/kui/issues/7488)
+- vi doesn't take up the full dimensions of the viewport ([cc884a5](https://github.com/IBM/kui/commit/cc884a5)), closes [#7482](https://github.com/IBM/kui/issues/7482)
+- **plugins/plugin-client-common:** sidecar screenshot button is visible even inBrowser ([b3db2c2](https://github.com/IBM/kui/commit/b3db2c2))
+- **plugins/plugin-kubectl:** getDirect try/catch does not handle errors with no code ([27a6fe0](https://github.com/IBM/kui/commit/27a6fe0)), closes [#7239](https://github.com/IBM/kui/issues/7239)
+- PTY jobs are not resizable ([b4c9cbc](https://github.com/IBM/kui/commit/b4c9cbc)), closes [#7473](https://github.com/IBM/kui/issues/7473)
+- **plugins/plugin-kubectl:** tab-state transition optimization ([d13f1cf](https://github.com/IBM/kui/commit/d13f1cf))
+
+### Features
+
+- **plugins/plugin-kubectl:** Provide search capability on pod details Logs tab ([9b15a23](https://github.com/IBM/kui/commit/9b15a23)), closes [#5570](https://github.com/IBM/kui/issues/5570)
+
 ## [10.3.5](https://github.com/IBM/kui/compare/v10.3.4...v10.3.5) (2021-05-27)
 
 ### Bug Fixes

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.6](https://github.com/IBM/kui/compare/v10.3.5...v10.3.6) (2021-05-28)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** getDirect try/catch does not handle errors with no code ([27a6fe0](https://github.com/IBM/kui/commit/27a6fe0)), closes [#7239](https://github.com/IBM/kui/issues/7239)
+- PTY jobs are not resizable ([b4c9cbc](https://github.com/IBM/kui/commit/b4c9cbc)), closes [#7473](https://github.com/IBM/kui/issues/7473)
+- **plugins/plugin-kubectl:** tab-state transition optimization ([d13f1cf](https://github.com/IBM/kui/commit/d13f1cf))
+
+### Features
+
+- **plugins/plugin-kubectl:** Provide search capability on pod details Logs tab ([9b15a23](https://github.com/IBM/kui/commit/9b15a23)), closes [#5570](https://github.com/IBM/kui/issues/5570)
+
 ## [10.3.5](https://github.com/IBM/kui/compare/v10.3.4...v10.3.5) (2021-05-27)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.6](https://github.com/IBM/kui/compare/v10.3.5...v10.3.6) (2021-05-28)
+
+### Bug Fixes
+
+- in electron mode, ctrl/cmd+w should always close kui tab ([dcf084a](https://github.com/IBM/kui/commit/dcf084a))
+
 ## [10.3.5](https://github.com/IBM/kui/compare/v10.3.4...v10.3.5) (2021-05-27)
 
 ### Bug Fixes
