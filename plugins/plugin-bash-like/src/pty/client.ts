@@ -161,7 +161,10 @@ class Resizer {
     }
     document.addEventListener('select', this.clearXtermSelectionNow)
 
-    this.resize()
+    // no need to resize now; we need to wait until xtermContainer is
+    // mounted (see below, in the listener for /command/stdout/done)
+    // see https://github.com/kubernetes-sigs/kui/issues/7482
+    // this.resize()
   }
 
   get ws(): Channel {
@@ -834,9 +837,6 @@ export const doExec = (
           xtermContainer = document.createElement('xterm')
           xtermContainer.classList.add('xterm-container')
 
-          // add xtermContainer to the current Output
-          await execOptions.stdout(xtermContainer)
-
           if (execOptions.replSilence) {
             debug('repl silence')
             xtermContainer.style.display = 'none'
@@ -863,6 +863,12 @@ export const doExec = (
           eventChannelUnsafe.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
 
           resizer = new Resizer(terminal, tab, execOptions, ourUUID)
+          eventChannelUnsafe.once(`/command/stdout/done/${tab.uuid}/${execOptions.execUUID}`, () => {
+            resizer.resize()
+          })
+
+          // add xtermContainer to the current Output
+          await execOptions.stdout(xtermContainer)
 
           // respond to font zooming
           const doZoom = () => {
