@@ -15,14 +15,11 @@
  */
 
 import React from 'react'
-import { REPL, inBrowser, i18n } from '@kui-shell/core'
+import { REPL, inBrowser } from '@kui-shell/core'
 
 import Width from './width'
 import Icons from '../../spi/Icons'
-import DropDown from '../../spi/DropDown'
 import Breadcrumb, { BreadcrumbView } from '../../spi/Breadcrumb'
-
-const strings = i18n('plugin-client-common', 'screenshot')
 
 export interface Props {
   kind?: string
@@ -74,39 +71,6 @@ export default class Window extends React.PureComponent<Props> {
   }
 
   private readonly _toggleMaximization = this.toggleMaximization.bind(this)
-
-  private toggleClose() {
-    this.props.onClose()
-  }
-
-  private screenshotAction() {
-    if (inBrowser()) {
-      return []
-    } else {
-      return [
-        {
-          label: strings('Screenshot'),
-          handler: () => this.props.willScreenshot()
-        }
-      ]
-    }
-  }
-
-  private overflowButton() {
-    if (this.props.width !== Width.Closed) {
-      const actions = this.screenshotAction()
-
-      if (actions.length > 0) {
-        return (
-          <div className="sidecar-bottom-stripe-button">
-            <a href="#">
-              <DropDown actions={actions} className="kui--sidecar-overflow kui--repl-block-right-element" />
-            </a>
-          </div>
-        )
-      }
-    }
-  }
 
   private readonly _preventDefault = (evt: React.MouseEvent) => evt.preventDefault()
 
@@ -252,7 +216,7 @@ export default class Window extends React.PureComponent<Props> {
 
         <div className="sidecar-bottom-stripe-right-bits">
           <div className="sidecar-window-buttons">
-            {this.screenshotButton()}
+            {!inBrowser() && this.screenshotButton()}
             {this.maximizeButton()}
             {!this.props.notCloseable && this.quitButton()}
           </div>
