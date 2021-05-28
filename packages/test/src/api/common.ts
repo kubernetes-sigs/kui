@@ -209,6 +209,46 @@ const prepareElectron = (popup: string[]) => {
   return new Application(opts)
 }
 
+/** Add app.client commands */
+function addCommands(ctx: ISuite) {
+  // add an isActive command; isFocused is not what we want
+  if (ctx.app && ctx.app.client) {
+    // ref: https://github.com/webdriverio/webdriverio/issues/1362#issuecomment-224042781
+    ctx.app.client.addCommand('isActive', selector => {
+      return ctx.app.client.execute(selector => {
+        const focused = document.activeElement
+
+        if (!focused || focused === document.body) {
+          return false
+        } else if (document.querySelector) {
+          return document.querySelector(selector) === focused
+        }
+
+        return false
+      }, selector)
+    })
+  }
+}
+
+/** restart the app */
+export const restart = async (ctx: ISuite) => {
+  try {
+    await ctx.app.restart()
+    addCommands(ctx)
+  } catch (err) {
+    const errorIsNavigatedError: boolean =
+      err.message.includes('Inspected target navigated or closed') ||
+      err.message.includes('cannot determine loading status') ||
+      err.message.includes('Inspected target navigated or closed')
+
+    if (!errorIsNavigatedError) {
+      throw err
+    }
+  }
+
+  return CLI.waitForSession(ctx)
+}
+
 /** reload the app */
 export const refresh = async (ctx: ISuite, wait = true, clean = false) => {
   try {
@@ -319,23 +359,8 @@ export const before = (ctx: ISuite, options?: BeforeOptions): HookFunction => {
       ctx.timeout(process.env.TIMEOUT || 60000)
       await start()
 
-      // add an isActive command; isFocused is not what we want
-      if (ctx.app && ctx.app.client) {
-        // ref: https://github.com/webdriverio/webdriverio/issues/1362#issuecomment-224042781
-        ctx.app.client.addCommand('isActive', selector => {
-          return ctx.app.client.execute(selector => {
-            const focused = document.activeElement
-
-            if (!focused || focused === document.body) {
-              return false
-            } else if (document.querySelector) {
-              return document.querySelector(selector) === focused
-            }
-
-            return false
-          }, selector)
-        })
-      }
+      // add app.client commands
+      addCommands(ctx)
 
       // see https://github.com/electron-userland/spectron/issues/763
       // and https://github.com/webdriverio/webdriverio/issues/6092
@@ -503,24 +528,6 @@ export const oops = (ctx: ISuite, wait = false) => async (err: Error) => {
     }, 100000)
   )
   // throw err
-}
-
-/** restart the app */
-export const restart = async (ctx: ISuite) => {
-  try {
-    await ctx.app.restart()
-  } catch (err) {
-    const errorIsNavigatedError: boolean =
-      err.message.includes('Inspected target navigated or closed') ||
-      err.message.includes('cannot determine loading status') ||
-      err.message.includes('Inspected target navigated or closed')
-
-    if (!errorIsNavigatedError) {
-      throw err
-    }
-  }
-
-  return CLI.waitForSession(ctx)
 }
 
 /** only execute the test in local */
