@@ -180,10 +180,17 @@ $toolbar-height: 1.5rem;
     line-height: 1.5em;
     padding: 3px;
 
-    & > button {
+    & > div {
+      display: flex;
+      align-items: center;
       padding: 0;
     }
 
+    button[aria-label="Actions"] {
+      padding: 0;
+    }
+
+    & > div,
     a,
     button {
       color: inherit;
@@ -415,6 +422,7 @@ $toolbar-height: 1.5rem;
     align-items: center;
     margin-right: 0.375em;
 
+    & > div,
     a,
     button {
       padding: 3px;

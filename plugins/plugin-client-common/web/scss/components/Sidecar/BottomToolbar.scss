@@ -31,6 +31,12 @@
       background-color: var(--color-table-border3);
     }
 
+    & > div {
+      display: flex;
+      align-items: center;
+    }
+
+    & > div,
     a,
     button {
       &:hover {
