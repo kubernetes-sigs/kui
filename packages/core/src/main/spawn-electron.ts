@@ -171,6 +171,7 @@ export function createWindow(
         webPreferences: {
           enableRemoteModule: true,
           backgroundThrottling: false,
+          contextIsolation: false, // prior to electron 12, nodeIntegration: true did not need this
           nodeIntegration: true // prior to electron 5, this was the default
         }
         // titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default'

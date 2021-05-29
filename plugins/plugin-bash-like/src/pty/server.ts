@@ -229,13 +229,13 @@ export const onConnection = (exitNow: ExitHandler, uid?: number, gid?: number) =
   // compiler does not work versus node-pty's eager loading of the
   // native modules -- we compile the native modules against electron,
   // but the plugin compiler uses the platform nodejs :(
-  const { spawn } = await import('node-pty-prebuilt-multiarch')
+  const { spawn } = await import('node-pty')
 
   // re: importing node-pty twice: this is clumsy because typescript
   // doesn't support module imports for dynamic imports, and node-pty
   // exports IPty under a module of its creation
   // @see https://github.com/microsoft/TypeScript/issues/22445
-  const shells: Record<string, Promise<import('node-pty-prebuilt-multiarch').IPty>> = {}
+  const shells: Record<string, Promise<import('node-pty').IPty>> = {}
 
   /** Active streaming jobs */
   const jobs: Record<string, Abortable & FlowControllable> = {}

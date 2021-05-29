@@ -30,11 +30,11 @@ if [ "$1" = "electron" ]; then
     ARCH=$(node -e 'console.log(require("os").arch())')
     TARGET="${PLATFORM}-${ARCH}"
     echo "node-pty PLATFORM=$TARGET"
-    mkdir -p node_modules/node-pty-prebuilt-multiarch/build/Release
-    rm -f node_modules/node-pty-prebuilt-multiarch/build/Release/*
-    cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty-prebuilt-multiarch/build/$TARGET/electron/* node_modules/node-pty-prebuilt-multiarch/build/Release
-    gunzip node_modules/node-pty-prebuilt-multiarch/build/Release/*.gz
-    ls node_modules/node-pty-prebuilt-multiarch/build/Release
+    mkdir -p node_modules/node-pty/build/Release
+    rm -f node_modules/node-pty/build/Release/*
+    cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty/build/$TARGET/electron/* node_modules/node-pty/build/Release
+    gunzip node_modules/node-pty/build/Release/*.gz
+    ls node_modules/node-pty/build/Release
 else
     if [ -e ./node_modules/.bin/rc ] && [ ! -L ./node_modules/.bin/rc ]; then
         echo "rc is not a symlink"
@@ -45,7 +45,7 @@ else
         (cd node_modules/.bin && rm -f prebuild-install && node -e 'require("fs").symlinkSync("../prebuild-install/bin.js", "prebuild-install")')
     fi
 
-    cd node_modules/node-pty-prebuilt-multiarch
+    cd node_modules/node-pty
     prebuild-install --force --download --runtime $1
 fi
 

@@ -53,7 +53,7 @@ const { exec } = require('child_process')
 const sign = require('./sign')
 const notarize = require('./notarize')
 
-const nodePty = 'node-pty-prebuilt-multiarch'
+const nodePty = 'node-pty'
 
 /**
  * afterCopy hook to build webpack bundles.
