@@ -27,7 +27,7 @@ import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
 // temporarily, seeing if this gets us green
-xdescribe('Tab completion core', function(this: Common.ISuite) {
+describe('Tab completion core', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
