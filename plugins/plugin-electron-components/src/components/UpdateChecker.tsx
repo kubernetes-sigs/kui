@@ -235,11 +235,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
 
               bodyContent: (
                 <React.Fragment>
-                  <Markdown
-                    source={this.state.entryForLatestVersion.content}
-                    contentType="text/html"
-                    baseUrl={baseUrl()}
-                  />
+                  <Markdown source={this.state.entryForLatestVersion.content} baseUrl={baseUrl()} />
                 </React.Fragment>
               ),
               headerContent: (
