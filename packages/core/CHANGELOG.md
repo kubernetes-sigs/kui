@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.10](https://github.com/IBM/kui/compare/v10.3.9...v10.3.10) (2021-06-01)
+
+**Note:** Version bump only for package @kui-shell/core
+
 ## [10.3.9](https://github.com/IBM/kui/compare/v10.3.8...v10.3.9) (2021-06-01)
 
 **Note:** Version bump only for package @kui-shell/core
