@@ -45,7 +45,7 @@ const { arch: osArch } = require('os')
 const { createGunzip } = require('zlib')
 const { basename, join } = require('path')
 const packager = require('electron-packager')
-const { copy, emptyDir } = require('fs-extra')
+const { copy, emptyDir, pathExists } = require('fs-extra')
 const { createReadStream, createWriteStream, readdir } = require('fs')
 
 const sign = require('./sign')
@@ -126,6 +126,16 @@ function copySignableBits(baseArgs /*: { dir: string, name: string, platform: st
       console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
       await emptyDir(target)
       await copy(source, target)
+    }
+
+    // copy in the headless.zip build?
+    if (process.env.KUI_HEADLESS_WEBPACK) {
+      const source = process.env.HEADLESS_BUILDDIR + '.zip'
+      if (await pathExists(source)) {
+        const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
+        console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
+        await copy(source, target)
+      }
     }
 
     callback()
