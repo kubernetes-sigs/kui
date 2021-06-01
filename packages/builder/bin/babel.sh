@@ -37,7 +37,7 @@ function babel {
 }
 
 declare -a LIST=()
-for i in {packages,plugins}/*; do
+for i in {packages,node_modules/@kui-shell/plugin-*,node_modules/@kui-shell/client}; do
     if [ -d $i/mdist ]; then
         cmd=$(babel $i)
         LIST+=("$cmd")
