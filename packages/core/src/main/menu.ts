@@ -207,7 +207,6 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
     const separator: MenuItemConstructorOptions = { type: 'separator' }
     const submenu: MenuItemConstructorOptions[] = [
       about,
-      notebook('Configure Kui', '/kui/settings.json'),
       separator,
       { role: 'services', submenu: [] as MenuItemConstructorOptions[] },
       separator,
