@@ -27,7 +27,6 @@ export default async () => {
       undefined,
       [
         'plugin://plugin-client-common/notebooks/welcome.json',
-        'plugin://plugin-client-common/notebooks/settings.json',
         'plugin://plugin-client-common/notebooks/make-notebook.json'
       ],
       '/kui'
