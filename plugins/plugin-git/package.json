@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-git",
-  "version": "10.3.11",
+  "version": "10.3.12",
   "description": "Kui plugin that offers git integrations",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
@@ -25,7 +25,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "86dc12bf30f36f93d92f11fed0e77f4dbce84a2b",
+  "gitHead": "6317d55fcea10044ecb7f4cfafefb06cf54ed006",
   "dependencies": {
     "strip-ansi": "6.0.0"
   }

@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-kubectl-flow-views",
-  "version": "10.3.11",
+  "version": "10.3.12",
   "description": "Kubectl flow visualizations for Kui",
   "license": "Apache-2.0",
   "keywords": [
@@ -30,5 +30,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "gitHead": "86dc12bf30f36f93d92f11fed0e77f4dbce84a2b"
+  "gitHead": "6317d55fcea10044ecb7f4cfafefb06cf54ed006"
 }
