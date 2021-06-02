@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.13](https://github.com/IBM/kui/compare/v10.3.12...v10.3.13) (2021-06-02)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** race conditions with establishing client-kuiproxy connection ([8e50967](https://github.com/IBM/kui/commit/8e50967)), closes [#7516](https://github.com/IBM/kui/issues/7516)
+
 ## [10.3.12](https://github.com/IBM/kui/compare/v10.3.11...v10.3.12) (2021-06-01)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like
