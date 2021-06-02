@@ -293,8 +293,6 @@ export const BLOCK_UNPIN_BUTTON = `${OVERFLOW_MENU} button[data-mode="Show as ta
 
 /** xterm */
 export const ALT_BUFFER_N = (N: number) => `${CURRENT_TAB} .kui--scrollback:nth-child(${N}).xterm-alt-buffer-mode`
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const NOSPLIT_ALT_BUFFER_N = (N: number) => `${CURRENT_TAB}.xterm-alt-buffer-mode`
 
 /** Status Stripe widgets */
 export const STATUS_STRIPE = '#kui--status-stripe'
