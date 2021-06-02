@@ -18,9 +18,9 @@
 
 import Debug from 'debug'
 
-import { eventBus, inBrowser, inElectron, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
+import { eventBus, inBrowser, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
 
-import { Channel, InProcessChannel } from './channel'
+import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
 
 const strings = i18n('plugin-bash-like')
@@ -47,10 +47,12 @@ export function getChannelForTab(tab: Tab): Promise<Channel> {
  *
  */
 export function setChannelForTab(tab: Tab, channel: Promise<Channel>) {
+  debug('initializing pty channel: set')
   _singleChannel = channel
 
   // listen for the end of the world
   channel.then(chan => {
+    debug('initializing pty channel: success')
     window.addEventListener('beforeunload', () => {
       _exiting = true // prevent any stagglers re-establishing a channel
       chan.close()
@@ -64,16 +66,9 @@ export function setChannelForTab(tab: Tab, channel: Promise<Channel>) {
  * Return the session for the given tab
  *
  */
-export async function getSessionForTab(tab: Tab): Promise<Channel> {
-  if (tab['_kui_session'] === undefined && inElectron()) {
-    const channel = new InProcessChannel()
-    await channel.init()
-    tab['_kui_session'] = Promise.resolve(channel)
-
-    return tab['_kui_session']
-  } else {
-    return tab['_kui_session'] as Promise<Channel>
-  }
+export function getSessionForTab(tab: Tab): Promise<Channel> {
+  debug('pty channel: get', tab.uuid)
+  return _singleChannel
 }
 
 /**
@@ -135,8 +130,6 @@ async function newSessionForTab(tab: Tab) {
         reject(err)
       }
     })
-
-  tab['_kui_session'] = thisSession
 
   await thisSession
   tab.classList.add('kui--session-init-done')
