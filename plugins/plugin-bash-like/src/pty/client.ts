@@ -688,8 +688,10 @@ type ChannelFactory = (tab: Tab) => Promise<Channel>
  * Create a websocket channel to a remote bash
  *
  */
-const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
+const remoteChannelFactory: ChannelFactory = async (tab: Tab): Promise<Channel> => {
   try {
+    debug('initializing remote channel to kui proxy')
+
     // Notes: this command is expected to be handled directly by the
     // proxy server; see for example packages/proxy/app/routes/exec.js
     const resp = await tab.REPL.rexec<ChannelId>('bash websocket open', {
@@ -700,8 +702,9 @@ const remoteChannelFactory: ChannelFactory = async (tab: Tab) => {
       .replace(/#?\/?$/, '')
       .replace(/^http(s?):\/\/([^:/]+)(:\d+)?/, `${proto}://$2${port === -1 ? '$3' : ':' + port}`)
       .replace(/\/(index\.html)?$/, '')
+
     const url = new URL(path, protoHostPortContextRoot).href
-    debug('websocket url', url, proto, port, path, uid, gid)
+    debug('here is the kui proxy websocket url', url, proto, port, path, uid, gid)
     const WebSocketChannel = (await import('./websocket-channel')).default
     return new WebSocketChannel(url, uid, gid)
   } catch (err) {
@@ -778,6 +781,7 @@ const getOrCreateChannel = async (
     // here by ensure that any `await` comes *after* grabbing a
     // reference to the channelFactory promise. see
     // https://github.com/kubernetes-sigs/kui/issues/7465
+    debug('initializing pty channel')
     const ws = await setChannelForTab(tab, channelFactory(tab))
 
     // when the websocket is ready, handle any queued input; only then
