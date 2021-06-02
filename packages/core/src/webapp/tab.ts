@@ -95,6 +95,26 @@ export const getTab = (idx: Tab | number): Tab => {
 }
 
 /**
+ * We need to find the instance of the Split that has a REPL controller
+ *   - if given a `topLevelTab` that is already a Split, then we're "good to go"
+ *   - if we are given an actual top-level tab (i.e. not a split), then we need to find the first Split child of that given tab
+ *   - if we aren't given a tab as input, then we search from `document`
+ *
+ */
+export function splitFor(topLevelTab: Tab) {
+  if (topLevelTab && !isTopLevelTab(topLevelTab) && topLevelTab.REPL) {
+    // "good to go"! we were given a Split that has a REPL controller
+    return topLevelTab
+  } else {
+    return (((topLevelTab || document).querySelector(
+      (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback:not([data-is-minisplit])'
+    ) as any) as {
+      facade: Tab
+    }).facade
+  }
+}
+
+/**
  * Execute the given command in the current (or given) tab.
  *
  * @param isInternalCallPath This is one plugin calling another
@@ -102,16 +122,14 @@ export const getTab = (idx: Tab | number): Tab => {
  *
  */
 export function pexecInCurrentTab(command: string, topLevelTab?: Tab, isInternalCallpath = false, incognito = false) {
-  const scrollback = ((topLevelTab || document).querySelector(
-    (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback:not([data-is-minisplit])'
-  ) as any) as {
-    facade: Tab
-  }
-  if (scrollback) {
-    const { facade: tab } = scrollback
+  const split = splitFor(topLevelTab)
+
+  if (split) {
+    const tab = split // "tab" is the old name for the split in the repl/exec code
+
     return isInternalCallpath
-      ? tab.REPL.qexec(command, undefined, undefined, { tab })
-      : tab.REPL.pexec(command, { tab, echo: !incognito, noHistory: true })
+      ? split.REPL.qexec(command, undefined, undefined, { tab }) // "quiet" exec i.e. don't display the fact that we are executing a command
+      : split.REPL.pexec(command, { tab, echo: !incognito, noHistory: true }) // normal exec, display the Input/Output in the UI
   } else {
     return Promise.reject(
       new Error(
