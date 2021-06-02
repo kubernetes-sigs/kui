@@ -57,7 +57,7 @@ describe('core new tab from pty active tab via button click', function(this: Com
 
   it('start vi, then new tab via button click', () =>
     CLI.command('vi', this.app)
-      .then(() => this.app.client.$(Selectors.NOSPLIT_ALT_BUFFER_N(1)))
+      .then(() => this.app.client.$(Selectors.ALT_BUFFER_N(1)))
       .then(_ => _.waitForExist())
       .then(() => this.app.client.$(tabButtonSelector))
       .then(_ => _.click())

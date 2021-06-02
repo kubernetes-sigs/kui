@@ -61,7 +61,7 @@ import SymbolTable from '../core/symbol-table'
 import { getModel } from '../commands/tree'
 import { isSuccessfulCommandResolution } from '../commands/resolution'
 
-import { Tab, getCurrentTab, getTabId } from '../webapp/tab'
+import { Tab, getCurrentTab, getTabId, splitFor } from '../webapp/tab'
 import { Block } from '../webapp/models/block'
 
 import { Stream, Streamable } from '../models/streamable'
@@ -585,12 +585,9 @@ export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions())
  * @param execUUID for command re-execution
  *
  */
-export const doEval = (tab: Tab, block: Block, command: string, execUUID?: string) => {
-  //  const command = prompt.value.trim()
-
-  // otherwise, this is a plain old eval, resulting from the user hitting Enter
+export const doEval = (_tab: Tab, block: Block, command: string, execUUID?: string) => {
+  const tab = splitFor(_tab)
   const defaultExecOptions = new DefaultExecOptionsForTab(tab, block, execUUID)
-
   const execOptions = !execUUID ? defaultExecOptions : Object.assign(defaultExecOptions, { type: ExecType.Rerun })
 
   return exec(command, execOptions)
