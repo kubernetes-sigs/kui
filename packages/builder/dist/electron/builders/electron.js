@@ -45,7 +45,7 @@ const { arch: osArch } = require('os')
 const { createGunzip } = require('zlib')
 const { basename, join } = require('path')
 const packager = require('electron-packager')
-const { copy, emptyDir, pathExists } = require('fs-extra')
+const { copy, emptyDir, remove } = require('fs-extra')
 const { createReadStream, createWriteStream, readdir } = require('fs')
 const { exec } = require('child_process')
 
@@ -169,6 +169,7 @@ async function copySignableBits(buildPath, electronVersion, targetPlatform, targ
       const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
       console.log(`Copying in launcher for ${targetPlatform} ${targetArch} from ${source} to ${target}`)
       await copy(source, target)
+      await remove(source)
     }
   } catch (err) {
     console.error(`Error copying in launcher for ${targetPlatform} ${targetArch}`)
@@ -192,9 +193,14 @@ async function copySignableBits(buildPath, electronVersion, targetPlatform, targ
  *
  */
 function package(baseArgs /*: { dir: string, name: string, platform: string, arch: string, icon: string } */) {
+  const client = join(baseArgs.dir, 'node_modules', '@kui-shell', 'client')
+  const iconSpecifiedByClient = require(join(client, 'config.d', 'icons')).filesystem[baseArgs.platform]
+
   const args = Object.assign(baseArgs, {
     // where to store the builds
     out: process.env.BUILDDIR,
+
+    icon: join(client, iconSpecifiedByClient),
 
     // version settings
     appVersion: process.env.VERSION,
@@ -242,13 +248,12 @@ const dir = process.argv[0]
 const name = process.argv[1]
 const platform = process.argv[2]
 const arch = process.argv[3]
-const icon = process.argv[4]
-const launcher = process.argv[5]
+const launcher = process.argv[4]
 
 //
 // invoke electron-packager, catching any errors it might throw
 //
-package({ dir, name, platform, arch, icon, launcher })
+package({ dir, name, platform, arch, launcher })
   .then(sign(name, platform))
   .then(notarize(name, platform))
   .then(() => {
