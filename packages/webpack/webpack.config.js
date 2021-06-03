@@ -186,8 +186,8 @@ function thisPath(aPath /* : string */) {
  * an example of this.
  *
  */
-const main = path.join(stageDir, 'node_modules/@kui-shell/react')
-const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
+const main = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/react')
+const pluginBase = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
 const allKuiPlugins = fs.readdirSync(pluginBase)
@@ -239,7 +239,7 @@ const pluginEntries = allKuiPlugins.map(dir => {
 const entry = Object.assign({ main }, ...pluginEntries)
 console.log('entry', entry)
 
-const clientBase = path.join(stageDir, 'node_modules/@kui-shell/client')
+const clientBase = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/client')
 
 plugins.push(
   new CopyPlugin({
@@ -276,7 +276,7 @@ const htmlBuildOptions = Object.assign(
   clientOptions,
   {
     filename: path.join(outputPath, 'index.html'),
-    template: path.join(stageDir, 'node_modules/@kui-shell/core/templates/index.ejs')
+    template: path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/core/templates/index.ejs')
   }
 )
 
@@ -378,7 +378,7 @@ const fallback = !inBrowser
     }
 
 module.exports = {
-  context: stageDir,
+  context: process.env.CLIENT_HOME,
   stats: {
     // while developing, you should set this to true
     warnings: false
@@ -412,31 +412,6 @@ module.exports = {
   optimization,
   module: {
     rules: kuiPluginRules.concat([
-      /* {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'ts-loader',
-            options: {
-              projectReferences: true,
-              configFile: path.join(stageDir, 'tsconfig-es6.json')
-            }
-          }
-        ],
-        exclude: /node_modules/
-      }, */
-
-      // native binaries for node-pty; commented out for now. !!!!
-      // !!! Please do not remove this (commented out) rule !!!!!!
-      // See the Notes paragraph, just above the `externals`
-      // definition)
-      /* {
-        test: new RegExp(
-          `\\${path.sep}node_modules\\${path.sep}node-pty-prebuilt-multiarch\\${path.sep}build\\${path.sep}Release`
-        ),
-        use: mode === 'production' ? 'asar-friendly-node-loader' : 'node-loader'
-      }, */
-
       // ignore commonjs bits
       {
         test: new RegExp(`\\${path.sep}node_modules\\${path.sep}@kui-shell\\${path.sep}\\.*\\${path.sep}dist`),
