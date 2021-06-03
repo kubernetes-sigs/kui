@@ -155,7 +155,8 @@ class InProcessExecutor implements Executor {
     if (!execOptions || !execOptions.noHistory) {
       if (!execOptions || !execOptions.quiet) {
         if (!execOptions || execOptions.type !== ExecType.Nested) {
-          const historyModel = getHistoryForTab(tab.uuid)
+          const tabUUIDForHistory = execOptions.tabUUIDForHistory || tab.uuid
+          const historyModel = getHistoryForTab(tabUUIDForHistory)
           return (execOptions.history = historyModel.add({
             raw: command
           }))
@@ -587,8 +588,14 @@ export const exec = (commandUntrimmed: string, execOptions = emptyExecOptions())
  */
 export const doEval = (_tab: Tab, block: Block, command: string, execUUID?: string) => {
   const tab = splitFor(_tab)
+  const tabUUIDForHistory = _tab.uuid
   const defaultExecOptions = new DefaultExecOptionsForTab(tab, block, execUUID)
-  const execOptions = !execUUID ? defaultExecOptions : Object.assign(defaultExecOptions, { type: ExecType.Rerun })
+  const execOptions: ExecOptions = Object.assign(
+    {
+      tabUUIDForHistory
+    },
+    !execUUID ? defaultExecOptions : Object.assign(defaultExecOptions, { type: ExecType.Rerun })
+  )
 
   return exec(command, execOptions)
 }
