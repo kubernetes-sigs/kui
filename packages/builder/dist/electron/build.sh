@@ -20,31 +20,27 @@ set -e
 set -o pipefail
 
 #
-# @param $1 staging directory
 # @param $2 platform (optional) defaulting to all platforms (you may also set this via PLATFORM env)
 # @param $3 client directory (optional) defaulting to default
 #
-STAGING="${1-`pwd`}"
 PLATFORM=${2-${PLATFORM-all}}
 export CLIENT_NAME=${3}
 
-STAGING="$(cd $STAGING && pwd)/kui-electron-tmp"
-echo "staging directory: $STAGING"
-
 CLIENT_HOME="$(pwd)"
-APPDIR="$STAGING"/node_modules/@kui-shell
-CORE_HOME="$STAGING"/node_modules/@kui-shell/core
+APPDIR="$CLIENT_HOME"/node_modules/@kui-shell
+CORE_HOME="$CLIENT_HOME"/node_modules/@kui-shell/core
 THEME="$CLIENT_HOME"/node_modules/@kui-shell/client
-export BUILDER_HOME="$STAGING"/node_modules/@kui-shell/builder
+export BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
+MODULE_HOME="$CLIENT_HOME"/node_modules/@kui-shell
 export BUILDDIR="$CLIENT_HOME"/dist/electron
-export HEADLESS_BUILDDIR="$STAGING"/dist/headless
+export HEADLESS_BUILDDIR="$CLIENT_HOME"/dist/headless
 export KUI_HEADLESS_WEBPACK
 
 #
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(bak\.json)|(@kui-shell/.*/mdist)|(node_modules/.*/fonts/)|(\.scss$)|(\.woff$)|(/node_modules/@carbon)|(/node_modules/@patternfly)|(/node_modules/@emotion)|(/node_modules/babel-plugin-emotion)|(/node_modules/core-js)|(/node_modules/cssstyle)|(/node_modules/lodash)|(/node_modules/carbon-icons)|(/node_modules/@fortawesome)|(/node_modules/@babel)|(/node_modules/carbon-components)|(/node_modules/@kui-shell/plugin-.*/node_modules/)|(node_modules/trie-search/dictionary.json)|(node_modules/apexcharts/src)'
+export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(bak\.json)|(packages/.*/mdist)|(@kui-shell/.*/mdist)|(node_modules/.*/fonts/)|(\.scss$)|(\.woff$)|(/node_modules/@carbon)|(/node_modules/@patternfly)|(/node_modules/@emotion)|(/node_modules/babel-plugin-emotion)|(/node_modules/core-js)|(/node_modules/cssstyle)|(/node_modules/lodash)|(/node_modules/carbon-icons)|(/node_modules/@fortawesome)|(/node_modules/@babel)|(/node_modules/carbon-components)|(/node_modules/@kui-shell/plugin-.*/node_modules/)|(node_modules/trie-search/dictionary.json)|(node_modules/apexcharts/src)|(node_modules/victory-*)|(packages/builder)|(packages/test)|(tmp/)'
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
@@ -62,92 +58,6 @@ function makeBinDirectory {
     echo "$dir"
 }
 
-function tarCopy {
-  if [[ `uname` == Darwin ]]; then
-      which gtar || brew install gnu-tar
-      TAR=gtar
-  else
-      TAR=tar
-  fi
-    # word of warning for linux: in the TAR command below, the `-cf -` has
-    # to come before the --exclude rules!
-    "$TAR" -C "$CLIENT_HOME" -h -cf - \
-           --exclude "./npm-packs" \
-           --exclude "./kui" \
-           --exclude "./kui-*-tmp" \
-           --exclude "./bin" \
-           --exclude "./dist" \
-           --exclude "./tools" \
-           --exclude "./builds" \
-           --exclude "./tests" \
-           --exclude "./docs/dev" \
-           --exclude "**/package-lock.json" \
-           --exclude "lerna-debug.log" \
-           --exclude ".git*" \
-           --exclude ".travis*" \
-           --exclude "node_modules/@kui-shell/build" \
-           --exclude "./build/*/node_modules/*" \
-           --exclude "./packages" \
-           --exclude "./plugins" \
-           --exclude "**/*~" \
-           --exclude "**/.bak" \
-           --exclude "**/yarn.lock" \
-           --exclude "**/*.debug.js" \
-	   --exclude "monaco-editor/dev" \
-	   --exclude "monaco-editor/min/*/*.js" \
-	   --exclude "monaco-editor/min-maps" \
-           --exclude "node_modules/*.bak/*" \
-           --exclude "node_modules/**/*.md" \
-           --exclude "node_modules/**/*.DOCS" \
-           --exclude "node_modules/**/LICENSE" \
-           --exclude "node_modules/**/docs/**/*.html" \
-           --exclude "node_modules/**/docs/**/*.png" \
-           --exclude "node_modules/**/docs/**/*.js" \
-           --exclude "./plugins" \
-           --exclude "./docs" \
-           --exclude "./attic" \
-           --exclude "./.*" \
-           --exclude "./README.md" \
-           --exclude "*.tsbuildinfo" \
-           --exclude "**/tslint.json" \
-           --exclude "node_modules/**/test/*" . \
-        | "$TAR" -C "$STAGING" -xf -
-
-    echo "tar copy done"
-
-    if [ -n "$TARBALL_ONLY" ]; then exit; fi
-}
-
-# TODO share this with headless/build.sh, as they are identical
-function configure {
-    UGLIFY=true npx --no-install kui-prescan
-}
-
-# prepare staging directory
-function initStage {
-    rm -rf "$STAGING"
-    mkdir -p "$STAGING"
-    cd "$STAGING"
-
-    # make the build directory
-    mkdir -p "$BUILDDIR"
-}
-
-# check for prerequisites
-function prereq {
-    if [ ! -d "$THEME" ]; then
-        echo "You do not provide a client definition"
-        exit 1
-    fi
-}
-
-# compile es6 modules
-function es6 {
-    if [ -d node_modules/typescript ] && [ -f tsconfig-es6.json ]; then
-        npx --no-install tsc -b tsconfig-es6.json
-    fi
-}
-
 # copy over the theme bits
 function theme {
     # filesystem icons
@@ -155,12 +65,6 @@ function theme {
     ICON_WIN32="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.win32)')
     ICON_LINUX="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.linux)')
 
-}
-
-function cleanup {
-    if [ -z "$NO_CLEAN" ] && [ -z "$TARBALL_ONLY" ]; then
-        rm -rf "$STAGING"
-    fi
 }
 
 function win32 {
@@ -174,7 +78,7 @@ function win32 {
           which mono || brew install mono
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" win32 $ARCH $ICON_WIN32)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" win32 $ARCH $ICON_WIN32)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
@@ -261,7 +165,7 @@ fi
             ls -l "$KUI_LAUNCHER"
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" darwin $ARCH $ICON_MAC "$KUI_LAUNCHER")
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" darwin $ARCH $ICON_MAC "$KUI_LAUNCHER")
 
         # use a custom icon for mac
         # cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
@@ -311,7 +215,7 @@ function linux {
           which fakeroot || brew install fakeroot
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$STAGING" "${PRODUCT_NAME}" linux $ARCH $ICON_LINUX)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" linux $ARCH $ICON_LINUX)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
@@ -395,39 +299,9 @@ function tarball {
     wait
 }
 
-# make sure we have the needed native modules compiled and ready
-function native {
-    (cd "$STAGING" && npx --no-install kui-pty-rebuild electron)
-}
-
-# install the webpackery bits
-function initWebpack {
-    pushd "$STAGING" > /dev/null
-    cp -a "$BUILDER_HOME"/../webpack/webpack.config.js .
-    (cd node_modules/.bin && rm -f webpack-cli && ln -s ../webpack-cli/bin/cli.js webpack-cli)
-    popd > /dev/null
-}
-
-# build the webpack bundles
-function webpack {
-    pushd "$STAGING" > /dev/null
-    rm -f "$BUILDDIR"/*.js*
-
-    if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
-        echo "Building headless bundles via webpack"
-        MODE=${MODE-production} CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --config ./node_modules/@kui-shell/webpack/headless-webpack.config.js --mode=${MODE-production} &
-    fi
-
-    # echo "Building electron bundles via webpack"                                                                     
-    TARGET=electron-renderer MODE=${MODE-production} CLIENT_HOME="$CLIENT_HOME" KUI_STAGE="$STAGING" KUI_BUILDDIR="$BUILDDIR" KUI_BUILDER_HOME="$BUILDER_HOME" npx --no-install webpack-cli --mode=${MODE-production}
-
-    wait
-    popd > /dev/null
-}
-
 # install the electron-packager dependencies
 function builddeps {
-    (cd "$BUILDER_HOME/dist/electron" && npm install)
+    (cd "$BUILDER_HOME/dist/electron" && npm ci)
 
     export ELECTRON_VERSION=$(BUILDER_HOME=$BUILDER_HOME node -e 'console.log((require(require("path").join(process.env.BUILDER_HOME, "dist/electron/package.json")).devDependencies.electron).replace(/^[~^]/, ""))')
     echo "ELECTRON_VERSION=$ELECTRON_VERSION"
@@ -442,14 +316,6 @@ function builddeps {
 
 # this is the main routine
 function build {
-    echo "prereq" && prereq
-    echo "es6" && es6
-    echo "initStage" && initStage
-    echo "tarCopy" && tarCopy
-    echo "initWebpack" && initWebpack
-    echo "native" && native
-    echo "configure" && configure
-    echo "webpack" && webpack
     echo "builddeps" && builddeps
     echo "theme" && theme
     echo "win32" && win32 x64
@@ -464,7 +330,6 @@ function build {
     fi
 
     echo "tarball" && tarball
-    echo "cleanup" && cleanup
 }
 
 # line up the work

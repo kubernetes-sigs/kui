@@ -94,8 +94,8 @@ plugins.push(new IgnorePlugin({ contextRegExp: /\/@kui-shell\/build/ }))
  * an example of this.
  *
  */
-const main = path.join(stageDir, 'node_modules/@kui-shell/core/mdist/main/main.js')
-const pluginBase = path.join(stageDir, 'node_modules/@kui-shell')
+const main = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/core/mdist/main/main.js')
+const pluginBase = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell')
 console.log('main', main)
 console.log('pluginBase', pluginBase)
 const allKuiPlugins = fs.readdirSync(pluginBase)
@@ -200,7 +200,7 @@ kuiPluginExternals.forEach(_ => {
 })
 
 module.exports = {
-  context: stageDir,
+  context: process.env.CLIENT_HOME,
   stats: {
     // while developing, you should set this to true
     warnings: false

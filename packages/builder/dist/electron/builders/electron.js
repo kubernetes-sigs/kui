@@ -47,21 +47,79 @@ const { basename, join } = require('path')
 const packager = require('electron-packager')
 const { copy, emptyDir, pathExists } = require('fs-extra')
 const { createReadStream, createWriteStream, readdir } = require('fs')
+const { exec } = require('child_process')
 
 const sign = require('./sign')
 const notarize = require('./notarize')
 
 const nodePty = 'node-pty-prebuilt-multiarch'
 
+/**
+ * afterCopy hook to build webpack bundles.
+ *
+ * @param this baseArgs from package() below
+ *
+ */
+async function buildWebpack(buildPath, electronVersion, targetPlatform, targetArch, callback) {
+  const CLIENT_HOME = this.dir
+
+  console.log('buildPath', buildPath)
+
+  const asyncs /*: Promise<void>[]*/ = []
+
+  if (process.env.KUI_HEADLESS_WEBPACK) {
+    console.log('Building headless bundles via webpack')
+    asyncs.push(
+      new Promise((resolve, reject) => {
+        exec(
+          `KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
+          (err, stdout, stderr) => {
+            console.log('stdout', stdout)
+            if (err) {
+              console.error(err)
+              reject(stderr)
+            } else {
+              resolve()
+            }
+          }
+        )
+      })
+    )
+  }
+
+  console.log('Building electron bundles via webpack')
+  asyncs.push(
+    new Promise((resolve, reject) => {
+      exec(
+        `KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" TARGET=electron-renderer MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/webpack.config.js"`,
+        (err, stdout, stderr) => {
+          console.log('stdout', stdout)
+          if (err) {
+            console.error(err)
+            reject(stderr)
+          } else {
+            resolve()
+          }
+        }
+      )
+    })
+  )
+
+  await Promise.all(asyncs)
+  callback()
+}
+
 /** afterCopy hook to copy in the platform-specific node-pty build */
 async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArch, callback) {
-  if (process.platform === targetPlatform && targetArch === osArch()) {
+  console.log('copying node pty')
+  /* if (process.platform === targetPlatform && targetArch === osArch()) {
     // if the current platform matches the target platform, there is
     // nothing to do
     callback()
-  } else {
+  } else */ {
     const target = `${targetPlatform}-${targetArch}`
     const sourceDir = join(process.env.BUILDER_HOME, 'dist/electron/vendor', nodePty, 'build', target, 'electron')
+    console.log('sourceDir', sourceDir)
 
     readdir(sourceDir, async (err, files) => {
       if (err) {
@@ -101,47 +159,34 @@ async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArc
 }
 
 /** afterCopy hook to copy in headless build, etc. things that need to be codesigned */
-function copySignableBits(baseArgs /*: { dir: string, name: string, platform: string, arch: string, icon: string } */) {
-  return async (buildPath, electronVersion, targetPlatform, targetArch, callback) => {
-    // copy in launcher? it is important to copy this in before
-    // signing and notarizing, otherwise macOS/windows, when launching
-    // the app, will see unsigned content in the application bundle
-    try {
-      if (baseArgs.launcher) {
-        const source = baseArgs.launcher
-        const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
-        console.log(`Copying in launcher for ${targetPlatform} ${targetArch} from ${source} to ${target}`)
-        await copy(source, target)
-      }
-    } catch (err) {
-      console.error(`Error copying in launcher for ${targetPlatform} ${targetArch}`)
-      console.error(err)
-      callback(err)
-    }
-
-    // copy in the headless build?
-    if (process.env.KUI_HEADLESS_WEBPACK) {
-      const source = process.env.HEADLESS_BUILDDIR
+async function copySignableBits(buildPath, electronVersion, targetPlatform, targetArch, callback) {
+  // copy in launcher? it is important to copy this in before
+  // signing and notarizing, otherwise macOS/windows, when launching
+  // the app, will see unsigned content in the application bundle
+  try {
+    if (this.launcher) {
+      const source = this.launcher
       const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
-      console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
-      await emptyDir(target)
+      console.log(`Copying in launcher for ${targetPlatform} ${targetArch} from ${source} to ${target}`)
       await copy(source, target)
     }
-
-    // copy in the headless.zip build?
-    if (process.env.KUI_HEADLESS_WEBPACK) {
-      const source = process.env.HEADLESS_BUILDDIR + '.zip'
-      if (await pathExists(source)) {
-        const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
-        console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
-        await copy(source, target)
-      }
-    }
-
-    callback()
+  } catch (err) {
+    console.error(`Error copying in launcher for ${targetPlatform} ${targetArch}`)
+    console.error(err)
+    callback(err)
   }
-}
 
+  // copy in the headless build?
+  if (process.env.KUI_HEADLESS_WEBPACK) {
+    const source = process.env.HEADLESS_BUILDDIR
+    const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
+    console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
+    await emptyDir(target)
+    await copy(source, target)
+  }
+
+  callback()
+}
 /**
  * Use electron-packager to create the application package
  *
@@ -174,9 +219,10 @@ function package(baseArgs /*: { dir: string, name: string, platform: string, arc
     },
 
     // lifecycle hooks to copy in our extra bits
-    afterCopy: [copyNodePty, copySignableBits(baseArgs)]
+    afterCopy: [buildWebpack.bind(baseArgs), copyNodePty, copySignableBits.bind(baseArgs)]
   })
 
+  console.log('args', args)
   if (process.env.APP_BUNDLE_ID) {
     // this part of electron-packager seems weird; we need to set the
     // macOS bundleID here (i.e. HERE ALSO!! we of course need to pass
