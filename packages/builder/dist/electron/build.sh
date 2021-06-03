@@ -58,15 +58,6 @@ function makeBinDirectory {
     echo "$dir"
 }
 
-# copy over the theme bits
-function theme {
-    # filesystem icons
-    ICON_MAC="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.darwin)')
-    ICON_WIN32="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.win32)')
-    ICON_LINUX="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").filesystem.linux)')
-
-}
-
 function win32 {
     local ARCH=$1
 
@@ -78,7 +69,7 @@ function win32 {
           which mono || brew install mono
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" win32 $ARCH $ICON_WIN32)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" win32 $ARCH)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
@@ -165,10 +156,7 @@ fi
             ls -l "$KUI_LAUNCHER"
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" darwin $ARCH $ICON_MAC "$KUI_LAUNCHER")
-
-        # use a custom icon for mac
-        # cp $ICON_MAC "$BUILDDIR/${PRODUCT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app/Contents/Resources/electron.icns"
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" darwin $ARCH "$KUI_LAUNCHER")
 
         # we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
@@ -181,17 +169,18 @@ fi
         #node ./builders/zip.js
 
         if [ -z "$NO_INSTALLER" ]; then
-            if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
-                echo "DMG build for darwin"
-                (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
-	            "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app" \
-	            "${CLIENT_NAME}" \
-	            --out="$BUILDDIR" \
-	            --icon="$ICON_MAC" \
-	            --icon-size=128 \
-	            --overwrite) &
-                MAC_DMG_PID=$!
-            fi
+            # build mac dmg installer
+            # if [ -z "$NO_MAC_DMG_INSTALLER" ]; then
+            #     echo "DMG build for darwin"
+            #     (cd "$BUILDER_HOME/dist/electron" && npx --no-install electron-installer-dmg \
+	        #     "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH/${PRODUCT_NAME}.app" \
+	        #     "${CLIENT_NAME}" \
+	        #     --out="$BUILDDIR" \
+            #     --icon="$ICON_MAC" \
+            #     --icon-size=128 \
+	        #     --overwrite) &
+            #     MAC_DMG_PID=$!
+            # fi
 
             echo "TGZ build for darwin"
             tar -C "$BUILDDIR" -jcf "$BUILDDIR/${CLIENT_NAME}-darwin-$ARCH.tar.bz2" "${CLIENT_NAME}-darwin-$ARCH" &
@@ -215,7 +204,7 @@ function linux {
           which fakeroot || brew install fakeroot
         fi
 
-        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" linux $ARCH $ICON_LINUX)
+        (cd "$BUILDER_HOME/dist/electron" && node builders/electron.js "$CLIENT_HOME" "${PRODUCT_NAME}" linux $ARCH)
 
 	# we want the electron app name to be PRODUCT_NAME, but the app to be in <CLIENT_NAME>-<platform>-<arch>
 	if [ "${PRODUCT_NAME}" != "${CLIENT_NAME}" ]; then
@@ -317,7 +306,6 @@ function builddeps {
 # this is the main routine
 function build {
     echo "builddeps" && builddeps
-    echo "theme" && theme
     echo "win32" && win32 x64
     echo "mac" && mac x64
 
