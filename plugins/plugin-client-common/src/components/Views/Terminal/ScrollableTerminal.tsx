@@ -143,6 +143,7 @@ type ScrollbackState = ScrollbackOptions & {
   onFocus: (evt: React.FocusEvent) => void
   onOutputRender: () => void
   navigateTo: (dir: 'first' | 'last' | 'previous' | 'next') => void
+  setActiveBlock: (c: Block) => void
   willFocusBlock: (evt: React.SyntheticEvent) => void
   willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
   willUpdateCommand: (idx: number, command: string) => void
@@ -403,6 +404,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       onFocus: undefined,
       onOutputRender: undefined,
       navigateTo: undefined,
+      setActiveBlock: undefined,
       willFocusBlock: undefined,
       willRemoveBlock: undefined,
       willUpdateCommand: undefined
@@ -460,6 +462,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           showThisIdxInMiniSplit: newIdx
         }
       })
+    }
+
+    /** Update the active block */
+    state.setActiveBlock = (c: Block) => {
+      if (c && c.props && c.props.model && isActive(c.props.model)) {
+        state._activeBlock = c
+      }
     }
 
     /**
@@ -1327,7 +1336,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
                     isWidthConstrained={isWidthConstrained}
                     onOutputRender={scrollback.onOutputRender}
                     navigateTo={scrollback.navigateTo}
-                    ref={idx !== this.findActiveBlock(scrollback) ? undefined : c => (scrollback._activeBlock = c)}
+                    ref={scrollback.setActiveBlock}
                   />
                 )
               })

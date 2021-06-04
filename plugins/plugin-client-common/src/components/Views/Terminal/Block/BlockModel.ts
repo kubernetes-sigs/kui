@@ -204,6 +204,10 @@ export function hasOriginalUUID(block: BlockModel | WithOriginalExecUUID): block
   return typeof (block as WithOriginalExecUUID).originalExecUUID === 'string'
 }
 
+export function hasBeenRerun(block: BlockModel): boolean {
+  return hasOriginalUUID(block)
+}
+
 /** Transform to Processing */
 export function Processing(
   block: BlockModel,
