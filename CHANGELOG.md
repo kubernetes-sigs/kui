@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.15](https://github.com/IBM/kui/compare/v10.3.14...v10.3.15) (2021-06-04)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** when rerunning blocks, output always scrolls to bottom ([23e6728](https://github.com/IBM/kui/commit/23e6728)), closes [#7527](https://github.com/IBM/kui/issues/7527)
+
+### Features
+
+- **plugins/plugin-client-common:** ability to close a split via UI gesture ([de275f6](https://github.com/IBM/kui/commit/de275f6)), closes [#7530](https://github.com/IBM/kui/issues/7530)
+
 ## [10.3.14](https://github.com/IBM/kui/compare/v10.3.13...v10.3.14) (2021-06-04)
 
 ### Bug Fixes
