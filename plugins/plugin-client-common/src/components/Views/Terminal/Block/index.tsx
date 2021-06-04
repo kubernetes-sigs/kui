@@ -131,6 +131,17 @@ export default class Block extends React.PureComponent<Props, State> {
 
   private readonly _willChangeSize = this.willChangeSize.bind(this)
 
+  private onOutputRender() {
+    if (this.props.onOutputRender) {
+      this.props.onOutputRender()
+    }
+    if (this.props.noActiveInput && this.state._block) {
+      this.state._block.scrollIntoView()
+    }
+  }
+
+  private readonly _onOutputRender = this.onOutputRender.bind(this)
+
   private output() {
     if (isFinished(this.props.model) || isProcessing(this.props.model)) {
       return (
@@ -142,7 +153,7 @@ export default class Block extends React.PureComponent<Props, State> {
           isBeingRerun={isBeingRerun(this.props.model)}
           willRemove={this.props.willRemove}
           willChangeSize={this._willChangeSize}
-          onRender={this.props.onOutputRender}
+          onRender={this._onOutputRender}
           willUpdateCommand={this.props.willUpdateCommand}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}
           isWidthConstrained={this.props.isWidthConstrained}

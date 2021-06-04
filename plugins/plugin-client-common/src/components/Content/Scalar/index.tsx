@@ -95,15 +95,26 @@ export default class Scalar extends React.PureComponent<Props, State> {
     console.error('catastrophic error in Scalar', error, errorInfo)
   }
 
+  private onRender() {
+    if (this.props.onRender) {
+      setTimeout(() => this.props.onRender(true), 0)
+    }
+  }
+
+  private readonly _onRender = this.onRender.bind(this)
+
   private renderResponse(response: Props['response']) {
     const { tab } = this.props
 
     if (typeof response === 'boolean') {
+      this.onRender()
       return <React.Fragment />
     } else if (typeof response === 'number') {
+      this.onRender()
       return <pre>{response}</pre>
     } else if (isUsageError(response)) {
       // hopefully we can do away with this shortly
+      this.onRender()
       if (typeof response.raw === 'string') {
         return <pre>{response.raw}</pre>
       } else if (isMessageWithUsageModel(response.raw) || isMessageWithCode(response.raw)) {
@@ -112,11 +123,13 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <HTMLDom content={response.raw} />
       }
     } else if (isXtermResponse(response)) {
+      this.onRender()
       return <XtermDom response={response} />
     } else if (typeof response === 'string' || isError(response)) {
       const message = isError(response) ? response.message : response
 
       // Markdown interprets escapes, so we need to double-escape
+      this.onRender()
       return (
         <pre>
           <Markdown tab={tab} repl={tab.REPL} source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')} />
@@ -130,6 +143,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
             repl={tab.REPL}
             tabUUID={getPrimaryTabId(tab)}
             isPartOfMiniSplit={this.props.isPartOfMiniSplit}
+            onRender={this._onRender}
             willRemove={this.props.willRemove}
             willUpdateCommand={this.props.willUpdateCommand}
             willUpdateResponse={(text: string) => {
@@ -139,6 +153,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         </span>
       )
     } else if (isRadioTable(response)) {
+      this.onRender()
       return (
         <KuiContext.Consumer>
           {config => <RadioTableSpi table={response} title={!config.disableTableTitle} repl={tab.REPL} />}
@@ -158,7 +173,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         undefined,
         renderBottomToolbar,
         renderGrid,
-        this.props.onRender,
+        this._onRender,
         this.props.isPartOfMiniSplit,
         this.props.isWidthConstrained
       )
@@ -174,19 +189,30 @@ export default class Scalar extends React.PureComponent<Props, State> {
         </React.Fragment>
       )
     } else if (isReactResponse(response)) {
+      this.onRender()
       return response.react
     } else if (isHTML(response)) {
       // ^^^ intentionally using an "else" so that typescript double
       // checks that we've covered every case of ScalarResponse
+      this.onRender()
       return <HTMLDom content={response} />
     } else if (isMarkdownResponse(response)) {
-      return <Markdown tab={tab} repl={tab.REPL} source={response.content} />
+      return <Markdown tab={tab} repl={tab.REPL} source={response.content} onRender={this._onRender} />
     } else if (isRandomErrorResponse1(response)) {
       // maybe this is an error response from some random API?
-      return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError1', response.code)} />
+      return (
+        <Markdown tab={tab} repl={tab.REPL} source={strings('randomError1', response.code)} onRender={this._onRender} />
+      )
     } else if (isRandomErrorResponse2(response)) {
       // maybe this is an error response from some random API?
-      return <Markdown tab={tab} repl={tab.REPL} source={strings('randomError2', response.errno)} />
+      return (
+        <Markdown
+          tab={tab}
+          repl={tab.REPL}
+          source={strings('randomError2', response.errno)}
+          onRender={this._onRender}
+        />
+      )
     } else if (isMultiModalResponse(response)) {
       return (
         <TopNavSidecar
@@ -216,10 +242,12 @@ export default class Scalar extends React.PureComponent<Props, State> {
         />
       )
     } else if (isAbortableResponse(response)) {
+      this.onRender()
       return this.renderResponse(response.response)
     }
 
     console.error('unexpected null return from Scalar:', this.props.response)
+    this.onRender()
     return <pre className="oops">Internal Error in command execution</pre>
   }
 

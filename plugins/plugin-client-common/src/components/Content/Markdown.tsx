@@ -50,6 +50,8 @@ interface Props {
 
   /** Base HTTP Url? */
   baseUrl?: string
+
+  onRender?: () => void
 }
 
 export default class Markdown extends React.PureComponent<Props> {
@@ -101,6 +103,10 @@ export default class Markdown extends React.PureComponent<Props> {
   }
 
   public render() {
+    if (this.props.onRender) {
+      this.props.onRender()
+    }
+
     return (
       <ReactMarkdown
         plugins={[gfm]}
