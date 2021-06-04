@@ -432,10 +432,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     /** Output.tsx finished rendering something */
     state.onOutputRender = () => {
-      const sbidx = this.findSplit(this.state, sbuuid)
-      if (sbidx >= 0) {
-        const scrollback = this.state.splits[sbidx]
-        setTimeout(() => scrollback.facade.scrollToBottom())
+      if (!this.props.noActiveInput) {
+        // if we are using inline input, then scroll to the bottom
+        // whenever an output is rendered in this split
+        const sbidx = this.findSplit(this.state, sbuuid)
+        if (sbidx >= 0) {
+          const scrollback = this.state.splits[sbidx]
+          setTimeout(() => scrollback.facade.scrollToBottom())
+        }
       }
     }
 
