@@ -36,6 +36,7 @@ type Props = CommentaryResponse['props'] & {
   willUpdateResponse?: (text: string) => void
   willRemove?: () => void
   willUpdateCommand?: (command: string) => void
+  onRender: () => void
 }
 
 export default class Commentary extends React.PureComponent<Props, State> {
@@ -230,6 +231,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
   }
 
   public render() {
+    this.props.onRender()
     return (
       <div className="kui--commentary" data-is-editing={this.state.isEdit || undefined}>
         {this.card()}

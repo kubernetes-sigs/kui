@@ -25,7 +25,6 @@ import Props from './model'
  */
 const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 
-// FIXME There's no ideal Card component in Carbon Component Libary, so we use Patternfly
 export default function CardSpi(props: Props): React.ReactElement {
   return (
     <React.Suspense fallback={<div />}>

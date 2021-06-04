@@ -69,6 +69,7 @@ export default function renderTable(
                 title={!config.disableTableTitle}
                 toolbars={toolbars}
                 asGrid={asGrid}
+                onRender={onRender}
                 isPartOfMiniSplit={isPartOfMiniSplit}
                 isWidthConstrained={isWidthConstrained}
               />

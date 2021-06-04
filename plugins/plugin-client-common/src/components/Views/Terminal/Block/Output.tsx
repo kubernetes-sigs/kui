@@ -264,6 +264,7 @@ export default class Output extends React.PureComponent<Props, State> {
                 willFocusBlock={this.props.willFocusBlock}
                 willRemove={this._willRemove}
                 willUpdateCommand={this._willUpdateCommand}
+                onRender={this._onRender}
               />
             </React.Suspense>
           )}

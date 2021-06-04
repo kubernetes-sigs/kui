@@ -83,6 +83,8 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 
   /** prefix breadcrumbs? */
   prefixBreadcrumbs?: BreadcrumbView[]
+
+  onRender: (hasContent: boolean) => void
 }
 
 /** state of PaginatedTable component */
@@ -419,6 +421,10 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private content(includeToolbars = false, lightweightTables = false) {
+    if (this.props.onRender) {
+      this.props.onRender(true)
+    }
+
     return (
       <React.Fragment>
         {includeToolbars && this.topToolbar(lightweightTables)}
