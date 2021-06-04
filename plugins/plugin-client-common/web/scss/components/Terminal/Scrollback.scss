@@ -19,14 +19,31 @@
 @import 'mixins';
 @import './Block';
 
+$split-padding: 0.5em;
+$split-gutter-gap: 6px;
+$split-gutter-color: var(--color-stripe-01);
+$split-bgcolor: var(--color-repl-background);
+
 @include SplitContainer {
   display: grid;
-  grid-gap: 6px;
   overflow: hidden;
-  background-color: var(--color-stripe-01);
+  grid-gap: $split-gutter-gap;
+  background-color: $split-gutter-color;
 }
 
 @include Scrollback {
-  padding: 0.5em 0;
-  background-color: var(--color-repl-background);
+  /* support for inner scrolling on ScrollbackBlockList */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  background-color: $split-bgcolor;
+}
+
+@include ScrollbackBlockList {
+  /* these two rules given us inner scrolling on ScrollbackBlockList */
+  flex: 1;
+  overflow: auto;
+
+  padding: $split-padding 0;
 }
