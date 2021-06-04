@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.14](https://github.com/IBM/kui/compare/v10.3.13...v10.3.14) (2021-06-04)
+
+### Bug Fixes
+
+- **packages/core:** bottomInput clients that use splits do not properly preserve command history ([f3df6ff](https://github.com/IBM/kui/commit/f3df6ff)), closes [#7522](https://github.com/IBM/kui/issues/7522)
+
 ## [10.3.13](https://github.com/IBM/kui/compare/v10.3.12...v10.3.13) (2021-06-02)
 
 ### Bug Fixes

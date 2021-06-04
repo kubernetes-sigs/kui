@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.14](https://github.com/IBM/kui/compare/v10.3.13...v10.3.14) (2021-06-04)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** content does not always reliably scroll into view after command execution ([bf6d6c1](https://github.com/IBM/kui/commit/bf6d6c1)), closes [#7524](https://github.com/IBM/kui/issues/7524)
+
 ## [10.3.13](https://github.com/IBM/kui/compare/v10.3.12...v10.3.13) (2021-06-02)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common
