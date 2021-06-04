@@ -139,7 +139,8 @@ type ScrollbackState = ScrollbackOptions & {
   showThisIdxInMiniSplit: number
 
   /** Memoized handlers */
-  onClick: (evt: React.FocusEvent) => void
+  remove: () => void
+  onClick: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
   onFocus: (evt: React.FocusEvent) => void
   onOutputRender: () => void
   navigateTo: (dir: 'first' | 'last' | 'previous' | 'next') => void
@@ -400,6 +401,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       inverseColors: opts.inverseColors,
       showThisIdxInMiniSplit: -2,
       blocks: this.restoreBlocks(sbuuid).concat([Active()]),
+      remove: undefined,
       onClick: undefined,
       onFocus: undefined,
       onOutputRender: undefined,
@@ -422,6 +424,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
     }
 
+    state.remove = () => this.removeSplit(sbuuid)
     state.onClick = () => {
       if (getSelectionText().length === 0) {
         const sbidx = this.findSplit(this.state, sbuuid)
@@ -1255,93 +1258,116 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return isPopup() || this.isMiniSplit(scrollback, sbidx) || this.isASideBySide(sbidx)
   }
 
-  public render() {
-    const nTerminals = this.state.splits.length
+  /** Render the blocks in one split */
+  private blocks(tab: KuiTab, scrollback: ScrollbackState, sbidx: number) {
+    const blocks = scrollback.blocks
+    const nBlocks = blocks.length
+
+    const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
+    const isWidthConstrained = this.isWidthConstrained(scrollback, sbidx)
+
+    // running tally for In[_idx_]
+    let displayedIdx = 0
+
+    return blocks.map((_, idx) => {
+      if (!isAnnouncement(_) && !isOutputOnly(_)) {
+        displayedIdx++
+      }
+
+      if (isMiniSplit) {
+        const isVisibleInMiniSplit =
+          isActive(_) ||
+          isProcessing(_) ||
+          (scrollback.showThisIdxInMiniSplit >= 0
+            ? idx === scrollback.showThisIdxInMiniSplit
+            : idx === scrollback.showThisIdxInMiniSplit + nBlocks)
+
+        if (!isVisibleInMiniSplit) {
+          return
+        }
+      }
+
+      /** To find the focused block, we check:
+       *  1. the block is in a focused scrollback
+       *  2. the block idx matches scrollback.focusedBlockIdx (considering blocks that were hidden)
+       *  3. return the active block if there's no scrollback.focusedBlockIdx */
+      const isFocused =
+        sbidx === this.state.focusedIdx &&
+        (idx === scrollback.focusedBlockIdx ||
+          (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
+
+      return (
+        <Block
+          key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
+          idx={idx}
+          displayedIdx={displayedIdx}
+          model={_}
+          isBeingRerun={isBeingRerun(_)}
+          uuid={scrollback.uuid}
+          tab={tab}
+          nSplits={this.state.splits.length}
+          noActiveInput={this.props.noActiveInput || isOfflineClient()}
+          onFocus={scrollback.onFocus}
+          willRemove={scrollback.willRemoveBlock}
+          willFocusBlock={scrollback.willFocusBlock}
+          willUpdateCommand={scrollback.willUpdateCommand}
+          isExperimental={hasCommand(_) && _.isExperimental}
+          isFocused={isFocused}
+          isPartOfMiniSplit={isMiniSplit}
+          isVisibleInMiniSplit={true}
+          isWidthConstrained={isWidthConstrained}
+          onOutputRender={scrollback.onOutputRender}
+          navigateTo={scrollback.navigateTo}
+          ref={scrollback.setActiveBlock}
+        />
+      )
+    })
+  }
+
+  /** Render a header for the given split */
+  private splitHeader(scrollback: ScrollbackState) {
+    return (
+      this.state.splits.length > 1 && (
+        <div className="kui--split-header flex-layout kui--inverted-color-context">
+          <div className="flex-fill" />
+          <div className="kui--split-close-button" onClick={scrollback.remove}>
+            &#x2A2F;
+          </div>
+        </div>
+      )
+    )
+  }
+
+  /** Render one split */
+  private split(scrollback: ScrollbackState, sbidx: number) {
+    const tab = this.tabFor(scrollback)
+    const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
+    const isWidthConstrained = this.isWidthConstrained(scrollback, sbidx)
 
     return (
+      <div
+        className={'kui--scrollback' + (scrollback.inverseColors ? ' kui--inverted-color-context' : '')}
+        data-is-minisplit={isMiniSplit}
+        data-is-width-constrained={isWidthConstrained || undefined}
+        data-is-focused={sbidx === this.state.focusedIdx || undefined}
+        key={tab.uuid}
+        data-scrollback-id={tab.uuid}
+        ref={ref => this.tabRefFor(scrollback, ref)}
+        onClick={scrollback.onClick}
+      >
+        <React.Fragment>
+          {this.splitHeader(scrollback)}
+          <ul className="kui--scrollback-block-list">{this.blocks(tab, scrollback, sbidx)}</ul>
+        </React.Fragment>
+      </div>
+    )
+  }
+
+  public render() {
+    return (
       <div className="repl" id="main-repl">
-        <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={nTerminals}>
-          {this.state.splits.map((scrollback, sbidx) => {
-            const tab = this.tabFor(scrollback)
-            const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
-            const isWidthConstrained = this.isWidthConstrained(scrollback, sbidx)
-
-            // don't render any echo:false blocks
-            const blocks = scrollback.blocks
-            const nBlocks = blocks.length
-
-            // running tally for In[_idx_]
-            let displayedIdx = 0
-
-            return React.createElement(
-              'ul',
-              {
-                className:
-                  'kui--scrollback scrollable scrollable-auto' +
-                  (scrollback.inverseColors ? ' kui--inverted-color-context' : ''),
-                'data-is-minisplit': isMiniSplit,
-                'data-is-width-constrained': isWidthConstrained || undefined,
-                'data-is-focused': sbidx === this.state.focusedIdx || undefined,
-                key: tab.uuid,
-                'data-scrollback-id': tab.uuid,
-                ref: ref => this.tabRefFor(scrollback, ref),
-                onClick: scrollback.onClick
-              },
-
-              blocks.map((_, idx) => {
-                if (!isAnnouncement(_) && !isOutputOnly(_)) {
-                  displayedIdx++
-                }
-
-                if (isMiniSplit) {
-                  const isVisibleInMiniSplit =
-                    isActive(_) ||
-                    isProcessing(_) ||
-                    (scrollback.showThisIdxInMiniSplit >= 0
-                      ? idx === scrollback.showThisIdxInMiniSplit
-                      : idx === scrollback.showThisIdxInMiniSplit + nBlocks)
-
-                  if (!isVisibleInMiniSplit) {
-                    return
-                  }
-                }
-
-                /** To find the focused block, we check:
-                 *  1. the block is in a focused scrollback
-                 *  2. the block idx matches scrollback.focusedBlockIdx (considering blocks that were hidden)
-                 *  3. return the active block if there's no scrollback.focusedBlockIdx */
-                const isFocused =
-                  sbidx === this.state.focusedIdx &&
-                  (idx === scrollback.focusedBlockIdx ||
-                    (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
-                return (
-                  <Block
-                    key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
-                    idx={idx}
-                    displayedIdx={displayedIdx}
-                    model={_}
-                    isBeingRerun={isBeingRerun(_)}
-                    uuid={scrollback.uuid}
-                    tab={tab}
-                    nSplits={this.state.splits.length}
-                    noActiveInput={this.props.noActiveInput || isOfflineClient()}
-                    onFocus={scrollback.onFocus}
-                    willRemove={scrollback.willRemoveBlock}
-                    willFocusBlock={scrollback.willFocusBlock}
-                    willUpdateCommand={scrollback.willUpdateCommand}
-                    isExperimental={hasCommand(_) && _.isExperimental}
-                    isFocused={isFocused}
-                    isPartOfMiniSplit={isMiniSplit}
-                    isVisibleInMiniSplit={true}
-                    isWidthConstrained={isWidthConstrained}
-                    onOutputRender={scrollback.onOutputRender}
-                    navigateTo={scrollback.navigateTo}
-                    ref={scrollback.setActiveBlock}
-                  />
-                )
-              })
-            )
-          })}
+        <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={this.state.splits.length}>
+          {this.state.splits.map((scrollback, sbidx) => this.split(scrollback, sbidx))}
         </div>
       </div>
     )

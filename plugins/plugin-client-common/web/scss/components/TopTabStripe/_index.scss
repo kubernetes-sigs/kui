@@ -203,6 +203,16 @@ $tab-label-font-size: 0.875rem;
     &:not(.kui--tab--active) .kui--tab-close:hover {
       background: var(--color-table-border3);
     }
+
+    /* This overrides the .kui--tab:after rule we have from Sidecar */
+    &:after {
+      display: none;
+    }
+  }
+
+  /* This makes some separation between the selected tab border and the SplitHeader */
+  .pf-c-nav.pf-m-horizontal .pf-c-nav__link::before {
+    bottom: 1px;
   }
 
   .kui--top-tab-buttons {
