@@ -45,6 +45,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin ScrollbackBlockList {
+  .kui--scrollback-block-list {
+    @content;
+  }
+}
+
 @mixin NotFocusedSplit {
   @include Scrollback {
     &:not([data-is-focused]):not([data-is-minisplit]) {
@@ -325,5 +331,17 @@ $action-hover-delay: 210ms;
     &[data-split-count='#{$N}'] {
       @content;
     }
+  }
+}
+
+/** header for split */
+@mixin SplitHeader {
+  .kui--split-header {
+    @content;
+  }
+}
+@mixin SplitHeaderClose {
+  .kui--split-close-button {
+    @content;
   }
 }
