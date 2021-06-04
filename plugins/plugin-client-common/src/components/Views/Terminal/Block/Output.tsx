@@ -45,6 +45,7 @@ import {
   FinishedBlock,
   hasUUID,
   hasCommand,
+  hasBeenRerun,
   isBeingRerun,
   isFinished,
   isProcessing,
@@ -171,7 +172,8 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private onRender(assertHasContent: boolean): void {
-    if (this.props.onRender) {
+    if (this.props.onRender && !this.props.isBeingRerun && !hasBeenRerun(this.props.model)) {
+      // we don't want reruns to trigger any scrolling behavior
       this.props.onRender()
     }
     this.setState({ assertHasContent })
