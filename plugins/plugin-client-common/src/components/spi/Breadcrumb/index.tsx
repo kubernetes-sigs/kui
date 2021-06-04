@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
+import PatternFly4 from './impl/PatternFly'
 
 import Props, { BreadcrumbView } from './model'
 export { Props, BreadcrumbView }
