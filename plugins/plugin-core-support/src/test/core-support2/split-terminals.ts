@@ -26,6 +26,7 @@ import { mkdir, rmdir } from 'fs-extra'
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import {
   close,
+  closeViaButton,
   expectSplits,
   focusAndValidate,
   doSplitViaButton,
@@ -292,37 +293,45 @@ describe('split an active split', function(this: Common.ISuite) {
 describe('split close and reopen', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
-  Util.closeAllExceptFirstTab.bind(this)()
 
   const expectBlockCount = ReplExpect.blockCount.bind(this)
   const splitTheTerminalViaButton = splitViaButton.bind(this)
-  const closeTheSplit = close.bind(this)
   const count = expectSplits.bind(this)
+  const arr = [close.bind(this), closeViaButton.bind(this)]
 
-  count(1)
-  splitTheTerminalViaButton(2)
-  count(2)
-  splitTheTerminalViaButton(3)
-  count(3)
-  closeTheSplit(2, 3)
-  count(2)
-  splitTheTerminalViaButton(3)
-  count(3)
+  arr.forEach(closeTheSplit => {
+    it('should refresh', () => Common.refresh(this))
+    Util.closeAllExceptFirstTab.bind(this)()
+    count(1)
+    splitTheTerminalViaButton(2)
+    count(2)
+    splitTheTerminalViaButton(3)
+    count(3)
+    closeTheSplit(2, 3)
+    count(2)
+    splitTheTerminalViaButton(3)
+    count(3)
 
-  it('should add a command and have only one more block', async () => {
-    try {
-      await expectBlockCount()
-        .inSplit(3)
-        .is(1)
+    it('should add a command and have only one more block', async () => {
+      try {
+        await expectBlockCount()
+          .inSplit(3)
+          .is(1)
 
-      await CLI.commandInSplit('# hello', this.app, 3).then(ReplExpect.okWithString('hello'))
+        await CLI.commandInSplit('# hello', this.app, 3).then(ReplExpect.okWithString('hello'))
 
-      await expectBlockCount()
-        .inSplit(3)
-        .is(2)
-    } catch (err) {
-      await Common.oops(this, true)(err)
-    }
+        await expectBlockCount()
+          .inSplit(3)
+          .is(2)
+      } catch (err) {
+        await Common.oops(this, true)(err)
+      }
+    })
+
+    closeTheSplit(2, 3)
+    count(2)
+    closeTheSplit(1, 2)
+    count(1)
   })
 })
 
