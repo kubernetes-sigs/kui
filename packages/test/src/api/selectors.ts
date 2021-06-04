@@ -157,6 +157,8 @@ export const SPLITS = `${CURRENT_TAB} .kui--scrollback`
 export const SPLIT_ID = 'data-scrollback-id'
 export const SPLIT_N = (N: number, inverseColors = false) =>
   `${SPLITS}:nth-child(${N})` + (inverseColors ? INVERTED_COLORS : '')
+export const SPLIT_N_HEADER = (N: number) => `${SPLIT_N(N)} .kui--split-header`
+export const SPLIT_N_CLOSE = (N: number) => `${SPLIT_N_HEADER(N)} .kui--split-close-button`
 export const SPLIT_N_FOCUS = (N: number) => `${SPLITS}:nth-child(${N}) ${current(_PROMPT_BLOCK)} ${_PROMPT}`
 export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-output`
 export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (splitIndex: number) => `${SPLIT_N(splitIndex)} ${current(_PROMPT_BLOCK)}`
