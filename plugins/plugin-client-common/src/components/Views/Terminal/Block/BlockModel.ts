@@ -205,7 +205,7 @@ export function hasOriginalUUID(block: BlockModel | WithOriginalExecUUID): block
 }
 
 export function hasBeenRerun(block: BlockModel): boolean {
-  return hasOriginalUUID(block)
+  return hasOriginalUUID(block) && hasUUID(block) && block.originalExecUUID !== block.execUUID
 }
 
 /** Transform to Processing */
