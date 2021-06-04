@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-@import 'Announcement';
-@import 'Commentary';
-@import 'Experimental';
-@import 'Layout';
-@import 'MiniSplit';
-@import 'Scrollback';
-@import 'SourceRef';
-@import 'Spinner';
-@import 'SplitHeader';
+@import 'mixins';
+
+@include SplitHeader {
+  opacity: 0.925;
+  padding: 0.125em 0;
+  padding-right: $input-padding-right;
+  background-color: var(--color-stripe-01);
+}
+
+@include SplitHeaderClose {
+  padding: 3px;
+  &:hover {
+    cursor: pointer;
+    background-color: var(--color-table-border1);
+  }
+}
