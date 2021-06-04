@@ -104,6 +104,16 @@ export function close(this: Common.ISuite, splitCount: number, inSplit: number) 
       .catch(Common.oops(this, true)))
 }
 
+/** Close the split in the current tab by clicking the close button */
+export function closeViaButton(this: Common.ISuite, splitCount: number, inSplit: number) {
+  it(`should close the split via button in the current tab and expect splitCount=${splitCount}`, () =>
+    this.app.client
+      .$(Selectors.SPLIT_N_CLOSE(inSplit))
+      .then(_ => _.click())
+      .then(() => ReplExpect.splitCount(splitCount)(this.app))
+      .catch(Common.oops(this, true)))
+}
+
 async function clickToFocus(this: Common.ISuite, toSplitIndex: number) {
   console.error('1')
   await this.app.client.$(Selectors.SPLIT_N_FOCUS(toSplitIndex)).then(_ => _.click())
