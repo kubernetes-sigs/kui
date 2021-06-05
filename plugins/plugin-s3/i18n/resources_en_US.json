@@ -1,0 +1,22 @@
+{
+  "S3": "S3",
+  "S3 Mounts ": "S3 Mounts",
+  "You are currently connected to these S3 services": "You are currently connected to these S3 services",
+  "No S3 connections found": "No S3 connections found",
+  "Unable to connect to": "### Connection Error\n#### Unable to connect to **{0}**",
+  "Error connecting to": "### Connection Error\n#### Error connecting to **{0}**\n\n{1}",
+  "Connected to public buckets on": "### Public Data Access Only\n#### You may access public buckets on **{0}**\n\nYou may now use the paths `{1}` with standard filesystem commands",
+  "Successfully connected to": "### Connection is live\n#### You are connected to **{0}**\n\nYou may now use the paths `{1}` with standard filesystem commands",
+  "A is mounted on B": "**{0}** is mounted on [{1}](#kuiexec?command={2})",
+  "A is mounted public on B": "**{0}** public access only via [{1}](#kuiexec?command={2})",
+  "A is not mounted": "{0} is not mounted",
+  "A is not mounted due to X": "{0} is not mounted: {1}",
+  "Created object with etag": "Created object with etag {0}",
+  "Created objects with etags": "Created objects with etags {0}",
+  "rmdir: X: Directory is not empty": "rmdir: {0}: Directory is not empty",
+  "Removed bucket X and its contents": "Removed bucket {0} and its contents",
+  "Removed N buckets and their contents": "Removed {0} buckets and their contents",
+  "Published website as": "Published website [here]({0})",
+  "Published object as": "Published object [here]({0})",
+  "Published N objects to": "Published {0} objects [here]({1})"
+}

@@ -87,4 +87,4 @@ export KUI_ELECTRON_HOME="${KUI_ELECTRON_HOME-$NODE}"
 # exec "$NODE" -e 'require("'$HEADLESS'/kui.min.js").kiwi.main(process.argv)' . -- kubectl $@
 
 # for now
-exec "$NODE" . -- kubectl $@
+exec "$NODE" . -- ${KUI_COMMAND_PREFIX-kubectl} $@

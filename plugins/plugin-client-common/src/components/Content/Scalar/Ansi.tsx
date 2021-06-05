@@ -17,8 +17,11 @@
 import React from 'react'
 import { ansiToJson, AnserJsonEntry } from 'anser'
 
+import Markdown from '../Markdown'
+
 interface Props {
   children: string
+  onRender?: () => void
 }
 
 const decos = {
@@ -39,14 +42,33 @@ function classOf(entry: AnserJsonEntry) {
   return `${fg} ${bg} ${deco.join(' ')}`
 }
 
+function content(source: string) {
+  if (/kuiexec/.test(source)) {
+    // special case for embedded links; Markdown trims prefix and suffix whitespace
+    const match = source.match(/^(\s?)(\s*)/) // one \n is ok, because <pre> inserts a linebreak for us
+    return (
+      <React.Fragment>
+        {match && match[1] && <pre>{match[1]}</pre>}
+        <Markdown className="pre-wrap" source={source} />
+      </React.Fragment>
+    )
+  } else {
+    return source
+  }
+}
+
 export default function Ansi(props: Props) {
   // eslint-disable-next-line @typescript-eslint/camelcase
   const model = ansiToJson(props.children, { use_classes: true })
 
+  if (props.onRender) {
+    props.onRender()
+  }
+
   return (
     <pre>
       {model.map(
-        (_, idx) => _.content && React.createElement(tagOf(_), { key: idx, className: classOf(_) }, _.content)
+        (_, idx) => _.content && React.createElement(tagOf(_), { key: idx, className: classOf(_) }, content(_.content))
       )}
     </pre>
   )

@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { i18n, inBrowser, isPopup } from '@kui-shell/core'
+import { i18n, inBrowser } from '@kui-shell/core'
 import {
   Kui,
   KuiProps,
@@ -27,11 +27,10 @@ import {
 } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
-import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
-// import { ClusterUtilization } from '@kui-shell/plugin-kubectl/view-utilization'
+import { S3Mounts } from '@kui-shell/plugin-s3/components'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
+import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
 import { Screenshot, Search, UpdateChecker } from '@kui-shell/plugin-electron-components'
-// import { GridWidget as OpenWhiskGridWidget } from '@kui-shell/plugin-openwhisk'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
@@ -45,6 +44,11 @@ const strings = i18n('plugin-client-default')
  */
 const welcomeBit = 'plugin-client-default.welcome-was-dismissed'
 
+/** Are we executing the given command? */
+function isExecuting(props: KuiProps, ...cmds: string[]) {
+  return props.commandLine && cmds.includes(props.commandLine[0])
+}
+
 /**
  * Format our body, with extra status stripe widgets
  *   - <CurrentGitBranch />
@@ -54,16 +58,32 @@ const welcomeBit = 'plugin-client-default.welcome-was-dismissed'
 export default function renderMain(props: KuiProps) {
   const title = strings('Welcome to Kui')
 
+  // Important: don't use popup for commands that need tabs,
+  // e.g. replaying notebooks, since `replay` currently needs tabs,
+  // and the Popup client doesn't offer that feature
+  const avoidPopupCommands = ['browse']
+  const doNotUsePopupClientVariant = isExecuting(props, ...avoidPopupCommands)
+  const isPopup = !(!props.isPopup || doNotUsePopupClientVariant)
+
+  const quietExecCommand =
+    props.quietExecCommand !== undefined
+      ? props.quietExecCommand
+      : props.isPopup && doNotUsePopupClientVariant
+      ? false
+      : undefined
+
   return (
     <Kui
       productName={productName}
       splitTerminals
       lightweightTables
       {...props}
+      isPopup={isPopup}
+      quietExecCommand={quietExecCommand}
       toplevel={!inBrowser() && <Search />}
       commandLine={
         props.commandLine ||
-        (!isPopup() && [
+        (!isPopup && [
           'tab',
           'new',
           '-s',
@@ -84,19 +104,20 @@ export default function renderMain(props: KuiProps) {
       }
     >
       <ContextWidgets>
-        {!isPopup() && <CurrentWorkingDirectory />}
+        {!isPopup && <CurrentWorkingDirectory />}
         <CurrentGitBranch className="kui--hide-in-narrower-windows" />
         <CurrentContext />
         <CurrentNamespace />
+        <S3Mounts />
       </ContextWidgets>
 
       <SpaceFiller />
 
       <MeterWidgets className="kui--hide-in-narrower-windows">
         {/* <ClusterUtilization /> */}
-        {/* !isPopup() && <OpenWhiskGridWidget /> */}
+        {/* !isPopup && <OpenWhiskGridWidget /> */}
         {inBrowser() && <ProxyOfflineIndicator />}
-        {!isPopup() && !inBrowser() && <UpdateChecker />}
+        {!isPopup && !inBrowser() && <UpdateChecker />}
       </MeterWidgets>
 
       <MeterWidgets>

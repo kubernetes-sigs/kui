@@ -1,0 +1,281 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Notebook",
+  "metadata": {
+    "name": "Using Cloud Object Storage"
+  },
+  "spec": {
+    "splits": [
+      {
+        "uuid": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "# Using Kiwi to interact with Cloud Object Storage\n\nKiwi allows you to interact with your S3 buckets and objects using familiar shell commands. On the right, learn how Kiwi represents providers as filepaths such as `/s3/ibm/us/south`. Below, learn how to use familiar commands such as `ls` and `cp` to manipulate buckets, folders, and objects within S3."
+              }
+            },
+            "historyIdx": 250,
+            "cwd": "~/git/internal/kiwi",
+            "command": "# # Using Kiwi to interact with Cloud Object Storage\\n\\nKiwi allows you to interact with your S3 buckets and objects using familiar shell commands. On the right, learn how Kiwi represents providers as filepaths such as `/s3/ibm/us/south`. Below, learn how to use familiar commands such as `ls` and `cp` to manipulate buckets, folders, and objects within S3.",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1614032048644,
+              "command": "# # Using Kiwi to interact with Cloud Object Storage\\n\\nKiwi allows you to interact with your S3 buckets and objects using familiar shell commands. On the right, learn how Kiwi represents providers as filepaths such as `/s3/ibm/us/south`. Below, learn how to use familiar commands such as `ls` and `cp` to manipulate buckets, folders, and objects within S3.",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "af126a50-9a24-49b3-8d20-793569342a28",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "af126a50-9a24-49b3-8d20-793569342a28",
+                "history": 250,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1614032048656,
+              "command": "# # Using Kiwi to interact with Cloud Object Storage\\n\\nKiwi allows you to interact with your S3 buckets and objects using familiar shell commands. On the right, learn how Kiwi represents providers as filepaths such as `/s3/ibm/us/south`. Below, learn how to use familiar commands such as `ls` and `cp` to manipulate buckets, folders, and objects within S3.",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "af126a50-9a24-49b3-8d20-793569342a28",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "af126a50-9a24-49b3-8d20-793569342a28",
+                "history": 250,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "# Using Kiwi to interact with Cloud Object Storage\n\nKiwi allows you to interact with your S3 buckets and objects using familiar shell commands. On the right, learn how Kiwi represents providers as filepaths such as `/s3/ibm/us/south`. Below, learn how to use familiar commands such as `ls` and `cp` to manipulate buckets, folders, and objects within S3."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 250
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "af126a50-9a24-49b3-8d20-793569342a28",
+            "startTime": 1614032048644,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Kiwi manifests your S3 resources as filepaths\n\nKiwi supports three S3 providers: AWS, IBM Cloud, and a local [Minio](https://min.io/) running on your laptop. In each case, the resources provided will be available as virtual filepaths: `/s3/aws`, `/s3/ibm`, and `/s3/minio`, respectively.\n\nFor IBM Cloud, the geographic regions will be further expressed on the filepaths; e.g. `/s3/ibm/us/south`. You may use `ls` to explore these filepaths. See below for a full treatment of the commands you may use to interact with your S3 resources.\n\nFor example, to explore the IBM Cloud regions, you can start with [`ls /s3/ibm`](#kuiexec?command=ls%20%2Fs3%2Fibm)."
+              }
+            },
+            "historyIdx": 251,
+            "cwd": "~/git/internal/kiwi",
+            "command": "# ## Kiwi manifests your S3 resources as filepaths\\n\\nKiwi supports three S3 providers: AWS, IBM Cloud, and a local [Minio](https://min.io/) running on your laptop. In each case, the resources provided will be available as virtual filepaths: `/s3/aws`, `/s3/ibm`, and `/s3/minio`, respectively.\\n\\nFor IBM Cloud, the geographic regions will be further expressed on the filepaths; e.g. `/s3/ibm/us/south`. You may use `ls` to explore these filepaths. See below for a full treatment of the commands you may use to interact with your S3 resources.\\n\\nFor example, to explore the IBM Cloud regions, you can start with [`ls /s3/ibm`](#kuiexec?command=ls%20%2Fs3%2Fibm).",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1614031747130,
+              "command": "# ## Kiwi manifests your S3 resources as filepaths\\n\\nKiwi supports three S3 providers: AWS, IBM Cloud, and a local [Minio](https://min.io/) running on your laptop. In each case, the resources provided will be available as virtual filepaths: `/s3/aws`, `/s3/ibm`, and `/s3/minio`, respectively.\\n\\nFor IBM Cloud, the geographic regions will be further expressed on the filepaths; e.g. `/s3/ibm/us/south`. You may use `ls` to explore these filepaths. See below for a full treatment of the commands you may use to interact with your S3 resources.\\n\\nFor example, to explore the IBM Cloud regions, you can start with [`ls /s3/ibm`](#kuiexec?command=ls%20%2Fs3%2Fibm).",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "7001e830-cbe3-4da0-a822-14274cd8507e",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "7001e830-cbe3-4da0-a822-14274cd8507e",
+                "history": 251,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1614031747141,
+              "command": "# ## Kiwi manifests your S3 resources as filepaths\\n\\nKiwi supports three S3 providers: AWS, IBM Cloud, and a local [Minio](https://min.io/) running on your laptop. In each case, the resources provided will be available as virtual filepaths: `/s3/aws`, `/s3/ibm`, and `/s3/minio`, respectively.\\n\\nFor IBM Cloud, the geographic regions will be further expressed on the filepaths; e.g. `/s3/ibm/us/south`. You may use `ls` to explore these filepaths. See below for a full treatment of the commands you may use to interact with your S3 resources.\\n\\nFor example, to explore the IBM Cloud regions, you can start with [`ls /s3/ibm`](#kuiexec?command=ls%20%2Fs3%2Fibm).",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "7001e830-cbe3-4da0-a822-14274cd8507e",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "7001e830-cbe3-4da0-a822-14274cd8507e",
+                "history": 251,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Kiwi manifests your S3 resources as filepaths\n\nKiwi supports three S3 providers: AWS, IBM Cloud, and a local [Minio](https://min.io/) running on your laptop. In each case, the resources provided will be available as virtual filepaths: `/s3/aws`, `/s3/ibm`, and `/s3/minio`, respectively.\n\nFor IBM Cloud, the geographic regions will be further expressed on the filepaths; e.g. `/s3/ibm/us/south`. You may use `ls` to explore these filepaths. See below for a full treatment of the commands you may use to interact with your S3 resources.\n\nFor example, to explore the IBM Cloud regions, you can start with [`ls /s3/ibm`](#kuiexec?command=ls%20%2Fs3%2Fibm)."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 251
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "7001e830-cbe3-4da0-a822-14274cd8507e",
+            "startTime": 1614031747130,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Available Commands\n\nKiwi provides a suite of UNIX filesystem commands. Generally speaking, their semantics will be compatible with their local counterparts. Consider `mkdir`, `ls`, `cp`, etc. but where you can intermix local and S3 filepaths.\n\n### Creating and Deleting Buckets and Folders\n\nThe `mkdir` and `rmdir` commands have the expected behavior of their UNIX filesystem counterparts. These commands either create (remove) buckets, or folders within a bucket, depending on the filepath. \n\n- `mkdir /s3/ibm/default/myBucket` will create a bucket\n- `mkdir /s3/ibm/default/myBucket/myFolder` creates a folder within that bucket; Kiwi unifies these two concepts under the umbrella of UNIX filepaths.\n\n### Listing Objects\n\nThe `ls` command lists objects in a way that attempts to be conformant with the expected behavior against a local filesystem. You may choose between `ls` and `ls -l`, where the latter gives additional detail, such as size of each object. The `ls` command line allows for intermixing of s3 and local filepaths, and filepaths may use [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\n\n- `ls /s3/ibm/default/myBucket` lists the objects within that bucket\n- `ls /s3/ibm/default/myBucket/myFolder` lists the objects within that folder\n- `ls /s3/ibm/default/myBucket/*.txt` lists the objects within that bucket that end in `.txt`\n\n### Copying Objects into S3\n\nAs with the above, `cp` attempts to conform to expectations when operating against a local filesystem. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\n\n- `cp README.md /s3/ibm/default/myBucket/myFolder` creates an object against your default region, within a bucket `myBucket`, in a folder `myFolder`, and named `README.md`\n\n- `cp README.md /s3/ibm/default/myBucket/myREADME.md` allows for choosing the name of the target object\n\n- `cp -P *.{css,txt} /s3/ibm/default/myWebSite` will expand the glob pattern, and copy all of the matching local files into the specified `myWebSite` bucket. **Danger**: With the `-P` option, all of the created objects will be viewable by everyone.\n\n### Copying Objects out of S3\n\nHere, the syntax is the same as with copying into S3, except that the final filepath will specify a local directory or file. For example:\n\n- `cp /s3/ibm/default/myWebSite/*.{css,txt} /tmp` will copy the matching files out of S3 and to your local `/tmp` directory.\n\n### Copying Objects within S3\n\nThe only difference here is that the sources are all S3 filepaths, and the destination is as well. Kiwi will determine whether it can use an optimized copy within a region, or whether it needs to copy the data out of one region (or even one provider) and back in to a different region (or provider). For example:\n\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/south/myOtherBucket` will use an optimized intra-region copy.\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will use your laptop as an intermediary for the inter-region copy.\n- `cp /s3/aws/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will also use your laptop for the inter-provider copy.\n"
+              }
+            },
+            "historyIdx": 250,
+            "cwd": "~/git/internal/kiwi",
+            "command": "# ## Available Commands\\n\\nKiwi provides a suite of UNIX filesystem commands. Generally speaking, their semantics will be compatible with their local counterparts. Consider `mkdir`, `ls`, `cp`, etc. but where you can intermix local and S3 filepaths.\\n\\n### Creating and Deleting Buckets and Folders\\n\\nThe `mkdir` and `rmdir` commands have the expected behavior of their UNIX filesystem counterparts. These commands either create (remove) buckets, or folders within a bucket, depending on the filepath. \\n\\n- `mkdir /s3/ibm/default/myBucket` will create a bucket\\n- `mkdir /s3/ibm/default/myBucket/myFolder` creates a folder within that bucket; Kiwi unifies these two concepts under the umbrella of UNIX filepaths.\\n\\n### Listing Objects\\n\\nThe `ls` command lists objects in a way that attempts to be conformant with the expected behavior against a local filesystem. You may choose between `ls` and `ls -l`, where the latter gives additional detail, such as size of each object. The `ls` command line allows for intermixing of s3 and local filepaths, and filepaths may use [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\\n\\n- `ls /s3/ibm/default/myBucket` lists the objects within that bucket\\n- `ls /s3/ibm/default/myBucket/myFolder` lists the objects within that folder\\n- `ls /s3/ibm/default/myBucket/*.txt` lists the objects within that bucket that end in `.txt`\\n\\n### Copying Objects into S3\\n\\nAs with the above, `cp` attempts to conform to expectations when operating against a local filesystem. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\\n\\n- `cp README.md /s3/ibm/default/myBucket/myFolder` creates an object against your default region, within a bucket `myBucket`, in a folder `myFolder`, and named `README.md`\\n\\n- `cp README.md /s3/ibm/default/myBucket/myREADME.md` allows for choosing the name of the target object\\n\\n- `cp -P *.{css,txt} /s3/ibm/default/myWebSite` will expand the glob pattern, and copy all of the matching local files into the specified `myWebSite` bucket. **Danger**: With the `-P` option, all of the created objects will be viewable by everyone.\\n\\n### Copying Objects out of S3\\n\\nHere, the syntax is the same as with copying into S3, except that the final filepath will specify a local directory or file. For example:\\n\\n- `cp /s3/ibm/default/myWebSite/*.{css,txt} /tmp` will copy the matching files out of S3 and to your local `/tmp` directory.\\n\\n### Copying Objects within S3\\n\\nThe only difference here is that the sources are all S3 filepaths, and the destination is as well. Kiwi will determine whether it can use an optimized copy within a region, or whether it needs to copy the data out of one region (or even one provider) and back in to a different region (or provider). For example:\\n\\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/south/myOtherBucket` will use an optimized intra-region copy.\\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will use your laptop as an intermediary for the inter-region copy.\\n- `cp /s3/aws/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will also use your laptop for the inter-provider copy.\\n",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1614027334835,
+              "command": "# ## Available Commands\\n\\nKiwi provides a suite of UNIX filesystem commands. Generally speaking, their semantics will be compatible with their local counterparts. Consider `mkdir`, `ls`, `cp`, etc. but where you can intermix local and S3 filepaths.\\n\\n### Creating and Deleting Buckets and Folders\\n\\nThe `mkdir` and `rmdir` commands have the expected behavior of their UNIX filesystem counterparts. These commands either create (remove) buckets, or folders within a bucket, depending on the filepath. \\n\\n- `mkdir /s3/ibm/default/myBucket` will create a bucket\\n- `mkdir /s3/ibm/default/myBucket/myFolder` creates a folder within that bucket; Kiwi unifies these two concepts under the umbrella of UNIX filepaths.\\n\\n### Listing Objects\\n\\nThe `ls` command lists objects in a way that attempts to be conformant with the expected behavior against a local filesystem. You may choose between `ls` and `ls -l`, where the latter gives additional detail, such as size of each object. The `ls` command line allows for intermixing of s3 and local filepaths, and filepaths may use [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\\n\\n- `ls /s3/ibm/default/myBucket` lists the objects within that bucket\\n- `ls /s3/ibm/default/myBucket/myFolder` lists the objects within that folder\\n- `ls /s3/ibm/default/myBucket/*.txt` lists the objects within that bucket that end in `.txt`\\n\\n### Copying Objects into S3\\n\\nAs with the above, `cp` attempts to conform to expectations when operating against a local filesystem. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\\n\\n- `cp README.md /s3/ibm/default/myBucket/myFolder` creates an object against your default region, within a bucket `myBucket`, in a folder `myFolder`, and named `README.md`\\n\\n- `cp README.md /s3/ibm/default/myBucket/myREADME.md` allows for choosing the name of the target object\\n\\n- `cp -P *.{css,txt} /s3/ibm/default/myWebSite` will expand the glob pattern, and copy all of the matching local files into the specified `myWebSite` bucket. **Danger**: With the `-P` option, all of the created objects will be viewable by everyone.\\n\\n### Copying Objects out of S3\\n\\nHere, the syntax is the same as with copying into S3, except that the final filepath will specify a local directory or file. For example:\\n\\n- `cp /s3/ibm/default/myWebSite/*.{css,txt} /tmp` will copy the matching files out of S3 and to your local `/tmp` directory.\\n\\n### Copying Objects within S3\\n\\nThe only difference here is that the sources are all S3 filepaths, and the destination is as well. Kiwi will determine whether it can use an optimized copy within a region, or whether it needs to copy the data out of one region (or even one provider) and back in to a different region (or provider). For example:\\n\\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/south/myOtherBucket` will use an optimized intra-region copy.\\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will use your laptop as an intermediary for the inter-region copy.\\n- `cp /s3/aws/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will also use your laptop for the inter-provider copy.\\n",
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "d52fc831-1212-415c-a08b-f857b7d1590e",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "d52fc831-1212-415c-a08b-f857b7d1590e",
+                "history": 250,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1614027334855,
+              "command": "# ## Available Commands\\n\\nKiwi provides a suite of UNIX filesystem commands. Generally speaking, their semantics will be compatible with their local counterparts. Consider `mkdir`, `ls`, `cp`, etc. but where you can intermix local and S3 filepaths.\\n\\n### Creating and Deleting Buckets and Folders\\n\\nThe `mkdir` and `rmdir` commands have the expected behavior of their UNIX filesystem counterparts. These commands either create (remove) buckets, or folders within a bucket, depending on the filepath. \\n\\n- `mkdir /s3/ibm/default/myBucket` will create a bucket\\n- `mkdir /s3/ibm/default/myBucket/myFolder` creates a folder within that bucket; Kiwi unifies these two concepts under the umbrella of UNIX filepaths.\\n\\n### Listing Objects\\n\\nThe `ls` command lists objects in a way that attempts to be conformant with the expected behavior against a local filesystem. You may choose between `ls` and `ls -l`, where the latter gives additional detail, such as size of each object. The `ls` command line allows for intermixing of s3 and local filepaths, and filepaths may use [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\\n\\n- `ls /s3/ibm/default/myBucket` lists the objects within that bucket\\n- `ls /s3/ibm/default/myBucket/myFolder` lists the objects within that folder\\n- `ls /s3/ibm/default/myBucket/*.txt` lists the objects within that bucket that end in `.txt`\\n\\n### Copying Objects into S3\\n\\nAs with the above, `cp` attempts to conform to expectations when operating against a local filesystem. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\\n\\n- `cp README.md /s3/ibm/default/myBucket/myFolder` creates an object against your default region, within a bucket `myBucket`, in a folder `myFolder`, and named `README.md`\\n\\n- `cp README.md /s3/ibm/default/myBucket/myREADME.md` allows for choosing the name of the target object\\n\\n- `cp -P *.{css,txt} /s3/ibm/default/myWebSite` will expand the glob pattern, and copy all of the matching local files into the specified `myWebSite` bucket. **Danger**: With the `-P` option, all of the created objects will be viewable by everyone.\\n\\n### Copying Objects out of S3\\n\\nHere, the syntax is the same as with copying into S3, except that the final filepath will specify a local directory or file. For example:\\n\\n- `cp /s3/ibm/default/myWebSite/*.{css,txt} /tmp` will copy the matching files out of S3 and to your local `/tmp` directory.\\n\\n### Copying Objects within S3\\n\\nThe only difference here is that the sources are all S3 filepaths, and the destination is as well. Kiwi will determine whether it can use an optimized copy within a region, or whether it needs to copy the data out of one region (or even one provider) and back in to a different region (or provider). For example:\\n\\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/south/myOtherBucket` will use an optimized intra-region copy.\\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will use your laptop as an intermediary for the inter-region copy.\\n- `cp /s3/aws/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will also use your laptop for the inter-provider copy.\\n",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "execUUID": "d52fc831-1212-415c-a08b-f857b7d1590e",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "d52fc831-1212-415c-a08b-f857b7d1590e",
+                "history": 250,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Available Commands\n\nKiwi provides a suite of UNIX filesystem commands. Generally speaking, their semantics will be compatible with their local counterparts. Consider `mkdir`, `ls`, `cp`, etc. but where you can intermix local and S3 filepaths.\n\n### Creating and Deleting Buckets and Folders\n\nThe `mkdir` and `rmdir` commands have the expected behavior of their UNIX filesystem counterparts. These commands either create (remove) buckets, or folders within a bucket, depending on the filepath. \n\n- `mkdir /s3/ibm/default/myBucket` will create a bucket\n- `mkdir /s3/ibm/default/myBucket/myFolder` creates a folder within that bucket; Kiwi unifies these two concepts under the umbrella of UNIX filepaths.\n\n### Listing Objects\n\nThe `ls` command lists objects in a way that attempts to be conformant with the expected behavior against a local filesystem. You may choose between `ls` and `ls -l`, where the latter gives additional detail, such as size of each object. The `ls` command line allows for intermixing of s3 and local filepaths, and filepaths may use [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\n\n- `ls /s3/ibm/default/myBucket` lists the objects within that bucket\n- `ls /s3/ibm/default/myBucket/myFolder` lists the objects within that folder\n- `ls /s3/ibm/default/myBucket/*.txt` lists the objects within that bucket that end in `.txt`\n\n### Copying Objects into S3\n\nAs with the above, `cp` attempts to conform to expectations when operating against a local filesystem. You may provide multiple sources, and each may be a [glob pattern](https://en.wikipedia.org/wiki/Glob_(programming)).\n\n- `cp README.md /s3/ibm/default/myBucket/myFolder` creates an object against your default region, within a bucket `myBucket`, in a folder `myFolder`, and named `README.md`\n\n- `cp README.md /s3/ibm/default/myBucket/myREADME.md` allows for choosing the name of the target object\n\n- `cp -P *.{css,txt} /s3/ibm/default/myWebSite` will expand the glob pattern, and copy all of the matching local files into the specified `myWebSite` bucket. **Danger**: With the `-P` option, all of the created objects will be viewable by everyone.\n\n### Copying Objects out of S3\n\nHere, the syntax is the same as with copying into S3, except that the final filepath will specify a local directory or file. For example:\n\n- `cp /s3/ibm/default/myWebSite/*.{css,txt} /tmp` will copy the matching files out of S3 and to your local `/tmp` directory.\n\n### Copying Objects within S3\n\nThe only difference here is that the sources are all S3 filepaths, and the destination is as well. Kiwi will determine whether it can use an optimized copy within a region, or whether it needs to copy the data out of one region (or even one provider) and back in to a different region (or provider). For example:\n\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/south/myOtherBucket` will use an optimized intra-region copy.\n- `cp /s3/ibm/us/south/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will use your laptop as an intermediary for the inter-region copy.\n- `cp /s3/aws/myBucket/*.txt /s3/ibm/us/east/myOtherBucket` will also use your laptop for the inter-provider copy.\n"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 250
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "d52fc831-1212-415c-a08b-f857b7d1590e",
+            "startTime": 1614027334835,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      }
+    ]
+  }
+}

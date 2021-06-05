@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import colors from 'colors'
 import wrap from 'word-wrap'
+import colors from 'colors/safe'
+
+import { isHeadless } from '../capabilities'
 import { Title, Option, Example, Usage, Related } from './types'
 
 export function command(cmdline: string) {
@@ -27,11 +29,13 @@ export function intro(paragraph: string) {
 }
 
 export function option(opts: string | string[]) {
-  return typeof opts === 'string' ? colors.bold(opts) : opts.map(_ => colors.bold(_)).join(', ')
+  return typeof opts === 'string'
+    ? colors.bold(opts) + colors.reset('')
+    : opts.map(_ => colors.bold(_)).join(', ') + colors.reset('')
 }
 
 export function title(_: Title) {
-  return `${colors.bold.yellow(_.command)} ${_.doc}
+  return `${colors.bold(colors.yellow(_.command))} ${colors.reset(_.doc)}
 `
 }
 
@@ -59,9 +63,13 @@ export function usage(usages: Usage[]) {
 `
 }
 
+function clickable(cmdline: string) {
+  return isHeadless() ? command(cmdline) : `[${cmdline}](#kuiexec?command=${encodeURIComponent(cmdline)})`
+}
+
 export function examples(examples: Example[], sectionTitle = 'Examples') {
   const data = examples.map(_ => ({
-    command: `${indent}${command(_.command)}`,
+    command: indent + clickable(_.command),
     doc: _.doc
   }))
 

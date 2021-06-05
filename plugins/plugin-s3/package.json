@@ -1,0 +1,43 @@
+{
+  "name": "@kui-shell/plugin-s3",
+  "version": "1.0.47",
+  "description": "s3 related commands for Kui",
+  "license": "Apache-2.0",
+  "keywords": [
+    "cloud object storage",
+    "s3",
+    "minio",
+    "cli",
+    "ui",
+    "kui",
+    "plugin"
+  ],
+  "author": "@starpit",
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "dependencies": {
+    "common-path-prefix": "3.0.0",
+    "ini": "2.0.0",
+    "minimatch": "3.0.4",
+    "minio": "github:starpit/minio-js#list-buckets-extended"
+  },
+  "krew": {
+    "commandPrefix": "kubeui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32"
+}

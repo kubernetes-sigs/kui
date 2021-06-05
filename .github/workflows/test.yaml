@@ -21,6 +21,8 @@ env:
   WINDOW_HEIGHT: 1050
   RUNNING_KUI_TEST: true
   KUI_USE_PROXY: true
+  MINIO_VERSION: minio_20210214040133.0.0
+  MINIO_SHA256: d5d9489262b532158a6dfd3f093de685854d83e0caf02ccef2e3d83294cb8eda
 
 jobs:
   api-browser:
@@ -196,3 +198,41 @@ jobs:
         TRAVIS_OS_NAME: osx
         TEST_FROM_BUILD: ${{ github.workspace }}/dist/electron/Kui-darwin-x64/Kui.app/Contents/MacOS/Kui
       run: ./tools/travis/install.sh && (which jq || brew install jq) && npx concurrently -n COPY 'npm run test1 core-standalone' && npx concurrently -n CORE,EDIT,SUP1,SUP2 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor' 'npm run test4 core-support2'
+
+  s3-electron:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: electron
+        NEEDS_MINIO: true
+      run: ./tools/travis/install.sh && npm run test1 s3
+
+  # this is a duplicate of s3-electron with one difference: `MOCHA_RUN_TARGET: webpack`
+  s3-browser:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [12.x]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Run Tests
+      env:
+        CLIENT: default
+        MOCHA_RUN_TARGET: webpack
+        NEEDS_MINIO: true
+      run: ./tools/travis/install.sh && npm run test1 s3
+      
