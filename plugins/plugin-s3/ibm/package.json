@@ -1,0 +1,30 @@
+{
+  "name": "@kui-shell/plugin-ibmcloud/cos",
+  "version": "0.0.10",
+  "description": "ibmcloud Cloud Object Storage service kui plugin",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "CloudEngine",
+    "cli",
+    "ui",
+    "kui",
+    "plugin"
+  ],
+  "author": "@starpit",
+  "contributors": [
+    "Mengting Yan"
+  ],
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts"
+}

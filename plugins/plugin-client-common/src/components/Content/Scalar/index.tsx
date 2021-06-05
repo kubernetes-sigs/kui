@@ -38,6 +38,7 @@ import {
   isUsageError
 } from '@kui-shell/core'
 
+const Ansi = React.lazy(() => import('./Ansi'))
 const Commentary = React.lazy(() => import('../Commentary'))
 import HTMLDom from './HTMLDom' // !! DO NOT MAKE LAZY. See https://github.com/IBM/kui/issues/6758
 const XtermDom = React.lazy(() => import('./XtermDom'))
@@ -129,12 +130,20 @@ export default class Scalar extends React.PureComponent<Props, State> {
       const message = isError(response) ? response.message : response
 
       // Markdown interprets escapes, so we need to double-escape
-      this.onRender()
-      return (
-        <pre>
-          <Markdown tab={tab} repl={tab.REPL} source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')} />
-        </pre>
-      )
+      if (message[0] === '\u001b') {
+        return <Ansi onRender={this._onRender}>{message}</Ansi>
+      } else {
+        return (
+          <pre>
+            <Markdown
+              tab={tab}
+              repl={tab.REPL}
+              source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')}
+              onRender={this._onRender}
+            />
+          </pre>
+        )
+      }
     } else if (isCommentaryResponse(response)) {
       return (
         <span className="flex-fill flex-layout flex-align-stretch">

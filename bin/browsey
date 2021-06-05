@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# -*- mode: shell-script
+
+SCRIPTDIR=$(cd $(dirname "$0") && pwd)                                                              
+
+KUI_COMMAND_PREFIX="browse" "$SCRIPTDIR"/kubectl-kui 

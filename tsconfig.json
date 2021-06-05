@@ -38,6 +38,9 @@
       "path": "plugins/plugin-proxy-support"
     },
     {
+      "path": "plugins/plugin-s3"
+    },
+    {
       "path": "plugins/plugin-client-default"
     },
     {
