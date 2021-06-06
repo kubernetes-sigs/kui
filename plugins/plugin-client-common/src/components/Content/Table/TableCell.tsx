@@ -24,7 +24,6 @@ import {
   Row as KuiRow,
   Tab,
   REPL,
-  isPopup,
   eventBus,
   pexecInCurrentTab,
   isHeadless
@@ -36,6 +35,7 @@ import tooltipContent, { tooltipProps } from './Tooltip'
 const Markdown = React.lazy(() => import('../Markdown'))
 import ErrorCell from './ErrorCell'
 import whenNothingIsSelected from '../../../util/selection'
+import KuiConfiguration from '../../Client/KuiConfiguration'
 
 export type CellOnClickHandler = (evt: React.MouseEvent) => void
 
@@ -52,7 +52,8 @@ export function onClickForCell(
   tab: Tab,
   repl: REPL,
   cell?: KuiCell,
-  opts?: Pick<KuiTable, 'drilldownTo'> & { selectRow?: () => void }
+  opts?: Pick<KuiTable, 'drilldownTo'> & { selectRow?: () => void },
+  config?: KuiConfiguration
 ): CellOnClickHandler {
   const { drilldownTo = 'side-split', selectRow = () => undefined } = opts || {}
 
@@ -80,7 +81,11 @@ export function onClickForCell(
       return whenNothingIsSelected(async (evt: React.MouseEvent) => {
         evt.stopPropagation()
         selectRow()
-        if (!isPopup() && drilldownTo === 'side-split' && !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)) {
+        if (
+          config.splitTerminals &&
+          drilldownTo === 'side-split' &&
+          !XOR(evt.metaKey, !!process.env.KUI_SPLIT_DRILLDOWN)
+        ) {
           pexecInCurrentTab(`split --ifnot is-split --cmdline "${handler}"`, undefined, false, true)
         } else if (!isHeadless() && drilldownTo === 'new-window') {
           const { ipcRenderer } = await import('electron')
@@ -111,7 +116,14 @@ export function onClickForCell(
  * Render a TableCell part
  *
  */
-export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated: boolean, tab: Tab, repl: REPL) {
+export default function renderCell(
+  table: KuiTable,
+  kuiRow: KuiRow,
+  justUpdated: boolean,
+  tab: Tab,
+  repl: REPL,
+  config: KuiConfiguration
+) {
   return function KuiTableCell(
     key: string,
     value: string,
@@ -174,7 +186,7 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
           data-value={value}
           data-tag={tag}
           className={outerClassName}
-          onClick={onclick ? onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table) : undefined}
+          onClick={onclick ? onClickForCell(kuiRow, tab, repl, attributes[cidx - 1], table, config) : undefined}
         >
           {tag === 'badge' && (
             <span
