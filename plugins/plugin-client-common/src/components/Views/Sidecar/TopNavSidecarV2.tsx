@@ -425,10 +425,9 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
         this.props.onRender(false)
       }
       return <div />
-    } else {
-      if (this.props.onRender) {
-        this.props.onRender(true)
-      }
+    } else if (this.props.onRender) {
+      // needs to be async'd; see https://github.com/kubernetes-sigs/kui/issues/7539
+      setTimeout(() => this.props.onRender(true))
     }
 
     const nameBreadCrumbs =
