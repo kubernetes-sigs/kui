@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-@import 'mixins';
+import React from 'react'
 
-@include SplitHeader {
-  padding: 0.125em 0;
-  padding-left: $input-padding-left;
-  padding-right: $input-padding-right;
+import '../../../../web/scss/components/Terminal/SplitHeader.scss'
 
-  opacity: 0.925;
-  background-color: var(--color-sidecar-toolbar-background);
-  & > div {
-    color: var(--color-sidecar-toolbar-foreground);
-  }
+interface Props {
+  onRemove(): void
 }
 
-@include SplitHeaderClose {
-  padding: 3px;
-  &:hover {
-    cursor: pointer;
-    background-color: var(--color-table-border1);
+/** Render a header for the given split */
+export default class SplitHeader extends React.PureComponent<Props> {
+  public render() {
+    return (
+      <div className="kui--split-header flex-layout kui--inverted-color-context">
+        <div className="flex-fill" />
+        <div className="kui--split-close-button" onClick={this.props.onRemove}>
+          &#x2A2F;
+        </div>
+      </div>
+    )
   }
 }
