@@ -45,6 +45,7 @@ import {
 
 import Block from './Block'
 import getSize from './getSize'
+import SplitHeader from './SplitHeader'
 import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder, tabAlignment } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 import { onCopy, onCut, onPaste } from './ClipboardTransfer'
@@ -1324,20 +1325,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
-  /** Render a header for the given split */
-  private splitHeader(scrollback: ScrollbackState) {
-    return (
-      this.state.splits.length > 1 && (
-        <div className="kui--split-header flex-layout kui--inverted-color-context">
-          <div className="flex-fill" />
-          <div className="kui--split-close-button" onClick={scrollback.remove}>
-            &#x2A2F;
-          </div>
-        </div>
-      )
-    )
-  }
-
   /** Render one split */
   private split(scrollback: ScrollbackState, sbidx: number) {
     const tab = this.tabFor(scrollback)
@@ -1356,7 +1343,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         onClick={scrollback.onClick}
       >
         <React.Fragment>
-          {this.splitHeader(scrollback)}
+          {this.state.splits.length > 1 && <SplitHeader onRemove={scrollback.remove} />}
           <ul className="kui--scrollback-block-list">{this.blocks(tab, scrollback, sbidx)}</ul>
         </React.Fragment>
       </div>
