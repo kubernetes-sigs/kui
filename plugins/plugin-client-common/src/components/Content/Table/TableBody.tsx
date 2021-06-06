@@ -22,6 +22,7 @@ import { EmptyState, EmptyStateVariant, Bullseye, Title, EmptyStateIcon } from '
 import { SearchIcon } from '@patternfly/react-icons'
 
 import renderCell from './TableCell'
+import KuiConfiguration from '../../Client/KuiConfiguration'
 
 const strings = i18n('plugin-client-common')
 
@@ -36,7 +37,8 @@ export default function renderBody(
   justUpdated: Record<string, boolean>, // rowKey index
   tab: Tab,
   repl: REPL,
-  offset: number
+  offset: number,
+  config: KuiConfiguration
 ) {
   const emptyState = () => {
     return (
@@ -60,7 +62,7 @@ export default function renderBody(
         ? emptyState()
         : kuiTable.body.map((kuiRow, ridx) => {
             const updated = justUpdated[kuiRow.rowKey || kuiRow.name]
-            const cell = renderCell(kuiTable, kuiRow, updated, tab, repl)
+            const cell = renderCell(kuiTable, kuiRow, updated, tab, repl, config)
 
             const key = kuiRow.key || (kuiTable.header ? kuiTable.header.key || kuiTable.header.name : undefined)
 

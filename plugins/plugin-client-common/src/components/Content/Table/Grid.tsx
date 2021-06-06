@@ -23,6 +23,7 @@ import { onClickForCell } from './TableCell'
 import DefaultColoring, { Coloring } from './Coloring'
 import tooltipContent, { tooltipProps } from './Tooltip'
 const Markdown = React.lazy(() => import('../Markdown'))
+import KuiConfiguration from '../../Client/KuiConfiguration'
 
 /** parameters to Grid component */
 export type Props<T extends KuiTable = KuiTable> = {
@@ -31,6 +32,7 @@ export type Props<T extends KuiTable = KuiTable> = {
   response: T
   visibleRows: KuiRow[]
   justUpdated: Record<string, boolean> // rowKey index
+  config: KuiConfiguration
 }
 
 export const findGridableColumn = (response: KuiTable) => {
@@ -104,7 +106,14 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
           <div key={_.name} data-name={_.name} className={_.css}>
             <span
               className={_.onclick && 'clickable'}
-              onClick={onClickForCell(_, this.props.tab, this.props.repl, _.onclick, this.props.response)}
+              onClick={onClickForCell(
+                _,
+                this.props.tab,
+                this.props.repl,
+                _.onclick,
+                this.props.response,
+                this.props.config
+              )}
             >
               {this.props.response.markdown ? <Markdown nested source={_.name} /> : _.name}
             </span>
@@ -145,7 +154,8 @@ export default class Grid<P extends Props> extends React.PureComponent<P, State>
               tab,
               repl,
               kuiRow.attributes.find(_ => _.onclick),
-              this.props.response
+              this.props.response,
+              this.props.config
             )
           }
 

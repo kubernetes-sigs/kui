@@ -27,7 +27,6 @@ import {
   ExecOptions,
   ExecOptionsWithUUID,
   ExecType,
-  isPopup,
   History,
   CommandStartEvent,
   CommandCompleteEvent,
@@ -371,7 +370,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private allocateUUIDForScrollback() {
-    if (this.props.config.splitTerminals && !this.props.config.isPopup) {
+    if (this.props.config.splitTerminals) {
       // this.props.uuid is the uuid for the whole tab
       // on top of that, we allocate a "v5" uuid for this scrollback
       const sbidx = this.scrollbackCounter++
@@ -1256,7 +1255,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Is this scrollback not-100% width? */
   private isWidthConstrained(scrollback: ScrollbackState, sbidx: number) {
-    return isPopup() || this.isMiniSplit(scrollback, sbidx) || this.isASideBySide(sbidx)
+    return this.props.config.isPopup || this.isMiniSplit(scrollback, sbidx) || this.isASideBySide(sbidx)
   }
 
   /** Render the blocks in one split */

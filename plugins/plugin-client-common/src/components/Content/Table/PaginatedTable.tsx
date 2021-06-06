@@ -339,15 +339,18 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         response={this.props.response}
         visibleRows={visibleRows}
         justUpdated={this.justUpdatedMap()}
+        config={this.props.config}
       />
     )
   }
 
+  private readonly _justUpdatedMap = {}
   private justUpdatedMap() {
-    return this.state.body.reduce(M => {
-      // FIXME if (_.justUpdated) M[_.rowKey] = true
+    return this._justUpdatedMap
+    /* FIXME return this.state.body.reduce(M => {
+      if (_.justUpdated) M[_.rowKey] = true
       return M
-    }, {} as Record<string, boolean>)
+    }, {} as Record<string, boolean>) */
   }
 
   private table() {
@@ -391,7 +394,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         <TableComposable className="kui--table-like-wrapper" variant={variant} isStickyHeader gridBreakPoint="">
           {header &&
             renderHeader(header, isSortable, this.state.activeSortIdx, this.state.activeSortDir, onSort.bind(this))}
-          {renderBody(response, this.justUpdatedMap(), tab, repl, offset)}
+          {renderBody(response, this.justUpdatedMap(), tab, repl, offset, this.props.config)}
         </TableComposable>
       </div>
     )

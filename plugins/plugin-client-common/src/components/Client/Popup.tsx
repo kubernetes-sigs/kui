@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react'
-import { eventBus, Tab as KuiTab, teeToFile } from '@kui-shell/core'
+import { eventBus, Tab as KuiTab, teeToFile, pexecInCurrentTab } from '@kui-shell/core'
 
 import CommonClientProps from './props/Common'
 import InputStripe from '../Client/InputStripe'
@@ -74,7 +74,7 @@ export default class Popup extends React.PureComponent<Props, State> {
 
   private onTabReady(tab: KuiTab) {
     this.setState({ tab })
-    tab.REPL.pexec(this.props.commandLine.join(' '), { tab })
+    pexecInCurrentTab(this.props.commandLine.join(' '), tab)
     this.doFocusInput()
   }
 
@@ -95,7 +95,7 @@ export default class Popup extends React.PureComponent<Props, State> {
           onTabReady={this.onTabReady.bind(this)}
         ></TabContent>
         <StatusStripe noHelp={this.props.noHelp} noSettings={this.props.noSettings}>
-          <ContextWidgets className="kui--input-stripe-in-status-stripe">
+          <ContextWidgets className="kui--input-stripe-in-status-stripe flex-fill">
             {this.state.tab && (
               <InputStripe
                 ref={this._inputStripeRef}

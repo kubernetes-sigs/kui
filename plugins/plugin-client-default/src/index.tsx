@@ -111,7 +111,7 @@ export default function renderMain(props: KuiProps) {
         <S3Mounts />
       </ContextWidgets>
 
-      <SpaceFiller />
+      {!isPopup() && <SpaceFiller />}
 
       <MeterWidgets className="kui--hide-in-narrower-windows">
         {/* <ClusterUtilization /> */}
