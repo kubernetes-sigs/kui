@@ -26,10 +26,22 @@
   & > div {
     color: var(--color-sidecar-toolbar-foreground);
   }
+
+  & > svg {
+    fill: var(--color-sidecar-toolbar-foreground);
+  }
 }
 
 @include SplitHeaderClose {
-  padding: 3px;
+  padding: 2px;
+  &:hover {
+    cursor: pointer;
+    background-color: var(--color-table-border1);
+  }
+}
+
+@include SplitHeaderClear {
+  padding: 2px;
   &:hover {
     cursor: pointer;
     background-color: var(--color-table-border1);

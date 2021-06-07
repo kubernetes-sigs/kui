@@ -65,5 +65,7 @@
   "Abort watcher": "Abort this watcher",
   "Pause watcher": "Pause this watcher",
   "Resume watcher": "Resume this watcher",
+  "Clear this split pane": "Clear this split pane",
+  "Close this split pane": "Close this split pane",
   "Close watcher": "Close and terminate this watcher"
 }

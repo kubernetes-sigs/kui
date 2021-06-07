@@ -17,6 +17,7 @@
 import React from 'react'
 
 import {
+  EraserIcon as Clear,
   CameraIcon as Screenshot,
   CameraRetroIcon as ScreenshotInProgress,
   CheckCircleIcon as Checkmark,
@@ -93,6 +94,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Copy {...props} />
     case 'Edit':
       return <Edit {...props} />
+    case 'Clear':
+      return <Clear {...props} />
     case 'Error':
       return <Oops {...props} />
     case 'Eye':

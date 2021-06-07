@@ -17,6 +17,7 @@
 import React from 'react'
 import { i18n } from '@kui-shell/core'
 
+import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
 import '../../../../web/scss/components/Terminal/SplitHeader.scss'
 
@@ -24,16 +25,25 @@ const strings = i18n('plugin-client-common')
 
 interface Props {
   onRemove(): void
+  onClear(): void
 }
 
 /** Render a header for the given split */
 export default class SplitHeader extends React.PureComponent<Props> {
   private closeButton() {
     return (
-      <Tooltip markdown={strings('Close this split')}>
+      <Tooltip markdown={strings('Close this split pane')}>
         <div className="kui--split-close-button" onClick={this.props.onRemove}>
           &#x2A2F;
         </div>
+      </Tooltip>
+    )
+  }
+
+  private clearButton() {
+    return (
+      <Tooltip markdown={strings('Clear this split pane')}>
+        <Icons className="kui--split-clear-button" icon="Clear" onClick={this.props.onClear} />
       </Tooltip>
     )
   }
@@ -42,6 +52,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
     return (
       <div className="kui--split-header flex-layout kui--inverted-color-context">
         <div className="flex-fill" />
+        {this.clearButton()}
         {this.closeButton()}
       </div>
     )
