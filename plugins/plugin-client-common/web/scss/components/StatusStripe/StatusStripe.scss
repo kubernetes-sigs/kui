@@ -144,7 +144,13 @@ $z-index: var(--pf-global--ZIndex--xs);
 
   .kui--status-stripe-context {
     font-size: $font-size;
-    border-right: $element-border;
+
+    &:first-child {
+      border-right: $element-border;
+    }
+    & + .kui--status-stripe-context .kui--status-stripe-element {
+      border-left: none;
+    }
 
     .kui--status-stripe-element {
       padding-left: calc(#{$element-padding} * 0.875 / 0.75);
