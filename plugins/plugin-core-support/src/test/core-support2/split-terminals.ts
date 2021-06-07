@@ -27,6 +27,7 @@ import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import {
   close,
   closeViaButton,
+  clearViaButton,
   expectSplits,
   focusAndValidate,
   doSplitViaButton,
@@ -296,6 +297,7 @@ describe('split close and reopen', function(this: Common.ISuite) {
 
   const expectBlockCount = ReplExpect.blockCount.bind(this)
   const splitTheTerminalViaButton = splitViaButton.bind(this)
+  const clearTheSplitViaButton = clearViaButton.bind(this)
   const count = expectSplits.bind(this)
   const arr = [close.bind(this), closeViaButton.bind(this)]
 
@@ -328,6 +330,7 @@ describe('split close and reopen', function(this: Common.ISuite) {
       }
     })
 
+    clearTheSplitViaButton(3)
     closeTheSplit(2, 3)
     count(2)
     closeTheSplit(1, 2)
