@@ -46,12 +46,8 @@ if (process.env.NO_OPT) {
 console.log('mode?', mode)
 console.log('target?', target)
 
-/** point webpack to the root directory */
-const stageDir = process.cwd()
-console.log('stageDir', stageDir)
-
 /** point webpack to the output directory */
-const buildDir = path.join(stageDir, 'dist/headless')
+const buildDir = path.join(process.env.CLIENT_HOME, 'dist/headless')
 console.log('buildDir', buildDir)
 
 /** this is the full path in which will be serving up bundles */

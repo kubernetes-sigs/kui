@@ -45,6 +45,7 @@ const { arch: osArch } = require('os')
 const { createGunzip } = require('zlib')
 const { basename, join } = require('path')
 const packager = require('electron-packager')
+const { serialHooks } = require('electron-packager/src/hooks')
 const { copy, emptyDir, remove } = require('fs-extra')
 const { createReadStream, createWriteStream, readdir } = require('fs')
 const { exec } = require('child_process')
@@ -60,7 +61,7 @@ const nodePty = 'node-pty-prebuilt-multiarch'
  * @param this baseArgs from package() below
  *
  */
-async function buildWebpack(buildPath, electronVersion, targetPlatform, targetArch, callback) {
+async function buildWebpack(buildPath, electronVersion, targetPlatform, targetArch) {
   const CLIENT_HOME = this.dir
 
   console.log('buildPath', buildPath)
@@ -106,24 +107,19 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
   )
 
   await Promise.all(asyncs)
-  callback()
 }
 
 /** afterCopy hook to copy in the platform-specific node-pty build */
-async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArch, callback) {
-  console.log('copying node pty')
-  /* if (process.platform === targetPlatform && targetArch === osArch()) {
-    // if the current platform matches the target platform, there is
-    // nothing to do
-    callback()
-  } else */ {
+function copyNodePty(buildPath, electronVersion, targetPlatform, targetArch) {
+  return new Promise((resolve, reject) => {
+    console.log('copying node pty')
     const target = `${targetPlatform}-${targetArch}`
     const sourceDir = join(process.env.BUILDER_HOME, 'dist/electron/vendor', nodePty, 'build', target, 'electron')
     console.log('sourceDir', sourceDir)
 
     readdir(sourceDir, async (err, files) => {
       if (err) {
-        callback(err)
+        reject(err)
       } else {
         try {
           await Promise.all(
@@ -149,32 +145,26 @@ async function copyNodePty(buildPath, electronVersion, targetPlatform, targetArc
                 })
             )
           )
-          callback()
+          resolve()
         } catch (err) {
-          callback(err)
+          reject(err)
         }
       }
     })
-  }
+  })
 }
 
 /** afterCopy hook to copy in headless build, etc. things that need to be codesigned */
-async function copySignableBits(buildPath, electronVersion, targetPlatform, targetArch, callback) {
+async function copySignableBits(buildPath, electronVersion, targetPlatform, targetArch) {
   // copy in launcher? it is important to copy this in before
   // signing and notarizing, otherwise macOS/windows, when launching
   // the app, will see unsigned content in the application bundle
-  try {
-    if (this.launcher) {
-      const source = this.launcher
-      const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
-      console.log(`Copying in launcher for ${targetPlatform} ${targetArch} from ${source} to ${target}`)
-      await copy(source, target)
-      await remove(source)
-    }
-  } catch (err) {
-    console.error(`Error copying in launcher for ${targetPlatform} ${targetArch}`)
-    console.error(err)
-    callback(err)
+  if (this.launcher) {
+    const source = this.launcher
+    const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
+    console.log(`Copying in launcher for ${targetPlatform} ${targetArch} from ${source} to ${target}`)
+    await copy(source, target)
+    // NO!!! TODO find a better way to remove kubect-kui await remove(source)
   }
 
   // copy in the headless build?
@@ -185,8 +175,6 @@ async function copySignableBits(buildPath, electronVersion, targetPlatform, targ
     await emptyDir(target)
     await copy(source, target)
   }
-
-  callback()
 }
 /**
  * Use electron-packager to create the application package
@@ -225,7 +213,7 @@ function package(baseArgs /*: { dir: string, name: string, platform: string, arc
     },
 
     // lifecycle hooks to copy in our extra bits
-    afterCopy: [buildWebpack.bind(baseArgs), copyNodePty, copySignableBits.bind(baseArgs)]
+    afterCopy: [serialHooks([buildWebpack.bind(baseArgs), copyNodePty, copySignableBits.bind(baseArgs)])]
   })
 
   console.log('args', args)
