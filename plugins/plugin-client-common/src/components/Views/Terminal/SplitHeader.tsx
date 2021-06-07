@@ -15,8 +15,12 @@
  */
 
 import React from 'react'
+import { i18n } from '@kui-shell/core'
 
+import Tooltip from '../../spi/Tooltip'
 import '../../../../web/scss/components/Terminal/SplitHeader.scss'
+
+const strings = i18n('plugin-client-common')
 
 interface Props {
   onRemove(): void
@@ -24,13 +28,21 @@ interface Props {
 
 /** Render a header for the given split */
 export default class SplitHeader extends React.PureComponent<Props> {
+  private closeButton() {
+    return (
+      <Tooltip markdown={strings('Close this split')}>
+        <div className="kui--split-close-button" onClick={this.props.onRemove}>
+          &#x2A2F;
+        </div>
+      </Tooltip>
+    )
+  }
+
   public render() {
     return (
       <div className="kui--split-header flex-layout kui--inverted-color-context">
         <div className="flex-fill" />
-        <div className="kui--split-close-button" onClick={this.props.onRemove}>
-          &#x2A2F;
-        </div>
+        {this.closeButton()}
       </div>
     )
   }
