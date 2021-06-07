@@ -27,6 +27,7 @@ export type SupportedIcon =
   | 'CodeBranch'
   | 'Copy'
   | 'Edit'
+  | 'Clear'
   | 'Error'
   | 'Eye'
   | 'EyeSlash'

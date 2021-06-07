@@ -345,3 +345,8 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+@mixin SplitHeaderClear {
+  .kui--split-clear-button {
+    @content;
+  }
+}

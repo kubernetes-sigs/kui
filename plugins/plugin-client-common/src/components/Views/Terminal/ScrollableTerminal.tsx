@@ -43,6 +43,7 @@ import {
   SnapshotRequestEvent
 } from '@kui-shell/core'
 
+import ScrollbackState, { ScrollbackOptions, Cleaner } from './ScrollbackState'
 import Block from './Block'
 import getSize from './getSize'
 import SplitHeader from './SplitHeader'
@@ -76,8 +77,6 @@ import isInViewport from './visible'
 import '../../../../web/scss/components/Terminal/_index.scss'
 
 const strings = i18n('plugin-client-common')
-
-type Cleaner = () => void
 
 /** Hard limit on the number of Terminal splits */
 const MAX_TERMINALS = 8
@@ -113,42 +112,6 @@ type Props = TerminalOptions & {
 
   /** KuiConfiguration */
   config: KuiConfiguration
-}
-
-type ScrollbackOptions = NewSplitRequest['options']
-type ScrollbackState = ScrollbackOptions & {
-  uuid: string
-  blocks: BlockModel[]
-  forceMiniSplit: boolean
-
-  /** tab facade */
-  facade?: KuiTab
-
-  /** grab a ref to the active block, to help us maintain focus */
-  _activeBlock?: Block
-
-  /** Has the user clicked to focus on a block? */
-  focusedBlockIdx?: number
-
-  /** cleanup routines for this split */
-  cleaners: Cleaner[]
-
-  /**
-   * Block index (into this.blocks) to show in a MiniSplit. Must be a
-   * negative number, interpreted as an index from the end.
-   */
-  showThisIdxInMiniSplit: number
-
-  /** Memoized handlers */
-  remove: () => void
-  onClick: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
-  onFocus: (evt: React.FocusEvent) => void
-  onOutputRender: () => void
-  navigateTo: (dir: 'first' | 'last' | 'previous' | 'next') => void
-  setActiveBlock: (c: Block) => void
-  willFocusBlock: (evt: React.SyntheticEvent) => void
-  willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
-  willUpdateCommand: (idx: number, command: string) => void
 }
 
 interface State {
@@ -403,6 +366,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       showThisIdxInMiniSplit: -2,
       blocks: this.restoreBlocks(sbuuid).concat([Active()]),
       remove: undefined,
+      clear: undefined,
       onClick: undefined,
       onFocus: undefined,
       onOutputRender: undefined,
@@ -426,6 +390,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
 
     state.remove = () => this.removeSplit(sbuuid)
+    state.clear = () => this.clear(sbuuid)
     state.onClick = () => {
       if (getSelectionText().length === 0) {
         const sbidx = this.findSplit(this.state, sbuuid)
@@ -1343,7 +1308,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         onClick={scrollback.onClick}
       >
         <React.Fragment>
-          {this.state.splits.length > 1 && <SplitHeader onRemove={scrollback.remove} />}
+          {this.state.splits.length > 1 && <SplitHeader onRemove={scrollback.remove} onClear={scrollback.clear} />}
           <ul className="kui--scrollback-block-list">{this.blocks(tab, scrollback, sbidx)}</ul>
         </React.Fragment>
       </div>

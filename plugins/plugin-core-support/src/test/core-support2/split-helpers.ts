@@ -114,6 +114,22 @@ export function closeViaButton(this: Common.ISuite, splitCount: number, inSplit:
       .catch(Common.oops(this, true)))
 }
 
+/** Clear the split in the current tab by clicking the clear button */
+export function clearViaButton(this: Common.ISuite, inSplit: number) {
+  const expectBlockCount = ReplExpect.blockCount.bind(this)
+
+  it(`should close the split via button in the current tab and expect blockCount=1`, () =>
+    this.app.client
+      .$(Selectors.SPLIT_N_CLEAR(inSplit))
+      .then(_ => _.click())
+      .then(async () => {
+        await expectBlockCount()
+          .inSplit(inSplit)
+          .is(1)
+      })
+      .catch(Common.oops(this, true)))
+}
+
 async function clickToFocus(this: Common.ISuite, toSplitIndex: number) {
   console.error('1')
   await this.app.client.$(Selectors.SPLIT_N_FOCUS(toSplitIndex)).then(_ => _.click())
