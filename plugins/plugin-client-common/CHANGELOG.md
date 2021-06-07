@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.16](https://github.com/IBM/kui/compare/v10.3.15...v10.3.16) (2021-06-07)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** new tab and new split tooltips suggest incorrect keyboard shortcuts inBrowser ([36b58f4](https://github.com/IBM/kui/commit/36b58f4)), closes [#7515](https://github.com/IBM/kui/issues/7515)
+- **plugins/plugin-client-common:** sidecar drilldown can result in react warning in console ([be2c7cb](https://github.com/IBM/kui/commit/be2c7cb)), closes [#7539](https://github.com/IBM/kui/issues/7539)
+- **plugins/plugin-client-common:** split close button lacks tooltip ([7162bd8](https://github.com/IBM/kui/commit/7162bd8)), closes [#7549](https://github.com/IBM/kui/issues/7549)
+- **plugins/plugin-client-common:** split headers have low contrast in dark themes ([0e22862](https://github.com/IBM/kui/commit/0e22862)), closes [#7538](https://github.com/IBM/kui/issues/7538)
+- **plugins/plugin-client-common:** StatusStripe widgets may have double borders ([cff3551](https://github.com/IBM/kui/commit/cff3551)), closes [#7544](https://github.com/IBM/kui/issues/7544)
+
 ## [10.3.15](https://github.com/IBM/kui/compare/v10.3.14...v10.3.15) (2021-06-04)
 
 ### Bug Fixes
