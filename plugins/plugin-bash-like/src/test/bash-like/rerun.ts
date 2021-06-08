@@ -65,6 +65,8 @@ describe(`rerun command ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: C
       await CLI.command('cd /tmp', this.app).then(ReplExpect.okWithAny)
       const cdDirectory = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
 
+      await CLI.command('sleep 1000', this.app) // test if rerun works when there's an active block
+
       await this.app.client.$(Selectors.PROMPT_N(pwdRes.count)).then(_ => _.moveTo())
       const rerunButton = await this.app.client.$(Selectors.COMMAND_RERUN_BUTTON(pwdRes.count))
       await rerunButton.waitForDisplayed()
