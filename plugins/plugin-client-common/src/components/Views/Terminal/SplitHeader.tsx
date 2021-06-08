@@ -33,9 +33,9 @@ export default class SplitHeader extends React.PureComponent<Props> {
   private closeButton() {
     return (
       <Tooltip markdown={strings('Close this split pane')}>
-        <div className="kui--split-close-button" onClick={this.props.onRemove}>
+        <a href="#" className="kui--split-close-button kui--tab-navigatable" onClick={this.props.onRemove}>
           &#x2A2F;
-        </div>
+        </a>
       </Tooltip>
     )
   }
@@ -43,7 +43,9 @@ export default class SplitHeader extends React.PureComponent<Props> {
   private clearButton() {
     return (
       <Tooltip markdown={strings('Clear this split pane')}>
-        <Icons className="kui--split-clear-button" icon="Clear" onClick={this.props.onClear} />
+        <a href="#" className="kui--tab-navigatable" onClick={this.props.onClear}>
+          <Icons className="kui--split-clear-button" icon="Clear" />
+        </a>
       </Tooltip>
     )
   }
