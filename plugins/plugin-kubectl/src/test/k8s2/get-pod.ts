@@ -264,36 +264,9 @@ commands.forEach(command => {
       }
     })
 
-    let clickRes: ReplExpect.AppAndCount
     it(`should list pods via ${command} then click`, async () => {
       try {
-        clickRes = await openSidecarByList(this, `${command} get pods ${inNamespace}`, 'nginx')
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
-
-    it('should click on the sidecar maximize button', async () => {
-      try {
-        await this.app.client
-          .$(Selectors.SIDECAR_MAXIMIZE_BUTTON(clickRes.count, clickRes.splitIndex))
-          .then(_ => _.click())
-        await this.app.client
-          .$(Selectors.SIDECAR_FULLSCREEN(clickRes.count, clickRes.splitIndex))
-          .then(_ => _.waitForExist())
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
-
-    it('should click on the sidecar maximize button to restore split screen', async () => {
-      try {
-        await this.app.client
-          .$(Selectors.SIDECAR_MAXIMIZE_BUTTON(clickRes.count, clickRes.splitIndex))
-          .then(_ => _.click())
-        await this.app.client
-          .$(Selectors.SIDECAR_FULLSCREEN(clickRes.count, clickRes.splitIndex))
-          .then(_ => _.waitForExist({ timeout: 20000, reverse: true }))
+        await openSidecarByList(this, `${command} get pods ${inNamespace}`, 'nginx')
       } catch (err) {
         return Common.oops(this, true)(err)
       }

@@ -52,7 +52,6 @@ export const _SIDECAR = '.kui--sidecar'
 // eslint-disable-next-line @typescript-eslint/no-use-before-define
 export const SIDECAR_BASE = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_SIDECAR}`
 export const SIDECAR = (N: number, splitIndex = 1) => `${SIDECAR_BASE(N, splitIndex)}.visible:not(.minimized)`
-export const SIDECAR_FULLSCREEN = (N: number, splitIndex = 1) => `${SIDECAR(N, splitIndex)}.maximized`
 export const SIDECAR_WITH_FAILURE = (N: number, splitIndex = 1) =>
   `${SIDECAR_BASE(N, splitIndex)}.visible.activation-success-false`
 export const SIDECAR_ACTIVATION_TITLE = (N: number, splitIndex = 1) =>
@@ -135,8 +134,6 @@ export const SIDECAR_FORWARD_BUTTON = (N: number, splitIndex = 1) =>
 export const SIDECAR_FORWARD_BUTTON_DISABLED = (N: number, splitIndex = 1) =>
   `${SIDECAR_HEADER_NAVIGATION(N, splitIndex)} .disabled .kui--sidecar--titlebar-navigation--forward`
 
-export const SIDECAR_MAXIMIZE_BUTTON = (N: number, splitIndex = 1) =>
-  `${SIDECAR(N, splitIndex)} .toggle-sidecar-maximization-button a` // maximize button in the bottom stripe
 export const SIDECAR_CLOSE_BUTTON = (N: number, splitIndex = 1) =>
   `${SIDECAR(N, splitIndex)} .sidecar-bottom-stripe-close a` // close button in the bottom stripe
 export const SIDECAR_RESUME_FROM_CLOSE_BUTTON = (N: number, splitIndex = 1) =>

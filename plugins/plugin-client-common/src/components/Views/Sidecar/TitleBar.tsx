@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { REPL, inBrowser } from '@kui-shell/core'
+import { REPL } from '@kui-shell/core'
 
 import Width from './width'
 import Icons from '../../spi/Icons'
@@ -31,14 +31,10 @@ export interface Props {
   notCloseable?: boolean
 
   repl: REPL
-  fixedWidth: boolean
   width: Width
 
   onClickNamespace?: () => void
-  onMaximize: () => void
-  onRestore: () => void
   onClose: () => void
-  willScreenshot: () => void
 
   back?: { enabled: boolean; onClick: () => void }
   forward?: { enabled?: boolean; onClick: () => void }
@@ -49,78 +45,11 @@ export interface Props {
  * ---------------------------------
  * | Kind | Namespace    S | M m x |
  * ---------------------------------
- *  S: Screenshot button
- *  M: Maximize/Restore button [!props.fixedWith]
- *  m: Minimize button [!props.fixedWith]
- *  x: Close button
  *
  *  Kind: props.kind
  *  Namespace: props.namespace
  */
 export default class Window extends React.PureComponent<Props> {
-  private toggleMaximization() {
-    try {
-      if (this.props.width !== Width.Maximized) {
-        this.props.onMaximize()
-      } else {
-        this.props.onRestore()
-      }
-    } catch (err) {
-      console.error(err)
-    }
-  }
-
-  private readonly _toggleMaximization = this.toggleMaximization.bind(this)
-
-  private readonly _preventDefault = (evt: React.MouseEvent) => evt.preventDefault()
-
-  private screenshotButton() {
-    return (
-      <div className="sidecar-bottom-stripe-button">
-        <span className="kui--sidecar-screenshot-button">
-          <div aria-label="Screenshot">
-            <a
-              href="#"
-              className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
-              tabIndex={-1}
-              onMouseDown={this._preventDefault}
-              onClick={this.props.willScreenshot}
-            >
-              <Icons icon="Screenshot" />
-            </a>
-          </div>
-        </span>
-      </div>
-    )
-  }
-
-  private maximizeButton() {
-    if (this.props.width !== Width.Closed && !this.props.fixedWidth) {
-      const max = this.props.width === Width.Maximized
-      const className = max ? 'unmaximize-button-label' : 'maximize-button-label'
-      const icon = max ? <Icons icon="WindowMinimize" /> : <Icons icon="WindowMaximize" />
-      const aria = max ? 'Restore' : 'Maximize'
-
-      return (
-        <div className="sidecar-bottom-stripe-button sidecar-bottom-stripe-maximize toggle-sidecar-maximization-button">
-          <span className={className}>
-            <div aria-label={aria}>
-              <a
-                href="#"
-                className="graphical-icon kui--tab-navigatable kui--notab-when-sidecar-hidden"
-                tabIndex={-1}
-                onMouseDown={this._preventDefault}
-                onClick={this._toggleMaximization}
-              >
-                {icon}
-              </a>
-            </div>
-          </span>
-        </div>
-      )
-    }
-  }
-
   private quitButton() {
     return (
       <div className="sidecar-bottom-stripe-button sidecar-bottom-stripe-quit">
@@ -215,11 +144,7 @@ export default class Window extends React.PureComponent<Props> {
         <div className="sidecar-bottom-stripe-left-bits"></div>
 
         <div className="sidecar-bottom-stripe-right-bits">
-          <div className="sidecar-window-buttons">
-            {!inBrowser() && this.screenshotButton()}
-            {this.maximizeButton()}
-            {!this.props.notCloseable && this.quitButton()}
-          </div>
+          <div className="sidecar-window-buttons">{!this.props.notCloseable && this.quitButton()}</div>
         </div>
       </div>
     )
