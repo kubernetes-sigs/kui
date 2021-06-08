@@ -18,7 +18,7 @@ import React from 'react'
 import commonPathPrefix from 'common-path-prefix'
 import { TableComposable, Tbody, Tr, Td } from '@patternfly/react-table'
 
-import { Icons, ViewLevel, Markdown, TextWithIconWidget, Tooltip } from '@kui-shell/plugin-client-common'
+import { Ansi, Icons, ViewLevel, Markdown, TextWithIconWidget, Tooltip } from '@kui-shell/plugin-client-common'
 
 import { wireToStandardEvents, unwireToStandardEvents, i18n, encodeComponent } from '@kui-shell/core'
 
@@ -160,9 +160,7 @@ export default class S3Mounts extends React.PureComponent<Props, State> {
 
     const className = status !== 'mounted' ? 'sub-text' : ''
     const content =
-      status === 'error'
-        ? strings('A is not mounted due to X', provider, mounts[0].error.message)
-        : status === 'not-mounted'
+      status === 'not-mounted'
         ? strings('A is not mounted', provider)
         : publicOnly
         ? strings('A is mounted public on B', provider, prefix, encodeURIComponent(`ls ${encodeComponent(prefix)}`))
@@ -170,7 +168,14 @@ export default class S3Mounts extends React.PureComponent<Props, State> {
 
     return (
       <Td className={className}>
-        <Markdown nested source={content} />
+        {status === 'error' ? (
+          <React.Fragment>
+            <div className="small-bottom-pad">{strings('A is not mounted due to an error', provider)}</div>
+            <Ansi className="pre-wrap">{mounts[0].error.message.trim()}</Ansi>
+          </React.Fragment>
+        ) : (
+          <Markdown nested source={content} />
+        )}
       </Td>
     )
   }
