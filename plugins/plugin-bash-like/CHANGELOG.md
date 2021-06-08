@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.18](https://github.com/IBM/kui/compare/v10.3.17...v10.3.18) (2021-06-08)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** rerunning a block when there is an active block seems to insert a new block ([028e738](https://github.com/IBM/kui/commit/028e738))
+
 ## [10.3.17](https://github.com/IBM/kui/compare/v10.3.16...v10.3.17) (2021-06-07)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like
