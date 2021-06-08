@@ -80,6 +80,7 @@ body[kui-theme-style] {
       svg[data-mode='selected container'] {
         /* need to override some enclosing hover effects from sidecar toolbar */
         fill: currentColor;
+        padding: 0px;
       }
     }
   }
