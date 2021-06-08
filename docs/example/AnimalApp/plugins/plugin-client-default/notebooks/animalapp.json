@@ -1,0 +1,119 @@
+{
+  "apiVersion": "kui-shell/v1",
+  "kind": "Notebook",
+  "metadata": {
+    "name": "Welcome to AnimalApp"
+  },
+  "spec": {
+    "splits": [
+      {
+        "uuid": "1_c57e811f-2da8-557e-a402-9f0950407675",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "# Welcome to AnimalApp\n\nThis is a test of notebooks."
+              }
+            },
+            "historyIdx": 9,
+            "cwd": "~/git/whisk/nickm/kui/docs/example/AnimalApp",
+            "command": "# # Welcome to AnimalApp\\n\\nThis is a test of notebooks.",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1623183901175,
+              "command": "# # Welcome to AnimalApp\\n\\nThis is a test of notebooks.",
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--base-url",
+                      "alias": "-b",
+                      "docs": "Base URL for images"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "19531506-cf4b-4813-adde-84333b93dd44",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "19531506-cf4b-4813-adde-84333b93dd44",
+                "history": 9,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1623183901211,
+              "command": "# # Welcome to AnimalApp\\n\\nThis is a test of notebooks.",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "execUUID": "19531506-cf4b-4813-adde-84333b93dd44",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "19531506-cf4b-4813-adde-84333b93dd44",
+                "history": 9,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "# Welcome to AnimalApp\n\nThis is a test of notebooks."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 9
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "19531506-cf4b-4813-adde-84333b93dd44",
+            "originalExecUUID": "19531506-cf4b-4813-adde-84333b93dd44",
+            "startTime": 1623183901175,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      }
+    ]
+  }
+}
