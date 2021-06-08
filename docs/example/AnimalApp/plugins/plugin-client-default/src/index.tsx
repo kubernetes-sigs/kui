@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { i18n, inBrowser } from '@kui-shell/core'
+import { inBrowser } from '@kui-shell/core'
 import { Kui, KuiProps, ContextWidgets, MeterWidgets, CurrentWorkingDirectory } from '@kui-shell/plugin-client-common'
 
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
@@ -26,15 +26,13 @@ import { Screenshot, Search } from '@kui-shell/plugin-electron-components'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
-const strings = i18n('plugin-client-default')
-
 /**
  * We will set this bit when the user dismisses the Welcome to Kui
  * tab, so as to avoid opening it again and bothering that user for
  * every new Kui window.
  *
  */
-const welcomeBit = 'plugin-client-default.welcome-was-dismissed'
+// const welcomeBit = 'plugin-client-default.welcome-was-dismissed'
 
 /**
  * Format our body, with extra status stripe widgets
@@ -43,8 +41,6 @@ const welcomeBit = 'plugin-client-default.welcome-was-dismissed'
  *
  */
 export default function renderMain(props: KuiProps) {
-  const title = strings('Welcome to Kui')
-
   return (
     <Kui
       productName={productName}
@@ -54,22 +50,9 @@ export default function renderMain(props: KuiProps) {
       toplevel={!inBrowser() && <Search />}
       commandLine={
         props.commandLine || [
-          'tab',
-          'new',
-          '--cmdline',
-          'replay /kui/welcome.json',
-          '-q', // qexec
-          '--bg', // open in background
-          '--title',
-          title,
-          '--status-stripe-type',
-          'blue',
-          '--status-stripe-message',
-          title,
-          '--if',
-          `kuiconfig not set ${welcomeBit}`,
-          '--onClose',
-          `kuiconfig set ${welcomeBit}`
+          'replay',
+          '/kui/animalapp.json'
+          // '--close-current-tab' // with this, AnimalApp opens showing only the animalapp.json notebook
         ]
       }
     >
