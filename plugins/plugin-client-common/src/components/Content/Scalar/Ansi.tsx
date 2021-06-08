@@ -20,6 +20,7 @@ import { ansiToJson, AnserJsonEntry } from 'anser'
 import Markdown from '../Markdown'
 
 interface Props {
+  className?: string
   children: string
   onRender?: () => void
 }
@@ -66,7 +67,7 @@ export default function Ansi(props: Props) {
   }
 
   return (
-    <pre>
+    <pre className={props.className} style={{ margin: 0 }}>
       {model.map(
         (_, idx) => _.content && React.createElement(tagOf(_), { key: idx, className: classOf(_) }, content(_.content))
       )}

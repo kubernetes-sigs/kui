@@ -10,7 +10,7 @@
   "A is mounted on B": "**{0}** is mounted on [{1}](#kuiexec?command={2})",
   "A is mounted public on B": "**{0}** public access only via [{1}](#kuiexec?command={2})",
   "A is not mounted": "{0} is not mounted",
-  "A is not mounted due to X": "{0} is not mounted: {1}",
+  "A is not mounted due to an error": "{0} is not mounted due to an error",
   "Created object with etag": "Created object with etag {0}",
   "Created objects with etags": "Created objects with etags {0}",
   "rmdir: X: Directory is not empty": "rmdir: {0}: Directory is not empty",
