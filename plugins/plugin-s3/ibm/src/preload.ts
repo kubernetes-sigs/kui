@@ -16,7 +16,7 @@
 
 import { addProviderInitializer } from '@kui-shell/plugin-s3'
 
-export default async function preloadIBMS3Provider() {
+export async function registerCapability() {
   const ibmcloud = await import('./s3provider').then(_ => _.default)
   addProviderInitializer(ibmcloud)
 }
