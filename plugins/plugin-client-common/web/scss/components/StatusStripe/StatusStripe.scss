@@ -242,6 +242,8 @@ $z-index: var(--pf-global--ZIndex--xs);
     padding: 0 $element-padding;
   }
   @include StatusStripeElement {
+    white-space: nowrap;
+
     &[data-padding='none'] {
       padding: 0;
     }
@@ -250,6 +252,12 @@ $z-index: var(--pf-global--ZIndex--xs);
   .kui--status-stripe-icon {
     display: flex;
     opacity: 0.875;
+  }
+
+  .kui--status-stripe-text {
+    max-width: 20em;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* tab completions in status stripe input element */
