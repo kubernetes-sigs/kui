@@ -647,13 +647,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .concat([Processing(Active(), event, event.evaluatorOptions.isExperimental)])
               .concat(curState.blocks.slice(insertIdx))
           }
-        } else if (isProcessing(curState.blocks[idx])) {
-          // the last block is Processing; this can handle if the user
-          // causes a pexec to be sent to a split that is already
-          // processing
-          return {
-            blocks: curState.blocks.concat(processing(Active()))
-          }
         }
 
         const rerunIdx =
@@ -696,6 +689,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
               .slice(0, rerunIdx) // everything before
               .concat(isRerunable(block) ? [Rerun(block, event)] : [])
               .concat(curState.blocks.slice(rerunIdx + 1)) // everything after
+          }
+        } else if (isProcessing(curState.blocks[idx])) {
+          // the last block is Processing; this can handle if the user
+          // causes a pexec to be sent to a split that is already
+          // processing
+          return {
+            blocks: curState.blocks.concat(processing(Active()))
           }
         } else {
           // Transform the last block to Processing
