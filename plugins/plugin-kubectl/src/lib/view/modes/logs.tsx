@@ -224,6 +224,7 @@ export class Logs extends Terminal<State> {
     return {
       mode: 'kubectl-logs-previous-toggle',
       label: this.state.showingPrevious ? strings('Show Current') : strings('Show Previous'),
+      icon: <Icons icon={this.state.showingPrevious ? 'NextPage' : 'PreviousPage'} />,
       kind: 'view',
       command: () =>
         this.showContainer(undefined, curState => ({
