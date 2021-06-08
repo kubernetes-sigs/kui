@@ -54,6 +54,7 @@
     "@kui-shell/plugin-example": "file:./plugins/plugin-example",
     "@kui-shell/plugin-git": "^10.3.13",
     "@kui-shell/plugin-kubectl": "^10.3.13",
+    "@kui-shell/plugin-patternfly4-themes": "^10.3.13",
     "@kui-shell/plugin-proxy-support": "^10.3.13"
   }
 }
