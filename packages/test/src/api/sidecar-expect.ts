@@ -48,14 +48,6 @@ export const openWithFailure = async (res: AppAndCount) => {
     .then(() => res)
 }
 
-/** expect open fullscreen */
-export const fullscreen = async (res: AppAndCount) => {
-  return res.app.client
-    .$(Selectors.SIDECAR_FULLSCREEN(res.count, res.splitIndex))
-    .then(_ => _.waitForDisplayed({ timeout: waitTimeout }))
-    .then(() => res)
-}
-
 /** fully closed, not just minimized */
 export const fullyClosed = async (res: AppAndCount) => {
   return res.app.client
