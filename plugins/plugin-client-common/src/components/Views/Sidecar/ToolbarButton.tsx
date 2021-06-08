@@ -18,6 +18,7 @@ import React from 'react'
 import { Button, ResourceWithMetadata, isViewButton, MultiModalResponse, ParsedOptions } from '@kui-shell/core'
 
 import LocationProps from './Location'
+import Tooltip from '../../spi/Tooltip'
 
 type Props = LocationProps & {
   button: Button
@@ -74,18 +75,18 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
     const { button } = this.props
 
     return (
-      <span
-        className={
-          'kui--tab-navigatable kui--notab-when-sidecar-hidden sidecar-bottom-stripe-button-as-button sidecar-bottom-stripe-button' +
-          (button.icon ? ' kui--toolbar-button-with-icon' : '')
-        }
-      >
-        <div role="presentation" onClick={this._buttonOnclick} data-mode={button.mode}>
-          <span role="tab" title={button.label || button.mode}>
-            {button.icon ? button.icon : button.label || button.mode}
-          </span>
-        </div>
-      </span>
+      <Tooltip content={button.label || button.mode}>
+        <span
+          className={
+            'kui--tab-navigatable kui--notab-when-sidecar-hidden sidecar-bottom-stripe-button-as-button sidecar-bottom-stripe-button' +
+            (button.icon ? ' kui--toolbar-button-with-icon' : '')
+          }
+        >
+          <div role="presentation" onClick={this._buttonOnclick} data-mode={button.mode}>
+            <span role="tab">{button.icon ? button.icon : button.label || button.mode}</span>
+          </div>
+        </span>
+      </Tooltip>
     )
   }
 }
