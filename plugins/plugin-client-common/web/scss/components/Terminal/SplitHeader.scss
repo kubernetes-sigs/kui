@@ -16,34 +16,38 @@
 
 @import 'mixins';
 
-@include SplitHeader {
-  padding: 0.125em 0;
-  padding-left: $input-padding-left;
-  padding-right: $input-padding-right;
+body[kui-theme-style] {
+  @include SplitHeader {
+    padding: 0.125em 0;
+    padding-left: $input-padding-left;
+    padding-right: $input-padding-right;
 
-  opacity: 0.925;
-  background-color: var(--color-sidecar-toolbar-background);
-  & > div {
-    color: var(--color-sidecar-toolbar-foreground);
+    opacity: 0.925;
+    background-color: var(--color-sidecar-toolbar-background);
+
+    & > a,
+    & > div {
+      color: var(--color-sidecar-toolbar-foreground);
+    }
+
+    & > svg {
+      fill: var(--color-sidecar-toolbar-foreground);
+    }
   }
 
-  & > svg {
-    fill: var(--color-sidecar-toolbar-foreground);
+  @include SplitHeaderClose {
+    padding: 2px;
+    &:hover {
+      cursor: pointer;
+      background-color: var(--color-table-border1);
+    }
   }
-}
 
-@include SplitHeaderClose {
-  padding: 2px;
-  &:hover {
-    cursor: pointer;
-    background-color: var(--color-table-border1);
-  }
-}
-
-@include SplitHeaderClear {
-  padding: 2px;
-  &:hover {
-    cursor: pointer;
-    background-color: var(--color-table-border1);
+  @include SplitHeaderClear {
+    padding: 2px;
+    &:hover {
+      cursor: pointer;
+      background-color: var(--color-table-border1);
+    }
   }
 }
