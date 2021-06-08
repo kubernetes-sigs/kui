@@ -178,7 +178,6 @@ $toolbar-height: 1.5rem;
   .sidecar-bottom-stripe-button {
     display: flex;
     line-height: 1.5em;
-    padding: 3px;
 
     & > div {
       display: flex;
