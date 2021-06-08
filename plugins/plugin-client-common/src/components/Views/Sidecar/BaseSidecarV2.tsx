@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { KResponse, Tab as KuiTab, ParsedOptions, eventChannelUnsafe, isPopup } from '@kui-shell/core'
+import { KResponse, Tab as KuiTab, ParsedOptions, isPopup } from '@kui-shell/core'
 
 import Width from './width'
 import LocationProps from './Location'
@@ -118,12 +118,6 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
     return 'visible' + (this.state.isMaximized ? ' maximized' : '')
   }
 
-  private onScreenshot() {
-    setTimeout(() => {
-      eventChannelUnsafe.emit('/screenshot/element', this.dom.current)
-    })
-  }
-
   protected title(
     props?: Omit<
       TitleBarProps,
@@ -135,12 +129,8 @@ export default class BaseSidecar<R extends KResponse, S extends State> extends R
         {...props}
         notCloseable
         repl={this.props.tab.REPL}
-        width={this.state.isMaximized ? Width.Maximized : this.defaultWidth()}
-        fixedWidth={this.isFixedWidth()}
-        onMaximize={this.onMaximize.bind(this)}
-        onRestore={this.onRestore.bind(this)}
+        width={this.defaultWidth()}
         onClose={this.onClose.bind(this)}
-        willScreenshot={this.onScreenshot.bind(this)}
       />
     )
   }

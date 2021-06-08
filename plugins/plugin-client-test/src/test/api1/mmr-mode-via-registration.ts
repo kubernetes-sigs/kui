@@ -92,7 +92,7 @@ testRegistrationWithModes.badges([
   { title: 'badge2', css: 'red-background' },
   { title: 'badge3', css: 'green-background' }
 ])
-testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0], { testWindowButtons: true })
+testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0])
 testRegistrationWithModes.toolbarButtons(buttonFromRegistration)
 
 testRegistrationOnly.modes(modesFromRegistration, modesFromRegistration[0])
@@ -101,6 +101,6 @@ testRegistrationOnly.toolbarButtons(buttonFromRegistration)
 // iterate back and forth between these two, to make sure there is no
 // erroneous state transfer across the mode models
 testRegistrationOnlyWithShow.modes(modesFromRegistration, modesFromRegistration[1])
-testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0], { testWindowButtons: true })
+testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0])
 testRegistrationOnlyWithShow.modes(modesFromRegistration, modesFromRegistration[1])
-testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0], { testWindowButtons: true })
+testRegistrationWithModes.modes(modes.concat(modesFromRegistration), modes[0])

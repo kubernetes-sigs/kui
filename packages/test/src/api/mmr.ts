@@ -212,11 +212,10 @@ export class TestMMR {
    * modes() executes `command` in REPL and expects `modes` are showin in Sidecar
    * @param { MMRExpectMode[] } expectModes is the expected modes shown as Sidecar Tabs
    * @param { MMRExpectMode } defaultMode is the expected default Sidecar Tab
-   * @param  options includes: testWindowButtons
-   * @param { boolean } testWindowButtons indicates whether modes() will test the sidecar window buttons as well
+   *
    *
    */
-  public modes(expectModes: MMRExpectMode[], defaultMode: MMRExpectMode, options?: { testWindowButtons?: boolean }) {
+  public modes(expectModes: MMRExpectMode[], defaultMode: MMRExpectMode) {
     const { command, testName } = this.param
 
     describe(`mmr modes ${testName || command || ''} ${process.env.MOCHA_RUN_TARGET ||
@@ -373,41 +372,9 @@ export class TestMMR {
           }
         })
 
-      const backToOpen = () => {
-        it(`should resume the sidecar from maximized to open`, async () => {
-          try {
-            const button = await this.app.client.$(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
-            await button.waitForDisplayed()
-            await button.click()
-            await SidecarExpect.open({ app: this.app, count: cmdIdx })
-          } catch (err) {
-            await Common.oops(this, true)
-          }
-        })
-      }
-
       showModes()
       cycleTheTabs()
       cycleTheTabs()
-
-      if (options && options.testWindowButtons === true) {
-        const maximize = () =>
-          it('should maximize the sidecar', async () => {
-            try {
-              const button = await this.app.client.$(Selectors.SIDECAR_MAXIMIZE_BUTTON(cmdIdx))
-              await button.waitForDisplayed()
-              await button.click()
-              await SidecarExpect.fullscreen({ app: this.app, count: cmdIdx })
-            } catch (err) {
-              await Common.oops(this, true)(err)
-            }
-          })
-
-        showModes()
-        maximize()
-        backToOpen()
-        showModes()
-      }
     })
   }
 
