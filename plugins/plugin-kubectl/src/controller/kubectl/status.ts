@@ -77,9 +77,9 @@ async function getResourcesReferencedByFile(
   namespaceFromCommandLine: string
 ): Promise<Resources> {
   const { isFor } = fileOfWithDetail(args)
-  const [{ safeLoadAll }, raw] = await Promise.all([import('js-yaml'), fetchFilesVFS(args, file, true)])
+  const [{ loadAll }, raw] = await Promise.all([import('js-yaml'), fetchFilesVFS(args, file, true)])
 
-  const models = flatten(raw.map(_ => safeLoadAll(_.data) as KubeResource[]))
+  const models = flatten(raw.map(_ => loadAll(_.data) as KubeResource[]))
   const resourcesToWaitFor = models
     .filter(_ => _.metadata)
     .map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {
@@ -104,11 +104,11 @@ async function getResourcesReferencedByKustomize(
   args: Arguments<Options>,
   namespace: string
 ): Promise<Resources> {
-  const [kuiSourceRef, { safeLoad }] = await Promise.all([fetchKusto(args, kusto), import('js-yaml')])
+  const [kuiSourceRef, { load }] = await Promise.all([fetchKusto(args, kusto), import('js-yaml')])
 
   const resourcesToWaitFor = await Promise.all(
     kuiSourceRef.templates
-      .map(raw => safeLoad(raw.data))
+      .map(raw => load(raw.data))
       .map(async (resource: KubeResource) => {
         const { apiVersion, kind, metadata } = resource
         const { group, version } = versionOf(apiVersion)

@@ -16,7 +16,7 @@
 
 import { execSync } from 'child_process'
 import { readFileSync, writeFileSync } from 'fs'
-import { safeDump, safeLoad as parseYAML } from 'js-yaml'
+import { dump, load as parseYAML } from 'js-yaml'
 import * as path from 'path'
 import * as assert from 'assert'
 
@@ -107,7 +107,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
 
           kconfig['contexts'][0].context.namespace = ns
           kconfig['contexts'][0].name = contextName
-          writeFileSync(newOnesFilepath, safeDump(kconfig))
+          writeFileSync(newOnesFilepath, dump(kconfig))
 
           await this.app.client.execute(
             (defaultFilepath: string, newOnesFilepath: string) => {

@@ -56,7 +56,7 @@ async function content(tab: Tab, crd: CustomResourceDefinition, args: { argvNoOp
   }
 
   return {
-    content: (await jsyaml).safeDump(baseResponse),
+    content: (await jsyaml).dump(baseResponse),
     contentType: 'yaml'
   }
 }

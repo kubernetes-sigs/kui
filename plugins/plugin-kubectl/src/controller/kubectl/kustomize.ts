@@ -80,9 +80,9 @@ export const doKustomize = (command = 'kubectl') => async (args: Arguments<KubeO
   if (isUsage(args)) {
     return doHelp(command, args)
   } else {
-    const [yaml, { safeLoadAll }] = await Promise.all([doExecWithStdout(args, prepare, command), import('js-yaml')])
+    const [yaml, { loadAll }] = await Promise.all([doExecWithStdout(args, prepare, command), import('js-yaml')])
     try {
-      const resources = safeLoadAll(yaml)
+      const resources = loadAll(yaml)
       const inputFile = resolve(args.argvNoOptions[args.argvNoOptions.indexOf('kustomize') + 1])
 
       return {

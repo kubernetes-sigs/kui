@@ -31,7 +31,7 @@
     "command-exists": "1.2.9",
     "debug": "4.3.1",
     "fs-extra": "9.1.0",
-    "js-yaml": "3.14.1",
+    "js-yaml": "4.1.0",
     "jsonpath": "github:starpit/jsonpath#preparse",
     "needle": "2.6.0",
     "parse-duration": "1.0.0",

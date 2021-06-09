@@ -73,7 +73,7 @@ async function renderSummary({ REPL }: Tab, resource: KubeResource) {
 
     // our content is that map, rendered as yaml
     return {
-      content: (await jsyaml).safeDump(await map),
+      content: (await jsyaml).dump(await map),
       contentType: 'yaml'
     }
   } catch (err) {

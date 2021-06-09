@@ -29,7 +29,7 @@
     "@kui-shell/plugin-wskflow": "*",
     "@kui-shell/plugin-kubectl": "*",
     "debug": "4.1.1",
-    "js-yaml": "3.13.1"
+    "js-yaml": "4.1.0"
   },
   "kui": {
     "headless": false
