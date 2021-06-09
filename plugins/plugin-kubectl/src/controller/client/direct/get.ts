@@ -226,12 +226,12 @@ export async function get(
         throw new Error(response.toString())
       }
     } else if (format === 'yaml') {
-      const { safeDump } = await import('js-yaml')
+      const { dump } = await import('js-yaml')
       return {
         content: {
           code: 0,
           stderr: '',
-          stdout: safeDump(
+          stdout: dump(
             Buffer.isBuffer(response) || typeof response === 'string' ? JSON.parse(response.toString()) : response
           ),
           wasSentToPty: false

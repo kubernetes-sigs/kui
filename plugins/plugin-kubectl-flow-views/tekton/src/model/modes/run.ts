@@ -26,7 +26,7 @@ const mode: Mode = {
   mode: 'Run Config',
   content: async (tab: Tab, _: ResponseObject) => {
     if (!isKubeResource(_)) {
-      const { safeDump } = await import('js-yaml')
+      const { dump } = await import('js-yaml')
 
       // then _ is already the response we need
       const models = _.model.filter(_ => _.kind === 'PipelineRun' || _.kind === 'TaskRun')
@@ -37,7 +37,7 @@ const mode: Mode = {
           isEntity: true,
           contentType: 'yaml',
           resource: model || models,
-          content: safeDump(model || models)
+          content: dump(model || models)
         },
         model || {}
       )

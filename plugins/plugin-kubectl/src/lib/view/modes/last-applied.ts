@@ -51,11 +51,11 @@ export function hasLastApplied(resource: KubeResource): boolean {
  */
 export const renderLastApplied = async (tab: Tab, resource: KubeResource) => {
   // this module is expensive to load, so we defer that expense
-  const { safeDump } = await import('js-yaml')
+  const { dump } = await import('js-yaml')
 
   // raw is a JSON string, but we want a YAML string
   return {
-    content: safeDump(JSON.parse(getLastAppliedRaw(resource))),
+    content: dump(JSON.parse(getLastAppliedRaw(resource))),
     contentType: 'yaml'
   }
 }

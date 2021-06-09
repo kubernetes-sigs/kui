@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { safeLoad, safeDump } from 'js-yaml'
+import { load, dump } from 'js-yaml'
 import { Button, Icons } from '@kui-shell/plugin-client-common'
 import { Caption, TableComposable, Tbody, Tr, Td } from '@patternfly/react-table'
 import {
@@ -372,8 +372,8 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
   private constructorHelper = () => {
     try {
       // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()
-      const counterMetrics = safeLoad(this.state.rawConfigMap.data['counter_metrics.yaml']) as CounterMetrics
-      const ratioMetrics = safeLoad(this.state.rawConfigMap.data['ratio_metrics.yaml']) as RatioMetrics
+      const counterMetrics = load(this.state.rawConfigMap.data['counter_metrics.yaml']) as CounterMetrics
+      const ratioMetrics = load(this.state.rawConfigMap.data['ratio_metrics.yaml']) as RatioMetrics
       const cleanConfigMap = removeExtraneousMetaData(this.state.rawConfigMap)
 
       // TODO: Add proper error handling
@@ -637,7 +637,7 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
         counterMetrics.push(cleanNewMetric as CounterMetric)
 
         // Convert new metric config to stringified YAML
-        const stringifiedMetrics = safeDump(counterMetrics)
+        const stringifiedMetrics = dump(counterMetrics)
 
         // Add new metric config to config map
         configMap.data['counter_metrics.yaml'] = stringifiedMetrics
@@ -721,7 +721,7 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
         ratioMetrics.push(cleanNewMetric as RatioMetric)
 
         // Convert new metric config to stringified YAML
-        const stringifiedMetrics = safeDump(ratioMetrics)
+        const stringifiedMetrics = dump(ratioMetrics)
 
         // Add new metric config to config map
         configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
@@ -834,8 +834,8 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
         })
 
         // Convert new metric config to stringified YAML
-        const stringifiedCounterMetrics = safeDump(counterMetrics)
-        const stringifiedRatioMetrics = safeDump(ratioMetrics)
+        const stringifiedCounterMetrics = dump(counterMetrics)
+        const stringifiedRatioMetrics = dump(ratioMetrics)
 
         // Add new metric config to config map
         configMap.data['counter_metrics.yaml'] = stringifiedCounterMetrics
@@ -924,7 +924,7 @@ export default class MetricDetailsMode extends React.Component<{}, MetricDetails
         ratioMetrics.push(cleanNewMetric as RatioMetric)
 
         // Convert new metric config to stringified YAML
-        const stringifiedMetrics = safeDump(ratioMetrics)
+        const stringifiedMetrics = dump(ratioMetrics)
 
         // Add new metric config to config map
         configMap.data['ratio_metrics.yaml'] = stringifiedMetrics
