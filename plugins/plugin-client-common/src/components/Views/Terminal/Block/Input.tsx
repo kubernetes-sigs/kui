@@ -464,28 +464,6 @@ export default class Input extends InputProvider {
     })
   })
 
-  /**
-   * The current logic here is to obey any `promptPlaceholder`
-   * property from the `<Kui/>` top-level property first. If that
-   * hasn't been set, then we fall back on using a "this is how to
-   * close this split" message, but only if there is more than one split,
-   * and even then only if the block is currently focused.
-   *
-   * @return placeholder text for input elements within Active blocks
-   *
-   */
-  private placeholderForActiveBlocks(): string {
-    return (
-      this.props.promptPlaceholder ||
-      (this.props.isFocused && // block is focused
-      typeof this.props.nSplits === 'number' &&
-      this.props.nSplits > 1 && // more than one split
-      this.props.idx <= 1 // only for the first few blocks
-        ? strings('Use Ctrl+D to close this split')
-        : '')
-    )
-  }
-
   /** For Processing blocks, we use an overlay <input/> element. We need to manage focus, since it has pointer-events: none */
   private readonly _restoreFocusToOverlayInput = whenNothingIsSelected((evt: React.SyntheticEvent) => {
     ;(evt.currentTarget.querySelector('.kui--invisible-overlay') as HTMLInputElement).focus()
@@ -543,7 +521,6 @@ export default class Input extends InputProvider {
             className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
             aria-label="Command Input"
             tabIndex={1}
-            placeholder={this.placeholderForActiveBlocks()}
             data-scrollback-uuid={this.props.uuid}
             data-input-count={this.props.idx}
             onBlur={this._onBlur}
