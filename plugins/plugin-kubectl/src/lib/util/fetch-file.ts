@@ -359,13 +359,13 @@ interface Kustomization {
 }
 
 export async function fetchKusto(args: Arguments<KubeOptions>, kusto: string) {
-  const [{ safeLoad }, { join }, raw] = await Promise.all([
+  const [{ load }, { join }, raw] = await Promise.all([
     import('js-yaml'),
     import('path'),
     fetchFileKustomize(args.REPL, kusto)
   ])
 
-  const kustomization = safeLoad(raw.data) as Kustomization
+  const kustomization = load(raw.data) as Kustomization
 
   if (kustomization.resources) {
     const resources = kustomization.resources

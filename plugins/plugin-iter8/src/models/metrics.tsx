@@ -20,12 +20,12 @@ import { getMetricConfig } from '../components/metric-config'
 const MetricDetailsMode = React.lazy(() => import('../modes/get-metrics'))
 
 async function getMetricsYaml(args) {
-  const { safeDump } = await import('js-yaml')
+  const { dump } = await import('js-yaml')
   const [res] = await Promise.all([getMetricConfig(args)])
   delete res['originatingCommand']
   delete res['kuiRawData']
   delete res['isKubeResource']
-  return safeDump(res)
+  return dump(res)
 }
 
 function getMetricDetailsMode(tab) {

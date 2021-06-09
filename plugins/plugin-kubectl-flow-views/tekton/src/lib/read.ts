@@ -28,8 +28,8 @@ const knownKinds = /PipelineResource|Pipeline|Task/
  *
  */
 export const parse = async (raw: string | PromiseLike<string>): Promise<KubeResource[]> => {
-  const { safeLoadAll } = await import('js-yaml')
-  return safeLoadAll(await raw).filter(_ => knownKinds.test(_.kind))
+  const { loadAll } = await import('js-yaml')
+  return loadAll(await raw).filter(_ => knownKinds.test(_.kind))
 }
 
 /**

@@ -22,8 +22,8 @@ export async function kubectlApplyRule(rule, args: Arguments) {
   delete rule['originatingCommand']
   delete rule['kuiRawData']
   delete rule['isKubeResource']
-  const { safeDump } = await import('js-yaml')
-  const yamlRule = safeDump(rule)
+  const { dump } = await import('js-yaml')
+  const yamlRule = dump(rule)
 
   return await args.REPL.qexec(`cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`)
 }
