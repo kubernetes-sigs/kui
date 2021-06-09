@@ -1317,7 +1317,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       >
         <React.Fragment>
           {this.state.splits.length > 1 && <SplitHeader onRemove={scrollback.remove} onClear={scrollback.clear} />}
-          <ul className="kui--scrollback-block-list">{this.blocks(tab, scrollback, sbidx)}</ul>
+          <ul className="kui--scrollback-block-list">
+            <div className="kui--scrollback-block-list-for-sizing">{this.blocks(tab, scrollback, sbidx)}</div>
+          </ul>
         </React.Fragment>
       </div>
     )
