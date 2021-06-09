@@ -40,10 +40,21 @@ $split-bgcolor: var(--color-repl-background);
   background-color: $split-bgcolor;
 }
 
+/**
+ * e.g. so that Terminal/getSize() can have a height that doesn't
+   require computing the padding we may associate with the
+   ScrollbackBlockList
+ *
+ */
 @include ScrollbackBlockList {
-  /* these two rules given us inner scrolling on ScrollbackBlockList */
-  flex: 1;
-  overflow: auto;
-
   padding: $split-padding 0;
+
+  /* these rules given us inner scrolling on ScrollbackBlockList */
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  .kui--scrollback-block-list-for-sizing {
+    flex: 1;
+    overflow: auto;
+  }
 }
