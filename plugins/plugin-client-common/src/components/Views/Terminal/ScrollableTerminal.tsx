@@ -1075,6 +1075,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         return { splits, focusedIdx }
       }
     })
+
+    setTimeout(() => eventChannelUnsafe.emit('/zoom'))
   }
 
   /**
