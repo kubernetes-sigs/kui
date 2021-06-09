@@ -33,7 +33,7 @@ import '../web/css/static/test.scss'
  */
 export default function TestClient(props: KuiProps) {
   return (
-    <Kui {...props} splitTerminals disableTableTitle sidecarName="heroText">
+    <Kui {...props} disableTableTitle sidecarName="heroText">
       <ContextWidgets>
         <CounterWidget idx={0} />
       </ContextWidgets>

@@ -18,7 +18,6 @@ import React from 'react'
 import { i18n, inBrowser, pexecInCurrentTab } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
-import KuiContext from '../context'
 import ctrlOrMeta from './ctrlOrMeta'
 import Tooltip from '../../spi/Tooltip'
 
@@ -59,16 +58,10 @@ export default class SplitTerminalButton extends React.PureComponent {
 
   public render() {
     return (
-      <KuiContext.Consumer>
-        {config =>
-          config.splitTerminals && (
-            <React.Fragment>
-              {this.button()}
-              {this.tooltip()}
-            </React.Fragment>
-          )
-        }
-      </KuiContext.Consumer>
+      <React.Fragment>
+        {this.button()}
+        {this.tooltip()}
+      </React.Fragment>
     )
   }
 }

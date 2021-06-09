@@ -333,16 +333,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private allocateUUIDForScrollback() {
-    if (this.props.config.splitTerminals) {
-      // this.props.uuid is the uuid for the whole tab
-      // on top of that, we allocate a "v5" uuid for this scrollback
-      const sbidx = this.scrollbackCounter++
-      const tabPart = this.props.uuid
-      const scrollbackPart = v5(sbidx.toString(), UUID_NAMESPACE)
-      return `${tabPart}_${scrollbackPart}`
-    } else {
-      return this.props.uuid
-    }
+    // this.props.uuid is the uuid for the whole tab
+    // on top of that, we allocate a "v5" uuid for this scrollback
+    const sbidx = this.scrollbackCounter++
+    const tabPart = this.props.uuid
+    const scrollbackPart = v5(sbidx.toString(), UUID_NAMESPACE)
+    return `${tabPart}_${scrollbackPart}`
   }
 
   /** Restore from localStorage for a given tab UUID */

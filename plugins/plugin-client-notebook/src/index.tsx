@@ -56,7 +56,6 @@ export default function renderMain(props: KuiProps) {
       productName="Kui"
       noHelp
       noSettings
-      splitTerminals
       lightweightTables
       {...props}
       commandLine={

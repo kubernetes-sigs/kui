@@ -494,14 +494,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                 : (gap >= 0 ? '+' : '') + prettyPrintDuration(gap)
 
             // drilldown to underlying resource, e.g. Pod for Kubernetes Jobs
-            const onClick = onClickForCell(
-              row,
-              this.props.tab,
-              this.props.repl,
-              row.attributes[0],
-              this.props.response,
-              this.props.config
-            )
+            const onClick = onClickForCell(row, this.props.tab, this.props.repl, row.attributes[0], this.props.response)
 
             // rows that help to define the contents of the interval; e.g. jobName
             const interGroupGapRow =

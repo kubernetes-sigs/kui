@@ -26,9 +26,6 @@ type FeatureFlags = {
   /** [Optional] show sidecar name as breadcrumb or hero text, default: 'breadcrumb' */
   sidecarName?: 'breadcrumb' | 'heroText'
 
-  /** [Optional] Enable Split Terminals? */
-  splitTerminals?: boolean
-
   /** [Optional] Show bottom status stripe? [default: true] */
   statusStripe?: boolean
 
