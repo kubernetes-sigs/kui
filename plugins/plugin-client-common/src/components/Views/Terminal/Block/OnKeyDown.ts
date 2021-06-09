@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { inBrowser, inElectron, KeyCodes, eventChannelUnsafe, doCancel, HistoryLine } from '@kui-shell/core'
+import { inBrowser, inElectron, KeyCodes, eventChannelUnsafe, doCancel, HistoryLine, splitFor } from '@kui-shell/core'
 
 import { InputProvider as Input } from './Input'
 import startTabCompletion from './TabCompletion'
@@ -95,7 +95,7 @@ function deleteThisWord(prompt: HTMLInputElement) {
 }
 
 export default function onKeyDown(this: Input, event: KeyboardEvent) {
-  const tab = this.props.tab
+  const tab = splitFor(this.props.tab)
   const block = this.props._block
   const prompt = this.state.prompt
 
@@ -144,8 +144,11 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
       this.props.navigateTo('next')
     }
   } else if (char === KeyCodes.C && event.ctrlKey) {
-    // Ctrl+C, cancel
-    doCancel(tab, block, prompt.value)
+    // block could be undefined for bottom-input mode
+    if (block) {
+      // Ctrl+C, cancel
+      doCancel(tab, block, prompt.value)
+    }
   } else if (char === KeyCodes.U && event.ctrlKey) {
     // clear line
     prompt.value = ''
