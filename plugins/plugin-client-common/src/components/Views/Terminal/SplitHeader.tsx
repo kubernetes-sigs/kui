@@ -30,10 +30,17 @@ interface Props {
 
 /** Render a header for the given split */
 export default class SplitHeader extends React.PureComponent<Props> {
+  private readonly stopFocusStealing = (evt: React.MouseEvent<HTMLElement>) => evt.preventDefault()
+
   private closeButton() {
     return (
       <Tooltip markdown={strings('Close this split pane')}>
-        <a href="#" className="kui--split-close-button kui--tab-navigatable" onClick={this.props.onRemove}>
+        <a
+          href="#"
+          className="kui--split-close-button kui--tab-navigatable"
+          onMouseDown={this.stopFocusStealing}
+          onClick={this.props.onRemove}
+        >
           &#x2A2F;
         </a>
       </Tooltip>
@@ -43,7 +50,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
   private clearButton() {
     return (
       <Tooltip markdown={strings('Clear this split pane')}>
-        <a href="#" className="kui--tab-navigatable" onClick={this.props.onClear}>
+        <a href="#" className="kui--tab-navigatable" onMouseDown={this.stopFocusStealing} onClick={this.props.onClear}>
           <Icons className="kui--split-clear-button" icon="Clear" />
         </a>
       </Tooltip>
