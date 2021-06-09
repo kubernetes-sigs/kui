@@ -24,9 +24,6 @@ export interface ExecOptions {
   /** force execution in a given tab? */
   tab?: Tab
 
-  /** Tab id to use for recording history */
-  tabUUIDForHistory?: string
-
   /** execution UUID */
   execUUID?: string
 

@@ -160,6 +160,7 @@ export {
   getTabId,
   getPrimaryTabId,
   sameTab,
+  splitFor,
   isTopLevelTab
 } from './webapp/tab'
 export { default as TabState, registerTabState } from './models/tab-state'
