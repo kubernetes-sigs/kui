@@ -44,7 +44,6 @@ export default function renderMain(props: KuiProps) {
   return (
     <Kui
       productName={productName}
-      splitTerminals
       lightweightTables
       {...props}
       toplevel={!inBrowser() && <Search />}
