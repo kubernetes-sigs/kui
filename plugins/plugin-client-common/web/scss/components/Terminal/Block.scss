@@ -130,7 +130,7 @@
   }
 
   /** focus */
-  & > li:focus {
+  li.repl-block:focus {
     outline: none;
   }
   li:focus.repl-block,
