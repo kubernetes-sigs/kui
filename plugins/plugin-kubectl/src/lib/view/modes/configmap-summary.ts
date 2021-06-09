@@ -33,7 +33,7 @@ export function getDefaultSummaryMap(
   // a command that will fetch a single-row table
   const cmd = `${getCommandFromArgs(args)} get ${fqnOf(resource)} -o wide`
 
-  // fetch the table model and the safeDump function from js-yaml
+  // fetch the table model and the dump function from js-yaml
   return tab.REPL.qexec<Table>(cmd).then(toMap)
 }
 
@@ -42,7 +42,7 @@ export function getDefaultSummaryMap(
  *
  */
 async function content(tab: Tab, cm: ConfigMap, args: { argvNoOptions: string[] }) {
-  const [map, { safeDump }] = await Promise.all([getDefaultSummaryMap(tab, cm, args), import('js-yaml')])
+  const [map, { dump }] = await Promise.all([getDefaultSummaryMap(tab, cm, args), import('js-yaml')])
 
   if (cm.data) {
     delete map.Data
@@ -59,7 +59,7 @@ async function content(tab: Tab, cm: ConfigMap, args: { argvNoOptions: string[] 
   }
 
   return {
-    content: safeDump(map),
+    content: dump(map),
     contentType: 'yaml'
   }
 }

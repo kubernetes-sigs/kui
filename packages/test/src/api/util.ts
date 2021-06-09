@@ -17,10 +17,7 @@
 import * as assert from 'assert'
 import { Application } from 'spectron'
 import { v4 as uuid } from 'uuid'
-
-// until we can use esModuleInterop...
-// import { safeLoad } from 'js-yaml'
-const { safeLoad } = require('js-yaml')
+import { load } from 'js-yaml'
 
 import * as Selectors from './selectors'
 import * as CLI from './cli'
@@ -133,12 +130,12 @@ export const expectStruct = (struct1: object, noParse = false, failFast = true) 
 
 export const expectYAML = (struct1: object, subset = false, failFast = true) => (str: string) => {
   try {
-    const struct2 = safeLoad(str)
-    const ok = sameStruct(struct1, struct2, subset)
-    if (failFast) {
-      assert.ok(ok)
-    }
-    return ok
+    const struct2 = load(str)
+    const ok = sameStruct(struct1, typeof struct2 === 'object' ? struct2 : JSON.parse(typeof struct2 === 'number' ? `${struct2}` : struct2), subset)
+      if (failFast) {
+        assert.ok(ok)
+      }
+      return ok
   } catch (err) {
     if (failFast) {
       return false

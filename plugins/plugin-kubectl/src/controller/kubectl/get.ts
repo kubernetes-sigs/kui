@@ -116,11 +116,11 @@ export async function doGetAsEntity(
   try {
     // this is the raw data string we get from `kubectl`
     const data = response.content.stdout
-    const { safeLoad, safeDump } = await import('js-yaml')
+    const { load, dump } = await import('js-yaml')
 
     // parse the raw response; the parser we use depends on whether
     // the user asked for JSON or for YAML
-    const resource = formatOf(args) === 'json' ? JSON.parse(data) : await safeLoad(data)
+    const resource = formatOf(args) === 'json' ? JSON.parse(data) : await load(data)
 
     const kuiResponse = Object.assign(resource, {
       isKubeResource: true,
@@ -136,7 +136,7 @@ export async function doGetAsEntity(
             return Object.assign(_, {
               isKubeResource: true,
               originatingCommand: args, // here, not in viewTransformer otherwise nested qexecs won't work
-              kuiRawData: await safeDump(_)
+              kuiRawData: await dump(_)
             })
           })
         )
@@ -207,12 +207,12 @@ export async function doGetAsMMR(
 
     const doDiffMode = async () => {
       if (isDiffRequest(args)) {
-        // NOTE: strings in the diff model could've been processed by js-yaml safedump.
+        // NOTE: strings in the diff model could've been processed by js-yaml dump.
         // To avoid redherring when comparing a raw yaml string and strings like the above,
-        // we do safeload and safedump for both of them before sending to diff editor
-        const { safeLoad, safeDump } = await import('js-yaml')
-        const [_a, _b] = await Promise.all([safeLoad(resource.kuiRawData), safeLoad(args.execOptions.data['diff'])])
-        const [a, b] = await Promise.all([safeDump(_a), safeDump(_b)])
+        // we do load and dump for both of them before sending to diff editor
+        const { load, dump } = await import('js-yaml')
+        const [_a, _b] = await Promise.all([load(resource.kuiRawData), load(args.execOptions.data['diff'])])
+        const [a, b] = await Promise.all([dump(_a), dump(_b)])
 
         return {
           mode: 'diff',

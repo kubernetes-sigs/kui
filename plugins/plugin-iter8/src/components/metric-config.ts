@@ -60,14 +60,14 @@ export class GetMetricConfig {
   public async getCounterMetrics(args: Arguments) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['counter_metrics.yaml']
-    const { safeLoad } = await import('js-yaml')
-    return safeLoad(res) as CounterMetrics
+    const { load } = await import('js-yaml')
+    return load(res) as CounterMetrics
   }
 
   public async getRatioMetrics(args: Arguments) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['ratio_metrics.yaml']
-    const { safeLoad } = await import('js-yaml')
-    return safeLoad(res) as RatioMetrics
+    const { load } = await import('js-yaml')
+    return load(res) as RatioMetrics
   }
 }
