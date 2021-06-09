@@ -572,23 +572,30 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Clear Terminal; TODO: also clear persisted state, when we have it */
   private clear(uuid: string) {
-    if (this.props.onClear) {
-      this.props.onClear()
-    }
+    this.setState(curState => {
+      const focusedIdx = this.findSplit(curState, uuid)
 
-    this.splice(uuid, scrollback => {
-      const residualBlocks = scrollback.blocks
-        .filter(_ => {
-          this.removeWatchableBlock(_)
-          return false
+      return Object.assign(
+        { focusedIdx: focusedIdx < 0 ? curState.focusedIdx : focusedIdx },
+        this.spliceMutate(curState, uuid, scrollback => {
+          const residualBlocks = scrollback.blocks
+            .filter(_ => {
+              this.removeWatchableBlock(_)
+              return false
+            })
+            .concat([Active(scrollback._activeBlock ? scrollback._activeBlock.inputValue() : '')])
+
+          return Object.assign(scrollback, {
+            blocks: residualBlocks,
+            focusedBlockIdx: residualBlocks.length - 1
+          })
         })
-        .concat([Active(scrollback._activeBlock ? scrollback._activeBlock.inputValue() : '')])
-
-      return Object.assign(scrollback, {
-        blocks: residualBlocks,
-        focusedBlockIdx: residualBlocks.length - 1
-      })
+      )
     })
+
+    if (this.props.onClear) {
+      setTimeout(() => this.props.onClear())
+    }
   }
 
   /**
