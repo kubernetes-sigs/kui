@@ -22,16 +22,8 @@ function paddingHorizontal(elt: Element) {
   )
 }
 
-function paddingVertical(elt: Element) {
-  const style = window.getComputedStyle(elt)
-  return (
-    parseInt(style.getPropertyValue('padding-top') || '0', 10) +
-    parseInt(style.getPropertyValue('padding-bottom') || '0', 10)
-  )
-}
-
 export default function getSize(this: HTMLElement): { width: number; height: number } {
-  const enclosingRect = this.getBoundingClientRect()
+  const enclosingRect = this.querySelector('.kui--scrollback-block-list-for-sizing').getBoundingClientRect()
 
   const selectorForWidthPad = '.repl-block .repl-output'
   const widthPadElement = this.querySelector(selectorForWidthPad)
@@ -42,7 +34,7 @@ export default function getSize(this: HTMLElement): { width: number; height: num
   const { width: contextWidth } = contextElement ? contextElement.getBoundingClientRect() : { width: 0 }
 
   const width = enclosingRect.width - paddingHorizontal(widthPadElement) - contextWidth
-  const height = enclosingRect.height - paddingVertical(this /* heightPadElement */)
+  const height = enclosingRect.height // kui--scrollback-block-list-for-sizing will include any outer padding
 
   return { width, height }
 }
