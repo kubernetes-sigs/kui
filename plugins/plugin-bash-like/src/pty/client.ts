@@ -61,10 +61,12 @@ interface Size {
   cols: number
 }
 let resizeGeneration = 0
+function bumpGeneration() {
+  resizeGeneration++
+}
 if (window) {
-  window.addEventListener('resize', () => {
-    resizeGeneration++
-  })
+  window.addEventListener('resize', bumpGeneration)
+  eventChannelUnsafe.on('/zoom', bumpGeneration)
 }
 function getCachedSize(tab: Tab): Size {
   const cachedSize: Size = tab['_kui_pty_cachedSize']
