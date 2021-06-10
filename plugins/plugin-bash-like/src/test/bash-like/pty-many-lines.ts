@@ -17,7 +17,7 @@
 import { dirname, join } from 'path'
 import { readFileSync } from 'fs'
 
-import { Common, CLI, ReplExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Keys } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
@@ -61,4 +61,44 @@ describe('pty output with many lines', function(this: Common.ISuite) {
       .then(ReplExpect.okWithPtyOutput('hi'))
       .catch(Common.oops(this))
   )
+})
+
+describe('pty input with many lines', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const heredoc = `cat << EOF
+yoyoyo
+EOF`
+
+  it('should do here doc and show the current directory', () =>
+    CLI.command(heredoc, this.app)
+      .then(async res => {
+        try {
+          await ReplExpect.okWithString('yoyoyo')(res)
+        } catch (err) {
+          console.error('try hitting enter manually')
+          await this.app.client.keys(Keys.ENTER) // sometimes even though CLI.command hits Enter key, electron stil doesn't receive it?
+          await ReplExpect.okWithString('yoyoyo')(res)
+        }
+
+        return res
+      })
+      .catch(Common.oops(this, true)))
+
+  it('should echo multi lines', () =>
+    CLI.command(`echo foo \\`, this.app)
+      .then(async res => {
+        await CLI.command('bar', this.app)
+        try {
+          await ReplExpect.okWithString(`foo bar`)(res)
+        } catch (err) {
+          console.error('try hitting enter manually')
+          await this.app.client.keys(Keys.ENTER) // sometimes even though CLI.command hits Enter key, electron stil doesn't receive it?
+          await ReplExpect.okWithString(`foo bar`)(res)
+        }
+
+        return res
+      })
+      .catch(Common.oops(this, true)))
 })

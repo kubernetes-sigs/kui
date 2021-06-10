@@ -28,6 +28,7 @@ import { Plane as Spinner } from './Spinner'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import whenNothingIsSelected from '../../../../util/selection'
+import { endsWithBackSlash, includesBachSlash, isMultiLineHereDoc } from '../../util/multiline-input'
 import {
   BlockModel,
   isActive,
@@ -48,6 +49,7 @@ import { BlockViewTraits, BlockOperationTraits } from './'
 import FancyPipeline from './FancyPipeline'
 
 const Tag = React.lazy(() => import('../../../spi/Tag'))
+const TextArea = React.lazy(() => import('../../../spi/TextArea'))
 const SourceRef = React.lazy(() => import('../SourceRef'))
 const Icons = React.lazy(() => import('../../../spi/Icons'))
 
@@ -82,10 +84,10 @@ export interface InputOptions extends BlockOperationTraits {
   onInputMouseMove?: (event: React.MouseEvent<HTMLInputElement>) => void
 
   /** Optional: onBlur handler */
-  onInputBlur?: (event: React.FocusEvent<HTMLInputElement>) => void
+  onInputBlur?: (event: React.FocusEvent<InputElement>) => void
 
   /** Optional: onFocus handler */
-  onInputFocus?: (event: React.FocusEvent<HTMLInputElement>) => void
+  onInputFocus?: (event: React.FocusEvent<InputElement>) => void
 
   /** Capture a screenshot of the enclosing block */
   willScreenshot?: () => void
@@ -117,11 +119,51 @@ type InputProps = {
   isExperimental?: boolean
 }
 
+export type InputElement = HTMLInputElement | HTMLTextAreaElement
+
+export function isHTMLInputElement(element: InputElement): element is HTMLInputElement {
+  const input = element as HTMLInputElement
+  return input && input.tagName === 'INPUT'
+}
+
+export function isHTMLTextAreaElement(element: InputElement): element is HTMLTextAreaElement {
+  const input = element as HTMLTextAreaElement
+  return input && input.tagName === 'TEXTAREA'
+}
+
+/**
+ * This helps to work around React swallowing change events when
+ * setting value via ref; e.g.
+ *
+ *   element.value='foo'.
+ *   element.dispatchEvent(new Event('input', { bubbles: true }))
+ *
+ */
+function setNativeValue(element: HTMLElement, value: string) {
+  const { set: valueSetter } = Object.getOwnPropertyDescriptor(element, 'value') || {}
+  const prototype = Object.getPrototypeOf(element)
+  const { set: prototypeValueSetter } = Object.getOwnPropertyDescriptor(prototype, 'value') || {}
+
+  if (prototypeValueSetter && valueSetter !== prototypeValueSetter) {
+    prototypeValueSetter.call(element, value)
+  } else if (valueSetter) {
+    valueSetter.call(element, value)
+  } else {
+    throw new Error('The given element does not have a value setter')
+  }
+}
+
 export type Props = InputOptions & InputProps & BlockViewTraits
 
 export interface State {
   /** Copy from props; to help with getDerivedStateFromProps */
   model: BlockModel
+
+  /** is the input in multi-line mode? if true, use text area rather than in-line input */
+  multiline?: boolean
+
+  /** did user paste multiline texts */
+  pasteMultiLineTexts?: string
 
   /** did user click to re-edit the input? */
   isReEdit?: boolean
@@ -130,7 +172,7 @@ export interface State {
   execUUID?: string
 
   /** DOM element for prompt; set via `ref` in render() below */
-  prompt?: HTMLInputElement
+  prompt?: InputElement
 
   /** state of active reverse-i-search */
   isearch?: ActiveISearch
@@ -283,7 +325,6 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 export default class Input extends InputProvider {
   public constructor(props: Props) {
     super(props)
-
     this.state = {
       model: props.model,
       isReEdit: false,
@@ -392,11 +433,42 @@ export default class Input extends InputProvider {
 
   private onPaste(evt: React.ClipboardEvent) {
     if (!this.state.isearch) {
-      onPaste(evt.nativeEvent, this.props.tab, this.state.prompt)
+      onPaste.bind(this)(evt.nativeEvent, this.props.tab, this.state.prompt)
     }
   }
 
   private readonly _onPaste = this.onPaste.bind(this)
+
+  private onTextAreaRef(c: HTMLTextAreaElement) {
+    if (c && (!this.state.prompt || isHTMLInputElement(this.state.prompt) || this.state.isReEdit)) {
+      let value = hasValue(this.props.model)
+        ? this.props.model.value
+        : hasCommand(this.props.model)
+        ? this.props.model.command
+        : ''
+
+      if (isHTMLInputElement(this.state.prompt)) {
+        if (endsWithBackSlash(this.state.prompt.value)) {
+          value += `${this.state.prompt.value}\n`
+        } else if (this.state.pasteMultiLineTexts) {
+          value += `${this.state.prompt.value}${this.state.pasteMultiLineTexts}`
+        } else {
+          value += this.state.prompt.value
+        }
+
+        setNativeValue(c, value) // see the comment on the function; React swallows the event otherwise
+        c.dispatchEvent(new Event('input', { bubbles: true })) // to get TextArea to adjust its height
+      }
+
+      this.setState({ prompt: c })
+
+      if (this.props.isFocused && document.activeElement !== c) {
+        c.focus()
+      }
+    } else if (c && this.props.isFocused && isInViewport(c)) {
+      c.focus()
+    }
+  }
 
   private onRef(c: HTMLInputElement) {
     if (c && (!this.state.prompt || this.state.isReEdit)) {
@@ -416,21 +488,22 @@ export default class Input extends InputProvider {
   }
 
   private readonly _onRef = this.onRef.bind(this)
+  private readonly _onTextAreaRef = this.onTextAreaRef.bind(this)
 
-  private willFocusBlock(evt: React.SyntheticEvent<HTMLInputElement>) {
+  private willFocusBlock(evt: React.SyntheticEvent<InputElement>) {
     if (this.props.willFocusBlock) {
       this.props.willFocusBlock(evt)
     }
   }
 
   /** This is the onFocus property of the active prompt */
-  private readonly _onFocus = (evt: React.FocusEvent<HTMLInputElement>) => {
+  private readonly _onFocus = (evt: React.FocusEvent<InputElement>) => {
     this.props.onInputFocus && this.props.onInputFocus(evt)
     this.willFocusBlock(evt)
   }
 
   /** This is the onBLur property of the active prompt */
-  private readonly _onBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+  private readonly _onBlur = (evt: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     this.props.onInputBlur && this.props.onInputBlur(evt)
 
     const valueNotChanged =
@@ -458,7 +531,10 @@ export default class Input extends InputProvider {
     this.setState(curState => {
       if (!curState.isReEdit) {
         return {
-          isReEdit: true
+          isReEdit: true,
+          multiline:
+            hasCommand(this.props.model) &&
+            (includesBachSlash(this.props.model.command) || isMultiLineHereDoc(this.props.model.command))
         }
       }
     })
@@ -485,6 +561,72 @@ export default class Input extends InputProvider {
     )
   }
 
+  /** if in multi-line mode, render text area */
+  protected multilineInput() {
+    return (
+      <div
+        className="repl-input-element-wrapper flex-layout flex-fill"
+        data-is-reedit={this.state.isReEdit || undefined}
+      >
+        <TextArea
+          autoResize
+          autoFocus={this.props.isFocused && isInViewport(this.props._block)}
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
+          autoCapitalize="off"
+          className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '') + ' repl-textarea'}
+          aria-label="Command Input"
+          tabIndex={1}
+          data-scrollback-uuid={this.props.uuid}
+          data-input-count={this.props.idx}
+          onBlur={this._onBlur}
+          onFocus={this._onFocus}
+          onKeyPress={this._onKeyPress}
+          onKeyDown={this._onKeyDown}
+          innerRef={this._onTextAreaRef}
+        />
+        {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
+      </div>
+    )
+  }
+
+  /** if not in multi-line mode, render an inline input */
+  protected inlineInput() {
+    return (
+      <div
+        className="repl-input-element-wrapper flex-layout flex-fill"
+        data-is-reedit={this.state.isReEdit || undefined}
+      >
+        <input
+          type="text"
+          autoFocus={this.props.isFocused && isInViewport(this.props._block)}
+          autoCorrect="off"
+          autoComplete="off"
+          spellCheck="false"
+          autoCapitalize="off"
+          className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
+          aria-label="Command Input"
+          tabIndex={1}
+          data-scrollback-uuid={this.props.uuid}
+          data-input-count={this.props.idx}
+          onBlur={this._onBlur}
+          onFocus={this._onFocus}
+          onMouseDown={this.props.onInputMouseDown}
+          onMouseMove={this.props.onInputMouseMove}
+          onChange={this.props.onInputChange}
+          onClick={this._onClickActive}
+          onKeyPress={this._onKeyPress}
+          onKeyDown={this._onKeyDown}
+          onKeyUp={this._onKeyUp}
+          onPaste={this._onPaste}
+          ref={this._onRef}
+        />
+        {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
+      </div>
+    )
+  }
+
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
     const active = isActive(this.props.model) || this.state.isReEdit
@@ -506,38 +648,7 @@ export default class Input extends InputProvider {
         }
       }
 
-      return (
-        <div
-          className="repl-input-element-wrapper flex-layout flex-fill"
-          data-is-reedit={this.state.isReEdit || undefined}
-        >
-          <input
-            type="text"
-            autoFocus={this.props.isFocused && isInViewport(this.props._block)}
-            autoCorrect="off"
-            autoComplete="off"
-            spellCheck="false"
-            autoCapitalize="off"
-            className={'repl-input-element' + (this.state.isearch ? ' repl-input-hidden' : '')}
-            aria-label="Command Input"
-            tabIndex={1}
-            data-scrollback-uuid={this.props.uuid}
-            data-input-count={this.props.idx}
-            onBlur={this._onBlur}
-            onFocus={this._onFocus}
-            onMouseDown={this.props.onInputMouseDown}
-            onMouseMove={this.props.onInputMouseMove}
-            onChange={this.props.onInputChange}
-            onClick={this._onClickActive}
-            onKeyPress={this._onKeyPress}
-            onKeyDown={this._onKeyDown}
-            onKeyUp={this._onKeyUp}
-            onPaste={this._onPaste}
-            ref={this._onRef}
-          />
-          {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
-        </div>
-      )
+      return this.state.multiline ? this.multilineInput() : this.inlineInput()
     } else {
       const value = Input.valueToBeDisplayed(this.props)
       const isInProgress = isProcessing(this.props.model)

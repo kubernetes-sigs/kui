@@ -65,11 +65,14 @@
   --color-caret: var(--color-support-01);
   color: var(--color-text-01);
   background: transparent;
-  border: none;
   flex: 1;
   caret-color: var(--color-caret);
   padding: 0px; /* to match user-agent styling of <input/> */
   word-break: break-all;
+
+  &:not(.repl-textarea) {
+    border: none;
+  }
 }
 .kui--prompt-like:empty {
   border-right: 1ex solid var(--color-caret);
