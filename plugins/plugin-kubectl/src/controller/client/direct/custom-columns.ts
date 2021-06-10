@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import jsonpath from 'jsonpath'
+import jsonpath from '@kui-shell/jsonpath'
 import { Arguments, Row, Table, encodeComponent } from '@kui-shell/core'
 
 import TrafficLight from '../../../lib/model/traffic-light'
