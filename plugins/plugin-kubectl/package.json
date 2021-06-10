@@ -32,7 +32,7 @@
     "debug": "4.3.1",
     "fs-extra": "9.1.0",
     "js-yaml": "4.1.0",
-    "@kui-shell/jsonpath": "1.1.0",
+    "@kui-shell/jsonpath": "1.1.1",
     "needle": "2.6.0",
     "parse-duration": "1.0.0",
     "pluralize": "8.0.0",
