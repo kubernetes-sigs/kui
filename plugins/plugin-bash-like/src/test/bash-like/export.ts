@@ -29,6 +29,10 @@ import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 const value1 = 'nnnnnn'
 const value2 = 'bar baz'
 const value3 = 'mmmmmm'
+const value4 = '"$(echo hi) $(echo ho)"'
+const _value4 = 'hi ho'
+const value5 = '"`echo yo` $(echo yoyo)"'
+const _value5 = 'yo yoyo'
 
 describe('export command', function(this: Common.ISuite) {
   before(Common.before(this))
@@ -44,6 +48,8 @@ describe('export command', function(this: Common.ISuite) {
       .then(ReplExpect.okWithAny)
       .then(() => CLI.command('pwd', this.app).then(ReplExpect.okWithString(process.env.HOME)))
       .then(() => CLI.command('printenv HOME', this.app).then(ReplExpect.okWithPtyOutput(home)))
+      .then(() => CLI.command('export testpath=$HOME/bin', this.app).then(ReplExpect.okWithAny))
+      .then(() => CLI.command('printenv testpath', this.app).then(ReplExpect.okWithPtyOutput(`${home}/bin`)))
       .catch(Common.oops(this))
   })
 
@@ -91,6 +97,30 @@ describe('export command', function(this: Common.ISuite) {
       .catch(Common.oops(this))
   )
 
+  Common.pit(`should export foo ${value4}`, () =>
+    CLI.command(`export foo=${value4}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this))
+  )
+
+  Common.pit('should printenv the new value for foo in the second tab', () =>
+    CLI.command('printenv foo', this.app)
+      .then(ReplExpect.okWithPtyOutput(_value4))
+      .catch(Common.oops(this))
+  )
+
+  Common.pit(`should export foo ${value5}`, () =>
+    CLI.command(`export foo=${value5}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this))
+  )
+
+  Common.pit('should printenv the new value for foo in the second tab', () =>
+    CLI.command('printenv foo', this.app)
+      .then(ReplExpect.okWithPtyOutput(_value5))
+      .catch(Common.oops(this))
+  )
+
   Common.pit('should switch back to the first tab', () =>
     CLI.command('tab switch 1', this.app)
       .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(1)))
@@ -113,7 +143,7 @@ describe('export command', function(this: Common.ISuite) {
 
   Common.pit('should show the second-tab value for foo in the second tab', () =>
     CLI.command('printenv foo', this.app)
-      .then(ReplExpect.okWithPtyOutput(value3))
+      .then(ReplExpect.okWithPtyOutput(_value5))
       .catch(Common.oops(this))
   )
 })
