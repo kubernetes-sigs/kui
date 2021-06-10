@@ -15,19 +15,22 @@
  */
 
 import { Arguments, Registrar, SymbolTable, eventBus } from '@kui-shell/core'
+import { doExecWithStdoutViaPty } from './catchall'
 
 /**
  * export command
  *
  */
-const exportCommand = ({ tab, parsedOptions }: Arguments) => {
+const exportCommand = async (args: Arguments) => {
+  const { command, tab, parsedOptions } = args
   const curDic = SymbolTable.read(tab)
 
   const toBeParsed = parsedOptions._[1]
   const arr = toBeParsed.split('=')
   const key = arr[0]
-  const value = arr[1]
 
+  const myArgs = Object.assign({}, args, { command: `${command}; echo $${key}` })
+  const value = await doExecWithStdoutViaPty(myArgs)
   curDic[key] = value
 
   SymbolTable.write(tab, curDic)
