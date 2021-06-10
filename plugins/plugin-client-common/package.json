@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-common",
-  "version": "10.3.19",
+  "version": "10.3.20",
   "description": "Kui plugin that offers stylesheets",
   "license": "Apache-2.0",
   "author": "Mengting Yan",

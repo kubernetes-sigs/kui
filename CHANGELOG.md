@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.20](https://github.com/IBM/kui/compare/v10.3.19...v10.3.20) (2021-06-10)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** unable to set variable to command output ([ec8bbaa](https://github.com/IBM/kui/commit/ec8bbaa))
+
 ## [10.3.19](https://github.com/IBM/kui/compare/v10.3.18...v10.3.19) (2021-06-10)
 
 ### Bug Fixes
