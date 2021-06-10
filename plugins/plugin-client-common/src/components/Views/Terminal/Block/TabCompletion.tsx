@@ -29,7 +29,7 @@ import {
 } from '@kui-shell/core'
 
 import Button from '../../../spi/Button'
-import { InputProvider as Input } from './Input'
+import { InputElement, InputProvider as Input } from './Input'
 import '../../../../../web/css/static/TabCompletion.scss'
 
 const debug = Debug('Terminal/Input/TabCompletion')
@@ -243,7 +243,7 @@ class TabCompletionInitialState extends TabCompletionState {
  * not trigger onChange events, so a bit of round-about is needed.
  *
  */
-function setPromptValue(prompt: HTMLInputElement, newValue: string, selectionStart: number) {
+function setPromptValue(prompt: InputElement, newValue: string, selectionStart: number) {
   const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set
   nativeInputValueSetter.call(prompt, newValue)
 

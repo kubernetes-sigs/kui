@@ -16,8 +16,10 @@
 
 import { Tab as KuiTab } from '@kui-shell/core'
 import { isClipboardTransferString } from '../ClipboardTransfer'
+import { InputElement, InputProvider as Input } from './Input'
+import { isMultiLineHereDoc } from '../../util/multiline-input'
 
-export const doPaste = (text: string, tab: KuiTab, prompt: HTMLInputElement) => {
+export const doPaste = (text: string, tab: KuiTab, prompt: InputElement) => {
   // const prompt = event.currentTarget
   const lines = text.split(/[\n\r]/)
 
@@ -73,7 +75,7 @@ export const doPaste = (text: string, tab: KuiTab, prompt: HTMLInputElement) => 
  * @return a Promise of when we will be done.
  *
  */
-export function onPasteAsync(event: ClipboardEvent, tab: KuiTab, prompt: HTMLInputElement): Promise<void> {
+export function onPasteAsync(this: Input, event: ClipboardEvent, tab: KuiTab, prompt: InputElement): Promise<void> {
   const text = event.clipboardData.getData('text')
   if (text) {
     // we'll handle it from here!
@@ -84,7 +86,11 @@ export function onPasteAsync(event: ClipboardEvent, tab: KuiTab, prompt: HTMLInp
       return
     }
 
-    return doPaste(text, tab, prompt)
+    if (isMultiLineHereDoc(text)) {
+      this.setState({ multiline: true, pasteMultiLineTexts: text })
+    } else {
+      return doPaste(text, tab, prompt)
+    }
   }
 }
 
@@ -92,6 +98,6 @@ export function onPasteAsync(event: ClipboardEvent, tab: KuiTab, prompt: HTMLInp
  * User has requested that we paste something from the clipboard
  *
  */
-export default function onPaste(event: ClipboardEvent, tab: KuiTab, prompt: HTMLInputElement) {
-  onPasteAsync(event, tab, prompt)
+export default function onPaste(this: Input, event: ClipboardEvent, tab: KuiTab, prompt: InputElement) {
+  onPasteAsync.bind(this)(event, tab, prompt)
 }

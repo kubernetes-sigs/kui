@@ -18,7 +18,7 @@ import Debug from 'debug'
 
 import { inBrowser, inElectron, KeyCodes, eventChannelUnsafe, doCancel, HistoryLine, splitFor } from '@kui-shell/core'
 
-import { InputProvider as Input } from './Input'
+import { isHTMLInputElement, InputElement, InputProvider as Input } from './Input'
 import startTabCompletion from './TabCompletion'
 
 const debug = Debug('Terminal/Block/OnKeyDown')
@@ -32,7 +32,7 @@ interface MSIETextRange {
 interface MSIEControl extends HTMLInputElement {
   createTextRange: () => MSIETextRange
 }
-function isMSIEControl(ctrl: HTMLInputElement): ctrl is MSIEControl {
+function isMSIEControl(ctrl: InputElement): ctrl is MSIEControl {
   return Object.prototype.hasOwnProperty.call(ctrl, 'createTextRange')
 }
 
@@ -40,7 +40,7 @@ function isMSIEControl(ctrl: HTMLInputElement): ctrl is MSIEControl {
  * Update the caret position in an html INPUT field
  *
  */
-const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
+const setCaretPosition = (ctrl: InputElement, pos: number) => {
   if (ctrl.setSelectionRange) {
     ctrl.focus()
     ctrl.setSelectionRange(pos, pos)
@@ -53,8 +53,9 @@ const setCaretPosition = (ctrl: HTMLInputElement, pos: number) => {
   }
 }
 
-const setCaretPositionToStart = (input: HTMLInputElement) => setCaretPosition(input, 0)
-const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(input, input.value.length)
+const setCaretPositionToStart = (input: InputElement) => setCaretPosition(input, 0)
+const setCaretPositionToEnd = (input: InputElement) => setCaretPosition(input, input.value.length)
+export const setCaretPositionToLineStart = (input: InputElement) => setCaretPosition(input, input.selectionStart)
 
 /** Update the given input to reflect the given HistoryLine */
 const updateInputAndMoveCaretToEOL = (input: Input, entry: HistoryLine) => {
@@ -73,7 +74,7 @@ const updateInputAndMoveCaretToEOL = (input: Input, entry: HistoryLine) => {
  * "hello.world<userHitsCtrl+Delete>" -> "hello"
  *
  */
-function deleteThisWord(prompt: HTMLInputElement) {
+function deleteThisWord(prompt: InputElement) {
   const start = prompt.selectionStart
   const end = prompt.selectionEnd
 
@@ -108,41 +109,8 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
     startTabCompletion(this, event)
   }
 
-  if (char === KeyCodes.UP || (char === KeyCodes.P && event.ctrlKey)) {
-    // go to previous command in history
-    setTimeout(async () => {
-      const historyModel = await (await import('@kui-shell/core')).History(tab)
-      const entry = historyModel.previous()
-      if (entry) {
-        updateInputAndMoveCaretToEOL(this, entry)
-      }
-    })
-  } else if (char === KeyCodes.D && event.ctrlKey) {
-    if (prompt.value === '') {
-      // <-- only if the line is blank
-      debug('exit via ctrl+D')
-      tab.REPL.pexec('exit', { tab })
-    }
-  } else if (event.key === 'Backspace' && event.ctrlKey) {
+  if (event.key === 'Backspace' && event.ctrlKey) {
     deleteThisWord(prompt)
-  } else if (char === KeyCodes.PAGEUP) {
-    if (inBrowser()) {
-      debug('pageup')
-      const { height } = document.body.getBoundingClientRect()
-      document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, -height)
-    } else if (this.props.isPartOfMiniSplit) {
-      // in minisplits, pageup means navigate to previous Block
-      this.props.navigateTo('previous')
-    }
-  } else if (char === KeyCodes.PAGEDOWN) {
-    if (inBrowser()) {
-      debug('pagedown')
-      const { height } = document.body.getBoundingClientRect()
-      document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, +height)
-    } else if (this.props.isPartOfMiniSplit) {
-      // in minisplits, pageup means navigate to next Block
-      this.props.navigateTo('next')
-    }
   } else if (char === KeyCodes.C && event.ctrlKey) {
     // block could be undefined for bottom-input mode
     if (block) {
@@ -152,38 +120,76 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
   } else if (char === KeyCodes.U && event.ctrlKey) {
     // clear line
     prompt.value = ''
-  } else if (
-    (char === KeyCodes.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
-    (process.platform === 'darwin' && char === KeyCodes.K && event.metaKey)
-  ) {
-    // clear screen; capture and restore the current
-    // prompt value, in keeping with unix terminal
-    // behavior
-    eventChannelUnsafe.emit('/terminal/clear')
-    eventChannelUnsafe.emit(`/terminal/clear/${this.props.uuid}`)
-    eventChannelUnsafe.emit(`/close/views/${this.props.uuid}`)
-    // restore the prompt cursor position
-    // debug('restoring cursor position', currentCursorPosition)
-    // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
   } else if (event.key === 'Home' && event.shiftKey && process.platform === 'darwin') {
     // go to beginning of line
     setCaretPositionToStart(prompt)
   } else if (event.key === 'End' && event.shiftKey && process.platform === 'darwin') {
     // go to end of line
     setCaretPositionToEnd(prompt)
-  } else if (char === KeyCodes.DOWN || (char === KeyCodes.N && event.ctrlKey)) {
-    // going DOWN past the last history item will result in '', i.e. a blank line
-    setTimeout(async () => {
-      const historyModel = await (await import('@kui-shell/core')).History(tab)
-      const entry = historyModel.next()
-      updateInputAndMoveCaretToEOL(this, entry)
-    })
-  } else if (event.key === 'w' && event.ctrlKey) {
-    const { prompt } = this.state
-    const idx = prompt.value.lastIndexOf(
-      ' ',
-      prompt.value.charAt(prompt.value.length - 1) === ' ' ? prompt.value.length - 2 : prompt.value.length - 1
-    )
-    this.state.prompt.value = this.state.prompt.value.slice(0, idx + 1)
+  }
+
+  // keydown handler for HTMLInputElement
+  if (isHTMLInputElement(this.state.prompt)) {
+    if (char === KeyCodes.UP || (char === KeyCodes.P && event.ctrlKey)) {
+      // go to previous command in history
+      setTimeout(async () => {
+        const historyModel = await (await import('@kui-shell/core')).History(tab)
+        const entry = historyModel.previous()
+        if (entry) {
+          updateInputAndMoveCaretToEOL(this, entry)
+        }
+      })
+    } else if (char === KeyCodes.D && event.ctrlKey) {
+      if (prompt.value === '') {
+        // <-- only if the line is blank
+        debug('exit via ctrl+D')
+        tab.REPL.pexec('exit', { tab })
+      }
+    } else if (char === KeyCodes.PAGEUP) {
+      if (inBrowser()) {
+        debug('pageup')
+        const { height } = document.body.getBoundingClientRect()
+        document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, -height)
+      } else if (this.props.isPartOfMiniSplit) {
+        // in minisplits, pageup means navigate to previous Block
+        this.props.navigateTo('previous')
+      }
+    } else if (char === KeyCodes.PAGEDOWN) {
+      if (inBrowser()) {
+        debug('pagedown')
+        const { height } = document.body.getBoundingClientRect()
+        document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, +height)
+      } else if (this.props.isPartOfMiniSplit) {
+        // in minisplits, pageup means navigate to next Block
+        this.props.navigateTo('next')
+      }
+    } else if (
+      (char === KeyCodes.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
+      (process.platform === 'darwin' && char === KeyCodes.K && event.metaKey)
+    ) {
+      // clear screen; capture and restore the current
+      // prompt value, in keeping with unix terminal
+      // behavior
+      eventChannelUnsafe.emit('/terminal/clear')
+      eventChannelUnsafe.emit(`/terminal/clear/${this.props.uuid}`)
+      eventChannelUnsafe.emit(`/close/views/${this.props.uuid}`)
+      // restore the prompt cursor position
+      // debug('restoring cursor position', currentCursorPosition)
+      // getCurrentPrompt().setSelectionRange(currentCursorPosition, currentCursorPosition)
+    } else if (char === KeyCodes.DOWN || (char === KeyCodes.N && event.ctrlKey)) {
+      // going DOWN past the last history item will result in '', i.e. a blank line
+      setTimeout(async () => {
+        const historyModel = await (await import('@kui-shell/core')).History(tab)
+        const entry = historyModel.next()
+        updateInputAndMoveCaretToEOL(this, entry)
+      })
+    } else if (event.key === 'w' && event.ctrlKey) {
+      const { prompt } = this.state
+      const idx = prompt.value.lastIndexOf(
+        ' ',
+        prompt.value.charAt(prompt.value.length - 1) === ' ' ? prompt.value.length - 2 : prompt.value.length - 1
+      )
+      this.state.prompt.value = this.state.prompt.value.slice(0, idx + 1)
+    }
   }
 }

@@ -15,24 +15,35 @@
  */
 
 import { hasUUID } from './BlockModel'
-import { InputProvider as Input } from './Input'
+import { isHTMLInputElement, isHTMLTextAreaElement, InputProvider as Input } from './Input'
+import { endsWithBackSlash } from '../../util/multiline-input'
 
 export default async function onKeyPress(this: Input, event: KeyboardEvent) {
   const char = event.key
   if (char === 'Enter') {
-    // user typed Enter; we've finished Reading, now Evalute
-    const { doEval } = await import('@kui-shell/core')
+    const shiftInTextAreaMode = isHTMLTextAreaElement(this.state.prompt) && event.shiftKey
 
-    // Do we already have an execUUID? if so, this means we are in the
-    // midst of a command re-execution. In order to have the command
-    // response flow back to the same block, we have to reuse the
-    // execUUID. See https://github.com/IBM/kui/issues/5814
-    const execUUID = hasUUID(this.props.model) ? this.props.model.execUUID : undefined
+    if (endsWithBackSlash(this.state.prompt.value)) {
+      if (isHTMLInputElement(this.state.prompt)) {
+        // user typed backslash and Enter; input'll enter multiline mode, and keep reading
+        this.setState({ multiline: true })
+      }
+    } else if (!shiftInTextAreaMode) {
+      // user typed Enter; we've finished Reading, now Evalute
+      const { doEval } = await import('@kui-shell/core')
 
-    // see https://github.com/IBM/kui/issues/6311
-    this.setState({ isReEdit: false })
+      // Do we already have an execUUID? if so, this means we are in the
+      // midst of a command re-execution. In order to have the command
+      // response flow back to the same block, we have to reuse the
+      // execUUID. See https://github.com/IBM/kui/issues/5814
+      const execUUID = hasUUID(this.props.model) ? this.props.model.execUUID : undefined
 
-    doEval(this.props.tab, this.props._block, this.state.prompt.value.trim(), execUUID)
-    //                                                                        ^^^^ reusing execUUID
+      // see https://github.com/IBM/kui/issues/6311
+      this.setState({ isReEdit: false })
+
+      // FIXME: shiftreturned line should be joined with '\'?
+      doEval(this.props.tab, this.props._block, this.state.prompt.value.trim(), execUUID)
+      //                                                                        ^^^^ reusing execUUID
+    }
   }
 }
