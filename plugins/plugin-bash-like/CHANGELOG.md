@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.19](https://github.com/IBM/kui/compare/v10.3.18...v10.3.19) (2021-06-10)
+
+### Bug Fixes
+
+- width of vi not correct after closing splits ([0ac9af0](https://github.com/IBM/kui/commit/0ac9af0)), closes [#7600](https://github.com/IBM/kui/issues/7600)
+
 ## [10.3.18](https://github.com/IBM/kui/compare/v10.3.17...v10.3.18) (2021-06-08)
 
 ### Bug Fixes

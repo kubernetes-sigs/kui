@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.19](https://github.com/IBM/kui/compare/v10.3.18...v10.3.19) (2021-06-10)
+
+### Bug Fixes
+
+- width of vi not correct after closing splits ([0ac9af0](https://github.com/IBM/kui/commit/0ac9af0)), closes [#7600](https://github.com/IBM/kui/issues/7600)
+- **plugins/plugin-client-common:** after clicking split Clear button, that split's input should have focus ([d7fb8af](https://github.com/IBM/kui/commit/d7fb8af)), closes [#7585](https://github.com/IBM/kui/issues/7585)
+- **plugins/plugin-client-common:** Block UI has transient orange outline on focus ([8000b66](https://github.com/IBM/kui/commit/8000b66)), closes [#7596](https://github.com/IBM/kui/issues/7596)
+- **plugins/plugin-client-common:** fullscreen pty apps like vi are a bit too tall ([b65e507](https://github.com/IBM/kui/commit/b65e507)), closes [#7598](https://github.com/IBM/kui/issues/7598)
+- history commands in bottom-input mode show history of Primary Tab instead of Split ([f467a8d](https://github.com/IBM/kui/commit/f467a8d))
+- **plugins/plugin-client-common:** remove the "press ctrl+d to close this split" placeholder text ([01e6799](https://github.com/IBM/kui/commit/01e6799)), closes [#7587](https://github.com/IBM/kui/issues/7587)
+- StatusStripe text can oddly overflow ([9d989fd](https://github.com/IBM/kui/commit/9d989fd))
+
 ## [10.3.18](https://github.com/IBM/kui/compare/v10.3.17...v10.3.18) (2021-06-08)
 
 ### Bug Fixes

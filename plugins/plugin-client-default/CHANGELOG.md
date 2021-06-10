@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.19](https://github.com/IBM/kui/compare/v10.3.18...v10.3.19) (2021-06-10)
+
+**Note:** Version bump only for package @kui-shell/plugin-client
+
 ## [10.3.18](https://github.com/IBM/kui/compare/v10.3.17...v10.3.18) (2021-06-08)
 
 **Note:** Version bump only for package @kui-shell/plugin-client
