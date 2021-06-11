@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-@import '../Terminal/mixins';
+@import '../components/Terminal/mixins';
+
+@mixin LightweightUI {
+  html.kui > body.kui--lightweight-ui {
+    @content;
+  }
+}
 
 @mixin NoPadding {
   padding: 0;

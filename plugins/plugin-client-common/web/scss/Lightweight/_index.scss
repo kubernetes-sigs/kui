@@ -15,13 +15,11 @@
  */
 
 @import 'mixins';
-@import 'lightweight_mixins';
-@import '../Table/mixins';
-@import '../Sidecar/mixins';
-@import '../Terminal/mixins';
-@import '../common/Lightweight';
-@import '../TopTabStripe/mixins';
-@import 'SequenceDiagram/mixins';
+@import '../components/Table/mixins';
+@import '../components/Sidecar/mixins';
+@import '../components/Terminal/mixins';
+@import '../components/TopTabStripe/mixins';
+@import '../components/Table/SequenceDiagram/mixins';
 
 $block-padding: 0.25em;
 $row-height: 1.5em;
@@ -29,6 +27,11 @@ $row-height: 1.5em;
 @include LightweightUI {
   font-size: 0.8125rem; /* 13px */
   --kui--font-factor: 0.8125/0.875;
+
+  /* No "Brand" */
+  @include HeaderNameContainer {
+    display: none;
+  }
 
   @include SideBySide {
     @include LightweightBlocks;
@@ -89,11 +92,11 @@ $row-height: 1.5em;
   }
 
   @include TableRow {
+    border: none;
     height: $row-height;
   }
 
   @include TopTabStripe {
-    height: 2.75em;
     --tab-shadow: inset 0 -2px 0 0;
 
     @include TopTabStripe_Tab_Active {

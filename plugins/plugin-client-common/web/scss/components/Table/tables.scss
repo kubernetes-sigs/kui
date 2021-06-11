@@ -14,133 +14,10 @@
  * limitations under the License.
  */
 
-@import './sizing';
+@import 'mixins';
+@import 'sizing';
 @import '../common/narrow-window';
-@import './mixins';
 @import '../Card/mixins';
-
-body[kui-theme-style] {
-  .bx--select--inline .bx--select-input {
-    fill: var(--color-text-01);
-  }
-  .bx--select__arrow {
-    fill: var(--color-text-01);
-  }
-}
-
-body .bx--data-table-container {
-  min-width: unset;
-
-  .bx--data-table-header {
-    background-color: var(--color-stripe-01);
-
-    .bx--data-table-header__title {
-      color: var(--color-text-02);
-    }
-  }
-
-  .bx--data-table {
-    font-family: var(--font-sans-serif);
-
-    /* markdown */
-    p {
-      padding: 0;
-      font-size: inherit;
-      line-height: inherit;
-      font-weight: inherit;
-    }
-    .clickable:not(:hover) p code {
-      color: var(--color-text-02);
-    }
-
-    /* td [data-key='NAME'],
-    td .kui--table-cell-is-name {
-      font-weight: 700;
-    } */
-
-    tbody,
-    td {
-      background-color: transparent; /* var(--color-ui-02) */
-    }
-
-    tbody tr:hover,
-    tbody tr.bx--data-table--selected:hover {
-      &,
-      td {
-        background-color: var(--color-ui-03);
-        color: var(--color-text-01);
-        border-color: var(--color-table-border1);
-      }
-    }
-
-    th,
-    .bx--table-sort {
-      vertical-align: middle; /* why do we need this? (we do, currently) */
-    }
-
-    .bx--table-sort {
-      padding: 0;
-    }
-
-    td,
-    th,
-    .bx--table-sort {
-      font-size: $font-size;
-      color: var(--color-text-01);
-    }
-
-    td,
-    th,
-    tr,
-    .bx--table-sort__flex {
-      height: 2em;
-    }
-    th .bx--table-sort__flex {
-      min-height: 2em;
-    }
-
-    .bx--table-sort__icon {
-      fill: var(--color-text-02);
-    }
-    .bx--table-sort__icon-unsorted {
-      fill: var(--color-text-01);
-    }
-  }
-}
-
-body .bx--data-table {
-  --table-head-background-color: var(--color-base03);
-
-  th {
-    vertical-align: middle;
-  }
-
-  th,
-  .bx--table-sort {
-    background-color: var(--table-head-background-color);
-  }
-
-  thead,
-  tbody {
-    font-size: $font-size;
-  }
-
-  thead {
-    background-color: transparent;
-  }
-
-  td {
-    border-top-color: var(--color-table-border1);
-    border-bottom-color: var(--color-table-border3);
-  }
-
-  tr:hover,
-  tbody tr:hover td,
-  tbody tr.bx--data-table--selected:hover,
-  tbody tr.bx--data-table--selected:hover td {
-    background-color: transparent;
-  }
-}
 
 @mixin full-width-tables {
   .kui--data-table-wrapper:not(.kui--data-table-as-grid) {
@@ -207,54 +84,56 @@ body .bx--data-table {
   }
 }
 
-body[kui-theme-style] .kui--data-table-wrapper {
-  overflow-x: auto;
+body[kui-theme-style] {
+  @include TableOuter {
+    overflow-x: auto;
 
-  .kui--table-like-wrapper p {
-    margin: 0;
-  }
-
-  .kui--screenshotable {
-    flex: 1;
-    display: flex;
-  }
-
-  @include CardFooter {
-    padding: 0;
-    .kui--data-table-toolbar-bottom {
-      padding-left: var(--pf-c-card--child--PaddingLeft);
-      padding-right: var(--pf-c-card--child--PaddingRight);
+    .kui--table-like-wrapper p {
+      margin: 0;
     }
-  }
 
-  @include CardBody {
-    table {
-      td,
-      th {
+    .kui--screenshotable {
+      flex: 1;
+      display: flex;
+    }
+
+    @include CardFooter {
+      padding: 0;
+      .kui--data-table-toolbar-bottom {
         padding-left: var(--pf-c-card--child--PaddingLeft);
+        padding-right: var(--pf-c-card--child--PaddingRight);
       }
+    }
 
-      td {
-        h2 {
-          margin: 0;
+    @include CardBody {
+      table {
+        td,
+        th {
+          padding-left: var(--pf-c-card--child--PaddingLeft);
+        }
+
+        td {
+          h2 {
+            margin: 0;
+          }
         }
       }
+
+      .pf-m-wrap {
+        word-break: break-all;
+      }
     }
 
-    .pf-m-wrap {
-      word-break: break-all;
-    }
-  }
-
-  &:not(.kui--data-table-as-grid) {
-    .kui--card-body {
-      padding-top: 0;
-      padding-left: 0;
-      padding-right: 0;
-      padding-bottom: 0;
-
-      .bx--data-table-container {
+    &:not(.kui--data-table-as-grid) {
+      .kui--card-body {
         padding-top: 0;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 0;
+
+        .bx--data-table-container {
+          padding-top: 0;
+        }
       }
     }
   }

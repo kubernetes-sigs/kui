@@ -43,8 +43,9 @@ import { BreadcrumbView } from '../../spi/Breadcrumb'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 
 /** import the kui theme alignment */
+import '../../../../web/scss/components/Table/_index.scss'
 import '../../../../web/scss/components/Table/PatternFly.scss'
-import '../../../../web/scss/components/Table/carbon-kui-theme-alignment.scss'
+// import '../../../../web/scss/components/Table/carbon-kui-theme-alignment.scss'
 
 const strings = i18n('plugin-client-common')
 
