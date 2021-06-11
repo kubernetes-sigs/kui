@@ -34,6 +34,7 @@ import {
   i18n
 } from '@kui-shell/core'
 
+import Icons from '../../spi/Icons'
 import ClearButton from './ClearButton'
 import SaveFileButton from './SaveFileButton'
 import RevertFileButton from './RevertFileButton'
@@ -189,6 +190,7 @@ export default class Editor extends React.PureComponent<Props, State> {
           mode: 'Save',
           label: content.spec.save.label || strings('saveLocalFile'),
           kind: 'drilldown' as const,
+          icon: <Icons icon="Save" />,
           inPlace: true,
           command: async () => {
             try {
@@ -256,6 +258,7 @@ export default class Editor extends React.PureComponent<Props, State> {
           mode: 'Revert',
           label: content.spec.revert.label || strings('revert'),
           kind: 'view' as const,
+          icon: <Icons icon="Revert" />,
           command: async () => {
             try {
               const data = await onRevert()
