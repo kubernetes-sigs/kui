@@ -56,6 +56,8 @@ import {
   NetworkWiredIcon as Network,
   PauseCircleIcon as Pause,
   RebootingIcon as Retry,
+  HistoryIcon as Revert,
+  SaveIcon as Save,
   SlidersHIcon as Sequence,
   SearchIcon as Search,
   BellIcon as Notification,
@@ -124,10 +126,14 @@ export default function PatternFly4Icons(props: Props) {
       return <Pause {...props} />
     case 'Play':
       return <Play {...props} />
-    case 'Retry':
-      return <Retry {...props} />
     case 'PreviousPage':
       return <PreviousPage style={Pagination} {...props} />
+    case 'Retry':
+      return <Retry {...props} />
+    case 'Revert':
+      return <Revert {...props} />
+    case 'Save':
+      return <Save {...props} />
     case 'Network':
       return <Network {...props} />
     case 'NextPage':

@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import React from 'react'
 import { editor as Monaco } from 'monaco-editor'
 import { i18n, Button, REPL } from '@kui-shell/core'
 import { File } from '@kui-shell/plugin-bash-like/fs'
+
+import Icons from '../../spi/Icons'
 
 const strings = i18n('plugin-client-common', 'editor')
 
@@ -34,6 +37,7 @@ export default function SaveFileButton(
     mode: 'Save',
     kind: 'view',
     label: strings('saveLocalFile'),
+    icon: <Icons icon="Save" />,
 
     command: async () => {
       try {
