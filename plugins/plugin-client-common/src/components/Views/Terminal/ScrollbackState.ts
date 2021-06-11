@@ -50,6 +50,7 @@ type ScrollbackState = ScrollbackOptions & {
   remove: () => void
   clear: () => void
   onClick: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
+  onMouseDown: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
   onFocus: (evt: React.FocusEvent) => void
   onOutputRender: () => void
   navigateTo: (dir: 'first' | 'last' | 'previous' | 'next') => void
@@ -57,6 +58,7 @@ type ScrollbackState = ScrollbackOptions & {
   willFocusBlock: (evt: React.SyntheticEvent) => void
   willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
   willUpdateCommand: (idx: number, command: string) => void
+  tabRefFor: (ref: HTMLElement) => void
 }
 
 export default ScrollbackState
