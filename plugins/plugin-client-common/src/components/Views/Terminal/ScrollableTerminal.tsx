@@ -368,13 +368,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       remove: undefined,
       clear: undefined,
       onClick: undefined,
+      onMouseDown: undefined,
       onFocus: undefined,
       onOutputRender: undefined,
       navigateTo: undefined,
       setActiveBlock: undefined,
       willFocusBlock: undefined,
       willRemoveBlock: undefined,
-      willUpdateCommand: undefined
+      willUpdateCommand: undefined,
+      tabRefFor: undefined
     }
 
     const getBlockIndexFromEvent = (evt: React.SyntheticEvent, doNotComplain = false) => {
@@ -391,14 +393,25 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     state.remove = () => this.removeSplit(sbuuid)
     state.clear = () => this.clear(sbuuid)
+
+    /**
+     * For inline-input clients, we want empty-space clicks to steal
+     * focus away from the other split, if we are switching splits;
+     * otherwise, we don't want empty-space clicks in the focused
+     * split to steal focus away from that split's active input
+     */
     state.onClick = () => {
       if (getSelectionText().length === 0) {
-        const sbidx = this.findSplit(this.state, sbuuid)
-        if (sbidx >= 0) {
-          const scrollback = this.state.splits[sbidx]
-          this.doFocus(scrollback)
-        }
+        this.doFocus(state)
       }
+    }
+
+    /**
+     * For bottom-input clients, we don't want empty-space clicks to
+     * steal focus away from the bottom input
+     */
+    state.onMouseDown = (evt: React.MouseEvent<HTMLElement>) => {
+      evt.preventDefault()
     }
 
     /** Output.tsx finished rendering something */
@@ -406,11 +419,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       if (!this.props.noActiveInput) {
         // if we are using inline input, then scroll to the bottom
         // whenever an output is rendered in this split
-        const sbidx = this.findSplit(this.state, sbuuid)
-        if (sbidx >= 0) {
-          const scrollback = this.state.splits[sbidx]
-          setTimeout(() => scrollback.facade.scrollToBottom())
-        }
+        setTimeout(() => state.facade.scrollToBottom())
       }
     }
 
@@ -519,6 +528,34 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             focusedBlockIdx
           }
         })
+      }
+    }
+
+    state.tabRefFor = (ref: HTMLElement) => {
+      const scrollback = state
+      if (ref) {
+        ref['facade'] = scrollback.facade
+        scrollback.facade.getSize = getSize.bind(ref)
+
+        scrollback.facade.splitCount = () => this.state.splits.length
+        scrollback.facade.hasSideBySideTerminals = () => {
+          return !!this.state.splits.find((_, sbidx) => this.isASideBySide(sbidx))
+        }
+
+        scrollback.facade.scrollToBottom = () => {
+          ref.scrollTop = ref.scrollHeight
+        }
+
+        scrollback.facade.scrollToTop = () => {
+          ref.scrollTop = 0
+        }
+
+        scrollback.facade.addClass = (cls: string) => {
+          ref.classList.add(cls)
+        }
+        scrollback.facade.removeClass = (cls: string) => {
+          ref.classList.remove(cls)
+        }
       }
     }
 
@@ -1120,33 +1157,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return this.theseAreSideBySide[this.state.splits.length][sbidx]
   }
 
-  private tabRefFor(scrollback: ScrollbackState, ref: HTMLElement) {
-    if (ref) {
-      ref['facade'] = scrollback.facade
-      scrollback.facade.getSize = getSize.bind(ref)
-
-      scrollback.facade.splitCount = () => this.state.splits.length
-      scrollback.facade.hasSideBySideTerminals = () => {
-        return !!this.state.splits.find((_, sbidx) => this.isASideBySide(sbidx))
-      }
-
-      scrollback.facade.scrollToBottom = () => {
-        ref.scrollTop = ref.scrollHeight
-      }
-
-      scrollback.facade.scrollToTop = () => {
-        ref.scrollTop = 0
-      }
-
-      scrollback.facade.addClass = (cls: string) => {
-        ref.classList.add(cls)
-      }
-      scrollback.facade.removeClass = (cls: string) => {
-        ref.classList.remove(cls)
-      }
-    }
-  }
-
   private tabFor(scrollback: ScrollbackState): KuiTab {
     if (!scrollback.facade) {
       const { uuid } = scrollback
@@ -1313,8 +1323,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         data-is-focused={sbidx === this.state.focusedIdx || undefined}
         key={tab.uuid}
         data-scrollback-id={tab.uuid}
-        ref={ref => this.tabRefFor(scrollback, ref)}
-        onClick={scrollback.onClick}
+        ref={scrollback.tabRefFor}
+        onClick={!this.props.noActiveInput ? scrollback.onClick : undefined}
+        onMouseDown={this.props.noActiveInput ? scrollback.onMouseDown : undefined}
       >
         <React.Fragment>
           {this.state.splits.length > 1 && <SplitHeader onRemove={scrollback.remove} onClear={scrollback.clear} />}
