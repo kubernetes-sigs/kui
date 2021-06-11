@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import React from 'react'
 import { editor as Monaco } from 'monaco-editor'
 import { i18n, Button } from '@kui-shell/core'
+
+import Icons from '../../spi/Icons'
 
 const strings = i18n('plugin-client-common', 'editor')
 
@@ -27,6 +30,7 @@ export default function ClearButton(editor: Monaco.ICodeEditor, onClear?: () => 
   return {
     mode: 'Clear',
     kind: 'view',
+    icon: <Icons icon="Clear" />,
     label: strings('Clear'),
     command: () => {
       editor.setValue('')
