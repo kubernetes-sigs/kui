@@ -54,7 +54,7 @@
     "raw-loader": "4.0.2",
     "require-all": "3.0.0",
     "sass": "1.34.1",
-    "sass-loader": "12.0.0",
+    "sass-loader": "12.1.0",
     "shebang-loader": "0.0.1",
     "source-map-loader": "3.0.0",
     "stream-browserify": "3.0.0",
