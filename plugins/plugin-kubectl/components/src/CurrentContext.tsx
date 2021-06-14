@@ -241,7 +241,6 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
    *
    */
   public componentDidMount() {
-    this.handler()
     eventBus.on('/tab/new', this.handler)
     eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
