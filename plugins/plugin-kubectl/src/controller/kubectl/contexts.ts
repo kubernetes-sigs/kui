@@ -71,20 +71,20 @@ export async function getCurrentContextName({ REPL }: { REPL: REPLType }): Promi
 }
 
 /** Extract the namespace from the current context */
-let currentDefaultNamespaceCache: string
-let currentDefaultContextCache: string
+let currentDefaultNamespaceCache: Promise<string>
+let currentDefaultContextCache: Promise<string>
 
 onKubectlConfigChangeEvents((type, namespace, context) => {
   if (type === 'SetNamespaceOrContext') {
     if (typeof namespace === 'string' && namespace.length > 0) {
-      currentDefaultNamespaceCache = namespace
+      currentDefaultNamespaceCache = Promise.resolve(namespace)
     } else {
       // invalidate cache
       currentDefaultNamespaceCache = undefined
     }
 
     if (typeof context === 'string' && context.length > 0) {
-      currentDefaultContextCache = context
+      currentDefaultContextCache = Promise.resolve(context)
     } else {
       // invalidate cache
       currentDefaultContextCache = undefined
@@ -96,51 +96,52 @@ export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }): 
     return currentDefaultNamespaceCache
   }
 
-  const cmdline = `kubectl config view --minify --output "jsonpath={..namespace}"`
-  const ns = await REPL.qexec<string | number>(cmdline)
-    .then(_ns => {
-      const ns = typeof _ns === 'number' ? _ns.toString() : _ns // ns might be number
+  // eslint-disable-next-line no-async-promise-executor
+  currentDefaultNamespaceCache = new Promise(async resolve => {
+    const cmdline = `kubectl config view --minify --output "jsonpath={..namespace}"`
+    const ns = await REPL.qexec<string | number>(cmdline)
+      .then(_ns => {
+        const ns = typeof _ns === 'number' ? _ns.toString() : _ns // ns might be number
 
-      if (typeof ns !== 'string' || ns.length === 0) {
-        // e.g. microk8s
-        console.error('Suspicious return value for current namespace', ns, cmdline)
-        return 'default'
-      } else {
-        return ns
-      }
-    })
-    .then(ns => {
-      currentDefaultNamespaceCache = ns
-      return ns
-    })
-    .catch(err => {
-      if (err.code !== 404 && !/command not found/.test(err.message)) {
-        console.error('error determining default namespace', err)
-      }
-      return 'default'
-    })
+        if (typeof ns !== 'string' || ns.length === 0) {
+          // e.g. microk8s
+          console.error('Suspicious return value for current namespace', ns, cmdline)
+          return 'default'
+        } else {
+          return ns
+        }
+      })
+      .catch(err => {
+        if (err.code !== 404 && !/command not found/.test(err.message)) {
+          console.error('error determining default namespace', err)
+        }
+        resolve('default')
+      })
 
-  return ns ? ns.trim() : ns
+    resolve(ns ? ns.trim() : 'default')
+  })
+
+  return currentDefaultNamespaceCache
 }
 
-export async function getCurrentDefaultContextName({ REPL }: { REPL: REPLType }): Promise<string> {
+export function getCurrentDefaultContextName({ REPL }: { REPL: REPLType }): Promise<string> {
   if (currentDefaultContextCache) {
     return currentDefaultContextCache
   }
 
-  const context = await getCurrentContextName({ REPL })
-    .then(context => {
-      currentDefaultContextCache = context
-      return context
-    })
-    .catch(err => {
+  // eslint-disable-next-line no-async-promise-executor
+  currentDefaultContextCache = new Promise(async resolve => {
+    const context = await getCurrentContextName({ REPL }).catch(err => {
       if (err.code !== 404 && !/command not found/.test(err.message)) {
         console.error('error determining default context', err)
       }
       return ''
     })
 
-  return context
+    resolve(context)
+  })
+
+  return currentDefaultContextCache
 }
 
 /**
