@@ -30,14 +30,14 @@ interface WithTabUUID {
   uuid: string
 }
 
-interface WithTab {
-  tab: KuiTab
+interface WithTab<T extends KuiTab | React.RefObject<KuiTab> = React.RefObject<KuiTab>> {
+  tab: T
   tabClassList: Record<string, boolean>
 }
 
 export type TabContentOptions = TerminalOptions & {
   /** [Optional] elements to be placed below the Terminal */
-  bottom?: React.ReactElement<WithTabUUID & WithTab>
+  bottom?: React.ReactElement<WithTabUUID & WithTab<KuiTab>>
 
   onTabReady?: (tab: KuiTab) => void
 }
@@ -59,7 +59,7 @@ type State = Partial<WithTab> & {
   showSessionInitDone: boolean
 
   /** grab a ref (below) so that we can maintain focus */
-  _terminal: ScrollableTerminal
+  _terminal: React.RefObject<ScrollableTerminal>
 }
 
 /**
@@ -86,20 +86,22 @@ export default class TabContent extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      tab: undefined,
+      tab: React.createRef(),
       sessionInit: 'NotYet',
       showSessionInitDone: true,
-      _terminal: undefined
+      _terminal: React.createRef()
     }
   }
 
   public componentDidMount() {
+    this.oneTimeInit()
+
     const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
 
       try {
         if (this.props.onTabReady) {
-          this.props.onTabReady(this.state.tab)
+          this.props.onTabReady(this.state.tab.current)
         }
       } catch (err) {
         console.error('Error in onTabReady', err)
@@ -124,7 +126,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       sessionInit: 'Reinit'
     })
 
-    initializeSession(this.state.tab)
+    initializeSession(this.state.tab.current)
       .then(() => {
         this.setState({
           sessionInit: 'Done' as const
@@ -137,17 +139,19 @@ export default class TabContent extends React.PureComponent<Props, State> {
     eventChannelUnsafe.emit(`/tab/new/error/${uuid}`, sessionInitError)
   }
 
-  /** emit /tab/new event, if we have now a tab, but have not yet
-   * emitted the event */
-  public static getDerivedStateFromProps(props: Props, state: State) {
-    if (state.tab && state.sessionInit === 'NotYet') {
+  private oneTimeInit() {
+    const { props, state } = this
+
+    if (state.sessionInit === 'NotYet') {
+      this.initTab(this.state.tab.current)
+
       try {
-        state.tab.state = props.state
+        state.tab.current.state = props.state
         // session init hook goes here
-        initializeSession(state.tab)
+        initializeSession(state.tab.current)
           .then(() => {
-            eventBus.emit('/tab/new', state.tab)
-            eventChannelUnsafe.emit(`/tab/new/${props.uuid}`, state.tab)
+            eventBus.emit('/tab/new', state.tab.current)
+            eventChannelUnsafe.emit(`/tab/new/${props.uuid}`, state.tab.current)
           })
           .catch(TabContent.onSessionInitError.bind(undefined, props.uuid))
 
@@ -159,16 +163,65 @@ export default class TabContent extends React.PureComponent<Props, State> {
       } catch (err) {
         console.error(err)
       }
-    } else {
-      if (props.active && state._terminal) {
-        state._terminal.doFocusIfNeeded()
-      }
-      return state
     }
   }
 
+  private initTab(tab: KuiTab) {
+    if (tab) {
+      tab.uuid = this.props.uuid
+
+      const c = tab
+      tab.getSize = getSize.bind(c)
+      tab.scrollToBottom = () => {
+        c.scrollTop = c.scrollHeight
+      }
+      tab.onActivate = (handler: (isActive: boolean) => void) => {
+        this.activateHandlers.push(handler)
+      }
+      tab.offActivate = (handler: (isActive: boolean) => void) => {
+        const idx = this.activateHandlers.findIndex(_ => _ === handler)
+        if (idx >= 0) {
+          this.activateHandlers.splice(idx, 1)
+        }
+      }
+
+      tab.addClass = (cls: string) => {
+        this.setState(curState => {
+          if (!curState.tabClassList || !curState.tabClassList[cls]) {
+            return {
+              tabClassList: Object.assign({}, curState.tabClassList, { [cls]: true })
+            }
+          }
+        })
+      }
+
+      tab.removeClass = (cls: string) => {
+        this.setState(curState => {
+          if (curState.tabClassList && curState.tabClassList[cls]) {
+            const update = Object.assign({}, curState.tabClassList)
+            delete update[cls]
+            return {
+              tabClassList: update
+            }
+          }
+        })
+      }
+    }
+  }
+
+  /** emit /tab/new event, if we have now a tab, but have not yet
+   * emitted the event */
+  public static getDerivedStateFromProps(props: Props, state: State) {
+    if (state.sessionInit === 'Done') {
+      if (props.active && state._terminal.current) {
+        state._terminal.current.doFocusIfNeeded()
+      }
+    }
+    return state
+  }
+
   public componentWillUnmount() {
-    eventBus.emit('/tab/close', this.state.tab)
+    eventBus.emit('/tab/close', this.state.tab.current)
     this.cleaners.forEach(cleaner => cleaner())
   }
 
@@ -199,7 +252,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
             {config => (
               <ScrollableTerminal
                 {...this.props}
-                tab={this.state.tab}
+                tab={this.state.tab.current}
                 config={config}
                 onClear={() => {
                   this.setState({ showSessionInitDone: false })
@@ -207,12 +260,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
                   // reset the status stripe on clearing of the terminal
                   // eslint false positive:
                   // eslint-disable-next-line react/no-direct-mutation-state
-                  this.state.tab.state.desiredStatusStripeDecoration = { type: 'default' }
+                  this.state.tab.current.state.desiredStatusStripeDecoration = { type: 'default' }
                 }}
-                ref={_terminal => {
-                  // so that we can refocus/blur
-                  this.setState({ _terminal })
-                }}
+                ref={this.state._terminal}
               >
                 {this.children()}
               </ScrollableTerminal>
@@ -251,7 +301,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       // ^^^ this check avoids tsc errors
       return React.cloneElement(this.props.bottom, {
         uuid: this.props.uuid,
-        tab: this.state.tab
+        tab: this.state.tab.current
       })
     } else {
       return this.props.bottom
@@ -272,63 +322,16 @@ export default class TabContent extends React.PureComponent<Props, State> {
 
     return (
       <React.Fragment>
-        <div
-          ref={c => {
-            const tab = c as KuiTab
-            this.setState({ tab })
-
-            if (tab) {
-              tab.uuid = this.props.uuid
-
-              tab.getSize = getSize.bind(c)
-              tab.scrollToBottom = () => {
-                c.scrollTop = c.scrollHeight
-              }
-              tab.onActivate = (handler: (isActive: boolean) => void) => {
-                this.activateHandlers.push(handler)
-              }
-              tab.offActivate = (handler: (isActive: boolean) => void) => {
-                const idx = this.activateHandlers.findIndex(_ => _ === handler)
-                if (idx >= 0) {
-                  this.activateHandlers.splice(idx, 1)
-                }
-              }
-
-              tab.addClass = (cls: string) => {
-                this.setState(curState => {
-                  if (!curState.tabClassList || !curState.tabClassList[cls]) {
-                    return {
-                      tabClassList: Object.assign({}, curState.tabClassList, { [cls]: true })
-                    }
-                  }
-                })
-              }
-
-              tab.removeClass = (cls: string) => {
-                this.setState(curState => {
-                  if (curState.tabClassList && curState.tabClassList[cls]) {
-                    const update = Object.assign({}, curState.tabClassList)
-                    delete update[cls]
-                    return {
-                      tabClassList: update
-                    }
-                  }
-                })
-              }
-            }
-          }}
-          className={this.tabClassName()}
-          data-tab-id={this.props.uuid}
-        >
+        <div ref={this.state.tab} className={this.tabClassName()} data-tab-id={this.props.uuid}>
           <div className="kui--rows">
             <div className="kui--columns" style={{ position: 'relative' }}>
               {this.terminal()}
             </div>
             {this.bottom()}
           </div>
-          {this.state.tab && (
+          {this.state.tab.current && (
             <React.Suspense fallback={<div />}>
-              <Confirm tab={this.state.tab} uuid={this.props.uuid} />
+              <Confirm tab={this.state.tab.current} uuid={this.props.uuid} />
             </React.Suspense>
           )}
         </div>
