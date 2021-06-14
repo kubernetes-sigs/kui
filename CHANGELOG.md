@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.21](https://github.com/IBM/kui/compare/v10.3.20...v10.3.21) (2021-06-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** clicking on split blank space does not focus active block ([cb63e34](https://github.com/IBM/kui/commit/cb63e34)), closes [#7618](https://github.com/IBM/kui/issues/7618)
+- **plugins/plugin-client-common:** sidecar editor buttons have no padding ([3d85733](https://github.com/IBM/kui/commit/3d85733)), closes [#7616](https://github.com/IBM/kui/issues/7616)
+- CurrentContext and CurrentNamespace widgets double-fetch onLoad ([39ba4db](https://github.com/IBM/kui/commit/39ba4db)), closes [#7624](https://github.com/IBM/kui/issues/7624)
+
 ## [10.3.20](https://github.com/IBM/kui/compare/v10.3.19...v10.3.20) (2021-06-10)
 
 ### Bug Fixes
