@@ -18,7 +18,16 @@ import React from 'react'
 
 import { Icons, ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
-import { eventBus, i18n, eventChannelUnsafe, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
+import {
+  eventBus,
+  inBrowser,
+  i18n,
+  eventChannelUnsafe,
+  getTab,
+  Tab,
+  TabState,
+  pexecInCurrentTab
+} from '@kui-shell/core'
 
 import {
   kubectl,
@@ -51,9 +60,9 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     super(props)
 
     this.state = {
-      currentNamespace: '',
+      currentNamespace: strings('Loading...'),
       allNamespaces: [],
-      viewLevel: 'hidden'
+      viewLevel: 'info'
     }
   }
 
@@ -129,7 +138,11 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
    *
    */
   public componentDidMount() {
-    eventBus.on('/tab/new', this.handler)
+    if (inBrowser()) {
+      eventBus.on('/tab/new', this.handler)
+    } else {
+      this.handler()
+    }
     eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.onAnyCommandComplete(this.handler)
@@ -166,11 +179,12 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   }
 
   private switchNamespaceDescription() {
-    return (
-      <span className="sub-text bottom-pad">
-        {strings('To change, select from the following list of all known namespaces.')}
-      </span>
-    )
+    const key =
+      this.state.allNamespaces.length === 0
+        ? 'Please wait, while we find your namespaces'
+        : 'To change, select from the following list of all known namespaces.'
+
+    return <span className="sub-text bottom-pad">{strings(key)}</span>
   }
 
   /** @return the options model for the given namespace named `ns` */
@@ -186,6 +200,10 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   }
 
   private switchNamespace() {
+    if (this.state.allNamespaces.length === 0) {
+      return
+    }
+
     const internalNs = this.state.allNamespaces.filter(_ => isInternalNamespace(_)).map(_ => this.optionFor(_))
     const regularNs = this.state.allNamespaces.filter(_ => !isInternalNamespace(_)).map(_ => this.optionFor(_))
 
@@ -233,10 +251,6 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   }
 
   public render() {
-    if (this.state.allNamespaces.length === 0) {
-      return <React.Fragment />
-    }
-
     return (
       <TextWithIconWidget
         className={this.props.className}
