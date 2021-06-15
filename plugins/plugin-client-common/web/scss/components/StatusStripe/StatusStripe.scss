@@ -107,7 +107,8 @@ $z-index: var(--pf-global--ZIndex--xs);
             background-color: var(--color-yellow);
           }
           &[data-view='info'] {
-            background-color: var(--color-brand-01);
+            font-style: italic;
+            background-color: var(--color-base04);
           }
           color: var(--color-base00);
         }
