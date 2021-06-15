@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.22](https://github.com/IBM/kui/compare/v10.3.21...v10.3.22) (2021-06-15)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** CurrentContext/CurrentNamespace widgets show nothing while loading ([3453fb2](https://github.com/IBM/kui/commit/3453fb2)), closes [#7629](https://github.com/IBM/kui/issues/7629)
+
 ## [10.3.21](https://github.com/IBM/kui/compare/v10.3.20...v10.3.21) (2021-06-14)
 
 ### Bug Fixes
