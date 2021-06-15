@@ -41,7 +41,8 @@ export default class CustomInput extends InputProvider<MyState> {
 
     this.state = Object.assign(this.state || {}, {
       model: props.model,
-      customCount: 0
+      customCount: 0,
+      prompt: React.createRef<HTMLInputElement>()
     })
   }
 

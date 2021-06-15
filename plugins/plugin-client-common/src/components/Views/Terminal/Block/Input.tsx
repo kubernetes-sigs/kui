@@ -257,6 +257,23 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     }
   }
 
+  public componentDidMount() {
+    // i'm not sure why the delay is needed :( something steals focus
+    // to document.body after this is mounted
+    setTimeout(() => this.doFocus(), 300)
+  }
+
+  /** Owner wants us to focus on the current prompt */
+  public doFocus() {
+    if (
+      this.props.isFocused !== false &&
+      this.state.prompt.current &&
+      document.activeElement !== this.state.prompt.current
+    ) {
+      this.state.prompt.current.focus()
+    }
+  }
+
   public render() {
     return (
       <React.Suspense fallback={<div />}>
@@ -300,19 +317,6 @@ export default class Input extends InputProvider {
   /** @return the value to be added to the prompt */
   protected static valueToBeDisplayed(props: Props) {
     return hasValue(props.model) ? props.model.value : hasCommand(props.model) ? props.model.command : ''
-  }
-
-  public componentDidMount() {
-    // i'm not sure why the delay is needed :( something steals focus
-    // to document.body after this is mounted
-    setTimeout(() => this.doFocus(), 300)
-  }
-
-  /** Owner wants us to focus on the current prompt */
-  public doFocus() {
-    if (this.props.isFocused && this.state.prompt.current && document.activeElement !== this.state.prompt.current) {
-      this.state.prompt.current.focus()
-    }
   }
 
   protected contextContent() {
