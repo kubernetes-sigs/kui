@@ -66,16 +66,16 @@ export abstract class TabCompletionState {
     debug('tab completion init')
 
     // remember where the cursor was when the user hit tab
-    this.lastIdx = this.input.state.prompt.selectionEnd
+    this.lastIdx = this.input.state.prompt.current.selectionEnd
   }
 
   private findCommandCompletions(last: string) {
     return typeahead(last)
   }
 
-  protected async findCompletions(lastIdx = this.input.state.prompt.selectionEnd) {
+  protected async findCompletions(lastIdx = this.input.state.prompt.current.selectionEnd) {
     const input = this.input
-    const { prompt } = this.input.state
+    const prompt = this.input.state.prompt.current
 
     const { A: argv, endIndices } = _split(prompt.value, true, true) as Split
     const options = minimist(argv)
@@ -157,8 +157,8 @@ export abstract class TabCompletionState {
     } else {
       if (
         key === 'Tab' &&
-        this.input.state.prompt &&
-        this.input.state.prompt.value.length > 0 &&
+        this.input.state.prompt.current &&
+        this.input.state.prompt.current.value.length > 0 &&
         !this.input.state.tabCompletion
       ) {
         // Swallow any Tab keys if we are currently presenting a set
@@ -268,7 +268,7 @@ class TabCompletionStateWithSingleSuggestion extends TabCompletionState {
 
   public render() {
     const lastIdx = this.lastIdx
-    const prompt = this.input.state.prompt
+    const prompt = this.input.state.prompt.current
 
     const prefix = prompt.value.slice(0, lastIdx)
     const suffix = prompt.value.slice(lastIdx)
@@ -302,7 +302,7 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
     const longestPrefix = TabCompletionStateWithMultipleSuggestions.findLongestPrefixMatch(completions)
     if (longestPrefix && prefillPartialMatches) {
       // update the prompt directly; is this dangerous? to sidestep react?
-      const prompt = this.input.state.prompt
+      const prompt = this.input.state.prompt.current
       const lastIdx = this.lastIdx
       const prefix = prompt.value.slice(0, lastIdx)
       const suffix = prompt.value.slice(lastIdx)
@@ -465,7 +465,7 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
     const { ex, em } = this.estimateGridColumnWidth()
 
     // we're adding content to the bottom of the Terminal; make sure it's visible
-    setTimeout(() => this.input.state.prompt.scrollIntoView(), 5)
+    setTimeout(() => this.input.state.prompt.current.scrollIntoView(), 5)
 
     return (
       <div
@@ -483,7 +483,7 @@ class TabCompletionStateWithMultipleSuggestions extends TabCompletionState {
  *
  */
 export default function startTabCompletion(input: Input, evt: KeyboardEvent) {
-  if (input.state.prompt && input.state.prompt.value.length === 0) {
+  if (input.state.prompt.current && input.state.prompt.current.value.length === 0) {
     debug('ignoring tab completion for empty prompt') // <-- no, the Input prompt is empty
     return
   } else {

@@ -130,7 +130,7 @@ export interface State {
   execUUID?: string
 
   /** DOM element for prompt; set via `ref` in render() below */
-  prompt?: HTMLInputElement
+  prompt?: React.RefObject<HTMLInputElement>
 
   /** state of active reverse-i-search */
   isearch?: ActiveISearch
@@ -245,7 +245,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
 
   /** the "xxx >" prompt part of the input section */
   protected prompt() {
-    if (this.state && this.state.isearch && this.state.prompt) {
+    if (this.state && this.state.isearch && this.state.prompt.current) {
       try {
         return this.isearchPrompt()
       } catch (err) {
@@ -288,13 +288,13 @@ export default class Input extends InputProvider {
       model: props.model,
       isReEdit: false,
       execUUID: hasUUID(props.model) ? props.model.execUUID : undefined,
-      prompt: undefined
+      prompt: React.createRef()
     }
   }
 
   /** @return the current value of the prompt */
   public value() {
-    return this.state.prompt && this.state.prompt.value
+    return this.state.prompt.current && this.state.prompt.current.value
   }
 
   /** @return the value to be added to the prompt */
@@ -302,10 +302,16 @@ export default class Input extends InputProvider {
     return hasValue(props.model) ? props.model.value : hasCommand(props.model) ? props.model.command : ''
   }
 
+  public componentDidMount() {
+    // i'm not sure why the delay is needed :( something steals focus
+    // to document.body after this is mounted
+    setTimeout(() => this.doFocus(), 300)
+  }
+
   /** Owner wants us to focus on the current prompt */
   public doFocus() {
-    if (this.props.isFocused && this.state.prompt && document.activeElement !== this.state.prompt) {
-      setTimeout(() => this.state.prompt.focus(), 50)
+    if (this.props.isFocused && this.state.prompt.current && document.activeElement !== this.state.prompt.current) {
+      this.state.prompt.current.focus()
     }
   }
 
@@ -392,30 +398,11 @@ export default class Input extends InputProvider {
 
   private onPaste(evt: React.ClipboardEvent) {
     if (!this.state.isearch) {
-      onPaste(evt.nativeEvent, this.props.tab, this.state.prompt)
+      onPaste(evt.nativeEvent, this.props.tab, this.state.prompt.current)
     }
   }
 
   private readonly _onPaste = this.onPaste.bind(this)
-
-  private onRef(c: HTMLInputElement) {
-    if (c && (!this.state.prompt || this.state.isReEdit)) {
-      c.value = hasValue(this.props.model)
-        ? this.props.model.value
-        : hasCommand(this.props.model)
-        ? this.props.model.command
-        : ''
-      this.setState({ prompt: c })
-
-      if (this.props.isFocused && document.activeElement !== c) {
-        c.focus()
-      }
-    } else if (c && this.props.isFocused && isInViewport(c)) {
-      c.focus()
-    }
-  }
-
-  private readonly _onRef = this.onRef.bind(this)
 
   private willFocusBlock(evt: React.SyntheticEvent<HTMLInputElement>) {
     if (this.props.willFocusBlock) {
@@ -434,7 +421,9 @@ export default class Input extends InputProvider {
     this.props.onInputBlur && this.props.onInputBlur(evt)
 
     const valueNotChanged =
-      hasCommand(this.props.model) && this.state.prompt && this.props.model.command === this.state.prompt.value
+      hasCommand(this.props.model) &&
+      this.state.prompt.current &&
+      this.props.model.command === this.state.prompt.current.value
 
     this.setState(curState => {
       if (curState.isReEdit && valueNotChanged) {
@@ -469,18 +458,24 @@ export default class Input extends InputProvider {
     ;(evt.currentTarget.querySelector('.kui--invisible-overlay') as HTMLInputElement).focus()
   })
 
+  private readonly _doCancelProcessing = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+    if (evt.key === 'c' && evt.ctrlKey) {
+      const value = evt.currentTarget.getAttribute('data-initial-value')
+      doCancel(this.props.tab, this.props._block, value)
+    }
+  }
+
+  private readonly _doFocusImmediately = (c: HTMLInputElement) => c && c.focus()
+
   /** This is the input overlay for Processing blocks */
   private inputOverlayForProcessingBlocks(value: string) {
     return (
       <input
-        className="kui--invisible-overlay"
         readOnly
-        onKeyDown={evt => {
-          if (evt.key === 'c' && evt.ctrlKey) {
-            doCancel(this.props.tab, this.props._block, value)
-          }
-        }}
-        ref={c => c && c.focus()}
+        data-initial-value={value}
+        className="kui--invisible-overlay"
+        onKeyDown={this._doCancelProcessing}
+        ref={this._doFocusImmediately}
       />
     )
   }
@@ -490,22 +485,6 @@ export default class Input extends InputProvider {
     const active = isActive(this.props.model) || this.state.isReEdit
 
     if (active) {
-      if (this.state.prompt) {
-        if (this.props.isFocused) {
-          if (document.activeElement !== this.state.prompt) {
-            setTimeout(() => {
-              if (isInViewport(this.state.prompt) && this.props.isFocused) {
-                this.state.prompt.focus()
-              }
-            })
-          }
-        } else {
-          // @starpit 20210128; i think this is leftover from earlier buggier days
-          // keeping around, commented out, for a bit just in case
-          // setTimeout(() => this.state.prompt.scrollIntoView(), 10)
-        }
-      }
-
       return (
         <div
           className="repl-input-element-wrapper flex-layout flex-fill"
@@ -533,7 +512,7 @@ export default class Input extends InputProvider {
             onKeyDown={this._onKeyDown}
             onKeyUp={this._onKeyUp}
             onPaste={this._onPaste}
-            ref={this._onRef}
+            ref={this.state.prompt}
           />
           {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
         </div>

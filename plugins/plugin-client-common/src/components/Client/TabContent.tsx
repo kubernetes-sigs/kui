@@ -209,17 +209,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
-  /** emit /tab/new event, if we have now a tab, but have not yet
-   * emitted the event */
-  public static getDerivedStateFromProps(props: Props, state: State) {
-    if (state.sessionInit === 'Done') {
-      if (props.active && state._terminal.current) {
-        state._terminal.current.doFocusIfNeeded()
-      }
-    }
-    return state
-  }
-
   public componentWillUnmount() {
     eventBus.emit('/tab/close', this.state.tab.current)
     this.cleaners.forEach(cleaner => cleaner())

@@ -59,10 +59,10 @@ const setCaretPositionToEnd = (input: HTMLInputElement) => setCaretPosition(inpu
 /** Update the given input to reflect the given HistoryLine */
 const updateInputAndMoveCaretToEOL = (input: Input, entry: HistoryLine) => {
   if (entry) {
-    input.state.prompt.value = entry.raw
-    setTimeout(() => setCaretPositionToEnd(input.state.prompt), 0)
+    input.state.prompt.current.value = entry.raw
+    setTimeout(() => setCaretPositionToEnd(input.state.prompt.current), 0)
   } else {
-    input.state.prompt.value = ''
+    input.state.prompt.current.value = ''
   }
 }
 
@@ -97,7 +97,7 @@ function deleteThisWord(prompt: HTMLInputElement) {
 export default function onKeyDown(this: Input, event: KeyboardEvent) {
   const tab = splitFor(this.props.tab)
   const block = this.props._block
-  const prompt = this.state.prompt
+  const prompt = this.state.prompt.current
 
   const char = event.keyCode
 
@@ -179,11 +179,11 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
       updateInputAndMoveCaretToEOL(this, entry)
     })
   } else if (event.key === 'w' && event.ctrlKey) {
-    const { prompt } = this.state
+    const prompt = this.state.prompt.current
     const idx = prompt.value.lastIndexOf(
       ' ',
       prompt.value.charAt(prompt.value.length - 1) === ' ' ? prompt.value.length - 2 : prompt.value.length - 1
     )
-    this.state.prompt.value = this.state.prompt.value.slice(0, idx + 1)
+    prompt.value = prompt.value.slice(0, idx + 1)
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018, 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ export default class ActiveISearch {
         <span className="sub-text semi-transparent">
           {this.currentSearchIdx === -1 ? '' : ' ' + this.currentSearchIdx.toString()}
         </span>
-        ){!this.input.state.prompt.value ? '' : '`' + this.input.state.prompt.value + '`:'}
+        ){!this.input.state.prompt.current.value ? '' : '`' + this.input.state.prompt.current.value + '`:'}
       </span>
     )
   }
@@ -62,13 +62,15 @@ export default class ActiveISearch {
   }
 
   private matchedSuffixPart(newValue: string, caretPosition: number) {
-    const matchedSuffix = newValue.substring(caretPosition + this.input.state.prompt.value.length - 1)
+    const matchedSuffix = newValue.substring(caretPosition + this.input.state.prompt.current.value.length - 1)
     return <span className="slightly-deemphasize">{matchedSuffix}</span>
   }
 
   private typedPart() {
     // show matched whitespaces with an underscore
-    return <strong className="red-text kui--prompt-like">{this.input.state.prompt.value.replace(/ /g, '_')}</strong>
+    return (
+      <strong className="red-text kui--prompt-like">{this.input.state.prompt.current.value.replace(/ /g, '_')}</strong>
+    )
   }
 
   private matchAt(idx = this.currentSearchIdx): string {
@@ -88,7 +90,7 @@ export default class ActiveISearch {
       return this.fixedPart()
     } else {
       const newValue = this.currentMatch()
-      const caretPosition = newValue.indexOf(this.input.state.prompt.value) + 1
+      const caretPosition = newValue.indexOf(this.input.state.prompt.current.value) + 1
       return (
         <React.Fragment>
           {this.fixedPart()}
@@ -122,7 +124,7 @@ export default class ActiveISearch {
       return -1
     }
 
-    const { prompt } = this.input.state
+    const prompt = this.input.state.prompt.current
 
     const newSearchIdx = prompt.value ? this.history.findIndex(prompt.value, startIdx) : -1
     if (
@@ -150,7 +152,7 @@ export default class ActiveISearch {
     const startIdx = userHitCtrlR ? this.currentSearchIdx - 1 : undefined
     debug('doSearch', userHitCtrlR, startIdx)
 
-    const { prompt } = this.input.state
+    const prompt = this.input.state.prompt.current
     const newSearchIdx = this.findPrevious(startIdx, userHitCtrlR)
     debug('search index', prompt.value, newSearchIdx)
 
@@ -169,7 +171,7 @@ export default class ActiveISearch {
   /** fill in the result of a search */
   public completeSearch() {
     debug('completing search')
-    this.input.state.prompt.value = this.currentMatch()
+    this.input.state.prompt.current.value = this.currentMatch()
     this.cancelISearch()
   }
 }
@@ -217,7 +219,7 @@ export async function onKeyUp(this: Input, evt: React.KeyboardEvent) {
     activeSearch.completeSearch()
   } else if (evt.key === 'Enter' && this.state.isearch) {
     this.state.isearch.completeSearch()
-    this.props.tab.REPL.pexec(this.state.isearch.currentMatch() || this.state.prompt.value)
+    this.props.tab.REPL.pexec(this.state.isearch.currentMatch() || this.state.prompt.current.value)
   } else if (this.state.isearch && evt.key !== 'Control') {
     evt.preventDefault()
     this.state.isearch.doSearch(evt)

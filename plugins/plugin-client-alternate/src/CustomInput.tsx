@@ -59,12 +59,7 @@ export default class CustomInput extends InputProvider<MyState> {
         onKeyPress={defaultOnKeyPress.bind(this)}
         onKeyDown={defaultOnKeyDown.bind(this)}
         onKeyUp={defaultOnKeyUp.bind(this)}
-        ref={prompt => {
-          if (prompt) {
-            prompt.focus()
-            this.setState({ prompt })
-          }
-        }}
+        ref={this.state.prompt}
       />
     )
   }

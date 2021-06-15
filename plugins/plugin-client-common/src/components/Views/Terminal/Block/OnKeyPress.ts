@@ -32,7 +32,7 @@ export default async function onKeyPress(this: Input, event: KeyboardEvent) {
     // see https://github.com/IBM/kui/issues/6311
     this.setState({ isReEdit: false })
 
-    doEval(this.props.tab, this.props._block, this.state.prompt.value.trim(), execUUID)
-    //                                                                        ^^^^ reusing execUUID
+    doEval(this.props.tab, this.props._block, this.state.prompt.current.value.trim(), execUUID)
+    //                                                                                ^^^^ reusing execUUID
   }
 }
