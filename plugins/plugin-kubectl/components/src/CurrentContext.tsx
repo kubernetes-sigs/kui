@@ -22,6 +22,7 @@ import {
   eventChannelUnsafe,
   getCurrentTab,
   getTab,
+  inBrowser,
   Tab,
   TabState,
   encodeComponent,
@@ -74,9 +75,9 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
-      currentContext: '',
+      currentContext: strings('Loading...'),
       allContexts: [],
-      viewLevel: 'hidden'
+      viewLevel: 'info'
     }
   }
 
@@ -123,6 +124,13 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     })
   }
 
+  private setNoContext() {
+    this.last = undefined
+    this.setState({
+      viewLevel: 'hidden'
+    })
+  }
+
   private async reportCurrentContext(idx?: Tab | number | string) {
     const tab = getTab(typeof idx === 'string' ? undefined : idx)
     if (!tab || !tab.REPL) {
@@ -138,17 +146,18 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
       const allContexts = await getAllContexts(tab)
       const currentContext = allContexts.find(context => context.spec.isCurrent)
 
-      this.setState({
-        allContexts,
-        currentContext: currentContext && this.renderName(currentContext.metadata.name),
-        viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
-      })
+      if (currentContext) {
+        this.setState({
+          allContexts,
+          currentContext: currentContext && this.renderName(currentContext.metadata.name),
+          viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
+        })
+      } else {
+        this.setNoContext()
+      }
     } catch (err) {
       console.error(err)
-      this.last = undefined
-      this.setState({
-        viewLevel: 'hidden'
-      })
+      this.setNoContext()
     }
   }
 
@@ -188,6 +197,10 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   }
 
   private switchContext() {
+    if (this.state.allContexts.length === 0) {
+      return
+    }
+
     const options = this.state.allContexts.map(context => ({
       label: this.renderName(context.metadata.name),
       isSelected: context.spec.isCurrent,
@@ -211,9 +224,12 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   }
 
   private switchContextDescription() {
-    return (
-      <span className="sub-text">{strings('To change, select from the following list of all known contexts.')}</span>
-    )
+    const key =
+      this.state.allContexts.length === 0
+        ? 'Please wait, while we find your contexts'
+        : 'To change, select from the following list of all known contexts.'
+
+    return <span className="sub-text">{strings(key)}</span>
   }
 
   /** @return the body for the Popover component */
@@ -241,7 +257,11 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
    *
    */
   public componentDidMount() {
-    eventBus.on('/tab/new', this.handler)
+    if (inBrowser()) {
+      eventBus.on('/tab/new', this.handler)
+    } else {
+      this.handler()
+    }
     eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.onAnyCommandComplete(this.handler)
@@ -250,17 +270,13 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
 
   /** Bye! */
   public componentWillUnmount() {
-    eventBus.off('/tab/new', this.handler)
+    // eventBus.off('/tab/new', this.handler)
     eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
     eventBus.offAnyCommandComplete(this.handler)
     offKubectlConfigChangeEvents(this.handlerForConfigChange)
   }
 
   public render() {
-    if (this.state.allContexts.length === 0) {
-      return <React.Fragment />
-    }
-
     return (
       <TextWithIconWidget
         className={this.props.className}
