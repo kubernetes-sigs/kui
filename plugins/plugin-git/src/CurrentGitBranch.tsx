@@ -21,7 +21,9 @@ import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-c
 import {
   wireToStandardEvents,
   unwireToStandardEvents,
+  eventBus,
   getCurrentTab,
+  inBrowser,
   i18n,
   encodeComponent,
   pexecInCurrentTab,
@@ -118,7 +120,11 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
    *
    */
   public componentDidMount() {
-    this.handler()
+    if (inBrowser()) {
+      eventBus.once('/tab/new', this.handler)
+    } else {
+      this.handler()
+    }
     wireToStandardEvents(this.handler)
   }
 
