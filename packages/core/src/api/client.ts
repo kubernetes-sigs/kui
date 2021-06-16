@@ -20,10 +20,47 @@ const debug = Debug('core/api/client')
 /** Is the current client running in offline/disconnected mode? */
 export function isOfflineClient(): boolean {
   try {
-    const { offline } = require('@kui-shell/client/config.d/client.json')
-    return offline
+    const { offline, readonly, executable } = require('@kui-shell/client/config.d/client.json')
+
+    if (offline === undefined && readonly !== undefined && executable !== undefined) {
+      return readonly && !executable
+    } else {
+      return offline
+    }
   } catch (err) {
     debug('Client did not define an offline status, assuming not offline')
     return false
+  }
+}
+
+/** Is the current client running in readonly mode? */
+export function isReadOnlyClient(): boolean {
+  try {
+    const { offline, readonly } = require('@kui-shell/client/config.d/client.json')
+
+    if (offline) {
+      return true
+    } else {
+      return readonly
+    }
+  } catch (err) {
+    debug('Client did not define a readonly status, assuming not readonly')
+    return false
+  }
+}
+
+/** Is the current client running in an executable mode? */
+export function isExecutableClient(): boolean {
+  try {
+    const { offline, executable } = require('@kui-shell/client/config.d/client.json')
+
+    if (offline) {
+      return false
+    } else {
+      return executable === undefined ? true : executable
+    }
+  } catch (err) {
+    debug('Client did not define an executable status, assuming executable')
+    return true
   }
 }

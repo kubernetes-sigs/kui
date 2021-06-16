@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { i18n } from '@kui-shell/core'
+import { i18n, isReadOnlyClient } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
@@ -59,11 +59,13 @@ export default class SplitHeader extends React.PureComponent<Props> {
 
   public render() {
     return (
-      <div className="kui--split-header flex-layout kui--inverted-color-context">
-        <div className="flex-fill" />
-        {this.clearButton()}
-        {this.closeButton()}
-      </div>
+      !isReadOnlyClient() && (
+        <div className="kui--split-header flex-layout kui--inverted-color-context">
+          <div className="flex-fill" />
+          {this.clearButton()}
+          {this.closeButton()}
+        </div>
+      )
     )
   }
 }

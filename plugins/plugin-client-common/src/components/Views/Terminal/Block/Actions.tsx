@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Tab, i18n, isOfflineClient } from '@kui-shell/core'
+import { Tab, i18n, isOfflineClient, isReadOnlyClient, isExecutableClient } from '@kui-shell/core'
 
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'
@@ -123,10 +123,10 @@ export default class Actions extends React.PureComponent<Props> {
       !isOfflineClient() && (
         <div className="kui--block-actions-buttons kui--inverted-color-context">
           <div className="kui-block-actions-others">
-            {this.copyAction()}
-            {this.rerunAction()}
+            {!isReadOnlyClient() && this.copyAction()}
+            {isExecutableClient() && this.rerunAction()}
           </div>
-          {this.removeAction()}
+          {!isReadOnlyClient() && this.removeAction()}
         </div>
       )
     )
