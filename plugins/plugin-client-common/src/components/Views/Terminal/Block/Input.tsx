@@ -408,7 +408,7 @@ export default class Input extends InputProvider {
       this.setState({ prompt: c })
 
       if (this.props.isFocused && document.activeElement !== c) {
-        c.focus()
+        setTimeout(() => c.focus(), 300)
       }
     } else if (c && this.props.isFocused && isInViewport(c)) {
       c.focus()
