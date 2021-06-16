@@ -64,3 +64,13 @@ export function isExecutableClient(): boolean {
     return true
   }
 }
+
+export function hideReplayOutput(): boolean {
+  try {
+    const { hideReplayOutput } = require('@kui-shell/client/config.d/client.json')
+    return hideReplayOutput
+  } catch (err) {
+    debug('Client did not define a hideReplayOutput status, assuming no')
+    return false
+  }
+}
