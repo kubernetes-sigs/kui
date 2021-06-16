@@ -487,9 +487,6 @@ export default class Input extends InputProvider {
     }
   }
 
-  private readonly _onRef = this.onRef.bind(this)
-  private readonly _onTextAreaRef = this.onTextAreaRef.bind(this)
-
   private willFocusBlock(evt: React.SyntheticEvent<InputElement>) {
     if (this.props.willFocusBlock) {
       this.props.willFocusBlock(evt)
@@ -584,7 +581,11 @@ export default class Input extends InputProvider {
           onFocus={this._onFocus}
           onKeyPress={this._onKeyPress}
           onKeyDown={this._onKeyDown}
-          innerRef={this._onTextAreaRef}
+          innerRef={
+            this.onTextAreaRef.bind(
+              this
+            ) /* DO NOT MEMOIZE THIS; see https://github.com/kubernetes-sigs/kui/issues/7648 */
+          }
         />
         {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
       </div>
@@ -597,6 +598,7 @@ export default class Input extends InputProvider {
       <div
         className="repl-input-element-wrapper flex-layout flex-fill"
         data-is-reedit={this.state.isReEdit || undefined}
+        key={this.state.execUUID}
       >
         <input
           type="text"
@@ -620,7 +622,7 @@ export default class Input extends InputProvider {
           onKeyDown={this._onKeyDown}
           onKeyUp={this._onKeyUp}
           onPaste={this._onPaste}
-          ref={this._onRef}
+          ref={this.onRef.bind(this) /* DO NOT MEMOIZE THIS; see https://github.com/kubernetes-sigs/kui/issues/7648 */}
         />
         {this.state.typeahead && <span className="kui--input-typeahead">{this.state.typeahead}</span>}
       </div>
