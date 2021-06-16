@@ -29,7 +29,7 @@ ENV PORT 3000
 ENV KUI_PROXY_EXTERNAL_PORT 9080
 
 # nginx port
-EXPOSE 80/tcp
+EXPOSE 9080/tcp
 
 RUN apt update
 RUN apt install -y nginx
