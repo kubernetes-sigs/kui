@@ -440,7 +440,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     /** Update the active block */
     state.setActiveBlock = (c: Block) => {
       if (c && c.props && c.props.model && isActive(c.props.model)) {
-        state._activeBlock = c
+        const split = this.state.splits[this.findSplit(this.state, sbuuid)]
+        split._activeBlock = c
       }
     }
 
