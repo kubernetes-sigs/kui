@@ -83,7 +83,7 @@ COPY . /usr/share/nginx/html
 RUN cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock
 
 # recompile pty
-RUN cd /usr/share/nginx/html/kui/node_modules/node-pty-prebuilt-multiarch && npm run install
+RUN cd /usr/share/nginx/html/kui/node_modules/node-pty && npm run install
 
 # kubeconfig
 COPY .kube /root/.kube
