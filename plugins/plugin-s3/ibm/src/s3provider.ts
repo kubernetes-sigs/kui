@@ -75,15 +75,27 @@ class IBMCloudS3Provider implements S3Provider {
 
 /** Listening for reconfigs? */
 let listeningAlready = false
+let currentConfig: Promise<{ content: void | Config }>
+
+async function fetchConfig(repl: REPL): Promise<void | Config> {
+  if (!currentConfig) {
+    currentConfig = repl.rexec<void | Config>('ibmcloud cos validate')
+  }
+
+  return (await currentConfig).content
+}
 
 async function init(geo: string, mountName: string, repl: REPL, reinit: () => void) {
   try {
     if (!listeningAlready) {
       listeningAlready = true
-      eventChannelUnsafe.on(updateChannel, reinit)
+      eventChannelUnsafe.on(updateChannel, () => {
+        currentConfig = undefined
+        reinit()
+      })
     }
 
-    const config = (await repl.rexec<void | Config>('ibmcloud cos validate')).content
+    const config = await fetchConfig(repl)
     listeningAlready = false
     if (!isGoodConfig(config)) {
       return new IBMCloudS3Provider(
