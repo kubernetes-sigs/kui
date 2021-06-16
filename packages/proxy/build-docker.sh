@@ -74,9 +74,9 @@ function proxy {
 
 function ptyKui {
     echo "pty for kui"
-    PTYDIR="$BUILDDIR"/kui/node_modules/node-pty-prebuilt-multiarch/build/Release
+    PTYDIR="$BUILDDIR"/kui/node_modules/node-pty/build/Release
     mkdir -p "$PTYDIR" && \
-        cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty-prebuilt-multiarch/build/linux-x64/electron/pty.node.gz "$PTYDIR" && \
+        cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty/build/linux-x64/electron/pty.node.gz "$PTYDIR" && \
         gunzip "$PTYDIR"/pty.node.gz
     # ^^ travis does not seem to have gzcat, which would make the above command marginally more simple
 }
