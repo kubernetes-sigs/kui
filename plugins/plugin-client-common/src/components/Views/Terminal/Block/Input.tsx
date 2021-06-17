@@ -661,7 +661,7 @@ export default class Input extends InputProvider {
         <div
           data-input-count={this.props.idx}
           className="repl-input-element-wrapper flex-layout flex-fill"
-          onClick={isInProgress ? this._restoreFocusToOverlayInput : this._onClickFinished}
+          onClick={isInProgress ? this._restoreFocusToOverlayInput : this.props.isExecutable && this._onClickFinished}
         >
           {this.fancyValue(value)}
           {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}

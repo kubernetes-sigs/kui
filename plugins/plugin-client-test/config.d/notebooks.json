@@ -1,0 +1,33 @@
+{
+  "label": "Notebooks",
+  "submenu": [
+    { "notebook": "Welcome to Kui", "filepath": "/kui/welcome.json" },
+    { "type": "separator" },
+    {
+      "label": "Learning Kubernetes",
+      "submenu": [
+        {
+          "label": "Kubernetes",
+          "submenu": [
+            { "notebook": "CRUD Operations", "filepath": "/kui/kubernetes/crud-operations.json" },
+            { "notebook": "Working with Jobs", "filepath": "/kui/kubernetes/create-jobs.json" },
+            { "notebook": "Deploying Applications", "filepath": "/kui/kubernetes/deploy-applications.json" }
+          ]
+        },
+        {
+          "label": "iter8",
+          "submenu": [{ "notebook": "Welcome to iter8", "filepath": "/kui/iter8/welcome.json" }]
+        }
+      ]
+    },
+    {
+      "label": "Dashboard",
+      "submenu": [
+        { "notebook": "Kubernetes Dashboard", "filepath": "/kui/kubernetes/dashboard.json" },
+        { "notebook": "Popeye Dashboard", "filepath": "/kui/kubernetes/popeye.json" }
+      ]
+    },
+    { "type": "separator" },
+    { "notebook": "Make Your Own Notebook", "filepath": "/kui/make-notebook.json" }
+  ]
+}
