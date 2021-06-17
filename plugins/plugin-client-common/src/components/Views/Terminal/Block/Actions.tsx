@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Tab, i18n, isOfflineClient, isReadOnlyClient, isExecutableClient } from '@kui-shell/core'
+import { Tab, i18n, isOfflineClient, isReadOnlyClient } from '@kui-shell/core'
 
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'
@@ -60,6 +60,7 @@ export default class Actions extends React.PureComponent<Props> {
       const handler = () => {
         if (hasUUID(this.props.model)) {
           this.props.tab.REPL.reexec(this.props.command, { execUUID: this.props.model.execUUID })
+          this.props.willUpdateExecutable()
         }
       }
 
@@ -124,7 +125,7 @@ export default class Actions extends React.PureComponent<Props> {
         <div className="kui--block-actions-buttons kui--inverted-color-context">
           <div className="kui-block-actions-others">
             {!isReadOnlyClient() && this.copyAction()}
-            {isExecutableClient() && this.rerunAction()}
+            {this.props.isExecutable && this.rerunAction()}
           </div>
           {!isReadOnlyClient() && this.removeAction()}
         </div>

@@ -306,6 +306,12 @@ export {
 export { default as teeToFile } from './util/tee'
 
 // Client API
-export { isOfflineClient, isReadOnlyClient, isExecutableClient, hideReplayOutput } from './api/client'
+export {
+  isOfflineClient,
+  isReadOnlyClient,
+  isExecutableClient,
+  executeSequentially,
+  hideReplayOutput
+} from './api/client'
 
 export * from './api/window-events'

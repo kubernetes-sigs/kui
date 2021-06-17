@@ -51,6 +51,11 @@ export type BlockViewTraits = {
 export interface BlockOperationTraits {
   /** Remove the enclosing block */
   willRemove?: (evt: React.SyntheticEvent, idx?: number) => void
+
+  /** Is the block executable? e.g. re-editable and re-runable */
+  isExecutable?: boolean
+
+  willUpdateExecutable?: () => void
 }
 
 type Props = InputOptions & {
@@ -213,6 +218,7 @@ export default class Block extends React.PureComponent<Props, State> {
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
         <li
           className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
+          data-is-executale={this.props.isExecutable}
           data-is-maximized={this.state.isMaximized || undefined}
           data-is-output-only={isOutputOnly(this.props.model) || undefined}
           data-is-empty={isEmpty(this.props.model) || undefined}
