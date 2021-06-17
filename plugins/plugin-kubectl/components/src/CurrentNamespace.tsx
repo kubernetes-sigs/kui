@@ -18,16 +18,7 @@ import React from 'react'
 
 import { Icons, ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
-import {
-  eventBus,
-  inBrowser,
-  i18n,
-  eventChannelUnsafe,
-  getTab,
-  Tab,
-  TabState,
-  pexecInCurrentTab
-} from '@kui-shell/core'
+import { eventBus, i18n, eventChannelUnsafe, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
 
 import {
   kubectl,
@@ -38,6 +29,7 @@ import {
   offKubectlConfigChangeEvents
 } from '@kui-shell/plugin-kubectl'
 
+import { ready } from './CurrentContext'
 import { isInternalNamespace } from '@kui-shell/plugin-kubectl/heuristics'
 
 interface Props {
@@ -138,8 +130,8 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
    *
    */
   public componentDidMount() {
-    if (inBrowser()) {
-      eventBus.on('/tab/new', this.handler)
+    if (!ready) {
+      eventBus.once('/tab/new', this.handler)
     } else {
       this.handler()
     }

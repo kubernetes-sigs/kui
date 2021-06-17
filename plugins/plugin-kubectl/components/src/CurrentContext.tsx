@@ -22,7 +22,6 @@ import {
   eventChannelUnsafe,
   getCurrentTab,
   getTab,
-  inBrowser,
   Tab,
   TabState,
   encodeComponent,
@@ -65,6 +64,9 @@ function KubernetesIcon() {
     </svg>
   )
 }
+
+export let ready = false
+eventBus.once('/tab/new', () => (ready = true))
 
 export default class CurrentContext extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentContext.bind(this)
@@ -257,8 +259,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
    *
    */
   public componentDidMount() {
-    if (inBrowser()) {
-      eventBus.on('/tab/new', this.handler)
+    if (!ready) {
+      eventBus.once('/tab/new', this.handler)
     } else {
       this.handler()
     }
@@ -270,7 +272,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
 
   /** Bye! */
   public componentWillUnmount() {
-    // eventBus.off('/tab/new', this.handler)
+    eventBus.off('/tab/new', this.handler)
     eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
     eventBus.offAnyCommandComplete(this.handler)
     offKubectlConfigChangeEvents(this.handlerForConfigChange)
