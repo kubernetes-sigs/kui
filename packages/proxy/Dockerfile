@@ -25,11 +25,12 @@ RUN debconf-set-selections /tmp/preseed.txt && \
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # proxy ports (keep in sync with conf.d/proxy.conf)
-ENV PORT 3000
+ENV KUI_PROXY_PORT 3000
 ENV KUI_PROXY_EXTERNAL_PORT 9080
+ENV HOME /home/kui
 
 # nginx port
-EXPOSE 9080/tcp
+EXPOSE 80/tcp
 
 RUN apt update
 RUN apt install -y nginx
@@ -74,6 +75,11 @@ RUN wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSI
 RUN wget -q https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-linux-amd64 -O /usr/local/bin/odo && \
       chmod +x /usr/local/bin/odo
 
+#### IBMCLOUD tools
+RUN curl -L https://download.clis.cloud.ibm.com/ibm-cloud-cli/1.6.0/IBM_Cloud_CLI_1.6.0_amd64.tar.gz | tar zxf - \
+        && mv Bluemix_CLI/bin/ibmcloud /usr/local/bin \
+        && chmod a+rX /usr/local/bin/ibmcloud
+
 COPY conf.d/default.conf /etc/nginx/conf.d/default.conf
 
 RUN mkdir /kui-proxy
@@ -101,6 +107,13 @@ ENV PATH=/root/.krew/bin:$PATH
 # profile.d
 COPY profile.d /tmp/profile.d
 RUN for i in /tmp/profile.d/*; do cat $i >> /etc/profile; done
+
+# issues with running in e.g. knative
+RUN mkdir -p /home/kui \
+        && chown -R www-data:www-data /home/kui \
+        && chown -R www-data:www-data /var/lib/nginx \
+        && touch /run/nginx.pid \
+        && chown -R www-data:www-data /run/nginx.pid
 
 RUN apt remove -y curl wget python make g++ && apt -y auto-remove
 
