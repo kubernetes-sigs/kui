@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-export KUI_USE_HTTP=true
+export KUI_USE_HTTP=${KUI_USE_HTTP-true}
 export KUI_PROXY_COHOSTED=true
 
 # start kui proxy
