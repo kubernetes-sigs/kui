@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.4.0](https://github.com/IBM/kui/compare/v4.5.0...v10.4.0) (2021-06-17)
+
+### Bug Fixes
+
+- **plugins/plugin-git:** CurrentGitBranch widget errors onLoad for browser clients ([1ff62a2](https://github.com/IBM/kui/commit/1ff62a2)), closes [#7631](https://github.com/IBM/kui/issues/7631)
+- kui may try to open files of unbounded size in monaco-editor ([00197a5](https://github.com/IBM/kui/commit/00197a5)), closes [#7091](https://github.com/IBM/kui/issues/7091)
+- **plugin-client-common:** RadioTable onSelect changes do not always result in status stripe updates ([3549b7a](https://github.com/IBM/kui/commit/3549b7a)), closes [#5644](https://github.com/IBM/kui/issues/5644)
+- **plugins/plugin-git:** git branch command fails if the underlying git command decides to paginate ([45af52b](https://github.com/IBM/kui/commit/45af52b)), closes [#6535](https://github.com/IBM/kui/issues/6535)
+- improve handling of narrower windows ([7a32591](https://github.com/IBM/kui/commit/7a32591)), closes [#4181](https://github.com/IBM/kui/issues/4181)
+- improve hover effect for status stripe buttons ([50ced8f](https://github.com/IBM/kui/commit/50ced8f)), closes [#4896](https://github.com/IBM/kui/issues/4896)
+- pick a winner if more than one tab completion enumerator has offerings ([fbd6696](https://github.com/IBM/kui/commit/fbd6696)), closes [#3736](https://github.com/IBM/kui/issues/3736)
+- restore status stripe to default behavior on terminal clear ([128ec92](https://github.com/IBM/kui/commit/128ec92)), closes [#5495](https://github.com/IBM/kui/issues/5495)
+- use Dropdown component for RadioTable impl ([244b16a](https://github.com/IBM/kui/commit/244b16a)), closes [#6539](https://github.com/IBM/kui/issues/6539)
+- **plugins/plugin-git:** kui's git branch command fails if the underlying git command decides to paginate ([47e1616](https://github.com/IBM/kui/commit/47e1616)), closes [#6535](https://github.com/IBM/kui/issues/6535)
+- avoid excessive status stripe overheads when replaying Notebooks ([58de9c0](https://github.com/IBM/kui/commit/58de9c0)), closes [#5635](https://github.com/IBM/kui/issues/5635)
+- RadioTables are not replayable ([d0dd00e](https://github.com/IBM/kui/commit/d0dd00e)), closes [#5599](https://github.com/IBM/kui/issues/5599)
+- **packages/core:** status stripe fragments should be hidden until data arrives ([5792746](https://github.com/IBM/kui/commit/5792746)), closes [#3538](https://github.com/IBM/kui/issues/3538)
+- **plugins/plugin-core-support:** tab completion of "interior" text is buggy ([b13cdb7](https://github.com/IBM/kui/commit/b13cdb7)), closes [#3605](https://github.com/IBM/kui/issues/3605)
+- **plugins/plugin-git:** CurrentGitBranch excessively reports errors to the console ([aa53c0a](https://github.com/IBM/kui/commit/aa53c0a)), closes [#5291](https://github.com/IBM/kui/issues/5291)
+- **plugins/plugin-git:** CurrentGitBranch widget can produce spurious console error messages ([705de4e](https://github.com/IBM/kui/commit/705de4e)), closes [#3941](https://github.com/IBM/kui/issues/3941)
+
+### Features
+
+- clicking changed files in the `git status widget` should show `git diff` result in a DiffEditor ([3a199c7](https://github.com/IBM/kui/commit/3a199c7)), closes [#6348](https://github.com/IBM/kui/issues/6348)
+- Refine Update Checker widget UI ([5c97479](https://github.com/IBM/kui/commit/5c97479)), closes [#6343](https://github.com/IBM/kui/issues/6343)
+- s3 plugin, and vfs ([970ba6e](https://github.com/IBM/kui/commit/970ba6e)), closes [#5319](https://github.com/IBM/kui/issues/5319)
+- SPI for icons ([3d034e3](https://github.com/IBM/kui/commit/3d034e3)), closes [#4441](https://github.com/IBM/kui/issues/4441) [#4364](https://github.com/IBM/kui/issues/4364)
+- use a Popover UI for git branch status stripe widget ([6bbf348](https://github.com/IBM/kui/commit/6bbf348)), closes [#6325](https://github.com/IBM/kui/issues/6325)
+- use Select Component for Kubernetes Context and Namespace status stripe widgets ([0e1c25e](https://github.com/IBM/kui/commit/0e1c25e)), closes [#6920](https://github.com/IBM/kui/issues/6920)
+- **plugins/plugin-git:** git branch should respond with RadioTable ([59a9213](https://github.com/IBM/kui/commit/59a9213)), closes [#5256](https://github.com/IBM/kui/issues/5256)
+
 # [10.2.0](https://github.com/IBM/kui/compare/v10.1.1-dev-20210223-062039...v10.2.0) (2021-02-24)
 
 **Note:** Version bump only for package @kui-shell/plugin-git
