@@ -74,3 +74,18 @@ export function hideReplayOutput(): boolean {
     return false
   }
 }
+
+export function executeSequentially(): boolean {
+  if (isExecutableClient()) {
+    try {
+      const { sequentialExecution } = require('@kui-shell/client/config.d/client.json')
+
+      return sequentialExecution
+    } catch (err) {
+      debug('Client did not define a sequential execution status, assuming not sequential')
+      return false
+    }
+  } else {
+    return false
+  }
+}

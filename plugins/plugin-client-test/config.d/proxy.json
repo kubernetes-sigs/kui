@@ -1,0 +1,11 @@
+{
+  "millisBeforeProxyConnectionWarning": 250,
+  "proxyServer": {
+    "url": "http://localhost:8081/exec",
+    "needleOptions": {
+      "rejectUnauthorized": false
+    }
+  },
+  "shellExe": "",
+  "shellOpts": []
+}

@@ -36,6 +36,8 @@ import {
   NewSplitRequest,
   isOfflineClient,
   isNewSplitRequest,
+  isExecutableClient,
+  executeSequentially,
   isWatchable,
   promiseEach,
   Notebook,
@@ -58,6 +60,7 @@ import {
   Rerun,
   isRerunable,
   isBeingRerun,
+  hasBeenRerun,
   hasOriginalUUID,
   Processing,
   isActive,
@@ -114,6 +117,7 @@ type Props = TerminalOptions & {
 }
 
 interface State {
+  executable: { sbidx: number; blockidx: number }
   focusedIdx: number
   splits: ScrollbackState[]
   notebookMetadata?: Notebook['metadata']
@@ -167,7 +171,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.state = {
       focusedIdx: 0,
       splits,
-      notebookMetadata
+      notebookMetadata,
+      executable: {
+        sbidx: 0,
+        blockidx: splits[0].blocks.findIndex(_ => hasUUID(_) && isRerunable(_) && !isOutputOnly(_))
+      }
     }
 
     this.initSnapshotEvents()
@@ -371,6 +379,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       willFocusBlock: undefined,
       willRemoveBlock: undefined,
       willUpdateCommand: undefined,
+      willUpdateExecutable: undefined,
       tabRefFor: undefined
     }
 
@@ -463,6 +472,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
     }
 
+    state.willUpdateExecutable = () => this.updateExecutable()
+
     state.willUpdateCommand = (idx: number, command: string) => {
       return this.splice(sbuuid, curState => {
         const block = Object.assign({}, curState.blocks[idx])
@@ -524,6 +535,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             focusedBlockIdx
           }
         })
+
+        if (this.findSplit(this.state, sbuuid) === this.state.executable.sbidx) {
+          this.updateExecutable()
+        }
       }
     }
 
@@ -829,6 +844,29 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         console.error('invalid state: got a command completion event, but never got command start event', event)
       }
     })
+
+    this.updateExecutable()
+  }
+
+  private updateExecutable() {
+    if (isExecutableClient() && executeSequentially()) {
+      let blockidx: number
+
+      const sbidx = this.state.splits.findIndex(split => {
+        const idx = split.blocks.findIndex(_ => hasUUID(_) && isRerunable(_) && !isOutputOnly(_) && !hasBeenRerun(_))
+
+        if (idx !== -1) {
+          blockidx = idx
+          return true
+        } else {
+          return false
+        }
+      })
+
+      if (sbidx !== this.state.executable.sbidx || blockidx !== this.state.executable.blockidx) {
+        this.setState({ executable: { sbidx, blockidx } })
+      }
+    }
   }
 
   /** Only set focus if we haven't, yet */
@@ -1277,10 +1315,17 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         (idx === scrollback.focusedBlockIdx ||
           (scrollback.focusedBlockIdx === undefined && idx === this.findActiveBlock(scrollback)))
 
+      const isExecutable = !isExecutableClient()
+        ? false
+        : !executeSequentially()
+        ? true
+        : this.state.executable.blockidx === idx && this.state.executable.sbidx === sbidx
+
       return (
         <Block
           key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
           idx={idx}
+          isExecutable={isExecutable}
           displayedIdx={displayedIdx}
           model={_}
           isBeingRerun={isBeingRerun(_)}
@@ -1292,6 +1337,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
           willUpdateCommand={scrollback.willUpdateCommand}
+          willUpdateExecutable={scrollback.willUpdateExecutable}
           isExperimental={hasCommand(_) && _.isExperimental}
           isFocused={isFocused}
           isPartOfMiniSplit={isMiniSplit}
