@@ -27,7 +27,7 @@ const { app, setServer } = require('../app')
  * Get port from environment and store in Express.
  */
 
-const port = normalizePort(process.env.PORT || '3000')
+const port = normalizePort(process.env.KUI_PROXY_PORT || process.env.PORT || '3000')
 app.set('port', port)
 
 /**
