@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.4.0](https://github.com/IBM/kui/compare/v4.5.0...v10.4.0) (2021-06-17)
+
+### Bug Fixes
+
+- a few more color contrast issues with inverted sidecar themes ([f0f36d5](https://github.com/IBM/kui/commit/f0f36d5)), closes [#3874](https://github.com/IBM/kui/issues/3874)
+- a few more color contrast issues with inverted sidecars ([0776df7](https://github.com/IBM/kui/commit/0776df7)), closes [#3835](https://github.com/IBM/kui/issues/3835)
+- block timestamp in Light theme/lightweight ui has low contrast ([6ae08fd](https://github.com/IBM/kui/commit/6ae08fd)), closes [#6226](https://github.com/IBM/kui/issues/6226)
+- Clean up the way patternfly fonts are incorporated into themes ([2ba49e9](https://github.com/IBM/kui/commit/2ba49e9)), closes [#6375](https://github.com/IBM/kui/issues/6375)
+- Confirm dialog color contrast issues ([da14c25](https://github.com/IBM/kui/commit/da14c25)), closes [#4995](https://github.com/IBM/kui/issues/4995)
+- improve CodeSnippet rendering in Markdown ([9df43d0](https://github.com/IBM/kui/commit/9df43d0)), closes [#3863](https://github.com/IBM/kui/issues/3863)
+- in "lightweight" themes, split header buttons overflow ([e059fb8](https://github.com/IBM/kui/commit/e059fb8)), closes [#7620](https://github.com/IBM/kui/issues/7620)
+- increase contrast in watch pane ([246ecd2](https://github.com/IBM/kui/commit/246ecd2)), closes [#5000](https://github.com/IBM/kui/issues/5000) [#5001](https://github.com/IBM/kui/issues/5001)
+- monaco diff view colors are not themed ([eed2527](https://github.com/IBM/kui/commit/eed2527)), closes [#6232](https://github.com/IBM/kui/issues/6232)
+- more inverted sidecar fixes ([5316c66](https://github.com/IBM/kui/commit/5316c66)), closes [#3756](https://github.com/IBM/kui/issues/3756)
+- multiple fixes for screenshot toast notification UI ([8725e0b](https://github.com/IBM/kui/commit/8725e0b)), closes [#3933](https://github.com/IBM/kui/issues/3933)
+- reduce custom CSS rules for table UI ([56f69cb](https://github.com/IBM/kui/commit/56f69cb)), closes [#5024](https://github.com/IBM/kui/issues/5024)
+- the x in the offline badge is sometimes low contrast, especially in dark themes ([c60157c](https://github.com/IBM/kui/commit/c60157c)), closes [#6784](https://github.com/IBM/kui/issues/6784)
+- **plugins/plugin-core-themes:** In Light theme, inverted splits don't render well ([db6ae59](https://github.com/IBM/kui/commit/db6ae59)), closes [#6220](https://github.com/IBM/kui/issues/6220)
+- **plugins/plugin-core-themes:** Sidecar header and body may lack contrast ([b09391e](https://github.com/IBM/kui/commit/b09391e)), closes [#6306](https://github.com/IBM/kui/issues/6306)
+- move patternfly alignment out of patternfly themes plugin ([6adbfd6](https://github.com/IBM/kui/commit/6adbfd6)), closes [#4988](https://github.com/IBM/kui/issues/4988)
+- status stripe UI fixes to work better across themes ([2aa107f](https://github.com/IBM/kui/commit/2aa107f)), closes [#3507](https://github.com/IBM/kui/issues/3507)
+- support for using patternfly components with non-patternfly themes ([f88ef97](https://github.com/IBM/kui/commit/f88ef97)), closes [#4934](https://github.com/IBM/kui/issues/4934)
+- text selection in active xterms for light themes is not visible ([ace9ec9](https://github.com/IBM/kui/commit/ace9ec9)), closes [#4087](https://github.com/IBM/kui/issues/4087)
+- Tree view badges can have low contrast ([9be1ae5](https://github.com/IBM/kui/commit/9be1ae5)), closes [#6245](https://github.com/IBM/kui/issues/6245)
+- use more standard TopTabStripe UI ([c390dff](https://github.com/IBM/kui/commit/c390dff)), closes [#3867](https://github.com/IBM/kui/issues/3867)
+- **plugins/plugin-carbon-themes:** carbon themes do not fully apply ([1659157](https://github.com/IBM/kui/commit/1659157)), closes [#3740](https://github.com/IBM/kui/issues/3740)
+
+### chore
+
+- kui client cleanup ([b4c3984](https://github.com/IBM/kui/commit/b4c3984)), closes [#3974](https://github.com/IBM/kui/issues/3974)
+
+### Features
+
+- allow plugins to define themes ([216f41c](https://github.com/IBM/kui/commit/216f41c)), closes [#3420](https://github.com/IBM/kui/issues/3420)
+- Improve support for designing light themes ([b6c859f](https://github.com/IBM/kui/commit/b6c859f)), closes [#6372](https://github.com/IBM/kui/issues/6372)
+- lightweight ui options for core themes ([cf96867](https://github.com/IBM/kui/commit/cf96867)), closes [#6187](https://github.com/IBM/kui/issues/6187)
+- MiniSplits ([70b8441](https://github.com/IBM/kui/commit/70b8441)), closes [#5112](https://github.com/IBM/kui/issues/5112)
+- refine sidecar minimization ([ead3b41](https://github.com/IBM/kui/commit/ead3b41)), closes [#3958](https://github.com/IBM/kui/issues/3958)
+
+### BREAKING CHANGES
+
+- this moves plugin-sidecar and plugin-carbon-tables into plugin-client-common
+
 # [10.2.0](https://github.com/IBM/kui/compare/v10.1.1-dev-20210223-062039...v10.2.0) (2021-02-24)
 
 **Note:** Version bump only for package @kui-shell/plugin-core-themes
