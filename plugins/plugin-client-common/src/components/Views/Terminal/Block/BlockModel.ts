@@ -341,14 +341,6 @@ export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
   return (isOk(block) || isOops(block) || isEmpty(block)) && block.completeEvent !== undefined
 }
 
-/** @return whether the block has pipeStages information; older snapshots may not */
-export function hasPipeStages(block: BlockModel) {
-  return (
-    (hasStartEvent(block) && block.startEvent.pipeStages !== undefined) ||
-    (isWithCompleteEvent(block) && block.completeEvent.pipeStages !== undefined)
-  )
-}
-
 /** @return whether the block is from replay */
 export function isReplay(block: BlockModel): boolean {
   return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
