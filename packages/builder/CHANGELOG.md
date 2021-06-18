@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.23](https://github.com/IBM/kui/compare/v10.3.22...v10.3.23) (2021-06-18)
+
+**Note:** Version bump only for package @kui-shell/builder
+
 ## [10.3.22](https://github.com/IBM/kui/compare/v10.3.21...v10.3.22) (2021-06-15)
 
 **Note:** Version bump only for package @kui-shell/builder
