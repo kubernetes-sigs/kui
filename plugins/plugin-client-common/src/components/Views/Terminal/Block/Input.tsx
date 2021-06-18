@@ -37,7 +37,6 @@ import {
   isFinished,
   hasCommand,
   isEmpty,
-  hasPipeStages,
   hasStartEvent,
   isWithCompleteEvent,
   isReplay,
@@ -678,9 +677,9 @@ export default class Input extends InputProvider {
    *
    */
   private fancyValue(value: string) {
-    if (isWithCompleteEvent(this.props.model) && hasPipeStages(this.props.model)) {
+    if (isWithCompleteEvent(this.props.model) && this.props.model.completeEvent.pipeStages !== undefined) {
       return <FancyPipeline REPL={this.props.tab.REPL} {...this.props.model.completeEvent.pipeStages} />
-    } else if (hasStartEvent(this.props.model) && hasPipeStages(this.props.model)) {
+    } else if (hasStartEvent(this.props.model) && this.props.model.startEvent.pipeStages !== undefined) {
       return <FancyPipeline REPL={this.props.tab.REPL} {...this.props.model.startEvent.pipeStages} />
     } else {
       return <span className="repl-input-element flex-fill">{value}</span>
