@@ -137,10 +137,7 @@ export class NotebookVFS implements VFS {
   private enumerate({ entries }: { entries: Entry[] }) {
     return entries.map((mount: Entry) => {
       const name = basename(mount.mountPath)
-      const nameForDisplay =
-        isLeaf(mount) && mount.data.metadata
-          ? mount.data.metadata.description || mount.data.metadata.name || name
-          : name
+      const nameForDisplay = isLeaf(mount) && mount.data.metadata ? mount.data.metadata.name || name : name
       const isDir = !isLeaf(mount)
 
       return {
