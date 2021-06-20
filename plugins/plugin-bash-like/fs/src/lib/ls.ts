@@ -251,7 +251,6 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
   return {
     header,
     body,
-    markdown: true,
     noSort: true,
     defaultPresentation,
     allowedPresentations,
