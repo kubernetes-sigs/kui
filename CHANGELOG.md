@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.1](https://github.com/IBM/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
+
+### Bug Fixes
+
+- ls should not use Markdown for cells (slow) ([f4715b4](https://github.com/IBM/kui/commit/f4715b4)), closes [#7667](https://github.com/IBM/kui/issues/7667)
+- **packages/proxy:** dockerized kui may fail with permissions denied on the nginx directories ([15dee35](https://github.com/IBM/kui/commit/15dee35)), closes [#7658](https://github.com/IBM/kui/issues/7658)
+- **plugins/plugin-client-common:** FancyPipeline errors out when rerunning snapshot blocks saved before pipestage was introduced ([b00e6c2](https://github.com/IBM/kui/commit/b00e6c2))
+- **plugins/plugin-client-default:** CurrentContext/Namespace in plugin-client-default don't exit Loading state ([f9705e8](https://github.com/IBM/kui/commit/f9705e8)), closes [#7665](https://github.com/IBM/kui/issues/7665)
+- **plugins/plugin-kubectl:** in browser clients, CurrentContext/Namespace widgets may get stuck ([2ce68a7](https://github.com/IBM/kui/commit/2ce68a7)), closes [#7656](https://github.com/IBM/kui/issues/7656)
+
+### Features
+
+- `up` command ([f528afb](https://github.com/IBM/kui/commit/f528afb)), closes [#7669](https://github.com/IBM/kui/issues/7669)
+- add a client option to show the block execution buttons sequentially ([ad8eb68](https://github.com/IBM/kui/commit/ad8eb68))
+
 # [10.4.0](https://github.com/IBM/kui/compare/v4.5.0...v10.4.0) (2021-06-17)
 
 ### Bug Fixes

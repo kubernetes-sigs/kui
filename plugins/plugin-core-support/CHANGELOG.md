@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.1](https://github.com/IBM/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
+
+### Bug Fixes
+
+- ls should not use Markdown for cells (slow) ([f4715b4](https://github.com/IBM/kui/commit/f4715b4)), closes [#7667](https://github.com/IBM/kui/issues/7667)
+
+### Features
+
+- `up` command ([f528afb](https://github.com/IBM/kui/commit/f528afb)), closes [#7669](https://github.com/IBM/kui/issues/7669)
+
 # [10.4.0](https://github.com/IBM/kui/compare/v4.5.0...v10.4.0) (2021-06-17)
 
 ### Bug Fixes

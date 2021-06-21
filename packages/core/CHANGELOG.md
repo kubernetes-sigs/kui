@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.1](https://github.com/IBM/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
+
+### Features
+
+- add a client option to show the block execution buttons sequentially ([ad8eb68](https://github.com/IBM/kui/commit/ad8eb68))
+
 # [10.4.0](https://github.com/IBM/kui/compare/v4.5.0...v10.4.0) (2021-06-17)
 
 ### Bug Fixes
