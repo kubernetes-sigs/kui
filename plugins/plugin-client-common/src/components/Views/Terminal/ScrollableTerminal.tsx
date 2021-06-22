@@ -65,6 +65,7 @@ import {
   Processing,
   isActive,
   isAnnouncement,
+  isSectionBreak,
   isWithCompleteEvent,
   isOk,
   isOutputOnly,
@@ -368,6 +369,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       inverseColors: opts.inverseColors,
       showThisIdxInMiniSplit: -2,
       blocks: this.restoreBlocks(sbuuid).concat([Active()]),
+      nSectionBreak: 0,
       remove: undefined,
       clear: undefined,
       onClick: undefined,
@@ -380,6 +382,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       willRemoveBlock: undefined,
       willUpdateCommand: undefined,
       willUpdateExecutable: undefined,
+      willInsertSection: undefined,
       tabRefFor: undefined
     }
 
@@ -474,6 +477,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     state.willUpdateExecutable = () => this.updateExecutable()
 
+    state.willInsertSection = (idx: number) => {
+      setTimeout(() => {
+        state.facade.REPL.pexec('# ---', { insertIdx: idx, noHistory: true })
+      })
+    }
+
     state.willUpdateCommand = (idx: number, command: string) => {
       return this.splice(sbuuid, curState => {
         const block = Object.assign({}, curState.blocks[idx])
@@ -532,7 +541,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
           return {
             blocks,
-            focusedBlockIdx
+            focusedBlockIdx,
+            nSectionBreak: isSectionBreak(curState.blocks[idx]) ? curState.nSectionBreak - 1 : curState.nSectionBreak
           }
         })
 
@@ -635,6 +645,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             .concat([Active(scrollback._activeBlock ? scrollback._activeBlock.inputValue() : '')])
 
           return Object.assign(scrollback, {
+            nSectionBreak: 0,
             blocks: residualBlocks,
             focusedBlockIdx: residualBlocks.length - 1
           })
@@ -678,7 +689,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   /** the REPL started executing a command */
-  public onExecStart(uuid = this.currentUUID, asReplay: boolean, event: CommandStartEvent, insertIdx?: number) {
+  public onExecStart(uuid = this.currentUUID, asReplay: boolean, event: CommandStartEvent, _insertIdx?: number) {
     if (event.execOptions && event.execOptions.echo === false) {
       return
     }
@@ -693,8 +704,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       this.splice(uuid, curState => {
         const idx = curState.blocks.length - 1
+        const insertIdx = typeof _insertIdx === 'number' ? _insertIdx : event.execOptions && event.execOptions.insertIdx
 
-        if (typeof insertIdx === 'number') {
+        if (insertIdx !== undefined) {
           // we were asked to splice in the startEvent at a particular index
           return {
             focusedBlockIdx: insertIdx,
@@ -809,15 +821,17 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             // `true`; e.g. the `commentary` controller uses this to
             // indicate an empty comment
             const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly && event.response !== true
+            const finishedBlock = Finished(inProcess, event, outputOnly, asReplay)
 
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
-              .concat([Finished(inProcess, event, outputOnly, asReplay)]) // mark as finished
+              .concat([finishedBlock]) // mark as finished
               .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
               .concat(!isBeingRerun(inProcess) && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
             return {
               focusedBlockIdx: insertIdx === undefined ? blocks.length - 1 : insertIdx,
+              nSectionBreak: isSectionBreak(finishedBlock) ? curState.nSectionBreak + 1 : curState.nSectionBreak,
               blocks
             }
           } catch (err) {
@@ -1287,10 +1301,24 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     // running tally for In[_idx_]
     let displayedIdx = 0
+    // running tally for §idx.jdx
+    let sectionIdx = scrollback.nSectionBreak > 0 ? 1 : 0
+    let subSectionIdx = 0
 
     return blocks.map((_, idx) => {
       if (!isAnnouncement(_) && !isOutputOnly(_)) {
         displayedIdx++
+      }
+
+      if (isSectionBreak(_)) {
+        if (idx !== 0 && !(idx === 1 && isAnnouncement(blocks[idx - 1]))) {
+          sectionIdx++
+        }
+        subSectionIdx = 0
+      } else {
+        if (!isAnnouncement(_) && !isOutputOnly(_)) {
+          subSectionIdx++
+        }
       }
 
       if (isMiniSplit) {
@@ -1326,7 +1354,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
           idx={idx}
           isExecutable={isExecutable}
+          isSectionBreak={isSectionBreak(_) || undefined}
           displayedIdx={displayedIdx}
+          sectionIdx={sectionIdx > 0 ? `${sectionIdx}${subSectionIdx > 0 ? `.${subSectionIdx}` : ''}` : undefined}
           model={_}
           isBeingRerun={isBeingRerun(_)}
           uuid={scrollback.uuid}
@@ -1336,6 +1366,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           onFocus={scrollback.onFocus}
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
+          willInsertSection={scrollback.willInsertSection}
           willUpdateCommand={scrollback.willUpdateCommand}
           willUpdateExecutable={scrollback.willUpdateExecutable}
           isExperimental={hasCommand(_) && _.isExperimental}

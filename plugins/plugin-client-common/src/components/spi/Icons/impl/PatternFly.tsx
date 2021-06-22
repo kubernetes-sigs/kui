@@ -134,6 +134,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Revert {...props} />
     case 'Save':
       return <Save {...props} />
+    case 'Section':
+      return <div {...props}>&sect;</div>
     case 'Network':
       return <Network {...props} />
     case 'NextPage':

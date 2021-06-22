@@ -86,9 +86,19 @@ export default class Actions extends React.PureComponent<Props> {
         <Action
           icon="WindowClose"
           onClick={evt => this.props.willRemove(evt, this.props.idx)}
-          title="Remove this block"
+          title={this.props.isSectionBreak ? 'Remove this section' : 'Remove this block'}
         />
       )
+    )
+  }
+
+  private sectionAction() {
+    return (
+      <Action
+        icon="Section"
+        onClick={() => this.props.willInsertSection(this.props.idx)}
+        title="Insert a section break above"
+      />
     )
   }
 
@@ -124,8 +134,9 @@ export default class Actions extends React.PureComponent<Props> {
       !isOfflineClient() && (
         <div className="kui--block-actions-buttons kui--inverted-color-context">
           <div className="kui-block-actions-others">
-            {!isReadOnlyClient() && this.copyAction()}
-            {this.props.isExecutable && this.rerunAction()}
+            {!isReadOnlyClient() && !this.props.isSectionBreak && this.copyAction()}
+            {!isReadOnlyClient() && !this.props.isSectionBreak && this.sectionAction()}
+            {this.props.isExecutable && !this.props.isSectionBreak && this.rerunAction()}
           </div>
           {!isReadOnlyClient() && this.removeAction()}
         </div>
