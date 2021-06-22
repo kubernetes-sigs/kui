@@ -102,6 +102,9 @@ type InputProps = {
   /** Block ordinal to be displayed to user */
   displayedIdx?: number
 
+  /** section index to be displayed to the user */
+  sectionIdx?: string
+
   /** needed temporarily to make pty/client happy */
   _block?: HTMLElement
 
@@ -212,6 +215,12 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
       <a href="#" className="kui--block-action" title={strings('Cancel edit')} onClick={this._cancelReEdit}>
         <Icons icon="Edit" className="clickable" />
       </a>
+    ) : this.props.sectionIdx !== undefined ? (
+      <span className="repl-context-inner">
+        {' '}
+        {/* Helps with vertical alignment */}
+        &sect;{this.props.sectionIdx}
+      </span>
     ) : (
       <span className="repl-context-inner">
         {' '}

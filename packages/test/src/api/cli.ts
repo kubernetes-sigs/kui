@@ -189,6 +189,13 @@ export const expectInput = (selector: string, expectedText: string) => async (ap
   return app
 }
 
+/** text repl input context text */
+export async function expectInputContext(res: AppAndCount, N: number, expectedText: string, exact = false) {
+  const text = await res.app.client.$(Selectors.PROMPT_CONTEXT_N(N)).then(_ => _.getText())
+
+  return exact ? expectedText === text : text.includes(expectedText)
+}
+
 export const expectPriorInput = (selector: string, expectedText: string) => async (app: Application) => {
   let idx = 0
   await app.client.waitUntil(

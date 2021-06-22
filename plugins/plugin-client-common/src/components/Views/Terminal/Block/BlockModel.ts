@@ -22,6 +22,7 @@ import {
   KResponse,
   ScalarResponse,
   UsageError,
+  isCommentarySectionBreak,
   isXtermErrorResponse,
   cwd as kuiCwd
 } from '@kui-shell/core'
@@ -50,6 +51,7 @@ type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 type WithRerun = { isRerun: true; newExecUUID: string } & WithOriginalExecUUID
 type WithReplay = { isReplay: boolean }
+type WithSectionBreak = { isSectionBreak: boolean }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -75,6 +77,7 @@ type OkBlock = WithState<BlockState.ValidResponse> &
   WithCommandStart &
   WithCommandComplete &
   Partial<WithRerun> &
+  Partial<WithSectionBreak> &
   WithReplay &
   WithPreferences
 export type ProcessingBlock = WithState<BlockState.Processing> &
@@ -311,6 +314,7 @@ export function Finished(
       isExperimental: block.isExperimental,
       isReplay,
       execUUID: block.execUUID,
+      isSectionBreak: isCommentarySectionBreak(response),
       originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
       startTime: block.startTime,
       outputOnly,
@@ -344,6 +348,11 @@ export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
 /** @return whether the block is from replay */
 export function isReplay(block: BlockModel): boolean {
   return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
+}
+
+/** @return whether the block is section break */
+export function isSectionBreak(block: BlockModel): block is CompleteBlock & WithSectionBreak {
+  return isOk(block) && block.isSectionBreak
 }
 
 /** A Block may be Rerunable. If so, then it can be transitioned to the BlockBeingRerun state. */

@@ -131,11 +131,15 @@ export const expectStruct = (struct1: object, noParse = false, failFast = true) 
 export const expectYAML = (struct1: object, subset = false, failFast = true) => (str: string) => {
   try {
     const struct2 = load(str)
-    const ok = sameStruct(struct1, typeof struct2 === 'object' ? struct2 : JSON.parse(typeof struct2 === 'number' ? `${struct2}` : struct2), subset)
-      if (failFast) {
-        assert.ok(ok)
-      }
-      return ok
+    const ok = sameStruct(
+      struct1,
+      typeof struct2 === 'object' ? struct2 : JSON.parse(typeof struct2 === 'number' ? `${struct2}` : struct2),
+      subset
+    )
+    if (failFast) {
+      assert.ok(ok)
+    }
+    return ok
   } catch (err) {
     if (failFast) {
       return false
@@ -272,17 +276,27 @@ export function uniqueFileForSnapshot() {
   return `/tmp/${uuid()}.kui`
 }
 
-/** Click the close button on a block, and expect it to be gone */
-export async function removeBlock(res: AppAndCount) {
+/** Click the specified button action button */
+export async function clickBlockActionButton(res: AppAndCount, buttonSelector: string) {
   const N = res.count
   const prompt = await res.app.client.$(Selectors.PROMPT_N(N))
   await prompt.scrollIntoView()
   await prompt.moveTo()
 
-  const removeButton = await res.app.client.$(Selectors.BLOCK_REMOVE_BUTTON(N))
+  const removeButton = await res.app.client.$(buttonSelector)
   await removeButton.scrollIntoView()
   await removeButton.waitForDisplayed({ timeout: CLI.waitTimeout })
   await removeButton.click()
+}
+
+/** Click the close button on a block, and expect it to be gone */
+export async function removeBlock(res: AppAndCount) {
+  return clickBlockActionButton(res, Selectors.BLOCK_REMOVE_BUTTON(res.count))
+}
+
+/** Click the section button on a block, and expect it to be a section */
+export async function markBlockAsSection(res: AppAndCount) {
+  return clickBlockActionButton(res, Selectors.BLOCK_SECTION_BUTTON(res.count))
 }
 
 /** Switch sidecar tab */

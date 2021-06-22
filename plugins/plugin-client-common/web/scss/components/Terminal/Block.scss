@@ -113,6 +113,13 @@
     }
   }
 
+  @include SectionBreak {
+    height: 1px;
+    background-color: var(--color-sidecar-toolbar-background);
+    padding: 0;
+    margin: $section-break-margin;
+  }
+
   @include FinishedBlockWithInputAndOutput {
     margin-top: 0.5em;
   }
