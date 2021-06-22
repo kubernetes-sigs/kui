@@ -30,6 +30,7 @@ export default {
   'eu-fra': 's3.fra.eu.cloud-object-storage.appdomain.cloud.',
   'eu-mil': 's3.mil.eu.cloud-object-storage.appdomain.cloud.',
   uk: 's3.eu-gb.cloud-object-storage.appdomain.cloud.',
+  'eu-gb': 's3.eu-gb.cloud-object-storage.appdomain.cloud.',
 
   // US
   // us: 's3.us.cloud-object-storage.appdomain.cloud.',
