@@ -55,7 +55,12 @@ export interface BlockOperationTraits {
   /** Is the block executable? e.g. re-editable and re-runable */
   isExecutable?: boolean
 
+  /** Is the block a section break? */
+  isSectionBreak?: boolean
+
   willUpdateExecutable?: () => void
+
+  willInsertSection?: (idx: number) => void
 }
 
 type Props = InputOptions & {
@@ -64,6 +69,9 @@ type Props = InputOptions & {
 
   /** block ordinal index to be displayed to the user */
   displayedIdx?: number
+
+  /** section index to be displayed to the user */
+  sectionIdx?: string
 
   /** block model */
   model: BlockModel
@@ -156,10 +164,12 @@ export default class Block extends React.PureComponent<Props, State> {
           idx={this.props.idx}
           model={this.props.model}
           isBeingRerun={isBeingRerun(this.props.model)}
+          isSectionBreak={this.props.isSectionBreak}
           willRemove={this.props.willRemove}
           willChangeSize={this._willChangeSize}
           onRender={this._onOutputRender}
           willUpdateCommand={this.props.willUpdateCommand}
+          willInsertSection={this.props.willInsertSection}
           isPartOfMiniSplit={this.props.isPartOfMiniSplit}
           isWidthConstrained={this.props.isWidthConstrained}
           willFocusBlock={this.props.willFocusBlock}
@@ -219,6 +229,8 @@ export default class Block extends React.PureComponent<Props, State> {
         <li
           className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
           data-is-executale={this.props.isExecutable}
+          data-is-section-break={this.props.isSectionBreak}
+          data-in-sections={this.props.sectionIdx !== undefined || undefined}
           data-is-maximized={this.state.isMaximized || undefined}
           data-is-output-only={isOutputOnly(this.props.model) || undefined}
           data-is-empty={isEmpty(this.props.model) || undefined}

@@ -191,6 +191,7 @@ export const PROMPT_BLOCK_MENU = (N: number) => `${PROMPT_BLOCK_N(N)} ${OVERFLOW
 export const BLOCK_REMOVE_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="WindowClose"]`
 export const BLOCK_UP_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="MoveUp"]`
 export const BLOCK_DOWN_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="MoveDown"]`
+export const BLOCK_SECTION_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Section"]`
 export const COMMAND_COPY_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Copy"]`
 export const COMMAND_COPY_DONE_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Checkmark"]`
 export const COMMAND_RERUN_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Retry"]`

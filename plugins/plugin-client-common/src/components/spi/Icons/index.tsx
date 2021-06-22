@@ -49,6 +49,7 @@ export type SupportedIcon =
   | 'Retry'
   | 'Revert'
   | 'Save'
+  | 'Section'
   | 'Screenshot'
   | 'ScreenshotInProgress'
   | 'Search'
