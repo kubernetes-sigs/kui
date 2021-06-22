@@ -165,7 +165,7 @@ plugins.push(
 // console.log('webpack plugins', plugins)
 
 // Notes: we want to pull
-// node-pty-prebuilt-multiarch in as a commonjs external module; this
+// node-pty in as a commonjs external module; this
 // is because node-pty has binary bits, and we are building one set of
 // bundles for all electron platforms. If, in the future, we decide to
 // rebuild the bundles for each platform, we can remove this 'commonjs
@@ -188,7 +188,7 @@ const externals = [
   '@patternfly/react-core': '',
   '@patternfly/react-chart',
   '@patternfly/react-table', */
-  { 'node-pty-prebuilt-multiarch': 'commonjs node-pty-prebuilt-multiarch' }
+  { 'node-pty': 'commonjs node-pty' }
 ]
 
 kuiPluginExternals.forEach(_ => {
