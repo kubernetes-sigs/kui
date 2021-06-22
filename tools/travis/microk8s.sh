@@ -68,13 +68,19 @@ echo "smashing microk8s kubeconfig into .kube/config [SUCCESS]"
 # Pods running in kube-system namespace should have cluster-admin role
 kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
 
-echo "microk8s setup script done"
-
 # Download and install kubectl (microk8s has its own kubectl, make sure we override it with the version we want)
 echo "Downloading this kubectl: https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl"
   curl --retry 5 -LO https://storage.googleapis.com/kubernetes-release/release/v${TRAVIS_KUBE_VERSION}/bin/linux/amd64/kubectl && \
        sudo cp kubectl /usr/local/bin/kubectl && \
        sudo chmod a+rx /usr/local/bin/kubectl
+
+# Wait for `default` serviceaccount to be ready
+# See https://github.com/kubernetes-sigs/kui/issues/7679
+echo "Waiting for default serviceaccount to be ready"
+n=0; until ((n >= 60)); do kubectl -n default get serviceaccount default -o name && break; n=$((n + 1)); sleep 1; done; ((n < 60))
+echo "Waiting for default serviceaccount to be ready: DONE"
+
+echo "microk8s setup script done"
 
 kubectl version -o json
 which kubectl
