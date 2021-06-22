@@ -17,10 +17,10 @@
 import { REPL, eventChannelUnsafe } from '@kui-shell/core'
 import { S3Provider, ProviderInitializer, UnsupportedS3ProviderError } from '@kui-shell/plugin-s3'
 
+import Config from './model/Config'
 import updateChannel from './channel'
 import { isGoodConfig } from './controller/local'
-import Geos from './model/geos'
-import Config from './model/Config'
+import Geos, { GeoDefaults } from './model/geos'
 
 const baseMountName = 'ibm'
 
@@ -56,7 +56,8 @@ class IBMCloudS3Provider implements S3Provider {
     // e.g. s3.ap.cloud-object-storage.appdomain.cloud -> s3.direct.ap.cloud-object-storage.appdomain.cloud
     this.directEndPoint = this.endPoint.replace(/^s3\./, 's3.direct.')
 
-    this.isDefault = config && geo === config['Default Region']
+    const defaultRegion = GeoDefaults[config['Default Region']] || config['Default Region']
+    this.isDefault = config && geo === defaultRegion
 
     // use the closest available endpoint for listBuckets, since it is geo-agnostic
     this.listBuckets = {
@@ -106,6 +107,7 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
       )
     } else {
       if (config && !config['Default Region']) {
+        // TODO: isn't there a race here?
         config['Default Region'] = await repl.qexec('ibmcloud cos config region default')
       }
       const provider = new IBMCloudS3Provider(geo, mountName, config)
@@ -124,12 +126,14 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
   }
 }
 
-const initializer: ProviderInitializer[] = Object.keys(Geos).map(geo => {
-  const mountName = `${baseMountName}/${geo.replace(/-/g, '/')}`
-  return {
-    mountName,
-    init: init.bind(undefined, geo, mountName)
-  }
-})
+const initializer: ProviderInitializer[] = Object.keys(Geos)
+  // .filter(_ => !/-geo$/.test(_)) // don't manifest geo endpoints in the VFS
+  .map(geo => {
+    const mountName = `${baseMountName}/${geo.replace(/-/g, '/')}`
+    return {
+      mountName,
+      init: init.bind(undefined, geo, mountName)
+    }
+  })
 
 export default initializer

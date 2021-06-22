@@ -17,6 +17,7 @@
 export default {
   // Asia-Pacific
   // ap: 's3.ap.cloud-object-storage.appdomain.cloud.',
+  // 'ap-geo': 's3.jp-tok.cloud-object-storage.appdomain.cloud.',
   'ap-jp': 's3.jp-tok.cloud-object-storage.appdomain.cloud.',
   'ap-tok': 's3.tok.ap.cloud-object-storage.appdomain.cloud.',
   'ap-seoul': 's3.seo.ap.cloud-object-storage.appdomain.cloud.',
@@ -25,8 +26,9 @@ export default {
 
   // Europe
   // eu: 's3.eu.cloud-object-storage.appdomain.cloud.',
-  'eu-ams': 's3.ams.eu.cloud-object-storage.appdomain.cloud.',
+  // 'eu-geo': 's3.eu-de.cloud-object-storage.appdomain.cloud.',
   'eu-de': 's3.eu-de.cloud-object-storage.appdomain.cloud.',
+  'eu-ams': 's3.ams.eu.cloud-object-storage.appdomain.cloud.',
   'eu-fra': 's3.fra.eu.cloud-object-storage.appdomain.cloud.',
   'eu-mil': 's3.mil.eu.cloud-object-storage.appdomain.cloud.',
   uk: 's3.eu-gb.cloud-object-storage.appdomain.cloud.',
@@ -34,9 +36,21 @@ export default {
 
   // US
   // us: 's3.us.cloud-object-storage.appdomain.cloud.',
+  // 'us-geo': 's3.us-south.cloud-object-storage.appdomain.cloud.',
   // 'us-dal': 's3.dal.us.cloud-object-storage.appdomain.cloud.',
   'us-south': 's3.us-south.cloud-object-storage.appdomain.cloud.',
   'us-east': 's3.us-east.cloud-object-storage.appdomain.cloud.',
   // 'us-wdc': 's3.wdc.us.cloud-object-storage.appdomain.cloud.',
   'us-west': 's3.sjc.us.cloud-object-storage.appdomain.cloud.'
+}
+
+/**
+ * Temporary solution: what should we do for cross-geo default target?
+ * Maybe we could list buckets across all regions in that geo?
+ * For now, we just force Kui to use one region :(
+ */
+export const GeoDefaults = {
+  'ap-geo': 'ap-jp',
+  'eu-geo': 'eu-de',
+  'us-geo': 'us-south'
 }
