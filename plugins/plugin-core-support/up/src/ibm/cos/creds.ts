@@ -19,9 +19,17 @@ import { Arguments, encodeComponent } from '@kui-shell/core'
 
 import Options from '../options'
 
-async function check({ REPL }: Pick<Arguments, 'REPL'>) {
+/** @return a --cos-instance command line option, if specified */
+function cosinstance(parsedOptions: Arguments<Options>['parsedOptions']) {
+  const cosinstance = parsedOptions['cos-instance']
+    ? `--cos-instance ${encodeComponent(parsedOptions['cos-instance'])}`
+    : ''
+  return cosinstance
+}
+
+async function check({ REPL, parsedOptions }: Pick<Arguments<Options>, 'REPL' | 'parsedOptions'>) {
   try {
-    return await REPL.qexec<string>('ibmcloud cos validate --output name')
+    return await REPL.qexec<string>(`ibmcloud cos validate --output name ${cosinstance(parsedOptions)}`)
   } catch (err) {
     return false
   }
@@ -33,10 +41,7 @@ export default {
     (!checkResult ? colors.red('not configured') : colors.gray('service-instance=') + colors.yellow(checkResult)),
   needsCloudLogin: true,
   fix: async (args: Arguments<Options>) => {
-    const cosinstance = args.parsedOptions['cos-instance']
-      ? `--cos-instance ${encodeComponent(args.parsedOptions['cos-instance'])}`
-      : ''
-    await args.REPL.qexec(`ibmcloud cos bind ${cosinstance}`)
+    await args.REPL.qexec(`ibmcloud cos bind ${cosinstance(args.parsedOptions)}`)
     return check(args)
   },
   onFail: 'ibmcloud cos bind',
