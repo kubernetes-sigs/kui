@@ -18,17 +18,19 @@ import { Arguments, RadioTable, encodeComponent, eventChannelUnsafe, expandHomeD
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import filepath from './filepath'
-import Geos from '../model/geos'
 import readConfig from './config'
 import updateChannel from '../channel'
 import { hasEndpoint } from '../model/Config'
+import Geos, { GeoDefaults } from '../model/geos'
 
 /** @return current region; note, this value may not appear in config.json! */
 async function doGetCurrentEndpoint(args: Arguments): Promise<void | string> {
   const raw = await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud cos config region --list' }))
   const match = raw.match(/Default Region\s+(.*)/)
   if (match && match.length === 2) {
-    return match[1].trim()
+    const geo = match[1].trim()
+    // this handles e.g. eu-geo for now; see the comment on GeoDefaults
+    return GeoDefaults[geo] || geo
   }
 }
 
