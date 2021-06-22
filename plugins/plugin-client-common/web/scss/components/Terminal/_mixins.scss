@@ -36,6 +36,8 @@ $input-padding-left: 1em;
 $repl-context-min-width: 3em;
 $repl-context-margin-right: 0.5em;
 
+$section-break-margin: 1em 0.5em 1em 3em;
+
 /** Hover hysteresis for showing action buttons */
 $action-hover-delay: 210ms;
 
@@ -92,6 +94,14 @@ $action-hover-delay: 210ms;
 @mixin Block {
   li.repl-block {
     @content;
+  }
+}
+
+@mixin SectionBreak {
+  @include Block {
+    &[data-is-section-break] {
+      @content;
+    }
   }
 }
 
@@ -198,8 +208,10 @@ $action-hover-delay: 210ms;
 /** Hide the In[1] bits */
 @mixin HideIn {
   @include Block {
-    .repl-context {
-      display: none;
+    &:not([data-in-sections]) {
+      .repl-context {
+        display: none;
+      }
     }
   }
 }

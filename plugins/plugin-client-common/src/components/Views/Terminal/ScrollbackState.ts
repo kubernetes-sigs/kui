@@ -27,6 +27,7 @@ type ScrollbackState = ScrollbackOptions & {
   uuid: string
   blocks: BlockModel[]
   forceMiniSplit: boolean
+  nSectionBreak: number
 
   /** tab facade */
   facade?: KuiTab
@@ -58,6 +59,7 @@ type ScrollbackState = ScrollbackOptions & {
   willFocusBlock: (evt: React.SyntheticEvent) => void
   willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
   willUpdateCommand: (idx: number, command: string) => void
+  willInsertSection: (idx: number) => void
   willUpdateExecutable: () => void
   tabRefFor: (ref: HTMLElement) => void
 }

@@ -84,6 +84,7 @@ export interface ExecOptions {
   noRetry?: boolean
   showHeader?: boolean
   alreadyWatching?: boolean
+  insertIdx?: number // insert the command to a particular block
 
   createErrorStream?: StreamableFactory
   createOutputStream?: StreamableFactory
