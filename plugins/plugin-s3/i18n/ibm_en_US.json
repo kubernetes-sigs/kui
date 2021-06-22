@@ -1,0 +1,8 @@
+{
+  "validCreds": "Your connection to IBM Cloud Object Storage looks good",
+  "noCreds": "An HMAC key is needed. Please try [ibmcloud cos bind](#kuiexec?command=ibmcloud%20cos%20bind).",
+  "invalidConfiguration": "Invalid IBM Cloud Object Storage configuration detected.",
+  "noServiceInstanceNameError": "Cannot find the Cloud Object Storage service instance for your credentials",
+  "nonMatchingServiceNameError": "Desired Cloud Object Storage service instance not selected: {0} != {1}",
+  "noEndpoint": "Please set your IBM Cloud Object Storage endpoint via [ibmcloud cos endpoint](#kuiexec?command=ibmcloud%20cos%20endpoint)."
+}

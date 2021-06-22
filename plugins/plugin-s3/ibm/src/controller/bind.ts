@@ -128,7 +128,10 @@ async function findCredentials(
 ): Promise<void | Config> {
   const local = await findLocal(args.REPL)
 
-  if (local) {
+  const instanceName = args.parsedOptions['cos-instance']
+  const matchingNames = local && (!instanceName || local.serviceInstanceName === instanceName)
+
+  if (local && matchingNames) {
     debug('already have valid local config')
     return local
   } else {
@@ -136,7 +139,6 @@ async function findCredentials(
     debug('instances', instances)
 
     if (instances.length > 0) {
-      const instanceName = args.parsedOptions['cos-instance']
       const instance = instanceName ? instances.find(_ => _.name === instanceName) : instances[0]
       if (!instance) {
         throw new Error(`Cannot find specified instance ${instanceName}`)
