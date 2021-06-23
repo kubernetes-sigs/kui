@@ -30,7 +30,16 @@ import {
   isMultiModalResponse
 } from '@kui-shell/core'
 
-import { CompleteBlock, isAnnouncement, isOk, isOops } from './Block/BlockModel'
+import {
+  FinishedBlock,
+  hasStartEvent,
+  isAnnouncement,
+  isCancelled,
+  isEmpty,
+  isOk,
+  isOops,
+  isWithCompleteEvent
+} from './Block/BlockModel'
 
 /**
  * Split: captures the split uuid and blocks in a split
@@ -38,7 +47,7 @@ import { CompleteBlock, isAnnouncement, isOk, isOops } from './Block/BlockModel'
  */
 export type Split = {
   uuid: string
-  blocks: CompleteBlock[]
+  blocks: FinishedBlock[]
   inverseColors?: boolean
 }
 
@@ -55,7 +64,7 @@ export function isNotebookImpl(raw: Record<string, any>): raw is NotebookImpl {
   return isNotebook(model) && model.spec && Array.isArray(model.spec.splits)
 }
 
-export function snapshot(block: CompleteBlock): CompleteBlock {
+export function snapshot(block: FinishedBlock): FinishedBlock {
   if (!isAnnouncement(block) && (isOops(block) || isOk(block))) {
     const execOptions = Object.assign(
       {},
@@ -103,6 +112,34 @@ export function snapshot(block: CompleteBlock): CompleteBlock {
       startEvent,
       completeEvent
     })
+  } else if (isEmpty(block)) {
+    const execOptions = Object.assign(
+      {},
+      block.completeEvent.execOptions,
+      { block: undefined },
+      {
+        tab:
+          block.completeEvent.execOptions && block.completeEvent.execOptions.tab
+            ? block.completeEvent.execOptions.tab.uuid
+            : undefined
+      }
+    )
+
+    const evaluatorOptions = Object.assign({}, block.completeEvent.evaluatorOptions, {
+      usage: undefined,
+      flags: undefined
+    })
+
+    const tab = block.completeEvent.tab ? block.completeEvent.tab.uuid : undefined
+
+    const completeEvent = Object.assign({}, block.completeEvent, { execOptions, evaluatorOptions }, { tab })
+
+    return Object.assign(block, {
+      isReplay: true,
+      completeEvent
+    })
+  } else if (isCancelled(block)) {
+    return Object.assign(block, { isReplay: true })
   }
 }
 
@@ -111,7 +148,7 @@ export function allocateTab(target: CommandStartEvent | CommandCompleteEvent, ta
 }
 
 /** assign tab to the block */
-export function tabAlignment(block: CompleteBlock, tab: Tab): CompleteBlock {
+export function tabAlignment(block: FinishedBlock, tab: Tab): FinishedBlock {
   const allocateTabForTable = (table: Table) => {
     table.body.forEach(row => {
       const onclickHome = row.onclick ? row : row.attributes.find(_ => _.onclick && _.key === 'NAME')
@@ -122,23 +159,28 @@ export function tabAlignment(block: CompleteBlock, tab: Tab): CompleteBlock {
     })
   }
 
-  if (isMultiModalResponse(block.completeEvent.response)) {
-    block.completeEvent.response.modes.forEach(mode => {
-      if (isScalarContent(mode)) {
-        if (isTable(mode.content)) {
-          allocateTabForTable(mode.content)
+  if (isWithCompleteEvent(block)) {
+    if (isMultiModalResponse(block.completeEvent.response)) {
+      block.completeEvent.response.modes.forEach(mode => {
+        if (isScalarContent(mode)) {
+          if (isTable(mode.content)) {
+            allocateTabForTable(mode.content)
+          }
         }
-      }
-    })
+      })
 
-    block.response = block.completeEvent.response
-  } else if (isTable(block.completeEvent.response)) {
-    allocateTabForTable(block.completeEvent.response)
-    block.response = block.completeEvent.response
+      block.response = block.completeEvent.response
+    } else if (isTable(block.completeEvent.response)) {
+      allocateTabForTable(block.completeEvent.response)
+      block.response = block.completeEvent.response
+    }
+
+    allocateTab(block.completeEvent, tab)
   }
 
-  allocateTab(block.completeEvent, tab)
-  allocateTab(block.startEvent, tab)
+  if (hasStartEvent(block)) {
+    allocateTab(block.startEvent, tab)
+  }
 
   return block
 }
@@ -194,18 +236,20 @@ export class FlightRecorder {
       this.splits.map(split =>
         Promise.all(
           split.blocks.map(async _ => {
-            if (isMultiModalResponse(_.completeEvent.response)) {
-              await Promise.all(
-                _.completeEvent.response.modes.map(async mode => {
-                  if (isScalarContent(mode)) {
-                    if (isTable(mode.content)) {
-                      await this.recordTable(mode.content)
+            if (isWithCompleteEvent(_)) {
+              if (isMultiModalResponse(_.completeEvent.response)) {
+                await Promise.all(
+                  _.completeEvent.response.modes.map(async mode => {
+                    if (isScalarContent(mode)) {
+                      if (isTable(mode.content)) {
+                        await this.recordTable(mode.content)
+                      }
                     }
-                  }
-                })
-              )
-            } else if (isTable(_.completeEvent.response)) {
-              await this.recordTable(_.completeEvent.response)
+                  })
+                )
+              } else if (isTable(_.completeEvent.response)) {
+                await this.recordTable(_.completeEvent.response)
+              }
             }
           })
         )

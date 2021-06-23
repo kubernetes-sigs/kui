@@ -24,6 +24,7 @@ import * as CLI from './cli'
 import * as Common from './common'
 import * as ReplExpect from './repl-expect'
 import * as SidecarExpect from './sidecar-expect'
+import { keys } from './keys'
 
 export interface AppAndCount {
   app: Application
@@ -396,4 +397,25 @@ export async function clickSidecarButtonCustomized(ctx: Common.ISuite, res: AppA
     await _.waitForDisplayed()
     await _.click()
   })
+}
+
+export function doCancel(this: Common.ISuite, cmd = '') {
+  return this.app.client
+    .$(Selectors.CURRENT_PROMPT_BLOCK)
+    .then(async _ => {
+      _.waitForExist()
+      return _.getAttribute('data-input-count')
+    })
+    .then(count => parseInt(count, 10))
+    .then(count =>
+      this.app.client
+        .keys(cmd)
+        .then(() => this.app.client.keys(keys.ctrlC))
+        .then(() => ({ app: this.app, count: count }))
+        .then(ReplExpect.blank)
+        .then(() => this.app.client.$(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
+        .then(_ => _.getText())
+        .then(input => assert.strictEqual(input, cmd))
+    )
+    .catch(Common.oops(this, true))
 }
