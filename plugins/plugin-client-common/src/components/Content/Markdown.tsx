@@ -202,8 +202,9 @@ export default class Markdown extends React.PureComponent<Props> {
                 return <span className={this.props.className}>{props.href}</span>
               } else {
                 const tip = isKuiCommand
-                  ? `### Command Execution\n#### ${decodeURI(
-                      props.href.slice(props.href.indexOf('=') + 1)
+                  ? `### Command Execution\n#### ${decodeURI(props.href.slice(props.href.indexOf('=') + 1)).replace(
+                      '&quiet',
+                      ''
                     )}\n\n\`Link will execute a command\``
                   : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
 
