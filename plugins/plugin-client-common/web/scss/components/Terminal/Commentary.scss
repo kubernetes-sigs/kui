@@ -145,7 +145,15 @@
 
   &[data-is-editing] {
     flex: 1;
+    min-width: 0;
     max-width: 60em;
+
+    .kui--commentary-card {
+      min-width: 0;
+      .kui--card {
+        min-width: 0;
+      }
+    }
   }
 }
 @include Card {
