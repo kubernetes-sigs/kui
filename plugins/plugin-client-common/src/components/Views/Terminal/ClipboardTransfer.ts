@@ -18,12 +18,12 @@ import { v4 } from 'uuid'
 import { eventBus, CommandStartEvent, CommandCompleteEvent, ScalarResponse, flatten, getTabId } from '@kui-shell/core'
 import ScrollableTerminal, { getSelectionText } from './ScrollableTerminal'
 import { isNotebookImpl } from './Snapshot'
-import { CompleteBlock } from './Block/BlockModel'
+import { FinishedBlock, hasStartEvent, isWithCompleteEvent } from './Block/BlockModel'
 
 interface ClipboardTransfer {
   apiVersion: 'kui-shell/v1'
   kind: 'ClipboardTransfer'
-  blocks: CompleteBlock[]
+  blocks: FinishedBlock[]
 }
 
 function isClipboardTransfer(transfer: Record<string, any>): transfer is ClipboardTransfer {
@@ -99,15 +99,21 @@ export function onPaste(this: ScrollableTerminal, evt: ClipboardEvent) {
         const { uuid, facade } = this.state.splits[target.scrollbackIdx]
 
         // update the events to retarget them to our target split
-        const { startEvent, completeEvent } = transfer.blocks[0]
         const execUUID = v4()
         const retarget = { execUUID, tab: facade }
-        const start = Object.assign(startEvent, retarget)
-        const complete = Object.assign(completeEvent, retarget) as CommandCompleteEvent<ScalarResponse>
 
         // finally, fire the events off
-        this.onExecStart(uuid, false, start, target.insertionIdx)
-        this.onExecEnd(uuid, false, complete, target.insertionIdx)
+        if (hasStartEvent(transfer.blocks[0])) {
+          const { startEvent } = transfer.blocks[0]
+          const start = Object.assign(startEvent, retarget)
+          this.onExecStart(uuid, false, start, target.insertionIdx)
+        }
+
+        if (isWithCompleteEvent(transfer.blocks[0])) {
+          const { completeEvent } = transfer.blocks[0]
+          const complete = Object.assign(completeEvent, retarget) as CommandCompleteEvent<ScalarResponse>
+          this.onExecEnd(uuid, false, complete, target.insertionIdx)
+        }
       }
     } catch (err) {
       // console.error(err)

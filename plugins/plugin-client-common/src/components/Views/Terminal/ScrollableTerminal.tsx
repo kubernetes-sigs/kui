@@ -65,6 +65,7 @@ import {
   Processing,
   isActive,
   isAnnouncement,
+  isEmpty,
   isSectionBreak,
   isWithCompleteEvent,
   isOk,
@@ -240,8 +241,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const onSnapshot = async (evt: SnapshotRequestEvent) => {
       const splits = this.state.splits.map(({ inverseColors, blocks, uuid }) => {
         const { filter = () => true } = evt
+
+        const isComplete = (block: BlockModel) => {
+          return hasStartEvent(block) && filter(block.startEvent) && block.startEvent.route !== '/split'
+        }
+
         const snapshotBlocks = blocks
-          .filter(_ => hasStartEvent(_) && filter(_.startEvent) && _.startEvent.route !== '/split')
+          .filter(_ => isComplete(_) || isEmpty(_) || isCancelled(_))
           .map(snapshot)
           .filter(_ => _)
 
