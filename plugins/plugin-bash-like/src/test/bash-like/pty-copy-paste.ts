@@ -91,28 +91,28 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       await Common.refresh(this)
 
       // emit some characters to the current prompt
-      console.error('CP2')
-      await this.app.client.keys(text)
+      const emittedText = 'hello'
+      const res1 = await CLI.command(`echo ${emittedText}`, this.app)
 
-      // wait for those characters to appear in the prompt
-      console.error('CP3')
+      // wait for the output to appear
+      await this.app.client.$(rows(res1.count)).then(_ => _.waitForExist())
+
+      let idx1 = 0
       await this.app.client.waitUntil(
         async () => {
-          const actualText = await this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.getValue())
-          return actualText === text
+          const actualText = await this.app.client.$(rows(res1.count)).then(_ => _.getText())
+          if (++idx1 > 5) {
+            console.error('still waiting for emitted text', actualText, res1.count)
+          }
+          return actualText === emittedText
         },
         { timeout: CLI.waitTimeout }
       )
 
-      // copy the content of the current prompt
-      console.error('CP4')
-      await this.app.client.$(Selectors.CURRENT_PROMPT).then(_ => _.doubleClick())
-      console.error('CP5')
-      await this.app.client.execute(() => document.execCommand('copy'))
+      console.log('now should copy from xterm output and paste inside of xterm')
 
-      // cancel out the current prompt so we can execute vi
-      console.error('CP6')
-      await this.app.client.keys(Keys.ctrlC)
+      await this.app.client.$(firstRow(res1.count)).then(_ => _.doubleClick())
+      await this.app.client.execute(() => document.execCommand('copy'))
 
       // open vi, so we have an xterm to receive a paste event
       // the last true means don't try to use the copy-paste optimization

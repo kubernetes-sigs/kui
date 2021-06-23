@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, SidecarExpect, Util, Keys } from '@kui-shell/test'
 
 import { splitViaButton, focus } from '../core-support2/split-helpers'
 
@@ -157,6 +157,96 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     await CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app))
 
     await this.app.client.$(Selectors.STATUS_STRIPE_TYPE('default')).then(_ => _.waitForExist())
+  })
+})
+
+describe(`snapshot and replay with cancelled blocks ${process.env.MOCHA_RUN_TARGET ||
+  ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const file = Util.uniqueFileForSnapshot()
+  const command = 'sleep 100000'
+
+  it('should cancel a sleep command via ctrl+c', async () => {
+    try {
+      const res = await CLI.command(command, this.app)
+
+      // wait for the sleep command to commence
+      await this.app.client.$(Selectors.PROCESSING_N(res.count)).then(_ => _.waitForExist())
+
+      // then issue the ctrl+c
+      await this.app.client.keys(Keys.ctrlC)
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+
+  it('should snapshot', () =>
+    CLI.command(`snapshot ${file}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  it('should refresh', () => Common.refresh(this))
+
+  it('should replay', async () => {
+    try {
+      await CLI.command(`replay ${file}`, this.app)
+
+      // verify that the last block is cancelled
+      let idx = 0
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await this.app.client.$(Selectors.PROMPT_LAST).then(_ => _.getText())
+          if (++idx > 5) {
+            console.error(`still waiting for expected=${command}; actual=${txt}`)
+          }
+          return txt === command
+        },
+        { timeout: CLI.waitTimeout }
+      )
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+})
+
+describe(`snapshot and replay with empty blocks ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const file = Util.uniqueFileForSnapshot()
+  const cancel = Util.doCancel.bind(this)
+  const command = 'foo'
+
+  it(`should type ${command} and hit ctrl+c`, () => cancel(command))
+
+  it('should snapshot', () =>
+    CLI.command(`snapshot ${file}`, this.app)
+      .then(ReplExpect.justOK)
+      .catch(Common.oops(this, true)))
+
+  it('should refresh', () => Common.refresh(this))
+
+  it('should replay', async () => {
+    try {
+      await CLI.command(`replay ${file}`, this.app)
+
+      // verify that the last block is cancelled
+      let idx = 0
+      await this.app.client.waitUntil(
+        async () => {
+          const txt = await this.app.client.$(Selectors.PROMPT_LAST).then(_ => _.getText())
+          if (++idx > 5) {
+            console.error(`still waiting for expected=${command}; actual=${txt}`)
+          }
+          return txt === command
+        },
+        { timeout: CLI.waitTimeout }
+      )
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
   })
 })
 

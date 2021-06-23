@@ -14,29 +14,7 @@
  * limitations under the License.
  */
 
-import { strictEqual } from 'assert'
 import { Common, CLI, Keys, ReplExpect, Selectors, Util } from '@kui-shell/test'
-
-function doCancel(this: Common.ISuite, cmd = '') {
-  return this.app.client
-    .$(Selectors.CURRENT_PROMPT_BLOCK)
-    .then(async _ => {
-      _.waitForExist()
-      return _.getAttribute('data-input-count')
-    })
-    .then(count => parseInt(count, 10))
-    .then(count =>
-      this.app.client
-        .keys(cmd)
-        .then(() => this.app.client.keys(Keys.ctrlC))
-        .then(() => ({ app: this.app, count: count }))
-        .then(ReplExpect.blank)
-        .then(() => this.app.client.$(Selectors.PROMPT_N(count))) // make sure the cancelled command text is still there, in the previous block
-        .then(_ => _.getText())
-        .then(input => strictEqual(input, cmd))
-    )
-    .catch(Common.oops(this, true))
-}
 
 function doClear(this: Common.ISuite) {
   it('should clear the terminal', () =>
@@ -50,7 +28,7 @@ describe(`Cancel via Ctrl+C then clear then execute ${process.env.MOCHA_RUN_TARG
   after(Common.after(this))
 
   const clear = doClear.bind(this)
-  const cancel = doCancel.bind(this)
+  const cancel = Util.doCancel.bind(this)
 
   it('should type a command, but hit ctrl+c before executing it', () => cancel('echo XXXXXXXXXX'))
   clear()
@@ -66,7 +44,7 @@ describe(`Cancel via Ctrl+C ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   after(Common.after(this))
 
   const clear = doClear.bind(this)
-  const cancel = doCancel.bind(this)
+  const cancel = Util.doCancel.bind(this)
 
   it('should hit ctrl+c', () => cancel())
   clear()
