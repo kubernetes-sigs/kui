@@ -196,28 +196,27 @@
       }
     }
     @include BlockActions {
-      align-items: center;
       display: flex;
       opacity: 0;
       border-radius: 1px;
       background-color: var(--color-base03);
 
+      transition-property: opacity;
+      transition-delay: $action-hover-delay;
+      transition-duration: 140ms;
+
       position: absolute;
       top: 0; /* this with bottom:0 gives 1) vertical center; 2) occluding of repl-input-element content */
       bottom: 0;
       right: 0;
-
-      padding-left: 0.5em;
-      transition-property: opacity;
-      transition-delay: $action-hover-delay;
-      transition-duration: 140ms;
     }
 
     .kui--block-action {
       align-items: center;
+      justify-content: center;
       display: flex;
-      margin-right: $action-padding;
       padding: $action-padding;
+      width: $action-width;
       color: var(--color-text-01);
 
       /* This is a bit of a hack for TwoFaceIcon, to work around the Checkmark being narrower than other icons in Carbon */
@@ -238,8 +237,6 @@
     }
 
     .kui-block-actions-others:not(:empty) {
-      padding-right: $action-padding;
-      margin-right: $action-padding;
       display: flex;
       border-right: 1px solid var(--color-table-border1);
     }

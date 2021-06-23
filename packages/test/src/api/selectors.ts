@@ -194,7 +194,7 @@ export const BLOCK_DOWN_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--bloc
 export const BLOCK_SECTION_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Section"]`
 export const COMMAND_COPY_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Copy"]`
 export const COMMAND_COPY_DONE_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Checkmark"]`
-export const COMMAND_RERUN_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Retry"]`
+export const COMMAND_RERUN_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Play"]`
 export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
