@@ -64,7 +64,7 @@ export default class Actions extends React.PureComponent<Props> {
         }
       }
 
-      return <Action icon="Retry" onClick={handler} title={strings('Re-execute this command')} />
+      return <Action icon="Play" onClick={handler} title={strings('Re-execute this command')} />
     }
   }
 

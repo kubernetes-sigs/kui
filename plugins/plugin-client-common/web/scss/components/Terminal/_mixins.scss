@@ -21,8 +21,9 @@ $inset: 0.375em;
 $right-element-font-size-factor: 0.75;
 $right-element-font-size: $right-element-font-size-factor + rem;
 
-/** Padding for action buttons */
+/** Sizing for Block action buttons */
 $action-padding: 3px;
+$action-width: 2em;
 
 /** Color to indicate focused block */
 $focus-color: var(--color-brand-01);
