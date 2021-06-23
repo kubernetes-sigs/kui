@@ -54,6 +54,14 @@ interface Props {
   onRender?: () => void
 }
 
+function decodeURI(uri: string) {
+  try {
+    return decodeURIComponent(uri)
+  } catch (err) {
+    return uri
+  }
+}
+
 export default class Markdown extends React.PureComponent<Props> {
   private readonly _uuid = uuid()
 
@@ -162,7 +170,7 @@ export default class Markdown extends React.PureComponent<Props> {
                       if (isKuiCommand) {
                         const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
                         if (raw) {
-                          const cmdline = decodeURIComponent(raw[1])
+                          const cmdline = decodeURI(raw[1])
                           const echo = !raw[2]
                           if (this.props.repl) {
                             return this.props.repl.pexec(cmdline, { echo })
@@ -194,7 +202,7 @@ export default class Markdown extends React.PureComponent<Props> {
                 return <span className={this.props.className}>{props.href}</span>
               } else {
                 const tip = isKuiCommand
-                  ? `### Command Execution\n#### ${decodeURIComponent(
+                  ? `### Command Execution\n#### ${decodeURI(
                       props.href.slice(props.href.indexOf('=') + 1)
                     )}\n\n\`Link will execute a command\``
                   : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
