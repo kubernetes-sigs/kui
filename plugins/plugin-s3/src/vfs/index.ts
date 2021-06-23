@@ -979,10 +979,6 @@ export default function initS3Mounts() {
   const init = (resolveA?: () => void) => {
     // eslint-disable-next-line promise/param-names
     waitForInitDone = new Promise((resolveB, reject) => {
-      if (typeof resolveA === 'function') {
-        resolveA()
-      }
-
       setTimeout(() => {
         mount(async (repl: REPL) => {
           try {
@@ -1004,6 +1000,10 @@ export default function initS3Mounts() {
             reject(err)
           }
         }, baseMountPath)
+
+        if (typeof resolveA === 'function') {
+          resolveA()
+        }
       })
     })
   }
