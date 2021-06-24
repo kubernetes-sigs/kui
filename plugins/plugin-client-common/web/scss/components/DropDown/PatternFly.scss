@@ -61,8 +61,6 @@ body[kui-theme-style] {
   }
 
   .pf-c-dropdown__menu {
-    /* see https://github.com/IBM/kui/issues/4651 */
-    z-index: 1;
     max-height: 30rem;
     overflow-y: auto;
     background-color: var(--color-dropdown);
@@ -74,7 +72,7 @@ body[kui-theme-style] {
 
       &:hover,
       &:focus {
-        background-color: var(--color-base02);
+        background-color: var(--color-base04);
       }
 
       svg[data-mode='selected container'] {
