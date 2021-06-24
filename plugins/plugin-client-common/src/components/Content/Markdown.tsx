@@ -150,6 +150,22 @@ export default class Markdown extends React.PureComponent<Props> {
                   })
                   .filter(_ => _)
                 return <React.Fragment>{imageTags}</React.Fragment>
+              } else if (/<a name=/.test(props.value)) {
+                const nameMatch = props.value.match(/name="?([^"\s]+)"?/)
+                if (nameMatch) {
+                  return <a id={nameMatch[1]} />
+                }
+              } else if (/a href="#/.test(props.value)) {
+                const hrefMatch = props.value.match(/href="?([^"\s]+)"?/)
+                if (hrefMatch) {
+                  return <a href={hrefMatch[1]} />
+                }
+              } else if (/<\/a>/.test(props.value)) {
+                // FIXME: react-markdown v5 doens't parse html properly,
+                // see issue: https://github.com/remarkjs/react-markdown/issues/320.
+                // here we'll work around by igoring the anchor child and closing tag.
+                // we should get rid of this hack once we upgrade to react-markdown v6.
+                return <React.Fragment />
               }
 
               // Render the raw string for all other raw html tags
