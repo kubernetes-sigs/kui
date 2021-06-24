@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.2](https://github.com/IBM/kui/compare/v10.4.1...v10.4.2) (2021-06-24)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** "quiet" markdown kui command execution links show the internal "quiet" part ([40a11d5](https://github.com/IBM/kui/commit/40a11d5)), closes [#7698](https://github.com/IBM/kui/issues/7698)
+- **plugins/plugin-client-common:** Change block rerun action button from Retry icon to Play icon ([2a5118a](https://github.com/IBM/kui/commit/2a5118a)), closes [#7696](https://github.com/IBM/kui/issues/7696)
+- **plugins/plugin-client-common:** commentary doesn't suport intrapage links ([f2a6a13](https://github.com/IBM/kui/commit/f2a6a13))
+- **plugins/plugin-client-common:** commentary editor does not shrink as window width ([f10c8a5](https://github.com/IBM/kui/commit/f10c8a5))
+- **plugins/plugin-client-common:** editing a commentary link can fail with uncaught decodeURIComponent error ([c151aea](https://github.com/IBM/kui/commit/c151aea))
+- **plugins/plugin-client-common:** increase spacing around new section break UI ([da20b12](https://github.com/IBM/kui/commit/da20b12)), closes [#7691](https://github.com/IBM/kui/issues/7691)
+- **plugins/plugin-client-common:** snapshot doesn't preserve cancelled or empty block ([e316c6f](https://github.com/IBM/kui/commit/e316c6f))
+
+### Features
+
+- section blocks ([ac66017](https://github.com/IBM/kui/commit/ac66017))
+
 ## [10.4.1](https://github.com/IBM/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
 
 ### Bug Fixes

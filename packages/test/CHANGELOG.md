@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.2](https://github.com/kubernetes-sigs/kui/compare/v10.4.1...v10.4.2) (2021-06-24)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Change block rerun action button from Retry icon to Play icon ([2a5118a](https://github.com/kubernetes-sigs/kui/commit/2a5118a)), closes [#7696](https://github.com/kubernetes-sigs/kui/issues/7696)
+- **plugins/plugin-client-common:** snapshot doesn't preserve cancelled or empty block ([e316c6f](https://github.com/kubernetes-sigs/kui/commit/e316c6f))
+
+### Features
+
+- section blocks ([ac66017](https://github.com/kubernetes-sigs/kui/commit/ac66017))
+
 ## [10.4.1](https://github.com/kubernetes-sigs/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
 
 **Note:** Version bump only for package @kui-shell/test

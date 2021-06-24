@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.2](https://github.com/IBM/kui/compare/v10.4.1...v10.4.2) (2021-06-24)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** snapshot doesn't preserve cancelled or empty block ([e316c6f](https://github.com/IBM/kui/commit/e316c6f))
+- **plugins/plugin-s3:** up command does not respect --cos-instance choice for ibm cloud ([2675bcf](https://github.com/IBM/kui/commit/2675bcf)), closes [#7677](https://github.com/IBM/kui/issues/7677)
+
+### Features
+
+- section blocks ([ac66017](https://github.com/IBM/kui/commit/ac66017))
+
 ## [10.4.1](https://github.com/IBM/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
 
 ### Bug Fixes

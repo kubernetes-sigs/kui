@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.2](https://github.com/IBM/kui/compare/v10.4.1...v10.4.2) (2021-06-24)
+
+### Bug Fixes
+
+- **packages/builder:** recompile node-pty prebuilt for linux against ubuntu 18 ([63f3a55](https://github.com/IBM/kui/commit/63f3a55)), closes [#7682](https://github.com/IBM/kui/issues/7682)
+
 ## [10.4.1](https://github.com/IBM/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
 
 **Note:** Version bump only for package @kui-shell/builder

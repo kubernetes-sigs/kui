@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.2](https://github.com/IBM/kui/compare/v10.4.1...v10.4.2) (2021-06-24)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** ibm provider for plugin-s3 does not recognize eu-gb region ([276c6ae](https://github.com/IBM/kui/commit/276c6ae)), closes [#7674](https://github.com/IBM/kui/issues/7674)
+- **plugins/plugin-s3:** ibm s3 provider fails with cross-region endpoints ([d650467](https://github.com/IBM/kui/commit/d650467)), closes [#7685](https://github.com/IBM/kui/issues/7685)
+- **plugins/plugin-s3:** s3 vfs not mounted in time in headless mode ([36c5199](https://github.com/IBM/kui/commit/36c5199)), closes [#7694](https://github.com/IBM/kui/issues/7694)
+- **plugins/plugin-s3:** up command does not respect --cos-instance choice for ibm cloud ([2675bcf](https://github.com/IBM/kui/commit/2675bcf)), closes [#7677](https://github.com/IBM/kui/issues/7677)
+
 ## [10.4.1](https://github.com/IBM/kui/compare/v10.4.0...v10.4.1) (2021-06-21)
 
 **Note:** Version bump only for package @kui-shell/plugin-s3
