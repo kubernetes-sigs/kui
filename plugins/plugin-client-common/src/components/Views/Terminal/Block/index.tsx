@@ -29,6 +29,7 @@ import {
   isOutputOnly,
   isProcessing,
   isAnnouncement,
+  hideOutput,
   hasUUID
 } from './BlockModel'
 
@@ -224,10 +225,12 @@ export default class Block extends React.PureComponent<Props, State> {
    *
    */
   public render() {
+    const hideOut = hideOutput(this.props.model)
+
     return (
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
         <li
-          className={'repl-block kui--maximize-candidate ' + this.props.model.state.toString()}
+          className={'repl-block ' + (hideOut ? '' : this.props.model.state.toString())}
           data-is-executale={this.props.isExecutable}
           data-is-section-break={this.props.isSectionBreak}
           data-in-sections={this.props.sectionIdx !== undefined || undefined}
@@ -252,7 +255,7 @@ export default class Block extends React.PureComponent<Props, State> {
           ) : (
             <React.Fragment>
               {this.input()}
-              {this.output()}
+              {!hideOut && this.output()}
             </React.Fragment>
           )}
         </li>

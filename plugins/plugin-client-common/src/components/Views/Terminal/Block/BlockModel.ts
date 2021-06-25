@@ -22,6 +22,8 @@ import {
   KResponse,
   ScalarResponse,
   UsageError,
+  hideReplayOutput,
+  isCommentaryResponse,
   isCommentarySectionBreak,
   isXtermErrorResponse,
   cwd as kuiCwd
@@ -374,4 +376,17 @@ export function Rerun(
     originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
     startTime: newStartTime
   })
+}
+
+/** this implements support for not showing the Output blocks when replaying a notebook */
+export function hideOutput(model: BlockModel): boolean {
+  return (
+    hideReplayOutput() && // client asked us not to show replay output in notebooks
+    isReplay(model) && // we are showing a notebook
+    !hasBeenRerun(model) && // user has yet to re-execute the block in this notebook
+    isFinished(model) &&
+    !isCancelled(model) &&
+    !isEmpty(model) &&
+    !isCommentaryResponse(model.response)
+  )
 }
