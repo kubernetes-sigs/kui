@@ -17,7 +17,6 @@
 import React from 'react'
 
 import {
-  hideReplayOutput,
   i18n,
   isAbortableResponse,
   isCodedError,
@@ -353,20 +352,8 @@ export default class Output extends React.PureComponent<Props, State> {
         ? this.state.assertHasContent
         : this.isShowingSomethingInTerminal(this.props.model)
 
-    const hideOutput =
-      hideReplayOutput() &&
-      isFinished(this.props.model) &&
-      !isCancelled(this.props.model) &&
-      !isEmpty(this.props.model) &&
-      !isCommentaryResponse(this.props.model.response) &&
-      this.props.model.isReplay
-
     return (
-      <div
-        className={
-          'repl-output ' + (hasContent ? ' repl-result-has-content' : '') + (hideOutput ? ' repl-result-hide' : '')
-        }
-      >
+      <div className={'repl-output ' + (hasContent ? ' repl-result-has-content' : '')}>
         {!this.props.isPartOfMiniSplit && hasContent && this.ctx()}
         <div className="result-vertical">
           {this.stream()}
