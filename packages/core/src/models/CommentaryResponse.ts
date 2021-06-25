@@ -45,3 +45,10 @@ export function isCommentaryResponse(entity: Entity): entity is CommentaryRespon
 export function isCommentarySectionBreak(entity: Entity): boolean {
   return entity && isCommentaryResponse(entity) && entity.props.children === '---'
 }
+
+export function maybeKuiLink(link: string): string {
+  const linkMatch = link.match('#kui-link-')
+  if (linkMatch) {
+    return linkMatch.input.slice(1)
+  }
+}

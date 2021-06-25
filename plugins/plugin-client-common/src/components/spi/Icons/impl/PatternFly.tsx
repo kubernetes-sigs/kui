@@ -17,6 +17,7 @@
 import React from 'react'
 
 import {
+  CircleIcon as Circle,
   EraserIcon as Clear,
   CameraIcon as Screenshot,
   CameraRetroIcon as ScreenshotInProgress,
@@ -34,6 +35,7 @@ import {
   SlidersHIcon as Settings,
   TrashAltIcon as Trash,
   LevelUpAltIcon as Up,
+  LinkIcon as Link,
   ArrowUpIcon as MoveUp,
   ArrowDownIcon as MoveDown,
   MapMarkerAltIcon as Location,
@@ -116,6 +118,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Info {...props} />
     case 'List':
       return <List {...props} />
+    case 'Link':
+      return <Link {...props} />
     case 'Location':
       return <Location {...props} />
     case 'MoveUp':
@@ -166,6 +170,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Warning {...props} />
     case 'Up':
       return <Up {...props} />
+    case 'Waiting':
+      return <Circle {...props} />
     case 'WindowClose':
       return <WindowClose style={Sidecar} {...props} />
     case 'WindowMaximize':
