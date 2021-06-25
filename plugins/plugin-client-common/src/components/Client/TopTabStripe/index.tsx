@@ -165,6 +165,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
         className="kui--top-tab-stripe-header"
         logo={this.headerName()}
         logoProps={logoProps}
+        logoComponent="span"
         topNav={this.tabs()}
       />
     )
