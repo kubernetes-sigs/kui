@@ -109,9 +109,6 @@
 .repl-block.valid-response .repl-output {
   display: flex;
   /* align-items: flex-start; */
-  &.repl-result-hide {
-    display: none;
-  }
 }
 .repl-result-spinner {
   font-size: 0.875rem;
