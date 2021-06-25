@@ -150,6 +150,8 @@ export default class Markdown extends React.PureComponent<Props> {
                   })
                   .filter(_ => _)
                 return <React.Fragment>{imageTags}</React.Fragment>
+              } else if (/^<br\s*\/?>$/.test(props.value)) {
+                return <p />
               } else if (/<a name=/.test(props.value)) {
                 const nameMatch = props.value.match(/name="?([^"\s]+)"?/)
                 if (nameMatch) {
