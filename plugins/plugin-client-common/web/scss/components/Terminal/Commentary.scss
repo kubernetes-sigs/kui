@@ -155,6 +155,20 @@
       }
     }
   }
+
+  svg.link-status {
+    margin-left: 0.2em;
+    width: 0.8em;
+    &[icon='Error'] {
+      fill: var(--color-red);
+    }
+    &[icon='Waiting'] {
+      fill: var(--color-yellow);
+    }
+    &[icon='Checkmark'] {
+      fill: var(--color-green);
+    }
+  }
 }
 @include Card {
   display: flex;

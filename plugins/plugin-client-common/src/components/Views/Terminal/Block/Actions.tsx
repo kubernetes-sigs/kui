@@ -102,6 +102,18 @@ export default class Actions extends React.PureComponent<Props> {
     )
   }
 
+  private linkAction() {
+    return (
+      this.props.willLinkifyBlock && (
+        <Action
+          icon="Link"
+          onClick={() => this.props.willLinkifyBlock(this.props.idx)}
+          title="Copy the link of this block"
+        />
+      )
+    )
+  }
+
   /* private screenshotAction() {
     return (
       this.props.willScreenshot &&
@@ -135,6 +147,7 @@ export default class Actions extends React.PureComponent<Props> {
         <div className="kui--block-actions-buttons kui--inverted-color-context">
           <div className="kui-block-actions-others">
             {!isReadOnlyClient() && !this.props.isSectionBreak && this.copyAction()}
+            {!isReadOnlyClient() && this.linkAction()}
             {!isReadOnlyClient() && !this.props.isSectionBreak && this.sectionAction()}
             {this.props.isExecutable && !this.props.isSectionBreak && this.rerunAction()}
           </div>

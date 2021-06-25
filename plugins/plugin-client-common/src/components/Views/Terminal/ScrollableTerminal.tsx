@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { v5 } from 'uuid'
+import { v4, v5 } from 'uuid'
 import React from 'react'
 
 import {
@@ -66,6 +66,8 @@ import {
   isActive,
   isAnnouncement,
   isEmpty,
+  isFinished,
+  isLinkified,
   isSectionBreak,
   isWithCompleteEvent,
   isOk,
@@ -181,6 +183,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
 
     this.initSnapshotEvents()
+    this.initLinkEvents()
+  }
+
+  private initLinkEvents() {
+    eventChannelUnsafe.on('/link/status/get', (link: string) => {
+      this.state.splits.find(({ blocks }) =>
+        blocks.find(_ => {
+          if (isLinkified(_) && _.link === link) {
+            const status = !hasBeenRerun(_) ? [0, 0] : isOk(_) ? [1, 0] : [0, 1]
+            eventChannelUnsafe.emit(`/link/status/update/${_.link}`, status)
+            return true
+          }
+        })
+      )
+    })
   }
 
   /** replay the splits and blocks from snapshot */
@@ -386,6 +403,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       setActiveBlock: undefined,
       willFocusBlock: undefined,
       willRemoveBlock: undefined,
+      willLinkifyBlock: undefined,
       willUpdateCommand: undefined,
       willUpdateExecutable: undefined,
       willInsertSection: undefined,
@@ -482,6 +500,24 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
 
     state.willUpdateExecutable = () => this.updateExecutable()
+
+    state.willLinkifyBlock = (idx: number) => {
+      return this.splice(sbuuid, curState => {
+        const block = Object.assign({}, curState.blocks[idx])
+        if (isFinished(block)) {
+          const uuid = hasUUID(block) ? `${block.execUUID}` : `${v4()}`
+          const link = `kui-link-${uuid}`
+          block.link = link
+          navigator.clipboard.writeText(`[Link](#${link})`)
+          return {
+            blocks: curState.blocks
+              .slice(0, idx)
+              .concat([block])
+              .concat(curState.blocks.slice(idx + 1))
+          }
+        }
+      })
+    }
 
     state.willInsertSection = (idx: number) => {
       setTimeout(() => {
@@ -828,6 +864,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             // indicate an empty comment
             const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly && event.response !== true
             const finishedBlock = Finished(inProcess, event, outputOnly, asReplay)
+
+            if (isLinkified(finishedBlock)) {
+              const status = !hasBeenRerun(finishedBlock) ? [0, 0] : isOk(finishedBlock) ? [1, 0] : [0, 1]
+
+              eventChannelUnsafe.emit(`/link/status/update/${finishedBlock.link}`, status)
+            }
 
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
@@ -1373,6 +1415,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
           willInsertSection={scrollback.willInsertSection}
+          willLinkifyBlock={isFinished(_) && scrollback.willLinkifyBlock}
           willUpdateCommand={scrollback.willUpdateCommand}
           willUpdateExecutable={scrollback.willUpdateExecutable}
           isExperimental={hasCommand(_) && _.isExperimental}
