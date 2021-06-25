@@ -28,6 +28,7 @@ import {
   isFinished,
   isOutputOnly,
   isProcessing,
+  isLinkified,
   isAnnouncement,
   hideOutput,
   hasUUID
@@ -62,6 +63,8 @@ export interface BlockOperationTraits {
   willUpdateExecutable?: () => void
 
   willInsertSection?: (idx: number) => void
+
+  willLinkifyBlock?: (idx: number) => void
 }
 
 type Props = InputOptions & {
@@ -248,16 +251,19 @@ export default class Block extends React.PureComponent<Props, State> {
           onClick={this.props.willFocusBlock}
           onFocus={this.props.onFocus}
         >
-          {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
-            this.output()
-          ) : isActive(this.props.model) || isEmpty(this.props.model) ? (
-            this.input()
-          ) : (
-            <React.Fragment>
-              {this.input()}
-              {!hideOut && this.output()}
-            </React.Fragment>
-          )}
+          <React.Fragment>
+            {isLinkified(this.props.model) && <a id={this.props.model.link} />}
+            {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
+              this.output()
+            ) : isActive(this.props.model) || isEmpty(this.props.model) ? (
+              this.input()
+            ) : (
+              <React.Fragment>
+                {this.input()}
+                {!hideOut && this.output()}
+              </React.Fragment>
+            )}
+          </React.Fragment>
         </li>
       )
     )
