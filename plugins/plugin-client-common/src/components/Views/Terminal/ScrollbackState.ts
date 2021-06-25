@@ -60,6 +60,7 @@ type ScrollbackState = ScrollbackOptions & {
   willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void
   willUpdateCommand: (idx: number, command: string) => void
   willInsertSection: (idx: number) => void
+  willLinkifyBlock: (idx: number) => void
   willUpdateExecutable: () => void
   tabRefFor: (ref: HTMLElement) => void
 }
