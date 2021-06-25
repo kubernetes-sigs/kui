@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.3](https://github.com/IBM/kui/compare/v10.4.2...v10.4.3) (2021-06-25)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** avoid link-like hover effect for product name in header ([d282f03](https://github.com/IBM/kui/commit/d282f03)), closes [#7709](https://github.com/IBM/kui/issues/7709)
+- **plugins/plugin-client-common:** hideReplayOutput doesn't always work as expected ([a2583a1](https://github.com/IBM/kui/commit/a2583a1)), closes [#7711](https://github.com/IBM/kui/issues/7711)
+- **plugins/plugin-client-common:** Logs/Terminal container selector cannot be interacted with ([3209d1c](https://github.com/IBM/kui/commit/3209d1c)), closes [#7707](https://github.com/IBM/kui/issues/7707)
+
+### Features
+
+- **plugins/plugin-client-common:** add support for <br> in Markdown ([984ade8](https://github.com/IBM/kui/commit/984ade8)), closes [#7715](https://github.com/IBM/kui/issues/7715)
+
 ## [10.4.2](https://github.com/IBM/kui/compare/v10.4.1...v10.4.2) (2021-06-24)
 
 ### Bug Fixes
