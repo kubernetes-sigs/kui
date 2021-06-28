@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.4](https://github.com/IBM/kui/compare/v10.4.3...v10.4.4) (2021-06-28)
+
+### Bug Fixes
+
+- sequential execution ignores errors and in progress ([d82c597](https://github.com/IBM/kui/commit/d82c597))
+- **plugins/plugin-client-default:** remove Screenshot component ([648c307](https://github.com/IBM/kui/commit/648c307))
+
+### Features
+
+- Add support for "slash tmp" to s3 mounts ([31e8a64](https://github.com/IBM/kui/commit/31e8a64)), closes [#7721](https://github.com/IBM/kui/issues/7721)
+- link the accomplishment of a block to commentary ([d33c42f](https://github.com/IBM/kui/commit/d33c42f))
+
 ## [10.4.3](https://github.com/IBM/kui/compare/v10.4.2...v10.4.3) (2021-06-25)
 
 ### Bug Fixes
