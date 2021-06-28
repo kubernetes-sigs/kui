@@ -227,10 +227,6 @@ export function hasOriginalUUID(block: BlockModel | WithOriginalExecUUID): block
   return typeof (block as WithOriginalExecUUID).originalExecUUID === 'string'
 }
 
-export function hasBeenRerun(block: BlockModel): boolean {
-  return hasOriginalUUID(block) && hasUUID(block) && block.originalExecUUID !== block.execUUID
-}
-
 /** Transform to Processing */
 export function Processing(
   block: BlockModel,
@@ -367,6 +363,12 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
 /** @return whether the block has a completeEvent trait */
 export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
   return (isOk(block) || isOops(block) || isEmpty(block)) && block.completeEvent !== undefined
+}
+
+export function hasBeenRerun(block: BlockModel): boolean {
+  return (
+    hasOriginalUUID(block) && hasUUID(block) && block.originalExecUUID !== block.execUUID && isWithCompleteEvent(block)
+  )
 }
 
 /** @return whether the block is from replay */
