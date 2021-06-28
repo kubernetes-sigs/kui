@@ -29,7 +29,7 @@ import {
 import { CurrentGitBranch } from '@kui-shell/plugin-git'
 import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
-import { Screenshot, Search, UpdateChecker } from '@kui-shell/plugin-electron-components'
+import { Search, UpdateChecker } from '@kui-shell/plugin-electron-components'
 
 import { productName } from '@kui-shell/client/config.d/name.json'
 
@@ -115,10 +115,6 @@ export default function renderMain(props: KuiProps) {
         {/* !isPopup && <OpenWhiskGridWidget /> */}
         {inBrowser() && <ProxyOfflineIndicator />}
         {!isPopup && !inBrowser() && <UpdateChecker />}
-      </MeterWidgets>
-
-      <MeterWidgets>
-        <Screenshot />
       </MeterWidgets>
     </Kui>
   )
