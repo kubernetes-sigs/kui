@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-export {
-  MinioConfig,
-  Provider as S3Provider,
-  addProviderInitializer,
-  ProviderInitializer,
-  UnsupportedS3ProviderError
-} from './providers'
+/** So that the user can interface via /s3/ibm; this is the "ibm" part of that path */
+const baseMountName = 'ibm'
 
-export { default as eventBus } from './vfs/events'
-export { minioConfig, mounts as getCurrentMounts, Mount } from './vfs/responders'
+export default baseMountName
