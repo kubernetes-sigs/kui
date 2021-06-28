@@ -873,7 +873,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       let blockidx: number
 
       const sbidx = this.state.splits.findIndex(split => {
-        const idx = split.blocks.findIndex(_ => hasUUID(_) && isRerunable(_) && !isOutputOnly(_) && !hasBeenRerun(_))
+        const idx = split.blocks.findIndex(_ => {
+          const notBeenRerunSuccessfully = !hasBeenRerun(_) || (isWithCompleteEvent(_) && !isOk(_))
+
+          return hasUUID(_) && isRerunable(_) && !isOutputOnly(_) && notBeenRerunSuccessfully
+        })
 
         if (idx !== -1) {
           blockidx = idx
