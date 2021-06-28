@@ -250,6 +250,7 @@ export { commandsOffered as commandsOfferedByPlugin, userHome as pluginUserHome 
 
 // Settings
 export { userDataDir, uiThemes } from './core/settings'
+export { getOrSetPreference, getPreference, setPreference } from './core/userdata'
 
 // Storage for user data
 export { default as Store } from './models/store'

@@ -183,3 +183,18 @@ export const setPreference = async (key: string, value: string): Promise<string>
   await fsyncPreferences(prefs)
   return value
 }
+
+export async function getOrSetPreference(
+  key: string,
+  defaultValue: string | (() => string | Promise<string>)
+): Promise<string> {
+  const prefs = await preferences()
+  if (prefs[key]) {
+    return prefs[key]
+  } else {
+    const value = typeof defaultValue === 'string' ? defaultValue : await defaultValue()
+    prefs[key] = value
+    await fsyncPreferences(prefs)
+    return value
+  }
+}
