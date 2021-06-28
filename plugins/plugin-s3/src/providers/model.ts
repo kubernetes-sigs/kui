@@ -22,18 +22,21 @@ type BucketFilter = (bucket: { name: string; locationConstraint: string }) => bo
 
 type Provider = ClientOptions & {
   /** Optimized path for job execution? */
-  directEndPoint?: string
+  readonly directEndPoint?: string
 
-  mountName: string
-  region?: string
-  error?: Error
-  bucketFilter?: BucketFilter
-  listBuckets?: ClientOptions
-  understandsFolders?: boolean
-  isDefault?: boolean
+  readonly mountName: string
+  readonly region?: string
+  readonly error?: Error
+  readonly bucketFilter?: BucketFilter
+  readonly listBuckets?: ClientOptions
+  readonly understandsFolders?: boolean
+  readonly isDefault?: boolean
 
   /** Does this provider allows access only to public buckets? */
-  publicOnly?: boolean
+  readonly publicOnly?: boolean
+
+  /** Is this mount a subirectory mount of an existing mount? */
+  readonly subdir?: string
 }
 export default Provider
 

@@ -17,6 +17,7 @@
 import Debug from 'debug'
 import { Client } from 'minio'
 import minimatch from 'minimatch'
+import { Readable } from 'stream'
 import { createGunzip } from 'zlib'
 import { createWriteStream } from 'fs'
 import { basename, dirname, join } from 'path'
@@ -24,6 +25,7 @@ import { basename, dirname, join } from 'path'
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, CodedError, REPL, encodeComponent, expandHomeDir, flatten, i18n } from '@kui-shell/core'
 
+import split from './split'
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider } from '../providers'
 
@@ -111,6 +113,33 @@ class S3VFSResponder extends S3VFS implements VFS {
     }
     debug('new s3 vfs responder', options.mountName, options.endPoint)
 
+    // ensure that the subdir path exists
+    if (this.options.subdir) {
+      const { bucketName, fileName = '' } = this.split('')
+      try {
+        await this.client.statObject(bucketName, join(fileName, '.init'))
+      } catch (err) {
+        if (err.code === 'NotFound') {
+          try {
+            if (!(await this.existsBucket(bucketName))) {
+              await this.makeBucket(bucketName)
+            }
+            await this.client.putObject(
+              bucketName,
+              join(fileName, '.init'),
+              Readable.from('tmp mount successfully initialized')
+            )
+          } catch (err) {
+            console.error(`Error initializing provider ${this.mountPath}`, err)
+            return
+          }
+        } else {
+          console.error(`Error initializing provider ${this.mountPath}`, err)
+          return
+        }
+      }
+    }
+
     return this
   }
 
@@ -143,9 +172,17 @@ class S3VFSResponder extends S3VFS implements VFS {
     return this.dirEntryForDirectory(basename(path), path)
   }
 
+  private get subdir() {
+    return this.options.subdir || ''
+  }
+
   public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
     return flatten(
-      await Promise.all(filepaths.map(filepath => this.dirstat(filepath.replace(this.s3Prefix, ''), parsedOptions.d)))
+      await Promise.all(
+        filepaths
+          .map(_ => _.replace(this.s3Prefix, this.subdir))
+          .map(filepath => this.dirstat(filepath, parsedOptions.d))
+      )
     )
   }
 
@@ -154,6 +191,10 @@ class S3VFSResponder extends S3VFS implements VFS {
     if (this.options.publicOnly) {
       throw new Error('No credentials found. You may only access public buckets.')
     }
+  }
+
+  private async existsBucket(bucketName: string): Promise<boolean> {
+    return (await this.listBuckets()).findIndex(_ => _.name === bucketName) >= 0
   }
 
   /** Degenerate case for `ls /s3`: list all buckets */
@@ -426,13 +467,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** /s3/minio/b/f => { bucketName: 'b', fileName: 'f' } */
   public split(filepath: string): { bucketName: string; fileName: string } {
-    const s3PrefixIdx = this.mountPath.length + 1 // e.g. /s3/minio/ (the +1 is for the trailing slash)
-    const firstSlashIdx = filepath.indexOf('/', s3PrefixIdx)
-
-    const bucketName = filepath.slice(s3PrefixIdx, firstSlashIdx < 0 ? filepath.length : firstSlashIdx)
-    const fileName = firstSlashIdx >= 0 ? filepath.slice(firstSlashIdx + 1) : undefined
-
-    return { bucketName, fileName }
+    return split(this.mountPath, filepath, this.subdir)
   }
 
   /** @return whether the given filepath is an s3 folder */

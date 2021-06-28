@@ -20,6 +20,7 @@ import cd from './cd'
 import S3Utils from './util'
 import basics from './basics'
 import rimraf from './rimraf'
+import pseudo from './pseudo'
 import folders from './folders'
 import wildcardRimraf from './wildcard-rimraf'
 
@@ -35,6 +36,16 @@ if (process.env.NEEDS_MINIO) {
       CLI.command('ls -l /s3', this.app)
         .then(ReplExpect.okWith('minio'))
         .catch(Common.oops(this, true)))
+  })
+
+  xdescribe('s3 vfs pseudo mounts', function(this: Common.ISuite) {
+    before(Common.before(this))
+    after(Common.after(this))
+
+    const { init } = S3Utils.bind(this)()
+
+    init()
+    pseudo.bind(this)()
   })
 
   describe('s3 vfs folders', function(this: Common.ISuite) {
