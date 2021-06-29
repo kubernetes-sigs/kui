@@ -121,7 +121,13 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   private async getCurrentContextFromChange() {
     const tab = getCurrentTab()
     const defaultCurrentContext = await getCurrentDefaultContextName(tab)
+
+    const allContexts = this.state.allContexts.find(_ => _.metadata.name === defaultCurrentContext)
+      ? this.state.allContexts
+      : await getAllContexts(tab)
+
     this.setState({
+      allContexts,
       currentContext: this.renderName(defaultCurrentContext)
     })
   }
