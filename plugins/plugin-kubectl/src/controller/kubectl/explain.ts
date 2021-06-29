@@ -293,7 +293,11 @@ async function fetch(command: string, args: Arguments, kindAsProvidedByUser: str
       }
     }
   } catch (err) {
-    if (!/does not exist/i.test(err.message) && !/couldn't find resource/i.test(err.message)) {
+    if (
+      !/does not exist/i.test(err.message) &&
+      !/couldn't find resource/i.test(err.message) &&
+      !/resource type/i.test(err.message)
+    ) {
       console.error(`error explaining kind ${kindAsProvidedByUser}`, args, err)
       throw err
     } else {
