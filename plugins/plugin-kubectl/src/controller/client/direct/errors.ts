@@ -19,7 +19,7 @@ import { CodedError, isCodedError, REPL } from '@kui-shell/core'
 import URLFormatter from './url'
 import { headersForPlainRequest } from './headers'
 import { Status, isStatus } from '../../../lib/model/resource'
-import { fetchFile, FetchedFile, isReturnedError } from '../../../lib/util/fetch-file'
+import { fetchFile, FetchedFile, isReturnedError, ReturnedError } from '../../../lib/util/fetch-file'
 
 type WithErrors = {
   errors: CodedError[]
@@ -29,16 +29,16 @@ type WithErrors = {
 }
 
 /** See if the given error message is a Kubernetes Status object */
-export function tryParseAsStatus(message: string): string | Status {
+export function tryParseAsStatus(code: number | string, error: string): ReturnedError | Status {
   try {
-    const obj = JSON.parse(message)
+    const obj = JSON.parse(error)
     if (isStatus(obj)) {
       return obj
     } else {
-      return message
+      return { code, error }
     }
   } catch (err) {
-    return message
+    return { code, error }
   }
 }
 
@@ -51,7 +51,11 @@ export default async function handleErrors(
 ): Promise<WithErrors> {
   const withErrors: (string | Buffer | object | CodedError)[] = await Promise.all(
     responses.map(async data => {
-      let errorData = isReturnedError(data) ? tryParseAsStatus(data.error) : isStatus(data) ? data : undefined
+      let errorData = isReturnedError(data)
+        ? tryParseAsStatus(data.code, data.error)
+        : isStatus(data)
+        ? data
+        : undefined
       if (errorData) {
         if (isStatus(errorData)) {
           // if we could not find the requested resource, do some
@@ -89,8 +93,8 @@ export default async function handleErrors(
           return error
         } else {
           // some other random error, i.e. not a Kubernetes Status error
-          const error: CodedError = new Error(errorData)
-          error.code = 500
+          const error: CodedError<number | string> = new Error(errorData.error)
+          error.code = errorData.code || 500
           return error
         }
       }
