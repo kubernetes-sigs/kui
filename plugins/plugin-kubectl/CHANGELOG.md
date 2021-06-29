@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.25](https://github.com/IBM/kui/compare/v10.3.24...v10.3.25) (2021-06-29)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** in browser clients, switching kui tabs can yield stale kube responses ([585504d](https://github.com/IBM/kui/commit/585504d)), closes [#7737](https://github.com/IBM/kui/issues/7737)
+- **plugins/plugin-kubectl:** kubectl direct get may pass through kubeproxy 404s to user ([be1046b](https://github.com/IBM/kui/commit/be1046b)), closes [#7731](https://github.com/IBM/kui/issues/7731)
+
 ## [10.3.24](https://github.com/IBM/kui/compare/v10.3.23...v10.3.24) (2021-06-24)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.25](https://github.com/IBM/kui/compare/v10.3.24...v10.3.25) (2021-06-29)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** kubectl Status cell can be empty with splits ([85f5fc7](https://github.com/IBM/kui/commit/85f5fc7)), closes [#7726](https://github.com/IBM/kui/issues/7726)
+
 ## [10.3.24](https://github.com/IBM/kui/compare/v10.3.23...v10.3.24) (2021-06-24)
 
 ### Bug Fixes
