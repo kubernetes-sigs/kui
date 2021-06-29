@@ -36,7 +36,10 @@ class Pseudo extends IBMCloudS3Provider {
 
 /** The /s3/ibm/tmp mount point */
 async function pseudoProvider(geo: string, config: Config, pseudo: string) {
-  const subdir = await getOrSetPreference(`org.kubernetes-sigs.kui/s3/pseudomount/${pseudo}`, `${pseudo}-${v4()}`)
+  const subdir = await getOrSetPreference(
+    `org.kubernetes-sigs.kui/s3/pseudomount/${geo}/${pseudo}`,
+    `${pseudo}-${v4()}`
+  )
   const provider = new Pseudo(geo, `${baseMountName}/tmp`, config, subdir)
   return provider
 }
