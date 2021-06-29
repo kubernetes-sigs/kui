@@ -676,7 +676,8 @@ export function toKuiTable(
   const drilldownFormat = '-o yaml'
 
   const onclickFor = (row: MetaTable['rows'][0], name: string) => {
-    const drilldownNamespace = !/namespace/i.test(drilldownKind) ? `-n ${row.object.metadata.namespace}` : ''
+    const drilldownNamespace =
+      !/namespace/i.test(drilldownKind) && row.object.metadata.namespace ? `-n ${row.object.metadata.namespace}` : ''
     return withKubeconfigFrom(
       args,
       `${drilldownCommand} ${drilldownVerb} ${drilldownKind} ${encodeComponent(
