@@ -79,6 +79,7 @@ $grid-cell-size: 1.25rem;
     &.red-background {
       @include RedBadge;
     }
+    &,
     &.gray-background,
     &.kui--status-unknown {
       @include GrayBadge;
