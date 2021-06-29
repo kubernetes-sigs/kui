@@ -249,6 +249,15 @@ commands.forEach(command => {
         .catch(Common.oops(this, true))
     })
 
+    it(`should get the pod with ${command} get all ${inNamespace}`, () => {
+      return CLI.command(`${command} get all ${inNamespace}`, this.app)
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+        )
+        .then((selector: string) => waitForGreen(this.app, selector))
+        .catch(Common.oops(this, true))
+    })
+
     it(`should toggle between grid and list mode`, async () => {
       try {
         const res = await CLI.command(`${command} get pods ${inNamespace}`, this.app)
