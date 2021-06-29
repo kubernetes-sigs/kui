@@ -196,7 +196,7 @@ export async function get(
     try {
       response = (await fetchFile(args.REPL, urls, { headers: { accept: 'application/json' } }))[0]
     } catch (err) {
-      response = tryParseAsStatus(err.message)
+      response = tryParseAsStatus(err.code, err.message)
       if (!isStatus(response)) {
         throw err
       }
