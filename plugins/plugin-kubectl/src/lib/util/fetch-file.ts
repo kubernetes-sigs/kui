@@ -150,7 +150,11 @@ export async function _needle(
 
     // internal usage: test kui's error handling of apiServer
     if (process.env.TRAVIS_CHAOS_TESTING) {
-      throw new Error('nope')
+      // simulate a condition where kuiproxy is not installed on the apiserver
+      const error: CodedError = new Error('404 page not found')
+      error.code = 404
+      error.statusCode = 404
+      throw error
     }
 
     try {
@@ -231,6 +235,7 @@ async function fetchRemote(repl: REPL, url: string, opts?: FetchOptions<BodyData
 }
 
 export type ReturnedError = {
+  code: number | string
   error: string
 }
 
@@ -264,7 +269,10 @@ export async function fetchFile(
           Object.assign({}, opts, { data: Array.isArray(opts.data) ? opts.data[idx] : opts.data })
         ).catch(err => {
           if (opts && opts.returnErrors) {
-            return { error: err.message || JSON.stringify(err) }
+            return {
+              code: err.code,
+              error: err.message || JSON.stringify(err)
+            }
           } else throw err
         })
       } else {
