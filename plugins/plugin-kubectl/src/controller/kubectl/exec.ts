@@ -108,9 +108,9 @@ export async function doExecWithPty<
   Content = void,
   Response extends KResponse<Content> = KResponse<Content>,
   O extends KubeOptions = KubeOptions
->(args: Arguments<O>, prepare: Prepare<O> = NoPrepare): Promise<string | Response> {
+>(args: Arguments<O>, prepare: Prepare<O> = NoPrepare, exec?: string): Promise<string | Response> {
   if (!reallyNeedsPty(args) && (isHeadless() || (!inBrowser() && args.execOptions.raw))) {
-    return doExecWithStdout(args, prepare)
+    return doExecWithStdout(args, prepare, exec)
   } else {
     //
     // For commands `kubectl (--help/-h)` and `k (--help/-h)`, render usage model;
