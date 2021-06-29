@@ -61,9 +61,7 @@ export function offKubectlConfigChangeEvents(handler: Handler) {
  * have changed.
  *
  */
-async function doConfig(args: Arguments<KubeOptions>) {
-  const response = await doExecWithPty(args)
-
+function emitChangeEventIfNeeded(args: Arguments<KubeOptions>) {
   const idx = args.argvNoOptions.indexOf('config')
   const verb = args.argvNoOptions[idx + 1]
   const change =
@@ -80,13 +78,30 @@ async function doConfig(args: Arguments<KubeOptions>) {
       verb === 'use-context' ? args.argvNoOptions[idx + 2] : undefined
     )
   }
+}
 
+/** Kui proxy-side handler; we just pass it through to the PTY, and then emit a config change event */
+async function doConfig(args: Arguments<KubeOptions>) {
+  args.command = args.command.replace(/_config/, 'config')
+  args.argvNoOptions[1] = 'config'
+  args.argv[1] = 'config'
+  const response = await doExecWithPty(args)
+  emitChangeEventIfNeeded(args)
+  return response
+}
+
+/** Kui client-side handler; we pass it through to the proxy-side handler, but also emit a config change event */
+async function doConfigClient(cmd: string, verb: string, args: Arguments<KubeOptions>) {
+  const command = args.command.replace(/config/, '_config')
+  const response = await args.REPL.qexec(command)
+  emitChangeEventIfNeeded(args)
   return response
 }
 
 export function register(registrar: Registrar, cmd: string) {
   mutators.forEach(verb => {
-    registrar.listen(`/${cmd}/config/${verb}`, doConfig, flags)
+    registrar.listen(`/${cmd}/_config/${verb}`, doConfig, Object.assign({}, flags, { requiresLocal: true }))
+    registrar.listen(`/${cmd}/config/${verb}`, doConfigClient.bind(undefined, cmd, verb), flags)
   })
 }
 
