@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.26](https://github.com/IBM/kui/compare/v10.3.25...v10.3.26) (2021-06-29)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** CurrentContext does not respond to new contexts ([ca869a1](https://github.com/IBM/kui/commit/ca869a1)), closes [#7741](https://github.com/IBM/kui/issues/7741)
+- **plugins/plugin-kubectl:** oc login does not switch kube proxy in browser clients ([f63d734](https://github.com/IBM/kui/commit/f63d734)), closes [#7742](https://github.com/IBM/kui/issues/7742)
+
 ## [10.3.25](https://github.com/IBM/kui/compare/v10.3.24...v10.3.25) (2021-06-29)
 
 ### Bug Fixes
