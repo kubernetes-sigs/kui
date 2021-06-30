@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.3.27](https://github.com/IBM/kui/compare/v10.3.26...v10.3.27) (2021-06-30)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl watchers stop receiving push notifications when context is changed ([e487170](https://github.com/IBM/kui/commit/e487170))
+
 ## [10.3.26](https://github.com/IBM/kui/compare/v10.3.25...v10.3.26) (2021-06-29)
 
 ### Bug Fixes
