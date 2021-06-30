@@ -33,6 +33,7 @@ import {
 import JSONStream from './json'
 import getProxyState from '../../controller/client/proxy'
 import { KubeOptions, isRecursive } from '../../controller/kubectl/options'
+import { getCurrentDefaultContextName } from '../../controller/kubectl/contexts'
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
@@ -45,12 +46,13 @@ const openshiftScheme = /^openshift:\/\//
 const kubernetesScheme = /^kubernetes:\/\//
 
 /** Instantiate a kubernetes:// scheme with the current kubectl proxy state */
-async function rescheme(url: string): Promise<string> {
+async function rescheme(url: string, args: Pick<Arguments, 'REPL'>): Promise<string> {
+  const context = await getCurrentDefaultContextName(args)
   if (kubernetesScheme.test(url)) {
-    const { baseUrl } = await getProxyState('kubectl')
+    const { baseUrl } = await getProxyState('kubectl', context)
     return url.replace(kubernetesScheme, baseUrl)
   } else if (openshiftScheme.test(url)) {
-    const { baseUrl } = await getProxyState('oc')
+    const { baseUrl } = await getProxyState('oc', context)
     return url.replace(openshiftScheme, baseUrl)
   } else {
     return url
@@ -86,7 +88,7 @@ export async function openStream<T extends object>(
   } else {
     // we need to set JSON to false to disable needle's parsing, which
     // seems not to be compatible with streaming
-    const uri = await rescheme(url)
+    const uri = await rescheme(url, args)
     debug('routing openStream request to endpoint', uri)
     const stream = needle.get(uri, { headers, parse: false })
     const onData = mgmt.onInit({
@@ -138,7 +140,7 @@ interface FetchOptions<Data extends BodyData | BodyData[]> {
 }
 
 export async function _needle(
-  repl: Pick<REPL, 'rexec'>,
+  repl: REPL,
   url: string,
   opts?: FetchOptions<BodyData>,
   retryCount = 0
@@ -158,7 +160,7 @@ export async function _needle(
     }
 
     try {
-      const { statusCode, body } = await needle(method, await rescheme(url), opts.data, {
+      const { statusCode, body } = await needle(method, await rescheme(url, { REPL: repl }), opts.data, {
         json: true,
         follow_max: 10,
         headers

@@ -18,8 +18,6 @@ import Debug from 'debug'
 import { onQuit, offQuit } from '@kui-shell/core'
 import { ChildProcess } from 'child_process'
 
-import { onKubectlConfigChangeEvents, offKubectlConfigChangeEvents } from '../../..'
-
 /** We know how to launch a kubectl proxy for... */
 type SupportedCommand = 'oc' | 'kubectl'
 
@@ -41,7 +39,7 @@ type State = {
 }
 
 /** State of current kubectl proxy */
-const currentProxyState: Record<SupportedCommand, Promise<State>> = {
+const currentProxyState: Record<SupportedCommand, Record<string, Promise<State>>> = {
   oc: undefined,
   kubectl: undefined
 }
@@ -54,7 +52,6 @@ function unregisterOnQuit(onQuitHandler: State['onQuitHandler']) {
   try {
     if (typeof onQuitHandler === 'function') {
       offQuit(onQuitHandler)
-      offKubectlConfigChangeEvents(onQuitHandler)
     }
   } catch (err) {
     console.error('Error unregistering kubectl proxy onQuit', err)
@@ -171,26 +168,21 @@ async function startProxy(command: SupportedCommand): Promise<State> {
 }
 
 /** Wrapper around `startProxy` that deals with the currentProxyState variable */
-function initProxyState(command: SupportedCommand) {
+function initProxyState(command: SupportedCommand, context: string) {
   if (!currentProxyState[command]) {
     const myProxyState = startProxy(command)
-    currentProxyState[command] = myProxyState
-
-    myProxyState.then(state =>
-      onKubectlConfigChangeEvents(type => {
-        if (type === 'SetNamespaceOrContext') {
-          state.onQuitHandler()
-        }
-      })
-    )
+    currentProxyState[command] = { [context]: myProxyState }
+  } else if (!currentProxyState[command][context]) {
+    const myProxyState = startProxy(command)
+    currentProxyState[command][context] = myProxyState
   }
 
-  return currentProxyState[command]
+  return currentProxyState[command][context]
 }
 
 /** Is the current kubectl proxy viable? */
-function isProxyActive(command: SupportedCommand) {
-  return currentProxyState[command] !== undefined
+function isProxyActive(command: SupportedCommand, context: string) {
+  return currentProxyState[command] !== undefined && currentProxyState[command][context] !== undefined
 }
 
 interface KubectlProxyInfo {
@@ -198,13 +190,14 @@ interface KubectlProxyInfo {
 }
 
 /** @return information about the current kubectl proxy */
-export default async function getProxyState(command: SupportedCommand): Promise<KubectlProxyInfo> {
-  if (!isProxyActive(command)) {
-    debug('attempting to start proxy')
-    initProxyState(command)
+export default async function getProxyState(command: SupportedCommand, context: string): Promise<KubectlProxyInfo> {
+  if (!isProxyActive(command, context)) {
+    initProxyState(command, context)
   }
 
   return {
-    baseUrl: !isProxyActive(command) ? undefined : `http://localhost:${(await currentProxyState[command]).port}`
+    baseUrl: !isProxyActive(command, context)
+      ? undefined
+      : `http://localhost:${(await currentProxyState[command][context]).port}`
   }
 }
