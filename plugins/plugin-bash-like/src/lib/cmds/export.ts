@@ -29,7 +29,7 @@ const exportCommand = async (args: Arguments) => {
   const arr = toBeParsed.split('=')
   const key = arr[0]
 
-  const myArgs = Object.assign({}, args, { command: `${command}; echo $${key}` })
+  const myArgs = Object.assign({}, args, { command: `${command}; echo -n $${key}` })
   const value = await doExecWithStdoutViaPty(myArgs)
   curDic[key] = value
 
