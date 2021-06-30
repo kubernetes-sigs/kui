@@ -30,6 +30,11 @@ const initialContext = execSync('kubectl config current-context')
   .toString()
   .trim()
 
+enum Status {
+  Offline = 'red-background',
+  Online = 'green-background'
+}
+
 // TODO: enable this once proxy can find $HOME on travis
 Common.localDescribe('kubectl context switching', function(this: Common.ISuite) {
   before(Common.before(this))
@@ -249,6 +254,14 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
           .catch(Common.oops(this, true)))
     }
 
+    const switchToTab2 = () => {
+      it(`switch back to the second tab tab via command`, () =>
+        CLI.command('tab switch 2', this.app)
+          .then(() => this.app.client.$(Selectors.TAB_SELECTED_N(2)))
+          .then(_ => _.waitForDisplayed())
+          .catch(Common.oops(this, true)))
+    }
+
     const switchNamespaceViaCommand = (ns: string) => {
       it(`should switch to the namespace ${ns} by command`, async () => {
         try {
@@ -303,18 +316,61 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
     createIt(ns2)
     switchNamespaceViaCommand(ns2)
     listPodsAndExpectNone(ns2)
+    let ns2WatcherBadgeInTab1: string
+    it(`should watch namespace in tab 1 and expect ${ns2} online`, () =>
+      CLI.command(`${kubectl} get ns -w`, this.app)
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns2) })
+        )
+        .then(selector => waitForGreen(this.app, selector))
+        .then(selector => {
+          ns2WatcherBadgeInTab1 = selector
+        })
+        .catch(Common.oops(this, true)))
     createNewTab()
     switchToContextByCommand('holla')
     showCurrentNamespace(ns)
     showCurrentNamespaceViaWidget(ns)
     listPodsAndExpectOne('nginx')
+    let nsWatcherBadgeInTab2: string
+    it(`should watch namespace in tab 2 and expect ${ns} online`, () =>
+      CLI.command(`${kubectl} get ns -w`, this.app)
+        .then(
+          ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME(ns) })
+        )
+        .then(selector => waitForGreen(this.app, selector))
+        .then(selector => {
+          nsWatcherBadgeInTab2 = selector
+        })
+        .catch(Common.oops(this, true)))
     switchToTab1()
     listContextsAndExpectDefault()
     showCurrentNamespace(ns2)
     showCurrentNamespaceViaWidget(ns2)
     listPodsAndExpectNone(ns2)
+    switchToTab2()
+    showCurrentNamespace(ns)
+    showCurrentNamespaceViaWidget(ns)
+    listPodsAndExpectOne('nginx')
 
     deleteIt(ns, initialContext, initialKubeConfig)
+    it(`should expect ${ns} to be offline in tab  2`, async () => {
+      try {
+        const offlineBadge = nsWatcherBadgeInTab2.replace(Status.Online, Status.Offline)
+        await this.app.client.$(offlineBadge).then(_ => _.waitForExist())
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+    switchToTab1()
     deleteIt(ns2, initialContext, initialKubeConfig)
+    it(`should expect ${ns2} to be offline in tab 1`, async () => {
+      try {
+        const offlineBadge = ns2WatcherBadgeInTab1.replace(Status.Online, Status.Offline)
+        await this.app.client.$(offlineBadge).then(_ => _.waitForExist())
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
   })
 })
