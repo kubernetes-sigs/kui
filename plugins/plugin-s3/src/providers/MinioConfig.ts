@@ -23,6 +23,7 @@ interface MinioConfig {
       accessKey: string
       secretKey: string
       api: string
+      subdir: string
       path: 'auto' | 'dns'
     }
   >
