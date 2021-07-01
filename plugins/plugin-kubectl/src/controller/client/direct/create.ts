@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Arguments, Table, isTable, is404or409 } from '@kui-shell/core'
+import { Arguments, CodedError, Table, isTable, is404or409 } from '@kui-shell/core'
 
 import { fetchFile } from '../../../lib/util/fetch-file'
 import { Explained, getKindAndVersion } from '../../kubectl/explain'
@@ -98,7 +98,9 @@ export default async function createDirect(
       if (ok.length === 0) {
         // all errors? then tell the user about them (no need to re-invoke the CLI)
         if (errors.length > 0 && errors.every(is404or409)) {
-          return errors.map(_ => _.message).join('\n')
+          const error: CodedError = new Error(errors.map(_ => _.message).join('\n'))
+          error.code = errors[0].code
+          throw error
         }
         // otherwise: intentional fall-through, returning void; let
         // kubectl CLI handle the errors for now
