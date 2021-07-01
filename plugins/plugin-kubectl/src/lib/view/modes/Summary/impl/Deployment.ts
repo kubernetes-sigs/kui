@@ -32,7 +32,7 @@ import { Deployment } from '../../../../model/resource'
 function ready(deployment: Deployment) {
   const { readyReplicas, replicas } = deployment.status
 
-  const numerator = readyReplicas
+  const numerator = readyReplicas || 0
   const denominator = replicas
   return `${numerator}/${denominator}`
 }
