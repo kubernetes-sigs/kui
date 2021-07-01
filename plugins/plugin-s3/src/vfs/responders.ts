@@ -104,6 +104,7 @@ export async function minioConfig(direct = false): Promise<MinioConfig> {
         url: /^http/.test(endPoint) ? endPoint : `https://${endPoint}`,
         accessKey: _.accessKey,
         secretKey: _.secretKey,
+        subdir: _.subdir || '',
         api: 's3v4',
         path: 'auto'
       }
