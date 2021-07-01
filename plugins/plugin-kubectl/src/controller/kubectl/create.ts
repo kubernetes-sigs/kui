@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { Registrar, Arguments } from '@kui-shell/core'
+import { Registrar, Arguments, is404or409 } from '@kui-shell/core'
 
 import defaultFlags from './flags'
 import { isDryRun, isEntityFormat, KubeOptions, formatOf } from './options'
@@ -52,7 +52,7 @@ export const doCreate = (verb: 'create' | 'apply', command = 'kubectl') => async
           debug('createDirect falling through to CLI impl')
         }
       } catch (err) {
-        if (err.code === 404) {
+        if (is404or409(err)) {
           throw err
         } else {
           console.error('Error in direct create. Falling back to CLI create.', err.code, err)

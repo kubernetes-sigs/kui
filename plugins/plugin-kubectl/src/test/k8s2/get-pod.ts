@@ -67,6 +67,12 @@ commands.forEach(command => {
     allocateNS(this, ns)
 
     /** error handling starts */
+    it('should error out when creating an existing namespace', () => {
+      return CLI.command(`${command} create ns ${ns}`, this.app)
+        .then(ReplExpect.error(409))
+        .catch(Common.oops(this, true))
+    })
+
     it('should command not found when kubectl is not specified', () => {
       return CLI.command('get pods', this.app)
         .then(ReplExpect.error(127))
