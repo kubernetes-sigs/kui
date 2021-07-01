@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { KeyCodes, inElectron, isOfflineClient } from '@kui-shell/core'
+import { KeyCodes, inElectron, isReadOnlyClient } from '@kui-shell/core'
 import { Nav, NavList, Page, PageHeader } from '@patternfly/react-core'
 
 import TabModel from '../TabModel'
@@ -123,7 +123,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
                 idx={idx}
                 uuid={tab.uuid}
                 title={tab.title}
-                closeable={this.props.tabs.length > 1}
+                closeable={this.props.tabs.length > 1 && !isReadOnlyClient()}
                 active={idx === this.props.activeIdx}
                 onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
                 onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
@@ -131,7 +131,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
             ))}
           </NavList>
         </Nav>
-        {!isOfflineClient() && (
+        {!isReadOnlyClient() && (
           <div className="kui--top-tab-buttons">
             <NewTabButton onNewTab={this.props.onNewTab} />
             <SplitTerminalButton />
