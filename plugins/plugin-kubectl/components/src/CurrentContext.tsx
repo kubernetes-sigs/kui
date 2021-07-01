@@ -118,8 +118,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     return last && now - last < 250
   }
 
-  private async getCurrentContextFromChange() {
-    const tab = getCurrentTab()
+  private async getCurrentContextFromChange(type: string, namespace: string, context: string, _tab: Tab) {
+    const tab = _tab || getCurrentTab()
     const defaultCurrentContext = await getCurrentDefaultContextName(tab)
 
     const allContexts = this.state.allContexts.find(_ => _.metadata.name === defaultCurrentContext)

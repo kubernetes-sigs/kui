@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, eventChannelUnsafe } from '@kui-shell/core'
+import { Arguments, eventBus, Tab, Registrar, eventChannelUnsafe } from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithPty } from './exec'
 import { KubeOptions, getNamespaceAsExpressed } from './options'
+import { getCurrentContextName } from './contexts'
 
 const kubectlConfigChangeChannel = '/kubectl/config/change'
 type Change = 'NewContext' | 'AlteredContext'
@@ -39,10 +40,11 @@ const mutators = [
 export function emitKubectlConfigChangeEvent(
   type: 'SetNamespaceOrContext' | 'CreateOrDeleteNamespace',
   namespace?: string,
-  context?: string
+  context?: string,
+  tab?: Tab
 ) {
   try {
-    eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace, context)
+    eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace, context, tab)
   } catch (err) {
     console.error('Error in onKubectlConfigChangeEvent handler', err)
   }
@@ -61,7 +63,7 @@ export function offKubectlConfigChangeEvents(handler: Handler) {
  * have changed.
  *
  */
-function emitChangeEventIfNeeded(args: Arguments<KubeOptions>) {
+async function emitChangeEventIfNeeded(args: Arguments<KubeOptions>) {
   const idx = args.argvNoOptions.indexOf('config')
   const verb = args.argvNoOptions[idx + 1]
   const change =
@@ -72,10 +74,13 @@ function emitChangeEventIfNeeded(args: Arguments<KubeOptions>) {
       : undefined
 
   if (change) {
+    const ns = getNamespaceAsExpressed(args) || (await args.tab.REPL.qexec('namespace current'))
+
     emitKubectlConfigChangeEvent(
       'SetNamespaceOrContext',
-      getNamespaceAsExpressed(args),
-      verb === 'use-context' ? args.argvNoOptions[idx + 2] : undefined
+      ns,
+      verb === 'use-context' ? args.argvNoOptions[idx + 2] : undefined,
+      args.tab
     )
   }
 }
@@ -86,7 +91,7 @@ async function doConfig(args: Arguments<KubeOptions>) {
   args.argvNoOptions[1] = 'config'
   args.argv[1] = 'config'
   const response = await doExecWithPty(args)
-  emitChangeEventIfNeeded(args)
+  await emitChangeEventIfNeeded(args)
   return response
 }
 
@@ -94,9 +99,16 @@ async function doConfig(args: Arguments<KubeOptions>) {
 async function doConfigClient(cmd: string, verb: string, args: Arguments<KubeOptions>) {
   const command = args.command.replace(/config/, '_config')
   const response = await args.REPL.qexec(command)
-  emitChangeEventIfNeeded(args)
+  await emitChangeEventIfNeeded(args)
   return response
 }
+
+eventBus.onEnvUpdate('KUBECONFIG', async args => {
+  const tab = args.tab
+  const context = await getCurrentContextName(tab)
+  const ns = await args.tab.REPL.qexec<string>('namespace current')
+  emitKubectlConfigChangeEvent('SetNamespaceOrContext', ns, context, tab)
+})
 
 export function register(registrar: Registrar, cmd: string) {
   mutators.forEach(verb => {

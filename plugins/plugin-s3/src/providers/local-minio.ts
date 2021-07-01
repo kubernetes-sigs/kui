@@ -50,13 +50,13 @@ let alreadyReportedCannotConnect = false
 
 async function init(repl: REPL, reinit: () => void) {
   if (!listeningAlready) {
-    eventBus.onEnvUpdate('MINIO_ACCESS_KEY', value => {
-      localStorage.setItem(localStorageAccessKey, value)
+    eventBus.onEnvUpdate('MINIO_ACCESS_KEY', args => {
+      localStorage.setItem(localStorageAccessKey, args.value)
       reinit()
     })
 
-    eventBus.onEnvUpdate('MINIO_SECRET_KEY', value => {
-      localStorage.setItem(localStorageSecretKey, value)
+    eventBus.onEnvUpdate('MINIO_SECRET_KEY', args => {
+      localStorage.setItem(localStorageSecretKey, args.value)
       reinit()
     })
   }

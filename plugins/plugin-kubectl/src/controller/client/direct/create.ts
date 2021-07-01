@@ -71,6 +71,7 @@ export default async function createDirect(
       version === 'v1' &&
       names.length > 0 &&
       !args.parsedOptions.context &&
+      !args.execOptions.env.KUBECONFIG &&
       !args.parsedOptions.kubeconfig
     ) {
       // WARNING: this is namespace-specific for now!

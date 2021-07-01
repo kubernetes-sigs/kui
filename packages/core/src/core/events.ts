@@ -104,8 +104,8 @@ class WriteEventBus extends EventBusBase {
     setTimeout(() => this.eventBus.emit(`/tab/layout/change/${tabUUID}`, evt))
   }
 
-  public emitEnvUpdate(key: string, value: string) {
-    this.eventBus.emit(`/env/update/${key}`, value)
+  public emitEnvUpdate(key: string, value: string, tab: Tab) {
+    this.eventBus.emit(`/env/update/${key}`, { value, tab })
   }
 
   private emitCommandEvent(
@@ -224,7 +224,7 @@ class ReadEventBus extends WriteEventBus {
     this.eventBus.off(`/tab/layout/change/${tabUUID}`, listener)
   }
 
-  public onEnvUpdate(key: string, listener: (value: string) => void): void {
+  public onEnvUpdate(key: string, listener: (args: { value: string; tab: Tab }) => void): void {
     this.eventBus.on(`/env/update/${key}`, listener)
   }
 

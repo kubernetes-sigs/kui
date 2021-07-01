@@ -40,6 +40,7 @@ export default async function deleteDirect(args: Arguments<KubeOptions>, _kind?:
     !args.parsedOptions['dry-run'] &&
     !args.parsedOptions['field-selector'] &&
     !args.parsedOptions.context &&
+    !args.execOptions.env.KUBECONFIG &&
     !args.parsedOptions.kubeconfig
   ) {
     const explainedKind = await (_kind ||

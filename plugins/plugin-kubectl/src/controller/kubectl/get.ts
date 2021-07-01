@@ -273,6 +273,7 @@ async function rawGet(
     !args.argvNoOptions.includes('>>') &&
     !requestWithoutKind &&
     !args.parsedOptions.context &&
+    !args.execOptions.env.KUBECONFIG &&
     !args.parsedOptions.kubeconfig
   ) {
     // try talking to the apiServer directly

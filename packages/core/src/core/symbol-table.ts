@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Tab, getTabId } from '../webapp/tab'
+import { Tab, getPrimaryTabId } from '../webapp/tab'
 import sessionStore from '../models/sessionStore'
 
 /**
@@ -29,12 +29,12 @@ export class SymbolTable {
   }
 
   public read(tab: Tab): Record<string, string> {
-    return this.getSymbolTable()[getTabId(tab)] || {}
+    return this.getSymbolTable()[getPrimaryTabId(tab)] || {}
   }
 
   public write(tab: Tab, curDic: Record<string, string>) {
     const storage = this.getSymbolTable()
-    storage[getTabId(tab)] = curDic
+    storage[getPrimaryTabId(tab)] = curDic
     sessionStore().setItem(this.symbolTableSessionStorageKey, JSON.stringify(storage))
   }
 }

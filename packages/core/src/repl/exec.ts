@@ -728,7 +728,24 @@ async function semicolonInvoke(commands: string[], execOptions: ExecOptions): Pr
  *
  */
 export function getImpl(tab: Tab): REPL {
-  const impl = { qexec, rexec, pexec, reexec, click, encodeComponent, split } as REPL
+  const impl = {
+    click,
+    split,
+    encodeComponent,
+    pexec: (command: string, execOptions?: ExecOptions) => {
+      return pexec(command, Object.assign({ tab }, execOptions))
+    },
+    reexec: (command: string, execOptions: ExecOptionsWithUUID) => {
+      return reexec(command, Object.assign({ tab }, execOptions))
+    },
+    rexec: (command: string, execOptions?: ExecOptions) => {
+      return rexec(command, Object.assign({ tab }, execOptions))
+    },
+    qexec: (command: string, b1?: HTMLElement | boolean, b2?: boolean, execOptions?: ExecOptions, b3?: HTMLElement) => {
+      return qexec(command, b1, b2, Object.assign({ tab }, execOptions), b3)
+    }
+  } as REPL
+
   tab.REPL = impl
   return impl
 }

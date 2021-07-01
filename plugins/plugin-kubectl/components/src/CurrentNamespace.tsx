@@ -46,6 +46,7 @@ const strings = i18n('plugin-kubectl')
 
 export default class CurrentNamespace extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentNamespace.bind(this)
+  private readonly handlerForTab = this.reportCurrentNamespaceForTab.bind(this)
   private readonly handlerNotCallingKubectl = this.getCurrentNamespaceFromTab.bind(this)
 
   public constructor(props: Props) {
@@ -71,6 +72,10 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     this.last = now
 
     return last && now - last < 250
+  }
+
+  private async reportCurrentNamespaceForTab(type: string, namespace: string, context: string, tab: Tab) {
+    return this.reportCurrentNamespace(tab)
   }
 
   private async reportCurrentNamespace(idx?: Tab | number | string) {
@@ -138,7 +143,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.onAnyCommandComplete(this.handler)
-    onKubectlConfigChangeEvents(this.handler)
+    onKubectlConfigChangeEvents(this.handlerForTab)
   }
 
   /** Bye! */
@@ -147,7 +152,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.offAnyCommandComplete(this.handler)
-    offKubectlConfigChangeEvents(this.handler)
+    offKubectlConfigChangeEvents(this.handlerForTab)
   }
 
   private listNamespace() {

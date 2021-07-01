@@ -34,7 +34,7 @@ const exportCommand = async (args: Arguments) => {
   curDic[key] = value
 
   SymbolTable.write(tab, curDic)
-  eventBus.emitEnvUpdate(key, value)
+  eventBus.emitEnvUpdate(key, value, args.tab)
 
   return true
 }
