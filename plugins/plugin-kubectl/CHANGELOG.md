@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.5](https://github.com/IBM/kui/compare/v10.4.4...v10.4.5) (2021-07-01)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** `kubectl get all` fails with resource type error ([93a5823](https://github.com/IBM/kui/commit/93a5823))
+- **plugins/plugin-kubectl:** click-drilling down from cluster-scoped resources can yield `-n undefined` in the command execution ([a0a08c6](https://github.com/IBM/kui/commit/a0a08c6))
+- **plugins/plugin-kubectl:** CurrentContext does not respond to new contexts ([aabc54a](https://github.com/IBM/kui/commit/aabc54a)), closes [#7741](https://github.com/IBM/kui/issues/7741)
+- **plugins/plugin-kubectl:** in browser clients, switching kui tabs can yield stale kube responses ([8fe1494](https://github.com/IBM/kui/commit/8fe1494)), closes [#7737](https://github.com/IBM/kui/issues/7737)
+- **plugins/plugin-kubectl:** kubectl create ns failures do not display as errors in Kui ([0a97935](https://github.com/IBM/kui/commit/0a97935))
+- **plugins/plugin-kubectl:** kubectl direct get may pass through kubeproxy 404s to user ([6422c4d](https://github.com/IBM/kui/commit/6422c4d)), closes [#7731](https://github.com/IBM/kui/issues/7731)
+- **plugins/plugin-kubectl:** kubectl watchers stop receiving push notifications when context is changed ([802d371](https://github.com/IBM/kui/commit/802d371))
+- **plugins/plugin-kubectl:** oc login does not switch kube proxy in browser clients ([bc7d25d](https://github.com/IBM/kui/commit/bc7d25d)), closes [#7742](https://github.com/IBM/kui/issues/7742)
+
 ## [10.4.4](https://github.com/IBM/kui/compare/v10.4.3...v10.4.4) (2021-06-28)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

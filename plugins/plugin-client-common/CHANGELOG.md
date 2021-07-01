@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.5](https://github.com/IBM/kui/compare/v10.4.4...v10.4.5) (2021-07-01)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** kubectl Status cell can be empty with splits ([767868c](https://github.com/IBM/kui/commit/767868c)), closes [#7726](https://github.com/IBM/kui/issues/7726)
+
+### Features
+
+- **plugins/plugin-client-common:** top-level tabs are not allowed to be closed or added in a readonly client ([c472c8a](https://github.com/IBM/kui/commit/c472c8a))
+
 ## [10.4.4](https://github.com/IBM/kui/compare/v10.4.3...v10.4.4) (2021-06-28)
 
 ### Bug Fixes

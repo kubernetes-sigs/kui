@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.5](https://github.com/IBM/kui/compare/v10.4.4...v10.4.5) (2021-07-01)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** s3 tmp/bin mounts are not geo-specific ([93d5e88](https://github.com/IBM/kui/commit/93d5e88)), closes [#7729](https://github.com/IBM/kui/issues/7729)
+
+### Features
+
+- **plugins/plugin-s3:** minioConfig of plugin-s3 does not properly export subdirs ([f5cc5ea](https://github.com/IBM/kui/commit/f5cc5ea)), closes [#7753](https://github.com/IBM/kui/issues/7753)
+
 ## [10.4.4](https://github.com/IBM/kui/compare/v10.4.3...v10.4.4) (2021-06-28)
 
 ### Features
