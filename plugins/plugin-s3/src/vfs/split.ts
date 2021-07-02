@@ -23,7 +23,7 @@ export default function split(
   const s3PrefixIdx = mountPath.length + 1 // e.g. /s3/minio/ (the +1 is for the trailing slash)
 
   // after stripping off the common prefix of mountPath and filepath
-  const leftover = subdir + filepath.slice(s3PrefixIdx)
+  const leftover = (subdir ? subdir + '/' : '') + filepath.slice(s3PrefixIdx)
   const firstSlashIdx = leftover.indexOf('/')
 
   const bucketName = leftover.slice(0, firstSlashIdx < 0 ? leftover.length : firstSlashIdx)
