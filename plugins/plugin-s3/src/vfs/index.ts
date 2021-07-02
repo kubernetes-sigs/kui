@@ -445,7 +445,6 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Enumerate the objects specified by the given filepath */
   private async dirstat(filepath: string, dashD: boolean): Promise<DirEntry[]> {
-    console.error('!!!!!!!!!', filepath)
     try {
       if (filepath.length === 0) {
         // then the user has asked to list buckets in a region
