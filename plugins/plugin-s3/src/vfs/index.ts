@@ -113,7 +113,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     }
     debug('new s3 vfs responder', options.mountName, options.endPoint)
 
-    // ensure that the subdir path exists
+    // ensure that the subdir path exists for bind mounts
     if (this.options.subdir) {
       const { bucketName, fileName = '' } = this.split('')
       try {
@@ -172,6 +172,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     return this.dirEntryForDirectory(basename(path), path)
   }
 
+  /** For bind mounts */
   private get subdir() {
     return this.options.subdir || ''
   }
@@ -180,7 +181,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     return flatten(
       await Promise.all(
         filepaths
-          .map(_ => _.replace(this.s3Prefix, this.subdir))
+          .map(_ => _.replace(this.s3Prefix, this.subdir ? this.subdir + '/' : '').replace(/\/\/$/, '/'))
           .map(filepath => this.dirstat(filepath, parsedOptions.d))
       )
     )
@@ -291,7 +292,12 @@ class S3VFSResponder extends S3VFS implements VFS {
         // Note: "folders" will have a trailing slash already
         const isDirectory = /\/$/.test(name)
 
-        const path = join(this.mountPath, bucketName, name)
+        // for bind mounts (where we have a this.subdir), we want to
+        // preserve the name of the bind mount in any clicks for `ls`
+        // (for example); so we make sure to redact the bucketName part)
+        const path = this.subdir
+          ? join(this.mountPath, this.subdir.replace(new RegExp('^' + bucketName), ''), name)
+          : join(this.mountPath, bucketName, name)
 
         objects.push({
           name,
@@ -439,6 +445,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Enumerate the objects specified by the given filepath */
   private async dirstat(filepath: string, dashD: boolean): Promise<DirEntry[]> {
+    console.error('!!!!!!!!!', filepath)
     try {
       if (filepath.length === 0) {
         // then the user has asked to list buckets in a region
