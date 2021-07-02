@@ -28,26 +28,23 @@ function defaultProvider(geo: string, config: Config) {
   return provider
 }
 
-class Pseudo extends IBMCloudS3Provider {
+/** A "bind" mount that points to a subdirectory of a given mount */
+class BindMount extends IBMCloudS3Provider {
   public constructor(geo: string, mountName: string, config: Config, public readonly subdir: string) {
     super(geo, mountName, config)
   }
 }
 
-/** The /s3/ibm/tmp mount point */
-async function pseudoProvider(geo: string, config: Config, pseudo: string) {
+/** The /s3/ibm/tmp and /bin mount points */
+async function bindProvider(geo: string, config: Config, pseudo: string) {
   const subdir = await getOrSetPreference(
     `org.kubernetes-sigs.kui/s3/pseudomount/${geo}/${pseudo}`,
     `${pseudo}-${v4()}`
   )
-  const provider = new Pseudo(geo, `${baseMountName}/tmp`, config, subdir)
+  const provider = new BindMount(geo, `${baseMountName}/tmp`, config, subdir)
   return provider
 }
 
 export default function extraProvidersForDefaultRegion(geo: string, config: Config) {
-  return Promise.all([
-    defaultProvider(geo, config),
-    pseudoProvider(geo, config, 'bin'),
-    pseudoProvider(geo, config, 'tmp')
-  ])
+  return Promise.all([defaultProvider(geo, config), bindProvider(geo, config, 'bin'), bindProvider(geo, config, 'tmp')])
 }
