@@ -17,7 +17,6 @@
 // TODO pty-main restore remove
 
 import { join } from 'path'
-// import { remove } from 'fs-extra'
 import { exec } from 'child_process'
 import { dir as createTemporaryDirectory } from 'tmp'
 
