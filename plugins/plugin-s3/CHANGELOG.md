@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** leftover debugging in plugin-s3 ([b91c945](https://github.com/IBM/kui/commit/b91c945)), closes [#7767](https://github.com/IBM/kui/issues/7767)
+- **plugins/plugin-s3:** s3 bind mounts don't behave correctly with clicks in ls output ([1ac7cd1](https://github.com/IBM/kui/commit/1ac7cd1)), closes [#7764](https://github.com/IBM/kui/issues/7764)
+
 ## [10.4.5](https://github.com/IBM/kui/compare/v10.4.4...v10.4.5) (2021-07-01)
 
 ### Bug Fixes

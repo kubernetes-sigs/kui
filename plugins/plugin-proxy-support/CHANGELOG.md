@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
+
+### Features
+
+- Add support to Kui proxy for pre-shared-key authorization ([0fb1c71](https://github.com/IBM/kui/commit/0fb1c71)), closes [#7772](https://github.com/IBM/kui/issues/7772)
+
 ## [10.4.5](https://github.com/IBM/kui/compare/v10.4.4...v10.4.5) (2021-07-01)
 
 **Note:** Version bump only for package @kui-shell/plugin-proxy-support

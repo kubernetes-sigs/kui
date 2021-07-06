@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
+
+### Bug Fixes
+
+- > > is not always treated as an append to the given file ([e6f5332](https://github.com/IBM/kui/commit/e6f5332))
+- **packages/core:** pipeStages splits command with >> incorrectly ([28f427b](https://github.com/IBM/kui/commit/28f427b)), closes [#7413](https://github.com/IBM/kui/issues/7413)
+- **plugins/plugin-kubectl:** Deployment Summary Ready shows "undefined/N" if there are no pods ready yet ([9ddfd03](https://github.com/IBM/kui/commit/9ddfd03))
+- **plugins/plugin-s3:** leftover debugging in plugin-s3 ([b91c945](https://github.com/IBM/kui/commit/b91c945)), closes [#7767](https://github.com/IBM/kui/issues/7767)
+- **plugins/plugin-s3:** s3 bind mounts don't behave correctly with clicks in ls output ([1ac7cd1](https://github.com/IBM/kui/commit/1ac7cd1)), closes [#7764](https://github.com/IBM/kui/issues/7764)
+
+### Features
+
+- Add support to Kui proxy for pre-shared-key authorization ([0fb1c71](https://github.com/IBM/kui/commit/0fb1c71)), closes [#7772](https://github.com/IBM/kui/issues/7772)
+
 ## [10.4.5](https://github.com/IBM/kui/compare/v10.4.4...v10.4.5) (2021-07-01)
 
 ### Bug Fixes

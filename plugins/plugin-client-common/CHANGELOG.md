@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
+
+### Bug Fixes
+
+- **packages/core:** pipeStages splits command with >> incorrectly ([28f427b](https://github.com/IBM/kui/commit/28f427b)), closes [#7413](https://github.com/IBM/kui/issues/7413)
+
 ## [10.4.5](https://github.com/IBM/kui/compare/v10.4.4...v10.4.5) (2021-07-01)
 
 ### Bug Fixes
