@@ -280,6 +280,16 @@ class ProxyEvaluator implements ReplEval {
               }
             })
             xhr.addEventListener('load', () => {
+              if (xhr.status === 401 || xhr.status === 403) {
+                alert('You do not have access to this resource')
+                const { homepage } = require('@kui-shell/client/package.json')
+                if (homepage) {
+                  window.location.href = homepage
+                } else {
+                  // some default...
+                  window.location.href = 'https://google.com'
+                }
+              }
               resolve({
                 statusCode: xhr.status,
                 body: xhr.response ? xhr.response.response : xhr.statusText

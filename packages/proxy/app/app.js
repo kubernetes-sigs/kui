@@ -33,8 +33,19 @@ app.use(express.json())
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
+app.use(cookieParser(process.env.KUI_PSK_COOKIE_SECRET))
 app.use(express.static(path.join(__dirname, 'public')))
+
+if (process.env.KUI_PSK && process.env.KUI_PSK_COOKIE) {
+  if (process.env.KUI_PSK_COOKIE_SECRET) {
+    console.log('Enabling Kui SIGNED pre-shared-key authorization using cookieKey=', process.env.KUI_PSK_COOKIE)
+  } else {
+    console.log(
+      'Danger! Enabling Kui UNSIGNED pre-shared-key authorization using cookieKey=',
+      process.env.KUI_PSK_COOKIE
+    )
+  }
+}
 
 // helps with ctrl-c when running in a docker container
 process.on('SIGINT', () => process.exit())
