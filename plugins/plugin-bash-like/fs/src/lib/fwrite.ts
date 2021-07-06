@@ -17,26 +17,38 @@
 import { Arguments, CodedError, RawResponse, Registrar } from '@kui-shell/core'
 import { dirname } from 'path'
 
-export async function _fwrite(_fullpath: string, data: string | Buffer) {
-  const { mkdir, writeFile } = await import('fs')
+export type FwriteOptions = {
+  append?: boolean
+  a?: boolean
+}
+
+export async function _fwrite(_fullpath: string, data: string | Buffer, options: { append?: boolean } = {}) {
+  const { mkdir, writeFile, appendFile } = await import('fs')
   const fullpath = _fullpath.replace(/"/g, '') // trim double quotes
 
   await new Promise<boolean>((resolve, reject) => {
-    const write = (path: string, data: string | Buffer) =>
-      writeFile(path, data, err => {
-        if (err) {
-          if (err.code === 'ENOENT') {
-            const error: CodedError = new Error(err.message)
-            error.stack = err.stack
-            error.code = 404
-            reject(error)
-          } else {
-            reject(err)
-          }
+    const errorHandler = (err: NodeJS.ErrnoException) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          const error: CodedError = new Error(err.message)
+          error.stack = err.stack
+          error.code = 404
+          reject(error)
         } else {
-          resolve(true)
+          reject(err)
         }
-      })
+      } else {
+        resolve(true)
+      }
+    }
+
+    const write = (path: string, data: string | Buffer) => {
+      if (options.append) {
+        return appendFile(path, data, errorHandler)
+      } else {
+        return writeFile(path, data, errorHandler)
+      }
+    }
 
     const dir = dirname(fullpath)
     if (dir !== '.') {
@@ -53,11 +65,12 @@ export async function _fwrite(_fullpath: string, data: string | Buffer) {
  * Kui command for fs.write
  *
  */
-const fwrite = async ({ argvNoOptions, execOptions }: Arguments) => {
+const fwrite = async ({ argvNoOptions, execOptions, parsedOptions }: Arguments<FwriteOptions>) => {
   const fullpath = argvNoOptions[1]
   const data = execOptions.data as string | Buffer
+  const append = parsedOptions && (parsedOptions.append || parsedOptions.a)
 
-  await _fwrite(fullpath, data)
+  await _fwrite(fullpath, data, { append })
   return true
 }
 

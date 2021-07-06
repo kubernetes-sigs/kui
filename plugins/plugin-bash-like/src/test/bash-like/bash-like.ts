@@ -157,7 +157,7 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
 
-  Common.pit('should kuiecho ho to a file', () =>
+  Common.pit('should kuiecho ho and redirect the output to a file', () =>
     CLI.command(`kuiecho ho > "${dirname}"/testTmp2`, this.app)
       .then(ReplExpect.ok)
       .catch(Common.oops(this, true))
@@ -165,6 +165,16 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   Common.pit('should cat that file', () =>
     CLI.command(`cat "${dirname}"/testTmp2`, this.app)
       .then(ReplExpect.okWithPtyOutput('ho'))
+      .catch(Common.oops(this, true))
+  )
+  Common.pit('should kuiecho yo and append the output to that file', () =>
+    CLI.command(`kuiecho yo >> "${dirname}"/testTmp2`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
+  )
+  Common.pit('should cat that file and expect appended output', () =>
+    CLI.command(`cat "${dirname}"/testTmp2`, this.app)
+      .then(ReplExpect.okWithPtyOutput('hoyo'))
       .catch(Common.oops(this, true))
   )
   Common.pit('should rm that file', () =>
