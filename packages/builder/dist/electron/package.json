@@ -10,7 +10,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "debug": "4.3.1",
-    "electron": "11.4.8",
+    "electron": "11.4.9",
     "electron-packager": "15.2.0",
     "glob": "7.1.7",
     "globby": "11.0.3"
