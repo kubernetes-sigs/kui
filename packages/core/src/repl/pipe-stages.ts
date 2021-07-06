@@ -25,8 +25,14 @@ import { CommandLine } from '../models/command'
  *
  */
 export function splitIntoPipeStages(command: string): CommandLine['pipeStages'] {
+  // This covers the standard bash convention of using -- to split the
+  // command line into a "prefix" part and a "rest" part.
   const dashDashPattern = /--\s/
-  const redirectPattern = /([^"'\\])>/
+
+  // This covers > and >>, but excludes '>' and ">" and \>.
+  // WARNING: this regexp uses negaive lookbehind. Firefox only got
+  // support for this in Firefox version 78 (released July 30 2020).
+  const redirectPattern = /\d?(?<!["'\\])((>>?)&?\d?)/
 
   const dashDashMatch = command.match(dashDashPattern)
   const pipeStartIdx = dashDashMatch ? dashDashMatch.index + '--'.length : undefined
@@ -34,16 +40,13 @@ export function splitIntoPipeStages(command: string): CommandLine['pipeStages'] 
 
   const redirectMatch = command.match(redirectPattern)
   const pipeEndIdx = redirectMatch ? redirectMatch.index : undefined
-  const redirect = !redirectMatch
-    ? ''
-    : command
-        .slice(pipeEndIdx)
-        .replace(/^\s*>/, '')
-        .trim()
+  const redirect = !redirectMatch ? '' : command.slice(redirectMatch.index + redirectMatch[0].length).trim()
+
+  const redirector = !redirectMatch ? undefined : (redirectMatch[0] as CommandLine['pipeStages']['redirector'])
 
   const stages = split(command, false, undefined, '|', pipeStartIdx, pipeEndIdx).map(_ =>
     split(_, false).map(_ => _.replace(/\\\s/g, ''))
   )
 
-  return { prefix, stages, redirect }
+  return { prefix, stages, redirect, redirector }
 }
