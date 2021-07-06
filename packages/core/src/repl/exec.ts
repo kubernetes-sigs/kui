@@ -38,6 +38,7 @@ import expandHomeDir from '../util/home'
 import { CommandStartEvent, CommandCompleteEvent } from './events'
 
 import {
+  CommandLine,
   CommandTreeResolution,
   CommandHandlerWithEvents,
   EvaluatorArgs as Arguments,
@@ -334,8 +335,8 @@ class InProcessExecutor implements Executor {
       const noCoreRedirect = execOptions.noCoreRedirect || (evaluator.options && evaluator.options.noCoreRedirect)
       const originalCommand = command
       if (!noCoreRedirect && pipeStages.redirect) {
-        argv.splice(argv.indexOf('>'), 2)
-        command = command.replace(new RegExp(`\\s*>\\s*${pipeStages.redirect}\\s*$`), '')
+        argv.splice(argv.indexOf(pipeStages.redirector), 2)
+        command = command.replace(new RegExp(`\\s*${pipeStages.redirector}\\s*${pipeStages.redirect}\\s*$`), '')
       }
 
       const { argvNoOptions, parsedOptions } = this.parseOptions(argv, evaluator)
@@ -502,7 +503,7 @@ class InProcessExecutor implements Executor {
 
       if (!noCoreRedirect && pipeStages.redirect) {
         try {
-          await redirectResponse(response, pipeStages.redirect)
+          await redirectResponse(response, pipeStages.redirect, pipeStages.redirector)
         } catch (err) {
           response = err
         }
@@ -737,14 +738,18 @@ export function getImpl(tab: Tab): REPL {
  * redirect a string response
  *
  */
-async function redirectResponse<T extends KResponse>(_response: MixedResponse | T | Promise<T>, filepath: string) {
+async function redirectResponse<T extends KResponse>(
+  _response: MixedResponse | T | Promise<T>,
+  filepath: string,
+  redirector: CommandLine['pipeStages']['redirector']
+) {
   const response = await _response
 
   if (typeof response === 'string' || isXtermResponse(response)) {
     try {
-      await rexec<{ data: string }>(`vfs fwrite ${encodeComponent(expandHomeDir(filepath))}`, {
-        data: isXtermResponse(response) ? response.rows.map(i => i.map(j => j.innerText)).join(' ') : response
-      })
+      const data = isXtermResponse(response) ? response.rows.map(i => i.map(j => j.innerText)).join(' ') : response
+      const writeOptions = redirector === '>>' ? '--append' : ''
+      await rexec<{ data: string }>(`vfs fwrite ${encodeComponent(expandHomeDir(filepath))} ${writeOptions}`, { data })
 
       debug(`redirected response to ${filepath}`)
     } catch (err) {
