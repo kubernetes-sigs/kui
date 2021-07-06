@@ -150,7 +150,12 @@ export interface CommandLine<Options = ParsedOptions> {
   /**
    * pipeline stages, e.g. if command='a b --foo|c', the pipeStages=[['a','b, '--foo'],'c']
    */
-  pipeStages: { prefix?: string; stages: string[][]; redirect?: string }
+  pipeStages: {
+    prefix?: string
+    stages: string[][]
+    redirect?: string
+    redirector?: '>' | '>>' | '2>&1' | '>&' | '>>&'
+  }
 
   /**
    * the dash options parsed out in a way that pays attention to n-ary

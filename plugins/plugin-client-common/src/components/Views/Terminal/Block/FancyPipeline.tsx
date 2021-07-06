@@ -17,7 +17,7 @@
 import React from 'react'
 import { Arguments } from '@kui-shell/core'
 
-type Props = Pick<Arguments['pipeStages'], 'prefix' | 'stages' | 'redirect'> & Pick<Arguments, 'REPL'>
+type Props = Pick<Arguments['pipeStages'], 'prefix' | 'stages' | 'redirect' | 'redirector'> & Pick<Arguments, 'REPL'>
 
 export default class FancyPipeline extends React.PureComponent<Props> {
   private linebreak() {
@@ -33,7 +33,7 @@ export default class FancyPipeline extends React.PureComponent<Props> {
    * e.g. somePrefix -- foo | bar > baz
    */
   public render() {
-    const { prefix, stages, redirect, REPL } = this.props
+    const { prefix, stages, redirect, redirector, REPL } = this.props
 
     return (
       <span className="repl-input-element flex-fill">
@@ -69,7 +69,7 @@ export default class FancyPipeline extends React.PureComponent<Props> {
         {redirect && (
           <React.Fragment>
             {this.linebreak()}
-            {this.pipe('>')}
+            {this.pipe(redirector)}
             <span className="clickable" onClick={() => REPL.pexec(`ls ${redirect}`)}>
               {redirect}
             </span>
