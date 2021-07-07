@@ -446,8 +446,12 @@ class S3VFSResponder extends S3VFS implements VFS {
   /** Enumerate the objects specified by the given filepath */
   private async dirstat(filepath: string, dashD: boolean): Promise<DirEntry[]> {
     try {
-      if (filepath.length === 0) {
-        // then the user has asked to list buckets in a region
+      if (
+        filepath.length === 0 || // case 1
+        (dashD && (filepath === this.subdir || filepath === this.subdir + '/')) // case 2
+      ) {
+        // case 1: the user has asked to list buckets in a region
+        // case 2: the user has asked to ls -d a bind mount
         if (dashD) {
           // not sure why they'd do this, but this would be e.g. `ls -d /s3/ibm/default`
           // we already know the region exists, ... so... just return that?
