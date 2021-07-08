@@ -47,7 +47,7 @@ interface DirentStats {
   isExecutable: boolean
   permissions: string
   username: string
-  mount: Pick<VFS, 'isLocal' | 'tags'>
+  mount: Pick<VFS, 'isLocal' | 'tags' | 'mountPath'>
 }
 
 interface RawGlobStats extends BaseStats {
@@ -115,11 +115,10 @@ const yup = () => true
  * Kui command for globbing readdir
  *
  */
-export async function kuiglob({
-  tab,
-  argvNoOptions,
-  parsedOptions
-}: Pick<Arguments<KuiGlobOptions>, 'tab' | 'argvNoOptions' | 'parsedOptions'>): Promise<GlobStats[]> {
+export async function kuiglob(
+  vfs: VFS,
+  { tab, argvNoOptions, parsedOptions }: Pick<Arguments<KuiGlobOptions>, 'tab' | 'argvNoOptions' | 'parsedOptions'>
+): Promise<GlobStats[]> {
   // Intentional require versus import... some typing issues right
   // now. Also intentionally lazy here, to avoid complications with
   // webpack bundling with browser targets.
@@ -243,7 +242,7 @@ export async function kuiglob({
         isSymbolicLink,
         isExecutable,
         isSpecial,
-        mount: { isLocal: true },
+        mount: { isLocal: vfs.isLocal, tags: vfs.tags, mountPath: vfs.mountPath },
         permissions: parsedOptions.l ? formatPermissions(stats, isFile, isDirectory, isSymbolicLink) : '',
         username: stats && user.uid === stats.uid ? user.username : ''
       }

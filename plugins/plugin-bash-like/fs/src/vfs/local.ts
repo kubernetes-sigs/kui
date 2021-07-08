@@ -29,7 +29,7 @@ class LocalVFS implements VFS {
   public readonly isVirtual = false
 
   public async ls(opts: Pick<Arguments<KuiGlobOptions>, 'tab' | 'REPL' | 'parsedOptions'>, filepaths: string[]) {
-    return kuiglob({
+    return kuiglob(this, {
       tab: opts.tab,
       argvNoOptions: ['kuiglob', ...filepaths],
       parsedOptions: opts.parsedOptions
