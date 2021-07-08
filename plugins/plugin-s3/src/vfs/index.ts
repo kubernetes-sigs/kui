@@ -29,7 +29,7 @@ import split from './split'
 import { username, uid, gid } from './username'
 import findAvailableProviders, { Provider } from '../providers'
 
-import setResponders from './responders'
+import setResponders, { vfsFor } from './responders'
 import S3VFS, { S3_TAG, baseMountPath } from './S3VFS'
 
 const strings = i18n('plugin-s3')
@@ -156,7 +156,7 @@ class S3VFSResponder extends S3VFS implements VFS {
       },
       nameForDisplay: name,
       dirent: {
-        mount: { isLocal: this.isLocal, tags: this.tags },
+        mount: { isLocal: this.isLocal, tags: this.tags, mountPath: this.mountPath },
         isFile: false,
         isDirectory: true,
         isSymbolicLink: false,
@@ -220,7 +220,7 @@ class S3VFSResponder extends S3VFS implements VFS {
       },
       nameForDisplay: name,
       dirent: {
-        mount: { isLocal: this.isLocal, tags: this.tags },
+        mount: { isLocal: this.isLocal, tags: this.tags, mountPath: this.mountPath },
         isFile: false,
         isDirectory: true,
         isSymbolicLink: false,
@@ -311,7 +311,7 @@ class S3VFSResponder extends S3VFS implements VFS {
             gid
           },
           dirent: {
-            mount: { isLocal: this.isLocal, tags: this.tags },
+            mount: { isLocal: this.isLocal, tags: this.tags, mountPath: this.mountPath },
             isFile: !isDirectory,
             isDirectory,
             isSymbolicLink: false,
@@ -414,7 +414,7 @@ class S3VFSResponder extends S3VFS implements VFS {
                 dirent: !isDirectory
                   ? _.dirent
                   : Object.assign(_.dirent, {
-                      mount: { isLocal: this.isLocal, tags: this.tags },
+                      mount: { isLocal: this.isLocal, tags: this.tags, mountPath: this.mountPath },
                       isFile: false,
                       isDirectory: true
                     })
@@ -673,7 +673,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     dstFilepath: string
   ) {
     const sources = args.REPL.rexec<GlobStats[]>(
-      `vfs ls ${srcs
+      `vfs ls -d ${srcs
         .map(_ => _.srcFilepath)
         .map(_ => encodeComponent(_))
         .join(' ')}`
@@ -683,15 +683,22 @@ class S3VFSResponder extends S3VFS implements VFS {
       throw new Error('Nothing to copy')
     }
 
+    console.error('!!!!!!!', sources)
+
     const { bucketName: dstBucket, fileName: dstFile } = this.split(dstFilepath)
     const dstIsFolder = !dstFile || (await this.isFolder(dstBucket, dstFile))
 
     debug('inter-copy-object sources', (await sources).content)
-    const etags = await Promise.all(
-      (await sources).content
-        .map(_ => _.path)
-        .map(async (srcFilepath, idx) => {
-          const { provider: srcProvider } = srcs[idx]
+    const etags = (
+      await Promise.all(
+        (await sources).content.map(async src => {
+          if (src.dirent.isDirectory) {
+            ;(await args.createErrorStream())(`cp: ${src.path} is a directory (not copied)`)
+            return
+          }
+
+          const srcFilepath = src.path
+          const srcProvider = vfsFor(src.dirent.mount.mountPath) as S3VFSResponder
           const { bucketName: srcBucket, fileName: srcFile } = srcProvider.split(srcFilepath)
 
           const dstName = dstIsFolder ? join(dstFile || '.', basename(srcFile)) : dstFile
@@ -702,7 +709,8 @@ class S3VFSResponder extends S3VFS implements VFS {
           const etag = await this.client.putObject(dstBucket, dstName, stream)
           return etag
         })
-    )
+      )
+    ).filter(_ => _)
 
     const N = etags.length
     return N === 0

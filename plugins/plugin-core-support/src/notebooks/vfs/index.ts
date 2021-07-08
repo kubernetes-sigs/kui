@@ -152,7 +152,7 @@ export class NotebookVFS implements VFS {
           gid
         },
         dirent: {
-          mount: { isLocal: this.isLocal },
+          mount: { isLocal: this.isLocal, mountPath: this.mountPath },
           isFile: !isDir,
           isDirectory: isDir,
           isSymbolicLink: false,

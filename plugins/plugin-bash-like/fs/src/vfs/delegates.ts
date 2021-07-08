@@ -46,7 +46,7 @@ function cropToSlashDepth(path: string, depth: number) {
 }
 
 /** Remove duplicates from an array of strings */
-function removeDuplicates(args: { mountPath: string; isLocal: VFS['isLocal']; tags: VFS['tags'] }[]) {
+function removeDuplicates(args: { mountPath: VFS['mountPath']; isLocal: VFS['isLocal']; tags: VFS['tags'] }[]) {
   return args.filter(({ mountPath }, idx) => args.findIndex(_ => _.mountPath === mountPath) === idx)
 }
 
@@ -83,7 +83,7 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
           mode: 0
         },
         dirent: {
-          mount: { isLocal, tags },
+          mount: { isLocal, tags, mountPath },
           isFile: false,
           isDirectory: true,
           isSymbolicLink: false,
