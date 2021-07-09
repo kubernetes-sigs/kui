@@ -41,7 +41,7 @@ function kubeconfig {
             echo "$(tput setaf 1)!!!!!!!!!!!! WARNING: injecting your IBM Cloud config into the container !!!!!!!!!!!!$(tput sgr0)"
             rm -rf "$BUILDDIR"/.bluemix
             cp -a ~/.bluemix "$BUILDDIR"
-        fi            
+        fi
     elif [ ! -d "$BUILDDIR"/.kube ]; then
         # avoid COPY failure in Dockerfile
         mkdir "$BUILDDIR"/.kube
@@ -92,7 +92,7 @@ function installKui {
     echo "install kui"
     # we have to hack out dependencies manually because npm uninstall doesn't know how limit itself to just a scissor cut.
     # (cd "$BUILDDIR"/kui && node -e 'const pjson = require("./package.json"); const remove = ["@kui-shell/plugin-editor", "@kui-shell/plugin-wskflow", "@kui-shell/plugin-client-common", "@kui-shell/plugin-client-default", "@kui-shell/plugin-carbon-themes", "@kui-shell/plugin-core-themes"]; remove.forEach(_ => delete pjson.dependencies[_]); require("fs").writeFileSync("package.json", JSON.stringify(pjson, undefined, 2))')
-    
+
     (cd "$BUILDDIR"/kui && npm ci --only=production --ignore-scripts)
 
     cp "$CLIENT_HOME"/node_modules/@kui-shell/prescan.json "$BUILDDIR"/kui/node_modules/@kui-shell/prescan.json
