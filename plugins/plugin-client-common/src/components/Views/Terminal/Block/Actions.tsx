@@ -20,7 +20,7 @@ import { Tab, i18n, isOfflineClient, isReadOnlyClient } from '@kui-shell/core'
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
-import BlockModel, { hasUUID, isOutputOnly, isRerunable } from './BlockModel'
+import BlockModel, { hasUUID, isOutputOnly, isReplay, isRerunable } from './BlockModel'
 
 const strings = i18n('plugin-client-common')
 
@@ -142,16 +142,18 @@ export default class Actions extends React.PureComponent<Props> {
   } */
 
   public render() {
+    const readonly = isReplay(this.props.model) && isReadOnlyClient()
+
     return (
       !isOfflineClient() && (
         <div className="kui--block-actions-buttons kui--inverted-color-context">
           <div className="kui-block-actions-others">
-            {!isReadOnlyClient() && !this.props.isSectionBreak && this.copyAction()}
-            {!isReadOnlyClient() && this.linkAction()}
-            {!isReadOnlyClient() && !this.props.isSectionBreak && this.sectionAction()}
+            {!readonly && !this.props.isSectionBreak && this.copyAction()}
+            {!readonly && this.linkAction()}
+            {!readonly && !this.props.isSectionBreak && this.sectionAction()}
             {this.props.isExecutable && !this.props.isSectionBreak && this.rerunAction()}
           </div>
-          {!isReadOnlyClient() && this.removeAction()}
+          {!readonly && this.removeAction()}
         </div>
       )
     )
