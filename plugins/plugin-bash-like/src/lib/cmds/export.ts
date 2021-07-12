@@ -41,7 +41,6 @@ const exportCommand = async (args: Arguments) => {
 
 const usage = {
   command: 'export',
-  strict: 'export',
   docs: 'Export a variable or function to the environment of all the child processes running in the current shell',
   required: [{ name: 'key=value', docs: 'an assignment of key to value' }]
 }
