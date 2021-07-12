@@ -20,7 +20,7 @@ if [ -z "$1" ]; then
     echo "please provide a prebuild target, such as electron or nodejs"
     exit 1
 fi
- 
+
 # Notes: keep the prebuild --target in sync with the major version of
 # electron desired for this client; see the dependencies section of
 # ../package.json

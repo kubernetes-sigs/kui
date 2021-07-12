@@ -46,7 +46,7 @@ while true; do
             echo -e "\033[32m+++ proxy is up with $NPROXY tenant processes\033[0m"
         fi
     fi
-    
+
     echo
     sleep 20
 done
