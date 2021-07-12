@@ -122,13 +122,12 @@ export async function setServiceInstanceName(args: Arguments, config: Config): P
   return false
 }
 
-async function findCredentials(
-  args: Arguments<Options>,
+export async function findCredentialsForInstance(
+  args: Arguments,
+  instanceName?: string,
   instancesP?: Promise<ServiceInstance[]>
 ): Promise<void | Config> {
   const local = await findLocal(args.REPL)
-
-  const instanceName = args.parsedOptions['cos-instance']
   const matchingNames = local && (!instanceName || local.serviceInstanceName === instanceName)
 
   if (local && matchingNames) {
@@ -158,6 +157,14 @@ async function findCredentials(
       }
     }
   }
+}
+
+async function findCredentials(
+  args: Arguments<Options>,
+  instancesP?: Promise<ServiceInstance[]>
+): Promise<void | Config> {
+  const instanceName = args.parsedOptions['cos-instance']
+  return findCredentialsForInstance(args, instanceName, instancesP)
 }
 
 export default async function findAndBindCredentials(args: Arguments<Options>) {

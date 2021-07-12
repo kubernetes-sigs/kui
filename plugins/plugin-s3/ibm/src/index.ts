@@ -20,3 +20,5 @@ export { default as updateChannel } from './channel'
 export { default as Geos } from './model/geos'
 export { default as Config } from './model/Config'
 export { default as ServiceInstance } from './model/ServiceInstance'
+
+export { findCredentialsForInstance } from './controller/bind'
