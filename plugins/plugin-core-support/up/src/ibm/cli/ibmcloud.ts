@@ -14,20 +14,31 @@
  * limitations under the License.
  */
 
+import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
+import Group from '../../Group'
+
 async function check(args: Arguments) {
   try {
-    await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud version' }))
-    return true
+    const version = await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud version' }))
+
+    // ibmcloud version 1.6.0+59b6322-2021-05-26T20:35:50+00:00
+    // -> v1.6.0
+    return version
+      .trim()
+      .replace(/^ibmcloud version /, 'v')
+      .replace(/\+.*$/, '')
   } catch (err) {
     return false
   }
 }
 
 export default {
-  label: 'CLI: ibmcloud',
+  group: Group.CLI,
+  label: (checkResult?: false | string) =>
+    checkResult === undefined ? 'ibmcloud' : !checkResult ? 'not installed' : colors.gray(checkResult),
   check,
   fix:
     process.platform === 'linux'

@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
+import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
+import Group from '../../Group'
+
 async function check(args: Arguments) {
   try {
-    await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud cos help' }))
-    return true
+    const { Version } = JSON.parse(
+      await doExecWithStdoutViaPty(
+        Object.assign({}, args, { command: 'ibmcloud plugin show cloud-object-storage --output json' })
+      )
+    )
+    return `v${Version.Major}.${Version.Minor}.${Version.Build}`
   } catch (err) {
     return false
   }
@@ -29,7 +36,13 @@ async function check(args: Arguments) {
 const install = 'ibmcloud plugin install cloud-object-storage'
 
 export default {
-  label: 'CLI plugin: ibmcloud cloud-object-storage',
+  group: Group.CLI,
+  label: (checkResult?: false | string) =>
+    checkResult === undefined
+      ? 'ibmcloud cloud-object-storage plugin'
+      : !checkResult
+      ? 'not installed'
+      : colors.gray(checkResult),
   fix: install,
   onFail: install,
   check

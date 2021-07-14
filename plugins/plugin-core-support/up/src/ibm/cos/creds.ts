@@ -17,6 +17,7 @@
 import colors from 'colors/safe'
 import { Arguments, encodeComponent } from '@kui-shell/core'
 
+import Group from '../../Group'
 import Options from '../options'
 
 /** @return a --cos-instance command line option, if specified */
@@ -27,18 +28,18 @@ function cosinstance(parsedOptions: Arguments<Options>['parsedOptions']) {
   return cosinstance
 }
 
-async function check({ REPL, parsedOptions }: Pick<Arguments<Options>, 'REPL' | 'parsedOptions'>) {
-  try {
-    return await REPL.qexec<string>(`ibmcloud cos validate --output name ${cosinstance(parsedOptions)}`)
-  } catch (err) {
-    return false
-  }
+function check({ REPL, parsedOptions }: Pick<Arguments<Options>, 'REPL' | 'parsedOptions' | 'createErrorStream'>) {
+  return REPL.qexec<string>(`ibmcloud cos validate --output name ${cosinstance(parsedOptions)}`)
 }
 
 export default {
-  label: (checkResult: false | string) =>
-    'S3: IBM Cloud Object Storage ' +
-    (!checkResult ? colors.red('not configured') : colors.gray('service-instance=') + colors.yellow(checkResult)),
+  group: Group.Storage,
+  label: (checkResult?: false | string) =>
+    checkResult === undefined
+      ? 'IBM Cloud Object Storage credentials'
+      : !checkResult
+      ? colors.red('not configured')
+      : colors.yellow(checkResult),
   needsCloudLogin: true,
   fix: async (args: Arguments<Options>) => {
     await args.REPL.qexec(`ibmcloud cos bind ${cosinstance(args.parsedOptions)}`)

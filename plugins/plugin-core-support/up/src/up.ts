@@ -19,12 +19,7 @@ import { Arguments, promiseEach } from '@kui-shell/core'
 
 import Options from './options'
 import checkers from './registrar'
-import checkAndEmit, { formatLabel } from './ui'
-
-async function checkPrerequistes(args: Arguments<Options>, stdout: Arguments['execOptions']['stdout']) {
-  stdout(colors.yellow('Checking prerequisites...\n'))
-  return Promise.all(checkers(args).map(_ => checkAndEmit(args, stdout, _)))
-}
+import { checkPrerequistes, formatLabel } from './ui'
 
 async function checkOrFix(args: Arguments<Options>, stdout: Arguments['execOptions']['stdout']) {
   if (!args.parsedOptions.fix) {
@@ -34,7 +29,7 @@ async function checkOrFix(args: Arguments<Options>, stdout: Arguments['execOptio
 
     // fixing prerequisites
     await promiseEach(checkers(args), async ({ check, label, fix, needsCloudLogin }) => {
-      const checkResult = await check(args)
+      const checkResult = await Promise.resolve(check(args, undefined)).catch(() => undefined)
       if (!checkResult && fix) {
         if (args.parsedOptions.login !== false || !needsCloudLogin) {
           stdout(`  🔨${formatLabel(label, checkResult)}`)
@@ -64,7 +59,7 @@ export default async function up(args: Arguments<Options>) {
 
   const nOk = checkResults.reduce((nOk, result) => nOk + (result.ok ? 1 : 0), 0)
 
-  checkResults.forEach(_ => stdout(`${_.message}\n`))
+  // checkResults.forEach(_ => stdout(`${_.message}\n`))
 
   const nCheckers = checkers(args).length
   if (nOk === nCheckers) {
@@ -74,11 +69,13 @@ export default async function up(args: Arguments<Options>) {
     return ''
   } else {
     if (!args.parsedOptions.fix) {
-      stderr(`\nTry ${colors.cyan('up --fix')} to automatically fix problems`)
+      const prefixIdx = args.command.indexOf(' up')
+      const prefix = prefixIdx <= 0 ? '' : args.command.slice(0, prefixIdx) + ' '
+      stderr(`\nTry ${colors.cyan(`${prefix}up --fix`)} to automatically fix problems`)
     }
 
     const nNotOk = nCheckers - nOk
-    throw new Error(colors.red(`\n☹ ${nNotOk} prerequisite${nNotOk === 1 ? '' : 's'} not satisfied`))
-    //                            ^^ unhappy face unicode
+    throw new Error(colors.red(`\n💣 ${nNotOk} prerequisite${nNotOk === 1 ? '' : 's'} not satisfied`))
+    //                            ^^ bomb unicode
   }
 }

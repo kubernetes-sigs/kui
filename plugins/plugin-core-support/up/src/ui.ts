@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
+import { Listr } from 'listr2'
 import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
-import Checker, { CheckerArgs, CheckResult } from './Checker'
+import { Observable, Observer } from 'rxjs'
 
-const debug = Debug('plugin-core-support/up')
+import Group from './Group'
+import Options from './options'
+import checkers from './registrar'
+import Checker, { CheckerArgs, CheckResult } from './Checker'
 
 /** indicator of failure */
 export function failure(color: 'red' | 'yellow' = 'red') {
@@ -34,30 +37,87 @@ export function success() {
 export function formatLabel<T extends CheckResult>(label: Checker['label'], checkResult: T): string {
   const labelText = typeof label === 'string' ? label : label(checkResult)
 
-  // e.g. "Cloud: something something" => "cyan(Cloud:) something something"
-  return labelText.replace(/^([^:]+:)/, (_, p1) => colors.cyan(p1))
+  return labelText // .replace(/^([^:]+:)/, (_, p1) => colors.cyan(p1))
 }
+
+type Status = { ok: boolean; message: string }
 
 export default async function checkAndEmit<T extends CheckResult>(
   args: CheckerArgs,
+  obs: Observer<string>,
   stdout: Arguments['execOptions']['stdout'],
-  { check, label, optional }: Checker<T>
-) {
-  try {
-    const checkResult = await check(args)
+  { check, label }: Checker<T>
+): Promise<Status> {
+  const checkResult = await check(args, obs)
 
-    const ok = typeof checkResult === 'string' || checkResult === true
-    const okMessage = `${ok ? success() : failure(optional ? 'yellow' : 'red')}`
+  return {
+    ok: typeof checkResult === 'string' || checkResult === true,
+    message: formatLabel(label, checkResult)
+  }
+}
+
+function listrTaskForChecker(args: Arguments<Options>, stdout: Arguments['execOptions']['stdout'], gidx: number) {
+  return (_: Checker, tidx: number) => {
+    const idx = gidx + tidx
+    const title = formatLabel(_.label, undefined)
 
     return {
-      ok,
-      message: `${okMessage} ${formatLabel(label, checkResult)}`
-    }
-  } catch (err) {
-    debug('Error in checker', label, err)
-    return {
-      ok: false,
-      message: err.message
+      title,
+      options: { persistentOutput: true },
+      task: ctx =>
+        new Observable(obs => {
+          checkAndEmit(args, obs, stdout, _)
+            .then(status => {
+              ctx[idx] = status
+
+              if (!status.ok) {
+                obs.error(new Error('momo ' + status.message))
+              } else if (status.message !== title) {
+                obs.next(status.message)
+                // task.output = status.message
+              }
+            })
+            .catch(err => {
+              ctx[idx] = { ok: false }
+              obs.error(err)
+            })
+            .finally(() => obs.complete())
+        })
     }
   }
+}
+
+export async function checkPrerequistes(
+  args: Arguments<Options>,
+  stdout: Arguments['execOptions']['stdout'],
+  concurrent = true,
+  exitOnError = false
+): Promise<Pick<Status, 'ok'>[]> {
+  const options = { concurrent, exitOnError, rendererOptions: { collapse: false, collapseErrors: false } }
+
+  // top-level grouping
+  const groups = Object.values(Group)
+    .filter(_ => isNaN(Number(_)))
+    .sort()
+  const nGroups = groups.length
+
+  const tasks = new Listr<Pick<Status, 'ok'>[]>(
+    groups.map((group, gidx) => ({
+      title: colors.cyan(group.toString()),
+      task: (_, task) =>
+        task.newListr(
+          checkers(args)
+            .filter(_ => _.group === Group[group])
+            .sort((a, b) => formatLabel(a.label, undefined).localeCompare(formatLabel(b.label, undefined)))
+            .map(listrTaskForChecker(args, stdout, gidx * nGroups)),
+          options
+        )
+    })),
+    options
+  )
+
+  const ctx = [] as Pick<Status, 'ok'>[]
+  return tasks.run(ctx).catch(() => {
+    return ctx
+  })
 }

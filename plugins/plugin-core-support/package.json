@@ -26,6 +26,8 @@
     "@supercharge/promise-pool": "1.7.0",
     "colors": "1.4.0",
     "debug": "4.3.1",
+    "enquirer": "2.3.6",
+    "listr2": "3.10.0",
     "micromatch": "4.0.4",
     "tmp": "0.2.1"
   },

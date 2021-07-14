@@ -20,33 +20,31 @@ import colors from 'colors/safe'
 import { Arguments, encodeComponent } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
+import Group from '../../Group'
 import Options from '../options'
 
 async function check(args: Arguments) {
-  try {
-    const res = await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud target --output=json' }))
-    if (res.includes('No resource group targeted')) {
-      return false
+  const res = await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud target --output=json' }))
+  if (res.includes('No resource group targeted')) {
+    throw new Error(res)
+  } else {
+    const { resource_group, region } = JSON.parse(res)
+    if (!resource_group) {
+      throw new Error('No active resource group ')
     } else {
-      const { resource_group, region } = JSON.parse(res)
-      if (!resource_group) {
-        return false
-      } else {
-        const resourceGroupMsg = resource_group
-          ? `${colors.gray('resource-group=')}${colors.yellow(resource_group.name)}`
-          : ''
-        const regionMsg = region ? `${colors.gray('region=')}${colors.yellow(region.name)}` : ''
-        return `${resourceGroupMsg} ${regionMsg}`
-      }
+      const resourceGroupMsg = resource_group
+        ? `${colors.gray('resource-group=')}${colors.yellow(resource_group.name)}`
+        : ''
+      const regionMsg = region ? `${colors.gray('region=')}${colors.yellow(region.name)}` : ''
+      return `${resourceGroupMsg} ${regionMsg}`
     }
-  } catch (err) {
-    return false
   }
 }
 
 export default {
-  label: (checkResult: false | string) =>
-    'Cloud: ibmcloud target ' + (!checkResult ? colors.red('not selected') : checkResult),
+  group: Group.Cloud,
+  label: (checkResult?: false | string) =>
+    checkResult === undefined ? 'ibmcloud target' : checkResult === false ? colors.red('not selected') : checkResult,
   needsCloudLogin: true,
   onFail: 'ibmcloud target -r <region=us-south,eu-de>',
   fix: async ({ REPL, parsedOptions }: Arguments<Options>) => {
