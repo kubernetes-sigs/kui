@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
+import Group from '../../Group'
 import { Arguments } from '@kui-shell/core'
 
 async function check({ REPL }: Pick<Arguments, 'REPL'>) {
-  try {
-    await REPL.qexec('vfs fstat /s3/ibm/default')
-    return true
-  } catch (err) {
-    return false
-  }
+  await REPL.qexec('vfs fstat /s3/ibm/default')
+  return true
 }
 
 export default {
-  label: 'S3: mounted ibmcloud default region',
+  group: Group.Storage,
+  label: 'mounted IBM Cloud Object Storage default region',
   needsCloudLogin: true,
   fix: 'ibmcloud cos bind',
   check

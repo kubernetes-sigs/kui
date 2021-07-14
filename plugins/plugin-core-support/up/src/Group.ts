@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import Group from '../Group'
-import { Arguments } from '@kui-shell/core'
-
-async function check({ REPL }: Pick<Arguments, 'REPL'>) {
-  try {
-    await REPL.qexec('kubectl version')
-    return true
-  } catch (err) {
-    return false
-  }
+enum Group {
+  Storage,
+  Compute,
+  Cloud,
+  CLI
 }
 
-export default {
-  group: Group.CLI,
-  label: 'Cloud: valid KUBECONFIG',
-  check
-}
+export default Group

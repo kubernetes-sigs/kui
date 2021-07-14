@@ -17,19 +17,17 @@
 import { Arguments, encodeComponent } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
+import Group from '../../Group'
 import Options from '../options'
 
 async function check(args: Arguments) {
-  try {
-    await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud account show' }))
-    return true
-  } catch (err) {
-    return false
-  }
+  await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud account show' }))
+  return true
 }
 
 export default {
-  label: 'CLI: ibmcloud login',
+  group: Group.Cloud,
+  label: 'ibmcloud login',
   needsCloudLogin: true,
   onFail: 'ibmcloud login',
   fix: async ({ REPL, parsedOptions }: Arguments<Options>) => {

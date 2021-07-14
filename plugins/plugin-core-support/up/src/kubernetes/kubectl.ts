@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
+import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
+import Group from '../Group'
+
 async function check(args: Arguments) {
   try {
-    await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'kubectl version --client=true' }))
-    return true
+    const { clientVersion } = JSON.parse(
+      await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'kubectl version --client=true -o json' }))
+    )
+    return clientVersion.gitVersion
   } catch (err) {
     return false
   }
 }
 
 export default {
-  label: 'CLI: kubectl',
+  group: Group.CLI,
+  label: (checkResult?: false | string) =>
+    checkResult === undefined ? 'kubectl' : !checkResult ? 'not installed' : colors.gray(checkResult),
   check,
   fix:
     process.platform === 'linux'

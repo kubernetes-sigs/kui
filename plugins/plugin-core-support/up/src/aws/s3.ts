@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
+import Group from '../Group'
 import { Arguments } from '@kui-shell/core'
 
 async function check({ REPL }: Pick<Arguments, 'REPL'>) {
-  try {
-    await REPL.qexec('vfs fstat /s3/aws')
-    return true
-  } catch (err) {
-    return false
-  }
+  await REPL.qexec('vfs fstat /s3/aws')
+  return true
 }
 
 export default {
-  label: 'S3: mounted AWS',
+  group: Group.Storage,
+  label: 'mounted AWS',
   check,
   optional: true
 }
