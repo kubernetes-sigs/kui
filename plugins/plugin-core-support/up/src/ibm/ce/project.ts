@@ -18,14 +18,11 @@ import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
+import Group from '../../Group'
 import Options from '../options'
 
-async function check(args: Arguments): Promise<string | boolean> {
-  try {
-    return await args.REPL.qexec<string>('ibmcloud ce project current-name')
-  } catch (err) {
-    return false
-  }
+function check(args: Arguments): Promise<string | boolean> {
+  return args.REPL.qexec<string>('ibmcloud ce project current-name')
 }
 
 async function fix(args: Arguments<Options>) {
@@ -105,10 +102,13 @@ async function fix(args: Arguments<Options>) {
 }
 
 export default {
-  label: (checkResult: false | string) =>
-    'Cloud: CodeEngine ' +
-    colors.gray('project=') +
-    (!checkResult ? colors.red('not selected') : colors.yellow(checkResult)),
+  group: Group.Compute,
+  label: (checkResult?: false | string) =>
+    checkResult === undefined
+      ? 'CodeEngine project'
+      : !checkResult
+      ? colors.red('not selected')
+      : colors.yellow(checkResult),
   needsCloudLogin: true,
   onFail: 'ibmcloud ce project create --name <projectname=superproject>',
   fix,
