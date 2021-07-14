@@ -30,18 +30,24 @@ export default {
   label: 'ibmcloud login',
   needsCloudLogin: true,
   onFail: 'ibmcloud login',
-  fix: async ({ REPL, parsedOptions }: Arguments<Options>) => {
+  fix: async ({ REPL, parsedOptions }: Arguments<Options>, onInit: Arguments['execOptions']['onInit']) => {
     const sso = parsedOptions.sso ? `--sso` : ''
     const apikey = parsedOptions.apikey ? `--apikey=${parsedOptions.apikey}` : ''
 
+    const env = { IBMCLOUD_VERSION_CHECK: 'false' }
+    const opts: Arguments['execOptions'] = { onInit, env, pipeStdin: true }
+
     if (process.env.TRAVIS_JOB_ID || !process.stdout.isTTY) {
       // when testing on traivs, force login without prompting for a region since we will test region targeting in target --fix
-      await REPL.qexec(`ibmcloud login ${sso || apikey} --no-region`)
+      await REPL.qexec(`ibmcloud login ${sso || apikey} --no-region`, undefined, undefined, opts)
     } else {
       await REPL.qexec(
         `ibmcloud login ${sso || apikey}` +
           (parsedOptions.region ? ` -r ${encodeComponent(parsedOptions.region)}` : '') +
-          (parsedOptions['resource-group'] ? ` -g ${encodeComponent(parsedOptions['resource-group'])}` : '')
+          (parsedOptions['resource-group'] ? ` -g ${encodeComponent(parsedOptions['resource-group'])}` : ''),
+        undefined,
+        undefined,
+        opts
       )
     }
     return true

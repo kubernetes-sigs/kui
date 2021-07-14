@@ -83,7 +83,7 @@ export const doExec = (
     try {
       const options: ChildProcessExecOptions = {
         maxBuffer: 1 * 1024 * 1024,
-        env: Object.assign({}, process.env, execOptions['env'] || {})
+        env: Object.assign({}, process.env, execOptions.env || {})
       }
       if (process.env.SHELL) {
         options.shell = process.env.SHELL
@@ -108,6 +108,10 @@ export const doExec = (
             write: () => {} // eslint-disable-line @typescript-eslint/no-empty-function
           })
         )
+      }
+
+      if (execOptions.pipeStdin) {
+        process.stdin.pipe(proc.stdin)
       }
 
       proc.stdout.on('data', async data => {
