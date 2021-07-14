@@ -15,38 +15,11 @@
  */
 
 import colors from 'colors/safe'
-import { Arguments, promiseEach } from '@kui-shell/core'
+import { Arguments } from '@kui-shell/core'
 
 import Options from './options'
 import checkers from './registrar'
-import { checkPrerequistes, formatLabel } from './ui'
-
-async function checkOrFix(args: Arguments<Options>, stdout: Arguments['execOptions']['stdout']) {
-  if (!args.parsedOptions.fix) {
-    return checkPrerequistes(args, stdout)
-  } else {
-    stdout(colors.yellow('Fixing prerequisites...'))
-
-    // fixing prerequisites
-    await promiseEach(checkers(args), async ({ check, label, fix, needsCloudLogin }) => {
-      const checkResult = await Promise.resolve(check(args, undefined)).catch(() => undefined)
-      if (!checkResult && fix) {
-        if (args.parsedOptions.login !== false || !needsCloudLogin) {
-          stdout(`  🔨${formatLabel(label, checkResult)}`)
-
-          if (typeof fix === 'string') {
-            await args.REPL.qexec(fix)
-          } else {
-            await fix(args)
-          }
-        }
-      }
-    })
-
-    // double check prerequisites
-    return checkPrerequistes(args, stdout)
-  }
-}
+import { checkPrerequistes } from './ui'
 
 /**
  * Prereq check
@@ -55,11 +28,9 @@ export default async function up(args: Arguments<Options>) {
   const stdout = await args.createOutputStream()
   const stderr = await args.createErrorStream()
 
-  const checkResults = await checkOrFix(args, stdout)
+  const checkResults = await checkPrerequistes(args, stdout, args.parsedOptions.fix)
 
   const nOk = checkResults.reduce((nOk, result) => nOk + (result.ok ? 1 : 0), 0)
-
-  // checkResults.forEach(_ => stdout(`${_.message}\n`))
 
   const nCheckers = checkers(args).length
   if (nOk === nCheckers) {
