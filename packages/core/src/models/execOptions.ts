@@ -90,6 +90,7 @@ export interface ExecOptions {
   createOutputStream?: StreamableFactory
   stdout?: (str: Streamable) => any // eslint-disable-line @typescript-eslint/no-explicit-any
   stderr?: (str: string) => any // eslint-disable-line @typescript-eslint/no-explicit-any
+  pipeStdin?: boolean
 
   /** on job init, pass the job, and get back a stdout; i.e. just before the PTY is brought up */
   onInit?: (job: Job) => Stream | Promise<Stream>

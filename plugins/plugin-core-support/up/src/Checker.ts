@@ -23,11 +23,13 @@ export type CheckerArgs = Pick<Arguments, 'REPL' | 'createErrorStream'>
 export type CheckResultSuccess = true | string
 export type CheckResult = CheckResultSuccess | false
 
+export type Stdout = NodeJS.WriteStream & NodeJS.WritableStream
+
 type Checker<T extends CheckResult = CheckResult> = {
   group: Group
   check: (args: CheckerArgs, obs: Observer<string>) => T | Promise<T>
   label: string | ((checkResult: T) => string)
-  fix?: string | ((args: Arguments) => T | Promise<T>)
+  fix?: string | ((args: Arguments, onInit: Arguments['execOptions']['onInit']) => T | Promise<T>)
   needsCloudLogin?: boolean
   optional?: boolean
 }
