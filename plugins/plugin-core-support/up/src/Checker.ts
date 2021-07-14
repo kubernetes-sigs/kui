@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
+import Group from './Group'
+import { Observer } from 'rxjs'
 import { Arguments } from '@kui-shell/core'
 
-export type CheckerArgs = Pick<Arguments, 'REPL'>
+export type CheckerArgs = Pick<Arguments, 'REPL' | 'createErrorStream'>
 
 export type CheckResultSuccess = true | string
 export type CheckResult = CheckResultSuccess | false
 
 type Checker<T extends CheckResult = CheckResult> = {
-  check: (args: CheckerArgs) => T | Promise<T>
+  group: Group
+  check: (args: CheckerArgs, obs: Observer<string>) => T | Promise<T>
   label: string | ((checkResult: T) => string)
   fix?: string | ((args: Arguments) => T | Promise<T>)
   needsCloudLogin?: boolean

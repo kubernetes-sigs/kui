@@ -135,9 +135,9 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
       if (stdout && isHeadless()) {
         // avoid stack traces to our own code? see
         // https://github.com/kubernetes-sigs/kui/issues/7334
-        console.error(message)
+        debug(message)
       } else {
-        console.error(err)
+        debug(err)
       }
 
       err.message = message
