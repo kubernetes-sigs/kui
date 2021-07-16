@@ -27,6 +27,7 @@ import IBMCloudCodeEngineCLIPlugin from './cli/ce'
 import IBMCloudLogin from './base/login'
 import IBMCloudTarget from './base/target'
 import CodeEngineProject from './ce/project'
+import CodeEngineCreds from './ce/creds'
 
 // COS config
 import S3IBMCOS from './cos/creds'
@@ -39,6 +40,7 @@ const checkers: Checker[] = [
   IBMCloudCOSCLIPlugin,
   IBMCloudTarget,
   CodeEngineProject,
+  CodeEngineCreds,
   S3IBMCOS,
   S3IBMCOSDefaultMount
 ]
