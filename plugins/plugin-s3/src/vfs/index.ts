@@ -683,8 +683,6 @@ class S3VFSResponder extends S3VFS implements VFS {
       throw new Error('Nothing to copy')
     }
 
-    console.error('!!!!!!!', sources)
-
     const { bucketName: dstBucket, fileName: dstFile } = this.split(dstFilepath)
     const dstIsFolder = !dstFile || (await this.isFolder(dstBucket, dstFile))
 
