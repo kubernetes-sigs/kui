@@ -209,8 +209,11 @@ module.exports = (server, port) => {
         // pre-shared key authorization
         if (process.env.KUI_PSK && process.env.KUI_PSK_COOKIE) {
           const token = process.env.KUI_PSK_COOKIE_SECRET
-            ? req.signedCookie(process.env.KUI_PSK_COOKIE, process.env.KUI_PSK_COOKIE_SECRET)
+            ? req.signedCookies
+              ? req.signedCookies[process.env.KUI_PSK_COOKIE]
+              : undefined
             : req.cookies[process.env.KUI_PSK_COOKIE]
+
           if (token !== process.env.KUI_PSK) {
             res.status(403).send('Access Denied')
             return
