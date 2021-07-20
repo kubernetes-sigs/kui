@@ -49,7 +49,7 @@ export default {
   group: Group.Compute,
   label: (checkResult?: false | string) =>
     checkResult === undefined
-      ? 'CodeEngine credentials'
+      ? 'CodeEngine project credentials'
       : !checkResult
       ? colors.red('not selected')
       : colors.yellow(checkResult),
