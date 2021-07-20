@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
+
+### Bug Fixes
+
+- **plugins/plugin-bash-like:** export command enforces parameters incorrectly ([36964da](https://github.com/IBM/kui/commit/36964da)), closes [#7791](https://github.com/IBM/kui/issues/7791)
+- **plugins/plugin-s3:** wildcard cp between s3 regions/providers fails ([c9e1ef8](https://github.com/IBM/kui/commit/c9e1ef8)), closes [#7782](https://github.com/IBM/kui/issues/7782)
+
+### Features
+
+- port up --fix to use Listr ([b77313d](https://github.com/IBM/kui/commit/b77313d)), closes [#7797](https://github.com/IBM/kui/issues/7797) [#7798](https://github.com/IBM/kui/issues/7798)
+- up command should use a real progress tracker ([ebe73de](https://github.com/IBM/kui/commit/ebe73de)), closes [#7795](https://github.com/IBM/kui/issues/7795)
+
 ## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
 
 ### Bug Fixes

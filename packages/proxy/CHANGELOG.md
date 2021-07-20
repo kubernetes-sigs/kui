@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
+
+### Bug Fixes
+
+- **packages/proxy:** signedCookie not a function ([4acdd8d](https://github.com/IBM/kui/commit/4acdd8d))
+
 ## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
 
 ### Features

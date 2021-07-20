@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** ls -d on s3 bind mount returns the underlying directory, not the bind directory ([9f64ff6](https://github.com/IBM/kui/commit/9f64ff6)), closes [#7780](https://github.com/IBM/kui/issues/7780)
+- **plugins/plugin-s3:** wildcard cp between s3 regions/providers fails ([c9e1ef8](https://github.com/IBM/kui/commit/c9e1ef8)), closes [#7782](https://github.com/IBM/kui/issues/7782)
+
+### Features
+
+- **plugins/plugin-s3:** plugin-s3/ibm should export findCredentialsForInstance ([d161fe0](https://github.com/IBM/kui/commit/d161fe0)), closes [#7793](https://github.com/IBM/kui/issues/7793)
+
 ## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
 
 ### Bug Fixes

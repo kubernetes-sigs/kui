@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
+
+### Features
+
+- port up --fix to use Listr ([b77313d](https://github.com/IBM/kui/commit/b77313d)), closes [#7797](https://github.com/IBM/kui/issues/7797) [#7798](https://github.com/IBM/kui/issues/7798)
+
 ## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
 
 ### Bug Fixes

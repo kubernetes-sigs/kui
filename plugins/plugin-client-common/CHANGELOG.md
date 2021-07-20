@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** readonly client property should only apply to replayed notebooks ([27d1ff7](https://github.com/IBM/kui/commit/27d1ff7)), closes [#7787](https://github.com/IBM/kui/issues/7787)
+
 ## [10.4.6](https://github.com/IBM/kui/compare/v10.4.5...v10.4.6) (2021-07-06)
 
 ### Bug Fixes
