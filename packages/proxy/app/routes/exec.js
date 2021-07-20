@@ -20,6 +20,7 @@ const { exec, spawn } = require('child_process')
 const express = require('express')
 const { v4: uuid } = require('uuid')
 const { parse: parseCookie } = require('cookie')
+const { sign } = require('cookie-signature')
 
 const sessionKey = 'kui_websocket_auth'
 
@@ -208,10 +209,12 @@ module.exports = (server, port) => {
 
         // pre-shared key authorization
         if (process.env.KUI_PSK && process.env.KUI_PSK_COOKIE) {
-          const token = process.env.KUI_PSK_COOKIE_SECRET
-            ? req.signedCookie(process.env.KUI_PSK_COOKIE, process.env.KUI_PSK_COOKIE_SECRET)
-            : req.cookies[process.env.KUI_PSK_COOKIE]
-          if (token !== process.env.KUI_PSK) {
+          const token = req.cookies[process.env.KUI_PSK_COOKIE]
+          const psk = process.env.KUI_PSK_COOKIE_SECRET
+            ? sign(process.env.KUI_PSK, process.env.KUI_PSK_COOKIE_SECRET)
+            : process.env.KUI_PSK
+
+          if (token !== psk) {
             res.status(403).send('Access Denied')
             return
           }
