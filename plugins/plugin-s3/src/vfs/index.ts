@@ -76,13 +76,18 @@ class S3VFSResponder extends S3VFS implements VFS {
   private client: Client
   private listBucketsClient: Client
 
+  private initDone: Promise<void>
+
   public constructor(private readonly options: Provider) {
     super(options.mountName, options.error, options.publicOnly)
   }
 
   public async init() {
     const { options } = this
+    debug('new s3 vfs responder', options.mountName, options.endPoint)
+
     const { Client } = await import('minio')
+    debug('new s3 vfs responder 2', options.mountName)
 
     if (options.error) {
       this.client = undefined
@@ -111,36 +116,39 @@ class S3VFSResponder extends S3VFS implements VFS {
         this.client = undefined
       }
     }
-    debug('new s3 vfs responder', options.mountName, options.endPoint)
+    debug('new s3 vfs responder 3', options.mountName)
 
     // ensure that the subdir path exists for bind mounts
-    if (this.options.subdir) {
-      const { bucketName, fileName = '' } = this.split('')
-      try {
-        await this.client.statObject(bucketName, join(fileName, '.init'))
-      } catch (err) {
-        if (err.code === 'NotFound') {
-          try {
-            if (!(await this.existsBucket(bucketName))) {
-              await this.makeBucket(bucketName)
-            }
-            await this.client.putObject(
-              bucketName,
-              join(fileName, '.init'),
-              Readable.from('tmp mount successfully initialized')
-            )
-          } catch (err) {
-            console.error(`Error initializing provider ${this.mountPath}`, err)
-            return
+    this.initDone = !this.options.subdir ? Promise.resolve() : this.initBindMount()
+
+    debug('new s3 vfs responder 4', options.mountName)
+    return this
+  }
+
+  private async initBindMount() {
+    const { bucketName, fileName = '' } = this.split('')
+    try {
+      await this.client.statObject(bucketName, join(fileName, '.init'))
+    } catch (err) {
+      if (err.code === 'NotFound') {
+        try {
+          if (!(await this.existsBucket(bucketName))) {
+            await this.makeBucket(bucketName)
           }
-        } else {
+          await this.client.putObject(
+            bucketName,
+            join(fileName, '.init'),
+            Readable.from('tmp mount successfully initialized')
+          )
+        } catch (err) {
           console.error(`Error initializing provider ${this.mountPath}`, err)
-          return
+          
         }
+      } else {
+        console.error(`Error initializing provider ${this.mountPath}`, err)
+        
       }
     }
-
-    return this
   }
 
   private dirEntryForDirectory(name: string, path: string): DirEntry {
@@ -178,6 +186,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 
   public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
+    await this.initDone
     return flatten(
       await Promise.all(
         filepaths
@@ -466,7 +475,7 @@ class S3VFSResponder extends S3VFS implements VFS {
         const start = Date.now()
         const res = await this.listObjects(filepath, dashD)
         const end = Date.now()
-        debug('dirstat latency', end - start)
+        debug('dirstat latency', end - start, filepath)
         return res
       }
     } catch (err) {
@@ -717,6 +726,7 @@ class S3VFSResponder extends S3VFS implements VFS {
   }
 
   public async fwrite(opts: Pick<Arguments, 'REPL'>, fullpath: string, data: string | Buffer) {
+    await this.initDone
     const { bucketName, fileName } = this.split(fullpath)
 
     if (!bucketName || !fileName) {
@@ -736,6 +746,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     srcProvider: VFS[]
     /* , dstProvider: VFS */
   ) {
+    await this.initDone
     try {
       const selfSrc = srcFilepaths.filter((_, idx) => srcIsSelf[idx])
       const otherNonS3Src = srcFilepaths.filter((_, idx) => !srcIsSelf[idx] && !isS3Provider(srcProvider[idx]))
@@ -802,6 +813,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Remove filepath */
   public async rm(_, filepath: string, recursive = false): ReturnType<VFS['rm']> {
+    await this.initDone
     try {
       const { bucketName, fileName } = this.split(filepath)
       if (!fileName) {
@@ -846,6 +858,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Fetch content slice */
   public async fslice(filepath: string, offset: number, length: number): Promise<string> {
+    await this.initDone
     const { bucketName, fileName } = this.split(filepath)
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
@@ -884,6 +897,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Fetch contents */
   public async fstat({ parsedOptions }: Parameters<VFS['fstat']>[0], filepath: string): Promise<FStat> {
+    await this.initDone
     if (filepath.replace(/\/$/, '') === this.mountPath) {
       return Promise.resolve({
         viewer: 'open',
@@ -959,6 +973,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Create a directory/bucket */
   public async mkdir(_, filepath: string): Promise<void> {
+    await this.initDone
     const { bucketName, fileName } = this.split(filepath)
 
     if (!fileName) {
@@ -1002,6 +1017,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   /** Remove a directory/bucket */
   public async rmdir(_, filepath: string): Promise<void> {
+    await this.initDone
     const { bucketName } = this.split(filepath)
 
     try {
