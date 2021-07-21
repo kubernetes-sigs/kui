@@ -18,6 +18,9 @@ import { inBrowser } from '@kui-shell/core'
 // import { notebookVFS } from '@kui-shell/plugin-core-support'
 
 export default async function preloadS3Plugin() {
+  // intentionally async prefetch of a slow-loading npm
+  import('minio')
+
   const vfsPromise = inBrowser()
     ? import('./vfs/browser').then(_ => _.default())
     : import('./vfs').then(_ => _.default())
