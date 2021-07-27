@@ -26,7 +26,6 @@ const webCompress = process.env.WEB_COMPRESS || 'none'
 const noCompression = !inBrowser || webCompress === 'none' || isWatching
 const CompressionPlugin = !noCompression && require('compression-webpack-plugin') // could be 'brotli-webpack-plugin' if needed
 const CopyPlugin = require('copy-webpack-plugin')
-const FontConfigWebpackPlugin = require('font-config-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
@@ -150,9 +149,7 @@ console.log('clientHome', process.env.CLIENT_HOME)
  * Note: these are _webpack plugins_ not Kui plugins; we will assemble
  * this list of webpack plugins as we go.
  */
-const fontConfigOptions = contextRoot ? { name: `${contextRoot}/[name].[contenthash].[ext]` } : undefined
-console.log('fontConfig', fontConfigOptions || 'using the default settings')
-const plugins = [new FontConfigWebpackPlugin(fontConfigOptions)]
+const plugins = []
 
 // any compression plugins?
 if (CompressionPlugin) {
@@ -439,8 +436,8 @@ module.exports = {
       },
 
       {
-        test: /\.(ttf)$/i,
-        use: 'file-loader'
+        test: /\.(ttf|woff2)$/i,
+        type: 'asset'
       },
 
       //
