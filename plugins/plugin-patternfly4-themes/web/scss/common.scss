@@ -15,7 +15,7 @@
  */
 
 @import 'fonts';
-@import '~@kui-shell/plugin-client-common/web/scss/PatternFly/common';
+@import '@kui-shell/plugin-client-common/web/scss/PatternFly/common';
 
 body.kui--patternfly4[kui-theme-style] {
   @include PatternFlyFonts;
