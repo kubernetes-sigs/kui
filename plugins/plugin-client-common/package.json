@@ -25,14 +25,14 @@
     "@patternfly/react-styles": "4.11.0",
     "@patternfly/react-table": "4.29.0",
     "anser": "2.0.1",
-    "monaco-editor": "0.25.2",
-    "monaco-editor-webpack-plugin": "4.0.0",
+    "monaco-editor": "0.26.1",
+    "monaco-editor-webpack-plugin": "4.1.1",
     "react-markdown": "5.0.3",
     "remark-gfm": "1.0.0",
     "spinkit": "2.0.1",
     "string-similarity-coloring": "1.0.12",
     "tmp": "0.2.1",
-    "turndown": "7.0.0",
+    "turndown": "7.1.1",
     "turndown-plugin-gfm": "1.0.2"
   },
   "kui": {
