@@ -19,11 +19,11 @@
  * author: @starpit
  */
 
-@import '~@kui-shell/plugin-patternfly4-themes/web/scss/fonts';
-@import '~@kui-shell/plugin-client-common/web/scss/Themes/mixins';
-@import '~@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
-@import '~@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
-@import '~@kui-shell/plugin-client-common/web/scss/components/TopTabStripe/mixins';
+@import '@kui-shell/plugin-patternfly4-themes/web/scss/fonts';
+@import '@kui-shell/plugin-client-common/web/scss/Themes/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
+@import '@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/TopTabStripe/mixins';
 
 $base00: #e8eddf;
 $base01: #929d8c;

@@ -17,7 +17,7 @@
 @import '_mixins';
 @import './theme-alignment.css';
 @import './diff.scss';
-@import '~monaco-editor/min/vs/editor/editor.main.css';
+@import 'monaco-editor/min/vs/editor/editor.main.css';
 
 @include EditorContainer {
   flex: 1;
