@@ -72,6 +72,7 @@ $inter-message-spacing: 0.1875rem;
 /* applies to tables and grids */
 .kui--data-table-wrapper {
   .kui--data-table-footer-messages {
+    color: var(--color-text-01);
     background-color: var(--color-stripe-02);
     line-height: initial;
 
