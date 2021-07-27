@@ -22,7 +22,7 @@ import { inBrowser } from '../core/capabilities'
 const homedir = home()
 
 export const expandHomeDir = function(path: string): string {
-  if (!path) {
+  if (!path || !path.slice) {
     return path
   } else if (path === '~') {
     return homedir
