@@ -17,7 +17,7 @@
 import React from 'react'
 
 import {
-  CircleIcon as Circle,
+  OutlinedDotCircleIcon as Waiting,
   EraserIcon as Clear,
   CameraIcon as Screenshot,
   CameraRetroIcon as ScreenshotInProgress,
@@ -174,7 +174,7 @@ export default function PatternFly4Icons(props: Props) {
     case 'Up':
       return <Up {...props} />
     case 'Waiting':
-      return <Circle {...props} />
+      return <Waiting {...props} />
     case 'WindowClose':
       return <WindowClose style={Sidecar} {...props} />
     case 'WindowMaximize':

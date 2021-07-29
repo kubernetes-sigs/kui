@@ -44,10 +44,10 @@ describe('Link blocks', function(this: Common.ISuite) {
       const commentary = `${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`
       const anchor = await this.app.client.$(`${commentary} a[href="#${id}"]`)
       await anchor.waitForExist()
-      const waiting = await this.app.client.$(`${commentary} .link-status[icon="Waiting"]`)
+      const waiting = await this.app.client.$(`${commentary} .kui--link-status--icon[icon="Waiting"]`)
       await waiting.waitForExist()
       await Util.rerunCommand(lsRes)
-      const success = await this.app.client.$(`${commentary} .link-status[icon="Checkmark"]`)
+      const success = await this.app.client.$(`${commentary} .kui--link-status--icon[icon="Checkmark"]`)
       await success.waitForExist()
     } catch (err) {
       return Common.oops(this, true)(err)

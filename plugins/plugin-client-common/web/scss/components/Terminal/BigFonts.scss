@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-@import 'Announcement';
-@import 'BigFonts';
-@import 'Commentary';
-@import 'Experimental';
-@import 'Layout';
-@import 'MiniSplit';
-@import 'Scrollback';
-@import 'SourceRef';
-@import 'Spinner';
+@use 'sass:math';
+@import 'mixins';
+
+$padding: 2em;
+
+html.kui--18px {
+  @include ScrollbackBlockList {
+    --split-padding: #{math.div($padding, 2)};
+  }
+  @include Block {
+    --input-padding-left: #{$padding};
+    --input-padding-right: #{$padding};
+  }
+}

@@ -47,7 +47,8 @@ $split-bgcolor: var(--color-repl-background);
  *
  */
 @include ScrollbackBlockList {
-  padding: $split-padding 0;
+  --split-padding: #{$split-padding};
+  padding: var(--split-padding) 0;
 
   /* these rules given us inner scrolling on ScrollbackBlockList */
   flex: 1;
