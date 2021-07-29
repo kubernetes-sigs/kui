@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@import 'mixins';
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
+@import 'BlockLinks';
 
 @mixin h1 {
   @include Card {
@@ -140,6 +141,8 @@
 }
 
 @include Commentary {
+  @include BlockLinks;
+
   flex: 1;
   display: flex;
   justify-content: flex-start;
@@ -154,20 +157,6 @@
       .kui--card {
         min-width: 0;
       }
-    }
-  }
-
-  svg.link-status {
-    margin-left: 0.2em;
-    width: 0.8em;
-    &[icon='Error'] {
-      fill: var(--color-red);
-    }
-    &[icon='Waiting'] {
-      fill: var(--color-yellow);
-    }
-    &[icon='Checkmark'] {
-      fill: var(--color-green);
     }
   }
 }

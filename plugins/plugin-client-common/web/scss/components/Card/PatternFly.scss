@@ -18,7 +18,7 @@
 @import '../../PatternFly/common';
 
 body[kui-theme-style] .kui--watch-pane {
-  .kui--card {
+  @include Card {
     background-color: var(--color-background-03);
 
     .pf-c-card__body {
@@ -62,12 +62,26 @@ body[kui-theme-style='dark'] .kui--card-footer.kui--inverted-color-context {
   background-color: var(--color-sidecar-background);
 }
 
-body[kui-theme-style] .kui--card {
-  white-space: normal;
-  font-family: var(--font-sans-serif);
+body[kui-theme-style] {
+  @include Card {
+    white-space: normal;
+    font-family: var(--font-sans-serif);
 
-  .kui--card-icon {
-    width: auto;
-    height: 7.43em;
+    .kui--card-icon {
+      width: auto;
+      height: 7.43em;
+    }
+  }
+}
+
+/** Just in case: protect against nested Cards */
+@include Card {
+  @include Card {
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    @include CardBody {
+      padding: 0;
+    }
   }
 }

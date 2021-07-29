@@ -16,7 +16,11 @@
 
 import { Common, CLI, ReplExpect, Util } from '@kui-shell/test'
 
-describe('section blocks', function(this: Common.ISuite) {
+/**
+ * re: xdescribe, we have currently disabled section blocks.
+ * https://github.com/kubernetes-sigs/kui/pull/7827
+ */
+xdescribe('section blocks', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
