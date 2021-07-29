@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-@import '@kui-shell/plugin-client-common/web/scss/Lightweight/index';
-@import '@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
+import React from 'react'
+import Props from './model'
+
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
+
+export { Props }
+
+export default function TagSpi(props: Props): React.ReactElement {
+  return <PatternFly4 {...props} />
+}

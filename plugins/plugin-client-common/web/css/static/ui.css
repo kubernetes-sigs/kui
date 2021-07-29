@@ -15,6 +15,7 @@
  */
 
 @import "ansi_up";
+@import "default-fonts";
 @import "master-font-size";
 @import "../../scss/components/Card/mixins";
 @import "../../scss/components/Chart/colors";
@@ -753,8 +754,6 @@ body.oops-total-catastrophe #restart-needed-warning {
 }
 @mixin CommentaryMargin {
   .page-content.padding-content:not(:empty) {
-    margin: 0 auto;
-
     /* these rules attempt to mimic github.com as of 20210115 */
     max-width: 960px; /* 75% of 1280px */
     width: 100%;
@@ -880,6 +879,7 @@ $kui--page-content-paragraph-padding: 0.375em;
 .page-content h1 {
   &,
   & a {
+    font-family: var(--font-sans-serif-title);
     margin-bottom: 1em;
     font-size: 2.75em;
     letter-spacing: 0;
@@ -892,12 +892,11 @@ $kui--page-content-paragraph-padding: 0.375em;
 }
 .page-content h2,
 .page-h2 {
+  font-family: var(--font-sans-serif-title);
   font-size: 1.875em;
   font-weight: 500;
   margin: 0.875em 0 0.5em;
   line-height: 1.25;
-  border-bottom: 1px solid var(--color-table-border3);
-  padding-bottom: 5px;
 }
 .page-content > h3:first-child,
 .page-content > h2:first-child,
@@ -907,6 +906,7 @@ $kui--page-content-paragraph-padding: 0.375em;
 }
 .page-content h3,
 .page-h3 {
+  font-family: var(--font-sans-serif-title);
   color: var(--color-text-01);
   font-size: 1.375em;
   font-weight: 600;
@@ -916,6 +916,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   margin: 0;
 }
 .page-content h4 {
+  font-family: var(--font-sans-serif-title);
   color: var(--color-brand-01);
   letter-spacing: 0.32px;
   padding-top: $kui--page-content-h4-padding;
@@ -929,6 +930,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   }
 }
 .page-content h5 {
+  font-family: var(--font-sans-serif-title);
   font-size: 1.25em;
   line-height: 2em;
 }
