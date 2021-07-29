@@ -22,6 +22,7 @@
 .repl-input-sourceref,
 .repl-output {
   padding-right: $input-padding-right;
+  padding-right: var(--input-padding-right);
 }
 
 @mixin show-block-action-buttons {
@@ -86,6 +87,9 @@
   }
 
   @include Block {
+    --input-padding-left: #{$input-padding-left};
+    --input-padding-right: #{$input-padding-right};
+
     position: relative;
     margin: 0.1875em 0;
 
@@ -249,6 +253,7 @@
     .repl-input-sourceref,
     .repl-output {
       padding-left: $input-padding-left;
+      padding-left: var(--input-padding-left);
     }
     .repl-input .kui--toolbar-button-with-icon {
       /* have buttons fit inside the input region */
@@ -301,15 +306,6 @@
     }
 
     &[data-is-output-only] {
-      .repl-result .kui--card:not([data-is-editing]) {
-        padding: 0;
-        background: none;
-        box-shadow: none;
-        .kui--card-body {
-          padding: 0;
-        }
-      }
-
       /* repl right-hand decorations */
       .repl-output .repl-prompt-right-elements {
         position: absolute;

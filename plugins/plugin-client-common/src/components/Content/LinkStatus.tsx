@@ -65,7 +65,7 @@ export default class TaskStatus extends React.PureComponent<Props, State> {
   private icon(ok: number, error: number) {
     const icon = ok !== 0 ? 'Checkmark' : error !== 0 ? 'Error' : 'Waiting'
 
-    return <Icon className="link-status" icon={icon} />
+    return <Icon className="kui--link-status--icon" icon={icon} />
   }
 
   public render() {

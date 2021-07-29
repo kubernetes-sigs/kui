@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-@import 'Announcement';
-@import 'BigFonts';
-@import 'Commentary';
-@import 'Experimental';
-@import 'Layout';
-@import 'MiniSplit';
-@import 'Scrollback';
-@import 'SourceRef';
-@import 'Spinner';
+@mixin BlockLinks {
+  .kui--link-status {
+    svg {
+      margin-left: 0.375em;
+
+      &[icon='Error'] {
+        fill: var(--color-red);
+      }
+      &[icon='Waiting'] {
+        fill: var(--color-yellow);
+      }
+      &[icon='Checkmark'] {
+        fill: var(--color-green);
+      }
+    }
+  }
+}
