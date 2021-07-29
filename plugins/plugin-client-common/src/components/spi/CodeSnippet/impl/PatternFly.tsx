@@ -24,6 +24,10 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
     return Language[this.props.language] || Language.text
   }
 
+  private height() {
+    return this.props.height || (this.props.value && this.props.value.split(/\n/).length * 20 + 'px') || '20px'
+  }
+
   public render() {
     return (
       <CodeEditor
@@ -32,7 +36,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
         isDownloadEnabled
         isLanguageLabelVisible
         isMinimapVisible={false}
-        height={this.props.height || '200px'}
+        height={this.height()}
         language={this.language()}
         code={this.props.value}
       />
