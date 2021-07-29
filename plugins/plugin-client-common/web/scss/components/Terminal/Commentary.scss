@@ -79,11 +79,10 @@
 
 @include Scrollback {
   @include h1 {
-    font-weight: 500;
-    font-size: 1.875em;
+    font-weight: 300;
+    font-size: 2em;
     letter-spacing: 0.32px;
     padding: 0.875em 1em 0.875em 0.25em;
-    border-bottom: 1px solid var(--color-table-border2);
     margin-bottom: 0.875em;
 
     &:first-child {
@@ -97,8 +96,8 @@
   }
 
   @include h2 {
-    font-weight: 500;
-    font-size: 1.625em;
+    font-weight: 300;
+    font-size: 1.875em;
     letter-spacing: 0.32px;
     margin: 0.5em 0;
 
@@ -141,7 +140,9 @@
 }
 
 @include Commentary {
+  flex: 1;
   display: flex;
+  justify-content: flex-start;
 
   &[data-is-editing] {
     flex: 1;

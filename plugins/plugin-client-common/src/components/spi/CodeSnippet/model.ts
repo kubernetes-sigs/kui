@@ -15,8 +15,9 @@
  */
 
 interface Props {
-  onCopy: () => void
+  language: string
   value: string
+  height?: string
 }
 
 export default Props

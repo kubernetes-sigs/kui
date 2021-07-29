@@ -21,6 +21,7 @@
   "types": "mdist/index.d.ts",
   "dependencies": {
     "@patternfly/react-charts": "6.15.3",
+    "@patternfly/react-code-editor": "4.2.92",
     "@patternfly/react-core": "4.135.0",
     "@patternfly/react-styles": "4.11.0",
     "@patternfly/react-table": "4.29.0",
@@ -28,6 +29,7 @@
     "monaco-editor": "0.26.1",
     "monaco-editor-webpack-plugin": "4.1.1",
     "react-markdown": "5.0.3",
+    "react-monaco-editor": "0.44.0",
     "remark-gfm": "1.0.0",
     "spinkit": "2.0.1",
     "string-similarity-coloring": "1.0.12",
