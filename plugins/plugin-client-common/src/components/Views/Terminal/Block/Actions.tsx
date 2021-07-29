@@ -148,7 +148,7 @@ export default class Actions extends React.PureComponent<Props> {
           <div className="kui-block-actions-others">
             {!readonly && !this.props.isSectionBreak && this.copyAction()}
             {!readonly && this.linkAction()}
-            {!readonly && !this.props.isSectionBreak && this.sectionAction()}
+            {/* !readonly && !this.props.isSectionBreak && this.sectionAction() */}
             {this.props.isExecutable && !this.props.isSectionBreak && this.rerunAction()}
           </div>
           {!readonly && this.removeAction()}

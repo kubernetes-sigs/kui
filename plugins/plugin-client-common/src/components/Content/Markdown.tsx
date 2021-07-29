@@ -246,7 +246,13 @@ export default class Markdown extends React.PureComponent<Props> {
 
                 return (
                   <Tooltip markdown={tip}>
-                    <a {...props} href={isKuiCommand ? '#' : props.href} target={target} onClick={onClick} />
+                    <a
+                      {...props}
+                      href={isKuiCommand ? '#' : props.href}
+                      target={target}
+                      onClick={onClick}
+                      className={kuiLink ? 'kui--link-status' : ''}
+                    />
                   </Tooltip>
                 )
               }
@@ -255,7 +261,6 @@ export default class Markdown extends React.PureComponent<Props> {
               return <Hint>{props.children}</Hint>
             },
             code: props => {
-              console.error('!!!!!!!', props)
               if (this.props.nested) {
                 return (
                   <div className="paragraph">
@@ -302,7 +307,11 @@ export default class Markdown extends React.PureComponent<Props> {
               return this.handleImage(props.src, props) || <img {...props} />
             },
             list: props => {
-              return <List component={props.ordered ? ListComponent.ol : ListComponent.ul}>{props.children}</List>
+              return (
+                <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+                  {props.children}
+                </List>
+              )
             },
             listItem: props => <ListItem className={props.className}>{props.children}</ListItem>,
             table: props => (
