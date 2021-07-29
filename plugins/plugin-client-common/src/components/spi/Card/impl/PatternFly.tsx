@@ -146,6 +146,11 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
   }
 
   public render() {
+    const children = React.Children.toArray(this.props.children).filter(Boolean)
+    if (children.length === 1 && typeof children[0] === 'string' && /^(>|```)/.test(children[0])) {
+      return this.body()
+    }
+
     const basicClassName = 'kui--card'
     return (
       <Card
