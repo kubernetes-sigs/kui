@@ -909,7 +909,7 @@ $kui--page-content-paragraph-padding: 0.375em;
   font-family: var(--font-sans-serif-title);
   color: var(--color-text-01);
   font-size: 1.375em;
-  font-weight: 600;
+  font-weight: 300;
   letter-spacing: 0;
   padding: 1em 0 0.5em;
   line-height: 1.625em;

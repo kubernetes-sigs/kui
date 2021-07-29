@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { Hint, HintBody } from '@patternfly/react-core'
+@mixin Hint {
+  .kui--hint {
+    @content;
+  }
+}
 
-import Icons from '../../Icons'
-import Props from '../model'
-
-import '../../../../../web/scss/components/Hint/PatternFly.scss'
-
-export default function PatternFlyHint(props: Props) {
-  return (
-    <Hint className="kui--hint" actions={<Icons icon="Lightbulb" />}>
-      <HintBody className="kui--hint-body">{props.children}</HintBody>
-    </Hint>
-  )
+@mixin HintBody {
+  .kui--hint-body {
+    @content;
+  }
 }
