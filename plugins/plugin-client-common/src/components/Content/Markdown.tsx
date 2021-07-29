@@ -29,6 +29,7 @@ const Tooltip = React.lazy(() => import('../spi/Tooltip'))
 const CodeSnippet = React.lazy(() => import('../spi/CodeSnippet'))
 const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 const LinkStatus = React.lazy(() => import('./LinkStatus'))
+const Hint = React.lazy(() => import('../spi/Hint'))
 
 interface Props {
   source: string
@@ -65,10 +66,6 @@ function decodeURI(uri: string) {
 
 export default class Markdown extends React.PureComponent<Props> {
   private readonly _uuid = uuid()
-
-  private onCopy(value: string) {
-    navigator.clipboard.writeText(value)
-  }
 
   private allContentIsRemote(): boolean {
     return typeof this.props.baseUrl === 'string'
@@ -251,11 +248,15 @@ export default class Markdown extends React.PureComponent<Props> {
                 )
               }
             },
+            blockquote: props => {
+              return <Hint>{props.children}</Hint>
+            },
             code: props => {
+              console.error('!!!!!!!', props)
               if (this.props.nested) {
                 return (
                   <div className="paragraph">
-                    <CodeSnippet value={props.value} onCopy={this.onCopy.bind(this, props.value)} />
+                    <CodeSnippet value={props.value} language={props.language} />
                   </div>
                 )
               } else {

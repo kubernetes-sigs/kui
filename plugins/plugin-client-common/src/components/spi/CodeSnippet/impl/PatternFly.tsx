@@ -15,25 +15,27 @@
  */
 
 import React from 'react'
-import { ClipboardCopy, ClipboardCopyVariant } from '@patternfly/react-core'
+import { CodeEditor, Language } from '@patternfly/react-code-editor'
 
 import Props from '../model'
-import needsMultiLine from './needs-multi-line'
-
-import '../../../../../web/scss/components/CodeSnippet/PatternFly.scss'
 
 export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
+  private language() {
+    return Language[this.props.language] || Language.text
+  }
+
   public render() {
     return (
-      <ClipboardCopy
+      <CodeEditor
         isReadOnly
-        isCode
-        isExpanded={this.props.value && needsMultiLine(this.props.value)}
-        variant={ClipboardCopyVariant.expansion}
-        onCopy={this.props.onCopy}
-      >
-        {this.props.value}
-      </ClipboardCopy>
+        isCopyEnabled
+        isDownloadEnabled
+        isLanguageLabelVisible
+        isMinimapVisible={false}
+        height={this.props.height || '200px'}
+        language={this.language()}
+        code={this.props.value}
+      />
     )
   }
 }

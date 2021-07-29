@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-body[kui-theme-style] {
-  --font-sans-serif: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol';
-  --font-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-}
+import React from 'react'
+
+type Props = React.PropsWithChildren<{
+  className?: string
+}>
+
+export default Props

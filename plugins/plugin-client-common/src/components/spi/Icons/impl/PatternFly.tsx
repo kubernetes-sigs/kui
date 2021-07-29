@@ -50,6 +50,7 @@ import {
   ExclamationTriangleIcon as Warning,
   BombIcon as Oops,
   ListIcon as List,
+  LightbulbIcon as Lightbulb,
   ThIcon as Grid,
   PaletteIcon as Theme,
   GithubIcon as Github,
@@ -120,6 +121,8 @@ export default function PatternFly4Icons(props: Props) {
       return <List {...props} />
     case 'Link':
       return <Link {...props} />
+    case 'Lightbulb':
+      return <Lightbulb {...props} />
     case 'Location':
       return <Location {...props} />
     case 'MoveUp':

@@ -38,6 +38,7 @@ export type SupportedIcon =
   | 'Info'
   | 'List'
   | 'Link'
+  | 'Lightbulb'
   | 'Location'
   | 'MoveUp'
   | 'MoveDown'

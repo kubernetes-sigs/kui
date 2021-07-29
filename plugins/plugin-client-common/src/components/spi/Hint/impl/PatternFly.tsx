@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Heuristic for the transition from single-line "inline" style to
- * multi-line style.
- *
- */
-export default (value: string) => /\n/.test(value) || value.length > 40
+import React from 'react'
+import { Hint, HintBody } from '@patternfly/react-core'
+
+import Icons from '../../Icons'
+import Props from '../model'
+
+export default function PatternFlyHint(props: Props) {
+  return (
+    <Hint actions={<Icons icon="Lightbulb" />}>
+      <HintBody>{props.children}</HintBody>
+    </Hint>
+  )
+}
