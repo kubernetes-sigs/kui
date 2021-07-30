@@ -228,11 +228,14 @@ export default class Markdown extends React.PureComponent<Props> {
               } else if (!isLocal && this.props.noExternalLinks) {
                 return <span className={this.props.className}>{props.href}</span>
               } else {
+                const isKuiBlockLink = props.href.startsWith('#kui-link-')
                 const tip = isKuiCommand
                   ? `### Command Execution\n#### ${decodeURI(props.href.slice(props.href.indexOf('=') + 1)).replace(
                       '&quiet',
                       ''
                     )}\n\n\`Link will execute a command\``
+                  : isKuiBlockLink
+                  ? `### Block Link\n\n\`Link will scroll the block into view\``
                   : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
 
                 const kuiLink = maybeKuiLink(props.href)
