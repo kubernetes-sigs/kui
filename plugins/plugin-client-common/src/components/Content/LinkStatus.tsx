@@ -15,10 +15,12 @@
  */
 
 import React from 'react'
+import { eventBus, eventChannelUnsafe, i18n } from '@kui-shell/core'
 
 import Icon from '../spi/Icons'
+import Tooltip from '../spi/Tooltip'
 
-import { eventBus, eventChannelUnsafe } from '@kui-shell/core'
+const strings = i18n('plugin-client-common')
 
 interface Props {
   className?: string
@@ -71,7 +73,17 @@ export default class TaskStatus extends React.PureComponent<Props, State> {
   public render() {
     if (this.state.ok !== undefined && this.state.error !== undefined) {
       const { ok, error } = this.state
-      return this.icon(ok, error)
+      const tip =
+        ok !== 0
+          ? strings('Task has been successfully accomplished')
+          : error !== 0
+          ? strings('Task unsuccessful')
+          : strings('Task in progress')
+      return (
+        <Tooltip markdown={tip} position="bottom">
+          {this.icon(ok, error)}
+        </Tooltip>
+      )
     } else {
       return <React.Fragment />
     }
