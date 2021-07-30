@@ -82,14 +82,14 @@ function win32 {
           && echo '#!/usr/bin/env sh
 export KUI_POPUP_WINDOW_RESIZE=true
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-"$SCRIPTDIR"/Kui kubectl $@ &' >> kubectl-kui)
+"$SCRIPTDIR"/Kui kubectl $@ &' > kubectl-kui)
 
         echo "Add kubectl-kui PowerShell script to electron build win32 $ARCH"
         (cd "$BUILDDIR/${CLIENT_NAME}-win32-$ARCH" && touch kubectl-kui.ps1 && chmod +x kubectl-kui.ps1 \
           && echo '$Env:KUI_POPUP_WINDOW_RESIZE="true"
 $ScriptDir = Split-Path $script:MyInvocation.MyCommand.Path
 $argv = "kubectl " + $args
-Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' >> kubectl-kui.ps1)
+Start-Process -NoNewWindow $ScriptDir/Kui.exe -ArgumentList $argv' > kubectl-kui.ps1)
 
         # copy in optional custom launcher from custom clients
         if [ -f "$KUI_LAUNCHER" ]; then
@@ -154,7 +154,7 @@ if [ "$KUI" != "true" ]; then
 else
     "$APP_RESOURCES_DIR/../MacOS/Kui" kubectl $@
 fi
-' >> kubectl-kui)
+' > kubectl-kui)
             KUI_LAUNCHER="$PWD/kubectl-kui"
             ls -l "$KUI_LAUNCHER"
         fi
@@ -218,7 +218,7 @@ function linux {
           && echo '#!/usr/bin/env sh
 export KUI_POPUP_WINDOW_RESIZE=true
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-"$SCRIPTDIR"/Kui kubectl $@ &' >> kubectl-kui)
+"$SCRIPTDIR"/Kui kubectl $@ &' > kubectl-kui)
 
         # copy in optional custom launcher from custom clients
         if [ -f "$KUI_LAUNCHER" ]; then
