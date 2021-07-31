@@ -102,14 +102,12 @@ export default class Actions extends React.PureComponent<Props> {
     )
   }
 
+  private readonly _willLinkifyBlock = () => this.props.willLinkifyBlock(this.props.idx)
+
   private linkAction() {
     return (
       this.props.willLinkifyBlock && (
-        <Action
-          icon="Link"
-          onClick={() => this.props.willLinkifyBlock(this.props.idx)}
-          title="Copy the link of this block"
-        />
+        <Action icon="Link" onClick={this._willLinkifyBlock} title="Copy the link of this block" />
       )
     )
   }
