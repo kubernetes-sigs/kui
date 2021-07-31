@@ -251,7 +251,7 @@ export function Processing(
 export function Empty(block: BlockModel, typedSoFar?: string, completeEvent?: CommandCompleteEvent): EmptyBlock {
   return {
     cwd: block.cwd,
-    link: isLinkified(block) && block.link,
+    link: isLinkified(block) ? block.link : undefined,
     command: typedSoFar,
     completeEvent,
     state: BlockState.Empty
