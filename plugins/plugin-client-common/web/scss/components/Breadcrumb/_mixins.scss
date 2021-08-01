@@ -14,23 +14,16 @@
  * limitations under the License.
  */
 
-@mixin BlockLinks {
-  .kui--link-status {
-    text-decoration: none;
+@mixin BreadcrumbItem {
+  .kui--breadcrumb-item {
+    @content;
+  }
+}
 
-    svg {
-      margin-left: 0.375em;
-
-      &[icon='Error'] {
-        fill: var(--color-red);
-      }
-      &[icon='Waiting'] {
-        fill: var(--color-yellow);
-        display: none; /* don't show "task not done" state */
-      }
-      &[icon='Checkmark'] {
-        fill: var(--color-green);
-      }
+@mixin BreadcrumbItemLink {
+  @include BreadcrumbItem {
+    a {
+      @content;
     }
   }
 }

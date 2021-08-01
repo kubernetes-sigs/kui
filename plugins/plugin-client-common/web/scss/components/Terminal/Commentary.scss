@@ -20,7 +20,7 @@
 @import 'BlockLinks';
 
 @mixin h1 {
-  @include Card {
+  @include CommentaryCard {
     h1 {
       @content;
     }
@@ -28,7 +28,7 @@
 }
 
 @mixin h2 {
-  @include Card {
+  @include CommentaryCard {
     h2 {
       @content;
     }
@@ -36,7 +36,7 @@
 }
 
 @mixin h3 {
-  @include Card {
+  @include CommentaryCard {
     h3 {
       @content;
     }
@@ -44,7 +44,7 @@
 }
 
 @mixin Paragraphs {
-  @include Card {
+  @include CommentaryCard {
     p {
       @content;
     }
@@ -52,7 +52,7 @@
 }
 
 @mixin blockquote {
-  @include Card {
+  @include CommentaryCard {
     blockquote {
       @content;
     }
@@ -60,7 +60,7 @@
 }
 
 @mixin blockquote {
-  @include Card {
+  @include CommentaryCard {
     blockquote {
       @content;
     }
@@ -68,7 +68,7 @@
 }
 
 @mixin FullWidth {
-  @include Card {
+  @include CommentaryCard {
     flex: 1;
   }
 }
@@ -120,7 +120,7 @@
   }
 
   /* while editing, use a different background color for the Markdown preview */
-  @include Card {
+  @include CommentaryCard {
     &[data-is-editing] {
       .marked-content {
         background-color: var(--color-base03);
@@ -160,7 +160,7 @@
     }
   }
 }
-@include Card {
+@include CommentaryCard {
   display: flex;
   .kui--card {
     flex: 1;
