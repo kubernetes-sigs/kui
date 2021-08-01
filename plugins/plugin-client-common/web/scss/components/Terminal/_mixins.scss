@@ -322,7 +322,7 @@ $action-hover-delay: 210ms;
 }
 
 /** Commentary card wrapper for the Commentary section */
-@mixin Card {
+@mixin CommentaryCard {
   .kui--commentary-card {
     @content;
   }

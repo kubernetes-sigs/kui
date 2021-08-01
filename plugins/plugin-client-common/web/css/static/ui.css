@@ -58,12 +58,6 @@ body[kui-theme-style] a.plain-anchor {
   text-decoration: none;
   transition: none;
 }
-body[kui-theme-style] a {
-  transition-property: color;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 /* HEADER */
 .header {
