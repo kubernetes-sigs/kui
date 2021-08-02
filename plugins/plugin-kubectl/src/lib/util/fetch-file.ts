@@ -350,16 +350,21 @@ export default fetchFileString
 
 export async function fetchFilesVFS(
   args: Arguments<KubeOptions>,
-  filepath: string,
+  srcs: string | string[],
   fetchNestedYamls?: boolean
 ): Promise<{ filepath: string; data: string }[]> {
-  const path = fetchNestedYamls ? `${encodeComponent(filepath)} ${encodeComponent(filepath)}/**/*.{yaml,yml}` : filepath
+  const filepaths = typeof srcs === 'string' ? [srcs] : srcs
+
+  const path = fetchNestedYamls
+    ? filepaths.map(filepath => `${encodeComponent(filepath)} ${encodeComponent(filepath)}/**/*.{yaml,yml}`).join(' ')
+    : filepaths.join(' ')
   const paths = new Set((await args.REPL.rexec<DirEntry[]>(`vfs ls ${path}`)).content.map(_ => _.path))
-  const raw = await fetchFileString(args.REPL, paths.size === 0 ? filepath : Array.from(paths).join(','))
+
+  const raw = await fetchFileString(args.REPL, paths.size === 0 ? filepaths.join(',') : Array.from(paths).join(','))
 
   return raw.map((data, idx) => {
     if (data) {
-      return { filepath: paths.size === 0 ? filepath : Array.from(paths)[idx], data }
+      return { filepath: paths.size === 0 ? filepaths[idx] : Array.from(paths)[idx], data }
     }
   })
 }
