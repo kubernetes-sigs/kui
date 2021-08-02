@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
+
+### Bug Fixes
+
+- **packages/builder:** electron build may result in double launches of kui as kubectl plugin ([831cc0b](https://github.com/IBM/kui/commit/831cc0b)), closes [#7834](https://github.com/IBM/kui/issues/7834)
+
 ## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
 
 **Note:** Version bump only for package @kui-shell/builder

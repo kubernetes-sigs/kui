@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** link status should not show "yellow", only green or red ([3dfe172](https://github.com/IBM/kui/commit/3dfe172)), closes [#7839](https://github.com/IBM/kui/issues/7839)
+- improve rendering of commentary in notebooks ([53c9490](https://github.com/IBM/kui/commit/53c9490)), closes [#7826](https://github.com/IBM/kui/issues/7826)
+- **plugins/plugin-client-common:** Linkified blocks can result in React console error ([cdc3214](https://github.com/IBM/kui/commit/cdc3214)), closes [#7836](https://github.com/IBM/kui/issues/7836)
+- **plugins/plugin-client-common:** tooltip for kui block links says "External Link" ([efbbd89](https://github.com/IBM/kui/commit/efbbd89)), closes [#7832](https://github.com/IBM/kui/issues/7832)
+- new Hint and CodeSnippet UIs do not need a wrapping Card ([ee0c74f](https://github.com/IBM/kui/commit/ee0c74f)), closes [#7830](https://github.com/IBM/kui/issues/7830)
+- **plugins/plugin-client-common:** new CodeSnippet impl should better size height to fit ([edf0b3e](https://github.com/IBM/kui/commit/edf0b3e)), closes [#7828](https://github.com/IBM/kui/issues/7828)
+- UI cleanups for notebooks ([4b56ec7](https://github.com/IBM/kui/commit/4b56ec7)), closes [#7824](https://github.com/IBM/kui/issues/7824)
+- **plugins/plugin-client-common:** Table event footer should define font color ([e0eda27](https://github.com/IBM/kui/commit/e0eda27)), closes [#7822](https://github.com/IBM/kui/issues/7822)
+- fixes for font rendering regressions due to [#7818](https://github.com/IBM/kui/issues/7818) ([2c8a044](https://github.com/IBM/kui/commit/2c8a044)), closes [#7817](https://github.com/IBM/kui/issues/7817)
+
 ## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
 
 ### Bug Fixes

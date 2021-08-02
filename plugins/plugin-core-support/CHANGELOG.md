@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
+
+### Bug Fixes
+
+- improve rendering of commentary in notebooks ([53c9490](https://github.com/IBM/kui/commit/53c9490)), closes [#7826](https://github.com/IBM/kui/issues/7826)
+- **plugins/plugin-core-support:** up checks CodeEngine project credentials before ensuring CodeEngine project ([72e27ad](https://github.com/IBM/kui/commit/72e27ad)), closes [#7808](https://github.com/IBM/kui/issues/7808)
+
 ## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
 
 ### Bug Fixes

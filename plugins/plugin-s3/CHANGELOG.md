@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** leftover debug in s3 vfs ([b9fe371](https://github.com/IBM/kui/commit/b9fe371)), closes [#7806](https://github.com/IBM/kui/issues/7806)
+- **plugins/plugin-s3:** optimize s3 init a bit ([8f58a67](https://github.com/IBM/kui/commit/8f58a67)), closes [#7812](https://github.com/IBM/kui/issues/7812)
+
 ## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
 
 ### Bug Fixes

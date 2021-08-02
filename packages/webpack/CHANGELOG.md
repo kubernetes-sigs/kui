@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
+
+### Bug Fixes
+
+- fixes for font rendering regressions due to [#7818](https://github.com/IBM/kui/issues/7818) ([2c8a044](https://github.com/IBM/kui/commit/2c8a044)), closes [#7817](https://github.com/IBM/kui/issues/7817)
+
 ## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
 
 **Note:** Version bump only for package @kui-shell/webpack

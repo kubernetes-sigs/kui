@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** kubectl logs does not support getting logs from deployment ([cd63e45](https://github.com/IBM/kui/commit/cd63e45)), closes [#7843](https://github.com/IBM/kui/issues/7843)
+- fixes for font rendering regressions due to [#7818](https://github.com/IBM/kui/issues/7818) ([2c8a044](https://github.com/IBM/kui/commit/2c8a044)), closes [#7817](https://github.com/IBM/kui/issues/7817)
+- kubectl apply -f does not support multi-file applies ([e0b1f36](https://github.com/IBM/kui/commit/e0b1f36)), closes [#7841](https://github.com/IBM/kui/issues/7841)
+
 ## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

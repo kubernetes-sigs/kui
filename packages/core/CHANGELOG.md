@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
+
+### Bug Fixes
+
+- kubectl apply -f does not support multi-file applies ([e0b1f36](https://github.com/IBM/kui/commit/e0b1f36)), closes [#7841](https://github.com/IBM/kui/issues/7841)
+- **packages/core:** expandHomeDir API should protect against path.slice not being defined ([4240e4d](https://github.com/IBM/kui/commit/4240e4d)), closes [#7815](https://github.com/IBM/kui/issues/7815)
+
 ## [10.4.7](https://github.com/IBM/kui/compare/v10.4.6...v10.4.7) (2021-07-20)
 
 ### Features
