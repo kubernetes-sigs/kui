@@ -238,7 +238,7 @@ export const formatTable = async <O extends KubeOptions>(
   const drilldownFormat =
     (drilldownCommand === 'kubectl' || drilldownCommand === 'oc') && drilldownVerb === 'get' ? '-o yaml' : ''
 
-  const ns = options.n || options.namespace
+  const ns = getNamespaceAsExpressed(args)
   const drilldownNamespace = ns ? `-n ${encodeComponent(ns)}` : ''
 
   const kindColumnIdx = preTable[0].findIndex(({ key }) => key === 'KIND')

@@ -161,7 +161,7 @@ export default async function watchMulti(
   groups: Group[],
   finalState?: FinalState,
   drilldownCommand = getCommandFromArgs(args),
-  file?: string,
+  file?: string | string[],
   isWatchRequest = true
 ): Promise<void | string[] | Table | (Table & Watchable)> {
   if (groups.length === 0) {
@@ -242,7 +242,7 @@ export default async function watchMulti(
 
     // HETEROGENEOUS CASE
     // we need to assemble a unifiedTable facade
-    const title = file ? basename(file) : undefined
+    const title = file ? (typeof file === 'string' ? basename(file) : file.map(_ => basename(_)).join(',')) : undefined
     const breadcrumbs = groups.every(_ => _.namespace === groups[0].namespace)
       ? [{ label: groups[0].namespace }]
       : undefined

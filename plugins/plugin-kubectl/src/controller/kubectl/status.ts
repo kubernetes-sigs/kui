@@ -72,7 +72,7 @@ type Resources = { resourcesToWaitFor: ResourceRef[] } & Partial<Pick<WithSource
  *
  */
 async function getResourcesReferencedByFile(
-  file: string,
+  file: string | string[],
   args: Arguments<Options>,
   namespaceFromCommandLine: string
 ): Promise<Resources> {
