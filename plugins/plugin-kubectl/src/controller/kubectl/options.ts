@@ -26,15 +26,15 @@ type CustomFormat = string // want: 'go-template' | 'go-template-file' | 'jsonpa
 type OutputFormat = EntityFormat | TableFormat | CustomFormat
 
 /** @return the -f or --filename option */
-export function fileOf(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string {
+export function fileOf(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string | string[] {
   const filename = args.parsedOptions.f || args.parsedOptions.filename
-  return typeof filename === 'string' ? filename : undefined
+  return typeof filename === 'string' || Array.isArray(filename) ? filename : undefined
 }
 
 /** @return same as fileOf, but also specify whether this came from a -f or --filename option */
 export function fileOfWithDetail(
   args: Pick<Arguments<KubeOptions>, 'parsedOptions'>
-): { filepath: string; isFor: 'f' | 'filename' } {
+): { filepath: string | string[]; isFor: 'f' | 'filename' } {
   return {
     filepath: fileOf(args),
     isFor: args.parsedOptions.f ? 'f' : 'filename'
@@ -65,7 +65,7 @@ export function getFileForArgv(args: Arguments<KubeOptions>, addSpace = false): 
   return ''
 }
 
-export function getFileFromArgv(args: Arguments<KubeOptions>): string {
+export function getFileFromArgv(args: Arguments<KubeOptions>): string | string[] {
   const file = fileOf(args)
   if (file) {
     return file
@@ -194,20 +194,25 @@ export function hasLabel(args: Arguments<KubeOptions>) {
 
 /** @return the namespace as expressed in the command line, or undefined if not */
 export function getNamespaceAsExpressed(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string {
-  return args.parsedOptions.n || args.parsedOptions.namespace
+  const ns = args.parsedOptions.n || args.parsedOptions.namespace
+  if (Array.isArray(ns)) {
+    return ns[ns.length - 1]
+  } else {
+    return ns
+  }
 }
 
 /** @return the namespace as expressed in the command line, or the default from context */
 export async function getNamespace(args: Arguments<KubeOptions>): Promise<string> {
-  return args.parsedOptions.n || args.parsedOptions.namespace || (await getCurrentDefaultNamespace(args))
+  return getNamespaceAsExpressed(args) || (await getCurrentDefaultNamespace(args))
 }
 
 /**
  * A variant of getNamespace where you *only* want to use what was
  * provided by the user in their command line.
  */
-export function getNamespaceForArgv({ parsedOptions }: { parsedOptions: KubeOptions }): string {
-  const ns = parsedOptions.n || parsedOptions.namespace
+export function getNamespaceForArgv(args: Pick<Arguments<KubeOptions>, 'parsedOptions'>): string {
+  const ns = getNamespaceAsExpressed(args)
   return !ns ? '' : `-n ${ns}`
 }
 
@@ -274,8 +279,8 @@ export interface KubeOptions extends ParsedOptions {
 
   'dry-run'?: boolean | string
 
-  n?: string
-  namespace?: string
+  n?: string | string[]
+  namespace?: string | string[]
 
   c?: string
   container?: string
@@ -295,8 +300,8 @@ export interface KubeOptions extends ParsedOptions {
   l?: string
   label?: string
 
-  f?: string
-  filename?: string
+  f?: string | string[]
+  filename?: string | string[]
 
   k?: string
   kustomize?: string

@@ -44,6 +44,9 @@ const doDiff = (command: string) =>
       try {
         const { REPL } = args
         const filepath = getFileFromArgv(args)
+        if (typeof filepath !== 'string') {
+          throw new Error('multi-file diff currently unsupported')
+        }
         const fullpath = findFile(expandHomeDir(filepath))
         const name = basename(filepath)
         const enclosingDirectory = dirname(filepath)

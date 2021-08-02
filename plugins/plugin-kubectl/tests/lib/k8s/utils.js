@@ -159,9 +159,13 @@ exports.waitTillNone = (kind, theCli = makeCLI('kubectl'), name = '', okToSurviv
   new Promise(resolve => {
     // fetch the entities
     const fetch = async () => {
-      const response = await theCli.command(`get "${kind}" ${name} ${inNamespace}`, app, {
-        errOk: 1
-      })
+      const response = await theCli.command(
+        `get "${kind}" ${typeof name === 'string' ? name : name.join(' ')} ${inNamespace}`,
+        app,
+        {
+          errOk: 1
+        }
+      )
       return response
     }
 
@@ -306,3 +310,7 @@ exports.waitForTerminalText = async function(res, checker) {
 /** URL of remote pod yaml */
 exports.remotePodYaml =
   'https://raw.githubusercontent.com/IBM/kui/master/plugins/plugin-kubectl/tests/data/k8s/headless/pod.yaml'
+
+/** URL of remote pod yaml */
+exports.remotePodYaml2 =
+  'https://raw.githubusercontent.com/IBM/kui/master/plugins/plugin-kubectl/tests/data/k8s/headless/pod2.yaml'
