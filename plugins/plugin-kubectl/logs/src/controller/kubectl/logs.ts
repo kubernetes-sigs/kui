@@ -69,7 +69,15 @@ function getOrPty(verb: string) {
       return doExecWithStdout(args, undefined, cmd)
     }
 
-    if (args.execOptions.type !== ExecType.Nested) {
+    const label = getLabel(args)
+    const idx = args.argvNoOptions.indexOf(verb)
+    const name = args.argvNoOptions[idx + 1]
+
+    if (args.execOptions.type !== ExecType.Nested && !/\|>/.test(args.command) && (label || !/\//.test(name))) {
+      // the !/\//.test(name) means: we want to use a pty if the user
+      // is doing e.g. `k logs deploy/hello`; we look for a slash in
+      // the name to indicate that the user is doing a more bulk query
+      // across a deployment
       if (verb === 'exec') {
         // special case for kubectl exec cat, ls, pwd, etc.
         const idx = args.argvNoOptions.indexOf('exec')
@@ -86,10 +94,7 @@ function getOrPty(verb: string) {
         }
       }
 
-      const label = getLabel(args)
       if (!label) {
-        const idx = args.argvNoOptions.indexOf(verb)
-        const name = args.argvNoOptions[idx + 1]
         if (!name) {
           return doExecWithStdout(args, undefined, cmd)
         } else {
