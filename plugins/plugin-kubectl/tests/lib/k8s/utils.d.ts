@@ -76,7 +76,7 @@ declare function deletePodByName (ctx: Common.ISuite, pod: string, ns: string, c
  * Keep poking the given kind till no more such entities exist
  *
  */
-declare function waitTillNone (kind: string, theCli?: headless, name?: string, okToSurvive?: string, inNamespace?: string): (app: Application) => Promise<void>
+declare function waitTillNone (kind: string, theCli?: headless, name?: string | string[], okToSurvive?: string, inNamespace?: string): (app: Application) => Promise<void>
 
 /**
  * Wait till the given resource is Terminating
@@ -129,3 +129,6 @@ declare function waitForTerminalText(this: Common.ISuite, res: ReplExpect.AppAnd
 
 /** URL of remote pod yaml */
 declare const remotePodYaml: string
+
+/** URL of second remote pod yaml */
+declare const remotePodYaml2: string

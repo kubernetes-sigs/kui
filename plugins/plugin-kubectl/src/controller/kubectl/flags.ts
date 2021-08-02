@@ -46,14 +46,17 @@ export function flags(booleans: string[] = []): CommandOptions {
     flags: {
       configuration: {
         // disable yargs-parser being clever with -lapp=name
-        'short-option-groups': false,
+        'short-option-groups': false
 
         // disable -n foo -n bar from being parsed as -n foo,bar
-        'duplicate-arguments-array': false
+        // ugh, we need this for multi-file applies
+        // 'duplicate-arguments-array': false
       },
       // Notes on narg: to prevent yargs-parser from processing "--watch true" into watch:true
+      // see https://github.com/kubernetes-sigs/kui/issues/7841
       narg: { w: 0, watch: 0, 'watch-only': 0 },
       string: ['_'], // enforce positional arguments to be parsed as string
+      array: ['f', 'file'],
       boolean: booleans.concat(defaultBooleans)
     },
     noCoreRedirect: true

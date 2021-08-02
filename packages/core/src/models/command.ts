@@ -290,6 +290,7 @@ export type CommandTreeResolution<T extends KResponse, O extends ParsedOptions> 
 
 export interface YargsParserFlags {
   configuration?: Partial<Yargs.Configuration>
+  array?: string[]
   boolean?: string[]
   string?: string[]
   narg?: Record<string, number>
