@@ -132,6 +132,14 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     })
   }
 
+  const getLogs = () => {
+    it('should show logs for whole deployment', () => {
+      return CLI.command(`kubectl logs deploy/myapp ${inNamespace}`, this.app)
+        .then(ReplExpect.okWithPtyOutput('Drone app ready'))
+        .catch(Common.oops(this, true))
+    })
+  }
+
   //
   // here start the tests
   //
@@ -140,6 +148,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   createIt()
   listIt()
   getPods()
+  getLogs()
   deleteItByName()
 
   createIt()
