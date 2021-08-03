@@ -1,16 +1,16 @@
 .kui--search {
-  .kui--search-match-count {
-    position: absolute;
-    right: 3em;
-  }
   .pf-c-search-input__icon {
-    svg {
-      vertical-align: -0.125em;
-    }
+    z-index: 1000;
+    color: var(--color-text-01);
   }
   .pf-c-search-input__text-input {
-    font-family: var(--font-sans-serif);
+    //font-family: var(--font-sans-serif);
     color: var(--color-text-01);
-    position: unset;
+    background-color: transparent;
+  }
+
+  .pf-c-badge.pf-m-read {
+    color: var(--color-text-01);
+    background-color: var(--color-base02);
   }
 }
