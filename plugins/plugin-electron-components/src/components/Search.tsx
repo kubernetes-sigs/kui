@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React from 'react'
-import { i18n } from '@kui-shell/core'
-import { Event, FoundInPageResult } from 'electron'
-import { Icons } from '@kui-shell/plugin-client-common'
+import { SearchInput } from '@patternfly/react-core'
+import { FoundInPageResult, FindInPageOptions } from 'electron'
 
 import '../../web/scss/components/Search/Search.scss'
-
-const strings = i18n('plugin-client-common', 'search')
 
 type Props = {}
 
 interface State {
   isActive: boolean
   result: FoundInPageResult
+  currentResult: number
 }
 
-export default class Search extends React.PureComponent<Props, State> {
+export default class Search extends React.Component<Props, State> {
   // to help with focus
   private _input: HTMLInputElement
 
@@ -42,31 +39,9 @@ export default class Search extends React.PureComponent<Props, State> {
 
     this.state = {
       isActive: false,
-      result: undefined
+      result: undefined,
+      currentResult: 1
     }
-  }
-
-  private initEvents() {
-    document.body.addEventListener('keydown', evt => {
-      if (
-        !evt.defaultPrevented &&
-        evt.code === 'KeyF' &&
-        ((evt.ctrlKey && process.platform !== 'darwin') || evt.metaKey)
-      ) {
-        if (this.state.isActive && !!this._input && document.activeElement !== this._input) {
-          this.doFocus()
-        } else {
-          this.setState(curState => {
-            const isActive = !curState.isActive
-            if (!isActive) {
-              this.stopFindInPage()
-            }
-
-            return { isActive, result: undefined }
-          })
-        }
-      }
-    })
   }
 
   /** stop findInPage, and clear selections in page */
@@ -79,40 +54,61 @@ export default class Search extends React.PureComponent<Props, State> {
     })
   }
 
+  private initEvents() {
+    document.body.addEventListener('keydown', evt => {
+      if (
+        !evt.defaultPrevented &&
+        evt.code === 'KeyF' &&
+        ((evt.ctrlKey && process.platform !== 'darwin') || evt.metaKey)
+      ) {
+        if (this.state.isActive && document.activeElement !== this._input) {
+          this.doFocus()
+        } else {
+          this.setState(curState => {
+            this.findInPage() // allows for search to be reinitiated when the search bar is reopened
+            const isActive = !curState.isActive
+            if (!isActive) {
+              this.stopFindInPage()
+            }
+            return { isActive, result: undefined }
+          })
+        }
+      }
+    })
+  }
+
+  private _onChange = this.onChange.bind(this)
   private async onChange() {
     if (this._input) {
       if (this._input.value.length === 0) {
         await this.stopFindInPage()
         this.setState({ result: undefined })
       } else {
-        const { remote } = await import('electron')
-
-        remote.getCurrentWebContents().once('found-in-page', async (event: Event, result: FoundInPageResult) => {
-          this.setState(curState => {
-            if (curState.isActive) {
-              this.hack()
-              return { result }
-            }
-          })
-        })
-
-        remote.getCurrentWebContents().findInPage(this._input.value)
+        this.findInPage()
       }
     }
   }
 
-  /**
-   * This bit of ugliness works around us not using a proper
-   * webview to encapsulate the <input> element; without this
-   * encapsulation, chrome does some funky things with
-   * focus. For example, when there is no text found, the
-   * input element oddly ... maintains focus but is not
-   * typeable until a global refresh. Weird. This also has the
-   * nice side-effect of (albeit with a small visual glitch)
-   * having no yellow/red highlight text around the text
-   * inside the input element.
-   *
-   */
+  private async findInPage(options?: FindInPageOptions) {
+    const { remote } = await import('electron')
+    // Registering a callback handler
+    remote.getCurrentWebContents().once('found-in-page', async (event: Event, result: FoundInPageResult) => {
+      this.setState(curState => {
+        if (curState.isActive) {
+          // we only need hack if we're doing a find as the user is typing and the options is defined for the converse
+          if (!options) {
+            this.hack()
+          }
+
+          return { result }
+        }
+      })
+    })
+    // this is where we call the electron API to initiate a new find
+    remote.getCurrentWebContents().findInPage(this._input.value, options)
+  }
+
+  /** findInPage api seems to result in a loss of focus */
   private hack() {
     const v = this._input.value
     this._input.value = ''
@@ -120,68 +116,88 @@ export default class Search extends React.PureComponent<Props, State> {
     this._input.focus()
   }
 
-  private doFocus(input?: HTMLInputElement) {
-    if (!!input && !this._input) {
-      this._input = input
-    }
-
+  private doFocus() {
     if (this.state.isActive && this._input) {
       this._input.focus()
     }
   }
 
-  /** Summarize results of find, e.g. "3 of 3" */
-  private matchCount() {
-    const { result } = this.state
-    if (result) {
-      // exclude the text search itself; TODO move the input element to a webview
-      const N = result.matches - 1
-      const text = N === 0 ? strings('noMatches') : N === 1 ? strings('1Match') : strings('nMatches', N)
+  private _onClear = this.onClear.bind(this)
+  private async onClear() {
+    await this.stopFindInPage()
+    if (this._input) {
+      this._input.value = ''
+    }
 
-      // re: id: text-search test needs this
-      return (
-        <span id="search-found-text" className="kui--search-match-count sub-text even-smaller-text nowrap">
-          {text}
-        </span>
-      )
+    this.setState({
+      result: undefined,
+      isActive: false,
+      currentResult: 1
+    })
+  }
+
+  private _onNext = this.onNext.bind(this)
+  private async onNext() {
+    // if statement blocks user from pressing next arrow if already on last result
+    if (this.state.currentResult < this.state.result.matches) {
+      await this.findInPage({ forward: true, findNext: false })
+
+      this.setState(prevState => {
+        const newCurrentResult = prevState.currentResult + 1
+        return {
+          currentResult: newCurrentResult <= prevState.result.matches ? newCurrentResult : prevState.result.matches
+        }
+      })
+    }
+  }
+
+  private _onPrevious = this.onPrevious.bind(this)
+  private async onPrevious() {
+    // if statement blocks user from pressing previous arrow if already on first result
+    if (this.state.currentResult > this.state.result.matches - this.state.result.matches + 1) {
+      await this.findInPage({ forward: false, findNext: false })
+
+      this.setState(prevState => {
+        const newCurrentResult = prevState.currentResult - 1
+        return { currentResult: newCurrentResult > 0 ? newCurrentResult : 1 }
+      })
+    }
+  }
+
+  private readonly _onRef = (c: HTMLInputElement) => {
+    if (c) {
+      this._input = c
+      this.doFocus()
+    }
+  }
+
+  private resultsRender() {
+    if (this.state.currentResult && this.state.result) {
+      const curResultDisplay = this.state.currentResult.toString()
+      const totalResult = this.state.result.matches.toString()
+      return curResultDisplay + '/' + totalResult
     }
   }
 
   public render() {
     if (!this.state.isActive) {
-      this._input = undefined
       return <React.Fragment />
     } else {
-      /**
-       * NOTE: we need the ref input to manage the focus.
-       * We want the search input to focus when user hits ctrl+f,
-       * and stay focused when electron finds match.
-       * With PatternFly’s SearchInput (function component), we can’t access the refs and manage the focus.
-       * So, we crafted the search input by ourselves. See issue: https://github.com/IBM/kui/issues/4364
-       *
-       */
-
-      // re: id, text-search test needs this
       return (
-        <div className="pf-c-search-input kui--search flex-layout" id="search-bar">
-          <span className="pf-c-search-input__text">
-            <span className="pf-c-search-input__icon">
-              <Icons icon="Search" />
-            </span>
-            <input
-              className="pf-c-search-input__text-input"
-              id="search-input"
-              placeholder={strings('placeHolderText')}
-              aria-label="Search"
-              onChange={this.onChange.bind(this)}
-              spellCheck={false}
-              ref={input => {
-                this.doFocus(input)
-              }}
-            />
-          </span>
-          {this.matchCount()}
-        </div>
+        <SearchInput
+          id="search-bar"
+          className="kui--search"
+          placeholder="Find by name"
+          value={this._input && this._input.value}
+          aria-label="Search"
+          onChange={this._onChange}
+          onClear={this._onClear}
+          spellCheck={false}
+          resultsCount={this.resultsRender()}
+          onNextClick={this._onNext}
+          onPreviousClick={this._onPrevious}
+          ref={this._onRef}
+        />
       )
     }
   }
