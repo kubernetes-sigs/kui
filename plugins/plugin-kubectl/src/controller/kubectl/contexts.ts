@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { REPL as REPLType, Table, Row, RawResponse, Arguments, Registrar, UsageModel, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
@@ -22,6 +23,8 @@ import { doExecWithTable } from './exec'
 import { KubeContext } from '../../lib/model/resource'
 import { isUsage, doHelp } from '../../lib/util/help'
 import { onKubectlConfigChangeEvents } from './config'
+
+const debug = Debug('plugin-kubectl/controller/kubectl/contexts')
 
 const usage = {
   context: (command: string): UsageModel => ({
@@ -113,7 +116,7 @@ export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }): 
       })
       .catch(err => {
         if (err.code !== 404 && !/command not found/.test(err.message)) {
-          console.error('error determining default namespace', err)
+          debug('error determining default namespace', err)
         }
         resolve('default')
       })
@@ -133,7 +136,7 @@ export function getCurrentDefaultContextName({ REPL }: { REPL: REPLType }): Prom
   currentDefaultContextCache = new Promise(async resolve => {
     const context = await getCurrentContextName({ REPL }).catch(err => {
       if (err.code !== 404 && !/command not found/.test(err.message)) {
-        console.error('error determining default context', err)
+        debug('error determining default context', err)
       }
       return ''
     })
