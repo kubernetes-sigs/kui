@@ -28,6 +28,7 @@ import {
   isFinished,
   isOutputOnly,
   isProcessing,
+  isReplay,
   isLinkified,
   isAnnouncement,
   hideOutput,
@@ -246,6 +247,7 @@ export default class Block extends React.PureComponent<Props, State> {
           data-input-count={this.props.idx}
           data-is-focused={this.props.isFocused || undefined}
           data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
+          data-is-replay={isReplay(this.props.model) || undefined}
           ref={c => this.setState({ _block: c })}
           tabIndex={isActive(this.props.model) ? -1 : 1}
           onClick={this.props.willFocusBlock}

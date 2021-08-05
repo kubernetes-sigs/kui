@@ -49,7 +49,7 @@ function Action(props: { onClick: (evt: React.SyntheticEvent) => void; icon: Sup
 }
 
 export default class Actions extends React.PureComponent<Props> {
-  private rerunAction() {
+  private rerunAction(icon: 'Play' | 'Retry') {
     if (
       hasUUID(this.props.model) &&
       isRerunable(this.props.model) &&
@@ -64,7 +64,13 @@ export default class Actions extends React.PureComponent<Props> {
         }
       }
 
-      return <Action icon="Play" onClick={handler} title={strings('Re-execute this command')} />
+      return (
+        <Action
+          icon={icon}
+          onClick={handler}
+          title={strings(icon === 'Retry' ? 'Re-execute this command' : 'Execute this command')}
+        />
+      )
     }
   }
 
@@ -142,18 +148,24 @@ export default class Actions extends React.PureComponent<Props> {
   public render() {
     const readonly = isReplay(this.props.model) && isReadOnlyClient()
 
-    return (
-      !isOfflineClient() && (
+    if (isReplay(this.props.model)) {
+      if (this.props.isExecutable && !this.props.isSectionBreak) {
+        return <div className="kui--block-actions-buttons">{this.rerunAction('Play')}</div>
+      }
+    } else if (!isOfflineClient()) {
+      return (
         <div className="kui--block-actions-buttons kui--inverted-color-context">
           <div className="kui-block-actions-others">
             {!readonly && !this.props.isSectionBreak && this.copyAction()}
             {!readonly && this.linkAction()}
             {/* !readonly && !this.props.isSectionBreak && this.sectionAction() */}
-            {this.props.isExecutable && !this.props.isSectionBreak && this.rerunAction()}
+            {this.props.isExecutable && !this.props.isSectionBreak && this.rerunAction('Play')}
           </div>
           {!readonly && this.removeAction()}
         </div>
       )
-    )
+    }
+
+    return <React.Fragment />
   }
 }

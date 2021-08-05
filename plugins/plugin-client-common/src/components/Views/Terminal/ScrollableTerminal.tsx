@@ -737,7 +737,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
 
     const processing = (block: BlockModel) => {
-      return [Processing(block, event, event.evaluatorOptions.isExperimental, asReplay)]
+      return [Processing(block, event, event.evaluatorOptions.isExperimental, asReplay || undefined)]
     }
 
     // uuid might be undefined if the split is going away
@@ -863,7 +863,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             // `true`; e.g. the `commentary` controller uses this to
             // indicate an empty comment
             const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly && event.response !== true
-            const finishedBlock = Finished(inProcess, event, outputOnly, asReplay)
+            const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
 
             if (isLinkified(finishedBlock)) {
               const status = !hasBeenRerun(finishedBlock) ? [0, 0] : isOk(finishedBlock) ? [1, 0] : [0, 1]

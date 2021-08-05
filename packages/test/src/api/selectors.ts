@@ -195,7 +195,8 @@ export const BLOCK_SECTION_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--b
 export const BLOCK_LINK_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Link"]`
 export const COMMAND_COPY_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Copy"]`
 export const COMMAND_COPY_DONE_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Checkmark"]`
-export const COMMAND_RERUN_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Play"]`
+export const COMMAND_RERUN_BUTTON = (N: number, splitIndex = 1) =>
+  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--block-action [icon="Play"]`
 export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
@@ -353,3 +354,9 @@ export const DROPDOWN_N_MENU_ITEM = (N: number, label: string, splitIndex = 1) =
 export const CONFIRM_DIALOG = '#confirm-dialog'
 export const CONFIRM_DIALOG_CONFIRM_BUTTON = `${CONFIRM_DIALOG} .kui--modal-btn--primary`
 export const CONFIRM_DIALOG_CANCEL_BUTTON = `${CONFIRM_DIALOG} .kui--modal-btn--secondary`
+
+/** Expandable output in notebooks */
+export const EXPANDABLE_OUTPUT_N = (N: number, splitIndex = 1) =>
+  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--expandable-section button`
+export const EXPANDABLE_OUTPUT_LAST = (splitIndex = 1) =>
+  `${PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)} .kui--expandable-section button`

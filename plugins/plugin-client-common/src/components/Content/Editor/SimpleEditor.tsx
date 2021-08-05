@@ -34,6 +34,9 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
   onContentChange?: (content: string) => void
   scrollIntoView?: boolean
 
+  /** Font size adjustment factor, based off getKuiFontSize(), i.e. the default font size for the theme and client */
+  fontSizeAdjust?: number
+
   /** Minimum height of the editor */
   minHeight?: number
 
@@ -134,13 +137,14 @@ export default class SimpleEditor extends React.Component<Props, State> {
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
   private initMonaco(props: Props, state: State) {
     const cleaners = []
+    console.error('!!!!!!!', props.fontSize, getKuiFontSize())
 
     try {
       // here we instantiate an editor widget
       const providedOptions = {
         value: props.content,
         readOnly: props.readonly !== undefined ? props.readonly : true,
-        fontSize: props.fontSize || getKuiFontSize(),
+        fontSize: props.fontSize || getKuiFontSize() * (props.fontSizeAdjust || 1),
         language: /^(ba)?sh$/.test(props.contentType) ? 'shell' : props.contentType,
         simple: props.simple
       }
