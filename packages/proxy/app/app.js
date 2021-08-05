@@ -36,6 +36,14 @@ app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser(process.env.KUI_PSK_COOKIE_SECRET))
 app.use(express.static(path.join(__dirname, 'public')))
 
+if (process.env.KUI_PSK_TOKEN) {
+  console.log('Enabling Kui token authorization')
+  if (!process.env.KUI_PSK || !process.env.KUI_PSK_COOKIE || !process.env.KUI_PSK_COOKIE_SECRET) {
+    console.log('The token needs a valid cookie setup') // signed cookies are mandatory
+    process.exit()
+  }
+}
+
 if (process.env.KUI_PSK && process.env.KUI_PSK_COOKIE) {
   if (process.env.KUI_PSK_COOKIE_SECRET) {
     console.log('Enabling Kui SIGNED pre-shared-key authorization using cookieKey=', process.env.KUI_PSK_COOKIE)

@@ -215,8 +215,18 @@ module.exports = (server, port) => {
             : req.cookies[process.env.KUI_PSK_COOKIE]
 
           if (token !== process.env.KUI_PSK) {
-            res.status(403).send('Access Denied')
-            return
+            // block to handle the token as a query param
+            if (process.env.KUI_PSK_TOKEN && req.query.token && req.query.token === process.env.KUI_PSK_TOKEN) {
+              res.cookie(process.env.KUI_PSK_COOKIE, process.env.KUI_PSK, {
+                httpOnly: true,
+                secure: process.env.KUI_USE_HTTP !== 'true',
+                signed: true,
+                secret: process.env.KUI_PSK_COOKIE_SECRET
+              })
+            } else {
+              res.status(403).send('Access Denied')
+              return
+            }
           }
         }
 
