@@ -29,6 +29,7 @@ $action-width: 2em;
 $focus-color: var(--color-brand-01);
 
 $input-bg: rgba(150, 150, 150, 0.1);
+$input-bg-inverted: var(--color-base02);
 $input-border: 1px solid hsla(0, 0%, 39.2%, 0.1);
 $input-border-editing: var(--color-brand-03);
 
@@ -206,10 +207,19 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin ReplayedBlock {
+  @include FinishedBlock {
+    &[data-is-replay] {
+      @content;
+    }
+  }
+}
+
 /** Hide the In[1] bits */
 @mixin HideIn {
   @include Block {
-    &:not([data-in-sections]) {
+    &[data-is-output-only],
+    &:not([data-in-sections]):not([data-is-replay]) {
       .repl-context {
         display: none;
       }
@@ -281,6 +291,18 @@ $action-hover-delay: 210ms;
 @mixin BlockActions {
   .kui--block-actions-buttons {
     @content;
+  }
+}
+
+@mixin BlockAction {
+  .kui--block-action {
+    @content;
+  }
+}
+
+@mixin show-block-action-buttons {
+  @include BlockActions {
+    opacity: 1;
   }
 }
 

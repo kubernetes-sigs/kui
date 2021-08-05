@@ -43,6 +43,8 @@ describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, 
       await CLI.command(`replay ${file}`, this.app)
 
       // verify the pwd command replay
+      await CLI.expandLast(this.app)
+
       let idx = 0
       await this.app.client.waitUntil(
         async () => {

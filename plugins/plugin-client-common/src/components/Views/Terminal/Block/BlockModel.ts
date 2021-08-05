@@ -227,12 +227,33 @@ export function hasOriginalUUID(block: BlockModel | WithOriginalExecUUID): block
   return typeof (block as WithOriginalExecUUID).originalExecUUID === 'string'
 }
 
+/** Useful e.g. when reloading a snapshot, to clear out any prior "has been rerun" state */
+export function clearOriginalUUID(block: WithOriginalExecUUID) {
+  block.originalExecUUID = undefined
+}
+
+/** @return whether the block has a completeEvent trait */
+export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
+  return (isOk(block) || isOops(block) || isEmpty(block)) && block.completeEvent !== undefined
+}
+
+export function hasBeenRerun(block: BlockModel): boolean {
+  return (
+    hasOriginalUUID(block) && hasUUID(block) && block.originalExecUUID !== block.execUUID && isWithCompleteEvent(block)
+  )
+}
+
+/** @return whether the block is from replay */
+export function isReplay(block: BlockModel): boolean {
+  return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
+}
+
 /** Transform to Processing */
 export function Processing(
   block: BlockModel,
   startEvent: CommandStartEvent,
   isExperimental = false,
-  isReplay = false
+  _isReplay = isReplay(block)
 ): ProcessingBlock {
   return {
     command: startEvent.command,
@@ -240,7 +261,7 @@ export function Processing(
     cwd: block.cwd,
     execUUID: startEvent.execUUID,
     originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || startEvent.execUUID,
-    isReplay,
+    isReplay: _isReplay,
     startEvent,
     startTime: startEvent.startTime,
     state: BlockState.Processing
@@ -283,7 +304,7 @@ export function Finished(
   block: ProcessingBlock | BlockBeingRerun,
   event: CommandCompleteEvent,
   outputOnly = false,
-  isReplay = false
+  _isReplay = isReplay(block)
 ): FinishedBlock {
   const response = event.response // event.responseType === 'ScalarResponse' ? (event.response as ScalarResponse) : true
   const { historyIdx } = event
@@ -316,7 +337,7 @@ export function Finished(
       startEvent,
       completeEvent: event,
       isExperimental: block.isExperimental,
-      isReplay,
+      isReplay: _isReplay,
       state: BlockState.Error,
       execUUID: block.execUUID,
       originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
@@ -332,7 +353,7 @@ export function Finished(
       startEvent,
       completeEvent: event,
       isExperimental: block.isExperimental,
-      isReplay,
+      isReplay: _isReplay,
       execUUID: block.execUUID,
       isSectionBreak: isCommentarySectionBreak(response),
       originalExecUUID: (hasOriginalUUID(block) && block.originalExecUUID) || block.execUUID,
@@ -360,22 +381,6 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
   return !isAnnouncement(block) && (isProcessing(block) || isOk(block) || isOops(block))
 }
 
-/** @return whether the block has a completeEvent trait */
-export function isWithCompleteEvent(block: BlockModel): block is CompleteBlock {
-  return (isOk(block) || isOops(block) || isEmpty(block)) && block.completeEvent !== undefined
-}
-
-export function hasBeenRerun(block: BlockModel): boolean {
-  return (
-    hasOriginalUUID(block) && hasUUID(block) && block.originalExecUUID !== block.execUUID && isWithCompleteEvent(block)
-  )
-}
-
-/** @return whether the block is from replay */
-export function isReplay(block: BlockModel): boolean {
-  return (isProcessing(block) || isWithCompleteEvent(block)) && block.isReplay
-}
-
 /** @return whether the block is section break */
 export function isSectionBreak(block: BlockModel): block is CompleteBlock & WithSectionBreak {
   return isOk(block) && block.isSectionBreak
@@ -392,7 +397,7 @@ export function Rerun(
   newCommand = newStartEvent.command,
   newStartTime = newStartEvent.startTime
 ): RerunableBlock & Required<WithRerun> {
-  return Object.assign(block, {
+  return Object.assign({}, block, {
     isRerun: true as const,
     startEvent: newStartEvent,
     command: newCommand,
