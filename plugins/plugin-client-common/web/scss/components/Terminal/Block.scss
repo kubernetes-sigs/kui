@@ -25,12 +25,6 @@
   padding-right: var(--input-padding-right);
 }
 
-@mixin show-block-action-buttons {
-  @include BlockActions {
-    opacity: 1;
-  }
-}
-
 /** Placeholder text styling */
 @include Input {
   &::placeholder {
@@ -72,6 +66,10 @@
 @include FinishedBlock {
   @include InputWrapper {
     background-color: $input-bg;
+
+    &.kui--inverted-color-context {
+      background-color: $input-bg-inverted;
+    }
   }
 }
 
@@ -215,7 +213,7 @@
       right: 0;
     }
 
-    .kui--block-action {
+    @include BlockAction {
       align-items: center;
       justify-content: center;
       display: flex;
