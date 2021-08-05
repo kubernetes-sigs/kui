@@ -54,6 +54,7 @@ import {
   isEmpty,
   isOutputOnly,
   isOops,
+  isReplay,
   isWithCompleteEvent
 } from './BlockModel'
 
@@ -62,6 +63,7 @@ import Scalar from '../../../Content/Scalar/' // !! DO NOT MAKE LAZY. See https:
 import KuiContext from '../../../Client/context'
 import { Maximizable } from '../../Sidecar/width'
 const Ansi = React.lazy(() => import('../../../Content/Scalar/Ansi'))
+const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
 
 const strings = i18n('plugin-client-common')
 
@@ -346,22 +348,46 @@ export default class Output extends React.PureComponent<Props, State> {
     }
   }
 
+  /** @return the UI for the main/content part of the Output */
+  private content(hasContent: boolean) {
+    return (
+      <div className="result-vertical">
+        {this.stream()}
+        {this.result()}
+        {this.cursor()}
+        {this.ok(hasContent)}
+      </div>
+    )
+  }
+
   public render() {
     const hasContent =
       this.state.assertHasContent !== undefined
         ? this.state.assertHasContent
         : this.isShowingSomethingInTerminal(this.props.model)
 
+    // when displaying blocks in a loaded Snapshot (isReplay) that
+    // have not yet been rerun (hasBeenRerun), then wrap an expando
+    // around them (except don't wrap expandos around output-only
+    // blocks, such as for Commentary)
+    const noExpando = !isReplay(this.props.model) || hasBeenRerun(this.props.model) || isOutputOnly(this.props.model)
+
+    const content = noExpando ? (
+      this.content(hasContent)
+    ) : (
+      <ExpandableSection
+        className="flex-fill"
+        showMore={strings('Show Sample Output')}
+        showLess={strings('Hide Sample Output')}
+      >
+        {this.content(hasContent)}
+      </ExpandableSection>
+    )
+
     return (
       <div className={'repl-output ' + (hasContent ? ' repl-result-has-content' : '')}>
         {!this.props.isPartOfMiniSplit && hasContent && this.ctx()}
-        <div className="result-vertical">
-          {this.stream()}
-          {this.result()}
-          {this.cursor()}
-          {this.ok(hasContent)}
-        </div>
-
+        {content}
         {this.actions()}
       </div>
     )

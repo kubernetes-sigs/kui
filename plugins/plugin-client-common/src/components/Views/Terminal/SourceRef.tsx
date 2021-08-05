@@ -44,7 +44,7 @@ export default class SourceRef extends React.PureComponent<Props> {
           content={content.replace(/\n$/, '')} /* monaco's renderFinalNewline option doesn't seem to do what we need */
           contentType={contentType}
           className="kui--source-ref-editor kui--inverted-color-context"
-          fontSize={12}
+          fontSizeAdjust={12 / 14}
           simple
         />
       </React.Suspense>

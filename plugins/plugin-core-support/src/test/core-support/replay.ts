@@ -41,6 +41,8 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
           .$(Selectors.TOP_TAB_WITH_TITLE(testTabLabel))
           .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 
+        await CLI.expandLast(this.app)
+
         let idx = 0
         await this.app.client.waitUntil(
           async () => {
@@ -134,6 +136,7 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
       const res = await CLI.command('version', this.app)
 
       // verify the base64 command replay
+      await CLI.expandNth(this.app, res.count - 2)
       let idx = 0
       await this.app.client.waitUntil(
         async () => {
@@ -337,6 +340,8 @@ Common.proxyDescribe(`core snapshot and replay by query ${process.env.MOCHA_RUN_
       await this.app.client
         .$(Selectors.TOP_TAB_WITH_TITLE(title))
         .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+
+      await CLI.expandLast(this.app)
 
       // verify the base64 command replay
       let idx = 0

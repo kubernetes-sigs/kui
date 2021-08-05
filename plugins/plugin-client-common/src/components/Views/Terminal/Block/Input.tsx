@@ -637,6 +637,27 @@ export default class Input extends InputProvider {
     )
   }
 
+  /** @return the UI for the input part of Finished blocks (i.e. those not processing or active) */
+  private inputForFinishedBlock() {
+    const value = Input.valueToBeDisplayed(this.props)
+    const isInProgress = isProcessing(this.props.model)
+
+    // for Processing or Done blocks, render the value as a plain div
+    // for Processing, though, we will need an inputOverlay... to capture ctrl+c
+    return (
+      <div
+        data-input-count={this.props.idx}
+        className={'repl-input-element-wrapper flex-layout flex-fill'}
+        onClick={isInProgress ? this._restoreFocusToOverlayInput : this.props.isExecutable && this._onClickFinished}
+      >
+        {this.fancyValue(value)}
+        {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
+        {isInProgress && this.inputOverlayForProcessingBlocks(value)}
+        {this.inputStatus(value)}
+      </div>
+    )
+  }
+
   /** the element that represents the command being/having been/going to be executed */
   protected input() {
     const active = isActive(this.props.model) || this.state.isReEdit
@@ -660,23 +681,7 @@ export default class Input extends InputProvider {
 
       return this.state.multiline ? this.multilineInput() : this.inlineInput()
     } else {
-      const value = Input.valueToBeDisplayed(this.props)
-      const isInProgress = isProcessing(this.props.model)
-
-      // for Processing or Done blocks, render the value as a plain div
-      // for Processing, though, we will need an inputOverlay... to capture ctrl+c
-      return (
-        <div
-          data-input-count={this.props.idx}
-          className="repl-input-element-wrapper flex-layout flex-fill"
-          onClick={isInProgress ? this._restoreFocusToOverlayInput : this.props.isExecutable && this._onClickFinished}
-        >
-          {this.fancyValue(value)}
-          {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
-          {isInProgress && this.inputOverlayForProcessingBlocks(value)}
-          {this.inputStatus(value)}
-        </div>
-      )
+      return this.inputForFinishedBlock()
     }
   }
 
@@ -727,18 +732,19 @@ export default class Input extends InputProvider {
       const openParen = noParen ? '' : '('
       const closeParen = noParen ? '' : ')'
 
+      const children = [openParen, duration, closeParen].filter(_ => _)
+
       // re: key... when the block changes from Processing to Input, we get an insertBefore error from React.
       return (
-        this.props.model.startTime && (
+        this.props.model.startTime &&
+        children.length > 0 && (
           <span
             className="kui--repl-block-timestamp kui--repl-block-right-element"
             key={isProcessing(this.props.model).toString()}
           >
             {showingDate && new Date(this.props.model.startTime).toLocaleTimeString()}
             <span className="small-left-pad sub-text" ref={c => this.setState({ durationDom: c })}>
-              {openParen}
-              {duration}
-              {closeParen}
+              {children}
             </span>
           </span>
         )
@@ -784,15 +790,24 @@ export default class Input extends InputProvider {
     return !this.props.isPartOfMiniSplit && !this.props.isWidthConstrained
   }
 
+  /** Experimental tag, timestamp, etc. */
+  private rightElements() {
+    const children = [
+      this.experimentalTag(),
+      !this.showSpinnerInContext() && isProcessing(this.props.model) && this.spinner(),
+      this.timestamp()
+    ].filter(_ => _)
+
+    if (children.length > 0) {
+      return <span className="repl-prompt-right-elements">{children}</span>
+    }
+  }
+
   /** Status elements placed in with <input> part of the block */
   protected inputStatus(input: string) {
     return (
       <React.Fragment>
-        <span className="repl-prompt-right-elements">
-          {this.experimentalTag()}
-          {!this.showSpinnerInContext() && isProcessing(this.props.model) && this.spinner()}
-          {this.timestamp()}
-        </span>
+        {this.rightElements()}
         {this.actions(input)}
       </React.Fragment>
     )

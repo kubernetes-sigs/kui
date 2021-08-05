@@ -59,6 +59,8 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
 
       await CLI.command(`replay ${file}`, this.app)
 
+      await CLI.expandLast(this.app)
+
       await waitForRed(this.app, `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
     } catch (err) {
       await Common.oops(this, true)(err)
@@ -129,6 +131,8 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
       await CLI.command(`replay ${file}`, this.app)
 
+      await CLI.expandLast(this.app)
+
       await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`).then(_ => _.waitForDisplayed())
       await Util.openSidecarByClick(
         this,
@@ -170,6 +174,8 @@ describe(`kubectl replay with grid table ${process.env.MOCHA_RUN_TARGET || ''}`,
       await CLI.command(`snapshot ${file}`, this.app).then(ReplExpect.justOK)
 
       await CLI.command(`replay ${file}`, this.app)
+
+      await CLI.expandLast(this.app)
 
       await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors._TABLE_AS_GRID}`).then(_ => _.waitForDisplayed())
     } catch (err) {

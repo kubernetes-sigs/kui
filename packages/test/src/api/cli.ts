@@ -230,3 +230,17 @@ export async function lastBlock(app: Application, splitIndex = 1): Promise<AppAn
     )
   }
 }
+
+/** Click to expand the last replayed sample output */
+export async function expandNth(app: Application, N: number, splitIndex = 1) {
+  const expando = await app.client.$(Selectors.EXPANDABLE_OUTPUT_N(N, splitIndex))
+  await expando.waitForExist()
+  await expando.click()
+}
+
+/** Click to expand the last replayed sample output */
+export async function expandLast(app: Application, splitIndex = 1) {
+  const expando = await app.client.$(Selectors.EXPANDABLE_OUTPUT_LAST(splitIndex))
+  await expando.waitForExist()
+  await expando.click()
+}

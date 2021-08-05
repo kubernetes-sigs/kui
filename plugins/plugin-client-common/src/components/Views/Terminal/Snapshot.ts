@@ -31,6 +31,8 @@ import {
 } from '@kui-shell/core'
 
 import {
+  clearOriginalUUID,
+  hasOriginalUUID,
   FinishedBlock,
   hasStartEvent,
   isAnnouncement,
@@ -106,7 +108,7 @@ export function snapshot(block: FinishedBlock): FinishedBlock {
       { response: excludeWatchable(block.completeEvent.response) }
     )
 
-    return Object.assign(block, {
+    return Object.assign({}, block, {
       isReplay: true,
       response: excludeWatchable(block.response),
       startEvent,
@@ -173,6 +175,11 @@ export function tabAlignment(block: FinishedBlock, tab: Tab): FinishedBlock {
     } else if (isTable(block.completeEvent.response)) {
       allocateTabForTable(block.completeEvent.response)
       block.response = block.completeEvent.response
+    }
+
+    // when replaying, we don't want to keep any rerun state from before
+    if (hasOriginalUUID(block)) {
+      clearOriginalUUID(block)
     }
 
     allocateTab(block.completeEvent, tab)
