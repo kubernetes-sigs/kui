@@ -254,8 +254,8 @@ class ProxyEvaluator implements ReplEval {
 
       try {
         const proxyHref = /KUI_PROXY_COHOSTED=true/.test(document.cookie)
-          ? `${window.location.pathname.replace(/index\.html/, '')}exec`
-          : new URL(proxyServerConfig.url, window.location.origin).href
+          ? `${window.location.pathname.replace(/index\.html/, '')}exec${window.location.search}`
+          : new URL(proxyServerConfig.url, window.location.origin).href + window.location.search
         debug('proxy server url', proxyHref)
 
         const invokeRemote = () =>
