@@ -17,7 +17,7 @@
 import { dirname, join } from 'path'
 import { readFileSync } from 'fs'
 
-import { Common, CLI, ReplExpect, Keys } from '@kui-shell/test'
+import { Common, CLI, Keys, ReplExpect, Selectors } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
@@ -79,6 +79,7 @@ EOF`
         } catch (err) {
           console.error('try hitting enter manually')
           // probably a bug in this test; the UI may take a bit of time to render
+          // await this.app.client.$(Selectors.CURRENT_MULTI_LINE_PROMPT).then(_ => _.waitForExist())
           await new Promise(resolve => setTimeout(resolve, 3000))
           await this.app.client.keys(Keys.ENTER) // sometimes even though CLI.command hits Enter key, electron stil doesn't receive it?
           await ReplExpect.okWithString('yoyoyo')(res)
@@ -91,6 +92,7 @@ EOF`
   it('should echo multi lines', () =>
     CLI.command(`echo foo \\`, this.app)
       .then(async res => {
+        await this.app.client.$(Selectors.CURRENT_MULTI_LINE_PROMPT).then(_ => _.waitForExist())
         await CLI.command('bar', this.app)
         try {
           await ReplExpect.okWithString(`foo bar`)(res)
