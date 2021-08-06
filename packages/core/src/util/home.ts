@@ -19,9 +19,11 @@ import { homedir as home } from 'os'
 
 import { inBrowser } from '../core/capabilities'
 
-const homedir = home()
+const _homedir = home()
 
 export const expandHomeDir = function(path: string): string {
+  const homedir = (_homedir === '/' && process.env.HOME) || _homedir
+
   if (!path || !path.slice) {
     return path
   } else if (path === '~') {
