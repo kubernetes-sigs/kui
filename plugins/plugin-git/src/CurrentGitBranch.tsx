@@ -56,6 +56,16 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
     }
   }
 
+  /** So we don't handle events after unmounting */
+  private _unmounted = true
+  private get unmounted() {
+    return this._unmounted
+  }
+
+  private set unmounted(umm: boolean) {
+    this._unmounted = umm
+  }
+
   /** Avoid recomputation for a flurry of events */
   private last: number
   private debounce(): boolean {
@@ -71,6 +81,10 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
    *
    */
   private async reportCurrentBranch() {
+    if (this.unmounted) {
+      return
+    }
+
     const tab = getCurrentTab()
     if (!tab || !tab.REPL) {
       return
@@ -120,6 +134,8 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
    *
    */
   public componentDidMount() {
+    this.unmounted = false
+
     if (inBrowser()) {
       eventBus.once('/tab/new', this.handler)
     } else {
@@ -130,6 +146,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
 
   /** Make sure to unsubscribe! */
   public componentWillUnmount() {
+    this.unmounted = true
     unwireToStandardEvents(this.handler)
   }
 
