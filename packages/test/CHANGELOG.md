@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.9](https://github.com/kubernetes-sigs/kui/compare/v10.4.8...v10.4.9) (2021-08-06)
+
+### Features
+
+- When replaying a notebook, prior output should have an ExpandableSection wrapper ([6b12fff](https://github.com/kubernetes-sigs/kui/commit/6b12fff)), closes [#7846](https://github.com/kubernetes-sigs/kui/issues/7846)
+
 ## [10.4.8](https://github.com/kubernetes-sigs/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
 
 **Note:** Version bump only for package @kui-shell/test

@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.9](https://github.com/IBM/kui/compare/v10.4.8...v10.4.9) (2021-08-06)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** leftover debug in SimpleEditor ([749e14a](https://github.com/IBM/kui/commit/749e14a)), closes [#7851](https://github.com/IBM/kui/issues/7851) [#7681](https://github.com/IBM/kui/issues/7681)
+
+### Features
+
+- When replaying a notebook, prior output should have an ExpandableSection wrapper ([6b12fff](https://github.com/IBM/kui/commit/6b12fff)), closes [#7846](https://github.com/IBM/kui/issues/7846)
+
 ## [10.4.8](https://github.com/IBM/kui/compare/v10.4.7...v10.4.8) (2021-08-02)
 
 ### Bug Fixes
