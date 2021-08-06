@@ -137,7 +137,6 @@ export default class SimpleEditor extends React.Component<Props, State> {
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
   private initMonaco(props: Props, state: State) {
     const cleaners = []
-    console.error('!!!!!!!', props.fontSize, getKuiFontSize())
 
     try {
       // here we instantiate an editor widget
