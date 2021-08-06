@@ -108,6 +108,16 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     return context
   }
 
+  /** So we don't handle events after unmounting */
+  private _unmounted = true
+  private get unmounted() {
+    return this._unmounted
+  }
+
+  private set unmounted(umm: boolean) {
+    this._unmounted = umm
+  }
+
   /** Avoid recomputation for a flurry of events */
   private last: number
   private debounce(): boolean {
@@ -119,6 +129,10 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   }
 
   private async getCurrentContextFromChange() {
+    if (this.unmounted) {
+      return
+    }
+
     const tab = getCurrentTab()
     const defaultCurrentContext = await getCurrentDefaultContextName(tab)
 
@@ -140,6 +154,10 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   }
 
   private async reportCurrentContext(idx?: Tab | number | string) {
+    if (this.unmounted) {
+      return
+    }
+
     const tab = getTab(typeof idx === 'string' ? undefined : idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
@@ -265,6 +283,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
    *
    */
   public componentDidMount() {
+    this.unmounted = false
+
     if (!ready) {
       eventBus.once('/tab/new', this.handler)
     } else {
@@ -278,6 +298,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
 
   /** Bye! */
   public componentWillUnmount() {
+    this.unmounted = true
     eventBus.off('/tab/new', this.handler)
     eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
     eventBus.offAnyCommandComplete(this.handler)
