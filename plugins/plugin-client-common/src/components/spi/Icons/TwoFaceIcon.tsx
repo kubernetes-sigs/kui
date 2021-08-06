@@ -55,8 +55,28 @@ export default class TwoFaceIcon<
     }
   }
 
+  /** So we don't handle events after unmounting */
+  private _unmounted = true
+  private get unmounted() {
+    return this._unmounted
+  }
+
+  private set unmounted(umm: boolean) {
+    this._unmounted = umm
+  }
+
+  public componentDidMount() {
+    this.unmounted = false
+  }
+
+  public componentWillUnmount() {
+    this.unmounted = true
+  }
+
   private toggleState() {
-    this.setState(curState => ({ face: curState.face === 'a' ? 'b' : 'a' }))
+    if (!this.unmounted) {
+      this.setState(curState => ({ face: curState.face === 'a' ? 'b' : 'a' }))
+    }
   }
 
   private onToggle(evt: React.MouseEvent) {

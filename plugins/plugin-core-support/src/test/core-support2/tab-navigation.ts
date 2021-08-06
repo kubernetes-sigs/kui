@@ -63,7 +63,7 @@ describe('tab navigation', function(this: Common.ISuite) {
         }
         await waitForFocus(Selectors.CURRENT_PROMPT)
       } catch (err) {
-        await Common.oops(this)(err)
+        await Common.oops(this, true)(err)
       }
     })
   }
@@ -86,7 +86,7 @@ describe('tab navigation', function(this: Common.ISuite) {
           }
         }
       } catch (err) {
-        await Common.oops(this)(err)
+        await Common.oops(this, true)(err)
       }
     })
   }
@@ -107,7 +107,7 @@ describe('tab navigation', function(this: Common.ISuite) {
         await this.app.client.keys(Keys.TAB)
         await this.app.client.$(Selectors.PROMPT_N(count)).then(_ => _.waitForEnabled())
       } catch (err) {
-        await Common.oops(this)(err)
+        await Common.oops(this, true)(err)
       }
     })
   }
