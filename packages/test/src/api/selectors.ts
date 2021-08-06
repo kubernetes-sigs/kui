@@ -40,6 +40,7 @@ export const PROMPT_CONTEXT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-conte
 export const PROCESSING_N = (N: number) => `${PROMPT_BLOCK_N(N)}.processing`
 const _PROMPT = '.repl-input-element'
 export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} ${_PROMPT}`
+export const CURRENT_MULTI_LINE_PROMPT = `${CURRENT_PROMPT_BLOCK} textarea${_PROMPT}`
 export const N_ATTR = 'data-input-count'
 
 export const WELCOME_BLOCK = `${PROMPT_BLOCK} .kui--repl-message.kui--session-init-done`
