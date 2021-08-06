@@ -78,6 +78,8 @@ EOF`
           await ReplExpect.okWithString('yoyoyo')(res)
         } catch (err) {
           console.error('try hitting enter manually')
+          // probably a bug in this test; the UI may take a bit of time to render
+          await new Promise(resolve => setTimeout(resolve, 3000))
           await this.app.client.keys(Keys.ENTER) // sometimes even though CLI.command hits Enter key, electron stil doesn't receive it?
           await ReplExpect.okWithString('yoyoyo')(res)
         }
@@ -94,6 +96,8 @@ EOF`
           await ReplExpect.okWithString(`foo bar`)(res)
         } catch (err) {
           console.error('try hitting enter manually')
+          // probably a bug in this test; the UI may take a bit of time to render
+          await new Promise(resolve => setTimeout(resolve, 3000))
           await this.app.client.keys(Keys.ENTER) // sometimes even though CLI.command hits Enter key, electron stil doesn't receive it?
           await ReplExpect.okWithString(`foo bar`)(res)
         }
