@@ -413,7 +413,7 @@ export function doCancel(this: Common.ISuite, cmd = '') {
   return this.app.client
     .$(Selectors.CURRENT_PROMPT_BLOCK)
     .then(async _ => {
-      _.waitForExist()
+      await _.waitForExist()
       return _.getAttribute('data-input-count')
     })
     .then(count => parseInt(count, 10))
