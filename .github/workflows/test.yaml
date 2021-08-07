@@ -76,7 +76,7 @@ jobs:
         MOCHA_RUN_TARGET: webpack
         NEEDS_BASH_PREP: true
         NEEDS_GIT: true
-      run: ./tools/travis/install.sh && npx concurrently -n CORE,SUP1,EDIT 'npm run test1 core' 'npm run test2 core-support' 'npm run test3 editor'
+      run: ./tools/travis/install.sh && npx concurrently -n CORE 'npm run test1 core' && npx concurrently -n SUP1 'npm run test2 core-support' && npx concurrently -n EDIT 'npm run test3 editor'
 
   bash-core-browser-2:
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
         MOCHA_RUN_TARGET: webpack
         NEEDS_BASH_PREP: true
         NEEDS_GIT: true
-      run: ./tools/travis/install.sh && npx concurrently -n SUP2,BASH 'npm run test4 core-support2' 'npm run test5 bash-like'
+      run: ./tools/travis/install.sh && npx concurrently -n SUP2 'npm run test4 core-support2' && npx concurrently -n BASH 'npm run test5 bash-like'
       
   bash-electron:
     runs-on: ubuntu-latest
@@ -140,7 +140,7 @@ jobs:
         NEEDS_K8S: true
         NEEDS_OC: true
         NEEDS_TOP: true
-      run: ./tools/travis/install.sh && npx concurrently -n K8S3,K8S4 'npm run test1 k8s3' 'npm run test2 k8s4' && npx concurrently -n K8S2 'npm run test1 k8s2'
+      run: ./tools/travis/install.sh && npx concurrently -n K8S3 'npm run test1 k8s3' && npx concurrently -n K8S4 'npm run test2 k8s4' && npx concurrently -n K8S2 'npm run test1 k8s2'
 
   k8s-chaos:
     runs-on: ubuntu-latest
@@ -194,7 +194,7 @@ jobs:
         NEEDS_HELM: true
         TEST_FROM_BUILD: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
         KUI_DIST_PATH: "${{ github.workspace }}/dist/electron/Kui-linux-x64/Kui"
-      run: ./tools/travis/install.sh && npx concurrently -n K8S 'npm run test1 k8s k8s-popup' && npx concurrently -n K8S1,LOGS,HELM 'npm run test1 k8s1' 'npm run test2 logs' 'npm run test3 helm' 
+      run: ./tools/travis/install.sh && npx concurrently -n K8S 'npm run test1 k8s k8s-popup' && npx concurrently -n K8S1 'npm run test1 k8s1' && npx concurrently -n LOGS 'npm run test2 logs' && npx concurrently -n HELM 'npm run test3 helm' 
 
   osx:
     runs-on: macos-10.15
