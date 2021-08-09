@@ -223,6 +223,9 @@ module.exports = (server, port) => {
                 signed: true,
                 secret: process.env.KUI_PSK_COOKIE_SECRET
               })
+
+              res.redirect('/') // to hide the auth token
+              return
             } else {
               res.status(403).send('Access Denied')
               return
