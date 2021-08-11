@@ -17,10 +17,8 @@
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-TOPDIR="${SCRIPTDIR}/../../.."
-THEME="${TOPDIR}"/node_modules/@kui-shell/client
-
-echo "Using CLIENT_HOME=$CLIENT_HOME"
+TOPDIR=.
+THEME=node_modules/@kui-shell/client
 
 # TODO this only handles MacOS right now
 
@@ -29,7 +27,7 @@ if [[ `uname` != Darwin ]]; then
     exit;
 else
     if [ ! -d "$SCRIPTDIR"/../node_modules/fileicon ]; then
-        (cd "$SCRIPTDIR"/.. && npm install --no-save fileicon)
+        (cd "$SCRIPTDIR"/.. && npm install --no-save --no-package-lock fileicon)
     fi
 
     ICON="$THEME"/$(cd $THEME && node -e 'console.log(require("./config.d/icons").app)')
