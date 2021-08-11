@@ -15,6 +15,7 @@
     "kui-pty-rebuild": "./bin/pty-rebuild.sh",
     "kui-build-headless": "./dist/headless/build.sh",
     "kui-build-electron": "./dist/electron/build.sh",
+    "kui-set-icon": "./bin/seticon.js",
     "kui-init": "./build/kui-dist-init.js",
     "kui-babel": "./bin/babel.sh",
     "kui-compile": "./bin/compile.sh",
