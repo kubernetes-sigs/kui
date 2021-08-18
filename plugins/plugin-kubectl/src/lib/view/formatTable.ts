@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import jsonpath from '@kui-shell/jsonpath'
+
 import {
   Breadcrumb,
   Table,
@@ -746,6 +748,24 @@ export function toKuiTable(
     (table.rows.length > 0 && table.rows.every(({ object }) => object.metadata.namespace)
       ? [{ label: table.rows[0].object.metadata.namespace }]
       : undefined)
+
+  const sortBy = args.parsedOptions['sort-by']
+  if (sortBy) {
+    const sortByDate = /Time/.test(sortBy)
+
+    // the jsonpath npm needs a leading "$"
+    const qquery = jsonpath.parse('$' + sortBy)
+    const query = (qquery as any) as string // bad typing in @types/jsonpath
+
+    body.sort((a, b) => {
+      const vvA = jsonpath.value(a.object, query)
+      const vvB = jsonpath.value(b.object, query)
+
+      const vA = sortByDate ? new Date(vvA) : vvA
+      const vB = sortByDate ? new Date(vvB) : vvB
+      return vA - vB
+    })
+  }
 
   const kuiTable = {
     header,
