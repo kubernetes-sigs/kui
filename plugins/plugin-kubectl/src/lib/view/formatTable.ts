@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import jsonpath from '@kui-shell/jsonpath'
-
 import {
   Breadcrumb,
   Table,
@@ -756,6 +754,8 @@ export function toKuiTable(
     // The jsonpath npm needs a leading "$". also, re: the replace:
     // jsonpath does not handle dashes!
     // https://github.com/dchester/jsonpath/issues/90
+    // and ugh, static imports seem to cause problems with headless https://github.com/kubernetes-sigs/kui/issues/7874
+    const jsonpath = require('@kui-shell/jsonpath')
     const qquery = jsonpath.parse('$' + sortBy.replace(/\.\w+-\w+/g, _ => `["${_}"]`))
     const query = (qquery as any) as string // bad typing in @types/jsonpath
 
