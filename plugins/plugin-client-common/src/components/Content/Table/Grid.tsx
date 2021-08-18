@@ -34,7 +34,12 @@ export type Props<T extends KuiTable = KuiTable> = {
 }
 
 export const findGridableColumn = (response: KuiTable) => {
-  return response.durationColumnIdx >= 0
+  // why the or part? well, if the controller hasn't specified a
+  // colorBy, and we have a durationColumnIdx but *not* a
+  // statusColumnIdx, then use duration as the default
+  const colorByDuration = response.colorBy === 'duration' || response.statusColumnIdx === undefined
+
+  return colorByDuration && response.durationColumnIdx >= 0
     ? response.durationColumnIdx
     : response.statusColumnIdx !== undefined
     ? response.statusColumnIdx
