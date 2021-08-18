@@ -57,7 +57,9 @@ function parse(spec: string): CustomColumns {
         if (key && query) {
           return {
             key,
-            query: jsonpath.parse('$' + query) // the jsonpath npm needs a leading "$"
+            query: jsonpath.parse('$' + query.replace(/\.(\w+-\w+)/g, (_, p1) => `["${p1}"]`))
+            // the jsonpath npm needs a leading "$", and does not handle -
+            // see https://github.com/dchester/jsonpath/issues/90
           }
         }
       }
