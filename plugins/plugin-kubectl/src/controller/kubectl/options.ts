@@ -310,6 +310,8 @@ export interface KubeOptions extends ParsedOptions {
   help?: boolean
 
   limit?: number
+
+  'sort-by'?: string
 }
 
 export function isForAllNamespaces(parsedOptions: KubeOptions) {
