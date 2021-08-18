@@ -753,8 +753,10 @@ export function toKuiTable(
   if (sortBy) {
     const sortByDate = /Time/.test(sortBy)
 
-    // the jsonpath npm needs a leading "$"
-    const qquery = jsonpath.parse('$' + sortBy)
+    // The jsonpath npm needs a leading "$". also, re: the replace:
+    // jsonpath does not handle dashes!
+    // https://github.com/dchester/jsonpath/issues/90
+    const qquery = jsonpath.parse('$' + sortBy.replace(/\.\w+-\w+/g, _ => `["${_}"]`))
     const query = (qquery as any) as string // bad typing in @types/jsonpath
 
     body.sort((a, b) => {
