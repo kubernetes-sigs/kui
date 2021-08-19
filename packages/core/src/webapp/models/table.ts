@@ -184,6 +184,13 @@ export class Table<RowType extends Row = Row> {
 
   footer?: string[]
 
+  /**
+   * E.g. when displaying events for a Kubernetes table, how many
+   * events to show in the viewport. Use -1 to show them
+   * all. [Default: 6]
+   */
+  nFooterMessages?: number
+
   noSort?: boolean
 
   title?: string
