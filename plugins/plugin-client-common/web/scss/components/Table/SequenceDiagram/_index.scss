@@ -23,7 +23,7 @@ $status-size: 0.625em;
 
 @include PlainTerminal {
   @include SequenceDiagram {
-    min-width: 50rem;
+    min-width: 30rem;
   }
 }
 
