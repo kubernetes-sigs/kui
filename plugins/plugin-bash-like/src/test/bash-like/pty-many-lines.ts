@@ -26,7 +26,7 @@ const readmeLines = readFileSync(join(process.env.TEST_ROOT, '../../README.md'))
   .split(/\n/)
 
 /** this test is HORRIBLY UNSTABLE */
-xdescribe('pty output with many lines', function(this: Common.ISuite) {
+describe('pty output with many lines', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -64,7 +64,8 @@ xdescribe('pty output with many lines', function(this: Common.ISuite) {
   )
 })
 
-describe('pty input with many lines', function(this: Common.ISuite) {
+/** this test is HORRIBLY UNSTABLE */
+xdescribe('pty input with many lines', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
