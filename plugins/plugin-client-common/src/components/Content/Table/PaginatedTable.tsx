@@ -251,7 +251,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private footerLines() {
-    const nRows = this.props.isPartOfMiniSplit ? -1 : -6
+    const nRows = this.props.isPartOfMiniSplit ? -1 : -(this.props.response.nFooterMessages || 6)
     return this.state.footer ? this.state.footer.slice(nRows) : undefined
   }
 
