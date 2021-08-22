@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.12](https://github.com/IBM/kui/compare/v10.4.11...v10.4.12) (2021-08-22)
+
+### Bug Fixes
+
+- **packages/builder:** seticon.sh script does not work for external clients ([4d720c1](https://github.com/IBM/kui/commit/4d720c1)), closes [#7863](https://github.com/IBM/kui/issues/7863)
+
 ## [10.4.11](https://github.com/IBM/kui/compare/v10.4.10...v10.4.11) (2021-08-06)
 
 **Note:** Version bump only for package @kui-shell/builder

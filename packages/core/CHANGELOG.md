@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.12](https://github.com/IBM/kui/compare/v10.4.11...v10.4.12) (2021-08-22)
+
+### Bug Fixes
+
+- in browser clients, ~ may not always be expanded properly to the user's home dir ([991b63d](https://github.com/IBM/kui/commit/991b63d)), closes [#7858](https://github.com/IBM/kui/issues/7858)
+
+### Features
+
+- Table model should allow controller to specify the number of footer events to display ([7eb7600](https://github.com/IBM/kui/commit/7eb7600)), closes [#7878](https://github.com/IBM/kui/issues/7878)
+
 ## [10.4.11](https://github.com/IBM/kui/compare/v10.4.10...v10.4.11) (2021-08-06)
 
 **Note:** Version bump only for package @kui-shell/core

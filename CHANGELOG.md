@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.12](https://github.com/IBM/kui/compare/v10.4.11...v10.4.12) (2021-08-22)
+
+### Bug Fixes
+
+- **packages/builder:** seticon.sh script does not work for external clients ([4d720c1](https://github.com/IBM/kui/commit/4d720c1)), closes [#7863](https://github.com/IBM/kui/issues/7863)
+- **plugins/plugin-client-common:** reduce min-width for SequenceDiagram bars ([2d4e44c](https://github.com/IBM/kui/commit/2d4e44c)), closes [#7876](https://github.com/IBM/kui/issues/7876)
+- **plugins/plugin-kubectl:** sort-by does not work for "direct" kubectl client ([9c2df3b](https://github.com/IBM/kui/commit/9c2df3b)), closes [#7868](https://github.com/IBM/kui/issues/7868)
+- **plugins/plugin-kubectl:** static jsonpath imports seems to be causing problems ([0ef66bb](https://github.com/IBM/kui/commit/0ef66bb)), closes [#7874](https://github.com/IBM/kui/issues/7874)
+- **plugins/plugin-kubectl:** tables-as-grid display bogus Status in tooltip if table has a durationColumnIndex ([2e2e143](https://github.com/IBM/kui/commit/2e2e143)), closes [#7872](https://github.com/IBM/kui/issues/7872)
+- **plugins/plugin-kubectl:** work around jsonpath npm's inability to handle dashes in query strings ([808c39f](https://github.com/IBM/kui/commit/808c39f)), closes [#7870](https://github.com/IBM/kui/issues/7870)
+- in browser clients, ~ may not always be expanded properly to the user's home dir ([991b63d](https://github.com/IBM/kui/commit/991b63d)), closes [#7858](https://github.com/IBM/kui/issues/7858)
+- Markdown component can emit console error "invalid dom nesting" with nested <p> ([b2a76c2](https://github.com/IBM/kui/commit/b2a76c2)), closes [#7856](https://github.com/IBM/kui/issues/7856)
+- react components result in invalid updates on unmounted components errors ([c577fd0](https://github.com/IBM/kui/commit/c577fd0)), closes [#7854](https://github.com/IBM/kui/issues/7854)
+
+### Features
+
+- Table model should allow controller to specify the number of footer events to display ([7eb7600](https://github.com/IBM/kui/commit/7eb7600)), closes [#7878](https://github.com/IBM/kui/issues/7878)
+
 ## [10.4.11](https://github.com/IBM/kui/compare/v10.4.10...v10.4.11) (2021-08-06)
 
 **Note:** Version bump only for package kui-shell

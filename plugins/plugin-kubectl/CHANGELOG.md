@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.12](https://github.com/IBM/kui/compare/v10.4.11...v10.4.12) (2021-08-22)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** sort-by does not work for "direct" kubectl client ([9c2df3b](https://github.com/IBM/kui/commit/9c2df3b)), closes [#7868](https://github.com/IBM/kui/issues/7868)
+- **plugins/plugin-kubectl:** static jsonpath imports seems to be causing problems ([0ef66bb](https://github.com/IBM/kui/commit/0ef66bb)), closes [#7874](https://github.com/IBM/kui/issues/7874)
+- **plugins/plugin-kubectl:** work around jsonpath npm's inability to handle dashes in query strings ([808c39f](https://github.com/IBM/kui/commit/808c39f)), closes [#7870](https://github.com/IBM/kui/issues/7870)
+- react components result in invalid updates on unmounted components errors ([c577fd0](https://github.com/IBM/kui/commit/c577fd0)), closes [#7854](https://github.com/IBM/kui/issues/7854)
+
 ## [10.4.11](https://github.com/IBM/kui/compare/v10.4.10...v10.4.11) (2021-08-06)
 
 **Note:** Version bump only for package @kui-shell/plugin-kubectl

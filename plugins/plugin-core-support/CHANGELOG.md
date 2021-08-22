@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.4.12](https://github.com/IBM/kui/compare/v10.4.11...v10.4.12) (2021-08-22)
+
+### Bug Fixes
+
+- react components result in invalid updates on unmounted components errors ([c577fd0](https://github.com/IBM/kui/commit/c577fd0)), closes [#7854](https://github.com/IBM/kui/issues/7854)
+
 ## [10.4.11](https://github.com/IBM/kui/compare/v10.4.10...v10.4.11) (2021-08-06)
 
 **Note:** Version bump only for package @kui-shell/plugin-core-support
