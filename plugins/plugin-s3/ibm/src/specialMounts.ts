@@ -41,7 +41,7 @@ async function bindProvider(geo: string, config: Config, pseudo: string) {
     `org.kubernetes-sigs.kui/s3/pseudomount/${geo}/${pseudo}`,
     `${pseudo}-${v4()}`
   )
-  const provider = new BindMount(geo, `${baseMountName}/tmp`, config, subdir)
+  const provider = new BindMount(geo, `${baseMountName}/${pseudo}`, config, subdir)
   return provider
 }
 
