@@ -3,9 +3,9 @@
 [![GitHub Stars](https://badgen.net/github/stars/IBM/kui)](https://github.com/IBM/kui/stargazers)
 [![GitHub Forks](https://badgen.net/github/forks/IBM/kui)](https://github.com/IBM/kui/network/members)
 ![ts](https://flat.badgen.net/badge/-/TypeScript?icon=typescript&label&labelColor=blue&color=555555)
-![Electron](https://flat.badgen.net/badge/Electron/10/orange)
+![Electron](https://flat.badgen.net/badge/Electron/11/orange)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
-[![Build Status](https://img.shields.io/travis/IBM/kui/master?style=flat-square)](https://travis-ci.com/IBM/kui)
+[![test](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml/badge.svg)](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml)
 
 > Help us make Kubernetes tools better by filling out a [quick 2
 > minute survey](https://forms.gle/CZgoj64zyQV2FGoh7) on your tool
