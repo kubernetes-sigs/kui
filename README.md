@@ -7,6 +7,10 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 [![Build Status](https://img.shields.io/travis/IBM/kui/master?style=flat-square)](https://travis-ci.com/IBM/kui)
 
+> Help us make Kubernetes tools better by filling out a [quick 2
+> minute survey](https://forms.gle/CZgoj64zyQV2FGoh7) on your tool
+> preferences. Thanks!
+
 We love CLIs, and think they are critical for interacting in a
 flexible way with the cloud. We need the power to go off the
 rails. But ASCII is tedious. Kui takes your normal `kubectl` command
