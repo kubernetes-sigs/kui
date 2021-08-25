@@ -8,7 +8,7 @@
 [![test](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml/badge.svg)](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml)
 
 > Help us make Kubernetes tools better by filling out a [quick 2
-> minute survey](https://forms.gle/CZgoj64zyQV2FGoh7) on your tool
+> minute survey](https://forms.gle/Kq5s9yHcrRW83gw9A) on your tool
 > preferences. Thanks!
 
 We love CLIs, and think they are critical for interacting in a
