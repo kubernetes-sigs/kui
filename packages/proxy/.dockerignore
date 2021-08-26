@@ -9,3 +9,9 @@ package-lock.json
 *.bak
 *.log
 kui/tests
+*/node_modules/@patternfly/*
+*/node_modules/monaco-editor/*
+*/node_modules/victory-*/*
+*/node_modules/trie-search/dictionary.json
+*/node_modules/rxjs/src
+*/node_modules/@kui-shell/*/web/*
