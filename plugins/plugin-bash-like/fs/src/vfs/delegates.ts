@@ -281,7 +281,7 @@ export async function fslice(
           break
         }
       } catch (err) {
-        console.error(err)
+        debug(err)
         break
       }
     }
