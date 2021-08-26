@@ -20,6 +20,8 @@ import { basename, dirname } from 'path'
 import {
   findFile,
   expandHomeDir,
+  isHeadless,
+  inProxy,
   i18n,
   MultiModalResponse,
   Arguments,
@@ -88,7 +90,11 @@ async function head(args: Arguments<HeadOptions>): Promise<KResponse> {
       parsedOptions.c || parsedOptions.n || 10,
       parsedOptions.c ? 'bytes' : 'lines'
     )
-    return showResponseAsMMR(filepath, data)
+    if (isHeadless() && !inProxy()) {
+      return data
+    } else {
+      return showResponseAsMMR(filepath, data)
+    }
   } catch (err) {
     throw new Error(`head: ${err.message}`)
   }
