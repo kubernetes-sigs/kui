@@ -24,7 +24,7 @@ import { isGoodConfig } from './controller/local'
 
 import baseMountName from './baseMountName'
 import IBMCloudS3Provider from './IBMCloudS3Provider'
-import extraProvidersForDefaultRegion from './specialMounts'
+import { extraProvidersForDefaultRegion, extraProvidersForAllRegions } from './specialMounts'
 
 /** Listening for reconfigs? */
 let listeningAlready = false
@@ -72,12 +72,16 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
         provider.isDefault = false
         return [...(await extraProvidersForDefaultRegion(geo, config)), provider]
       } else {
-        return provider
+        return [...(await extraProvidersForAllRegions(geo, config)), provider]
       }
     }
   } catch (err) {
     return new IBMCloudS3Provider(geo, mountName, undefined, new UnsupportedS3ProviderError(err.message))
   }
+}
+
+export function mountNameForGeo(geo: string, ...extra: string[]) {
+  return [baseMountName, geo.replace(/-/g, '/'), ...extra].join('/')
 }
 
 /**
@@ -87,7 +91,7 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
 const initializer: ProviderInitializer[] = Object.keys(Geos)
   // .filter(_ => !/-geo$/.test(_)) // don't manifest geo endpoints in the VFS
   .map(geo => {
-    const mountName = `${baseMountName}/${geo.replace(/-/g, '/')}`
+    const mountName = mountNameForGeo(geo)
     return {
       mountName,
       init: init.bind(undefined, geo, mountName)

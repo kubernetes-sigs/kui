@@ -19,6 +19,7 @@ import { getOrSetPreference } from '@kui-shell/core'
 
 import Config from './model/Config'
 import baseMountName from './baseMountName'
+import { mountNameForGeo } from './s3provider'
 import IBMCloudS3Provider from './IBMCloudS3Provider'
 
 /** The /s3/ibm/default mount point */
@@ -26,6 +27,15 @@ function defaultProvider(geo: string, config: Config) {
   const provider = new IBMCloudS3Provider(geo, `${baseMountName}/default`, config)
   provider.isDefault = true
   return provider
+}
+
+/** The /s3/ibm/public mount point */
+function publicProvider(geo: string, { endpointForKui }: Pick<Config, 'endpointForKui'>) {
+  return new IBMCloudS3Provider(geo, mountNameForGeo(geo, 'public'), {
+    AccessKeyID: '',
+    SecretAccessKey: '',
+    endpointForKui
+  })
 }
 
 /** A "bind" mount that points to a subdirectory of a given mount */
@@ -45,6 +55,17 @@ async function bindProvider(geo: string, config: Config, pseudo: string) {
   return provider
 }
 
-export default function extraProvidersForDefaultRegion(geo: string, config: Config) {
-  return Promise.all([defaultProvider(geo, config), bindProvider(geo, config, 'bin'), bindProvider(geo, config, 'tmp')])
+export function extraProvidersForDefaultRegion(geo: string, config: Config) {
+  return Promise.all([
+    defaultProvider(geo, config), // /s3/ibm/default
+    publicProvider(geo, config), // /s3/ibm/public (i.e. access to public buckets without credentials)
+    bindProvider(geo, config, 'bin'), // s3/ibm/bin
+    bindProvider(geo, config, 'tmp') // s3/ibm/tmp
+  ])
+}
+
+export function extraProvidersForAllRegions(geo: string, config: Config) {
+  return [
+    publicProvider(geo, config) // /s3/ibm/public (i.e. access to public buckets without credentials)
+  ]
 }
