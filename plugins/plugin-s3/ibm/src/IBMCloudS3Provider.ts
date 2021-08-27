@@ -36,7 +36,7 @@ export default class IBMCloudS3Provider implements S3Provider {
   public constructor(
     private readonly geo: string,
     public readonly mountName: string,
-    config?: Config,
+    config?: Pick<Config, 'AccessKeyID' | 'SecretAccessKey' | 'endpointForKui'>,
     public readonly error?: Error
   ) {
     const accessKey = config ? config.AccessKeyID : undefined
