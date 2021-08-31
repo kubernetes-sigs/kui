@@ -51,7 +51,7 @@
   @include NoInputColorBlocking;
 }
 
-@include FinishedBlock {
+@include Block {
   @include InputWrapper {
     border: $input-border;
     border-radius: 1px;
@@ -63,7 +63,7 @@
     white-space: pre-wrap;
   }
 }
-@include FinishedBlock {
+@include Block {
   @include InputWrapper {
     background-color: $input-bg;
 
@@ -98,13 +98,12 @@
       border-radius: 1px;
       opacity: 0.625;
       content: '';
-      left: 0;
+      left: 1px;
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 4px;
-      border-top-right-radius: 1px;
-      border-bottom-right-radius: 1px;
+      width: 0.375em;
+      box-shadow: -1px 0 rgba(100, 100, 100, 0.7);
     }
     &.error:before {
       opacity: 1;
@@ -122,19 +121,20 @@
     margin: $section-break-margin;
   }
 
-  @include FinishedBlockWithInputAndOutput {
+  /*@include FinishedBlockWithInputAndOutput {
     margin-top: 0.5em;
-  }
+  }*/
 
-  @include FinishedBlock {
+  @include Block {
     @include Context {
-      padding: $inset 0;
+      padding: calc(#{$inset} / 0.875 + 1px) 0;
       align-items: flex-start;
     }
 
     @include ContextInner {
       display: flex;
       align-items: center;
+      font-size: 0.875em;
     }
   }
 
@@ -181,9 +181,9 @@
     }
   }
 
-  @include ActiveBlock {
+  /*@include ActiveBlock {
     padding: 0.875em 0;
-  }
+  }*/
 
   @include Block {
     display: flex;
@@ -192,6 +192,7 @@
 
     /* special positioning for Actions inside of output-only versus input blocks */
     @include BlockOutput {
+      margin-top: 0.25em;
       @include BlockActions {
         top: -0.25em;
         bottom: calc(100% - 1.5em);
@@ -287,7 +288,7 @@
       left: -1em !important;
     }
 
-    &:not(.repl-active) {
+    & {
       @include InputWrapper {
         align-items: stretch;
         padding-left: 0.5em;

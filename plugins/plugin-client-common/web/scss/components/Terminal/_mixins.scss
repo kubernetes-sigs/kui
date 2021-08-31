@@ -35,7 +35,7 @@ $input-border-editing: var(--color-brand-03);
 
 $input-padding-right: calc(1em - 6px);
 $input-padding-left: 1em;
-$repl-context-min-width: 3em;
+$repl-context-min-width: 2em;
 $repl-context-margin-right: 0.5em;
 
 $section-break-margin: 2em 4em 2em 7em;
@@ -256,7 +256,7 @@ $action-hover-delay: 210ms;
 /** The InputWrapper for blocks that have no output */
 @mixin InputWrapperForEmptyBlock {
   @include FinishedBlock {
-    &[data-is-empty] {
+    &[data-is-empty]:not([data-is-focused]) {
       @include InputWrapper {
         @content;
       }
