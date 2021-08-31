@@ -224,8 +224,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     ) : (
       <span className="repl-context-inner">
         {' '}
-        {/* Helps with vertical alignment */}
-        In[{insideBrackets}]
+        {/* Helps with vertical alignment */}[{insideBrackets}]
       </span>
     ) // this.props.model.cwd
   }
