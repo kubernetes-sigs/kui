@@ -64,7 +64,7 @@ body.kui--patternfly4[kui-theme='PatternFly4 Dark'][kui-theme-style] {
 
   --color-repl-background: var(--pf-global--palette--black-900);
   --color-background-03: var(--pf-global--palette--black-800);
-  --color-stripe-01: var(--pf-global--palette--black-700);
+  --color-stripe-01: var(--pf-global--palette--black-800);
 
   .kui--inverted-color-context {
     --color-sidecar-header: var(--pf-global--palette--black-850);
@@ -79,10 +79,11 @@ body.kui--patternfly4[kui-theme='PatternFly4 Dark'][kui-theme-style] {
   --pf-global--primary-color--100: var(--pf-global--primary-color--light-100);
   --pf-global--link--Color: var(--pf-global--link--Color--light);
   --pf-global--link--Color--hover: var(--pf-global--link--Color--light);
-  --pf-global--BackgroundColor--100: var(--pf-global--palette--black-850);
+  --pf-global--BackgroundColor--100: var(--color-repl-background);
   --pf-global--Color--dark-100: var(--pf-global--Color--light-100);
   --pf-global--Color--dark-200: var(--pf-global--Color--light-200);
   --pf-global--BackgroundColor--light-100: var(--pf-global--BackgroundColor--dark-100);
   --pf-global--BackgroundColor--light-200: var(--pf-global--BackgroundColor--dark-200);
   --pf-global--BackgroundColor--light-300: var(--pf-global--BackgroundColor--dark-300);
+  --pf-global--BoxShadow--sm: 0 0.0625rem 0.125rem 0 rgba(200, 200, 200, 0.12), 0 0 0.125rem 0 rgba(200, 200, 200, 0.06);
 }

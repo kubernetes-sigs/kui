@@ -301,8 +301,12 @@ describe('split close and reopen', function(this: Common.ISuite) {
   const count = expectSplits.bind(this)
   const arr = [close.bind(this), closeViaButton.bind(this)]
 
-  arr.forEach(closeTheSplit => {
-    it('should refresh', () => Common.refresh(this))
+  arr.forEach((closeTheSplit, idx) => {
+    it(`should start testing with variant ${idx}`, () => true)
+    it('should refresh', async () => {
+      await Common.refresh(this)
+      await new Promise(resolve => setTimeout(resolve, 2000))
+    })
     Util.closeAllExceptFirstTab.bind(this)()
     count(1)
     splitTheTerminalViaButton(2)

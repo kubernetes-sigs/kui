@@ -2,7 +2,7 @@
 .repl-result-like {
   display: flex;
   flex-wrap: wrap;
-  overflow: hidden;
+  /* overflow: hidden; */
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -147,7 +147,6 @@
   flex-direction: column;
   margin: 0;
   flex: 4;
-  background-color: var(--color-repl-background);
 }
 .repl-inner {
   overflow-y: auto;

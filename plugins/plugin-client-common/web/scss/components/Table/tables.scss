@@ -86,7 +86,7 @@
 
 body[kui-theme-style] {
   @include TableOuter {
-    overflow-x: auto;
+    /* overflow-x: auto; */
 
     .kui--table-like-wrapper p {
       margin: 0;

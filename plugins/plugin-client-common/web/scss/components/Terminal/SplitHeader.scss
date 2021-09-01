@@ -16,22 +16,27 @@
 
 @import 'mixins';
 
+$border-radius: 3px;
+
 body[kui-theme-style] {
   @include SplitHeader {
     padding: 0.125em 0;
     padding-left: $input-padding-left;
     padding-right: $input-padding-right;
 
-    opacity: 0.925;
-    background-color: var(--color-sidecar-toolbar-background);
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+
+    background-color: var(--color-base01);
+    box-shadow: inset 0 -1px var(--color-base02);
 
     & > a,
     & > div {
-      color: var(--color-sidecar-toolbar-foreground);
+      color: var(--color-text-02);
     }
 
     & > svg {
-      fill: var(--color-sidecar-toolbar-foreground);
+      fill: var(--color-text-02);
     }
   }
 

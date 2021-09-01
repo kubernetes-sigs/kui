@@ -15,11 +15,11 @@
  */
 
 /** Inset of the <input> element w.r.t. the bordered/backgrounded region */
-$inset: 0.375em;
+$inset: 0.5em;
 
 /** Font size of e.g. timestamp */
-$right-element-font-size-factor: 0.75;
-$right-element-font-size: $right-element-font-size-factor + rem;
+$right-element-font-size-factor: 0.875;
+$right-element-font-size: $right-element-font-size-factor + em;
 
 /** Sizing for Block action buttons */
 $action-padding: 3px;
@@ -28,13 +28,16 @@ $action-width: 2em;
 /** Color to indicate focused block */
 $focus-color: var(--color-brand-01);
 
-$input-bg: rgba(150, 150, 150, 0.1);
+$input-bg: var(--color-base00);
 $input-bg-inverted: var(--color-base02);
-$input-border: 1px solid hsla(0, 0%, 39.2%, 0.1);
+$input-border: 1px solid rgba(150, 150, 150, 0.2);
 $input-border-editing: var(--color-brand-03);
 
-$input-padding-right: calc(1em - 6px);
+/** This is the left-hand band that defines each block region */
+$block-band-width: 0.375em;
+
 $input-padding-left: 1em;
+$input-padding-right: $input-padding-left - $block-band-width;
 $repl-context-min-width: 2em;
 $repl-context-margin-right: 0.5em;
 
