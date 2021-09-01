@@ -60,7 +60,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
   public render() {
     return (
       !isReadOnlyClient() && (
-        <div className="kui--split-header flex-layout kui--inverted-color-context">
+        <div className="kui--split-header flex-layout">
           <div className="flex-fill" />
           {this.clearButton()}
           {this.closeButton()}

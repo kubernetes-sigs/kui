@@ -102,7 +102,7 @@
       position: absolute;
       top: 0;
       bottom: 0;
-      width: 0.375em;
+      width: $block-band-width;
       box-shadow: -1px 0 rgba(100, 100, 100, 0.7);
     }
     &.error:before {
@@ -192,7 +192,7 @@
 
     /* special positioning for Actions inside of output-only versus input blocks */
     @include BlockOutput {
-      margin-top: 0.25em;
+      margin-top: 0.5em;
       @include BlockActions {
         top: -0.25em;
         bottom: calc(100% - 1.5em);
@@ -341,7 +341,7 @@
 }
 
 body[kui-theme-style] .kui--repl-block-right-element {
-  color: inherit;
+  color: var(--color-text-02);
   font-size: $right-element-font-size;
 }
 

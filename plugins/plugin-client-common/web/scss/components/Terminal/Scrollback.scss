@@ -36,8 +36,6 @@ $split-bgcolor: var(--color-repl-background);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-
-  background-color: $split-bgcolor;
 }
 
 /**
@@ -47,6 +45,8 @@ $split-bgcolor: var(--color-repl-background);
  *
  */
 @include ScrollbackBlockList {
+  background-color: $split-bgcolor;
+
   --split-padding: #{$split-padding};
   padding: var(--split-padding) 0;
 

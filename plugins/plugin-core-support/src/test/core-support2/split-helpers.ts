@@ -19,7 +19,9 @@ import { CLI, Common, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** The actual split terminal via button impl; splitViaButton is the mocha test wrapper */
 export async function doSplitViaButton(ctx: Common.ISuite, splitCount: number) {
-  await ctx.app.client.$(Selectors.NEW_SPLIT_BUTTON).then(_ => _.click())
+  const button = await ctx.app.client.$(Selectors.NEW_SPLIT_BUTTON)
+  await button.waitForExist()
+  await button.click()
   await ReplExpect.splitCount(splitCount)(ctx.app)
 
   await ctx.app.client.waitUntil(() => ctx.app.client['isActive'](Selectors.CURRENT_PROMPT_FOR_SPLIT(splitCount)), {

@@ -15,6 +15,7 @@
  */
 
 @import 'mixins';
+@import '../Card/_mixins';
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
 @import 'BlockLinks';
@@ -83,8 +84,7 @@
     font-weight: 300;
     font-size: 2em;
     letter-spacing: 0.32px;
-    padding: 0.875em 1em 0.875em 0.25em;
-    margin-bottom: 0.875em;
+    margin: 0.5em 1em 0.875em 0;
 
     &:first-child {
       padding-top: 0;
@@ -111,8 +111,13 @@
     }
   }
 
+  ol,
+  li {
+    margin: 0.5em 0;
+  }
+
   @include Paragraphs {
-    font-size: inherit;
+    font-size: 1rem;
 
     /* see https://github.com/IBM/kui/issues/5981 */
     word-break: break-word;
@@ -162,8 +167,15 @@
 }
 @include CommentaryCard {
   display: flex;
-  .kui--card {
+  @include Card {
     flex: 1;
+    box-shadow: none;
+
+    &:not([data-is-editing]) {
+      @include CardBody {
+        padding: 0;
+      }
+    }
   }
 }
 
