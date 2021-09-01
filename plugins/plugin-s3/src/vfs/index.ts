@@ -15,12 +15,12 @@
  */
 
 import Debug from 'debug'
-import { Client } from 'minio'
 import minimatch from 'minimatch'
 import { Readable } from 'stream'
 import { createGunzip } from 'zlib'
 import { createWriteStream } from 'fs'
 import { basename, dirname, join } from 'path'
+import { Client, ItemBucketMetadata } from 'minio'
 
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, CodedError, REPL, encodeComponent, expandHomeDir, flatten, i18n } from '@kui-shell/core'
@@ -142,11 +142,9 @@ class S3VFSResponder extends S3VFS implements VFS {
           )
         } catch (err) {
           console.error(`Error initializing provider ${this.mountPath}`, err)
-          
         }
       } else {
         console.error(`Error initializing provider ${this.mountPath}`, err)
-        
       }
     }
   }
@@ -532,6 +530,39 @@ class S3VFSResponder extends S3VFS implements VFS {
     return false
   }
 
+  /** Object put metadata, such as making the object public */
+  private metadata(parsedOptions: Arguments['parsedOptions']): ItemBucketMetadata {
+    // make public?
+    return parsedOptions.P
+      ? {
+          'x-amz-acl': 'public-read'
+        }
+      : {}
+  }
+
+  /** @return a string that summarizes public files that were just uploaded */
+  private async urlForUploadedFiles(
+    srcs: GlobStats[],
+    etags: string[],
+    bucketName: string,
+    fileName: string,
+    dstIsFolder: boolean
+  ) {
+    const endPoint = /^http/.test(this.options.endPoint) ? this.options.endPoint : `https://${this.options.endPoint}`
+    const folder = dstIsFolder ? fileName : dirname(fileName)
+    const dstDir = !folder ? bucketName : join(bucketName, folder)
+    if (srcs.find(_ => /index.html$/.test(_.path)) || /index.html$/.test(fileName)) {
+      const path = join(dstDir, 'index.html')
+      return strings('Published website as', `${endPoint}/${path}`)
+    } else if (etags.length === 1) {
+      const path = join(dstDir, basename(srcs[0].path))
+      return strings('Published object as', `${endPoint}/${path}`)
+    } else {
+      const path = dstDir
+      return strings('Published N objects to', etags.length, `${endPoint}/${path}`)
+    }
+  }
+
   /**
    * Upload one or more object. We consult the `vfs ls` API to
    * enumerate the source files. If parsedOptions.P is provided, we
@@ -547,37 +578,17 @@ class S3VFSResponder extends S3VFS implements VFS {
     const { bucketName, fileName } = this.split(dstFilepath)
     const dstIsFolder = await this.isFolder(bucketName, fileName)
 
-    // make public?
-    const metadata = parsedOptions.P
-      ? {
-          'x-amz-acl': 'public-read'
-        }
-      : {}
-
     const etagsP = Promise.all(
       (await sources).content.map(_ => {
         const dstFileName = fileName ? (dstIsFolder ? join(fileName, basename(_.path)) : fileName) : basename(_.path)
-        return this.client.fPutObject(bucketName, dstFileName, _.path, metadata)
+        return this.client.fPutObject(bucketName, dstFileName, _.path, this.metadata(parsedOptions))
       })
     )
 
     const etags = await etagsP
 
     if (parsedOptions.P) {
-      const endPoint = /^http/.test(this.options.endPoint) ? this.options.endPoint : `https://${this.options.endPoint}`
-      const srcs = (await sources).content
-      const folder = dstIsFolder ? fileName : dirname(fileName)
-      const dstDir = !folder ? bucketName : join(bucketName, folder)
-      if (srcs.find(_ => /index.html$/.test(_.path)) || /index.html$/.test(fileName)) {
-        const path = join(dstDir, 'index.html')
-        return strings('Published website as', `${endPoint}/${path}`)
-      } else if (etags.length === 1) {
-        const path = join(dstDir, basename(srcs[0].path))
-        return strings('Published object as', `${endPoint}/${path}`)
-      } else {
-        const path = dstDir
-        return strings('Published N objects to', etags.length, `${endPoint}/${path}`)
-      }
+      return this.urlForUploadedFiles((await sources).content, etags, bucketName, fileName, dstIsFolder)
     } else if (etags.length === 1) {
       return strings('Created object with etag', etags[0])
     } else {
@@ -713,7 +724,13 @@ class S3VFSResponder extends S3VFS implements VFS {
           debug('inter-client copy dst', dstFilepath, dstBucket, dstFile)
 
           const stream = await srcProvider.client.getObject(srcBucket, srcFile)
-          const etag = await this.client.putObject(dstBucket, dstName, stream)
+          const etag = await this.client.putObject(
+            dstBucket,
+            dstName,
+            stream,
+            undefined,
+            this.metadata(args.parsedOptions)
+          )
           return etag
         })
       )
@@ -722,6 +739,8 @@ class S3VFSResponder extends S3VFS implements VFS {
     const N = etags.length
     return N === 0
       ? 'Source files not found'
+      : args.parsedOptions.P
+      ? this.urlForUploadedFiles((await sources).content, etags, dstBucket, dstFile, dstIsFolder)
       : `Copied to ${N === 1 ? 'object' : 'objects'} with ${N === 1 ? 'etag' : 'etags'} ${etags.join(', ')}`
   }
 
