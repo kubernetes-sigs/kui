@@ -18,6 +18,8 @@
 @import 'mixins';
 @import '../Sidecar/mixins';
 
+@import 'BlockBorder';
+
 .repl-input,
 .repl-input-sourceref,
 .repl-output {
@@ -91,24 +93,6 @@
     position: relative;
     margin: 0.1875em 0;
 
-    &:before {
-      background-color: var(--color-table-border2);
-      border-left: none;
-      border-right: none;
-      border-radius: 1px;
-      opacity: 0.625;
-      content: '';
-      left: 1px;
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      width: $block-band-width;
-      box-shadow: -1px 0 rgba(100, 100, 100, 0.7);
-    }
-    &.error:before {
-      opacity: 1;
-      background-color: var(--color-red);
-    }
     &:hover .repl-output .repl-context:after {
       border-color: var(--color-base03);
     }
@@ -145,45 +129,18 @@
   li:focus.repl-block,
   li:hover.repl-block[data-is-focused],
   .repl-block[data-is-focused] {
-    &:before {
-      opacity: 1;
-    }
-    &:before {
-      background-color: $focus-color;
-    }
     .repl-input .repl-context {
       opacity: 1;
     }
   }
-  li:not(:focus):hover.repl-block {
-    &,
-    &[data-is-output-only] {
-      &:before {
-        background-color: $focus-color;
-      }
-    }
-
-    &.error {
-      &:before {
-        background-color: hsl(0, 100%, 70%);
-      }
-    }
-  }
   li:not(:focus) {
     &.repl-block {
-      &[data-is-output-only]:before {
-        background-color: transparent;
-      }
       .repl-context:hover,
       .repl-input-element:hover {
         cursor: pointer;
       }
     }
   }
-
-  /*@include ActiveBlock {
-    padding: 0.875em 0;
-  }*/
 
   @include Block {
     display: flex;
