@@ -356,7 +356,10 @@ export async function openSidecarByClick(
   const currentLastBlockIdx = currentSplitCount === splitIndex ? (await CLI.lastBlock(app, splitIndex)).count : -1
 
   // now click on the table row
-  await app.client.$(`${selector}`).then(_ => _.click())
+  const clickOn = await app.client.$(selector)
+  await clickOn.waitForExist({ timeout: CLI.waitTimeout })
+  await clickOn.scrollIntoView(false)
+  await clickOn.click()
 
   // expect 2 splits in total
   await ReplExpect.splitCount(splitIndex)(app)

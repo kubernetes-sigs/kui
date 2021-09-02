@@ -69,6 +69,7 @@ describe(`kubectl get all-namespaces ${process.env.MOCHA_RUN_TARGET || ''}`, fun
 
             const asListButton = await this.app.client.$(Selectors.TABLE_SHOW_AS_LIST(count))
             await asListButton.waitForExist({ timeout: CLI.waitTimeout })
+            await asListButton.scrollIntoView()
             await asListButton.click()
 
             await this.app.client.$(Selectors.TABLE_TITLE(count)).then(_ => _.waitForExist())
