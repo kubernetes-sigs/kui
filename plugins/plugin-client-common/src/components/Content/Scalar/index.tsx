@@ -96,9 +96,9 @@ export default class Scalar extends React.PureComponent<Props, State> {
     console.error('catastrophic error in Scalar', error, errorInfo)
   }
 
-  private onRender() {
+  private onRender(hasContent = true) {
     if (this.props.onRender) {
-      setTimeout(() => this.props.onRender(true), 0)
+      setTimeout(() => this.props.onRender(hasContent), 0)
     }
   }
 
@@ -108,7 +108,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
     const { tab } = this.props
 
     if (typeof response === 'boolean') {
-      this.onRender()
+      this.onRender(undefined) // not false, Output.tsx uses assertHasContent !== undefined
       return <React.Fragment />
     } else if (typeof response === 'number') {
       this.onRender()
