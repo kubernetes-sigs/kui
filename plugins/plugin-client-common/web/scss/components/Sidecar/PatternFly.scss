@@ -27,13 +27,6 @@
 @include SidecarTopTabLabel {
   color: var(--color-text-01);
 }
-@include LightweightUI {
-  &[kui-theme-style='light'] {
-    @include SidecarTopTabLabel {
-      color: var(--color-base00);
-    }
-  }
-}
 
 @include SidecarTopTabSelectedBorder {
   border-color: var(--color-base0C);

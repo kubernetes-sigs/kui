@@ -1195,7 +1195,7 @@ body {
   --color-support-04: var(--color-base0C);
 
   /* stripes */
-  --color-stripe-01: var(--color-base01);
+  --color-stripe-01: var(--color-base02);
   --color-stripe-02: var(--color-base03);
 
   --color-text-01: var(--color-base06);

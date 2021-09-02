@@ -74,23 +74,6 @@
     }
   }
 
-  @include FinishedBlock {
-    @include InputWrapper {
-      @include NoPadding;
-      @include Input {
-        @include NoPadding;
-      }
-    }
-  }
-  @include ProcessingBlock {
-    @include InputWrapper {
-      @include NoPadding;
-      @include Input {
-        @include NoPadding;
-      }
-    }
-  }
-
   @include Block {
     padding: $block-padding 0;
   }

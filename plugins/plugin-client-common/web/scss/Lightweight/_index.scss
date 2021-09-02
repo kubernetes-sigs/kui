@@ -58,10 +58,6 @@ $row-height: 1.5em;
     background-color: transparent;
   }
 
-  @include SidecarTitleBar {
-    background-color: transparent;
-  }
-
   /** Hide the sidecar buttons until hover */
   @include SidecarTitleBarButtons {
     opacity: 0;
