@@ -392,18 +392,25 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
     fallback
   },
+  watchOptions: {
+    poll: pollInterval,
+    ignored: ['**/*.d.ts', '**/*.js.map', '**/node_modules/**', '**/clients/default/**']
+  },
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*', 'Set-Cookie': 'KUI_PROXY_COHOSTED=false' },
     compress: true,
-    clientLogLevel: 'silent',
-    watchOptions: {
-      'info-verbosity': 'verbose',
-      poll: pollInterval,
-      ignored: ['**/*.d.ts', '**/*.js.map', '**/node_modules/**', '**/clients/default/**']
+    client: {
+      logging: 'none',
+      overlay: {
+        errors: true,
+        warnings: false
+      }
     },
-    writeToDisk: !inBrowser,
-    contentBase: buildDir,
-    disableHostCheck: true /* webpack 4.43 -> 4.44 seemed to require this, otherwise console errors WDS Disconnected, and no auto-reload on save+recompile */,
+    devMiddleware: {
+      writeToDisk: !inBrowser
+    },
+    allowedHosts:
+      'all' /* webpack 4.43 -> 4.44 seemed to require this, otherwise console errors WDS Disconnected, and no auto-reload on save+recompile */,
     port
   },
   optimization,
