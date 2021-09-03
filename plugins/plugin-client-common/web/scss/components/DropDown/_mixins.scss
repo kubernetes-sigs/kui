@@ -26,6 +26,14 @@
   }
 }
 
+@mixin DropdownList {
+  @include Dropdown {
+    ul {
+      @content;
+    }
+  }
+}
+
 @mixin DropdownItem {
   .kui--dropdown__menu-item {
     @content;

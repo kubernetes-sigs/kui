@@ -15,12 +15,19 @@
  */
 
 @import 'mixins';
+@import '../DropDown/mixins';
 @import '../common/Lightweight';
 
 @include Sidecar {
   /* We can get rid of this once we get rid of Carbon :( */
   section[hidden] {
     display: none;
+  }
+
+  @include DropdownList {
+    padding: 0;
+    font-size: 0.75rem;
+    color: var(--color-sidecar-toolbar-foreground);
   }
 }
 
