@@ -20,6 +20,8 @@
 body.kui--patternfly4[kui-theme-style] {
   @include PatternFlyFonts;
 
+  --color-dropdown: var(--pf-global--palette--black-200);
+
   --color-hover-primary-text: var(--pf-global--link--Color--light--hover);
   --color-primary-button-background: var(--pf-global--primary-color--100);
   --color-secondary-button-background: transparent;

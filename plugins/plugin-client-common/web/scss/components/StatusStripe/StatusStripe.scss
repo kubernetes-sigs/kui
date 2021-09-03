@@ -171,16 +171,11 @@ $z-index: var(--pf-global--ZIndex--xs);
   .kui--status-stripe-meter {
     font-size: $font-size;
 
-    &:not(:empty) {
-      padding-left: $element-padding;
-    }
     & + .kui--status-stripe-meter {
       padding-left: 0;
     }
 
     .kui--status-stripe-element {
-      padding-right: $element-padding;
-      padding-left: $element-padding;
       border-left: $element-border;
       &:not(:only-child) {
         border-right: $element-border;

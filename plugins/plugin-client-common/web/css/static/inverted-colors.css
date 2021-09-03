@@ -8,7 +8,7 @@ body {
   --color-sidecar-background: var(--color-ui-02);
   --color-sidecar-border: var(--color-ui-04);
   --color-sidecar-header: var(--color-ui-01);
-  --color-dropdown: var(--color-base03);
+  --color-dropdown: var(--color-base05);
 
   /* entity names and kinds */
   --color-name-sidecar: var(--color-name);
