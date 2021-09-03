@@ -22,6 +22,9 @@ export type Props = Pick<DropDownProps, 'position'> & {
   /** Dom identifier for status stripe wrapper around the button */
   id?: string
 
+  /** Special case for widgets that use a nested component that provides its own padding */
+  noPadding?: boolean
+
   icon?: React.ReactNode
   title?: string
   actions: DropDownAction[]
@@ -29,7 +32,12 @@ export type Props = Pick<DropDownProps, 'position'> & {
 
 export default function DropdownWidget(props: Props) {
   return (
-    <div className="kui--status-stripe-element kui--status-stripe-element-clickable" id={props.id} title={props.title}>
+    <div
+      className="kui--status-stripe-element kui--status-stripe-element-clickable"
+      id={props.id}
+      title={props.title}
+      data-no-padding={props.noPadding || undefined}
+    >
       <DropDown isPlain direction="up" toggle="caret" {...props} />
     </div>
   )
