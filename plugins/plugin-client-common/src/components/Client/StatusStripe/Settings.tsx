@@ -110,6 +110,7 @@ export default class Settings extends React.PureComponent<Props, State> {
 
     return (
       <DropdownWidget
+        noPadding
         id="kui--settings-widget"
         title={strings('Switch theme')}
         actions={this.state.themes.map(_ => ({

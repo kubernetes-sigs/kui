@@ -199,6 +199,10 @@ $z-index: var(--pf-global--ZIndex--xs);
     display: flex;
     align-items: center;
 
+    &:not([data-no-padding]) {
+      padding: 0 $element-padding;
+    }
+
     @include Dropdown {
       border: none;
       background-color: transparent;
