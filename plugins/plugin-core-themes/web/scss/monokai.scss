@@ -22,6 +22,7 @@
  */
 body[kui-theme='Monokai'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #272822;
   --color-base01: #383830;

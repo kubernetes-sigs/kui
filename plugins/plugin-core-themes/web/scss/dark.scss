@@ -22,6 +22,7 @@
  */
 body[kui-theme='Dark'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #13171a; /* Default Background */
   --color-base01: #202529; /* Lighter Background (Used for status bars) */

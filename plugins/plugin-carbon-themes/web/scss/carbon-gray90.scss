@@ -18,11 +18,26 @@
 @import 'kui--alternate';
 @import 'charts';
 @import 'colors';
+@import 'inverted';
+
+@import '@kui-shell/plugin-client-common/web/scss/Themes/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/Sidecar/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
 
 /* color variables */
 body[kui-theme='Carbon Gray90'][kui-theme-style] {
   @include charts-dark;
   @include colors-dark;
+
+  @include ScrollbackInvertedColors {
+    @include colors-light;
+    @reset;
+
+    @include Sidecar {
+      @include carbon-inverted;
+      @include Reset;
+    }
+  }
 
   --color-confirm-danger: #da1e28;
 

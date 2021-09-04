@@ -17,6 +17,7 @@
 import React from 'react'
 
 import {
+  AdjustIcon as Contrast,
   OutlinedDotCircleIcon as Waiting,
   EraserIcon as Clear,
   CameraIcon as Screenshot,
@@ -95,6 +96,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Checkmark {...props} />
     case 'CodeBranch':
       return <CodeBranch style={StatusStripe} {...props} />
+    case 'Contrast':
+      return <Contrast {...props} />
     case 'Copy':
       return <Copy {...props} />
     case 'Edit':

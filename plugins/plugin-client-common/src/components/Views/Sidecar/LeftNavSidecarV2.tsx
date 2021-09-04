@@ -121,7 +121,7 @@ export default class LeftNavSidecar extends BaseSidecar<NavResponse, NavigationM
 
     return (
       <div
-        className={'kui--sidecar kui--inverted-color-context kui--nav-view kui--sidecar-nested ' + this.width()}
+        className={'kui--sidecar kui--nav-view kui--sidecar-nested ' + this.width()}
         ref={this.dom}
         data-view="leftnav"
       >

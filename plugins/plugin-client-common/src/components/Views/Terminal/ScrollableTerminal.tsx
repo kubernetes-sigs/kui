@@ -118,6 +118,9 @@ type Props = TerminalOptions & {
 
   /** KuiConfiguration */
   config: KuiConfiguration
+
+  /** Toggle attribute on Tab DOM */
+  toggleAttribute(attr: string): void
 }
 
 interface State {
@@ -208,6 +211,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       console.error('invalid notebook', model)
       throw new Error('Invalid notebook')
     } else {
+      this.props.toggleAttribute('data-is-notebook')
+
       const splits = model.spec.splits.map(split => {
         const newScrollback = this.scrollback(undefined, { inverseColors: split.inverseColors })
 
@@ -395,6 +400,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       nSectionBreak: 0,
       remove: undefined,
       clear: undefined,
+      invert: undefined,
       onClick: undefined,
       onMouseDown: undefined,
       onFocus: undefined,
@@ -424,6 +430,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     state.remove = () => this.removeSplit(sbuuid)
     state.clear = () => this.clear(sbuuid)
+    state.invert = () => this.invert(sbuuid)
 
     /**
      * For inline-input clients, we want empty-space clicks to steal
@@ -669,6 +676,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private get currentUUID() {
     const cur = this.current
     return cur ? cur.uuid : undefined
+  }
+
+  /** Invert colors of the given Scrollback uuid */
+  private invert(uuid: string) {
+    return this.splice(uuid, sbState => Object.assign({}, sbState, { inverseColors: !sbState.inverseColors }))
   }
 
   /** Clear Terminal; TODO: also clear persisted state, when we have it */
@@ -1454,7 +1466,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         onMouseDown={this.props.noActiveInput ? scrollback.onMouseDown : undefined}
       >
         <React.Fragment>
-          {this.state.splits.length > 1 && <SplitHeader onRemove={scrollback.remove} onClear={scrollback.clear} />}
+          {this.state.splits.length > 1 && (
+            <SplitHeader onRemove={scrollback.remove} onClear={scrollback.clear} onInvert={scrollback.invert} />
+          )}
           <ul className="kui--scrollback-block-list">
             <div className="kui--scrollback-block-list-for-sizing">{this.blocks(tab, scrollback, sbidx)}</div>
           </ul>

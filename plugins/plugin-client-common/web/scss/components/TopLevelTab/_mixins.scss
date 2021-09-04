@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-@import 'charts';
-@import 'common';
-@import 'dark';
-@import 'light';
-@import '@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
+@mixin TopLevelTab {
+  .kui--tab-content {
+    @content;
+  }
+}
 
-body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
-  @include LightColors;
-  @include InvertLightToDarkGenerally;
-  @include InvertLightToDarkForSidecar;
-  @include charts-light;
-
-  /** An inverted StatusStripe looks better in this theme */
-  @include StatusStripe {
-    @include InvertLightToDark;
+@mixin NotebookTab {
+  @include TopLevelTab {
+    &[data-is-notebook] {
+      @content;
+    }
   }
 }

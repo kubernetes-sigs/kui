@@ -24,6 +24,7 @@
  */
 body[kui-theme='Lucario'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #19242f;
   --color-base01: hsl(209, 30%, 18%);

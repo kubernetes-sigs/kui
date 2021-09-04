@@ -40,19 +40,11 @@ body[kui-theme-style] {
     }
   }
 
-  @include SplitHeaderClose {
+  @include SplitHeaderButton {
     padding: 2px;
     &:hover {
       cursor: pointer;
-      background-color: var(--color-table-border1);
-    }
-  }
-
-  @include SplitHeaderClear {
-    padding: 2px;
-    &:hover {
-      cursor: pointer;
-      background-color: var(--color-table-border1);
+      background-color: var(--color-base02);
     }
   }
 }

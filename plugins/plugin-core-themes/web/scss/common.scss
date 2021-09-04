@@ -16,3 +16,14 @@
 
 @import '@kui-shell/plugin-client-common/web/scss/Lightweight/index';
 @import '@kui-shell/plugin-client-common/web/scss/PatternFly/kui-alignment';
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
+
+@mixin InvertColors {
+  filter: invert(100%);
+}
+
+@mixin InvertColorsForTerminal {
+  @include ScrollbackInvertedColors {
+    @include InvertColors;
+  }
+}

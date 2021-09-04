@@ -52,6 +52,14 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin ScrollbackInvertedColors {
+  @include Scrollback {
+    &.kui--inverted-color-context {
+      @content;
+    }
+  }
+}
+
 @mixin ScrollbackBlockList {
   .kui--scrollback-block-list {
     @content;
@@ -330,6 +338,14 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin BlockInputWithActiveISearch {
+  @include BlockInput {
+    &.kui--isearch-active {
+      @content;
+    }
+  }
+}
+
 /** Output portion of a Block */
 @mixin BlockOutput {
   .repl-output {
@@ -392,13 +408,8 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
-@mixin SplitHeaderClose {
-  .kui--split-close-button {
-    @content;
-  }
-}
-@mixin SplitHeaderClear {
-  .kui--split-clear-button {
+@mixin SplitHeaderButton {
+  .kui--split-header-button {
     @content;
   }
 }

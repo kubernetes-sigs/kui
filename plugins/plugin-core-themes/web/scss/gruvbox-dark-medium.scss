@@ -22,6 +22,7 @@
  */
 body[kui-theme='Gruvbox'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #282828;
   --color-base01: #3c3836;
