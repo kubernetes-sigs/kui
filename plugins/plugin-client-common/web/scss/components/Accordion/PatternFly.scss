@@ -18,6 +18,12 @@
 
 @include Accordion {
   margin: 0.5rem 0 0;
+
+  /** For some reason, PatternFly hard-wires this to Light-100 */
+  &.pf-c-accordion {
+    /* needed to up priority */
+    --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor-dark-100);
+  }
 }
 
 @include AccordionItem {

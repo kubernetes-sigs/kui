@@ -23,6 +23,7 @@
  */
 body[kui-theme='Paraiso'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #2f1e2e;
   --color-base01: hsl(308, 13%, 20%); /* #41323f; */

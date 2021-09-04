@@ -22,6 +22,7 @@
  */
 body[kui-theme='Atelier'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #131513;
   --color-base01: #242924;

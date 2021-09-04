@@ -1,62 +1,83 @@
+/*
+ * Copyright 2020 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 @import 'charts';
 @import 'colors';
+@import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
 
 /* inverted color scheme */
 @mixin carbon-inverted {
-  .kui--inverted-color-context {
-    @include charts-dark;
-    @include colors-dark;
+  @include charts-dark;
+  @include colors-dark;
 
-    --color-black: var(--color-ui-01);
-    --color-base08: #da1e28;
-    --color-red: var(--color-base08);
-    --color-green: var(--color-base0B);
-    --color-yellow: var(--color-base0A);
-    --color-cyan: var(--color-base0C);
-    --color-blue: var(--color-base0D);
-    --color-magenta: var(--color-base0E);
-    --color-white: var(--color-base07);
-    --color-light-gray: var(--color-base04);
-    --color-dark-gray: var(--color-base03);
-    --color-ui-01: var(--color-base00);
-    --color-ui-02: var(--color-base01);
-    --color-ui-03: var(--color-base03);
-    --color-ui-04: var(--color-base02);
-    --color-ui-05: var(--color-base04);
-    --color-ui-06: var(--color-base02);
+  --color-black: var(--color-ui-01);
+  --color-base08: #da1e28;
+  --color-red: var(--color-base08);
+  --color-green: var(--color-base0B);
+  --color-yellow: var(--color-base0A);
+  --color-cyan: var(--color-base0C);
+  --color-blue: var(--color-base0D);
+  --color-magenta: var(--color-base0E);
+  --color-white: var(--color-base07);
+  --color-light-gray: var(--color-base04);
+  --color-dark-gray: var(--color-base03);
+  --color-ui-01: var(--color-base00);
+  --color-ui-02: var(--color-base01);
+  --color-ui-03: var(--color-base03);
+  --color-ui-04: var(--color-base02);
+  --color-ui-05: var(--color-base04);
+  --color-ui-06: var(--color-base02);
 
-    --color-ok: var(--color-green);
-    --color-error: var(--color-red);
-    --color-warning: var(--color-base09);
+  --color-ok: var(--color-green);
+  --color-error: var(--color-red);
+  --color-warning: var(--color-base09);
 
-    --color-text-01: var(--color-base06);
-    --color-text-02: var(--color-base04);
-    color: var(--color-text-01);
+  --color-text-01: var(--color-base06);
+  --color-text-02: var(--color-base04);
+  color: var(--color-text-01);
 
-    --color-map-value: var(--color-text-01);
-    --color-map-key: var(--color-base0C);
-    --color-name: #30b0ff;
+  --color-map-value: var(--color-text-01);
+  --color-map-key: var(--color-base0C);
+  --color-name: #30b0ff;
 
-    --color-brand-01: #97c1ff;
-    --color-brand-02: var(--color-base07);
-    --color-brand-03: var(--color-base0C);
+  --color-brand-01: #97c1ff;
+  --color-brand-02: var(--color-base07);
+  --color-brand-03: var(--color-base0C);
 
-    --color-repl-background-02: var(--color-base02);
+  --color-repl-background-02: var(--color-base02);
 
-    --color-stripe-01: var(--color-base02);
-    --color-stripe-02: var(--color-sidecar-header);
+  --color-stripe-01: var(--color-base02);
+  --color-stripe-02: var(--color-sidecar-header);
 
-    --color-sidecar-background-01: #171717;
-    --color-sidecar-background-02: var(--color-base03);
-    --color-name-sidecar: var(--color-name);
+  --color-sidecar-background-01: #171717;
+  --color-sidecar-background-02: var(--color-base03);
+  --color-name-sidecar: var(--color-name);
 
-    --color-screenshot-background: #3d3d3d; /* $ui-01 */
-    --color-screenshot-primary-button-background: #0f62fe; /* $ibm-color__blue-60 */
-    --color-screenshot-primary-button-background-hover: #0043ce; /* $ibm-color__blue-70 */
-    --color-screenshot-secondary-button-background: #6f6f6f; /* $ibm-color__gray-60 */
-    --color-screenshot-secondary-button-background-hover: #525252; /* $ibm-color__gray-50 */
+  --color-screenshot-background: #3d3d3d; /* $ui-01 */
+  --color-screenshot-primary-button-background: #0f62fe; /* $ibm-color__blue-60 */
+  --color-screenshot-primary-button-background-hover: #0043ce; /* $ibm-color__blue-70 */
+  --color-screenshot-secondary-button-background: #6f6f6f; /* $ibm-color__gray-60 */
+  --color-screenshot-secondary-button-background-hover: #525252; /* $ibm-color__gray-50 */
 
-    --color-table-border1: rgba(255, 255, 255, 0.35);
-    --color-table-border2: rgba(255, 255, 255, 0.5);
+  --color-table-border1: rgba(255, 255, 255, 0.35);
+  --color-table-border2: rgba(255, 255, 255, 0.5);
+}
+
+@mixin InvertedColorsForTerminal {
+  @include ScrollbackInvertedColors {
+    @include carbon-inverted;
   }
 }

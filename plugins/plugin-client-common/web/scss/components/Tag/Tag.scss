@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-.kui--inverted-color-context {
+@import '../../Themes/mixins';
+
+@include InvertedColors {
   .kui--tag {
     &.pf-c-badge {
       &.yellow-background {

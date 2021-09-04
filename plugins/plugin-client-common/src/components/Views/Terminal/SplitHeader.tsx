@@ -25,6 +25,7 @@ const strings = i18n('plugin-client-common')
 
 interface Props {
   onRemove(): void
+  onInvert(): void
   onClear(): void
 }
 
@@ -37,7 +38,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
       <Tooltip markdown={strings('Close this split pane')}>
         <a
           href="#"
-          className="kui--split-close-button kui--tab-navigatable"
+          className="kui--split-close-button kui--tab-navigatable kui--split-header-button"
           onMouseDown={this.stopFocusStealing}
           onClick={this.props.onRemove}
         >
@@ -47,11 +48,21 @@ export default class SplitHeader extends React.PureComponent<Props> {
     )
   }
 
+  private invertButton() {
+    return (
+      <Tooltip markdown={strings('Invert colors')}>
+        <a href="#" className="kui--tab-navigatable" onMouseDown={this.stopFocusStealing} onClick={this.props.onInvert}>
+          <Icons className="kui--split-invert-button kui--split-header-button" icon="Contrast" />
+        </a>
+      </Tooltip>
+    )
+  }
+
   private clearButton() {
     return (
       <Tooltip markdown={strings('Clear this split pane')}>
         <a href="#" className="kui--tab-navigatable" onMouseDown={this.stopFocusStealing} onClick={this.props.onClear}>
-          <Icons className="kui--split-clear-button" icon="Clear" />
+          <Icons className="kui--split-clear-button kui--split-header-button" icon="Clear" />
         </a>
       </Tooltip>
     )
@@ -62,6 +73,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
       !isReadOnlyClient() && (
         <div className="kui--split-header flex-layout">
           <div className="flex-fill" />
+          {this.invertButton()}
           {this.clearButton()}
           {this.closeButton()}
         </div>

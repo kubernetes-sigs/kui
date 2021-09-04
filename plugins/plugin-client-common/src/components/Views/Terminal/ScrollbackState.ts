@@ -47,9 +47,16 @@ type ScrollbackState = ScrollbackOptions & {
    */
   showThisIdxInMiniSplit: number
 
-  /** Memoized handlers */
+  /** Remove this scrollback (memoized handler) */
   remove: () => void
+
+  /** Clear the current list of blocks (memoized handler) */
   clear: () => void
+
+  /** Invert colors (memoized handler) */
+  invert: () => void
+
+  /** Other memoized handlers (TODO: docs) */
   onClick: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
   onMouseDown: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
   onFocus: (evt: React.FocusEvent) => void

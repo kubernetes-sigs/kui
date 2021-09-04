@@ -16,72 +16,25 @@
 
 @import 'charts';
 @import 'common';
+@import 'dark';
+@import 'light';
+
+@import '@kui-shell/plugin-client-common/web/scss/Themes/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/Sidecar/mixins';
 
 body.kui--patternfly4[kui-theme='PatternFly4 Dark'][kui-theme-style] {
-  --color-base00: var(--pf-global--palette--black-850);
-  --color-base01: var(--pf-global--palette--black-700);
-  --color-base02: var(--pf-global--palette--black-800);
-  --color-base03: var(--pf-global--palette--black-900);
-  --color-base04: var(--pf-global--palette--black-500);
-  --color-base05: var(--pf-global--palette--black-300);
-  --color-base06: var(--pf-global--palette--black-200);
-  --color-base07: var(--pf-global--palette--black-100);
-  --color-base08: var(--pf-global--palette--red-100);
-  --color-base09: var(--pf-global--palette--orange-300);
-  --color-base0A: var(--pf-global--palette--gold-300);
-  --color-base0B: var(--pf-global--palette--green-300);
-  --color-base0C: var(--pf-global--palette--light-blue-300);
-  --color-base0D: var(--pf-global--palette--blue-300);
-  --color-base0E: #d12765;
-  --color-base0F: var(--pf-global--palette--purple-300);
-
-  --color-base08-rgb: var(--pf-global--palette--red-100-rgb);
-  --color-red-rgb: var(--color-base08-rgb);
-  --color-base0B-rgb: var(--pf-global--palette--green-400-rgb);
-  --color-green-rgb: var(--color-base0B-rgb);
-
-  --color-light-red: var(--pf-global--palette--red-200);
-
-  --color-hover-primary-text: var(--pf-global--link--Color--dark--hover);
-
-  --color-sidecar-toolbar-background: var(--pf-global--palette--black-300);
-
-  --color-text-02: var(--color-base05);
-  --color-brand-02: var(--color-base07);
-  --active-tab-color: var(--pf-global--active-color--300);
-
-  --color-red-sidecar: var(--pf-global--palette--red-200);
-  --color-yellow-sidecar: var(--pf-global--palette--gold-200);
-  --color-green-sidecar: var(--pf-global--palette--green-200);
-
-  --color-error-cell-bg: var(--color-base0E);
-  --color-error-cell-text: var(--color-base07);
-
-  @include charts-dark;
-  @include patternfly-sidecar;
-
-  --color-repl-background: var(--pf-global--palette--black-900);
-  --color-background-03: var(--pf-global--palette--black-800);
-  --color-stripe-01: var(--pf-global--palette--black-800);
-
-  .kui--inverted-color-context {
+  @include Sidecar {
+    --color-stripe-02: var(--pf-global--palette--black-850);
     --color-sidecar-header: var(--pf-global--palette--black-850);
     --color-sidecar-background-01: var(--color-base00);
     --active-tab-color: var(--pf-global--active-color--300);
   }
 
-  /* .pf-t-dark */
-  --pf-global--Color--100: var(--color-ui-01);
-  --pf-global--Color--200: var(--color-ui-02);
-  --pf-global--BorderColor--100: var(--pf-global--BorderColor--light-100);
-  --pf-global--primary-color--100: var(--pf-global--primary-color--light-100);
-  --pf-global--link--Color: var(--pf-global--link--Color--light);
-  --pf-global--link--Color--hover: var(--pf-global--link--Color--light);
-  --pf-global--BackgroundColor--100: var(--color-repl-background);
-  --pf-global--Color--dark-100: var(--pf-global--Color--light-100);
-  --pf-global--Color--dark-200: var(--pf-global--Color--light-200);
-  --pf-global--BackgroundColor--light-100: var(--pf-global--BackgroundColor--dark-100);
-  --pf-global--BackgroundColor--light-200: var(--pf-global--BackgroundColor--dark-200);
-  --pf-global--BackgroundColor--light-300: var(--pf-global--BackgroundColor--dark-300);
-  --pf-global--BoxShadow--sm: 0 0.0625rem 0.125rem 0 rgba(200, 200, 200, 0.12), 0 0 0.125rem 0 rgba(200, 200, 200, 0.06);
+  @include InvertedColors {
+    @include InvertLightToDarkForSidecar;
+  }
+
+  @include DarkColors;
+  @include charts-dark;
+  @include InvertDarkToLightGenerally;
 }

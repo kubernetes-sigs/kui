@@ -22,6 +22,7 @@
  */
 body[kui-theme='Nord'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #2e3440;
   --color-base01: #3b4252;

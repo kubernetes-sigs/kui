@@ -223,6 +223,23 @@ export default class TabContent extends React.PureComponent<Props, State> {
     return 'Please wait while we connect to your cluster'
   }
 
+  /** Toggle attribute on Tab DOM */
+  private readonly _toggleAttribute = (attr: string) => {
+    if (this.state.tab.current) {
+      this.state.tab.current.toggleAttribute(attr)
+    }
+  }
+
+  /** Request to clear the contents of the ScrollableTerminal */
+  private readonly _onClear = () => {
+    this.setState({ showSessionInitDone: false })
+
+    // reset the status stripe on clearing of the terminal
+    // eslint false positive:
+    // eslint-disable-next-line react/no-direct-mutation-state
+    this.state.tab.current.state.desiredStatusStripeDecoration = { type: 'default' }
+  }
+
   private terminal() {
     if (this.state.sessionInit !== 'Done') {
       return (
@@ -247,14 +264,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
                 {...this.props}
                 tab={this.state.tab.current}
                 config={config}
-                onClear={() => {
-                  this.setState({ showSessionInitDone: false })
-
-                  // reset the status stripe on clearing of the terminal
-                  // eslint false positive:
-                  // eslint-disable-next-line react/no-direct-mutation-state
-                  this.state.tab.current.state.desiredStatusStripeDecoration = { type: 'default' }
-                }}
+                toggleAttribute={this._toggleAttribute}
+                onClear={this._onClear}
                 ref={this.state._terminal}
               >
                 {this.children()}

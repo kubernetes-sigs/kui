@@ -1,0 +1,83 @@
+/*
+ * Copyright 2020 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import '@kui-shell/plugin-client-common/web/scss/Themes/mixins';
+
+@mixin pf-t-light {
+  --pf-global--Color--100: var(--pf-global--Color--dark-100);
+  --pf-global--Color--200: var(--pf-global--Color--dark-200);
+  --pf-global--BorderColor--100: var(--pf-global--BorderColor--dark-100);
+  --pf-global--primary-color--100: var(--pf-global--primary-color--dark-100);
+  --pf-global--link--Color: var(--pf-global--link--Color--dark);
+  --pf-global--link--Color--hover: var(--pf-global--link--Color--dark--hover);
+  --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--light-100);
+  --pf-global--BackgroundColor--200: var(--pf-global--BackgroundColor--light-200);
+}
+
+@mixin LightColors {
+  --color-base00: var(--pf-global--palette--black-100);
+  --color-base01: var(--pf-global--palette--black-200);
+  --color-base02: var(--pf-global--palette--black-300);
+  --color-base03: var(--pf-global--palette--black-150);
+  --color-base04: var(--pf-global--palette--black-600);
+  --color-base05: var(--pf-global--palette--black-800);
+  --color-base06: var(--pf-global--palette--black-900);
+  --color-base07: var(--pf-global--palette--black-1000);
+  --color-base08: var(--pf-global--palette--red-100);
+  --color-base09: var(--pf-global--palette--gold-500);
+  --color-base0A: var(--pf-global--palette--orange-500);
+  --color-base0B: var(--pf-global--palette--green-500);
+  --color-base0C: var(--pf-global--palette--light-blue-500);
+  --color-base0D: var(--pf-global--palette--blue-400);
+  --color-base0E: #d12765;
+  --color-base0F: var(--pf-global--palette--purple-300);
+
+  --color-stripe-01: var(--pf-global--palette--black-400);
+  --color-repl-background: var(--pf-global--palette--white);
+  --color-repl-background-02: var(--pf-global--palette--black-250-kui);
+
+  --color-base08-rgb: var(--pf-global--palette--red-100-rgb);
+  --color-red-rgb: var(--color-base08-rgb);
+  --color-base0B-rgb: var(--pf-global--palette--green-500-rgb);
+  --color-green-rgb: var(--color-base0B-rgb);
+
+  --color-background-03: var(--pf-global--palette--black-200);
+
+  --color-table-border1: var(--pf-global--palette--black-200);
+  --color-table-border2: var(--pf-global--palette--black-600);
+  --color-table-border3: var(--pf-global--palette--black-500);
+
+  --color-sidecar-toolbar-background: var(--pf-global--palette--black-300);
+
+  --color-text-02: var(--color-base05);
+  --color-brand-02: var(--color-base07);
+  --active-tab-color: var(--pf-global--active-color--100);
+
+  --color-red-sidecar: var(--pf-global--palette--red-200);
+  --color-yellow-sidecar: var(--pf-global--palette--gold-200);
+  --color-green-sidecar: var(--pf-global--palette--green-200);
+
+  --color-error-cell-bg: var(--color-base0E);
+  --color-error-cell-text: var(--color-base00);
+}
+
+@mixin InvertDarkToLightGenerally {
+  @include InvertedColors {
+    @include pf-t-light;
+    @include LightColors;
+    @include Reset;
+  }
+}

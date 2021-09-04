@@ -16,7 +16,9 @@
 
 @use 'sass:math';
 @import 'mixins';
+
 @import '../Sidecar/mixins';
+@import '../../Themes/mixins';
 
 @import 'BlockBorder';
 
@@ -330,5 +332,13 @@ body[kui-theme-style] .kui--repl-block-right-element {
   pre {
     margin: 0;
     white-space: pre-wrap;
+  }
+}
+
+@include BlockInputWithActiveISearch {
+  align-items: center;
+  @include InputWrapper {
+    width: 0;
+    opacity: 0;
   }
 }

@@ -23,6 +23,7 @@
  */
 body[kui-theme='Solarized'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #002b36;
   --color-base01: #073642;

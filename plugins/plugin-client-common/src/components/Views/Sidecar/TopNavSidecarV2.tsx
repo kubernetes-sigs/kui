@@ -447,7 +447,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
       // Note: data-view helps with tests
       return (
         <div
-          className={'kui--sidecar kui--inverted-color-context kui--sidecar-nested ' + this.width()}
+          className={'kui--sidecar kui--sidecar-nested ' + this.width()}
           ref={this.dom}
           data-view="topnav"
           onClick={this._stopPropagation}

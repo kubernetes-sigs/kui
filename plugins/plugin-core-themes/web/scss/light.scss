@@ -15,80 +15,84 @@
  */
 
 @import 'common';
+@import '@kui-shell/plugin-client-common/web/scss/components/Sidecar/mixins';
+@import '@kui-shell/plugin-client-common/web/scss/components/StatusStripe/mixins';
 
 /* inverted sidecar */
-body[kui-theme='Light'] .kui--inverted-color-context {
-  @include kui-patternfly-alignment-light;
+@mixin InvertColorsForSidecar {
+  @include Sidecar {
+    @include kui-patternfly-alignment-light;
 
-  --color-base00: #13171a; /* Default Background */
-  --color-base01: #202529; /* Lighter Background (Used for status bars) */
-  --color-base02: #272c30; /* Selection Background */
-  --color-base03: #373d42;
-  --color-base04: #8d8d8d; /* Dark Foreground (Used for status bars) */
-  --color-base05: #9fa5ad; /* Default Foreground, Caret, Delimiters, Operators */
-  --color-base06: #f2f4f8; /* Light Foreground (Not often used) */
-  --color-base07: #ffffff; /* Light Background (Not often used) */
-  --color-base08: #fb4b53; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
-  --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
-  --color-base0A: #fdd13a; /* YELLOW: Classes, Markup Bold, Search Text Background */
-  --color-base0B: #3dbb61; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
-  --color-base0C: #6ccaff; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
-  --color-base0D: #97c1ff; /* BLUE: Functions, Methods, Attribute IDs, Headings */
-  --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
-  --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
+    --color-base00: #13171a; /* Default Background */
+    --color-base01: #202529; /* Lighter Background (Used for status bars) */
+    --color-base02: #272c30; /* Selection Background */
+    --color-base03: #373d42;
+    --color-base04: #8d8d8d; /* Dark Foreground (Used for status bars) */
+    --color-base05: #9fa5ad; /* Default Foreground, Caret, Delimiters, Operators */
+    --color-base06: #f2f4f8; /* Light Foreground (Not often used) */
+    --color-base07: #ffffff; /* Light Background (Not often used) */
+    --color-base08: #fb4b53; /* RED: Variables, XML Tags, Markup Link Text, Markup Lists, Diff Deleted */
+    --color-base09: #de935f; /* ORANGE: Integers, Boolean, Constants, XML Attributes, Markup Link Url */
+    --color-base0A: #fdd13a; /* YELLOW: Classes, Markup Bold, Search Text Background */
+    --color-base0B: #3dbb61; /* GREEN: Strings, Inherited Class, Markup Code, Diff Inserted */
+    --color-base0C: #6ccaff; /* CYAN: Support, Regular Expressions, Escape Characters, Markup Quotes */
+    --color-base0D: #97c1ff; /* BLUE: Functions, Methods, Attribute IDs, Headings */
+    --color-base0E: #ffa0c2; /* MAGENTA: Keywords, Storage, Selector, Markup Italic, Diff Changed */
+    --color-base0F: #d0b0ff; /* BROWN: Deprecated, Opening/Closing Embedded Language Tags, e.g. <?php ?> */
 
-  --color-ok: var(--color-green);
-  --color-error: var(--color-red);
-  --color-warning: var(--color-base09);
+    --color-ok: var(--color-green);
+    --color-error: var(--color-red);
+    --color-warning: var(--color-base09);
 
-  --color-text-01: var(--color-base06);
-  --color-text-02: var(--color-base05);
-  color: var(--color-text-01);
-  --color-sidecar-header: var(--color-base03);
-  --color-sidecar-background-01: var(--color-base01);
-  --color-sidecar-background-02: var(--color-base03);
+    --color-text-01: var(--color-base06);
+    --color-text-02: var(--color-base05);
+    color: var(--color-text-01);
+    --color-sidecar-header: var(--color-base03);
+    --color-sidecar-background-01: var(--color-base01);
+    --color-sidecar-background-02: var(--color-base03);
 
-  --color-repl-background: var(--color-base01);
-  --color-repl-background-02: var(--color-base04);
+    --color-repl-background: var(--color-base01);
+    --color-repl-background-02: var(--color-base04);
 
-  --color-map-value: var(--color-text-01);
-  --color-map-key: var(--color-base0D);
+    --color-map-value: var(--color-text-01);
+    --color-map-key: var(--color-base0D);
 
-  --color-black: var(--color-ui-01);
-  --color-red: var(--color-base08);
-  --color-green: var(--color-base0B);
-  --color-yellow: var(--color-base0A);
-  --color-cyan: var(--color-base0C);
-  --color-blue: var(--color-base0D);
-  --color-magenta: var(--color-base0E);
-  --color-white: var(--color-base07);
-  --color-light-gray: var(--color-base04);
-  --color-dark-gray: var(--color-base03);
+    --color-black: var(--color-ui-01);
+    --color-red: var(--color-base08);
+    --color-green: var(--color-base0B);
+    --color-yellow: var(--color-base0A);
+    --color-cyan: var(--color-base0C);
+    --color-blue: var(--color-base0D);
+    --color-magenta: var(--color-base0E);
+    --color-white: var(--color-base07);
+    --color-light-gray: var(--color-base04);
+    --color-dark-gray: var(--color-base03);
 
-  --color-brand-01: var(--color-blue);
-  --color-brand-03: #418cff;
+    --color-brand-01: var(--color-blue);
+    --color-brand-03: #418cff;
 
-  --color-stripe-01: #4f565c;
-  --color-stripe-02: var(--color-base03);
+    --color-stripe-01: #4f565c;
+    --color-stripe-02: var(--color-base03);
 
-  --color-ui-01: var(--color-base00);
-  --color-ui-02: var(--color-base01);
-  --color-ui-03: var(--color-base03);
-  --color-ui-04: var(--color-base02);
-  --color-ui-05: var(--color-base04);
-  --color-ui-06: #1a2024;
+    --color-ui-01: var(--color-base00);
+    --color-ui-02: var(--color-base01);
+    --color-ui-03: var(--color-base03);
+    --color-ui-04: var(--color-base02);
+    --color-ui-05: var(--color-base04);
+    --color-ui-06: #1a2024;
 
-  --color-name: var(--color-base0C);
+    --color-name: var(--color-base0C);
 
-  --color-text-against-dark-bg: var(--color-text-01);
+    --color-text-against-dark-bg: var(--color-text-01);
 
-  --color-sidecar-toolbar-background: #d7dce3;
-  --color-sidecar-toolbar-foreground: var(--color-base02);
-  --color-name-sidecar: var(--color-name);
+    --color-sidecar-toolbar-background: #d7dce3;
+    --color-sidecar-toolbar-foreground: var(--color-base02);
+    --color-name-sidecar: var(--color-name);
 
-  --color-table-border1: #616466;
-  --color-table-border2: #a5a9ad;
-  --color-table-border3: #565151;
+    --color-table-border1: #616466;
+    --color-table-border2: #a5a9ad;
+    --color-table-border3: #565151;
+  }
 }
 
 /* color variables */
@@ -140,4 +144,12 @@ body[kui-theme='Light'] {
 
   --color-error-cell-bg: var(--color-base0E);
   --color-error-cell-text: var(--color-base00);
+
+  @include InvertColorsForTerminal;
+  @include InvertColorsForSidecar;
+
+  /** An inverted StatusStripe looks better in this theme */
+  @include StatusStripe {
+    @include InvertColors;
+  }
 }

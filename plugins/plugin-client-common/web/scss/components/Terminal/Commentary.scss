@@ -18,6 +18,7 @@
 @import '../Card/_mixins';
 @import '../Sidecar/_mixins';
 @import '../common/_narrow-window';
+@import '../../Themes/mixins';
 @import 'BlockLinks';
 
 @mixin h1 {
@@ -188,7 +189,7 @@ body[kui-theme-style='dark'] {
 }
 
 body[kui-theme-style='light'] {
-  .kui--inverted-color-context {
+  @include InvertedColors {
     @include Commentary {
       .bx--snippet {
         color: var(--color-base00);

@@ -22,6 +22,7 @@
  */
 body[kui-theme='Dracula'] {
   @include kui-patternfly-alignment-dark;
+  @include InvertColorsForTerminal;
 
   --color-base00: #282936;
   --color-base01: #3a3c4e;

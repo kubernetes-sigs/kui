@@ -110,7 +110,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
   }
 
   private className() {
-    return 'kui--status-stripe' + (this.state.type === 'default' ? ' kui--inverted-color-context' : '')
+    return 'kui--status-stripe'
   }
 
   public render() {

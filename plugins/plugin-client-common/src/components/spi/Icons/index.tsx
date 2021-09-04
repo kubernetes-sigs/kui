@@ -25,6 +25,7 @@ export type SupportedIcon =
   | 'ChartBar'
   | 'Checkmark'
   | 'CodeBranch'
+  | 'Contrast'
   | 'Copy'
   | 'Edit'
   | 'Clear'
