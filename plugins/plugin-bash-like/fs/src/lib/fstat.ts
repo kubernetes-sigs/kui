@@ -32,7 +32,7 @@ export interface FStatOptions extends ParsedOptions {
   'with-data': boolean
 }
 
-function readData(fullpath): Promise<string> {
+function readData(fullpath: string): Promise<string> {
   return new Promise((resolve, reject) => {
     readFile(fullpath, (err, data) => {
       if (err) {
@@ -94,7 +94,10 @@ export const fstat = ({
           isDirectory: stats.isDirectory(),
           size: stats.size,
           data:
-            !stats.isDirectory() && parsedOptions['with-data'] && !filepath.endsWith('.gz') && stats.size < 1024 * 1024
+            !stats.isDirectory() &&
+            parsedOptions['with-data'] &&
+            !filepath.endsWith('.gz') &&
+            stats.size < 10 * 1024 * 1024
               ? await readData(fullpath)
               : ''
         })
