@@ -89,9 +89,7 @@ function formatMessage(snapshot: Notebook) {
 
 /** Load snapshot model from disk */
 async function loadNotebook(REPL: Arguments['REPL'], filepath: string): Promise<Notebook> {
-  return JSON.parse(
-    (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
-  )
+  return JSON.parse((await REPL.rexec<string>(`vfs fslice ${REPL.encodeComponent(filepath)} 0`)).content)
 }
 
 /** Command registration */

@@ -72,8 +72,8 @@ export default function(registrar: Registrar) {
     args => {
       return fslice(
         args.argvNoOptions[2],
-        parseInt(args.argvNoOptions[3], 10),
-        parseInt(args.argvNoOptions[4], 10),
+        args.argvNoOptions[3] !== undefined ? parseInt(args.argvNoOptions[3], 10) : undefined,
+        args.argvNoOptions[4] !== undefined ? parseInt(args.argvNoOptions[4], 10) : undefined,
         args.argvNoOptions[5] as 'bytes' | 'lines'
       )
     },

@@ -8,7 +8,8 @@
   "spec": {
     "splits": [
       {
-        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
+        "inverseColors": true,
         "blocks": [
           {
             "response": {
@@ -86,7 +87,12 @@
             "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
-          },
+          }
+        ]
+      },
+      {
+        "uuid": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
@@ -124,7 +130,7 @@
                 "plugin": "plugin-client-common"
               },
               "execType": 0,
-              "execUUID": "02b40bab-d26b-4026-98c8-4d973d605e4e"
+              "execUUID": "2a4ee59d-e4ea-4068-8fcd-0d3926565c12"
             },
             "completeEvent": {
               "execType": 0,
@@ -133,7 +139,7 @@
               "parsedOptions": {
                 "_": ["#"]
               },
-              "execUUID": "02b40bab-d26b-4026-98c8-4d973d605e4e",
+              "execUUID": "2a4ee59d-e4ea-4068-8fcd-0d3926565c12",
               "cancelled": false,
               "evaluatorOptions": {
                 "outputOnly": true,
@@ -158,8 +164,9 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "02b40bab-d26b-4026-98c8-4d973d605e4e",
-            "prefersTerminalPresentation": false,
+            "execUUID": "2a4ee59d-e4ea-4068-8fcd-0d3926565c12",
+            "isSectionBreak": false,
+            "originalExecUUID": "2a4ee59d-e4ea-4068-8fcd-0d3926565c12",
             "outputOnly": true,
             "state": "valid-response"
           },
@@ -393,7 +400,7 @@
                 "plugin": "plugin-kubectl"
               },
               "execType": 3,
-              "execUUID": "9d76e6d5-1497-4f5c-b845-9b244907be4a"
+              "execUUID": "abd598d1-d010-486a-9a03-9a91f0fdcfdf"
             },
             "completeEvent": {
               "execType": 3,
@@ -403,7 +410,7 @@
               "parsedOptions": {
                 "_": ["k", "create", "ns", "kui-notebook-1"]
               },
-              "execUUID": "9d76e6d5-1497-4f5c-b845-9b244907be4a",
+              "execUUID": "abd598d1-d010-486a-9a03-9a91f0fdcfdf",
               "cancelled": false,
               "evaluatorOptions": {
                 "plugin": "plugin-kubectl"
@@ -607,9 +614,10 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "9d76e6d5-1497-4f5c-b845-9b244907be4a",
+            "execUUID": "abd598d1-d010-486a-9a03-9a91f0fdcfdf",
+            "isSectionBreak": false,
+            "originalExecUUID": "abd598d1-d010-486a-9a03-9a91f0fdcfdf",
             "startTime": 1603210685723,
-            "prefersTerminalPresentation": true,
             "outputOnly": false,
             "state": "valid-response"
           },
@@ -651,7 +659,7 @@
                 "plugin": "plugin-client-common"
               },
               "execType": 0,
-              "execUUID": "c01764b5-73e7-49a4-b01d-9d9b4de5412b"
+              "execUUID": "cb9e75c4-24c0-4441-8b6d-fa638b778f88"
             },
             "completeEvent": {
               "execType": 0,
@@ -661,7 +669,7 @@
               "parsedOptions": {
                 "_": ["#", "  Now we can create the resource."]
               },
-              "execUUID": "c01764b5-73e7-49a4-b01d-9d9b4de5412b",
+              "execUUID": "cb9e75c4-24c0-4441-8b6d-fa638b778f88",
               "cancelled": false,
               "evaluatorOptions": {
                 "outputOnly": true,
@@ -686,9 +694,10 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "c01764b5-73e7-49a4-b01d-9d9b4de5412b",
+            "execUUID": "cb9e75c4-24c0-4441-8b6d-fa638b778f88",
+            "isSectionBreak": false,
+            "originalExecUUID": "cb9e75c4-24c0-4441-8b6d-fa638b778f88",
             "startTime": 1602868891388,
-            "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
           },
@@ -1025,7 +1034,7 @@
                 "plugin": "plugin-kubectl"
               },
               "execType": 3,
-              "execUUID": "4545e2ce-cbb4-455e-9fe5-c7eb09287770"
+              "execUUID": "bfaa4e59-08bc-45aa-8366-994ca22afb0a"
             },
             "completeEvent": {
               "execType": 3,
@@ -1037,7 +1046,7 @@
                 "f": "https://k8s.io/examples/application/simple_deployment.yaml",
                 "n": "kui-notebook-1"
               },
-              "execUUID": "4545e2ce-cbb4-455e-9fe5-c7eb09287770",
+              "execUUID": "bfaa4e59-08bc-45aa-8366-994ca22afb0a",
               "cancelled": false,
               "evaluatorOptions": {
                 "plugin": "plugin-kubectl"
@@ -1344,9 +1353,10 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "4545e2ce-cbb4-455e-9fe5-c7eb09287770",
+            "execUUID": "bfaa4e59-08bc-45aa-8366-994ca22afb0a",
+            "isSectionBreak": false,
+            "originalExecUUID": "bfaa4e59-08bc-45aa-8366-994ca22afb0a",
             "startTime": 1603210688746,
-            "prefersTerminalPresentation": true,
             "outputOnly": false,
             "state": "valid-response"
           },
@@ -1355,7 +1365,7 @@
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "When running this yourself, the `apply` table will be live, with the **Status** cells updating as resources become available. You may also click to expand the show the `simple_deployment.yaml` source."
+                "children": "When running this yourself, the `apply` table will be live, with the **Status** cells updating as resources become available. You may also click to expand the source reference."
               }
             },
             "historyIdx": 249,
@@ -1388,7 +1398,7 @@
                 "plugin": "plugin-client-common"
               },
               "execType": 0,
-              "execUUID": "ec4f64cb-cd79-4ebb-95e6-0239f6a40919"
+              "execUUID": "478d4f12-243e-4205-b15d-12eef496355a"
             },
             "completeEvent": {
               "execType": 0,
@@ -1398,7 +1408,7 @@
               "parsedOptions": {
                 "_": ["#"]
               },
-              "execUUID": "ec4f64cb-cd79-4ebb-95e6-0239f6a40919",
+              "execUUID": "478d4f12-243e-4205-b15d-12eef496355a",
               "cancelled": false,
               "evaluatorOptions": {
                 "outputOnly": true,
@@ -1423,17 +1433,13 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "ec4f64cb-cd79-4ebb-95e6-0239f6a40919",
+            "execUUID": "478d4f12-243e-4205-b15d-12eef496355a",
+            "isSectionBreak": false,
+            "originalExecUUID": "478d4f12-243e-4205-b15d-12eef496355a",
             "startTime": 1602891188650,
-            "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
-          }
-        ]
-      },
-      {
-        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
-        "blocks": [
+          },
           {
             "response": {
               "apiVersion": "kui-shell/v1",
