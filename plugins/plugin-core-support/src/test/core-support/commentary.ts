@@ -272,6 +272,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 
   // Here comes the tests for snapshot --exec
+  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
   openEditor('foo1')
   typeAndVerify(Keys.ENTER, 'foo1\n')
   typeAndVerify(Keys.ENTER, 'foo1\n\n')

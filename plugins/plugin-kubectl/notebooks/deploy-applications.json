@@ -9,6 +9,7 @@
     "splits": [
       {
         "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
+        "inverseColors": true,
         "blocks": [
           {
             "response": {

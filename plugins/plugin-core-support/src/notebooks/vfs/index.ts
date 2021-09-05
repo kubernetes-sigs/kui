@@ -252,7 +252,8 @@ export class NotebookVFS implements VFS {
       if (offset > buffer.length) {
         throw new Error(`notebook fslice: reach file end`)
       } else {
-        return buffer.slice(offset, length + offset).toString()
+        const end = !length ? buffer.length : length + offset
+        return buffer.slice(offset, end).toString()
       }
     } else {
       throw new Error(`fslice: data not found ${filename}`)
