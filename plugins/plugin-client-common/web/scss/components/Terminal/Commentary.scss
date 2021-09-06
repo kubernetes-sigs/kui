@@ -112,9 +112,11 @@
     }
   }
 
-  ol,
-  li {
-    margin: 0.5em 0;
+  .page-content {
+    ol,
+    li {
+      margin: 0.5em 0;
+    }
   }
 
   @include Paragraphs {
