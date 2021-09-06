@@ -18,7 +18,6 @@ import React from 'react'
 import { eventChannelUnsafe, eventBus, Tab as KuiTab, TabState, initializeSession } from '@kui-shell/core'
 
 import KuiContext from './context'
-import { TopTabButton } from './TabModel'
 const Confirm = React.lazy(() => import('../Views/Confirm'))
 
 import getSize from '../Views/Terminal/getSize'
@@ -48,7 +47,6 @@ type Props = TabContentOptions &
     state: TabState
     snapshot?: Buffer
     tabTitle?: string
-    willUpdateTopTabButtons?: (buttons: TopTabButton[]) => void
   }
 
 type SessionInitStatus = 'NotYet' | 'InProgress' | 'Reinit' | 'Done' | 'Error'
