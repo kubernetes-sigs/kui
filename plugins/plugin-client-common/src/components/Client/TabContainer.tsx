@@ -43,20 +43,19 @@ interface State {
   /** list of current tabs; one TabContent for each */
   tabs: TabModel[]
 
-  /** Has the first tab activated itself? */
-  isFirstTabReady: boolean
-
   /** current active tab index */
   activeIdx: number
 }
 
 export default class TabContainer extends React.PureComponent<Props, State> {
+  /** Has the first tab activated itself? */
+  private isFirstTabReady = false
+
   public constructor(props: Props) {
     super(props)
 
     this.state = {
       tabs: [this.newTabModel()],
-      isFirstTabReady: false,
       activeIdx: 0
     }
 
@@ -221,11 +220,11 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
   private onTabReady(tab: Tab) {
     // "initial tab" handling
-    if (!this.state.isFirstTabReady) {
+    if (!this.isFirstTabReady) {
       if (this.props.onTabReady) {
         this.props.onTabReady(tab)
       }
-      this.setState({ isFirstTabReady: true })
+      this.isFirstTabReady = true
     }
 
     // then, for all tabs: we were asked to execute a command line in
@@ -283,7 +282,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
             key={_.uuid}
             uuid={_.uuid}
             active={idx === this.state.activeIdx}
-            willUpdateTopTabButtons={this.willUpdateTopTabButtons.bind(this, _.uuid)}
             onTabReady={this._onTabReady}
             state={_.state}
           >
