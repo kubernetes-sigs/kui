@@ -149,7 +149,7 @@ body[kui-theme='Light'] {
   @include InvertColorsForSidecar;
 
   /** An inverted StatusStripe looks better in this theme */
-  @include StatusStripe {
+  @include StatusStripeWithDefaultColors {
     @include InvertColors;
   }
   @include CommentaryEditor {

@@ -27,7 +27,7 @@ body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
   @include charts-light;
 
   /** An inverted StatusStripe looks better in this theme */
-  @include StatusStripe {
+  @include StatusStripeWithDefaultColors {
     @include InvertLightToDark;
   }
   @include CommentaryEditor {
