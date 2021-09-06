@@ -21,7 +21,7 @@ import Props from '../model'
 
 export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
   private language() {
-    return Language[this.props.language] || Language.text
+    return Language[this.props.language] || Language.plaintext
   }
 
   private height() {
