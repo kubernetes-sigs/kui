@@ -151,7 +151,7 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
     }
 
     const switchNamespaceViaStatusStripe = (ns: string) => {
-      it('should switch to default namespace via status strip element', async () => {
+      it('should switch to default namespace via status stripe element', async () => {
         try {
           await this.app.client
             .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
@@ -159,7 +159,7 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
 
           await this.app.client.$(Selectors.POPOVER_SELECT_OPTION(ns)).then(_ => _.click())
 
-          return this.app.client.waitUntil(
+          await this.app.client.waitUntil(
             async () => {
               const newNamespace = await this.app.client
                 .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
@@ -169,6 +169,11 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
             },
             { timeout: CLI.waitTimeout }
           )
+
+          // click again to close it
+          await this.app.client
+            .$(Selectors.STATUS_STRIPE_WIDGET('kui--plugin-kubeui--current-namespace'))
+            .then(_ => _.click())
         } catch (err) {
           await Common.oops(this, true)(err)
         }

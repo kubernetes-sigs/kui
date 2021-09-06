@@ -71,41 +71,37 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
 
     const textPart = <span className="kui--status-stripe-text">{this.props.text}</span>
 
+    const className =
+      'kui--status-stripe-element' +
+      (this.props.textOnclick || this.props.popover ? ' kui--status-stripe-element-clickable' : '') +
+      (!this.props.id ? '' : ' ' + this.props.id) +
+      (this.props.className ? ' ' + this.props.className : '')
+
     return (
-      <div
-        className={
-          'kui--status-stripe-element' +
-          (this.props.textOnclick || this.props.popover ? ' kui--status-stripe-element-clickable' : '') +
-          (!this.props.id ? '' : ' ' + this.props.id) +
-          (this.props.className ? ' ' + this.props.className : '')
-        }
-        title={this.props.title}
-        data-view={this.props.viewLevel}
-        onClick={
-          !this.props.textOnclick
-            ? undefined
-            : () => {
-                if (typeof this.props.textOnclick === 'string') {
-                  pexecInCurrentTab(this.props.textOnclick)
-                } else {
-                  this.props.textOnclick()
-                }
-              }
-        }
-      >
+      <div className={className} onClick={this._onClick} title={this.props.title} data-view={this.props.viewLevel}>
         {iconPart}
         {textPart}
       </div>
     )
   }
 
+  private readonly _onClick = !this.props.textOnclick
+    ? undefined
+    : () => {
+        if (typeof this.props.textOnclick === 'string') {
+          pexecInCurrentTab(this.props.textOnclick)
+        } else {
+          this.props.textOnclick()
+        }
+      }
+
   public render() {
     if (this.props.popover) {
       return (
         <Popover
-          maxWidth="40rem"
+          maxWidth="60rem"
           minWidth="5rem"
-          position="top"
+          position="top-start"
           triggerClassName="kui--status-stripe-element-wrapper"
           {...this.props.popover}
         >

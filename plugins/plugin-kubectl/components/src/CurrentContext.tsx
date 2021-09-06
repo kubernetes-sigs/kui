@@ -237,6 +237,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     return (
       <React.Suspense fallback={<div />}>
         <Select
+          key={this.state.currentContext /* pf 4.152.4 regression? "This is the current" does not show on change */}
           variant="typeahead"
           maxHeight="11rem"
           className="small-top-pad"
