@@ -260,7 +260,7 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
               key={mode.mode}
               id={mode.mode}
               eventKey={this.eventKey(idx)}
-              className="sidecar-bottom-stripe-button kui--sidecar-tab kui--full-height"
+              className="sidecar-bottom-stripe-button kui--sidecar-tab"
               title={<TabTitleText className="kui--sidecar-tab-label">{mode.label || mode.mode}</TabTitleText>}
               data-mode={mode.mode}
               data-is-selected={idx === this.current.currentTabIndex || undefined}
