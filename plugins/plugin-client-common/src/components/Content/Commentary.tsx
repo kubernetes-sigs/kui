@@ -218,7 +218,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
       <SimpleEditor
         tabUUID={this.props.tabUUID}
         content={this.state.textValue}
-        className="kui--source-ref-editor kui--inverted-color-context"
+        className="kui--source-ref-editor kui--commentary-editor"
         readonly={false}
         simple
         onSave={this._onSaveFromEditor}

@@ -30,4 +30,7 @@ body.kui--patternfly4[kui-theme='PatternFly4 Light'][kui-theme-style] {
   @include StatusStripe {
     @include InvertLightToDark;
   }
+  @include CommentaryEditor {
+    @include InvertLightToDark;
+  }
 }
