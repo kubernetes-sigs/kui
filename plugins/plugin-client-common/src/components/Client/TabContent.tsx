@@ -75,6 +75,8 @@ type State = Partial<WithTab> & {
  *
  */
 export default class TabContent extends React.PureComponent<Props, State> {
+  private _firstRenderDone = false
+
   private readonly cleaners: Cleaner[] = []
 
   /** switching back or away from this tab */
@@ -97,9 +99,11 @@ export default class TabContent extends React.PureComponent<Props, State> {
     const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
 
-      setTimeout(() => {
-        this.state._terminal.current.doFocusIfNeeded()
-      }, 300)
+      if (this.state._terminal.current) {
+        setTimeout(() => {
+          this.state._terminal.current.doFocusIfNeeded()
+        }, 300)
+      }
 
       try {
         if (this.props.onTabReady) {
@@ -319,25 +323,37 @@ export default class TabContent extends React.PureComponent<Props, State> {
     )
   }
 
+  private body() {
+    if (!this.props.active && !this._firstRenderDone) {
+      return <React.Fragment />
+    }
+
+    this._firstRenderDone = true
+
+    return (
+      <React.Fragment>
+        <div className="kui--rows">
+          <div className="kui--columns" style={{ position: 'relative' }}>
+            {this.terminal()}
+          </div>
+          {this.bottom()}
+        </div>
+        {this.state.tab.current && (
+          <React.Suspense fallback={<div />}>
+            <Confirm tab={this.state.tab.current} uuid={this.props.uuid} />
+          </React.Suspense>
+        )}
+      </React.Fragment>
+    )
+  }
+
   public render() {
     this.activateHandlers.forEach(handler => handler(this.props.active))
 
     return (
-      <React.Fragment>
-        <div ref={this.state.tab} className={this.tabClassName()} data-tab-id={this.props.uuid}>
-          <div className="kui--rows">
-            <div className="kui--columns" style={{ position: 'relative' }}>
-              {this.terminal()}
-            </div>
-            {this.bottom()}
-          </div>
-          {this.state.tab.current && (
-            <React.Suspense fallback={<div />}>
-              <Confirm tab={this.state.tab.current} uuid={this.props.uuid} />
-            </React.Suspense>
-          )}
-        </div>
-      </React.Fragment>
+      <div ref={this.state.tab} className={this.tabClassName()} data-tab-id={this.props.uuid}>
+        {this.body()}
+      </div>
     )
   }
 }

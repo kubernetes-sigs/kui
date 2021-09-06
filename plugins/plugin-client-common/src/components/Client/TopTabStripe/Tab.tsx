@@ -150,6 +150,19 @@ export default class Tab extends React.PureComponent<Props, State> {
     return this.state.topTabNames === 'command' // && !document.body.classList.contains('kui--alternate')
   }
 
+  private readonly _onMouseDownNavItem = (evt: React.SyntheticEvent) => {
+    evt.preventDefault()
+    evt.stopPropagation()
+  }
+
+  private readonly _onClickNavItem = () => this.props.onSwitchTab(this.props.idx)
+
+  private readonly _onClickCloseButton = (evt: React.SyntheticEvent) => {
+    evt.stopPropagation()
+    evt.preventDefault()
+    this.props.onCloseTab(this.props.idx)
+  }
+
   public render() {
     return (
       <NavItem
@@ -167,13 +180,8 @@ export default class Tab extends React.PureComponent<Props, State> {
         }
         data-tab-button-index={this.props.idx + 1}
         aria-label="tab"
-        onMouseDown={evt => {
-          evt.preventDefault()
-          evt.stopPropagation()
-        }}
-        onClick={() => {
-          this.props.onSwitchTab(this.props.idx)
-        }}
+        onMouseDown={this._onMouseDownNavItem}
+        onClick={this._onClickNavItem}
       >
         <div className="kui--tab--label">
           {this.isUsingCommandName() && this.state.title}
@@ -193,15 +201,7 @@ export default class Tab extends React.PureComponent<Props, State> {
 
         {this.props.closeable && (
           <React.Fragment>
-            <div
-              className="kui--tab-close"
-              ref={this.closeTabRef}
-              onClick={evt => {
-                evt.stopPropagation()
-                evt.preventDefault()
-                this.props.onCloseTab(this.props.idx)
-              }}
-            >
+            <div className="kui--tab-close" ref={this.closeTabRef} onClick={this._onClickCloseButton}>
               <Icons icon="WindowClose" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
             </div>
             <Tooltip reference={this.closeTabRef} position="bottom">
