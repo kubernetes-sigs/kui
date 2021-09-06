@@ -32,6 +32,9 @@ body[kui-theme='Carbon Gray10'] {
   @include StatusStripe {
     @include carbon-inverted;
   }
+  @include CommentaryEditor {
+    @include carbon-inverted;
+  }
 
   .monaco-editor .margin-view-overlays .current-line-margin,
   .monaco-editor .view-overlays .current-line {

@@ -95,6 +95,8 @@
 @mixin InvertLightToDark {
   @include DarkColors;
   @include Reset;
+  --color-sidecar-background-01: var(--pf-global--palette--black-900);
+  --color-sidecar-background-02: var(--pf-global--palette--black-850);
 }
 
 @mixin InvertLightToDarkGenerally {

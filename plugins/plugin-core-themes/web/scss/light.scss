@@ -152,4 +152,7 @@ body[kui-theme='Light'] {
   @include StatusStripe {
     @include InvertColors;
   }
+  @include CommentaryEditor {
+    @include InvertColors;
+  }
 }

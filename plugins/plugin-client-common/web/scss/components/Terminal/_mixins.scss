@@ -413,3 +413,10 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+/** The Editor while editing a Commentary */
+@mixin CommentaryEditor {
+  .kui--commentary-editor {
+    @content;
+  }
+}
