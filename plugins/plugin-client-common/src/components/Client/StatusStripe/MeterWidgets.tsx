@@ -18,9 +18,13 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react'
+import { Props as PopoverProps } from '../../spi/Popover'
 
 interface Props {
   className?: string
+
+  /** Override default Popover positioning for all children */
+  position?: PopoverProps['position']
 }
 
 export default class MeterWidgets extends React.PureComponent<Props> {
@@ -28,7 +32,28 @@ export default class MeterWidgets extends React.PureComponent<Props> {
     return 'kui--status-stripe-meter ' + (this.props.className || '')
   }
 
+  private graft(node: React.ReactNode | {}, key?: number) {
+    if (React.isValidElement(node)) {
+      // ^^^ this check avoids tsc errors
+      return React.cloneElement(node, {
+        key,
+        position: 'top-end' // meter widgets should default to top-end positioning of Popovers
+      })
+    } else {
+      return node
+    }
+  }
+
+  /** Graft on the REPL focus management */
+  private children() {
+    if (Array.isArray(this.props.children)) {
+      return this.props.children.map((child, idx) => this.graft(child, idx))
+    } else {
+      return this.graft(this.props.children)
+    }
+  }
+
   public render() {
-    return <div className={this.className()}>{this.props.children}</div>
+    return <div className={this.className()}>{this.children()}</div>
   }
 }
