@@ -184,11 +184,13 @@ export default class SimpleEditor extends React.Component<Props, State> {
       eventChannelUnsafe.on('/zoom', onZoom)
       cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
 
-      const onTabLayoutChange = () => {
-        editor.layout()
+      if (props.tabUUID) {
+        const onTabLayoutChange = () => {
+          editor.layout()
+        }
+        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
       }
-      eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-      cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
 
       cleaners.push(() => {
         editor.dispose()

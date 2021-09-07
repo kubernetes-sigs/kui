@@ -18,6 +18,15 @@ interface Props {
   language: string
   value: string
   height?: string
+
+  /** default: false */
+  isCopyEnabled?: boolean
+
+  /** default: false */
+  isDownloadEnabled?: boolean
+
+  /** default: true */
+  isLanguageLabelVisible?: boolean
 }
 
 export default Props
