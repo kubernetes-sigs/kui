@@ -20,7 +20,15 @@ import { TableComposable, Tbody, Tr, Td } from '@patternfly/react-table'
 
 import { i18n, encodeComponent } from '@kui-shell/core'
 import { eventBus, Mount, getCurrentMounts } from '@kui-shell/plugin-s3'
-import { Ansi, Icons, ViewLevel, Markdown, TextWithIconWidget, Tooltip } from '@kui-shell/plugin-client-common'
+import {
+  Ansi,
+  Icons,
+  ViewLevel,
+  Markdown,
+  TextWithIconWidget,
+  TextWithIconWidgetOptions,
+  Tooltip
+} from '@kui-shell/plugin-client-common'
 
 import '../web/scss/S3Mounts.scss'
 
@@ -29,9 +37,7 @@ const strings = i18n('plugin-s3')
 /** Status of mount */
 type Status = 'error' | 'not-mounted' | 'mounted'
 
-interface Props {
-  className?: string
-}
+type Props = TextWithIconWidgetOptions
 
 interface State {
   text: string
@@ -255,6 +261,7 @@ export default class S3Mounts extends React.PureComponent<Props, State> {
         viewLevel={this.state.viewLevel}
         id="kiwi--plugin-s3--s3-mounts"
         title={strings('Your current S3 connections')}
+        {...this.props}
         popover={this.popover()}
       >
         <Icons

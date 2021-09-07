@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import { ViewLevel, Select, TextWithIconWidget, TextWithIconWidgetOptions } from '@kui-shell/plugin-client-common'
 import {
   eventBus,
   eventChannelUnsafe,
@@ -38,9 +38,7 @@ import {
   offKubectlConfigChangeEvents
 } from '@kui-shell/plugin-kubectl'
 
-interface Props {
-  className?: string
-}
+type Props = TextWithIconWidgetOptions
 
 interface State {
   currentContext: string
@@ -314,6 +312,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
         viewLevel={this.state.viewLevel}
         id="kui--plugin-kubeui--current-context"
         title={strings('Kubernetes context')}
+        {...this.props}
         popover={this.popover()}
       >
         <KubernetesIcon />

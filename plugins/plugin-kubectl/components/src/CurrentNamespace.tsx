@@ -16,7 +16,13 @@
 
 import React from 'react'
 
-import { Icons, ViewLevel, Select, TextWithIconWidget } from '@kui-shell/plugin-client-common'
+import {
+  Icons,
+  ViewLevel,
+  Select,
+  TextWithIconWidget,
+  TextWithIconWidgetOptions
+} from '@kui-shell/plugin-client-common'
 
 import { eventBus, i18n, eventChannelUnsafe, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
 
@@ -32,9 +38,7 @@ import {
 import { ready } from './CurrentContext'
 import { isInternalNamespace } from '@kui-shell/plugin-kubectl/heuristics'
 
-interface Props {
-  className?: string
-}
+type Props = TextWithIconWidgetOptions
 
 interface State {
   currentNamespace: string
@@ -271,6 +275,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
         viewLevel={this.state.viewLevel}
         id="kui--plugin-kubeui--current-namespace"
         title={strings('Kubernetes namespace')}
+        {...this.props}
         popover={this.popover()}
       >
         <Icons icon="At" />

@@ -37,7 +37,11 @@ export { default as CurrentWorkingDirectory } from './components/Client/StatusSt
 export { default as SpaceFiller } from './components/Client/StatusStripe/SpaceFiller'
 export { default as MeterWidgets } from './components/Client/StatusStripe/MeterWidgets'
 export { default as ContextWidgets } from './components/Client/StatusStripe/ContextWidgets'
-export { ViewLevel, default as TextWithIconWidget } from './components/Client/StatusStripe/TextWithIconWidget'
+export {
+  ViewLevel,
+  default as TextWithIconWidget,
+  Options as TextWithIconWidgetOptions
+} from './components/Client/StatusStripe/TextWithIconWidget'
 export { default as Settings } from './components/Client/StatusStripe/Settings'
 export { default as TagWidget } from './components/Client/StatusStripe/TagWidget'
 export { default as DropdownWidget } from './components/Client/StatusStripe/DropdownWidget'

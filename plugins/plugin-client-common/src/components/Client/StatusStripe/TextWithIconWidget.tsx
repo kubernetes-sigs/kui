@@ -23,17 +23,26 @@ const Popover = React.lazy(() => import('../../spi/Popover'))
 /** variants of how the information should be presented */
 export type ViewLevel = 'removed' | 'hidden' | 'normal' | 'obscured' | 'ok' | 'warn' | 'error' | 'info'
 
-interface Props {
+/** End-user options */
+export interface Options {
+  className?: string
+
+  /** popover position override specified by container (not client)? */
+  position?: PopoverProps['position']
+}
+
+/** Component-specific Options */
+export interface Props extends Options {
   text: string
   viewLevel: ViewLevel
 
   title?: string
-  className?: string
   iconIsNarrow?: boolean
   iconOnclick?: string | (() => void)
   textOnclick?: string | (() => void)
   id?: string
 
+  /** popover properties specified by client */
   popover?: Pick<PopoverProps, 'bodyContent' | 'headerContent'> & Partial<PopoverProps>
 }
 
@@ -101,8 +110,8 @@ export default class TextWithIconWidget extends React.PureComponent<Props> {
         <Popover
           maxWidth="60rem"
           minWidth="5rem"
-          position="top-start"
           triggerClassName="kui--status-stripe-element-wrapper"
+          position={this.props.position || 'top-start' /* default value; the props.popover may override this */}
           {...this.props.popover}
         >
           {this.content()}
