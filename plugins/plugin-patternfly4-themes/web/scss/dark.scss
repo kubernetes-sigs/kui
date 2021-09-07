@@ -28,7 +28,9 @@
   --pf-global--BackgroundColor--100: var(--pf-global--BackgroundColor--dark-100);
   --pf-global--BackgroundColor--200: var(--pf-global--BackgroundColor--dark-200);
 
-  --pf-global--disabled-color--300: var(--pf-global--BackgroundColor--dark-200);
+  --pf-global--disabled-color--300: var(--pf-global--BackgroundColor--dark-300);
+  --pf-global--BoxShadow--sm: 0 0.0625rem 0.125rem 0 rgba(200, 200, 200, 0.12), 0 0 0.125rem 0 rgba(200, 200, 200, 0.06);
+  --pf-global--BoxShadow--md: 0 0.25rem 0.5rem 0rem rgba(200, 200, 200, 0.12), 0 0 0.25rem 0 rgba(200, 200, 200, 0.06);
 
   /*--pf-global--Color--100: var(--color-ui-01);
   --pf-global--Color--200: var(--color-ui-02);
