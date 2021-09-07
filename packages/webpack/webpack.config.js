@@ -370,6 +370,7 @@ const fallback = !inBrowser
       process: require.resolve('./process.js'),
       stream: require.resolve('stream-browserify'),
       timers: require.resolve('timers-browserify'),
+      tty: require.resolve('tty-browserify'),
       util: require.resolve('util'),
       zlib: require.resolve('browserify-zlib')
     }
