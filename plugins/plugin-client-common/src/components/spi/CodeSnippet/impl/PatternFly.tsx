@@ -21,7 +21,8 @@ import Props from '../model'
 
 export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
   private language() {
-    return Language[this.props.language] || Language.plaintext
+    const { language } = this.props
+    return Language[language === 'sh' || language === 'bash' ? 'shell' : language] || Language.plaintext
   }
 
   private height() {
@@ -32,9 +33,9 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
     return (
       <CodeEditor
         isReadOnly
-        isCopyEnabled
-        isDownloadEnabled
-        isLanguageLabelVisible
+        isCopyEnabled={this.props.isCopyEnabled || false}
+        isDownloadEnabled={this.props.isDownloadEnabled || false}
+        isLanguageLabelVisible={this.props.isLanguageLabelVisible || true}
         isMinimapVisible={false}
         height={this.height()}
         language={this.language()}
