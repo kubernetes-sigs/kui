@@ -97,7 +97,7 @@ function prettyPrintThroughput(bytes: string, durationInMillis: number): string 
 
 function prettyPrintDuration(duration: number): string {
   try {
-    return prettyMillis(duration)
+    return prettyMillis(duration, { millisecondsDecimalDigits: duration < 10 ? 1 : 0 })
   } catch (err) {
     console.error('error formatting duration', duration, err)
     return ''
@@ -307,16 +307,20 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     return 2 // this.props.response.statusColumnIdx >= 0 ? 4 : 3
   }
 
-  private overheads(interval: DenseInterval): { coldStartFraction: number; gapFraction: number } {
+  private overheads(
+    interval: DenseInterval
+  ): { coldStartFraction: number; queueingDelaysFraction: number; gapFraction: number } {
     const idx1 = this.props.response.startColumnIdx
     const idx2 = this.props.response.completeColumnIdx
     const idx3 = this.props.response.coldStartColumnIdx
+    const idx4 = this.props.response.queueingDelayColumnIdx
 
-    const { coldStarts, gaps, denominator } = interval.rows.reduce(
+    const { coldStarts, queueingDelays, gaps, denominator } = interval.rows.reduce(
       (sums, row) => {
         const startMillisAttr = row.attributes[idx1]
         const endMillisAttr = row.attributes[idx2]
         const coldAttr = idx3 ? row.attributes[idx3] : undefined
+        const queueingDelayAttr = idx4 ? row.attributes[idx4] : undefined
         let thisStartMillis: number
         const { previousEndMillis } = sums
 
@@ -332,6 +336,10 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
           sums.coldStarts += parseInt(coldAttr.value, 10)
         }
 
+        if (queueingDelayAttr) {
+          sums.queueingDelays += parseInt(queueingDelayAttr.value, 10)
+        }
+
         if (previousEndMillis > 0) {
           const gap = thisStartMillis - previousEndMillis
           if (gap > 0) {
@@ -341,10 +349,14 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
 
         return sums
       },
-      { coldStarts: 0, gaps: 0, denominator: 0, previousEndMillis: 0 }
+      { coldStarts: 0, queueingDelays: 0, gaps: 0, denominator: 0, previousEndMillis: 0 }
     )
 
-    return { coldStartFraction: coldStarts / denominator, gapFraction: gaps / denominator }
+    return {
+      coldStartFraction: coldStarts / denominator,
+      queueingDelaysFraction: queueingDelays / denominator,
+      gapFraction: gaps / denominator
+    }
   }
 
   private gapRow(startMillis: number, intervalIdx: number, onClick: CellOnClickHandler) {
@@ -449,40 +461,45 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
             const left = this.getFraction(startMillis - interval.startMillis, interval)
             let width = !duration ? undefined : this.getFraction(duration, interval)
             if (left + width > 1) {
-              /* console.error(
-                'oops',
-                left,
-                width,
-                duration,
-                startMillis - interval.startMillis,
-                interval.endMillis - interval.startMillis,
-                interval.endMillis - duration - interval.startMillis,
-                interval,
-                this.state.maxEndMillis
-              ) */
               width = 1 - left
             }
-            const coldStart =
-              this.props.response.coldStartColumnIdx >= 0 && row.attributes[this.props.response.coldStartColumnIdx]
-                ? parseInt(row.attributes[this.props.response.coldStartColumnIdx].value, 10)
-                : undefined
-            let widthB = coldStart ? this.getFraction(coldStart, interval) : undefined
+
             const title = strings('Duration', prettyPrintDuration(duration))
-            const titleB = coldStart ? strings('Cold Start', prettyPrintDuration(coldStart), title) : undefined
             const className = colorByStatus
               ? '' /* trafficLight(row.attributes[idx4]) */
               : durationColor(duration, false)
-            if (left + widthB > 1) {
-              /* console.error(
-                'oopsB',
-                left,
-                widthB,
-                startMillis - interval.startMillis,
-                interval,
-                interval.endMillis - interval.startMillis,
-                interval
-                ) */
-              widthB = 1 - left
+
+            /** Compute the width of the given attr of overhead */
+            const computeOverhead = (attr: 'Cold Start' | 'Queueing Delay') => {
+              const idxAttr = attr === 'Cold Start' ? 'coldStartColumnIdx' : 'queueingDelayColumnIdx'
+              const idx = this.props.response[idxAttr]
+
+              if (idx !== undefined && idx >= 0) {
+                const overhead = row.attributes[idx] ? parseInt(row.attributes[idx].value, 10) : undefined
+
+                if (overhead && overhead > 0) {
+                  // tooltip for the overhead bar
+                  const titleB = overhead ? strings(attr, prettyPrintDuration(overhead), title) : undefined
+
+                  // width of the overhead bar
+                  let widthB = overhead ? this.getFraction(overhead, interval) : undefined
+                  if (left + widthB > 1) {
+                    widthB = 1 - left
+                  }
+
+                  return { title: titleB, width: widthB, offset: 0 }
+                }
+              }
+            }
+
+            const overheads = ['Queueing Delay', 'Cold Start'].map(computeOverhead).filter(Boolean)
+
+            if (overheads.length > 1) {
+              let runningOffset = overheads[0].width
+              for (let idx = 1; idx < overheads.length; idx++) {
+                overheads[idx].offset = runningOffset
+                runningOffset += overheads[idx].width
+              }
             }
 
             // time gap since the run
@@ -532,11 +549,10 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   <Bar
                     left={left}
                     width={width}
-                    widthOverlay={widthB}
-                    className={className}
-                    onClick={onClick}
                     title={title}
-                    titleOverlay={titleB}
+                    onClick={onClick}
+                    className={className}
+                    overheads={overheads}
                   />
                 </td>
                 <td className="kui--tertiary-text pf-m-fit-content">{gapText}</td>

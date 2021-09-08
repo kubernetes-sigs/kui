@@ -517,6 +517,7 @@ export function computeDurations<T extends Table | KResponse>(table: T): T {
     const statusIdx = header.findIndex(_ => _.key === 'STATUS')
     const startIdx = header.findIndex(_ => _.key === 'START')
     const start2Idx = header.findIndex(_ => _.key === 'START2')
+    const start3Idx = header.findIndex(_ => _.key === 'START3')
     const endIdx = header.findIndex(_ => _.key === 'END')
     const durationIdx = header.findIndex(_ => _.key === 'Duration')
 
@@ -535,10 +536,28 @@ export function computeDurations<T extends Table | KResponse>(table: T): T {
       table.durationColumnIdx = header.length
 
       header.push({ key: 'Duration', value: 'Duration' })
+
+      // if we have only start2Idx, and not start3Idx, then we
+      // interpret start2-start as coldStart
+      const start2IsColdStart = start3Idx < 0
+
       if (start2Idx >= 0) {
-        table.coldStartColumnIdx = header.length
-        header.push({ key: 'Cold Start', value: 'Cold Start', outerCSS: 'hide-with-sidecar' })
+        if (start2IsColdStart) {
+          table.coldStartColumnIdx = header.length
+        } else {
+          table.queueingDelayColumnIdx = header.length
+        }
+
+        const key = start2IsColdStart ? 'Cold Start' : 'Queueing Delay'
+        header.push({ key, value: key, outerCSS: 'hide-with-sidecar' })
         header[start2Idx].outerCSS = 'hide'
+      }
+
+      if (start3Idx >= 0) {
+        const key = 'Cold Start'
+        table.coldStartColumnIdx = header.length
+        header.push({ key, value: key, outerCSS: 'hide-with-sidecar' })
+        header[start3Idx].outerCSS = 'hide'
       }
 
       table.body.forEach(row => {
@@ -549,13 +568,26 @@ export function computeDurations<T extends Table | KResponse>(table: T): T {
 
         row.attributes.push({ key: 'Duration', value: isNaN(duration) ? '' : duration.toString() })
 
+        let start2Time = startTime
         if (start2Idx >= 0) {
-          const start2Time = new Date(row.attributes[start2Idx].value).getTime()
-          const coldStart = start2Time - startTime
+          const key = start2IsColdStart ? 'Cold Start' : 'Queueing Delay'
+          start2Time = new Date(row.attributes[start2Idx].value).getTime()
+          const overhead = start2Time - startTime
           row.attributes[start2Idx].outerCSS = 'hide'
           row.attributes.push({
+            key,
+            value: isNaN(overhead) ? '' : overhead.toString(),
+            outerCSS: 'hide-with-sidecar'
+          })
+        }
+
+        if (start3Idx >= 0) {
+          const start3Time = new Date(row.attributes[start3Idx].value).getTime()
+          const overhead = start3Time - start2Time
+          row.attributes[start3Idx].outerCSS = 'hide'
+          row.attributes.push({
             key: 'Cold Start',
-            value: isNaN(coldStart) ? '' : coldStart.toString(),
+            value: isNaN(overhead) ? '' : overhead.toString(),
             outerCSS: 'hide-with-sidecar'
           })
         }
