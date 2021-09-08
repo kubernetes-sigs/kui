@@ -117,7 +117,9 @@ function prettyPrintDateDelta(row: Row, idx1: number, idx2: number, numerator?: 
       } else {
         // then print delta versus now
         const delta = Date.now() - startMillis
-        if (numerator === undefined) {
+        if (isNaN(delta) || !isFinite(delta)) {
+          return ''
+        } else if (numerator === undefined) {
           return prettyMillis(delta, { compact: true })
         } else {
           return prettyPrintThroughput(numerator, delta)
@@ -126,7 +128,9 @@ function prettyPrintDateDelta(row: Row, idx1: number, idx2: number, numerator?: 
     } else {
       const endMillis = new Date(cell2.value).getTime()
       const delta = endMillis - startMillis
-      if (numerator === undefined) {
+      if (isNaN(delta) || !isFinite(delta)) {
+        return ''
+      } else if (numerator === undefined) {
         return prettyMillis(delta)
       } else {
         return prettyPrintThroughput(numerator, delta)
@@ -195,7 +199,14 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
       const idx2 = response.completeColumnIdx
 
       return (a: Row, b: Row) => {
-        // [SORT]
+        if (!a.name) {
+          console.error('Missing name', a)
+          return 0
+        } else if (!b.name) {
+          console.error('Missing name', b)
+          return 0
+        }
+
         const jobNameComparo = a.name.localeCompare(b.name)
         if (jobNameComparo === 0) {
           // same job name; then compare by startTime
@@ -244,7 +255,7 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     // 3) [INTERVALS]: populate a tuple of intervals, where each interval consists of tasks a) from the same job; and b) not too distant in time from the start of the current interval
     const intervals = response.body
       .slice(0) // [SLICE]
-      .sort(SequenceDiagram.sorter(response))
+      .sort(SequenceDiagram.sorter(response)) // SORT
       .reduce((intervals, row) => {
         // [INTERVALS]
         const jobName = row.name
