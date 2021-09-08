@@ -18,13 +18,13 @@ import React from 'react'
 
 interface Props {
   left: number
-  width: number
   className?: string
   wrapperClassName?: string
-  title?: string
 
-  widthOverlay?: number
-  titleOverlay?: string
+  title?: string
+  width: number
+
+  overheads?: { title: string; width: number; offset: number }[]
 
   onClick?: (evt: React.MouseEvent) => void
 }
@@ -36,39 +36,38 @@ function str(frac: number) {
 
 export default class Bar extends React.PureComponent<Props> {
   public render() {
-    const left = str(this.props.left)
-    const width = str(this.props.width || 1 - (this.props.left || 0))
-    const widthOverlay = this.props.widthOverlay ? str(this.props.widthOverlay) : undefined
+    const totalOverheads = (this.props.overheads || []).reduce((left, { width }) => left + width, 0)
+    const leftIncludingOverheads = this.props.left === undefined ? 0 : this.props.left + totalOverheads
+    const left = str(leftIncludingOverheads)
+    const width = str(this.props.width ? this.props.width - totalOverheads : 1 - (leftIncludingOverheads || 0))
+
+    const className =
+      'kui--bar ' +
+      (this.props.className || 'kui--bar-default-color') +
+      (this.props.onClick ? ' clickable' : '') +
+      (this.props.left === undefined || this.props.width === undefined ? ' kui--sequence-diagram-in-progress' : '')
 
     return (
       <div className={'kui--bar-wrapper ' + (this.props.wrapperClassName || '')}>
         <div
-          className={
-            'kui--bar ' +
-            (this.props.className || 'kui--bar-default-color') +
-            (this.props.onClick ? ' clickable' : '') +
-            (this.props.left === undefined || this.props.width === undefined
-              ? ' kui--sequence-diagram-in-progress'
-              : '')
-          }
-          title={this.props.title}
+          className={className}
           data-left={left}
           data-width={width}
+          style={{ left, width }}
+          title={this.props.title}
           onClick={this.props.onClick}
-          style={{
-            left: left,
-            width: width
-          }}
         />
 
-        {/* overlay, make sure this comes last:  */}
-        {this.props.widthOverlay && (
+        {/* "overlays", make sure this comes last:  */}
+        {this.props.overheads.map(({ title, width, offset }, idx) => (
           <div
-            className="kui--bar kui--bar-overlay"
-            title={this.props.titleOverlay}
-            style={{ left: left, width: widthOverlay }}
+            key={idx}
+            title={title}
+            data-overlay={idx}
+            style={{ marginLeft: str(offset), width: str(width) }}
+            className={'kui--bar' + (this.props.onClick ? ' clickable' : '')}
           />
-        )}
+        ))}
       </div>
     )
   }

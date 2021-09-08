@@ -169,6 +169,9 @@ export class Table<RowType extends Row = Row> {
   /** Column index to be interpreted as a time to initialize the computation */
   coldStartColumnIdx?: number
 
+  /** Column index to be interpreted as a time spent in a run queue */
+  queueingDelayColumnIdx?: number
+
   /** Column index to be interpreted as a start timestamp column */
   startColumnIdx?: number
 

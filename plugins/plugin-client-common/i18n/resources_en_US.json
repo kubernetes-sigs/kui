@@ -40,6 +40,7 @@
   "Created a split with inverted colors": "Created a split with inverted colors",
   "Duration": "Duration: {0}",
   "Cold Start": "Cold start delay: {0}. {1}",
+  "Queueing Delay": "Queueing delay: {0}. {1}",
   "Close this tab": "Close this tab {0}",
   "Close this split": "Close this split",
   "Click to show more detail": "Click to show more detail",

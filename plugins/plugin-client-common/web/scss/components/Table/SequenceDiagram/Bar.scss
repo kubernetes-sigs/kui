@@ -46,15 +46,23 @@
   }
 }
 
-.kui--bar-overlay {
+.kui--bar[data-overlay] {
+  height: 100%;
+  box-shadow: 1px 0 var(--color-base01);
+}
+.kui--bar[data-overlay='1'] {
   background: repeating-linear-gradient(
     -55deg,
-    rgba(0, 0, 0, 0.5),
-    rgba(0, 0, 0, 0.6) 1px,
-    rgba(255, 255, 255, 0.7) 2px,
-    rgba(255, 255, 255, 0.5) 3px
+    var(--color-latency-3),
+    var(--color-latency-0) 2px,
+    var(--color-latency-3) 2px,
+    var(--color-latency-3) 8px
   );
-  height: 100%;
+  border: 1px solid var(--color-latency-0);
+}
+.kui--bar[data-overlay='0'] {
+  opacity: 0.5;
+  background: var(--color-latency-1);
 }
 
 .kui--bar {

@@ -132,7 +132,10 @@ export default function renderCell(table: KuiTable, kuiRow: KuiRow, justUpdated:
     // the text value of the cell
     const valueDom = cidx > 0 && kuiRow.attributes[cidx - 1] && kuiRow.attributes[cidx - 1].valueDom
     const title =
-      (cidx - 1 === table.durationColumnIdx || cidx - 1 === table.coldStartColumnIdx) && value
+      (cidx - 1 === table.durationColumnIdx ||
+        cidx - 1 === table.coldStartColumnIdx ||
+        cidx - 1 === table.queueingDelayColumnIdx) &&
+      value
         ? prettyPrintDuration(parseInt(value, 10))
         : value
     const innerText = valueDom || title
