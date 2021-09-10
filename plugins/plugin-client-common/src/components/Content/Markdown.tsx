@@ -258,7 +258,11 @@ export default class Markdown extends React.PureComponent<Props> {
               }
             },
             blockquote: props => {
-              return <Hint>{props.children}</Hint>
+              return (
+                <p>
+                  <Hint>{props.children}</Hint>
+                </p>
+              )
             },
             code: props => {
               if (this.props.nested) {
