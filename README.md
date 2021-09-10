@@ -42,31 +42,23 @@ In summary: Kui enhances your CLI experience, but is also fast. It
 launches in 1-2 seconds, and can process standard `kubectl` commands
 **2-3 times faster** than `kubectl` itself.
 
-### Next steps
-
-- [Download a prebuilt binary](#installation)
-- [Enhance Kui](#contributing)
-- Build your own [custom-branded Kui client](https://github.com/IBM/kui/wiki/5.-How-to-Customize-Your-Client)
-
 ## Installation
 
-[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
-
-You may launch Kui in two ways:
-
-- Open the Kui app, either by double clicking on the executable, or by launching the executable from your terminal, e.g. `open /path/to/Kui.app` on macOS.
-- As a `kubectl` plugin, via the `kubectl-kui` script that is bundled with the prebuilt images. Make sure the directory enclosing the script is on your PATH; e.g. for macOS:
+For macOS, use [Homebrew](https://brew.sh):
 
 ```bash
-curl -L https://macos-tarball.kui-shell.org/ | tar jxf -
-export PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH
+brew install kui
 kubectl kui get pods
+open /Applications/Kui.app
 ```
 
-After the final command, you should see a popup window listing pods in
-your current namespace.
+For other platforms, download one of the following:
 
-> **Windows Warnings**: Kui currently has some bugs in its treatment of backslashes in filepaths. Please use forward slashes for now. Thanks!
+[Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
+
+> To use a `kubectl` plugin, make sure the unpacked directory is on your PATH.
+
+> **Windows Warnings**: Please use forward slashes for filepaths, e.g. c:/users, not c:\users.
 
 ### Rolling Your Own
 
