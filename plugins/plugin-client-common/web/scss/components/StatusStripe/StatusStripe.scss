@@ -133,7 +133,6 @@ $z-index: var(--pf-global--ZIndex--xs);
   .kui--status-stripe-button .kui--status-stripe-element:hover {
     &:not(.kui--status-stripe-tag-element) {
       cursor: pointer;
-      color: $fg-type-default;
       background-color: $status-stripe-hover-bg-color;
     }
   }
