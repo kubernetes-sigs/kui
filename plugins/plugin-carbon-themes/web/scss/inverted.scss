@@ -16,6 +16,7 @@
 
 @import 'charts';
 @import 'colors';
+@import '@kui-shell/plugin-client-common/web/scss/Themes/mixins';
 @import '@kui-shell/plugin-client-common/web/scss/components/Terminal/mixins';
 
 /* inverted color scheme */
@@ -57,6 +58,7 @@
   --color-brand-02: var(--color-base07);
   --color-brand-03: var(--color-base0C);
 
+  --color-ui-01: #000;
   --color-repl-background-02: var(--color-base02);
 
   --color-stripe-01: var(--color-base02);
@@ -79,5 +81,6 @@
 @mixin InvertedColorsForTerminal {
   @include ScrollbackInvertedColors {
     @include carbon-inverted;
+    @include Reset;
   }
 }

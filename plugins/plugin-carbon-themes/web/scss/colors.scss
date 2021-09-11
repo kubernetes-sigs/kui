@@ -19,8 +19,8 @@
 @mixin colors-dark {
   @include kui-patternfly-alignment-dark-for-carbon;
 
-  --color-base00: #262626;
-  --color-base01: #161616;
+  --color-base00: #161616;
+  --color-base01: #262626;
   --color-base02: #393939;
   --color-base03: #525252;
   --color-base04: #8d8d8d;
@@ -68,24 +68,23 @@
   --tab-gray-text-color: #b5b5b5;
   --active-tab-color: #6ea6ff;
 
-  --color-repl-background: var(--color-base00);
+  --color-ui-01: #000000;
 
   --color-prompt-text: #408bfc;
 
+  --color-light-blue: #edf4ff;
   --color-light-red: #ffd7d9;
   --color-light-green: hsla(143, 73%, 43%, 50%);
   --color-light-yellow: hsla(46, 99%, 59%, 50%);
-
-  --color-table-border3: var(--color-base04);
 }
 
 @mixin colors-light {
   @include kui-patternfly-alignment-light-for-carbon;
 
-  --color-base00: #ffffff;
-  --color-base01: #f4f4f4;
-  --color-base02: #e0e0e0;
-  --color-base03: #dcdcdc;
+  --color-base00: #f4f4f4;
+  --color-base01: #e0e0e0;
+  --color-base02: #dcdcdc;
+  --color-base03: #c6c6c6;
   --color-base04: #f2f4f8;
   --color-base05: #50565b;
   --color-base06: #171717;
@@ -113,6 +112,7 @@
   --color-brand-02: #171717;
   --color-brand-03: #0062ff;
 
+  --color-ui-01: #fff;
   --color-ui-05: #171717;
   --color-ui-03: #e0e0e0;
   --color-text-02: #565656;
@@ -122,25 +122,21 @@
 
   --color-table-border1: var(--color-base01);
   --color-table-border2: #8f8b8b;
-  --color-table-border3: var(--color-base02);
 
   --color-background-03: var(--color-ui-03);
 
   --color-sidecar-toolbar-foreground: var(--color-text-01);
 
-  --color-sidecar-header: #282828;
   --color-sidecar-background-01: var(--color-base06);
   --color-sidecar-border: #e4e4e4;
 
   --color-brand-03: #008fff;
   --color-content-divider: #bfc0c2;
 
-  --color-stripe-01: #fff;
-  --color-stripe-02: #f5f7fa;
   --tab-gray-text-color: var(--color-text-01);
   --active-tab-color: #0f62fe;
-  --color-repl-background: #f0f0f0;
 
+  --color-light-blue: #edf4ff;
   --color-light-red: hsla(354, 81%, 51%, 50%);
   --color-light-green: hsla(143, 73%, 43%, 50%);
   --color-light-yellow: hsla(46, 99%, 59%, 50%);

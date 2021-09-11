@@ -15,11 +15,11 @@
  */
 
 @mixin kui-patternfly-alignment-base {
-  --pf-global--palette--blue-50: var(--color-blue);
-  --pf-global--palette--blue-100: var(--color-blue);
-  --pf-global--palette--blue-200: var(--color-blue);
-  --pf-global--palette--blue-300: var(--color-blue);
-  --pf-global--palette--blue-400: var(--color-blue);
+  --pf-global--palette--blue-50: var(--color-light-blue);
+  --pf-global--palette--blue-100: var(--color-light-blue);
+  --pf-global--palette--blue-200: var(--color-light-blue);
+  --pf-global--palette--blue-300: var(--color-light-blue);
+  --pf-global--palette--blue-400: var(--color-light-blue);
   --pf-global--palette--blue-500: var(--color-blue);
   --pf-global--palette--blue-600: var(--color-blue);
   --pf-global--palette--blue-700: var(--color-blue);
@@ -86,19 +86,19 @@
   --pf-global--BackgroundColor--light-100: var(--color-ui-01);
   --pf-global--BackgroundColor--light-200: var(--color-ui-02);
   --pf-global--BackgroundColor--light-300: var(--color-ui-03);
-  --pf-global--BackgroundColor--dark-100: var(--color-base01);
-  --pf-global--BackgroundColor--dark-200: var(--color-ui-03);
-  --pf-global--BackgroundColor--dark-300: var(--color-ui-02);
-  --pf-global--BackgroundColor--dark-400: var(--color-ui-01);
+  --pf-global--BackgroundColor--dark-100: var(--color-ui-01);
+  --pf-global--BackgroundColor--dark-200: var(--color-ui-02);
+  --pf-global--BackgroundColor--dark-300: var(--color-ui-03);
+  --pf-global--BackgroundColor--dark-400: var(--color-ui-04);
   --pf-global--BackgroundColor--dark-transparent-100: rgba(3, 3, 3, 0.62);
   --pf-global--BackgroundColor--dark-transparent-200: rgba(3, 3, 3, 0.32);
   --pf-global--Color--100: var(--color-ui-01);
-  --pf-global--Color--200: var(--color-ui-02);
-  --pf-global--Color--300: var(--color-ui-03);
+  --pf-global--Color--200: var(--color-ui-03);
+  --pf-global--Color--300: var(--color-ui-02);
   --pf-global--Color--400: var(--color-ui-04);
   --pf-global--Color--light-100: var(--color-ui-01);
-  --pf-global--Color--light-200: var(--color-ui-02);
-  --pf-global--Color--light-300: var(--color-ui-03);
+  --pf-global--Color--light-200: var(--color-text-02);
+  --pf-global--Color--light-300: var(--color-ui-02);
   --pf-global--Color--dark-100: var(--color-base06);
   --pf-global--Color--dark-200: var(--color-base05);
   --pf-global--active-color--100: var(--active-tab-color);
@@ -107,7 +107,7 @@
   --pf-global--active-color--400: var(--active-tab-color);
   --pf-global--disabled-color--100: var(--color-base03);
   --pf-global--disabled-color--200: var(--color-base04);
-  --pf-global--disabled-color--300: var(--color-base05);
+  --pf-global--disabled-color--300: var(--color-base02);
   --pf-global--primary-color--100: var(--color-brand-01);
   --pf-global--primary-color--200: var(--color-brand-03);
   --pf-global--primary-color--light-100: var(--color-brand-01);

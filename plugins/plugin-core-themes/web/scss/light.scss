@@ -97,6 +97,8 @@
 
 /* color variables */
 body[kui-theme='Light'] {
+  @include kui-patternfly-alignment-light;
+
   --color-base00: #ffffff;
   --color-base01: #f4f4f4;
   --color-base02: #e0e0e0;
@@ -113,6 +115,8 @@ body[kui-theme='Light'] {
   --color-base0D: #0072c3;
   --color-base0E: #d12764;
   --color-base0F: #8a3ffc;
+
+  --color-light-blue: #edf4ff;
 
   --color-base0B-rgb: 29, 189, 90;
   --color-green-rgb: var(--color-base0B-rgb);

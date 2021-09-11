@@ -31,7 +31,8 @@ body[kui-theme='Carbon Gray90'][kui-theme-style] {
 
   @include ScrollbackInvertedColors {
     @include colors-light;
-    @reset;
+    @include Reset;
+    --color-text-02: #565656;
 
     @include Sidecar {
       @include carbon-inverted;
