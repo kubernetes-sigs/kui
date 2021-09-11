@@ -204,7 +204,8 @@
     }
 
     .kui--block-action:hover {
-      background-color: var(--color-table-border1);
+      background-color: var(--color-table-border2);
+      mix-blend-mode: difference;
     }
 
     .repl-input,
