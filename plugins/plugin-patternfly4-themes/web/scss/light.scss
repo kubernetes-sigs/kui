@@ -49,6 +49,8 @@
   --color-base0E: #d12765;
   --color-base0F: var(--pf-global--palette--purple-300);
 
+  @include Reset;
+
   --color-stripe-01: var(--pf-global--palette--black-400);
   --color-repl-background: var(--pf-global--palette--white);
   --color-repl-background-02: var(--pf-global--palette--black-250-kui);
@@ -82,6 +84,5 @@
   @include InvertedColors {
     @include pf-t-light;
     @include LightColors;
-    @include Reset;
   }
 }

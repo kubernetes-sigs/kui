@@ -72,6 +72,8 @@
 
   --color-light-red: var(--pf-global--palette--red-200);
 
+  @include Reset;
+
   --color-hover-primary-text: var(--pf-global--link--Color--dark--hover);
 
   --color-sidecar-toolbar-background: var(--pf-global--palette--black-300);
@@ -96,7 +98,6 @@
 
 @mixin InvertLightToDark {
   @include DarkColors;
-  @include Reset;
   --color-sidecar-background-01: var(--pf-global--palette--black-900);
   --color-sidecar-background-02: var(--pf-global--palette--black-850);
 }
