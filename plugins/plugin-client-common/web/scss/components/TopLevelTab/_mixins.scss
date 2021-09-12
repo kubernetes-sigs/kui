@@ -27,3 +27,11 @@
     }
   }
 }
+
+@mixin NonNotebookTab {
+  @include TopLevelTab {
+    &:not([data-is-notebook]) {
+      @content;
+    }
+  }
+}

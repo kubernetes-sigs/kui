@@ -18,6 +18,7 @@
 @import '../components/Table/mixins';
 @import '../components/Sidecar/mixins';
 @import '../components/Terminal/mixins';
+@import '../components/TopLevelTab/mixins';
 @import '../components/TopTabStripe/mixins';
 @import '../components/Table/SequenceDiagram/mixins';
 
@@ -70,8 +71,12 @@ $row-height: 1.5em;
     }
   }
 
-  @include NotFocusedSplit {
-    filter: opacity(87.5%);
+  @include NonNotebookTab {
+    @include NotFocusedSplit {
+      @include ScrollbackBlockList {
+        filter: opacity(87.5%);
+      }
+    }
   }
 
   @include TableHeadCell {
