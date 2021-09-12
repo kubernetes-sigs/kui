@@ -22,11 +22,9 @@ import {
   getPersistedThemeChoice,
   i18n,
   pexecInCurrentTab,
-  uiThemes,
-  Theme
+  uiThemes
 } from '@kui-shell/core'
 
-import { Loading } from '../../..'
 import DropdownWidget, { Props as DropdownWidgetProps } from './DropdownWidget'
 
 const strings = i18n('plugin-client-common')
@@ -35,7 +33,7 @@ type Props = Pick<DropdownWidgetProps, 'position'>
 
 interface State {
   currentTheme: string
-  themes: Theme[]
+  actions: DropdownWidgetProps['actions']
 }
 
 export default class Settings extends React.PureComponent<Props, State> {
@@ -44,7 +42,7 @@ export default class Settings extends React.PureComponent<Props, State> {
 
     this.state = {
       currentTheme: undefined,
-      themes: []
+      actions: []
     }
 
     this.recomputeThemeList()
@@ -64,46 +62,15 @@ export default class Settings extends React.PureComponent<Props, State> {
 
     this.setState({
       currentTheme,
-      themes: themes
+      actions: themes.map(_ => ({
+        label: _.name,
+        isSelected: _.name === currentTheme,
+        handler: () => pexecInCurrentTab(`theme set ${encodeComponent(_.name)}`, undefined, true)
+      }))
     })
   }
 
-  private header() {
-    if (!this.state.currentTheme) {
-      return <Loading />
-    } else {
-      return (
-        <React.Fragment>
-          <div>{strings('Current Theme')}</div>
-          <div>
-            <strong>{this.state.currentTheme}</strong>
-          </div>
-          <div className="sub-text even-smaller-text">{this.changeTheme()}</div>
-        </React.Fragment>
-      )
-    }
-  }
-
-  private body() {
-    if (!this.state.currentTheme) {
-      return <Loading />
-    } else {
-      return <React.Fragment />
-    }
-  }
-
-  /** @return UI for changing themes */
-  private changeTheme() {
-    return (
-      <a href="#" onClick={() => pexecInCurrentTab('themes')}>
-        {strings('Switch theme')}
-      </a>
-    )
-  }
-
   public render() {
-    //            aria-label="Settings"
-    //            tabIndex={0}
     if (!this.state || !this.state.currentTheme) {
       return <React.Fragment />
     }
@@ -113,11 +80,7 @@ export default class Settings extends React.PureComponent<Props, State> {
         noPadding
         id="kui--settings-widget"
         title={strings('Switch theme')}
-        actions={this.state.themes.map(_ => ({
-          label: _.name,
-          isSelected: _.name === this.state.currentTheme,
-          handler: () => pexecInCurrentTab(`theme set ${encodeComponent(_.name)}`)
-        }))}
+        actions={this.state.actions}
       />
     )
   }
