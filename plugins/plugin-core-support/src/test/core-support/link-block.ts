@@ -37,7 +37,11 @@ describe('Link blocks', function(this: Common.ISuite) {
 
   it('paste the link to a commentary block, and expect the commentary block show the status of ls', async () => {
     try {
-      await CLI.command('#', this.app).then(ReplExpect.ok)
+      const res = await CLI.command('#', this.app).then(ReplExpect.ok)
+
+      await this.app.client
+        .$(`${Selectors.OUTPUT_N(res.count)} ${Selectors.COMMENTARY_EDITOR}`)
+        .then(_ => _.waitForDisplayed({ timeout: CLI.waitTimeout }))
 
       await this.app.client.execute(() => document.execCommand('paste'))
 
