@@ -33,6 +33,10 @@ interface State {
 }
 
 export default class ProxyOfflineIndicator extends React.PureComponent<Props, State> {
+  /** To help maintain state across unmounts */
+  private static rememberedOffline = true
+
+  /** Cleanups for event listener registrations */
   private cleaners: (() => void)[] = []
 
   public constructor(props: Props) {
@@ -42,12 +46,12 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
     const proxyEnabled = proxyServer['enabled'] === undefined || proxyServer['enabled'] !== false
     this.state = {
       proxyEnabled,
-      offline: true
+      offline: ProxyOfflineIndicator.rememberedOffline
     }
-  }
 
-  public componentDidMount() {
-    const onOnline = () => this.setState({ offline: false })
+    const onOnline = () => {
+      this.setState({ offline: false })
+    }
     eventChannelUnsafe.on('/proxy/online', onOnline)
     this.cleaners.push(() => eventChannelUnsafe.off('/proxy/online', onOnline))
 
@@ -57,6 +61,7 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
   }
 
   public componentWillUnmount() {
+    ProxyOfflineIndicator.rememberedOffline = this.state.offline
     this.cleaners.forEach(cleaner => cleaner())
     this.cleaners = []
   }
