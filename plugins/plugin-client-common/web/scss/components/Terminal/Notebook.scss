@@ -46,14 +46,16 @@ $input-padding: 1em;
     @include BlockActions {
       position: unset;
       background-color: transparent;
+
+      &[data-has-been-rerun] {
+        @include BlockAction {
+          color: var(--color-gray);
+        }
+      }
     }
     @include BlockAction {
       font-size: 1.375em;
       color: var(--color-green);
-
-      &:hover {
-        filter: brightness(1.25);
-      }
     }
   }
 }

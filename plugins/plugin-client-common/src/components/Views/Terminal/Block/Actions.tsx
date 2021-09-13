@@ -20,7 +20,7 @@ import { Tab, i18n, isOfflineClient, isReadOnlyClient } from '@kui-shell/core'
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
-import BlockModel, { hasUUID, isOutputOnly, isReplay, isRerunable } from './BlockModel'
+import BlockModel, { hasUUID, isOutputOnly, isReplay, isRerunable, hasBeenRerun } from './BlockModel'
 
 const strings = i18n('plugin-client-common')
 
@@ -49,6 +49,13 @@ function Action(props: { onClick: (evt: React.SyntheticEvent) => void; icon: Sup
 }
 
 export default class Actions extends React.PureComponent<Props> {
+  private readonly _rerunHandler = () => {
+    if (hasUUID(this.props.model)) {
+      this.props.tab.REPL.reexec(this.props.command, { execUUID: this.props.model.execUUID })
+      this.props.willUpdateExecutable()
+    }
+  }
+
   private rerunAction(icon: 'Play' | 'Retry') {
     if (
       hasUUID(this.props.model) &&
@@ -57,17 +64,10 @@ export default class Actions extends React.PureComponent<Props> {
       this.props.tab &&
       this.props.command
     ) {
-      const handler = () => {
-        if (hasUUID(this.props.model)) {
-          this.props.tab.REPL.reexec(this.props.command, { execUUID: this.props.model.execUUID })
-          this.props.willUpdateExecutable()
-        }
-      }
-
       return (
         <Action
           icon={icon}
-          onClick={handler}
+          onClick={this._rerunHandler}
           title={strings(icon === 'Retry' ? 'Re-execute this command' : 'Execute this command')}
         />
       )
@@ -150,7 +150,11 @@ export default class Actions extends React.PureComponent<Props> {
 
     if (isReplay(this.props.model)) {
       if (this.props.isExecutable && !this.props.isSectionBreak) {
-        return <div className="kui--block-actions-buttons">{this.rerunAction('Play')}</div>
+        return (
+          <div className="kui--block-actions-buttons" data-has-been-rerun={hasBeenRerun(this.props.model) || undefined}>
+            {this.rerunAction('Play')}
+          </div>
+        )
       }
     } else if (!isOfflineClient()) {
       return (
