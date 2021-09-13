@@ -99,11 +99,11 @@ export default class TabContent extends React.PureComponent<Props, State> {
     const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
 
-      if (this.state._terminal.current) {
-        setTimeout(() => {
+      setTimeout(() => {
+        if (this.state._terminal.current) {
           this.state._terminal.current.doFocusIfNeeded()
-        }, 300)
-      }
+        }
+      }, 300)
 
       try {
         if (this.props.onTabReady) {
