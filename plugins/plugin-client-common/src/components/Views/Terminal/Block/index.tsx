@@ -164,6 +164,7 @@ export default class Block extends React.PureComponent<Props, State> {
     if (isFinished(this.props.model) || isProcessing(this.props.model)) {
       return (
         <Output
+          key={isEmpty(this.props.model) ? undefined : this.props.model.execUUID}
           uuid={this.props.uuid}
           tab={this.props.tab}
           idx={this.props.idx}

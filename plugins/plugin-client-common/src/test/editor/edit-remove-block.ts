@@ -56,7 +56,7 @@ describe(`remove command output verify editor content is preserved ${process.env
 
   it('should open editor and type something', async () => {
     try {
-      res2 = await CLI.command(`edit "${filepath}"}`, this.app).then(SidecarExpect.open)
+      res2 = await CLI.command(`edit "${filepath}"`, this.app).then(SidecarExpect.open)
 
       await setValue(res2, typeThis)
       await expectText(res2, typeThis)
