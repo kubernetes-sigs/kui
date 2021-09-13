@@ -59,6 +59,8 @@ interface State {
 }
 
 export default class Tab extends React.PureComponent<Props, State> {
+  private _unmounted = false
+
   private readonly closeTabRef = React.createRef<HTMLDivElement>()
 
   private onCommandStart: (evt: Event) => void
@@ -78,7 +80,7 @@ export default class Tab extends React.PureComponent<Props, State> {
     if (!props.topTabNames) {
       setTimeout(async () => {
         const { theme } = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
-        if (theme.topTabNames) {
+        if (theme.topTabNames && !this._unmounted) {
           this.setState({
             topTabNames: theme.topTabNames
           })
@@ -90,6 +92,7 @@ export default class Tab extends React.PureComponent<Props, State> {
   }
 
   public componentWillUnmount() {
+    this._unmounted = true
     this.removeCommandEvaluationListeners()
   }
 
@@ -105,7 +108,7 @@ export default class Tab extends React.PureComponent<Props, State> {
    */
   private addCommandEvaluationListeners() {
     this.onCommandComplete = (event: Event) => {
-      if (this.props.uuid === event.tab.state.uuid) {
+      if (this.props.uuid === event.tab.state.uuid && !this._unmounted) {
         if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
           // ignore nested, which means one plugin calling another
           this.setState({ processing: false })
@@ -116,7 +119,7 @@ export default class Tab extends React.PureComponent<Props, State> {
     }
 
     this.onCommandStart = (event: Event) => {
-      if (this.props.uuid === event.tab.state.uuid) {
+      if (this.props.uuid === event.tab.state.uuid && !this._unmounted) {
         if (event.execType !== undefined && event.execType !== ExecType.Nested && event.route) {
           // ignore nested, which means one plugin calling another
           // debug('got event', event)
@@ -136,9 +139,11 @@ export default class Tab extends React.PureComponent<Props, State> {
     }
 
     this.onThemeChange = ({ themeModel }: { themeModel: Theme }) => {
-      this.setState({
-        topTabNames: themeModel.topTabNames || 'fixed'
-      })
+      if (!this._unmounted) {
+        this.setState({
+          topTabNames: themeModel.topTabNames || 'fixed'
+        })
+      }
     }
 
     eventBus.onCommandStart(this.props.uuid, this.onCommandStart)
