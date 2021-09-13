@@ -258,10 +258,11 @@ export default class Markdown extends React.PureComponent<Props> {
               }
             },
             blockquote: props => {
+              // avoid <p>: invalid dom nesting of p inside of p
               return (
-                <p>
+                <span className="paragraph">
                   <Hint>{props.children}</Hint>
-                </p>
+                </span>
               )
             },
             code: props => {

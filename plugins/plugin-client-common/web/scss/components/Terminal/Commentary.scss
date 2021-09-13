@@ -47,7 +47,8 @@
 
 @mixin Paragraphs {
   @include CommentaryCard {
-    p {
+    p,
+    .paragraph {
       @content;
     }
   }
