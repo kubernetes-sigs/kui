@@ -1067,11 +1067,45 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
+  /** Swap the position of the two splits; a and b are 1-indexed from the controller */
+  private swapSplits(a: number, b: number) {
+    const aIdx = a - 1 // 1-indexed from the controller
+    const bIdx = b - 1 // 1-indexed from the controller
+
+    if (!this.state.splits[aIdx]) {
+      console.error(`Cannot find split index ${a}`, aIdx, this.state.splits)
+      return new Error(`Cannot find split index ${a}`)
+    } else if (!this.state.splits[bIdx]) {
+      console.error(`Cannot find split index ${b}`, bIdx, this.state.splits)
+      return new Error(`Cannot find split index ${b}`)
+    } else {
+      const firstIdx = Math.min(aIdx, bIdx)
+      const secondIdx = Math.max(aIdx, bIdx)
+      const splits = this.state.splits
+        .slice(0, firstIdx)
+        .concat([this.state.splits[secondIdx]])
+        .concat(this.state.splits.slice(firstIdx + 1, secondIdx))
+        .concat([this.state.splits[firstIdx]])
+        .concat(this.state.splits.slice(secondIdx + 1))
+
+      this.setState({
+        splits,
+        focusedIdx:
+          this.state.focusedIdx === aIdx ? bIdx : this.state.focusedIdx === bIdx ? aIdx : this.state.focusedIdx
+      })
+
+      return true
+    }
+  }
+
   /** Split the view */
   private async onSplit(request: TabLayoutModificationResponse<NewSplitRequest>, sbuuid: string) {
     const nTerminals = this.state.splits.length
 
-    if (request.spec.options.cmdline && (request.spec.options.if || request.spec.options.ifnot)) {
+    if (request.spec.options.swap) {
+      // swap to splits
+      return this.swapSplits(request.spec.options.swap[0], request.spec.options.swap[1])
+    } else if (request.spec.options.cmdline && (request.spec.options.if || request.spec.options.ifnot)) {
       const thisSplitIdx = this.findSplit(this.state, sbuuid)
       const thisSplit = this.state.splits[thisSplitIdx]
 
