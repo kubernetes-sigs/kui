@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { CommentaryResponse, REPL, i18n } from '@kui-shell/core'
+import { CommentaryResponse, REPL, i18n, isReadOnlyClient } from '@kui-shell/core'
 
 import Card from '../spi/Card'
 import Button from '../spi/Button'
@@ -169,7 +169,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   private card() {
     return (
-      <span className="kui--commentary-card" onDoubleClick={this._setEdit}>
+      <span className="kui--commentary-card" onDoubleClick={isReadOnlyClient() ? undefined : this._setEdit}>
         <Card
           {...this.props}
           data-is-editing={this.state.isEdit || undefined}
