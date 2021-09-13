@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.2](https://github.com/IBM/kui/compare/v10.5.1...v10.5.2) (2021-09-13)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** double clicking on Commentary enters edit mode, even for readOnly clients ([22d50b6](https://github.com/IBM/kui/commit/22d50b6)), closes [#7977](https://github.com/IBM/kui/issues/7977)
+- **plugins/plugin-client-common:** links in hints in sidecar have low contrast in light themes ([ad90927](https://github.com/IBM/kui/commit/ad90927)), closes [#7981](https://github.com/IBM/kui/issues/7981)
+- **plugins/plugin-client-common:** Sequential execution fails if first split has nothing executable ([7a0f010](https://github.com/IBM/kui/commit/7a0f010)), closes [#7976](https://github.com/IBM/kui/issues/7976)
+
+### Features
+
+- Add ability to swap the order of splits ([d954324](https://github.com/IBM/kui/commit/d954324)), closes [#7975](https://github.com/IBM/kui/issues/7975)
+
 ## [10.5.1](https://github.com/IBM/kui/compare/v10.5.0...v10.5.1) (2021-09-13)
 
 ### Bug Fixes

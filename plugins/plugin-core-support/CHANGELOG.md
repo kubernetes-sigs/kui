@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.2](https://github.com/IBM/kui/compare/v10.5.1...v10.5.2) (2021-09-13)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** double clicking on Commentary enters edit mode, even for readOnly clients ([22d50b6](https://github.com/IBM/kui/commit/22d50b6)), closes [#7977](https://github.com/IBM/kui/issues/7977)
+
 ## [10.5.1](https://github.com/IBM/kui/compare/v10.5.0...v10.5.1) (2021-09-13)
 
 **Note:** Version bump only for package @kui-shell/plugin-core-support

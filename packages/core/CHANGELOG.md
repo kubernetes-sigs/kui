@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.2](https://github.com/IBM/kui/compare/v10.5.1...v10.5.2) (2021-09-13)
+
+### Features
+
+- Add ability to swap the order of splits ([d954324](https://github.com/IBM/kui/commit/d954324)), closes [#7975](https://github.com/IBM/kui/issues/7975)
+
 ## [10.5.1](https://github.com/IBM/kui/compare/v10.5.0...v10.5.1) (2021-09-13)
 
 **Note:** Version bump only for package @kui-shell/core
