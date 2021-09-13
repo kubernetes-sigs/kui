@@ -20,7 +20,7 @@ export default async (registrar: Registrar) => {
   if (!isHeadless()) {
     await import(/* webpackMode: "lazy" */ './controller/confirm').then(_ => _.default(registrar))
     await import(/* webpackMode: "lazy" */ './controller/split').then(_ => {
-      registrar.listen('/split', _.default, { flags: { boolean: ['inverse'] } })
+      registrar.listen('/split', _.default, { flags: { boolean: ['inverse'], alias: { split: ['s'] } } })
       registrar.listen('/split-debug', _.debug)
       registrar.listen('/split-count', ({ tab }) => tab.splitCount())
       registrar.listen('/is-split', ({ tab }) => tab.hasSideBySideTerminals())

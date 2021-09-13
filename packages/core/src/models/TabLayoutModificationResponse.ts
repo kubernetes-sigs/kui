@@ -46,6 +46,9 @@ export type NewSplitRequest = {
 
     /** Only perform the split if the given command returns false */
     ifnot?: string
+
+    /** Swap the positions of the given two splits */
+    swap?: { a: number; b: number }
   }
 }
 

@@ -31,7 +31,17 @@ export function debug(args: Arguments) {
  *
  */
 export default function split(args?: Arguments<CommandLineOptions>): TabLayoutModificationResponse<NewSplitRequest> {
+  if (args.parsedOptions.swap) {
+    if (!Array.isArray(args.parsedOptions.swap) || args.parsedOptions.swap.length !== 2) {
+      console.error('Expected exactly two --swap options', args.parsedOptions.swap)
+      throw new Error('Expected exactly two --swap options')
+    } else if (args.parsedOptions.swap.find(_ => _ === 0)) {
+      throw new Error('Expected --swap options to be 1-indexed')
+    }
+  }
+
   const options: Options = {
+    swap: !args.parsedOptions.swap ? undefined : args.parsedOptions.swap,
     if: args.parsedOptions.if,
     ifnot: args.parsedOptions.ifnot,
     index: args.parsedOptions.index,
