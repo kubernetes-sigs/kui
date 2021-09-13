@@ -124,9 +124,16 @@ type Props = TerminalOptions & {
 }
 
 interface State {
+  /** This helps enforce sequential block execution semantics */
   executable: { sbidx: number; blockidx: number }
+
+  /** Index of the focused split (index into State.splits) */
   focusedIdx: number
+
+  /** Splits model */
   splits: ScrollbackState[]
+
+  /** Things like the notebook title; we need to stash this away for future re-saving of this notebook */
   notebookMetadata?: Notebook['metadata']
 }
 
@@ -179,14 +186,33 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       focusedIdx: 0,
       splits,
       notebookMetadata,
-      executable: {
-        sbidx: 0,
-        blockidx: splits[0].blocks.findIndex(_ => hasUUID(_) && isRerunable(_) && !isOutputOnly(_))
-      }
+      executable: this.initBlockExecutableState(splits)
     }
 
     this.initSnapshotEvents()
     this.initLinkEvents()
+  }
+
+  /** This helps enforce sequential block execution semantics */
+  private initBlockExecutableState(splits: State['splits']) {
+    let sbidx = 0
+    while (sbidx < splits.length) {
+      const blockidx = splits[sbidx].blocks.findIndex(_ => hasUUID(_) && isRerunable(_) && !isOutputOnly(_))
+      if (blockidx >= 0) {
+        return {
+          sbidx,
+          blockidx
+        }
+      } else {
+        sbidx++
+      }
+    }
+
+    // then we didn't find anything executable
+    return {
+      sbidx: -1,
+      blockidx: -1
+    }
   }
 
   private initLinkEvents() {
