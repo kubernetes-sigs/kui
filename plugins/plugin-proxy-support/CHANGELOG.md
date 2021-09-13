@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.1](https://github.com/IBM/kui/compare/v10.5.0...v10.5.1) (2021-09-13)
+
+### Bug Fixes
+
+- **plugins/plugin-proxy-support:** ProxyOfflineIndicator state does not survive unmount/remount ([cbf1189](https://github.com/IBM/kui/commit/cbf1189)), closes [#7969](https://github.com/IBM/kui/issues/7969)
+
 # [10.5.0](https://github.com/IBM/kui/compare/v4.5.0...v10.5.0) (2021-09-13)
 
 ### Bug Fixes

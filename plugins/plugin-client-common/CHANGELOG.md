@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.1](https://github.com/IBM/kui/compare/v10.5.0...v10.5.1) (2021-09-13)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Hint component can generate invalid dom nesting warning ([8136c20](https://github.com/IBM/kui/commit/8136c20)), closes [#7963](https://github.com/IBM/kui/issues/7963)
+- **plugins/plugin-client-common:** If Tab is closed soon after it is created, console errors can appear ([0e484a9](https://github.com/IBM/kui/commit/0e484a9)), closes [#7965](https://github.com/IBM/kui/issues/7965)
+- **plugins/plugin-client-common:** improvements to hover and click behavior for block action buttons ([aac425f](https://github.com/IBM/kui/commit/aac425f)), closes [#7971](https://github.com/IBM/kui/issues/7971)
+- **plugins/plugin-client-common:** in browser mode, tab offline may result in react loading error ([80cd752](https://github.com/IBM/kui/commit/80cd752)), closes [#7967](https://github.com/IBM/kui/issues/7967)
+
 # [10.5.0](https://github.com/IBM/kui/compare/v4.5.0...v10.5.0) (2021-09-13)
 
 ### Bug Fixes
