@@ -17,10 +17,14 @@
 import React from 'react'
 import Props from './model'
 
-const PatternFly = React.lazy(() => import('./impl/PatternFly'))
+import PatternFly from './impl/PatternFly'
 
 export { Props }
 
 export default function AlertSpi(props: Props): React.ReactElement {
-  return <PatternFly {...props} />
+  return (
+    <React.Suspense fallback={<div />}>
+      <PatternFly {...props} />
+    </React.Suspense>
+  )
 }
