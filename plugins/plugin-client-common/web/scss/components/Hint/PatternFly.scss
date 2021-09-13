@@ -20,5 +20,9 @@
   @include HintBody {
     font-size: inherit;
     font-family: var(--font-sans-serif);
+
+    a {
+      color: var(--color-base0C);
+    }
   }
 }
