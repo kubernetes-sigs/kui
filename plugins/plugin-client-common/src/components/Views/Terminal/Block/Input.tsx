@@ -724,11 +724,9 @@ export default class Input extends InputProvider {
       const replayed = isReplay(this.props.model)
       const completed = this.props.model.startTime && isWithCompleteEvent(this.props.model)
       const showingDate = !replayed && completed && !this.props.isWidthConstrained
-      const duration =
-        !replayed &&
-        isWithCompleteEvent(this.props.model) &&
-        this.props.model.completeEvent.completeTime &&
-        prettyPrintDuration(this.props.model.completeEvent.completeTime - this.props.model.startTime)
+
+      const now = isWithCompleteEvent(this.props.model) ? this.props.model.completeEvent.completeTime : Date.now()
+      const duration = !replayed && now && prettyPrintDuration(Math.max(0, now - this.props.model.startTime))
       const noParen = !showingDate || !duration
       const openParen = noParen ? '' : '('
       const closeParen = noParen ? '' : ')'
