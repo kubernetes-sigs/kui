@@ -18,7 +18,7 @@ import React from 'react'
 import { DropDown, Icons } from '@kui-shell/plugin-client-common'
 import { Arguments, Button, ParsedOptions, Job, Tab, ToolbarProps, ToolbarText, i18n } from '@kui-shell/core'
 
-import { Pod } from '../../model/resource'
+import { Pod, isPod, Deployment, ReplicaSet } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
@@ -38,7 +38,7 @@ export interface ContainerProps {
     parsedOptions: ParsedOptions
   }
   tab: Tab
-  pod: Pod
+  resource: Pod | Deployment | ReplicaSet
   toolbarController: ToolbarProps
 }
 
@@ -114,9 +114,21 @@ export abstract class ContainerComponent<State extends ContainerState> extends R
     this.setState({ container })
   }
 
+  /** @returns list of containers managed by this.props.resource */
+  protected get containers() {
+    if (this.props.resource) {
+      const { containers = [] } = isPod(this.props.resource)
+        ? this.props.resource.spec
+        : this.props.resource.spec.template.spec
+      return containers
+    } else {
+      return []
+    }
+  }
+
   /** Render a selection component that allows user to select a container. */
   private containerOptions() {
-    const { containers = [] } = this.props.pod.spec
+    const containers = this.containers
     const actions = containers
       .map(_ => ({
         label: _.name,

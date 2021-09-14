@@ -16,7 +16,7 @@
 
 import { i18n, Arguments, ModeDeclaration, ModeRegistration, Tab } from '@kui-shell/core'
 
-import { Pod, isPod } from '../../model/resource'
+import { Pod, isPod, isDeployment, isReplicaSet } from '../../model/resource'
 import { KubeOptions } from '../../../controller/kubectl/options'
 
 const strings = i18n('plugin-kubectl', 'logs')
@@ -35,7 +35,7 @@ export const mode: ModeDeclaration<Pod> = {
  *
  */
 const logsReg: ModeRegistration<Pod> = {
-  when: isPod,
+  when: _ => isPod(_) || isDeployment(_) || isReplicaSet(_),
   mode
 }
 

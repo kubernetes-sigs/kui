@@ -20,11 +20,12 @@ import { i18n, Arguments, Button, Tab, ToolbarProps } from '@kui-shell/core'
 
 import { Icons } from '@kui-shell/plugin-client-common'
 
-import { Pod } from '../../model/resource'
+import { Pod, Deployment, ReplicaSet } from '../../model/resource'
 import { getCommandFromArgs } from '../../util/util'
 import { Terminal, TerminalState } from './ExecIntoPod'
 import { ContainerProps, StreamingStatus } from './ContainerCommon'
 import { KubeOptions, getContainer, hasLabel, withKubeconfigFrom } from '../../../controller/kubectl/options'
+import { kindPartOf } from '../../../controller/kubectl/fqn'
 
 import '../../../../web/scss/components/LogsSearch.scss'
 
@@ -79,9 +80,7 @@ export class Logs extends Terminal<State> {
     }
 
     // undefined means all containers
-    return this.props.pod && this.props.pod.spec.containers && this.props.pod.spec.containers.length === 1
-      ? this.props.pod.spec.containers[0].name
-      : undefined
+    return this.containers.length === 1 ? this.containers[0].name : undefined
   }
 
   /** Text to display in the Toolbar. */
@@ -151,7 +150,7 @@ export class Logs extends Terminal<State> {
    *
    */
   protected ptyCommand() {
-    const { args, pod } = this.props
+    const { args, resource } = this.props
     const { container: containerName } = this.state
     const container = containerName ? `-c ${containerName}` : '--all-containers'
     const isMulti = this.isMulti()
@@ -184,13 +183,13 @@ export class Logs extends Terminal<State> {
 
       const split = isMulti && containerName && containerName.split(/:/)
       const possibleMulti = split && split.length === 2 && split
-      const podName = possibleMulti ? possibleMulti[0] : pod.spec._podName || pod.metadata.name
+      const podName = possibleMulti ? possibleMulti[0] : resource.spec._podName || resource.metadata.name
       const theContainer = possibleMulti ? `-c ${possibleMulti[1]}` : container
 
       const command = withKubeconfigFrom(
         args,
-        `${getCommandFromArgs(args)} logs ${podName} -n ${
-          pod.metadata.namespace
+        `${getCommandFromArgs(args)} logs ${kindPartOf(resource)}/${podName} -n ${
+          resource.metadata.namespace
         } ${theContainer} ${dashF} ${previous} --tail ${defaultTail}`
       )
       debug('log command', command)
@@ -343,10 +342,10 @@ export class Logs extends Terminal<State> {
  * The content renderer for the summary tab
  *
  */
-export async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
+export async function content(tab: Tab, resource: Pod | Deployment | ReplicaSet, args: Arguments<KubeOptions>) {
   return {
     react: function LogsProvider(toolbarController: ToolbarProps) {
-      return <Logs tab={tab} pod={pod} args={args} toolbarController={toolbarController} />
+      return <Logs tab={tab} resource={resource} args={args} toolbarController={toolbarController} />
     }
   }
 }
