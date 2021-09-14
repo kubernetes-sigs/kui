@@ -38,6 +38,8 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
   after(Common.after(this))
 
   let res: ReplExpect.AppAndCount
+  let podName: string
+  let replicasetName: string
   const createIt = () => {
     it('should create deployment from local file', async () => {
       try {
@@ -97,13 +99,66 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
 
         await Util.clickSidecarModeButton(this, res, 'ownerReference')
         res = ReplExpect.blockAfter(res)
-        await SidecarExpect.open(res)
-          .then(SidecarExpect.kind('ReplicaSet'))
-          .then(SidecarExpect.button({ mode: 'ownerReference', label: 'Show Owner Reference' }))
-
         await Util.clickSidecarModeButton(this, res, 'ownerReference')
         res = ReplExpect.blockAfter(res)
         await SidecarExpect.open(res).then(SidecarExpect.kind('Deployment'))
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const getLogsViaCommand = () => {
+    it('should show logs for whole deployment, pods and replicasets', async () => {
+      try {
+        await Common.refresh(this)
+        // enter kubectl command for logs for a deployment
+        await CLI.command(`kubectl logs deployment/myapp ${inNamespace}`, this.app).then(
+          ReplExpect.okWithPtyOutput('Drone app ready')
+        )
+        // enter kubectl command for logs for pod
+        await CLI.command(`kubectl get pods ${inNamespace}`, this.app)
+        podName = await (
+          await this.app.client.$(`.display-inline-block.cell-inner.clickable .kui--cell-inner-text`)
+        ).getText()
+        await CLI.command(`kubectl logs Pod/${podName} ${inNamespace}`, this.app).then(
+          ReplExpect.okWithPtyOutput('Drone app ready')
+        )
+        // enter kubectl command for logs for replicaset
+        await CLI.command(`kubectl get rs ${inNamespace}`, this.app)
+        replicasetName = await (
+          await this.app.client.$(
+            `.kui--scrollback-block-list .repl-block.valid-response:nth-child(4) .entity-name .kui--cell-inner-text`
+          )
+        ).getText()
+        await CLI.command(`kubectl logs ReplicaSet/${replicasetName} ${inNamespace}`, this.app).then(
+          ReplExpect.okWithPtyOutput('Drone app ready')
+        )
+      } catch (err) {
+        return Common.oops(this, true)(err)
+      }
+    })
+  }
+
+  const getLogsViaTabs = () => {
+    it('should demonstrate use of the logs tab in deployment, pods and replicasets', async () => {
+      try {
+        // open deployment
+        let tableRes = await CLI.command(`kubectl get deployment ${inNamespace}`, this.app)
+        let selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.LIST_RESULT_FIRST })(tableRes)
+        let res = await Util.openSidecarByClick(this, selector, 'myapp')
+        // switch to the logs tab in deployment and show that the content is correct
+        await SidecarExpect.yaml({ Name: 'myapp' })(res)
+          .then(() => Util.switchToTab('logs')(res))
+          .then(ReplExpect.okWithPtyOutput('Drone app ready'))
+        // open replicaset
+        tableRes = await CLI.command(`kubectl get ReplicaSet ${inNamespace}`, this.app)
+        selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.LIST_RESULT_FIRST })(tableRes)
+        res = await Util.openSidecarByClick(this, selector, 'myapp')
+        // switch to logs tab in replicaset and show the content is correct
+        await SidecarExpect.yaml({ Name: replicasetName })(res)
+          .then(() => Util.switchToTab('logs')(res))
+          .then(ReplExpect.okWithPtyOutput('Drone app ready'))
       } catch (err) {
         return Common.oops(this, true)(err)
       }
@@ -132,23 +187,16 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
     })
   }
 
-  const getLogs = () => {
-    it('should show logs for whole deployment', () => {
-      return CLI.command(`kubectl logs deploy/myapp ${inNamespace}`, this.app)
-        .then(ReplExpect.okWithPtyOutput('Drone app ready'))
-        .catch(Common.oops(this, true))
-    })
-  }
-
   //
-  // here start the tests
+  // The tests are called here
   //
   allocateNS(this, ns)
 
   createIt()
   listIt()
   getPods()
-  getLogs()
+  getLogsViaCommand()
+  getLogsViaTabs()
   deleteItByName()
 
   createIt()
