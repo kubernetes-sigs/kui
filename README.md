@@ -11,40 +11,27 @@
 > minute survey](https://forms.gle/Kq5s9yHcrRW83gw9A) on your tool
 > preferences. Thanks!
 
-We love CLIs, and think they are critical for interacting in a
-flexible way with the cloud. We need the power to go off the
-rails. But ASCII is tedious. Kui takes your normal `kubectl` command
-line requests and **responds with graphics**. Instead of ASCII tables,
-you are presented with sortable ones. Instead of copying and pasting
-long auto-generated resource names to drill down, in Kui **you just
-click**. [Download Now!](#installation)
-
 <img width="600" align="right" src="docs/readme/images/kui-experience.gif">
 
-Watch and `apply` requests present you with live tables. Instead of
-poring over complex YAML, you can browse the facets of your resources
-in a tabbed UI. Drill down, drill up, and view logs or the events
-related just to the resource of interest, again with Kui you can just
-click.
+We love CLIs, and think they are critical for interacting in a
+flexible way with the cloud. We need the power to go off the
+rails. But ASCII is tedious.
 
-Iterating through a table to find the needle in the haystack? With
-Kui, you can click the rows in rapid succession, and Kui sends the
-details to a side terminal; the main table will not scroll out of
-view. If you are working with
-[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),
-you can see a "waterfall" diagram by simply executing `k get jobs`.
+Kui takes your normal `kubectl` command line requests and **responds
+with graphics**. Instead of ASCII tables, you are presented with
+sortable ones. Instead of copying and pasting long auto-generated
+resource names, in Kui **you just click**.
+
+Kui is also fast. It launches in seconds, and can process `kubectl`
+commands **2-3 times faster** than `kubectl` itself.
 
 <img height="185" src="docs/readme/images/grid-watch.gif"><img height="185" src="docs/readme/images/sequence-diagram.png"><img height="185" src="docs/readme/images/pod.png">
 
+## Installing the Pre-built Kui Graphical CLI
+
 <img width="575" align="right" src="docs/readme/images/minisplits.png">
 
-In summary: Kui enhances your CLI experience, but is also fast. It
-launches in 1-2 seconds, and can process standard `kubectl` commands
-**2-3 times faster** than `kubectl` itself.
-
-## Installation
-
-For macOS, use [Homebrew](https://brew.sh):
+To use Kui right away on macOS:
 
 ```bash
 brew install kui
@@ -56,22 +43,37 @@ For other platforms, download one of the following:
 
 [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-> To use a `kubectl` plugin, make sure the unpacked directory is on your PATH.
-
 > **Windows Warnings**: Please use forward slashes for filepaths, e.g. c:/users, not c:\users.
 
-### Rolling Your Own
+### Using Kui as a Framework to Make Your Own Custom Graphical CLI
 
-Don't trust the prebuilt binaries? We hear you. [Roll your own
-Kui](https://github.com/IBM/kui/wiki#getting-started).
+Kui is a framework for adding graphics to CLIs. Kui is a web app,
+which allows for either a hosted client-server architecture, or, via
+[Electron](https://electronjs.org), the distribution of
+double-clickable applications.
 
-## Contributing
+Using this framework, you can design your own Kubernetes enhancements,
+set a custom theme or custom icon, and enhance the commands of your
+favorite CLI. Check out the [template
+repo](https://github.com/kui-shell/KuiClientTemplate). If you
+prototype Kubernetes enhancements that you feel would be generally
+valuable, please PR them back here, for integration into to the [core
+Kubernetes plugin](plugins/plugin-kubectl).
 
-Kui uses [Electron](https://electronjs.org), which allows for
-distributing clients either as a local platform application, or as a
-hosted browser-based client. If you want to help, please take a look
-at the [developer guide](https://github.com/IBM/kui/wiki) and our
-[guidelines](CONTRIBUTING.md).
+<!--## Kui Showcase
+
+With Kui, watch and `apply` requests present you with live
+tables. Instead of poring over complex YAML, you can browse the facets
+of your resources in a tabbed UI. Drill down, drill up, and view logs
+or the events related just to the resource of interest, again with Kui
+you can just click.
+
+Iterating through a table to find the needle in the haystack? With
+Kui, you can click the rows in rapid succession, and Kui sends the
+details to a side terminal; the main table will not scroll out of
+view. If you are working with
+[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),
+you can see a "waterfall" diagram by simply executing `k get jobs`.-->
 
 ## Code of Conduct
 
