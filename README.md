@@ -31,7 +31,7 @@ commands **2-3 times faster** than `kubectl` itself.
 
 <img width="575" align="right" src="docs/readme/images/minisplits.png">
 
-To use Kui right away on macOS:
+#### MacOS (Intel and AppleSilicon)
 
 ```bash
 brew install kui
@@ -39,11 +39,14 @@ kubectl kui get pods
 open /Applications/Kui.app
 ```
 
-For other platforms, download one of the following:
+#### Windows and Linux
 
-[Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
+[Download and
+unzip](https://github.com/kubernetes-sigs/kui/releases/latest), then
+add the unzipped directory to your PATH. Now use `kubectl kui` or
+launch the `Kui` executable to use Kui's built-in REPL.
 
-> **Windows Warnings**: Please use forward slashes for filepaths, e.g. c:/users, not c:\users.
+> **Windows Warning**: Please use forward slashes for filepaths, e.g. c:/users, not c:\users.
 
 ### Using Kui as a Framework to Make Your Own Custom Graphical CLI
 
@@ -59,21 +62,6 @@ repo](https://github.com/kui-shell/KuiClientTemplate). If you
 prototype Kubernetes enhancements that you feel would be generally
 valuable, please PR them back here, for integration into to the [core
 Kubernetes plugin](plugins/plugin-kubectl).
-
-<!--## Kui Showcase
-
-With Kui, watch and `apply` requests present you with live
-tables. Instead of poring over complex YAML, you can browse the facets
-of your resources in a tabbed UI. Drill down, drill up, and view logs
-or the events related just to the resource of interest, again with Kui
-you can just click.
-
-Iterating through a table to find the needle in the haystack? With
-Kui, you can click the rows in rapid succession, and Kui sends the
-details to a side terminal; the main table will not scroll out of
-view. If you are working with
-[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),
-you can see a "waterfall" diagram by simply executing `k get jobs`.-->
 
 ## Code of Conduct
 
