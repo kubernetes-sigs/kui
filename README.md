@@ -31,7 +31,7 @@ commands **2-3 times faster** than `kubectl` itself.
 
 <img width="575" align="right" src="docs/readme/images/minisplits.png">
 
-#### MacOS (Intel and AppleSilicon)
+#### MacOS (Intel and Apple Silicon)
 
 ```bash
 brew install kui
