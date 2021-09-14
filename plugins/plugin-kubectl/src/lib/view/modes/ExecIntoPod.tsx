@@ -38,7 +38,7 @@ import { Terminal as XTerminal, ITheme } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 
 import { getCommandFromArgs } from '../../util/util'
-import { KubeResource, Pod, isPod } from '../../model/resource'
+import { KubeResource, Pod, isPod, Deployment, ReplicaSet } from '../../model/resource'
 import { KubeOptions, getContainer, withKubeconfigFrom } from '../../../controller/kubectl/options'
 
 import { ContainerProps, ContainerState, ContainerComponent, HYSTERESIS, StreamingStatus } from './ContainerCommon'
@@ -167,7 +167,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
       }
     }
 
-    return this.props.pod.spec.containers[0].name
+    return this.props.resource.spec.containers[0].name
   }
 
   /** Subclasses: override this! */
@@ -343,15 +343,15 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
   /** @return the command to issue in order to initialize the pty stream */
   protected ptyCommand(): { command: string; isLive?: 'Live' | 'Paused' } {
-    const { args, pod } = this.props
+    const { args, resource } = this.props
     const { container } = this.state
 
     const command =
       (args.argsForMode && withKubeconfigFrom(args.argsForMode, args.argsForMode.command)) ||
       withKubeconfigFrom(
         this.props.args,
-        `${getCommandFromArgs(this.props.args)} exec -it ${pod.metadata.name} -c ${container} -n ${
-          pod.metadata.namespace
+        `${getCommandFromArgs(this.props.args)} exec -it ${resource.metadata.name} -c ${container} -n ${
+          resource.metadata.namespace
         } -- sh`
       )
 
@@ -630,10 +630,10 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
  * The content renderer for the summary tab
  *
  */
-async function content(tab: Tab, pod: Pod, args: Arguments<KubeOptions>) {
+async function content(tab: Tab, resource: Pod | Deployment | ReplicaSet, args: Arguments<KubeOptions>) {
   return {
     react: function TerminalProvider(toolbarController: ToolbarProps) {
-      return <Terminal tab={tab} pod={pod} args={args} toolbarController={toolbarController} />
+      return <Terminal tab={tab} resource={resource} args={args} toolbarController={toolbarController} />
     }
   }
 }
