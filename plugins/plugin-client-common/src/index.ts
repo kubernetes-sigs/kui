@@ -40,6 +40,7 @@ export { default as ContextWidgets } from './components/Client/StatusStripe/Cont
 export {
   ViewLevel,
   default as TextWithIconWidget,
+  Props as TextWithIconWidgetProps,
   Options as TextWithIconWidgetOptions
 } from './components/Client/StatusStripe/TextWithIconWidget'
 export { default as Settings } from './components/Client/StatusStripe/Settings'
