@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.5](https://github.com/IBM/kui/compare/v10.5.4...v10.5.5) (2021-09-15)
+
+### Bug Fixes
+
+- **plugins/plugin-kubectl:** Kubernetes Context widget does not always correctly show "This is your current context" ([1990caa](https://github.com/IBM/kui/commit/1990caa)), closes [#7996](https://github.com/IBM/kui/issues/7996)
+
 ## [10.5.4](https://github.com/IBM/kui/compare/v10.5.3...v10.5.4) (2021-09-15)
 
 **Note:** Version bump only for package @kui-shell/plugin-electron-components
