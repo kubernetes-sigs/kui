@@ -52,20 +52,23 @@ COPY . /usr/share/nginx/html
 RUN debconf-set-selections /tmp/preseed.txt && \
     rm -f /etc/timezone /etc/localtime && \
     apt update && \
-    apt install -y tzdata nginx ca-certificates bash git python build-essential wget curl && \
+    apt install -y --no-install-recommends tzdata nginx ca-certificates bash git python build-essential curl upx && \
     cd /usr/share/nginx/html/kui/node_modules/node-pty && npm run install && \
     cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock && \
-    wget -q https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl && chmod +x /usr/local/bin/kubectl && \
-    wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar zxf - && cp linux-amd64/helm /usr/local/bin/helm && chmod +x /usr/local/bin/helm && \
-    wget -q https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux.tar.gz -O - | tar zxf - && \
-      cp oc /usr/local/bin && \
-      chmod +x /usr/local/bin/oc && \
-    wget -q https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-linux-amd64 -O /usr/local/bin/odo && \
-      chmod +x /usr/local/bin/odo && \
+    curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl && upx /usr/local/bin/kubectl && \
+    curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zxf - && mv linux-amd64/helm /usr/local/bin/helm && chmod +x /usr/local/bin/helm && upx /usr/local/bin/helm && rm -rf linux-amd64 && \
+    curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux.tar.gz | tar zxf - && \
+      mv oc /usr/local/bin && \
+      chmod +x /usr/local/bin/oc && upx /usr/local/bin/oc && \
+    curl -LO https://mirror.openshift.com/pub/openshift-v4/clients/odo/latest/odo-linux-amd64 \
+      && mv odo-linux-amd64 /usr/local/bin/odo && chmod +x /usr/local/bin/odo && upx /usr/local/bin/odo && \
     curl -L https://download.clis.cloud.ibm.com/ibm-cloud-cli/1.6.0/IBM_Cloud_CLI_1.6.0_amd64.tar.gz | tar zxf - \
         && mv Bluemix_CLI/bin/ibmcloud /usr/local/bin \
-        && chmod a+rX /usr/local/bin/ibmcloud && \
-    apt remove -y perl curl wget python make g++ && apt -y auto-remove && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /home/kui/.cache/node-gyp && \
+        && chmod a+rX /usr/local/bin/ibmcloud && upx /usr/local/bin/ibmcloud && rm -rf Bluemix_CLI && \
+    curl -LO https://github.com/kalantar/etc3/raw/linux-x64/linux-x64/iter8ctl \
+        && chmod +x iter8ctl && upx iter8ctl && mv iter8ctl /usr/local/bin && \
+    apt remove -y perl curl python make g++ upx && apt -y auto-remove && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /home/kui/.cache/node-gyp && \
+    rm -f /usr/share/nginx/html/kui/kubectl && \
     rm /etc/nginx/sites-enabled/default \
         && ln -sf /dev/stdout /var/log/nginx/access.log \
         && ln -sf /dev/stderr /var/log/nginx/error.log
