@@ -208,7 +208,7 @@ export class Terminal<S extends TerminalState = TerminalState> extends Container
 
     const itheme: ITheme = {
       foreground: val('text-01'),
-      background: val('base01'),
+      background: val('sidecar-background-01'),
       cursor: val('support-01'),
       selection: alpha(val('selection-background'), 0.3),
 

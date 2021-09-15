@@ -88,7 +88,7 @@ $toolbar-height: 1.5rem;
 }
 
 /* sidecar view-button "flush right" toolbar */
-.sidecar-bottom-stripe-toolbar {
+body[kui-theme-style] .sidecar-bottom-stripe-toolbar {
   display: flex;
   overflow: visible; /* for tooltip visibility */
 
@@ -192,8 +192,8 @@ $toolbar-height: 1.5rem;
     & > div,
     a,
     button {
-      color: inherit;
-      background-color: transparent;
+      color: var(--color-sidecar-toolbar-foreground);
+      background-color: var(--color-sidecar-toolbar-background);
       border: none;
       font-size: inherit;
       &:hover {
