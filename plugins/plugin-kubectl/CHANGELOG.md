@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.4](https://github.com/IBM/kui/compare/v10.5.3...v10.5.4) (2021-09-15)
+
+### Bug Fixes
+
+- sidecar contrast issues ([afa6e76](https://github.com/IBM/kui/commit/afa6e76)), closes [#7993](https://github.com/IBM/kui/issues/7993)
+
 ## [10.5.3](https://github.com/IBM/kui/compare/v10.5.2...v10.5.3) (2021-09-14)
 
 ### Bug Fixes
