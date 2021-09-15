@@ -61,9 +61,10 @@ export default async function deleteDirect(args: Arguments<KubeOptions>, _kind?:
       // then dissect it into errors and non-errors
       const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
       if (ok.length === 0) {
-        // all 404 errors? then tell the user about them (no need to re-invoke the CLI)
         if (errors.length > 0 && errors.every(is404)) {
-          return errors.map(_ => _.message).join('\n')
+          // all 404 errors? then tell the user about them (no need to re-invoke the CLI)
+          debug('throwing delete errors from the API', errors)
+          throw new Error(errors.map(_ => _.message).join('\n'))
         }
         // otherwise: intentional fall-through, returning void; let
         // kubectl CLI handle the errors for now
