@@ -43,6 +43,7 @@ type Props = TextWithIconWidgetOptions
 interface State {
   currentContext: string
   allContexts: KubeContext[]
+  options: { label: string; isSelected: boolean; description: string; command: string }[]
   viewLevel: ViewLevel
 }
 
@@ -77,7 +78,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     this.state = {
       currentContext: strings('Loading...'),
       allContexts: [],
-      viewLevel: 'info'
+      options: [],
+      viewLevel: 'loading'
     }
   }
 
@@ -134,20 +136,40 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     const tab = getCurrentTab()
     const defaultCurrentContext = await getCurrentDefaultContextName(tab)
 
-    const allContexts = this.state.allContexts.find(_ => _.metadata.name === defaultCurrentContext)
+    const currentContext = defaultCurrentContext
+
+    const allContexts = this.state.allContexts.find(_ => _.metadata.name === currentContext)
       ? this.state.allContexts
       : await getAllContexts(tab)
 
     this.setState({
       allContexts,
-      currentContext: this.renderName(defaultCurrentContext)
+      currentContext,
+      options: this.options(currentContext, allContexts)
+    })
+  }
+
+  private options(currentContext: string, allContexts: State['allContexts']) {
+    return allContexts.map(context => {
+      const { name } = context.metadata
+      const label = this.renderName(name)
+      const isSelected = name === currentContext
+
+      return {
+        label,
+        isSelected,
+        description: isSelected ? strings('This is your current context') : undefined,
+        command: `${kubectl} config use-context ${encodeComponent(name)}`
+      }
     })
   }
 
   private setNoContext() {
     this.last = undefined
     this.setState({
-      viewLevel: 'hidden'
+      viewLevel: 'hidden',
+      allContexts: [],
+      options: []
     })
   }
 
@@ -168,12 +190,14 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
 
     try {
       const allContexts = await getAllContexts(tab)
-      const currentContext = allContexts.find(context => context.spec.isCurrent)
+      const currentContextSpec = allContexts.find(context => context.spec.isCurrent)
+      const currentContext = currentContextSpec && currentContextSpec.metadata.name
 
       if (currentContext) {
         this.setState({
           allContexts,
-          currentContext: currentContext && this.renderName(currentContext.metadata.name),
+          currentContext,
+          options: this.options(currentContext, allContexts),
           viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
         })
       } else {
@@ -188,12 +212,15 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   private getCurrentContextFromTab(args: { idx: number; tab: TabState }) {
     const { tab } = args
     if (tab) {
-      const currentContext = getTabState(tab, 'context')
-      if (currentContext) {
-        this.setState({
-          currentContext: currentContext && this.renderName(currentContext),
+      const currentContextSpec = getTabState(tab, 'context')
+      if (currentContextSpec) {
+        const currentContext = currentContextSpec.metadata.name
+
+        this.setState(curState => ({
+          currentContext,
+          options: this.options(currentContext, curState.allContexts),
           viewLevel: 'normal'
-        })
+        }))
       }
     }
   }
@@ -213,7 +240,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
       <React.Fragment>
         <div>{strings('Kubernetes Context')}</div>
         <div className="do-not-overflow">
-          <strong>{this.state.currentContext}</strong>
+          <strong>{this.renderName(this.state.currentContext)}</strong>
         </div>
         <div className="sub-text even-smaller-text">{this.listContext()}</div>
       </React.Fragment>
@@ -225,24 +252,16 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
       return
     }
 
-    const options = this.state.allContexts.map(context => ({
-      label: this.renderName(context.metadata.name),
-      isSelected: context.spec.isCurrent,
-      description: context.spec.isCurrent ? strings('This is your current context') : undefined,
-      command: `${kubectl} config use-context ${encodeComponent(context.metadata.name)}`
-    }))
-
     return (
       <React.Suspense fallback={<div />}>
         <Select
-          key={this.state.currentContext /* pf 4.152.4 regression? "This is the current" does not show on change */}
-          variant="typeahead"
-          maxHeight="11rem"
-          className="small-top-pad"
-          selected={this.state.currentContext}
-          options={options}
           isOpen
           isClosable={false}
+          maxHeight="11rem"
+          variant="typeahead"
+          options={this.state.options}
+          selected={this.state.currentContext}
+          key={this.state.currentContext /* pf 4.152.4 regression? "This is the current" does not show on change */}
         />
       </React.Suspense>
     )
