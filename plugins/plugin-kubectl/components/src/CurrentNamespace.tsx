@@ -58,7 +58,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     this.state = {
       currentNamespace: strings('Loading...'),
       allNamespaces: [],
-      viewLevel: 'info'
+      viewLevel: 'loading'
     }
   }
 
@@ -239,7 +239,6 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
           key={this.state.currentNamespace /* pf 4.152.4 regression? "This is the current" does not show on change */}
           variant="typeahead"
           maxHeight="11rem"
-          className="small-top-pad"
           selected={this.state.currentNamespace}
           options={options}
           groups={groups}

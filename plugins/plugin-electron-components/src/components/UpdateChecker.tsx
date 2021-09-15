@@ -24,8 +24,8 @@
 import React from 'react'
 import needle from 'needle'
 
-import { eventChannelUnsafe, getCurrentTab, i18n } from '@kui-shell/core'
-import { TextWithIconWidget as Widget, Markdown } from '@kui-shell/plugin-client-common'
+import { eventChannelUnsafe, getCurrentTab, pexecInCurrentTab, i18n } from '@kui-shell/core'
+import { TextWithIconWidget as Widget, TextWithIconWidgetProps, Markdown } from '@kui-shell/plugin-client-common'
 
 import '../../web/scss/components/UpdateChecker/_index.scss'
 
@@ -64,6 +64,9 @@ interface Props {
 
   /** Additional css classes */
   className?: string
+
+  /** Name for brew upgrade */
+  brewName?: string
 }
 
 interface State {
@@ -87,6 +90,8 @@ interface State {
     content: string
     download: string
   }
+
+  popover: TextWithIconWidgetProps['popover']
 }
 
 /**
@@ -109,6 +114,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
       pinger: this.initPinger(),
       currentVersion: undefined,
       latestVersion: undefined,
+      popover: undefined,
       dulyNoted: localStorage.getItem(DULY_NOTED_KEY)
     }
   }
@@ -126,28 +132,61 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
       .then(res => {
         const version = res.body.tag_name
 
-        this.setState({
-          entryForLatestVersion: {
-            title: 'Release Notes from Kui',
-            updated: res.body.published_at,
-            version: res.body.tag_name,
-            content: res.body.body,
-            download: res.body.html_url
-          }
-        })
+        const entryForLatestVersion = {
+          title: 'Release Notes from Kui',
+          updated: res.body.published_at,
+          version: res.body.tag_name,
+          content: res.body.body,
+          download: res.body.html_url
+        }
 
-        return version
-      })
-      .then(stripOffPrefixV) // see https://github.com/IBM/kui/issues/4918
-      .then(latestVersion =>
+        const latestVersion = stripOffPrefixV(version) // see https://github.com/IBM/kui/issues/4918
+
         this.setState(curState => ({
           latestVersion,
+          entryForLatestVersion,
+          popover: this.popover(entryForLatestVersion),
           dulyNoted: curState.dulyNoted && curState.dulyNoted !== latestVersion ? undefined : curState.dulyNoted
         }))
-      )
+      })
       .catch(err => {
         console.error('error checking for updates', err)
       })
+  }
+
+  private readonly _brewUpgrade = () => pexecInCurrentTab(`brew upgrade ${this.props.brewName || 'kui'}`)
+
+  private popover(entryForLatestVersion: State['entryForLatestVersion']) {
+    if (entryForLatestVersion) {
+      return {
+        maxWidth: '23rem',
+        className: 'kui--update-checker--popover',
+        onHide: () => this.dulyNoted(),
+
+        bodyContent: (
+          <React.Fragment>
+            <Markdown source={entryForLatestVersion.content} baseUrl={baseUrl()} />
+          </React.Fragment>
+        ),
+        headerContent: (
+          <React.Fragment>
+            <div>{entryForLatestVersion.title}</div>
+            <div>
+              <strong>{entryForLatestVersion.version}</strong>
+            </div>
+            <div className="sub-text even-smaller-text">
+              {process.platform === 'darwin' ? (
+                <a href="#" onClick={this._brewUpgrade}>
+                  Upgrade
+                </a>
+              ) : (
+                <a href={entryForLatestVersion.download}>Download</a>
+              )}
+            </div>
+          </React.Fragment>
+        )
+      }
+    }
   }
 
   /** What version are we running? */
@@ -227,30 +266,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
             'Version X is available. Click to see the changelog and download the new release.',
             this.state.latestVersion
           )}
-          popover={
-            this.state.entryForLatestVersion && {
-              maxWidth: '23rem',
-              className: 'kui--update-checker--popover',
-              onHide: () => this.dulyNoted(),
-
-              bodyContent: (
-                <React.Fragment>
-                  <Markdown source={this.state.entryForLatestVersion.content} baseUrl={baseUrl()} />
-                </React.Fragment>
-              ),
-              headerContent: (
-                <React.Fragment>
-                  <div>{this.state.entryForLatestVersion.title}</div>
-                  <div>
-                    <strong>{this.state.entryForLatestVersion.version}</strong>
-                  </div>
-                  <div className="sub-text even-smaller-text">
-                    <a href={this.state.entryForLatestVersion.download}>Download</a>
-                  </div>
-                </React.Fragment>
-              )
-            }
-          }
+          popover={this.state.popover}
         />
       )
     } else {
