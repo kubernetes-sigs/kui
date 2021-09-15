@@ -95,6 +95,7 @@ $z-index: var(--pf-global--ZIndex--xs);
     }
     &:not(.kui--status-stripe-tag-element) {
       &[data-view='warn'],
+      &[data-view='loading'],
       &[data-view='info'] {
         filter: grayscale(0.15) brightness(0.9);
         &:hover {
@@ -107,6 +108,9 @@ $z-index: var(--pf-global--ZIndex--xs);
             background-color: var(--color-yellow);
           }
           &[data-view='info'] {
+            background-color: var(--color-base04);
+          }
+          &[data-view='loading'] {
             font-style: italic;
             background-color: var(--color-base04);
           }
