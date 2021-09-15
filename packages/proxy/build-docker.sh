@@ -23,9 +23,9 @@ export CLIENT_HOME=${CLIENT_HOME-$(pwd)}
 BUILDDIR="$CLIENT_HOME"/dist/webpack
 
 # accepted environment variables
-KUBE_VERSION=${KUBE_VERSION-1.18.3}
-HELM_VERSION=${HELM_VERSION-3.3.4}
-OC_VERSION=${OC_VERSION-4.3.3}
+KUBE_VERSION=${KUBE_VERSION-1.22.1}
+HELM_VERSION=${HELM_VERSION-3.6.3}
+OC_VERSION=${OC_VERSION-4.7.0}
 
 function kubeconfig {
     if [ -n "$INJECT_KUBECONFIG" ] && [ -n "$KUBECONFIG" ]; then
