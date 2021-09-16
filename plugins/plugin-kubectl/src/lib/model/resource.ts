@@ -70,6 +70,7 @@ export interface WithOwnerReferences {
   }[]
 }
 
+/** Resource Version */
 interface WithResourceVersion {
   resourceVersion: string
 }
@@ -90,6 +91,42 @@ export function sameResourceVersion(a: MultiModalResponse<KubeResource>, b: Mult
     hasResourceVersion(a) &&
     hasResourceVersion(b) &&
     a.metadata.resourceVersion === b.metadata.resourceVersion
+  )
+}
+
+/** Managed Fields */
+interface ManagedFields<T extends string> {
+  fieldsType: T
+}
+interface ManagedFieldsV1 extends ManagedFields<'FieldsV1'> {
+  fieldsV1: Record<string, any>
+}
+
+interface WithManagedFields<Fields extends ManagedFields<string> = ManagedFieldsV1> {
+  managedFields: (Fields & {
+    manager: string
+    operation: string
+    apiVersion: string
+    time: string
+  })[]
+}
+
+export type KubeResourceWithManagedFields<Fields extends ManagedFields<string> = ManagedFieldsV1> = KubeResource<
+  {},
+  KubeMetadata & Required<WithManagedFields<Fields>>
+>
+
+export function hasManagedFields(resource: KubeResource): resource is KubeResourceWithManagedFields {
+  const { managedFields } = (resource as KubeResourceWithManagedFields).metadata
+
+  return (
+    Array.isArray(managedFields) &&
+    managedFields.length > 0 &&
+    typeof managedFields[0].manager === 'string' &&
+    typeof managedFields[0].operation === 'string' &&
+    typeof managedFields[0].apiVersion === 'string' &&
+    typeof managedFields[0].time === 'string' &&
+    typeof managedFields[0].fieldsType === 'string'
   )
 }
 
