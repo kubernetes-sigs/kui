@@ -34,6 +34,9 @@ import involvedObjectMode from './lib/view/modes/involved-object'
 import showCRDResources from './lib/view/modes/show-crd-managed-resources'
 import EditButton from './lib/view/modes/EditButton'
 import { eventsMode, eventsBadge } from './lib/view/modes/Events'
+// import managedFieldsMode from './lib/view/modes/ManagedFields'
+import annotationsMode from './lib/view/modes/Annotations'
+import labelsMode from './lib/view/modes/Labels'
 
 import tabCompletionProvider from './lib/tab-completion'
 
@@ -50,11 +53,14 @@ export default async (registrar: PreloadRegistrar) => {
     crdSummaryMode,
     configmapSummaryMode,
     namespaceSummaryMode,
+    annotationsMode,
+    labelsMode,
     eventsMode,
     logsMode,
     ExecIntoPad,
     lastAppliedMode,
     EditButton,
+    // managedFieldsMode,
     showCRDResources,
     showOwnerButton,
     showNodeButton,
