@@ -38,3 +38,9 @@
 @include SidecarTopTabSelectedBorder {
   border-color: var(--color-base0C);
 }
+
+/** See https://github.com/kubernetes-sigs/kui/issues/8007 */
+@include SidecarTopTab {
+  flex: 1;
+  display: flex;
+}
