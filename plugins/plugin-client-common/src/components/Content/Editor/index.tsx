@@ -374,6 +374,9 @@ export default class Editor extends React.PureComponent<Props, State> {
       const editor = Monaco.create(state.wrapper, options)
       setTimeout(async () => {
         editor.setValue(await Editor.extractValue(state.content, props.response, props.repl))
+
+        // initial default folding level; see https://github.com/kubernetes-sigs/kui/issues/8008
+        editor.getAction('editor.foldLevel2').run()
       })
 
       const onZoom = () => {
