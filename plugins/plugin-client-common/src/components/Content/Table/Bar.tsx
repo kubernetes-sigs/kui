@@ -64,7 +64,7 @@ export default class Bar extends React.PureComponent<Props> {
             key={idx}
             title={title}
             data-overlay={idx}
-            style={{ marginLeft: str(offset), width: str(width) }}
+            style={{ marginLeft: str(offset + this.props.left), width: str(width) }}
             className={'kui--bar' + (this.props.onClick ? ' clickable' : '')}
           />
         ))}
