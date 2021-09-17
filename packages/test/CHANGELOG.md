@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.6](https://github.com/kubernetes-sigs/kui/compare/v10.5.5...v10.5.6) (2021-09-17)
+
+### Features
+
+- **plugins/plugin-client-common:** Editor component should default to a fold depth of 2 ([88c9b69](https://github.com/kubernetes-sigs/kui/commit/88c9b69)), closes [#8008](https://github.com/kubernetes-sigs/kui/issues/8008)
+
 ## [10.5.5](https://github.com/kubernetes-sigs/kui/compare/v10.5.4...v10.5.5) (2021-09-15)
 
 **Note:** Version bump only for package @kui-shell/test

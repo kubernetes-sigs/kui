@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-client-alternate",
-  "version": "10.5.5",
+  "version": "10.5.6",
   "description": "",
   "main": "dist/index.js",
   "module": "mdist/index.js",

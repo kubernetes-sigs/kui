@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.6](https://github.com/IBM/kui/compare/v10.5.5...v10.5.6) (2021-09-17)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Editor component does not respond to sidecar resizing ([d890245](https://github.com/IBM/kui/commit/d890245)), closes [#8007](https://github.com/IBM/kui/issues/8007)
+- **plugins/plugin-client-common:** SequenceDiagram bars sometimes lack left-offset ([f78b0fb](https://github.com/IBM/kui/commit/f78b0fb))
+- **plugins/plugin-client-common:** sidecar tab overflow buttons have low contrast ([6a64a85](https://github.com/IBM/kui/commit/6a64a85)), closes [#8017](https://github.com/IBM/kui/issues/8017)
+- **plugins/plugin-kubectl:** involved object button shows up in the wrong place ([09ddae4](https://github.com/IBM/kui/commit/09ddae4)), closes [#8013](https://github.com/IBM/kui/issues/8013)
+
+### Features
+
+- **plugins/plugin-client-common:** Editor component should default to a fold depth of 2 ([88c9b69](https://github.com/IBM/kui/commit/88c9b69)), closes [#8008](https://github.com/IBM/kui/issues/8008)
+- **plugins/plugin-kubectl:** Add Annotations and Labels tabs for kube resources ([b722f71](https://github.com/IBM/kui/commit/b722f71)), closes [#8009](https://github.com/IBM/kui/issues/8009)
+
 ## [10.5.5](https://github.com/IBM/kui/compare/v10.5.4...v10.5.5) (2021-09-15)
 
 ### Bug Fixes
