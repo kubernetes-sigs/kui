@@ -74,6 +74,10 @@ export default class ToolbarButton<T extends ResourceWithMetadata = ResourceWith
   public render() {
     const { button } = this.props
 
+    // we want bottom-end, but PatternFly 4.152.4 (also 4.157.3) does
+    // not seem to render bottom-end correctly; the caret/pointer is
+    // not visible see
+    // https://github.com/patternfly/patternfly/issues/4382
     return (
       <Tooltip content={button.label || button.mode}>
         <span

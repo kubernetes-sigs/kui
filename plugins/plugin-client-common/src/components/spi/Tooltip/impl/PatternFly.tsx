@@ -28,6 +28,7 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
   return (
     <Tooltip
       className="kui--tooltip"
+      enableFlip={props.enableFlip}
       isContentLeftAligned={isMarkdown}
       position={props.position || 'auto'}
       entryDelay={props.entryDelay || 200}

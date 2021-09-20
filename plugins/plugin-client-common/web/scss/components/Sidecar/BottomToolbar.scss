@@ -16,32 +16,31 @@
 
 @import 'mixins';
 
-@include SidecarBottomToolbar {
-  padding-right: 0;
-  align-items: unset;
-  font-size: calc(12em / 16);
-  color: var(--color-text-02);
-  background-color: var(--color-sidecar-header);
+body[kui-theme-style] {
+  @include SidecarBottomToolbar {
+    padding-right: 0;
+    align-items: unset;
+    font-size: calc(12em / 16);
+    color: var(--color-text-02);
+    background-color: var(--color-sidecar-header);
 
-  @include SidecarToolbarButton {
-    padding: 0 1em;
-    border-left: 1px solid var(--color-table-border3);
-
-    &:hover {
-      background-color: var(--color-table-border3);
-    }
-
-    & > div {
-      display: flex;
+    @include SidecarToolbarButton {
+      padding: 0 1em;
       align-items: center;
-    }
+      border-left: 1px solid var(--color-table-border3);
 
-    & > div,
-    a,
-    button {
       &:hover {
-        [role='tab'] {
-          color: var(--color-text-01);
+        cursor: pointer;
+        background-color: var(--color-table-border3);
+      }
+
+      & > div,
+      a,
+      button {
+        &:hover {
+          [role='tab'] {
+            color: var(--color-text-01);
+          }
         }
       }
     }
