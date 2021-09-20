@@ -41,8 +41,24 @@ type CommonProps = {
   /** Default 200ms */
   entryDelay?: number
 
+  /** If true, tries to keep the tooltip in view by flipping it if necessary */
+  enableFlip?: boolean
+
   /** Orienation of the tooltip relative to the tooltiped element */
-  position?: 'auto' | 'top' | 'bottom' | 'left' | 'right'
+  position?:
+    | 'auto'
+    | 'top'
+    | 'bottom'
+    | 'left'
+    | 'right'
+    | 'top-start'
+    | 'top-end'
+    | 'left-start'
+    | 'left-end'
+    | 'right-start'
+    | 'right-end'
+    | 'bottom-start'
+    | 'bottom-end'
 }
 
 type ByChildren = ByChildrenWithMarkdown | ByChildrenWithContent
