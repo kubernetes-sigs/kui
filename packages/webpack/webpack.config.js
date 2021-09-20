@@ -156,8 +156,9 @@ if (CompressionPlugin) {
   plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
 }
 
-plugins.push(new IgnorePlugin({ contextRegExp: /\/tests\// }))
-plugins.push(new IgnorePlugin({ contextRegExp: /\/@kui-shell\/build/ }))
+const allFiles = /.*/
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/@kui-shell\/build/ }))
 
 if (inBrowser) {
   plugins.push(
