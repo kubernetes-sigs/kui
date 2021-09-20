@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.7](https://github.com/IBM/kui/compare/v10.5.6...v10.5.7) (2021-09-20)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** In sidecar, hover effect for buttons can have low contrast in certain themes. ([dda93de](https://github.com/IBM/kui/commit/dda93de)), closes [#8019](https://github.com/IBM/kui/issues/8019)
+
 ## [10.5.6](https://github.com/IBM/kui/compare/v10.5.5...v10.5.6) (2021-09-17)
 
 ### Bug Fixes

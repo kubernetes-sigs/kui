@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-proxy-support",
-  "version": "10.5.6",
+  "version": "10.5.7",
   "description": "Kui plugin that adds runtime support for proxied communication",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
