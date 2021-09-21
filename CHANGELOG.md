@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.9](https://github.com/IBM/kui/compare/v10.5.8...v10.5.9) (2021-09-21)
+
+### Bug Fixes
+
+- **packages/webpack:** update headless webpack config to new IgnorePlugin schema enforcement ([f7f8f27](https://github.com/IBM/kui/commit/f7f8f27)), closes [#8032](https://github.com/IBM/kui/issues/8032)
+- **plugins/plugin-client-common:** leftover debugging in Editor component ([0ff7b95](https://github.com/IBM/kui/commit/0ff7b95)), closes [#8037](https://github.com/IBM/kui/issues/8037)
+- **plugins/plugin-client-common:** Loading for proxied clients is now centered ([104c31e](https://github.com/IBM/kui/commit/104c31e)), closes [#8034](https://github.com/IBM/kui/issues/8034)
+- **plugins/plugin-client-common:** when proxy disconnects, all terminal state is lost ([73285c6](https://github.com/IBM/kui/commit/73285c6)), closes [#8030](https://github.com/IBM/kui/issues/8030)
+
 ## [10.5.8](https://github.com/IBM/kui/compare/v10.5.7...v10.5.8) (2021-09-21)
 
 ### Bug Fixes

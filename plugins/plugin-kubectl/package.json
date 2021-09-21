@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-kubectl",
-  "version": "10.5.8",
+  "version": "10.5.9",
   "description": "Kubernetes visualization plugin for kubernetes",
   "license": "Apache-2.0",
   "keywords": [
