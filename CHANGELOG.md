@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.8](https://github.com/IBM/kui/compare/v10.5.7...v10.5.8) (2021-09-21)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** monaco folding overlay is not always very visible ([3b3dac4](https://github.com/IBM/kui/commit/3b3dac4)), closes [#8022](https://github.com/IBM/kui/issues/8022)
+- **plugins/plugin-s3:** rm -rf fails for s3 buckets with incomplete uploads ([b7c94e4](https://github.com/IBM/kui/commit/b7c94e4)), closes [#8026](https://github.com/IBM/kui/issues/8026)
+
 ## [10.5.7](https://github.com/IBM/kui/compare/v10.5.6...v10.5.7) (2021-09-20)
 
 ### Bug Fixes
