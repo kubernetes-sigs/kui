@@ -61,8 +61,9 @@ console.log('outputPath', outputPath)
 const plugins = []
 
 // ignore these bits for headless
-plugins.push(new IgnorePlugin({ contextRegExp: /\/tests\// }))
-plugins.push(new IgnorePlugin({ contextRegExp: /\/@kui-shell\/build/ }))
+const allFiles = /.*/
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/@kui-shell\/build/ }))
 ;[
   /^d3$/,
   /^elkjs\/lib\/elk.bundled.js$/,
