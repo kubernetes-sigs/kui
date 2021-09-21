@@ -50,6 +50,7 @@ import getSize from './getSize'
 import SplitHeader from './SplitHeader'
 import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder, tabAlignment } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
+import SessionInitStatus from '../../Client/SessionInitStatus'
 import { onCopy, onCut, onPaste } from './ClipboardTransfer'
 import {
   Active,
@@ -121,6 +122,9 @@ type Props = TerminalOptions & {
 
   /** Toggle attribute on Tab DOM */
   toggleAttribute(attr: string): void
+
+  /** Status of the proxy session (for client-server architectures of Kui) */
+  sessionInit: SessionInitStatus
 }
 
 interface State {
@@ -350,7 +354,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const scrollback = this.scrollback()
     const welcomeMax = this.props.config.showWelcomeMax
 
-    if (this.props.config.loadingDone && welcomeMax !== undefined) {
+    if (this.props.sessionInit === 'Done' && this.props.config.loadingDone && welcomeMax !== undefined) {
       const welcomed = parseInt(localStorage.getItem(NUM_WELCOMED)) || 0
 
       if ((welcomeMax === -1 || welcomed < welcomeMax) && this.props.config.loadingDone) {
@@ -1539,7 +1543,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public render() {
     return (
-      <div className="repl" id="main-repl">
+      <div className="repl" id="main-repl" data-session-init-status={this.props.sessionInit}>
         <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={this.state.splits.length}>
           {this.state.splits.map((scrollback, sbidx) => this.split(scrollback, sbidx))}
         </div>
