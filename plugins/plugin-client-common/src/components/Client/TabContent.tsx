@@ -21,6 +21,7 @@ import KuiContext from './context'
 const Confirm = React.lazy(() => import('../Views/Confirm'))
 
 import getSize from '../Views/Terminal/getSize'
+import SessionInitStatus from './SessionInitStatus'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
 
 type Cleaner = () => void
@@ -48,8 +49,6 @@ type Props = TabContentOptions &
     snapshot?: Buffer
     tabTitle?: string
   }
-
-type SessionInitStatus = 'NotYet' | 'InProgress' | 'Reinit' | 'Done' | 'Error'
 
 type State = Partial<WithTab> & {
   sessionInit: SessionInitStatus
@@ -243,38 +242,42 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   private terminal() {
+    if (this.state.sessionInit !== 'NotYet') {
+      return (
+        <KuiContext.Consumer>
+          {config => (
+            <ScrollableTerminal
+              {...this.props}
+              tab={this.state.tab.current}
+              sessionInit={this.state.sessionInit}
+              config={config}
+              toggleAttribute={this._toggleAttribute}
+              onClear={this._onClear}
+              ref={this.state._terminal}
+            >
+              {this.children()}
+            </ScrollableTerminal>
+          )}
+        </KuiContext.Consumer>
+      )
+    }
+  }
+
+  /** Use client-provided (or default) proxy disconnected notice, if warranted */
+  private proxyDisconnectNotice() {
     if (this.state.sessionInit !== 'Done') {
       return (
         <KuiContext.Consumer>
-          {config => {
-            if (this.state.sessionInit === 'Error' && config.loadingError) {
-              return config.loadingError(this.state.sessionInitError)
-            } else if (this.state.sessionInit === 'Reinit' && config.reinit) {
-              return config.reinit
-            }
-
-            return config.loading || this.defaultLoading()
-          }}
+          {config => (
+            <React.Suspense fallback={<div />}>
+              {this.state.sessionInit === 'Error' && config.loadingError
+                ? config.loadingError(this.state.sessionInitError)
+                : this.state.sessionInit === 'Reinit' && config.reinit
+                ? config.reinit
+                : this.state.sessionInit !== 'Done' && (config.loading || this.defaultLoading())}
+            </React.Suspense>
+          )}
         </KuiContext.Consumer>
-      )
-    } else {
-      return (
-        <React.Fragment>
-          <KuiContext.Consumer>
-            {config => (
-              <ScrollableTerminal
-                {...this.props}
-                tab={this.state.tab.current}
-                config={config}
-                toggleAttribute={this._toggleAttribute}
-                onClear={this._onClear}
-                ref={this.state._terminal}
-              >
-                {this.children()}
-              </ScrollableTerminal>
-            )}
-          </KuiContext.Consumer>
-        </React.Fragment>
       )
     }
   }
@@ -333,6 +336,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
     return (
       <React.Fragment>
         <div className="kui--rows">
+          {this.proxyDisconnectNotice()}
           <div className="kui--columns" style={{ position: 'relative' }}>
             {this.terminal()}
           </div>
