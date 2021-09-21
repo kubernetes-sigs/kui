@@ -22,3 +22,7 @@
     background-color: var(--color-repl-background);
   }
 }
+
+.repl:not([data-session-init-status='Done']) .kui--session-init-done {
+  display: none;
+}
