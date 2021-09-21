@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Kubernetes Authors
+ * Copyright 2020 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-.kui--toolbar-alert {
-  white-space: normal;
+type SessionInitStatus = 'NotYet' | 'InProgress' | 'Reinit' | 'Done' | 'Error'
 
-  h4 {
-    margin: 0;
-    font-size: inherit;
-  }
-}
+export default SessionInitStatus
