@@ -818,16 +818,42 @@ class S3VFSResponder extends S3VFS implements VFS {
   /** rm -rf */
   private async rimraf(bucketName: string): Promise<string> {
     const buckets = await this.listBucketsMatching(bucketName)
+    const errors: string[] = []
     await Promise.all(
       buckets.map(async ({ name: bucketName }) => {
         await this.client.removeObjects(bucketName, await this.objectsIn(bucketName))
-        await this.client.removeBucket(bucketName)
+        await this.client
+          .removeBucket(bucketName)
+          .catch(err => {
+            if (/multi-part upload in progress/.test(err.message)) {
+              // attempt to clean up incomplete uploads
+              // see https://github.com/kubernetes-sigs/kui/issues/8026
+              return new Promise((resolve, reject) => {
+                const stream = this.client.listIncompleteUploads(bucketName)
+                stream.on('end', resolve)
+                stream.on('error', reject)
+                stream.on('data', ({ key }) => {
+                  debug(`Removing multi-part upload ${key} from bucket ${bucketName}`)
+                  this.client.removeIncompleteUpload(bucketName, key)
+                })
+              })
+            }
+            debug(err)
+          })
+          .catch(err => {
+            errors.push(err.message)
+          })
       })
     )
 
-    return buckets.length === 1
-      ? strings('Removed bucket X and its contents', buckets[0].name)
-      : strings('Removed N buckets and their contents', buckets.length)
+    const okMessage =
+      errors.length === buckets.length
+        ? ''
+        : buckets.length === 1
+        ? strings('Removed bucket X and its contents', buckets[0].name)
+        : strings('Removed N buckets and their contents', buckets.length)
+
+    return errors.join('\n') + (errors.length > 0 ? '\n' : '') + okMessage
   }
 
   /** Remove filepath */
