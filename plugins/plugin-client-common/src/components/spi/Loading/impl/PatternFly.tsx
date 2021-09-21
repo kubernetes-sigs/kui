@@ -22,7 +22,7 @@ import Props from '../model'
 export default class PatternFlyLoading extends React.PureComponent<Props> {
   public render() {
     return (
-      <div className="flex-layout flex-align-center flex-align-top big-top-pad">
+      <div className="flex-layout flex-align-top big-top-pad">
         <Spinner size="lg" className="fade-in left-pad" />
         <span className={this.props.className + ' left-pad'}>{this.props.description}</span>
       </div>
