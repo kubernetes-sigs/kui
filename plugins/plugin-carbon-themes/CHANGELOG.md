@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.11](https://github.com/IBM/kui/compare/v10.5.10...v10.5.11) (2021-09-22)
+
+### Features
+
+- **plugins/plugin-carbon-themes:** use plex fonts via google font CDN ([9c3b390](https://github.com/IBM/kui/commit/9c3b390)), closes [#8048](https://github.com/IBM/kui/issues/8048)
+
 ## [10.5.10](https://github.com/IBM/kui/compare/v10.5.9...v10.5.10) (2021-09-22)
 
 **Note:** Version bump only for package @kui-shell/plugin-carbon-themes

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.11](https://github.com/kubernetes-sigs/kui/compare/v10.5.10...v10.5.11) (2021-09-22)
+
+**Note:** Version bump only for package @kui-shell/test
+
 ## [10.5.10](https://github.com/kubernetes-sigs/kui/compare/v10.5.9...v10.5.10) (2021-09-22)
 
 **Note:** Version bump only for package @kui-shell/test

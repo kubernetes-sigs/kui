@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.11](https://github.com/IBM/kui/compare/v10.5.10...v10.5.11) (2021-09-22)
+
+### Features
+
+- **plugins/plugin-carbon-themes:** use plex fonts via google font CDN ([9c3b390](https://github.com/IBM/kui/commit/9c3b390)), closes [#8048](https://github.com/IBM/kui/issues/8048)
+- **plugins/plugin-s3:** when copying to a public s3 bucket, use the bucket url, not the generic one ([5d5ac1e](https://github.com/IBM/kui/commit/5d5ac1e)), closes [#8046](https://github.com/IBM/kui/issues/8046)
+
 ## [10.5.10](https://github.com/IBM/kui/compare/v10.5.9...v10.5.10) (2021-09-22)
 
 ### Bug Fixes
