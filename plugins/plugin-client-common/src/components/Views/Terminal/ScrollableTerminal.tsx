@@ -62,7 +62,6 @@ import {
   isRerunable,
   isBeingRerun,
   hasBeenRerun,
-  hasOriginalUUID,
   Processing,
   isActive,
   isAnnouncement,
@@ -77,6 +76,7 @@ import {
   hasStartEvent,
   hasCommand,
   hasUUID,
+  hasOriginalUUID,
   BlockModel
 } from './Block/BlockModel'
 
@@ -1479,7 +1479,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       return (
         <Block
-          key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
+          key={
+            hasOriginalUUID(_)
+              ? _.originalExecUUID
+              : hasUUID(_)
+              ? _.execUUID
+              : `${idx}-${isActive(_)}-${isCancelled(_)}`
+          }
           idx={idx}
           isExecutable={isExecutable}
           isSectionBreak={isSectionBreak(_) || undefined}

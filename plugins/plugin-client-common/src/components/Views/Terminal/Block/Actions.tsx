@@ -40,6 +40,7 @@ function Action(props: { onClick: (evt: React.SyntheticEvent) => void; icon: Sup
     <TwoFaceIcon
       a={props.icon}
       b="Checkmark"
+      delay={4000}
       onClick={props.onClick}
       classNameB="green-text"
       className="kui--block-action"
