@@ -548,9 +548,15 @@ class S3VFSResponder extends S3VFS implements VFS {
     fileName: string,
     dstIsFolder: boolean
   ) {
-    const endPoint = /^http/.test(this.options.endPoint) ? this.options.endPoint : `https://${this.options.endPoint}`
+    // note how we use the bucketName.endpoint style of urls
+    // see https://github.com/kubernetes-sigs/kui/issues/8046
+    const proto = this.options.endPoint.match(/(^https?:\/\/)/)
+    const endPoint = (proto
+      ? `${proto[1]}${bucketName}.${this.options.endPoint}`
+      : `https://${bucketName}.${this.options.endPoint}`
+    ).replace(/\.$/, '')
     const folder = dstIsFolder ? fileName : dirname(fileName)
-    const dstDir = !folder ? bucketName : join(bucketName, folder)
+    const dstDir = folder || ''
     if (srcs.find(_ => /index.html$/.test(_.path)) || /index.html$/.test(fileName)) {
       const path = join(dstDir, 'index.html')
       return strings('Published website as', `${endPoint}/${path}`)
