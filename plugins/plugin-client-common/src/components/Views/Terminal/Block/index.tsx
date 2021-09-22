@@ -230,6 +230,7 @@ export default class Block extends React.PureComponent<Props, State> {
    *
    */
   public render() {
+    console.error('!!!!!!!!', this.props.idx, this.props)
     const hideOut = hideOutput(this.props.model)
 
     return (
