@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.10](https://github.com/IBM/kui/compare/v10.5.9...v10.5.10) (2021-09-22)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** improve block rerun UI ([5e34fdf](https://github.com/IBM/kui/commit/5e34fdf)), closes [#8025](https://github.com/IBM/kui/issues/8025)
+- **plugins/plugin-client-common:** leftover debugging in Block/index.tsx ([03965db](https://github.com/IBM/kui/commit/03965db)), closes [#8041](https://github.com/IBM/kui/issues/8041)
+
 ## [10.5.9](https://github.com/IBM/kui/compare/v10.5.8...v10.5.9) (2021-09-21)
 
 ### Bug Fixes
