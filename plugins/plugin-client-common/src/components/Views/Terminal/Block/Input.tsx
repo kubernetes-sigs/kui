@@ -40,6 +40,7 @@ import {
   hasStartEvent,
   isWithCompleteEvent,
   isReplay,
+  hasBeenRerun,
   hasUUID,
   hasValue
 } from './BlockModel'
@@ -721,12 +722,12 @@ export default class Input extends InputProvider {
   /** render the time the block started processing */
   private timestamp() {
     if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
-      const replayed = isReplay(this.props.model)
+      const replayedAndNotRerun = isReplay(this.props.model) && !hasBeenRerun(this.props.model)
       const completed = this.props.model.startTime && isWithCompleteEvent(this.props.model)
-      const showingDate = !replayed && completed && !this.props.isWidthConstrained
+      const showingDate = !replayedAndNotRerun && completed && !this.props.isWidthConstrained
 
       const now = isWithCompleteEvent(this.props.model) ? this.props.model.completeEvent.completeTime : Date.now()
-      const duration = !replayed && now && prettyPrintDuration(Math.max(0, now - this.props.model.startTime))
+      const duration = !replayedAndNotRerun && now && prettyPrintDuration(Math.max(0, now - this.props.model.startTime))
       const noParen = !showingDate || !duration
       const openParen = noParen ? '' : '('
       const closeParen = noParen ? '' : ')'
