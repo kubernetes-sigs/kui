@@ -26,6 +26,7 @@
 
 /* color variables */
 body[kui-theme='Carbon Gray90'][kui-theme-style] {
+  @include PlexFonts;
   @include charts-dark;
   @include colors-dark;
 
