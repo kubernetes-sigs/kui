@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { REPL, eventChannelUnsafe } from '@kui-shell/core'
 import { ProviderInitializer, UnsupportedS3ProviderError } from '@kui-shell/plugin-s3'
 
@@ -25,6 +26,8 @@ import { isGoodConfig } from './controller/local'
 import baseMountName from './baseMountName'
 import IBMCloudS3Provider from './IBMCloudS3Provider'
 import { extraProvidersForDefaultRegion, extraProvidersForAllRegions } from './specialMounts'
+
+const debug = Debug('plugin-s3/ibm/s3provider')
 
 /** Listening for reconfigs? */
 let listeningAlready = false
@@ -70,8 +73,10 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
       if (provider.isDefault) {
         // e.g. add an /s3/ibm/default mount point
         provider.isDefault = false
+        debug(`adding extra providers for default region in geo ${geo}`)
         return [...(await extraProvidersForDefaultRegion(geo, config)), provider]
       } else {
+        debug(`adding extra providers for all regions in geo ${geo}`)
         return [...(await extraProvidersForAllRegions(geo, config)), provider]
       }
     }
