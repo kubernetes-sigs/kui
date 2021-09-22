@@ -48,7 +48,7 @@ class BindMount extends IBMCloudS3Provider {
 /** The /s3/ibm/tmp and /bin mount points */
 async function bindProvider(geo: string, config: Config, pseudo: string) {
   const subdir = await getOrSetPreference(
-    `org.kubernetes-sigs.kui/s3/pseudomount/${geo}/${pseudo}`,
+    `org.kubernetes-sigs.kui/s3/pseudomount/${geo}/${pseudo}/${config.AccessKeyID}`,
     `${pseudo}-${v4()}`
   )
   const provider = new BindMount(geo, `${baseMountName}/${pseudo}`, config, subdir)
