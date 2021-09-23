@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.12](https://github.com/IBM/kui/compare/v10.5.11...v10.5.12) (2021-09-23)
+
+### Features
+
+- **plugins/plugin-core-support:** up command should offer to check for a valid kubeconfig ([38b346f](https://github.com/IBM/kui/commit/38b346f)), closes [#8053](https://github.com/IBM/kui/issues/8053)
+
 ## [10.5.11](https://github.com/IBM/kui/compare/v10.5.10...v10.5.11) (2021-09-22)
 
 **Note:** Version bump only for package @kui-shell/plugin-core-support

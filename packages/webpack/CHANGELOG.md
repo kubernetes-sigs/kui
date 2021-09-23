@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.12](https://github.com/IBM/kui/compare/v10.5.11...v10.5.12) (2021-09-23)
+
+### Features
+
+- **packages/proxy:** dockerized kui hard-wires ContentSecurityPolicy ([89988b1](https://github.com/IBM/kui/commit/89988b1)), closes [#8055](https://github.com/IBM/kui/issues/8055)
+
 ## [10.5.11](https://github.com/IBM/kui/compare/v10.5.10...v10.5.11) (2021-09-22)
 
 **Note:** Version bump only for package @kui-shell/webpack

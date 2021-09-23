@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.12](https://github.com/IBM/kui/compare/v10.5.11...v10.5.12) (2021-09-23)
+
+### Bug Fixes
+
+- **plugins/plugin-s3:** ibm s3 tmp and bin bind mounts do not handle switching instances within a region ([3532d4b](https://github.com/IBM/kui/commit/3532d4b)), closes [#8051](https://github.com/IBM/kui/issues/8051)
+
 ## [10.5.11](https://github.com/IBM/kui/compare/v10.5.10...v10.5.11) (2021-09-22)
 
 ### Features
