@@ -28,6 +28,14 @@ ENV HOME /home/kui
 ARG KUBECONFIG
 ENV KUBECONFIG=$KUBECONFIG
 
+# build-time injection of ContentSecurityPolicy
+ARG CSP
+ENV CSP=$CSP
+
+# build-time injection of OpenGraph headers
+ARG OPENGRAPH
+ENV OPENGRAPH=$OPENGRAPH
+
 ###########
 # Note: Latest version of kubectl may be found at:
 # https://aur.archlinux.org/packages/kubectl-bin/
@@ -49,10 +57,13 @@ RUN mkdir /kui-proxy
 RUN mkdir -p /usr/share/nginx
 COPY . /usr/share/nginx/html
 
+# copy in our nginx configs
+COPY conf.d/default.conf /tmp/default-template.conf
+
 RUN debconf-set-selections /tmp/preseed.txt && \
     rm -f /etc/timezone /etc/localtime && \
     apt update && \
-    apt install -y --no-install-recommends tzdata nginx ca-certificates bash git python build-essential curl upx && \
+    apt install -y --no-install-recommends tzdata nginx ca-certificates bash git python build-essential curl upx gettext-base && \
     cd /usr/share/nginx/html/kui/node_modules/node-pty && npm run install && \
     cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock && \
     curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl && upx /usr/local/bin/kubectl && \
@@ -67,7 +78,8 @@ RUN debconf-set-selections /tmp/preseed.txt && \
         && chmod a+rX /usr/local/bin/ibmcloud && upx /usr/local/bin/ibmcloud && rm -rf Bluemix_CLI && \
     curl -LO https://github.com/kalantar/etc3/raw/linux-x64/linux-x64/iter8ctl \
         && chmod +x iter8ctl && upx iter8ctl && mv iter8ctl /usr/local/bin && \
-    apt remove -y perl curl python make g++ upx && apt -y auto-remove && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /home/kui/.cache/node-gyp && \
+    envsubst '${CSP},${OPENGRAPH}' < /tmp/default-template.conf > /etc/nginx/conf.d/default.conf && \
+    apt remove -y perl curl python make g++ upx gettext-base && apt -y auto-remove && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /home/kui/.cache/node-gyp && \
     rm -f /usr/share/nginx/html/kui/kubectl && \
     rm /etc/nginx/sites-enabled/default \
         && ln -sf /dev/stdout /var/log/nginx/access.log \
@@ -76,12 +88,9 @@ RUN debconf-set-selections /tmp/preseed.txt && \
 # resmash in our index.html
 COPY index.html /usr/share/nginx/html/index.html
 
-# copy in our nginx config
-COPY conf.d/default.conf /etc/nginx/conf.d/default.conf
-
 # profile.d
-COPY profile.d /tmp/profile.d
-RUN for i in /tmp/profile.d/*; do cat $i >> /etc/profile; done
+# COPY profile.d /tmp/profile.d
+# RUN for i in /tmp/profile.d/*; do cat $i >> /etc/profile; done
 
 # kubeconfig
 COPY .kube /root/.kube
