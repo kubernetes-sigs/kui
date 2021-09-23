@@ -153,7 +153,7 @@ const plugins = []
 
 // any compression plugins?
 if (CompressionPlugin) {
-  plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
+  plugins.push(new CompressionPlugin({ deleteOriginalAssets: true, exclude: /.html$/ }))
 }
 
 const allFiles = /.*/
