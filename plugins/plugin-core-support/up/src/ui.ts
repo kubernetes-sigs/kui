@@ -90,7 +90,7 @@ function listrTaskForChecker(
   args: Arguments<Options>,
   stdout: Arguments['execOptions']['stdout'],
   fixErrors: boolean,
-  gidx: number
+  gidx: number /** checker group index */
 ) {
   return (_: Checker, tidx: number) => {
     const idx = gidx + tidx
@@ -126,7 +126,7 @@ export async function checkPrerequistes(
   args: Arguments<Options>,
   stdout: Arguments['execOptions']['stdout'],
   fixErrors = false,
-  concurrent = !fixErrors,
+  concurrent = false, //! fixErrors,
   exitOnError = fixErrors
 ): Promise<Pick<Status, 'ok'>[]> {
   const options = {

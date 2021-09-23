@@ -23,12 +23,17 @@ import AWS from './aws'
 import IBM from './ibm'
 import Kubernetes from './kubernetes'
 
-const defaultCheckers: Checker[] = [...Kubernetes, ...AWS]
+const defaultCheckers: Checker[] = []
 
 export default function checkers(args: Pick<Arguments<Options>, 'parsedOptions'>) {
-  if (args.parsedOptions.ibm) {
-    return [...defaultCheckers, ...IBM]
-  } else {
-    return defaultCheckers
-  }
+  return [
+    ...defaultCheckers,
+    ...(args.parsedOptions.aws ? AWS : []),
+    ...(args.parsedOptions.ibm ? IBM : []),
+    ...(args.parsedOptions.kubernetes ? Kubernetes : [])
+  ]
+}
+
+export function addUpper(checker: Checker) {
+  defaultCheckers.push(checker)
 }
