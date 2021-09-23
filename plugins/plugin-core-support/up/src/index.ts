@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-import colors from 'colors/safe'
-import { Arguments } from '@kui-shell/core'
-
-import Group from '../Group'
-
-async function check({ REPL }: Pick<Arguments, 'REPL'>) {
-  try {
-    await REPL.qexec('kubectl version')
-    return true
-  } catch (err) {
-    return false
-  }
-}
-
-export default {
-  group: Group.Cloud,
-  label: (checkResult?: false | string) =>
-    checkResult === undefined ? 'KUBECONFIG' : !checkResult ? 'no valid config found' : colors.gray(checkResult),
-  check
-}
+export { addUpper } from './registrar'
