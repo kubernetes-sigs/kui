@@ -15,6 +15,6 @@
  */
 
 import KubectlCLI from './kubectl'
-// import ValidKubeconfig from './cloud/valid-kubeconfig'
+import ValidKubeconfig from './valid-kubeconfig'
 
-export default [KubectlCLI]
+export default [KubectlCLI, ValidKubeconfig]
