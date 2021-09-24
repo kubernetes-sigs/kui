@@ -97,7 +97,7 @@ export function getStateFromMMR(tab: KuiTab, response: MultiModalResponse): Hist
 
   // toolbarText: if the default mode specified one, then use it;
   // otherwise, use the one specified by response
-  const toolbarText = tabs[defaultMode] ? tabs[defaultMode].toolbarText : response.toolbarText
+  const toolbarText = (tabs[defaultMode] && tabs[defaultMode].toolbarText) || response.toolbarText
 
   return {
     currentTabIndex: defaultMode,

@@ -710,7 +710,10 @@ export default class Input extends InputProvider {
   private experimentalTag() {
     if (this.props.isExperimental) {
       return (
-        <span className="kui--repl-block-right-element left-pad kui--repl-block-experimental-tag-wrapper">
+        <span
+          className="kui--repl-block-right-element left-pad kui--repl-block-experimental-tag-wrapper"
+          key="experimental-tag"
+        >
           <Tag spanclassname="kui--repl-block-experimental-tag" title={strings('HoverExperimentalTag')} type="warning">
             {strings('ExperimentalTag')}
           </Tag>
@@ -755,7 +758,7 @@ export default class Input extends InputProvider {
   /** spinner for processing blocks */
   private spinner() {
     return (
-      <span className="kui--repl-block-spinner">
+      <span className="kui--repl-block-spinner" key="spinner">
         <Spinner />
       </span>
     )

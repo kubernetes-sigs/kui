@@ -23,6 +23,7 @@ import { isHTML } from '../../util/types'
 import { ModeOrButton, Button } from './types'
 import { ToolbarText } from '../../webapp/views/toolbar-text'
 import { Editable } from '../editable'
+import DescriptionList, { isDescriptionList } from '../DescriptionList'
 
 /**
  * A `ScalarResource` is Any kind of resource that is directly
@@ -30,7 +31,7 @@ import { Editable } from '../editable'
  * function call.
  *
  */
-export type ScalarResource = string | HTMLElement | Table
+export type ScalarResource = string | HTMLElement | Table | DescriptionList
 export interface ScalarContent<T = ScalarResource> {
   content: T
 }
@@ -57,7 +58,7 @@ export function isScalarContent<T extends MetadataBearing>(entity: ScalarLike<T>
   return (
     isReactProvider(entity) ||
     (content !== undefined &&
-      (typeof content === 'string' || isTable(content) || isHTML(content)))
+      (typeof content === 'string' || isTable(content) || isHTML(content) || isDescriptionList(content)))
   )
 }
 

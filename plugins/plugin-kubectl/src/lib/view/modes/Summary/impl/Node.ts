@@ -31,6 +31,7 @@
 import { i18n } from '@kui-shell/core'
 
 import { age, none } from './Generic'
+import toDescriptionList from './convert'
 import Parser from '../../../../util/parse'
 import { AddressType, Node } from '../../../../model/resource'
 
@@ -56,7 +57,7 @@ function free(metric: 'memory' | 'ephemeral-storage', { status }: Node) {
 export default function NodeSummary(node: Node) {
   const { metadata, status } = node
 
-  return {
+  return toDescriptionList({
     Name: metadata.name,
     Age: age(node),
     CPUs: tryParse(status.capacity.cpu),
@@ -68,5 +69,5 @@ export default function NodeSummary(node: Node) {
     'OS Image': status.nodeInfo.osImage,
     'Kernel Version': status.nodeInfo.kernelVersion,
     'Container Runtime': status.nodeInfo.containerRuntimeVersion
-  }
+  })
 }

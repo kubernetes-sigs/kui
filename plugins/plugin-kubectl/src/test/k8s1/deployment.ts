@@ -70,7 +70,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
             .then(title => assert.ok(title === 'DEPLOYMENT'))
         }
 
-        await SidecarExpect.yaml({ Name: 'myapp' })(res)
+        await SidecarExpect.descriptionList({ Available: 1 })(res)
           .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
           .then(() => Util.switchToTab('pods')(res))
           .then(() => this.app.client.$(`${Selectors.SIDECAR_TAB_CONTENT(res.count, res.splitIndex)} table`))
@@ -148,7 +148,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
         let selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.LIST_RESULT_FIRST })(tableRes)
         let res = await Util.openSidecarByClick(this, selector, 'myapp')
         // switch to the logs tab in deployment and show that the content is correct
-        await SidecarExpect.yaml({ Name: 'myapp' })(res)
+        await SidecarExpect.descriptionList({ Available: 1 })(res)
           .then(() => Util.switchToTab('logs')(res))
           .then(ReplExpect.okWithPtyOutput('Drone app ready'))
         // open replicaset
@@ -156,7 +156,7 @@ describe(`kubectl deployment ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
         selector = await ReplExpect.okWithCustom<string>({ selector: Selectors.LIST_RESULT_FIRST })(tableRes)
         res = await Util.openSidecarByClick(this, selector, 'myapp')
         // switch to logs tab in replicaset and show the content is correct
-        await SidecarExpect.yaml({ Name: replicasetName })(res)
+        await SidecarExpect.descriptionList({ Ready: 1 })(res)
           .then(() => Util.switchToTab('logs')(res))
           .then(ReplExpect.okWithPtyOutput('Drone app ready'))
       } catch (err) {

@@ -29,6 +29,7 @@
  */
 
 import prettyPrintMillis from 'pretty-ms'
+import toDescriptionList from './convert'
 import { Event } from '../../../../model/resource'
 
 export default function EventSummary(event: Event) {
@@ -44,7 +45,7 @@ export default function EventSummary(event: Event) {
     count: Count
   } = event
 
-  return {
+  return toDescriptionList({
     'Last seen': prettyPrintMillis(Date.now() - new Date(lastTimestamp).getTime()),
     Object: `${involvedObject.kind}/${involvedObject.name}`,
     Type,
@@ -55,5 +56,5 @@ export default function EventSummary(event: Event) {
     'First seen': prettyPrintMillis(Date.now() - new Date(firstTimestamp).getTime()),
     Count,
     Name: metadata.name
-  }
+  })
 }

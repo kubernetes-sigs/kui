@@ -28,6 +28,7 @@
  */
 
 import { age, none } from './Generic'
+import toDescriptionList from './convert'
 import { Pod } from '../../../../model/resource'
 
 function ready(pod: Pod) {
@@ -55,10 +56,10 @@ function readinessGates(pod: Pod) {
 }
 
 export default function PodSummary(pod: Pod) {
-  const { metadata, spec, status } = pod
+  const { spec, status } = pod
 
-  return {
-    Name: metadata.name,
+  return toDescriptionList({
+    // Name: metadata.name,
     Ready: ready(pod),
     Status: status.phase,
     Restarts: restarts(pod),
@@ -67,5 +68,5 @@ export default function PodSummary(pod: Pod) {
     Node: spec.nodeName,
     'Nominated node': spec.nominatedNodeName || none(),
     'Readiness gates': readinessGates(pod)
-  }
+  })
 }
