@@ -258,7 +258,8 @@ commands.forEach(command => {
       validationError(true) // do unsupported edits in the current tab, validate the error alert, and then undo the changes
       modify(name, 'clickfoo3', 'clickbar3', false) // after error, should re-modify the resource in the current tab successfully
 
-      it('should switch to summary tab, expect no alerts and not editable', async () => {
+      // no longer needed, with DescriptionList summary
+      xit('should switch to summary tab, expect no alerts and not editable', async () => {
         try {
           await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary')).then(async _ => {
             await _.waitForDisplayed()

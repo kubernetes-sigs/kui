@@ -186,6 +186,8 @@
     --color-latency-4: #f9e0a2;
     --color-latency-5: #f4b678;
 
+    --color-selection-background: var(--color-selection-background-dark);
+
     @include pf-t-dark;
   }
 }

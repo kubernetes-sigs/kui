@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * Name: all-icr-io
- * Type: kubernetes.io/dockerconfigjson
- * Data: '1'
- * Age: 245d
- *
- */
+import React from 'react'
+import Props from './model'
 
-import { age } from './Generic'
-import toDescriptionList from './convert'
-import { Secret } from '../../../../model/resource'
+const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
 
-export default function SecretSummary(secret: Secret) {
-  const { metadata, type: Type } = secret
+export { Props }
 
-  return toDescriptionList({
-    Name: metadata.name,
-    Type,
-    Age: age(secret)
-  })
+export default function DescriptionListSpi(props: Props): React.ReactElement {
+  return <PatternFly4 {...props} />
 }

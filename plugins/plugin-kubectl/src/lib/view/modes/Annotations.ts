@@ -15,20 +15,32 @@
  */
 
 import { i18n, ModeRegistration } from '@kui-shell/core'
-import { KubeResource, isKubeResource } from '../../model/resource'
+import { KubeResource, hasAnnotations } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
 /**
- * Extract the managed fields
+ * Note: Presenting as a DescriptionList may work, if one of the
+ * annotation values is not a scalar
  *
  */
-async function content(_, resource: KubeResource) {
-  const { dump } = await import('js-yaml')
-
+function content(_, resource: KubeResource) {
   return {
-    contentType: 'yaml',
-    content: dump(resource.metadata.annotations)
+    apiVersion: 'kui-shell/v1' as const,
+    kind: 'DescriptionList' as const,
+    spec: {
+      groups: Object.keys(resource.metadata.annotations)
+        .filter(
+          term =>
+            term !== 'kubectl.kubernetes.io/last-applied-configuration' &&
+            resource.metadata.annotations[term].length > 0
+        )
+        .sort((a, b) => a.length - b.length)
+        .map(term => ({
+          term,
+          description: resource.metadata.annotations[term]
+        }))
+    }
   }
 }
 
@@ -37,7 +49,7 @@ async function content(_, resource: KubeResource) {
  *
  */
 const mode: ModeRegistration<KubeResource> = {
-  when: isKubeResource,
+  when: hasAnnotations,
   mode: {
     mode: 'annotations',
     label: strings('Annotations'),

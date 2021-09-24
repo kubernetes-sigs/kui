@@ -47,34 +47,27 @@ const strings = i18n('plugin-kubectl')
  *
  */
 async function renderSummary({ REPL }: Tab, resource: KubeResource) {
-  if (isKubeResourceWithItsOwnSummary(resource)) {
-    return resource.summary
-  }
-
   try {
-    const jsyaml = import('js-yaml')
-    const map = isPod(resource)
-      ? PodSummary(resource)
-      : isDeployment(resource)
-      ? DeploymentSummary(resource)
-      : isEvent(resource)
-      ? EventSummary(resource)
-      : isReplicaSet(resource)
-      ? ReplicaSetSummary(resource)
-      : isNamespace(resource)
-      ? NamespaceSummary(resource, REPL)
-      : isNode(resource)
-      ? NodeSummary(resource)
-      : isJob(resource)
-      ? JobSummary(resource)
-      : isSecret(resource)
-      ? SecretSummary(resource)
-      : GenericSummary(resource, REPL)
-
-    // our content is that map, rendered as yaml
-    return {
-      content: (await jsyaml).dump(await map),
-      contentType: 'yaml'
+    if (isKubeResourceWithItsOwnSummary(resource)) {
+      return resource.summary
+    } else if (isPod(resource)) {
+      return PodSummary(resource)
+    } else if (isDeployment(resource)) {
+      return DeploymentSummary(resource)
+    } else if (isReplicaSet(resource)) {
+      return ReplicaSetSummary(resource)
+    } else if (isEvent(resource)) {
+      return EventSummary(resource)
+    } else if (isNode(resource)) {
+      return NodeSummary(resource)
+    } else if (isSecret(resource)) {
+      return SecretSummary(resource)
+    } else if (isJob(resource)) {
+      return JobSummary(resource)
+    } else if (isNamespace(resource)) {
+      return NamespaceSummary(resource, REPL)
+    } else {
+      return GenericSummary(resource, REPL)
     }
   } catch (err) {
     if (err.code === 404) {

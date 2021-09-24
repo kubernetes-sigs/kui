@@ -28,23 +28,24 @@
 
 import { age } from './Generic'
 import { ReplicaSet } from '../../../../model/resource'
+import toDescriptionList, { selectorToString } from './convert'
 
 export default function ReplicaSetSummary(rs: ReplicaSet) {
-  const { metadata, spec, status } = rs
+  const { spec, status } = rs
   const {
     template: {
       spec: { containers }
     }
   } = spec
 
-  return {
-    Name: metadata.name,
+  return toDescriptionList({
+    // Name: metadata.name,
     Desired: status.replicas,
     Current: status.availableReplicas,
     Ready: status.readyReplicas,
     Age: age(rs),
     Containers: containers.map(_ => _.name).join(', '),
     Images: containers.map(_ => _.image).join(', '),
-    Selector: spec.selector
-  }
+    Selector: selectorToString(spec.selector)
+  })
 }

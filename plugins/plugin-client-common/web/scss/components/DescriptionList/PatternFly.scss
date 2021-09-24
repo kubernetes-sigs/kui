@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * Name: all-icr-io
- * Type: kubernetes.io/dockerconfigjson
- * Data: '1'
- * Age: 245d
- *
- */
+@import 'common';
 
-import { age } from './Generic'
-import toDescriptionList from './convert'
-import { Secret } from '../../../../model/resource'
+dd.pf-c-description-list__description {
+  /* We need to override the default user-agent stylesheet */
+  margin: 0;
 
-export default function SecretSummary(secret: Secret) {
-  const { metadata, type: Type } = secret
-
-  return toDescriptionList({
-    Name: metadata.name,
-    Type,
-    Age: age(secret)
-  })
+  /* Spice it up a bit */
+  color: var(--color-text-02);
 }

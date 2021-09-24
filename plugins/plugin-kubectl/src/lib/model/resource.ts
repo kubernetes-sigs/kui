@@ -760,3 +760,13 @@ export interface Secret<T = Record<string, any>> extends KubeResource {
 export function isSecret(resource: KubeResource): resource is Secret {
   return resource.apiVersion === 'v1' && resource.kind === 'Secret'
 }
+
+export function hasAnnotations(resource: KubeResource): resource is KubeResource {
+  return (
+    isKubeResource(resource) && resource.metadata.annotations && Object.keys(resource.metadata.annotations).length > 0
+  )
+}
+
+export function hasLabels(resource: KubeResource): resource is KubeResource {
+  return isKubeResource(resource) && resource.metadata.labels && Object.keys(resource.metadata.labels).length > 0
+}

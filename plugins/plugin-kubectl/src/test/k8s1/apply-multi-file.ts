@@ -47,7 +47,7 @@ describe(`kubectl apply multi-file ${process.env.MOCHA_RUN_TARGET || ''}`, funct
       resources.forEach(resource => {
         it(`should create two sample pods from URL via "${kubectl} apply ${dashF}" for test: ${this.title}`, async () => {
           return openSidecarByList(this, `${kubectl} apply ${files} ${inNamespace}`, resource)
-            .then(SidecarExpect.yaml({ Status: 'Running' }))
+            .then(SidecarExpect.descriptionList({ Status: 'Running' }))
             .catch(Common.oops(this, true))
         })
       })
