@@ -60,7 +60,7 @@ describe(`kubectl get dash o name ${process.env.MOCHA_RUN_TARGET || ''}`, functi
           )
           // now click on the table row
           await Util.openSidecarByClick(this, `${selector} .clickable`, 'nginx', defaultModeForGet).then(
-            SidecarExpect.yaml({ Status: 'Running' })
+            SidecarExpect.descriptionList({ Status: 'Running' })
           )
         } catch (err) {
           return Common.oops(this, true)(err)

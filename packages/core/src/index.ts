@@ -239,6 +239,7 @@ export {
   FunctionThatProducesContent
 } from './models/mmr/content-types'
 export { ToolbarText, ToolbarAlert, isSupportedToolbarTextType } from './webapp/views/toolbar-text'
+export { default as DescriptionList, isDescriptionList } from './models/DescriptionList'
 
 // low-level UI
 export { default as doCancel } from './webapp/cancel'
