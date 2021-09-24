@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-/**
- * Name: all-icr-io
- * Type: kubernetes.io/dockerconfigjson
- * Data: '1'
- * Age: 245d
- *
- */
-
-import { age } from './Generic'
-import toDescriptionList from './convert'
-import { Secret } from '../../../../model/resource'
-
-export default function SecretSummary(secret: Secret) {
-  const { metadata, type: Type } = secret
-
-  return toDescriptionList({
-    Name: metadata.name,
-    Type,
-    Age: age(secret)
-  })
+.kui--description-list {
+  /* override terminal rule on .repl */
+  white-space: normal;
 }

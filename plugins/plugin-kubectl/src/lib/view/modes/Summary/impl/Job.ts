@@ -26,17 +26,18 @@
 
 import { age } from './Generic'
 import { Job } from '../../../../model/resource'
+import toDescriptionList, { selectorToString } from './convert'
 
 export default function JobSummary(job: Job) {
   const { metadata, spec, status } = job
   const { containers } = spec.template.spec
 
-  return {
+  return toDescriptionList({
     Name: metadata.name,
     Completions: `${status.succeeded}/${spec.completions}`,
     Duration: age(job, status.completionTime),
     Age: age(job),
     Containers: containers.map(_ => _.image).join(', '),
-    Selector: spec.selector
-  }
+    Selector: selectorToString(spec.selector)
+  })
 }

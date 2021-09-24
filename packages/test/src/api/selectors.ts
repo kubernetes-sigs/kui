@@ -361,3 +361,8 @@ export const EXPANDABLE_OUTPUT_N = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--expandable-section button`
 export const EXPANDABLE_OUTPUT_LAST = (splitIndex = 1) =>
   `${PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)} .kui--expandable-section button`
+
+/** DescriptionList */
+export const DLIST = '.kui--description-list'
+export const DLIST_DESCRIPTION_FOR = (term: string) =>
+  `.kui--description-list-term[data-term=${term}] + .kui--description-list-description`

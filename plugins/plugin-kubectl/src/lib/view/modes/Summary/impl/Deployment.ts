@@ -28,6 +28,7 @@
 
 import { age } from './Generic'
 import { Deployment } from '../../../../model/resource'
+import toDescriptionList, { selectorToString } from './convert'
 
 function ready(deployment: Deployment) {
   const { readyReplicas, replicas } = deployment.status
@@ -38,21 +39,21 @@ function ready(deployment: Deployment) {
 }
 
 export default function DeploymentSummary(deployment: Deployment) {
-  const { metadata, spec, status } = deployment
+  const { spec, status } = deployment
   const {
     template: {
       spec: { containers }
     }
   } = spec
 
-  return {
-    Name: metadata.name,
+  return toDescriptionList({
+    // Name: metadata.name,
     Ready: ready(deployment),
     'Up-to-date': status.readyReplicas || 0,
     Available: status.availableReplicas || 0,
     Age: age(deployment),
     Containers: containers.map(_ => _.name).join(', '),
     Images: containers.map(_ => _.image).join(', '),
-    Selector: spec.selector
-  }
+    Selector: selectorToString(spec.selector)
+  })
 }

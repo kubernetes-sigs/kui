@@ -73,7 +73,7 @@ commands.forEach(command => {
      *
      */
     const testSummaryTab = async (ctx: Common.ISuite, res: ReplExpect.AppAndCount) => {
-      await Util.switchToTab(defaultModeForGet)(res).then(SidecarExpect.yaml({ Name: 'nginx' }))
+      await Util.switchToTab(defaultModeForGet)(res).then(SidecarExpect.descriptionList({ Status: 'Running' }))
     }
 
     allocateNS(this, ns, command)

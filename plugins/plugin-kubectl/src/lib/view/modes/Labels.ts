@@ -15,20 +15,27 @@
  */
 
 import { i18n, ModeRegistration } from '@kui-shell/core'
-import { KubeResource, isKubeResource } from '../../model/resource'
+import { KubeResource, hasLabels } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
 
 /**
- * Extract the managed fields
+ * Turn the Labels into a DescriptionList
  *
  */
-async function content(_, resource: KubeResource) {
-  const { dump } = await import('js-yaml')
-
+function content(_, resource: KubeResource) {
   return {
-    contentType: 'yaml',
-    content: dump(resource.metadata.labels)
+    apiVersion: 'kui-shell/v1' as const,
+    kind: 'DescriptionList' as const,
+    spec: {
+      groups: Object.keys(resource.metadata.labels)
+        .filter(term => resource.metadata.labels[term].length > 0)
+        .sort((a, b) => a.length - b.length)
+        .map(term => ({
+          term,
+          description: resource.metadata.labels[term]
+        }))
+    }
   }
 }
 
@@ -37,7 +44,7 @@ async function content(_, resource: KubeResource) {
  *
  */
 const mode: ModeRegistration<KubeResource> = {
-  when: isKubeResource,
+  when: hasLabels,
   mode: {
     mode: 'labels',
     label: strings('Labels'),
