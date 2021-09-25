@@ -38,15 +38,15 @@ import {
 } from '@kui-shell/core'
 
 import Eval from './Eval'
-import Editor from './Editor'
-import DiffEditor from './Editor/DiffEditor'
+const Editor = React.lazy(() => import('./Editor'))
+const DiffEditor = React.lazy(() => import('./Editor/DiffEditor'))
 import renderTable from './Table'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
 import { KuiContext } from '../../'
-import RadioTableSpi from '../spi/RadioTable'
-import DescriptionList from '../spi/DescriptionList'
+const RadioTableSpi = React.lazy(() => import('../spi/RadioTable'))
+const DescriptionList = React.lazy(() => import('../spi/DescriptionList'))
 
 export type KuiMMRProps = ToolbarProps & {
   tab: KuiTab
