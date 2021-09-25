@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.5.13](https://github.com/kubernetes-sigs/kui/compare/v10.5.12...v10.5.13) (2021-09-25)
+
+### Features
+
+- support for Description List UIs ([589b1c3](https://github.com/kubernetes-sigs/kui/commit/589b1c3)), closes [#8058](https://github.com/kubernetes-sigs/kui/issues/8058)
+
 ## [10.5.12](https://github.com/kubernetes-sigs/kui/compare/v10.5.11...v10.5.12) (2021-09-23)
 
 **Note:** Version bump only for package @kui-shell/test
