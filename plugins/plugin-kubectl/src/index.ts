@@ -100,7 +100,7 @@ export {
   withNamespaceBreadcrumb
 } from './lib/view/formatTable'
 
-export { mode as logsMode } from './lib/view/modes/logs-mode'
+export { default as logsMode } from './lib/view/modes/logs-mode-id'
 
 export { isUsage, doHelp, withHelp } from './lib/util/help'
 

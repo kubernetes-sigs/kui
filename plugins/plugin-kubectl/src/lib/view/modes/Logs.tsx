@@ -16,13 +16,12 @@
 
 import Debug from 'debug'
 import React from 'react'
-import { i18n, Arguments, Button, Tab, ToolbarProps } from '@kui-shell/core'
+import { i18n, Arguments, Button } from '@kui-shell/core'
 
 import { Icons } from '@kui-shell/plugin-client-common'
 
-import { Pod, Deployment, ReplicaSet } from '../../model/resource'
 import { getCommandFromArgs } from '../../util/util'
-import { Terminal, TerminalState } from './ExecIntoPod'
+import Terminal, { TerminalState } from './Terminal'
 import { ContainerProps, StreamingStatus } from './ContainerCommon'
 import { KubeOptions, getContainer, hasLabel, withKubeconfigFrom } from '../../../controller/kubectl/options'
 import { kindPartOf } from '../../../controller/kubectl/fqn'
@@ -49,7 +48,7 @@ export function showingPrevious(args: Arguments<KubeOptions>) {
   return args && (!!args.parsedOptions.p || !!args.parsedOptions.previous)
 }
 
-export class Logs extends Terminal<State> {
+export default class Logs extends Terminal<State> {
   public constructor(props: ContainerProps) {
     super(props)
 
@@ -63,10 +62,6 @@ export class Logs extends Terminal<State> {
 
   protected supportsAllContainers() {
     return true
-  }
-
-  protected mode() {
-    return 'logs'
   }
 
   /** Which container should we focus on by default? */
@@ -334,18 +329,6 @@ export class Logs extends Terminal<State> {
           {this.filterPane()}
         </React.Fragment>
       )
-    }
-  }
-}
-
-/**
- * The content renderer for the summary tab
- *
- */
-export async function content(tab: Tab, resource: Pod | Deployment | ReplicaSet, args: Arguments<KubeOptions>) {
-  return {
-    react: function LogsProvider(toolbarController: ToolbarProps) {
-      return <Logs tab={tab} resource={resource} args={args} toolbarController={toolbarController} />
     }
   }
 }
