@@ -15,7 +15,7 @@
  */
 export type SelectOptions = {
   label: string
-  command?: string
+  command?: string | (() => Promise<string>)
   description?: React.ReactNode
   isSelected?: boolean
   isDisabled?: boolean

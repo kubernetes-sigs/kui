@@ -104,7 +104,7 @@ commands.forEach(command => {
     createPod(ns2)
 
     it('should refresh', () => Common.refresh(this))
-    Util.closeAllExceptFirstTab.bind(this)()
+    Util.closeAllExceptFirstTab.bind(this)(1)
 
     let res1: ReplExpect.AppAndCount
     let res2: ReplExpect.AppAndCount

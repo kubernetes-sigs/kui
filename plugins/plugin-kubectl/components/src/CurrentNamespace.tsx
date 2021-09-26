@@ -26,14 +26,7 @@ import {
 
 import { eventBus, i18n, eventChannelUnsafe, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
 
-import {
-  kubectl,
-  KubeContext,
-  getTabState,
-  getCurrentDefaultNamespace,
-  onKubectlConfigChangeEvents,
-  offKubectlConfigChangeEvents
-} from '@kui-shell/plugin-kubectl'
+import { KubeContext } from '@kui-shell/plugin-kubectl'
 
 import { ready } from './CurrentContext'
 import { isInternalNamespace } from '@kui-shell/plugin-kubectl/heuristics'
@@ -93,6 +86,8 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     }
 
     try {
+      const { kubectl, getCurrentDefaultNamespace } = await import('@kui-shell/plugin-kubectl')
+
       const [currentNamespace, allNamespaces] = await Promise.all([
         getCurrentDefaultNamespace(tab),
         tab.REPL.qexec<string>(`${kubectl} get ns -o name`).then(_ =>
@@ -119,13 +114,14 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     }
   }
 
-  private getCurrentNamespaceFromTab(args: { idx: number; tab: TabState }) {
+  private async getCurrentNamespaceFromTab(args: { idx: number; tab: TabState }) {
     if (this.unmounted) {
       return
     }
 
     const { tab } = args
     if (tab) {
+      const { getTabState } = await import('@kui-shell/plugin-kubectl')
       const currentNamespace = getTabState(tab, 'namespace')
       if (currentNamespace) {
         this.setState({
@@ -151,7 +147,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.onAnyCommandComplete(this.handler)
-    onKubectlConfigChangeEvents(this.handler)
+    import('@kui-shell/plugin-kubectl').then(_ => _.onKubectlConfigChangeEvents(this.handler))
   }
 
   /** So we don't handle events after unmounting */
@@ -171,12 +167,17 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.offAnyCommandComplete(this.handler)
-    offKubectlConfigChangeEvents(this.handler)
+    import('@kui-shell/plugin-kubectl').then(_ => _.offKubectlConfigChangeEvents(this.handler))
+  }
+
+  private async kubectl() {
+    const { kubectl } = await import('@kui-shell/plugin-kubectl')
+    return kubectl
   }
 
   private listNamespace() {
     return (
-      <a href="#" onClick={() => pexecInCurrentTab(`${kubectl} get namespace`)}>
+      <a href="#" onClick={async () => pexecInCurrentTab(`${await this.kubectl()} get namespace`)}>
         {strings('Show Full Details')}
       </a>
     )
@@ -211,7 +212,10 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
       label: ns,
       isSelected,
       description: isSelected ? strings('This is your current namespace') : undefined,
-      command: `${kubectl} config set-context --current --namespace=${ns}`
+      command: async () => {
+        const kubectl = await this.kubectl()
+        return `${kubectl} config set-context --current --namespace=${ns}`
+      }
     }
   }
 

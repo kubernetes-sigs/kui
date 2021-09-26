@@ -15,10 +15,11 @@
  */
 
 import React from 'react'
+import { Tooltip } from '@patternfly/react-core'
+
 import Props, { isMarkdownProps, isReferenceProps } from '../model'
 
-import Markdown from '../../../Content/Markdown'
-import { Tooltip } from '@patternfly/react-core'
+const Markdown = React.lazy(() => import('../../../Content/Markdown'))
 
 import '../../../../../web/scss/components/Tooltip/PatternFly.scss'
 
