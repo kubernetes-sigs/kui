@@ -19,7 +19,7 @@ import TrieSearch from 'trie-search'
 import micromatch from 'micromatch'
 import { basename, dirname, join } from './posix'
 import { FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, flatten, Notebook } from '@kui-shell/core'
+import { Arguments, CodedError, flatten, Notebook, isNotebook } from '@kui-shell/core'
 
 interface Tutorial {
   name: string
@@ -37,7 +37,7 @@ interface BaseEntry {
 type Directory = BaseEntry
 
 interface Leaf extends BaseEntry {
-  data: Notebook
+  data: Notebook | { srcFilepath: string }
 }
 
 type Entry = Leaf | Directory
@@ -93,7 +93,7 @@ export class NotebookVFS implements VFS {
   }
 
   /** Looks in the trie for a single precise match */
-  private findExact(filepath: string, withData: boolean): FStat {
+  private async findExact(filepath: string, withData: boolean): Promise<FStat> {
     const possibleMatches = this.find(filepath, false, true)
 
     if (possibleMatches.length > 1) {
@@ -114,64 +114,114 @@ export class NotebookVFS implements VFS {
       }
     } else {
       const entry = possibleMatches[0]
+      const data = isLeaf(entry) ? await this.load(entry.data) : undefined
+
       return {
         viewer: 'replay',
         filepath: entry.mountPath,
         fullpath: entry.mountPath,
         size: isLeaf(entry)
           ? /\.json$/.test(entry.mountPath)
-            ? JSON.stringify(entry.data, undefined, 2).length
-            : entry.data.toString().length
+            ? JSON.stringify(data, undefined, 2).length
+            : data.toString().length
           : 0,
         isDirectory: !isLeaf(entry),
         data:
           withData && isLeaf(entry)
             ? /\.json$/.test(entry.mountPath)
-              ? JSON.stringify(entry.data, undefined, 2)
-              : entry.data.toString()
+              ? JSON.stringify(data, undefined, 2)
+              : data.toString()
             : undefined
       }
     }
   }
 
-  private enumerate({ entries }: { entries: Entry[] }) {
-    return entries.map((mount: Entry) => {
-      const name = basename(mount.mountPath)
-      const nameForDisplay = isLeaf(mount) && mount.data.metadata ? mount.data.metadata.name || name : name
-      const isDir = !isLeaf(mount)
+  private async enumerate({ entries }: { entries: Entry[] }) {
+    return Promise.all(
+      entries.map(async (mount: Entry) => {
+        const name = basename(mount.mountPath)
+        const data = isLeaf(mount) ? await this.load(mount.data) : undefined
+        const nameForDisplay = data && data.metadata ? data.metadata.name || name : name
+        const isDir = !isLeaf(mount)
 
-      return {
-        name,
-        nameForDisplay,
-        path: mount.mountPath,
-        stats: {
-          size: 0,
-          mtimeMs: 0,
-          mode: 0,
-          uid,
-          gid
-        },
-        dirent: {
-          mount: { isLocal: this.isLocal, mountPath: this.mountPath },
-          isFile: !isDir,
-          isDirectory: isDir,
-          isSymbolicLink: false,
-          isSpecial: false,
-          isExecutable: false,
-          permissions: '',
-          username
+        return {
+          name,
+          nameForDisplay,
+          path: mount.mountPath,
+          stats: {
+            size: 0,
+            mtimeMs: 0,
+            mode: 0,
+            uid,
+            gid
+          },
+          dirent: {
+            mount: { isLocal: this.isLocal, mountPath: this.mountPath },
+            isFile: !isDir,
+            isDirectory: isDir,
+            isSymbolicLink: false,
+            isSpecial: false,
+            isExecutable: false,
+            permissions: '',
+            username
+          }
         }
-      }
-    })
+      })
+    )
   }
 
   public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
     return flatten(
-      filepaths
-        .map(filepath => ({ filepath, entries: this.find(filepath, parsedOptions.d) }))
-        .filter(_ => _.entries.length > 0)
-        .map(_ => this.enumerate(_))
+      await Promise.all(
+        filepaths
+          .map(filepath => ({ filepath, entries: this.find(filepath, parsedOptions.d) }))
+          .filter(_ => _.entries.length > 0)
+          .map(_ => this.enumerate(_))
+      )
     )
+  }
+
+  /** Load Notebook data from bundles */
+  private async load(data: Leaf['data']): Promise<Notebook> {
+    if (isNotebook(data)) {
+      return data
+    } else {
+      const { srcFilepath } = data
+
+      const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.json$/)
+      const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.json$/)
+      const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
+      const match = match1 || match2 || match3
+      if (match) {
+        try {
+          const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
+          const data = await (match1
+            ? import(
+                /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
+                  match1[1] +
+                  '/notebooks/' +
+                  file +
+                  '.json'
+              )
+            : match2
+            ? import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.json'
+              )
+            : import(
+                /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
+              ))
+
+          return data as Notebook
+        } catch (err) {
+          console.error(err)
+          throw new Error(`Unable to load Notebook: ${err.message}`)
+        }
+      } else {
+        throw new Error('Unsupported filepath for Notebook')
+      }
+    }
   }
 
   /** Insert filepath into directory */
@@ -183,29 +233,15 @@ export class NotebookVFS implements VFS {
         const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
         const match = match1 || match2 || match3
         if (match) {
-          try {
-            // require versus import to work with babelized headless
+          const extension = match1 || match2 ? '.json' : '.md'
+
+          const dir = dirname(dstFilepath)
+          if (!this.trie.get(dir)) {
+            throw new Error(`Directory does not exist: ${dir}`)
+          } else {
             const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
-            const data = match1
-              ? require('@kui-shell/plugin-' + match1[1] + '/notebooks/' + file + '.json')
-              : match2
-              ? require('@kui-shell/client/notebooks/' + file + '.json')
-              : require('@kui-shell/client/' + file + '.md').default
-
-            const extension = match1 || match2 ? '.json' : '.md'
-
-            const dir = dirname(dstFilepath)
-            if (!this.trie.get(dir)) {
-              throw new Error(`Directory does not exist: ${dir}`)
-            } else {
-              const mountPath = join(dstFilepath, file + extension)
-              this.trie.map(mountPath, { mountPath, data })
-            }
-
-            return
-          } catch (err) {
-            console.error(err)
-            throw new Error(`Unable to copy given source into the notebooks VFS: ${srcFilepath}. ${err.message}`)
+            const mountPath = join(dstFilepath, file + extension)
+            this.trie.map(mountPath, { mountPath, data: { srcFilepath } })
           }
         } else {
           throw new Error(`Unable to copy given source into the notebooks VFS: ${srcFilepath}`)
@@ -226,7 +262,7 @@ export class NotebookVFS implements VFS {
     withData: boolean,
     enoentOk: boolean
   ): Promise<FStat> {
-    const entry = this.findExact(filepath, withData)
+    const entry = await this.findExact(filepath, withData)
     if (!entry) {
       if (enoentOk) {
         // i don't think it makes sense to ignore ENOENT for this VFS
@@ -246,7 +282,7 @@ export class NotebookVFS implements VFS {
 
   /** Fetch content slice */
   public async fslice(filename: string, offset: number, length: number): Promise<string> {
-    const entry = this.findExact(filename, true)
+    const entry = await this.findExact(filename, true)
     if (entry.data) {
       const buffer = Buffer.from(entry.data)
       if (offset > buffer.length) {
