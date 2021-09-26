@@ -75,12 +75,6 @@ body[kui-theme-style] a.plain-anchor {
 }
 
 /* REPL */
-#invisible-global-input {
-  /* element that handles text input while a command is being executed */
-  position: absolute;
-  left: -1000px;
-  top: -1000px;
-}
 body.still-loading .repl {
   opacity: 0;
 }

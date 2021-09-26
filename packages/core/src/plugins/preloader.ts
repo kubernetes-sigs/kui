@@ -82,7 +82,9 @@ export default async (prescan: PrescanModel) => {
             : module.route === 'client'
             ? require(/* webpackMode: "lazy" */ '@kui-shell/client/' + 'mdist/preload')
             : await import(
-                /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/preload'
+                /* webpackChunkName: "kui-plugin" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
+                  webpackPath(module.route) +
+                  '/mdist/preload'
               )
         debug('preloading capabilities.2 %s', module.path)
         const registration: CapabilityRegistration = registrationRef.registerCapability

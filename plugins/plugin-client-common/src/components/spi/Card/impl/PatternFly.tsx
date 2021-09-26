@@ -31,7 +31,7 @@ import {
 
 import Props from '../model'
 import { DropDownAction } from '../../DropDown'
-import Markdown from '../../../Content/Markdown'
+const Markdown = React.lazy(() => import('../../../Content/Markdown'))
 
 import '../../../../../web/scss/components/Card/PatternFly.scss'
 

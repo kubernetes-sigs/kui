@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { i18n, inBrowser } from '@kui-shell/core'
+import { inBrowser } from '@kui-shell/core'
 import {
   Kui,
   KuiProps,
@@ -26,14 +26,18 @@ import {
   SpaceFiller
 } from '@kui-shell/plugin-client-common'
 
-import { CurrentGitBranch } from '@kui-shell/plugin-git'
-import { ProxyOfflineIndicator } from '@kui-shell/plugin-proxy-support'
 import { CurrentContext, CurrentNamespace } from '@kui-shell/plugin-kubectl/components'
-import { Search, UpdateChecker } from '@kui-shell/plugin-electron-components'
+
+const Search = React.lazy(() => import('@kui-shell/plugin-electron-components').then(_ => ({ default: _.Search })))
+const CurrentGitBranch = React.lazy(() => import('@kui-shell/plugin-git').then(_ => ({ default: _.CurrentGitBranch })))
+const UpdateChecker = React.lazy(() =>
+  import('@kui-shell/plugin-electron-components').then(_ => ({ default: _.UpdateChecker }))
+)
+const ProxyOfflineIndicator = React.lazy(() =>
+  import('@kui-shell/plugin-proxy-support').then(_ => ({ default: _.ProxyOfflineIndicator }))
+)
 
 import { productName } from '@kui-shell/client/config.d/name.json'
-
-const strings = i18n('plugin-client-default')
 
 /**
  * We will set this bit when the user dismisses the Welcome to Kui
@@ -55,7 +59,7 @@ function isExecuting(props: KuiProps, ...cmds: string[]) {
  *
  */
 export default function renderMain(props: KuiProps) {
-  const title = strings('Welcome to Kui')
+  const title = 'Welcome to Kui'
 
   // Important: don't use popup for commands that need tabs,
   // e.g. replaying notebooks, since `replay` currently needs tabs,

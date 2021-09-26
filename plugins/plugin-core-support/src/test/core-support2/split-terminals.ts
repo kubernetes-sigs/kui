@@ -294,6 +294,7 @@ describe('split an active split', function(this: Common.ISuite) {
 describe('split close and reopen', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const expectBlockCount = ReplExpect.blockCount.bind(this)
   const splitTheTerminalViaButton = splitViaButton.bind(this)
@@ -307,7 +308,7 @@ describe('split close and reopen', function(this: Common.ISuite) {
       await Common.refresh(this)
       await new Promise(resolve => setTimeout(resolve, 2000))
     })
-    Util.closeAllExceptFirstTab.bind(this)()
+    Util.closeAllExceptFirstTab.bind(this)(1)
     count(1)
     splitTheTerminalViaButton(2)
     count(2)
