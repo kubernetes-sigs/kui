@@ -28,15 +28,7 @@ import {
   pexecInCurrentTab,
   i18n
 } from '@kui-shell/core'
-import {
-  kubectl,
-  getAllContexts,
-  getCurrentDefaultContextName,
-  getTabState,
-  KubeContext,
-  onKubectlConfigChangeEvents,
-  offKubectlConfigChangeEvents
-} from '@kui-shell/plugin-kubectl'
+import { KubeContext } from '@kui-shell/plugin-kubectl'
 
 type Props = TextWithIconWidgetOptions
 
@@ -133,6 +125,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
       return
     }
 
+    const { kubectl, getAllContexts, getCurrentDefaultContextName } = await import('@kui-shell/plugin-kubectl')
+
     const tab = getCurrentTab()
     const defaultCurrentContext = await getCurrentDefaultContextName(tab)
 
@@ -145,11 +139,11 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     this.setState({
       allContexts,
       currentContext,
-      options: this.options(currentContext, allContexts)
+      options: this.options(currentContext, allContexts, kubectl)
     })
   }
 
-  private options(currentContext: string, allContexts: State['allContexts']) {
+  private options(currentContext: string, allContexts: State['allContexts'], kubectl: string) {
     return allContexts.map(context => {
       const { name } = context.metadata
       const label = this.renderName(name)
@@ -189,6 +183,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     }
 
     try {
+      const { kubectl, getAllContexts } = await import('@kui-shell/plugin-kubectl')
+
       const allContexts = await getAllContexts(tab)
       const currentContextSpec = allContexts.find(context => context.spec.isCurrent)
       const currentContext = currentContextSpec && currentContextSpec.metadata.name
@@ -197,7 +193,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
         this.setState({
           allContexts,
           currentContext,
-          options: this.options(currentContext, allContexts),
+          options: this.options(currentContext, allContexts, kubectl),
           viewLevel: 'normal' // only show normally if we succeed; see https://github.com/IBM/kui/issues/3537
         })
       } else {
@@ -209,16 +205,18 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     }
   }
 
-  private getCurrentContextFromTab(args: { idx: number; tab: TabState }) {
+  private async getCurrentContextFromTab(args: { idx: number; tab: TabState }) {
     const { tab } = args
     if (tab) {
+      const { kubectl, getTabState } = await import('@kui-shell/plugin-kubectl')
+
       const currentContextSpec = getTabState(tab, 'context')
       if (currentContextSpec) {
         const currentContext = currentContextSpec.metadata.name
 
         this.setState(curState => ({
           currentContext,
-          options: this.options(currentContext, curState.allContexts),
+          options: this.options(currentContext, curState.allContexts, kubectl),
           viewLevel: 'normal'
         }))
       }
@@ -311,7 +309,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
     eventBus.onAnyCommandComplete(this.handler)
-    onKubectlConfigChangeEvents(this.handlerForConfigChange)
+
+    import('@kui-shell/plugin-kubectl').then(_ => _.onKubectlConfigChangeEvents(this.handlerForConfigChange))
   }
 
   /** Bye! */
@@ -320,7 +319,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     eventBus.off('/tab/new', this.handler)
     eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
     eventBus.offAnyCommandComplete(this.handler)
-    offKubectlConfigChangeEvents(this.handlerForConfigChange)
+    import('@kui-shell/plugin-kubectl').then(_ => _.offKubectlConfigChangeEvents(this.handlerForConfigChange))
   }
 
   public render() {
