@@ -15,11 +15,19 @@
  */
 
 import React from 'react'
-import { CodeEditor, Language } from '@patternfly/react-code-editor'
+import { CodeEditor, CodeEditorProps, Language } from '@patternfly/react-code-editor'
 
 import Props from '../model'
 
 export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
+  private readonly _monacoOptions: CodeEditorProps['options'] = {
+    cursorStyle: 'block',
+    lineDecorationsWidth: 0,
+    renderFinalNewline: false,
+    renderLineHighlight: 'none',
+    scrollBeyondLastLine: false
+  }
+
   private language() {
     const { language } = this.props
     return Language[language === 'sh' || language === 'bash' ? 'shell' : language] || Language.plaintext
@@ -33,6 +41,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
     return (
       <CodeEditor
         isReadOnly
+        isLineNumbersVisible={false}
         isCopyEnabled={this.props.isCopyEnabled || false}
         isDownloadEnabled={this.props.isDownloadEnabled || false}
         isLanguageLabelVisible={this.props.isLanguageLabelVisible || true}
@@ -40,6 +49,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
         height={this.height()}
         language={this.language()}
         code={this.props.value}
+        options={this._monacoOptions}
       />
     )
   }

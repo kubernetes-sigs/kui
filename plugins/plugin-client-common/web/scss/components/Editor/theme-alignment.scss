@@ -31,6 +31,15 @@ body[kui-theme-style] .monaco-editor .keyword {
   color: var(--color-base0C);
 }
 
+body[kui-theme-style] .monaco-editor {
+  .focused .selected-text {
+    background-color: var(--color-selection-background);
+  }
+  .selected-text {
+    background-color: var(--color-base02);
+  }
+}
+
 body[kui-theme-style] .monaco-editor .mtk6,
 body[kui-theme-style] .monaco-editor .selector-tag,
 body[kui-theme-style] .monaco-editor .title,
