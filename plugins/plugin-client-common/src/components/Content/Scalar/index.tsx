@@ -96,9 +96,9 @@ export default class Scalar extends React.PureComponent<Props, State> {
     console.error('catastrophic error in Scalar', error, errorInfo)
   }
 
-  private onRender(hasContent = true) {
+  private onRender(hasContent: boolean | 'undefined' = true) {
     if (this.props.onRender) {
-      setTimeout(() => this.props.onRender(hasContent), 0)
+      setTimeout(() => this.props.onRender(hasContent === 'undefined' ? undefined : hasContent), 0)
     }
   }
 
@@ -108,7 +108,9 @@ export default class Scalar extends React.PureComponent<Props, State> {
     const { tab } = this.props
 
     if (typeof response === 'boolean') {
-      this.onRender(undefined) // not false, Output.tsx uses assertHasContent !== undefined
+      // !!! intentionally quoted and not false, Output.tsx uses
+      // !!! assertHasContent !== undefined
+      this.onRender('undefined')
       return <React.Fragment />
     } else if (typeof response === 'number') {
       this.onRender()

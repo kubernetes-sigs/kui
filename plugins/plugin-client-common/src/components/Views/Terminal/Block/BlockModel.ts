@@ -223,6 +223,10 @@ export function isBeingRerun(block: BlockModel): block is BlockBeingRerun {
   return (block as WithRerun).isRerun === true
 }
 
+export function isProcessingOrBeingRerun(block: BlockModel): block is ProcessingBlock | BlockBeingRerun {
+  return isProcessing(block) || isBeingRerun(block)
+}
+
 export function hasOriginalUUID(block: BlockModel | WithOriginalExecUUID): block is WithOriginalExecUUID {
   return typeof (block as WithOriginalExecUUID).originalExecUUID === 'string'
 }

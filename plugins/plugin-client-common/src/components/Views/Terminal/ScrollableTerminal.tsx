@@ -1492,7 +1492,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           displayedIdx={displayedIdx}
           sectionIdx={sectionIdx > 0 ? `${sectionIdx}${subSectionIdx > 0 ? `.${subSectionIdx}` : ''}` : undefined}
           model={_}
-          isBeingRerun={isBeingRerun(_)}
           uuid={scrollback.uuid}
           tab={tab}
           nSplits={this.state.splits.length}
