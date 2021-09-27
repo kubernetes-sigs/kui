@@ -165,3 +165,11 @@ export function Wander(props: Props) {
     </div>
   )
 }
+
+export default function defaultSpinner(props: Props & { spinnerClassName?: string }) {
+  return (
+    <span className={classOf('kui--repl-block-spinner', props)}>
+      <Plane className={props.spinnerClassName} />
+    </span>
+  )
+}

@@ -48,7 +48,7 @@ import {
   hasBeenRerun,
   isBeingRerun,
   isFinished,
-  isProcessing,
+  isProcessingOrBeingRerun as isProcessing,
   isOk,
   isCancelled,
   isEmpty,
@@ -79,9 +79,6 @@ type Props = {
 
   /** Block ordinal to be displayed to user */
   displayedIdx?: number
-
-  /** Are we in the middle of a re-run? */
-  isBeingRerun: boolean
 
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
@@ -149,7 +146,7 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
-    if ((isProcessing(props.model) || isBeingRerun(props.model)) && !state.alreadyListen) {
+    if (isProcessing(props.model) && !state.alreadyListen) {
       const tabUUID = props.uuid
       eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
       return {
@@ -174,7 +171,7 @@ export default class Output extends React.PureComponent<Props, State> {
   }
 
   private onRender(assertHasContent: boolean): void {
-    if (this.props.onRender && !this.props.isBeingRerun && !hasBeenRerun(this.props.model)) {
+    if (this.props.onRender && !isBeingRerun(this.props.model) && !hasBeenRerun(this.props.model)) {
       // we don't want reruns to trigger any scrolling behavior
       this.props.onRender()
     }

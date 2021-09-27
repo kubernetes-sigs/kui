@@ -17,12 +17,6 @@
 @use 'sass:math';
 @import 'mixins';
 
-@mixin Spinner {
-  .kui--repl-block-spinner {
-    @content;
-  }
-}
-
 /** When in a minisplit, there is no timestamp/timer, so we need to add a margin-right */
 @include MiniSplit {
   @include Spinner {

@@ -420,3 +420,10 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+/** The spinner element that we place either in the context [x] or near the timestamp/duration element */
+@mixin Spinner {
+  .kui--repl-block-spinner {
+    @content;
+  }
+}

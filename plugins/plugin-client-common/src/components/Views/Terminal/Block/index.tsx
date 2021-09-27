@@ -23,7 +23,6 @@ import Output from './Output'
 import {
   BlockModel,
   isActive,
-  isBeingRerun,
   isEmpty,
   isFinished,
   isOutputOnly,
@@ -80,9 +79,6 @@ type Props = InputOptions & {
 
   /** block model */
   model: BlockModel
-
-  /** Are we in the middle of a re-run? */
-  isBeingRerun?: boolean
 
   /** tab UUID */
   uuid: string
@@ -169,7 +165,6 @@ export default class Block extends React.PureComponent<Props, State> {
           tab={this.props.tab}
           idx={this.props.idx}
           model={this.props.model}
-          isBeingRerun={isBeingRerun(this.props.model)}
           isSectionBreak={this.props.isSectionBreak}
           willRemove={this.props.willRemove}
           willChangeSize={this._willChangeSize}
@@ -207,7 +202,7 @@ export default class Block extends React.PureComponent<Props, State> {
       this.customInput() ||
       (this.state._block && (
         <Input
-          key={this.props.idx}
+          key={this.props.uuid}
           uuid={this.props.uuid}
           tab={this.props.tab}
           model={this.props.model}
