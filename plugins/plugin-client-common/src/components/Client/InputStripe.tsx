@@ -72,7 +72,7 @@ export default class InputStripe extends React.PureComponent<Props, State> {
           <Block
             ref={this._blockRef}
             idx={this.state.idx}
-            uuid={this.props.uuid}
+            uuid={`${this.props.uuid}-${this.state.idx}`}
             tab={this.props.tab}
             model={this.state.model}
             noOutput
