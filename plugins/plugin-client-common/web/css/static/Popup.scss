@@ -133,6 +133,8 @@ body.subwindow {
       flex-basis: 2.1em;
 
       .repl-block .repl-input {
+        white-space: nowrap;
+        flex-wrap: nowrap;
         &,
         .kui--input-and-context {
           background-color: transparent;
