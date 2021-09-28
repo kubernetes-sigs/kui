@@ -39,7 +39,9 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
         isReferenceProps(props) ? (
           props.children
         ) : isMarkdownProps(props) ? (
-          <Markdown nested source={props.markdown} />
+          <React.Suspense fallback={<div />}>
+            <Markdown nested source={props.markdown} />
+          </React.Suspense>
         ) : (
           props.content
         )
