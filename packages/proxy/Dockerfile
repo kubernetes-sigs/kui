@@ -17,6 +17,8 @@
 FROM node:12-bullseye-slim
 
 ## preesed tzdata, update package index, upgrade packages and install needed software
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN=true
 COPY preseed.txt /tmp/preseed.txt
 
 # proxy ports (keep in sync with conf.d/proxy.conf)
@@ -62,8 +64,7 @@ COPY conf.d/default.conf /tmp/default-template.conf
 
 RUN debconf-set-selections /tmp/preseed.txt && \
     rm -f /etc/timezone /etc/localtime && \
-    apt update && \
-    apt install -y --no-install-recommends tzdata nginx ca-certificates bash git python build-essential curl upx gettext-base && \
+    apt update && apt install -y --no-install-recommends tzdata nginx ca-certificates bash git python build-essential curl upx gettext-base && \
     cd /usr/share/nginx/html/kui/node_modules/node-pty && npm run install && \
     cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock && \
     curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl && upx /usr/local/bin/kubectl && \
