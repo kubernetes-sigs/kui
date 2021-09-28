@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.1](https://github.com/IBM/kui/compare/v10.6.0...v10.6.1) (2021-09-28)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** initial tooltip render may be placed oddly ([2cc9fe9](https://github.com/IBM/kui/commit/2cc9fe9)), closes [#8081](https://github.com/IBM/kui/issues/8081)
+
 # [10.6.0](https://github.com/IBM/kui/compare/v4.5.0...v10.6.0) (2021-09-27)
 
 ### Bug Fixes

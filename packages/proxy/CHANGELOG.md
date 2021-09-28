@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.1](https://github.com/IBM/kui/compare/v10.6.0...v10.6.1) (2021-09-28)
+
+### Bug Fixes
+
+- **packages/proxy:** Docker builds broken after recent update to node:12-bullseye-slim update ([16f6fdd](https://github.com/IBM/kui/commit/16f6fdd)), closes [#8083](https://github.com/IBM/kui/issues/8083)
+
 # [10.6.0](https://github.com/IBM/kui/compare/v4.5.0...v10.6.0) (2021-09-27)
 
 ### Bug Fixes
