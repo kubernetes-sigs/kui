@@ -82,5 +82,8 @@
   @include ScrollbackInvertedColors {
     @include carbon-inverted;
     @include Reset;
+    --color-brand-01: #97c1ff;
+    --color-brand-02: var(--color-base07);
+    --color-brand-03: #0062ff;
   }
 }
