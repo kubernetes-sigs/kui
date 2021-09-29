@@ -224,7 +224,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.state.splits.find(({ blocks }) =>
         blocks.find(_ => {
           if (isLinkified(_) && _.link === link) {
-            const status = !hasBeenRerun(_) ? [0, 0] : isOk(_) ? [1, 0] : [0, 1]
+            const status = !hasBeenRerun(_) ? [0, 0, 0] : isOk(_) ? [1, 0, 0] : [0, 1, 0]
             eventChannelUnsafe.emit(`/link/status/update/${_.link}`, status)
             return true
           }
@@ -545,7 +545,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           const uuid = hasUUID(block) ? `${block.execUUID}` : `${v4()}`
           const link = `kui-link-${uuid}`
           block.link = link
-          navigator.clipboard.writeText(`[Link](#${link})`)
+          const linkText = hasCommand(block) ? block.command.slice(0, 20) : 'Link'
+          navigator.clipboard.writeText(`- **[${linkText}](#${link})** *blank*`)
           return {
             blocks: curState.blocks
               .slice(0, idx)
@@ -835,6 +836,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           // execUUID, hence the `findIndex` logic just above, which
           // scans the blocks for an existing execUUID. So: we
           // Transform the rerun block to Processing
+
+          if (isLinkified(block)) {
+            eventChannelUnsafe.emit(`/link/status/update/${block.link}`, [0, 0, 1])
+          }
+
           return {
             blocks: curState.blocks
               .slice(0, rerunIdx) // everything before
@@ -908,7 +914,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
 
             if (isLinkified(finishedBlock)) {
-              const status = !hasBeenRerun(finishedBlock) ? [0, 0] : isOk(finishedBlock) ? [1, 0] : [0, 1]
+              const status = !hasBeenRerun(finishedBlock) ? [0, 0, 0] : isOk(finishedBlock) ? [1, 0, 0] : [0, 1, 0]
 
               eventChannelUnsafe.emit(`/link/status/update/${finishedBlock.link}`, status)
             }
