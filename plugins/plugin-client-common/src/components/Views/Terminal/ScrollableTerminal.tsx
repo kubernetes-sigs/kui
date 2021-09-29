@@ -86,7 +86,7 @@ import '../../../../web/scss/components/Terminal/_index.scss'
 const strings = i18n('plugin-client-common')
 
 /** Hard limit on the number of Terminal splits */
-const MAX_TERMINALS = 8
+const MAX_TERMINALS = 6
 
 /** Remember the welcomed count in localStorage, using this key */
 const NUM_WELCOMED = 'kui-shell.org/ScrollableTerminal/NumWelcomed'
@@ -125,6 +125,12 @@ type Props = TerminalOptions & {
 
   /** Status of the proxy session (for client-server architectures of Kui) */
   sessionInit: SessionInitStatus
+
+  /** Are we to display one of the splits as a bottom strip? */
+  hasBottomStrip: boolean
+
+  /** Toggle whether we have a bottom strip split */
+  willToggleBottomStripMode(): void
 }
 
 interface State {
@@ -244,7 +250,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.props.toggleAttribute('data-is-notebook')
 
       const splits = model.spec.splits.map(split => {
-        const newScrollback = this.scrollback(undefined, { inverseColors: split.inverseColors })
+        const newScrollback = this.scrollback(undefined, {
+          inverseColors: split.inverseColors,
+          position: split.position
+        })
+
+        if (split.position === 'bottom-strip') {
+          this.props.willToggleBottomStripMode()
+        }
 
         if (model.metadata.preferReExecute) {
           promiseEach(split.blocks, async _ => {
@@ -260,6 +273,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             .slice(0, insertIdx)
             .concat(restoreBlocks)
             .concat(newScrollback.blocks.slice(insertIdx))
+
+          // re-execute any blocks that executed a command whose
+          // controller specified it wants re-execute semantics
+          if (!isOfflineClient()) {
+            for (let idx = 0; idx < restoreBlocks.length; idx++) {
+              const block = restoreBlocks[idx]
+              if (isWithCompleteEvent(block) && block.completeEvent.evaluatorOptions.preferReExecute) {
+                newScrollback.facade.REPL.reexec(block.completeEvent.command, {
+                  execUUID: block.completeEvent.execUUID
+                })
+              }
+            }
+          }
         }
 
         setTimeout(() => newScrollback.facade.scrollToTop())
@@ -291,7 +317,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Listen for snapshot request events */
   private initSnapshotEvents() {
     const onSnapshot = async (evt: SnapshotRequestEvent) => {
-      const splits = this.state.splits.map(({ inverseColors, blocks, uuid }) => {
+      const splits = this.state.splits.map(({ inverseColors, position, blocks, uuid }) => {
         const { filter = () => true } = evt
 
         const isComplete = (block: BlockModel) => {
@@ -305,6 +331,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
         return {
           uuid,
+          position,
           inverseColors,
           blocks: snapshotBlocks
         }
@@ -443,7 +470,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       willUpdateCommand: undefined,
       willUpdateExecutable: undefined,
       willInsertSection: undefined,
-      tabRefFor: undefined
+      tabRefFor: undefined,
+
+      position: opts.position || 'default',
+      willToggleBottomStripMode: undefined
     }
 
     const getBlockIndexFromEvent = (evt: React.SyntheticEvent, doNotComplain = false) => {
@@ -656,6 +686,21 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         }
         scrollback.facade.removeClass = (cls: string) => {
           ref.classList.remove(cls)
+        }
+      }
+    }
+
+    if (this.props.willToggleBottomStripMode) {
+      state.willToggleBottomStripMode = () => {
+        const sbidx = this.findSplit(this.state, sbuuid)
+        if (sbidx >= 0) {
+          const scrollback = this.state.splits[sbidx]
+          if (scrollback.position === 'default') {
+            scrollback.position = 'bottom-strip'
+          } else {
+            scrollback.position = 'default'
+          }
+          this.props.willToggleBottomStripMode()
         }
       }
     }
@@ -1255,16 +1300,32 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    */
   private removeSplit(sbuuid: string) {
     this.setState(curState => {
-      eventBus.emitTabLayoutChange(sbuuid)
-
       const idx = this.findSplit(this.state, sbuuid)
       if (idx >= 0) {
+        // if the user typed exit/ctrl+D in a 2-split scenario where
+        // the split being closed is a default split, and the other is
+        // a bottom strip... we have a choice: either turn the bottom
+        // strip into a default split, or refuse the request to
+        // close. For now, we opt for the former
+        if (this.props.hasBottomStrip && curState.splits.length === 2 && curState.splits[idx].position === 'default') {
+          const otherSplit = curState.splits[1 - idx]
+          otherSplit.position = 'default'
+          setTimeout(() => this.props.willToggleBottomStripMode())
+        }
+
+        eventBus.emitTabLayoutChange(sbuuid)
+
         if (idx === curState.splits.length - 1) {
           // If we are removing the last split, we can safely
           // decrement the running counter. The reordering problem
           // described in the `scrollbackCounter` comment above does
           // not occur when removing the last split
           this.scrollbackCounter--
+        }
+
+        if (curState.splits[idx].position !== 'default') {
+          // then we are closing the bottom strip
+          setTimeout(() => this.props.willToggleBottomStripMode())
         }
 
         // remove any watchers from the blocks of the split we are
@@ -1276,6 +1337,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
         // splice out this split from the list of all splits in this tab
         const splits = curState.splits.slice(0, idx).concat(curState.splits.slice(idx + 1))
+        console.error('!!!!!REMAININGSPLITS', splits)
 
         if (splits.length === 0) {
           // the last split was removed; notify parent
@@ -1528,28 +1590,37 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
     const isWidthConstrained = this.isWidthConstrained(scrollback, sbidx)
 
-    return (
-      <div
-        className={'kui--scrollback' + (scrollback.inverseColors ? ' kui--inverted-color-context' : '')}
-        data-is-minisplit={isMiniSplit}
-        data-is-width-constrained={isWidthConstrained || undefined}
-        data-is-focused={sbidx === this.state.focusedIdx || undefined}
-        key={tab.uuid}
-        data-scrollback-id={tab.uuid}
-        ref={scrollback.tabRefFor}
-        onClick={!this.props.noActiveInput ? scrollback.onClick : undefined}
-        onMouseDown={this.props.noActiveInput ? scrollback.onMouseDown : undefined}
-      >
-        <React.Fragment>
-          {this.state.splits.length > 1 && (
-            <SplitHeader onRemove={scrollback.remove} onClear={scrollback.clear} onInvert={scrollback.invert} />
-          )}
-          <ul className="kui--scrollback-block-list">
-            <div className="kui--scrollback-block-list-for-sizing">{this.blocks(tab, scrollback, sbidx)}</div>
-          </ul>
-        </React.Fragment>
-      </div>
+    const props = {
+      className: 'kui--scrollback' + (scrollback.inverseColors ? ' kui--inverted-color-context' : ''),
+      'data-is-minisplit': isMiniSplit,
+      'data-is-width-constrained': isWidthConstrained || undefined,
+      'data-is-focused': sbidx === this.state.focusedIdx || undefined,
+      'data-position': scrollback.position,
+      key: tab.uuid,
+      'data-scrollback-id': tab.uuid,
+      ref: scrollback.tabRefFor,
+      onClick: !this.props.noActiveInput ? scrollback.onClick : undefined,
+      onMouseDown:
+        scrollback.position === 'bottom-strip' || this.props.noActiveInput ? scrollback.onMouseDown : undefined
+    }
+
+    const children = (
+      <React.Fragment>
+        {this.state.splits.length > 1 && (
+          <SplitHeader
+            onRemove={!this.props.hasBottomStrip || this.state.splits.length > 2 ? scrollback.remove : undefined}
+            onClear={scrollback.clear}
+            onInvert={scrollback.invert}
+            willToggleBottomStripMode={!this.props.hasBottomStrip && scrollback.willToggleBottomStripMode}
+          />
+        )}
+        <ul className="kui--scrollback-block-list">
+          <div className="kui--scrollback-block-list-for-sizing">{this.blocks(tab, scrollback, sbidx)}</div>
+        </ul>
+      </React.Fragment>
     )
+
+    return React.createElement(scrollback.position === 'default' ? 'div' : 'span', props, children)
   }
 
   public render() {

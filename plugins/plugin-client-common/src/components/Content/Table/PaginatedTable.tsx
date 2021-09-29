@@ -205,12 +205,9 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
     // 1) If we started as a table, and are now a grid, then show
     // "Status Grid", otherwise:
     // 2) only for client w/o disableTableTitle, show a breadcrumb
-    const breadcrumbs =
-      !lightweightTables && !this.props.asGrid && this.state.asGrid
-        ? [{ label: strings('Status Grid') }]
-        : !this.props.asGrid && !this.props.title
-        ? []
-        : getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
+    const breadcrumbs = !this.props.title
+      ? []
+      : getBreadcrumbsFromTable(this.props.response, this.props.prefixBreadcrumbs)
 
     // ... except when we're displaying asGrid by default
     if (!(!lightweightTables && !this.props.asGrid && this.state.asGrid)) {

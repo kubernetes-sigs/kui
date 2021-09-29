@@ -29,6 +29,8 @@
 @include AccordionItem {
   h3 {
     margin: 0;
+    padding: 0;
+    font-size: inherit;
   }
 }
 
@@ -38,7 +40,6 @@
 }
 
 @include AccordionToggle {
-  font-size: 0.825rem;
   font-family: var(--font-sans-serif);
   &:focus {
     outline: none;
@@ -50,8 +51,16 @@
   max-width: unset;
 }
 
+.no-padding {
+  @include AccordionToggle {
+    font-size: 0.825rem;
+  }
+  @include AccordionContentBody {
+    padding: 0;
+  }
+}
+
 @include AccordionContentBody {
-  padding: 0;
   &:before {
     display: none;
   }

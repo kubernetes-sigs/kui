@@ -24,21 +24,11 @@ $tab-label-font-size: 0.875rem;
   --tab-shadow: inset 0 -3px 0 0;
   --pf-c-page__header--BackgroundColor: var(--color-stripe-01);
 
-  height: $height;
-  border-bottom: none;
-  transition-property: background-color;
-  position: unset;
-  align-items: stretch;
-
   .kui--top-tab-stripe-header {
     display: flex;
     height: $height;
     min-height: $height;
     align-items: stretch;
-  }
-  #kui--top-tab-stripe-main {
-    /* we don't use the Page content part */
-    display: none;
   }
 
   @include HeaderNameContainer {

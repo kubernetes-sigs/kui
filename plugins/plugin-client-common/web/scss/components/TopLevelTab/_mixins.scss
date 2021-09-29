@@ -35,3 +35,9 @@
     }
   }
 }
+
+@mixin HasBottomStrip {
+  &[data-has-bottom-strip] {
+    @content;
+  }
+}

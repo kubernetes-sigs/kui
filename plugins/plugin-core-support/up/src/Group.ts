@@ -17,8 +17,9 @@
 enum Group {
   Storage,
   Compute,
-  Cloud,
-  CLI
+  Authorization,
+  CLI,
+  Operator
 }
 
 export default Group

@@ -18,6 +18,7 @@ import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
 
 import Group from '../Group'
+import service from './KubectlService'
 
 async function check({ REPL }: Pick<Arguments, 'REPL'>) {
   try {
@@ -29,8 +30,14 @@ async function check({ REPL }: Pick<Arguments, 'REPL'>) {
 }
 
 export default {
-  group: Group.Cloud,
+  service,
+  group: Group.CLI,
   label: (checkResult?: false | string) =>
-    checkResult === undefined ? 'KUBECONFIG' : !checkResult ? 'no valid config found' : colors.gray(checkResult),
+    checkResult === undefined
+      ? 'Connected to cluster'
+      : !checkResult
+      ? 'no valid config found'
+      : colors.gray(checkResult),
+  description: 'A valid KUBECONFIG environment variable allows authorized access to your Kubernetes clusters',
   check
 }

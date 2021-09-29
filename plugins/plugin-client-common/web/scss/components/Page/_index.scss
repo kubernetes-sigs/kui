@@ -1,0 +1,65 @@
+/*
+ * Copyright 2021 The Kubernetes Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@import 'mixins';
+@import '../ExpandableSection/mixins';
+
+@mixin KuiSidebar {
+  .kui--sidebar {
+    @content;
+  }
+}
+@mixin KuiSidebarMaximized {
+  .kui--sidebar-maximized {
+    @content;
+  }
+}
+
+@include KuiTabContainer {
+  /* PatternFly has height: 100% */
+  flex: 1;
+  height: auto;
+}
+
+/** Managed width of the non-sidebar page content */
+@include KuiTabContainerMainContent {
+  flex: 1;
+}
+@include KuiSidebarMaximized {
+  flex: 1;
+  @include KuiTabContainerMainContent {
+    + & {
+      flex: 0;
+    }
+  }
+}
+
+body[kui-theme-style='light'] {
+  /** Areas that we know are always dark, independent of theme. */
+  @include DarkContext {
+    color: var(--color-base00);
+  }
+}
+
+body[kui-theme-style] {
+  .pf-c-page {
+    overflow: hidden;
+  }
+
+  .pf-c-page {
+    background-color: var(--color-base01);
+  }
+}

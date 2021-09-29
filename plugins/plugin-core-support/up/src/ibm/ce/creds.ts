@@ -19,6 +19,7 @@ import { Arguments } from '@kui-shell/core'
 
 import Group from '../../Group'
 import Options from '../options'
+import service from './CodeEngineService'
 
 /** This is only needed because CodeEngine CLI does not currently auto-refresh tokens */
 
@@ -46,13 +47,16 @@ async function fix(args: Arguments<Options>) {
 }
 
 export default {
-  group: Group.Compute,
+  group: Group.Authorization,
+  service,
+
   label: (checkResult?: false | string) =>
     checkResult === undefined
-      ? 'CodeEngine project credentials'
+      ? 'Valid Auth Token'
       : !checkResult
       ? colors.red('not selected')
       : colors.yellow(checkResult),
+  description: 'To schedule jobs against IBM CodeEngine, you will need valid and non-expired credentials',
   needsCloudLogin: true,
   onFail: 'ibmcloud ce project create --name <projectname=superproject>',
   fix,
