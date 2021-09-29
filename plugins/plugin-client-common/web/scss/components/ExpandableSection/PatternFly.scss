@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-@import '_mixins';
+@import 'mixins';
+@import '../Terminal/mixins';
 
 @include ExpandableSectionButton {
-  font-size: 0.825rem;
-  font-family: var(--font-sans-serif);
+  background: none;
 }
 
-@include ExpandableSectionButtonText {
-  margin-left: $expandablesection--spacing;
+@include ExpandableSectionButtonIcon {
+  color: var(--color-text-01);
+}
+
+@include Block {
+  @include ExpandableSectionButton {
+    font-size: 0.825rem;
+    font-family: var(--font-sans-serif);
+  }
+
+  @include ExpandableSectionButtonText {
+    margin-left: $expandablesection--spacing;
+  }
 }

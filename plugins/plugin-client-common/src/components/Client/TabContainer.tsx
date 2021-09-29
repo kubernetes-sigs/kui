@@ -15,6 +15,8 @@
  */
 
 import React from 'react'
+import { Page } from '@patternfly/react-core'
+
 import { NewTabRequestEvent, Tab, eventBus, pexecInCurrentTab } from '@kui-shell/core'
 
 import TabModel, { TopTabButton } from './TabModel'
@@ -22,6 +24,7 @@ import TabContent, { TabContentOptions } from './TabContent'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
 
 import '../../../web/css/static/TabContainer.scss'
+import '../../../web/scss/components/Page/_index.scss'
 
 /**
  *
@@ -294,10 +297,9 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <div className="kui--full-height">
-        {this.topTabStripe()}
+      <Page mainContainerId="kui--page-main" className="kui--tab-container-page" header={this.topTabStripe()}>
         {this.tabContent()}
-      </div>
+      </Page>
     )
   }
 }

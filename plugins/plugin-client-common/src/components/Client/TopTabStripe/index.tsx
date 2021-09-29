@@ -15,8 +15,8 @@
  */
 
 import React from 'react'
+import { Nav, NavList, PageHeader } from '@patternfly/react-core'
 import { KeyCodes, inElectron, isReadOnlyClient } from '@kui-shell/core'
-import { Nav, NavList, Page, PageHeader } from '@patternfly/react-core'
 
 import TabModel from '../TabModel'
 import KuiContext from '../context'
@@ -176,13 +176,6 @@ export default class TopTabStripe extends React.PureComponent<Props> {
    *
    */
   public render() {
-    return (
-      <Page
-        aria-label="Header"
-        className="kui--top-tab-stripe"
-        header={this.header()}
-        mainContainerId="kui--top-tab-stripe-main"
-      />
-    )
+    return this.header()
   }
 }

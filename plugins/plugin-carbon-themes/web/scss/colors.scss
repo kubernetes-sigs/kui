@@ -51,7 +51,9 @@
 
   --color-sidecar-toolbar-foreground: var(--color-base01);
 
-  --color-text-02: #bebebe; /**/
+  --color-text-02: #bebebe;
+
+  --pf-global--BackgroundColor--dark-300: #393939;
 
   --color-table-border2: #565151;
   --color-background-03: #393939;
@@ -118,6 +120,8 @@
   --color-ui-05: #171717;
   --color-ui-03: #e0e0e0;
   --color-text-02: #565656;
+
+  --pf-global--BackgroundColor--dark-300: #393939;
 
   --color-map-key: #6ea6ff;
   --color-map-value: var(--color-text-inverted01);

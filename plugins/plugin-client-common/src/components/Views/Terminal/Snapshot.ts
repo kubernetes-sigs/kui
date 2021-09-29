@@ -43,6 +43,8 @@ import {
   isWithCompleteEvent
 } from './Block/BlockModel'
 
+import SplitPosition from './SplitPosition'
+
 /**
  * Split: captures the split uuid and blocks in a split
  *
@@ -51,6 +53,7 @@ export type Split = {
   uuid: string
   blocks: FinishedBlock[]
   inverseColors?: boolean
+  position?: SplitPosition
 }
 
 type NotebookSpec = {

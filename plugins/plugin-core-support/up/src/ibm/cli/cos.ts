@@ -19,6 +19,7 @@ import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import Group from '../../Group'
+import service from '../cos/CosService'
 
 async function check(args: Arguments) {
   try {
@@ -36,13 +37,12 @@ async function check(args: Arguments) {
 const install = 'ibmcloud plugin install cloud-object-storage'
 
 export default {
+  service,
   group: Group.CLI,
+
   label: (checkResult?: false | string) =>
-    checkResult === undefined
-      ? 'ibmcloud cloud-object-storage plugin'
-      : !checkResult
-      ? 'not installed'
-      : colors.gray(checkResult),
+    checkResult === undefined ? 'Installed CLI plugin' : !checkResult ? 'not installed' : colors.gray(checkResult),
+  description: 'The IBM Cloud Object Storage plugin to the ibmcloud CLI allows access to your S3 data',
   fix: install,
   onFail: install,
   check

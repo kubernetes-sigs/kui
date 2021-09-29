@@ -65,6 +65,7 @@ export type SupportedIcon =
   | 'Trash'
   | 'TerminalOnly'
   | 'Theme'
+  | 'Unknown'
   | 'Up'
   | 'Warning'
   | 'Waiting'

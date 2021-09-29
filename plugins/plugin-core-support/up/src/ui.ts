@@ -66,7 +66,12 @@ function toStream(stdout: Stdout): Arguments['execOptions']['onInit'] {
 }
 
 /** Fix prerequisites for a given Checker */
-async function doFix(args: Arguments<Options>, obs: Observer<string>, checker: Checker, stdout: Stdout) {
+export async function doFix(
+  args: CheckerArgs /* Arguments<Options> */,
+  obs: Observer<string>,
+  checker: Checker,
+  stdout: Stdout
+) {
   const { check, fix, needsCloudLogin } = checker
   const checkResult = await Promise.resolve(check(args, obs)).catch(() => undefined)
 

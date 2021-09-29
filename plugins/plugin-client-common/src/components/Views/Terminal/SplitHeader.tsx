@@ -27,6 +27,9 @@ interface Props {
   onRemove(): void
   onInvert(): void
   onClear(): void
+
+  /** Toggle whether we have a bottom strip split */
+  willToggleBottomStripMode(): void
 }
 
 /** Render a header for the given split */
@@ -35,16 +38,38 @@ export default class SplitHeader extends React.PureComponent<Props> {
 
   private closeButton() {
     return (
-      <Tooltip markdown={strings('Close this split pane')}>
-        <a
-          href="#"
-          className="kui--split-close-button kui--tab-navigatable kui--split-header-button"
-          onMouseDown={this.stopFocusStealing}
-          onClick={this.props.onRemove}
-        >
-          &#x2A2F;
-        </a>
-      </Tooltip>
+      this.props.onRemove && (
+        <Tooltip markdown={strings('Close this split pane')}>
+          <a
+            href="#"
+            className="kui--split-close-button kui--tab-navigatable kui--split-header-button"
+            onMouseDown={this.stopFocusStealing}
+            onClick={this.props.onRemove}
+          >
+            &#x2A2F;
+          </a>
+        </Tooltip>
+      )
+    )
+  }
+
+  private bottomStripToggleButton() {
+    return (
+      this.props.willToggleBottomStripMode && (
+        <Tooltip markdown={strings('Toggle bottom strip mode')}>
+          <a
+            href="#"
+            className="kui--tab-navigatable"
+            onMouseDown={this.stopFocusStealing}
+            onClick={this.props.willToggleBottomStripMode}
+          >
+            <Icons
+              className="kui--split-bottom-strip-toggle kui--split-header-button kui--rotate-180"
+              icon="TerminalOnly"
+            />
+          </a>
+        </Tooltip>
+      )
     )
   }
 
@@ -75,6 +100,7 @@ export default class SplitHeader extends React.PureComponent<Props> {
           <div className="flex-fill" />
           {this.invertButton()}
           {this.clearButton()}
+          {this.bottomStripToggleButton()}
           {this.closeButton()}
         </div>
       )

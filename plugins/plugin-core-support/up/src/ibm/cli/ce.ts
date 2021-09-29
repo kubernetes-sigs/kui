@@ -19,6 +19,7 @@ import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import Group from '../../Group'
+import service from '../ce/CodeEngineService'
 
 async function check(args: Arguments) {
   try {
@@ -36,13 +37,12 @@ async function check(args: Arguments) {
 const install = 'ibmcloud plugin install code-engine'
 
 export default {
+  service,
   group: Group.CLI,
+
   label: (checkResult?: false | string) =>
-    checkResult === undefined
-      ? 'ibmcloud code-engine plugin'
-      : !checkResult
-      ? 'not installed'
-      : colors.gray(checkResult),
+    checkResult === undefined ? 'Installed CLI plugin' : !checkResult ? 'not installed' : colors.gray(checkResult),
+  description: 'The CodeEngine plugin to the ibmcloud CLI allows access to a multi-tenant Kubernetes cluster',
   fix: install,
   onFail: install,
   check
