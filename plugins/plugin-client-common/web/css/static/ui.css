@@ -1038,6 +1038,9 @@ badge:not(.badge-as-fontawesome):not(.badge-as-image) {
 .yellow-text svg path {
   fill: var(--color-support-03-darker);
 }
+.blue-text {
+  color: var(--color-blue);
+}
 .processing-text {
   color: var(--color-processing) !important;
 }
