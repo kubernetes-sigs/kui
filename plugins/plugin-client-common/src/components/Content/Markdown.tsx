@@ -21,6 +21,7 @@ const ReactMarkdown = React.lazy(() => import('react-markdown'))
 import { dirname, isAbsolute, join, relative } from 'path'
 import { List, ListComponent, ListItem } from '@patternfly/react-core'
 import { maybeKuiLink, REPL, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
+import { ProgressStepper, ProgressStep, isProgressStepCompatible, liveStatusChannel } from './ProgressStepper'
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
@@ -312,13 +313,49 @@ export default class Markdown extends React.PureComponent<Props> {
               return this.handleImage(props.src, props) || <img {...props} />
             },
             list: props => {
+              if (Array.isArray(props.children) && props.children.length > 0) {
+                const lastIncompatibleIdx = props.children.findIndex(_ => !isProgressStepCompatible(_.props))
+                if (lastIncompatibleIdx === -1) {
+                  return (
+                    <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+                      {props.children}
+                    </ProgressStepper>
+                  )
+                } else if (lastIncompatibleIdx >= 0) {
+                  return (
+                    <React.Fragment>
+                      <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+                        {props.children.slice(0, lastIncompatibleIdx)}
+                      </ProgressStepper>
+                      <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+                        {props.children.slice(lastIncompatibleIdx)}
+                      </List>
+                    </React.Fragment>
+                  )
+                }
+              }
               return (
                 <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
                   {props.children}
                 </List>
               )
             },
-            listItem: props => <ListItem className={props.className}>{props.children}</ListItem>,
+            listItem: props => {
+              if (isProgressStepCompatible(props)) {
+                return (
+                  <ProgressStep
+                    className={props.className}
+                    title={props.children[0]}
+                    liveStatusChannel={liveStatusChannel(props)}
+                    defaultStatus={props.children[2].props.children[0].props.children}
+                  >
+                    {props.children.slice(3)}
+                  </ProgressStep>
+                )
+              } else {
+                return <ListItem className={props.className}>{props.children}</ListItem>
+              }
+            },
             table: props => (
               <table className={props.className + ' kui--table-like kui--structured-list'}>{props.children}</table>
             ),

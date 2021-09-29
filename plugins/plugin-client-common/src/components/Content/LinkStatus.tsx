@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { eventBus, eventChannelUnsafe, i18n } from '@kui-shell/core'
+import { eventChannelUnsafe, i18n } from '@kui-shell/core'
 
 import Icon from '../spi/Icons'
 import Tooltip from '../spi/Tooltip'
@@ -30,6 +30,17 @@ interface Props {
 interface State {
   ok: number
   error: number
+}
+
+export function subscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
+  eventChannelUnsafe.on(`/link/status/update/${link}`, statusUpdateHandler)
+
+  // request the first update
+  eventChannelUnsafe.emit(`/link/status/get`, link)
+}
+
+export function unsubscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
+  eventChannelUnsafe.off(`/link/status/update/${link}`, statusUpdateHandler)
 }
 
 export default class TaskStatus extends React.PureComponent<Props, State> {
@@ -49,19 +60,16 @@ export default class TaskStatus extends React.PureComponent<Props, State> {
     })
   }
 
-  /**
-   * Once we have mounted, we immediately check the current branch,
-   * and schedule an update based on standard REPL events.
-   *
-   */
+  private readonly _statusUpdateHandler = this.reportStatus.bind(this)
+
+  /** Once we have mounted, subscribe to link status update events */
   public componentDidMount() {
-    eventChannelUnsafe.on(`/link/status/update/${this.props.link}`, this.reportStatus.bind(this))
-    eventChannelUnsafe.emit(`/link/status/get`, this.props.link)
+    subscribeToLinkUpdates(this.props.link, this._statusUpdateHandler)
   }
 
   /** Bye! */
   public componentWillUnmount() {
-    eventBus.off(`/link/status/update/${this.props.link}`, this.reportStatus.bind(this))
+    unsubscribeToLinkUpdates(this.props.link, this._statusUpdateHandler)
   }
 
   private icon(ok: number, error: number) {

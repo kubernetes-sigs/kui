@@ -8,23 +8,24 @@
   "spec": {
     "splits": [
       {
-        "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
+        "uuid": "4_c57e811f-2da8-557e-a402-9f0950407675",
+        "inverseColors": true,
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "# How to Make a Notebook\n\nThis notebook will cover the following topics on making a notebook:\n- How to craft commentary\n- How to update commentary\n- How to save a notebook with title \n- How to make sections via splits"
+                "children": "# Authoring Notebooks\n\n1. Execute commands, as you would normally. Kui will remember the output of the commands, offering them as \"Sample Output\". Keep this in mind, from the standpoint of information disclosure!\n2. You may intersperse commentary to help explain the notebook, and to weave a story around the commands being executed.\n3. You may split the notebook, if that helps convey your story.\n"
               }
             },
             "historyIdx": 250,
             "cwd": "~/Workspace8/kui",
-            "command": "# # How to Make a Notebook\\n\\nThis notebook will cover the following topics on making a notebook:\\n- How to craft commentary\\n- How to update commentary\\n- How to save a notebook with title \\n- How to make sections via splits",
+            "command": "# # Authoring Notebooks\\n\\n1. Execute commands, as you would normally. Kui will remember the output of the commands, offering them as \"Sample Output\". Keep this in mind, from the standpoint of information disclosure!\\n2. You may intersperse commentary to help explain the notebook, and to weave a story around the commands being executed.\\n3. You may split the notebook, if that helps convey your story.\\n",
             "startEvent": {
               "route": "/#",
               "startTime": 1603311062339,
-              "command": "# # How to Make a Notebook\\n\\nThis notebook will cover the following topics on making a notebook:\\n- How to craft commentary\\n- How to update commentary\\n- How to save a notebook with title \\n- How to make sections via splits",
+              "command": "# # Authoring Notebooks\\n\\n1. Execute commands, as you would normally. Kui will remember the output of the commands, offering them as \"Sample Output\". Keep this in mind, from the standpoint of information disclosure!\\n2. You may intersperse commentary to help explain the notebook, and to weave a story around the commands being executed.\\n3. You may split the notebook, if that helps convey your story.\\n",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -53,7 +54,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1603311062365,
-              "command": "# # How to Make a Notebook\\n\\nThis notebook will cover the following topics on making a notebook:\\n- How to craft commentary\\n- How to update commentary\\n- How to save a notebook with title \\n- How to make sections via splits",
+              "command": "# # Authoring Notebooks\\n\\n1. Execute commands, as you would normally. Kui will remember the output of the commands, offering them as \"Sample Output\". Keep this in mind, from the standpoint of information disclosure!\\n2. You may intersperse commentary to help explain the notebook, and to weave a story around the commands being executed.\\n3. You may split the notebook, if that helps convey your story.\\n",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -88,27 +89,22 @@
             "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
-          }
-        ]
-      },
-      {
-        "uuid": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
-        "blocks": [
+          },
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "## How to Save with Title\n\nTo save a notebook with title, you can try the following command:\n\n ```bash\n snapshot [filename] --title [title]\n ```\n \nWhen replaying your notebook, Kui will then render the title as a Tab name. \n\nKui will also show the message `Now playing: [title]` at the bottom status stripe. "
+                "children": "### Saving your Notebook\n\nUse File->Save to save your notebook to disk. Then use File->Open to view it again. The serialized notebook is JSON.\n\nTo give a title to your notebook, for now edit the JSON to add a `metadata.name` field.\n \nWhen replaying your notebook, Kui will render the title as the name of the Tab in which the notebook is rendered.\n\nKui will also show the message `Now playing: [title]` at the bottom status stripe. "
               }
             },
             "historyIdx": 147,
-            "cwd": "~/Workspace8/kui",
-            "command": "# ## How to Save with Title\\n\\nTo save a notebook with title, you can try the following command:\\n\\n ```bash\\n snapshot [filename] --title [title]\\n ```\\n \\nWhen replaying your notebook, Kui will then render the title as a Tab name. \\n\\nKui will also show the message `Now playing: [title]` at the bottom status stripe. ",
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ### Saving your Notebook\\n\\nUse File->Save to save your notebook to disk. Then use File->Open to view it again. The serialized notebook is JSON.\\n\\nTo give a title to your notebook, for now edit the JSON to add a `metadata.name` field.\\n \\nWhen replaying your notebook, Kui will render the title as the name of the Tab in which the notebook is rendered.\\n\\nKui will also show the message `Now playing: [title]` at the bottom status stripe. ",
             "startEvent": {
               "route": "/#",
               "startTime": 1603312183146,
-              "command": "# ## How to Save with Title\\n\\nTo save a notebook with title, you can try the following command:\\n\\n ```bash\\n snapshot [filename] --title [title]\\n ```\\n \\nWhen replaying your notebook, Kui will then render the title as a Tab name. \\n\\nKui will also show the message `Now playing: [title]` at the bottom status stripe. ",
+              "command": "# ### Saving your Notebook\\n\\nUse File->Save to save your notebook to disk. Then use File->Open to view it again. The serialized notebook is JSON.\\n\\nTo give a title to your notebook, for now edit the JSON to add a `metadata.name` field.\\n \\nWhen replaying your notebook, Kui will render the title as the name of the Tab in which the notebook is rendered.\\n\\nKui will also show the message `Now playing: [title]` at the bottom status stripe. ",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -132,17 +128,17 @@
                 "plugin": "plugin-client-common"
               },
               "execType": 0,
-              "execUUID": "e10111f7-4ad4-4fc0-9800-369156f69a03"
+              "execUUID": "15b56ec4-94ae-44d8-a7b2-2191f3478622"
             },
             "completeEvent": {
               "execType": 0,
               "completeTime": 1603312183165,
-              "command": "# ## How to Save with Title\\n\\nTo save a notebook with title, you can try the following command:\\n\\n ```bash\\n snapshot [filename] --title [title]\\n ```\\n \\nWhen replaying your notebook, Kui will then render the title as a Tab name. \\n\\nKui will also show the message `Now playing: [title]` at the bottom status stripe. ",
+              "command": "# ### Saving your Notebook\\n\\nUse File->Save to save your notebook to disk. Then use File->Open to view it again. The serialized notebook is JSON.\\n\\nTo give a title to your notebook, for now edit the JSON to add a `metadata.name` field.\\n \\nWhen replaying your notebook, Kui will render the title as the name of the Tab in which the notebook is rendered.\\n\\nKui will also show the message `Now playing: [title]` at the bottom status stripe. ",
               "argvNoOptions": ["#", "  ## How to Save a Notebook with Title"],
               "parsedOptions": {
                 "_": ["#", "  ## How to Save a Notebook with Title"]
               },
-              "execUUID": "e10111f7-4ad4-4fc0-9800-369156f69a03",
+              "execUUID": "15b56ec4-94ae-44d8-a7b2-2191f3478622",
               "cancelled": false,
               "evaluatorOptions": {
                 "outputOnly": true,
@@ -159,7 +155,7 @@
                 "apiVersion": "kui-shell/v1",
                 "kind": "CommentaryResponse",
                 "props": {
-                  "children": "## How to Save with Title\n\nTo save a notebook with title, you can try the following command:\n\n ```bash\n snapshot [filename] --title [title]\n ```\n \nWhen replaying your notebook, Kui will then render the title as a Tab name. \n\nKui will also show the message `Now playing: [title]` at the bottom status stripe. "
+                  "children": "### Saving your Notebook\n\nUse File->Save to save your notebook to disk. Then use File->Open to view it again. The serialized notebook is JSON.\n\nTo give a title to your notebook, for now edit the JSON to add a `metadata.name` field.\n \nWhen replaying your notebook, Kui will render the title as the name of the Tab in which the notebook is rendered.\n\nKui will also show the message `Now playing: [title]` at the bottom status stripe. "
                 }
               },
               "responseType": "ScalarResponse",
@@ -167,204 +163,33 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "e10111f7-4ad4-4fc0-9800-369156f69a03",
+            "execUUID": "15b56ec4-94ae-44d8-a7b2-2191f3478622",
+            "isSectionBreak": false,
+            "originalExecUUID": "15b56ec4-94ae-44d8-a7b2-2191f3478622",
             "startTime": 1603312183146,
-            "prefersTerminalPresentation": false,
             "outputOnly": true,
             "state": "valid-response"
           }
         ]
       },
       {
-        "uuid": "3_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
-        "inverseColors": true,
+        "uuid": "4_de257cab-7893-5d39-9f8c-248a88026a18",
         "blocks": [
           {
             "response": {
               "apiVersion": "kui-shell/v1",
               "kind": "CommentaryResponse",
               "props": {
-                "children": "## How to Make  Sections by Splits\n\nYou can divide your notebook into sections by splitting the terminal. You can do it via the split button on the top Tab stripe, or via command `split`.\n\nKui also gives you the option to split the terminal with inverse background color. For example, this section is done by command `split --inverse`."
-              }
-            },
-            "historyIdx": 148,
-            "cwd": "~/Workspace8/kui",
-            "command": "# ## How to Make  Sections by Splits\\n\\nYou can divide your notebook into sections by splitting the terminal. You can do it via the split button on the top Tab stripe, or via command `split`.\\n\\nKui also gives you the option to split the terminal with inverse background color. For example, this section is done by command `split --inverse`.",
-            "startEvent": {
-              "route": "/#",
-              "startTime": 1603312369054,
-              "command": "# ## How to Make  Sections by Splits\\n\\nYou can divide your notebook into sections by splitting the terminal. You can do it via the split button on the top Tab stripe, or via command `split`.\\n\\nKui also gives you the option to split the terminal with inverse background color. For example, this section is done by command `split --inverse`.",
-              "evaluatorOptions": {
-                "usage": {
-                  "command": "commentary",
-                  "strict": "commentary",
-                  "example": "commentary -f [<markdown file path>]",
-                  "docs": "Commentary",
-                  "optional": [
-                    {
-                      "name": "--title",
-                      "alias": "-t",
-                      "docs": "Title for the commentary"
-                    },
-                    {
-                      "name": "--file",
-                      "alias": "-f",
-                      "docs": "File that contains the texts"
-                    }
-                  ]
-                },
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execType": 0,
-              "execUUID": "3e0f5737-c9a5-4615-89ed-65d2b2180754"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1603312369083,
-              "command": "# ## How to Make  Sections by Splits\\n\\nYou can divide your notebook into sections by splitting the terminal. You can do it via the split button on the top Tab stripe, or via command `split`.\\n\\nKui also gives you the option to split the terminal with inverse background color. For example, this section is done by command `split --inverse`.",
-              "argvNoOptions": ["#", "  ## How to Divide a Notebook with Sections by Terminal Splits"],
-              "parsedOptions": {
-                "_": ["#", "  ## How to Divide a Notebook with Sections by Terminal Splits"]
-              },
-              "execUUID": "3e0f5737-c9a5-4615-89ed-65d2b2180754",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "0feb6535-4431-41e1-9fca-0960b42bdd4a",
-                "history": 148,
-                "env": {}
-              },
-              "response": {
-                "apiVersion": "kui-shell/v1",
-                "kind": "CommentaryResponse",
-                "props": {
-                  "children": "## How to Make  Sections by Splits\n\nYou can divide your notebook into sections by splitting the terminal. You can do it via the split button on the top Tab stripe, or via command `split`.\n\nKui also gives you the option to split the terminal with inverse background color. For example, this section is done by command `split --inverse`."
-                }
-              },
-              "responseType": "ScalarResponse",
-              "historyIdx": 148
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "3e0f5737-c9a5-4615-89ed-65d2b2180754",
-            "startTime": 1603312369054,
-            "prefersTerminalPresentation": false,
-            "outputOnly": true,
-            "state": "valid-response"
-          }
-        ]
-      },
-      {
-        "uuid": "3_8205f6b8-87bf-5679-ac83-e3519c17d89c",
-        "blocks": [
-          {
-            "response": {
-              "apiVersion": "kui-shell/v1",
-              "kind": "CommentaryResponse",
-              "props": {
-                "children": "## How to Update Commentary\n\n**Modify Commentary**: \n\nYou can modify commentary by double clicking a commentary response. Try double click me, and you should see an editor open.\n\n**Copy/Paste and Cut Commentary**:\n\nYou can also use keyboard shortcut to copy/paste and cut any commentary response."
-              }
-            },
-            "historyIdx": 262,
-            "cwd": "~/Workspace8/kui",
-            "command": "# ## How to Update Commentary\\n\\n**Modify Commentary**: \\n\\nYou can modify commentary by double clicking a commentary response. Try double click me, and you should see an editor open.\\n\\n**Copy/Paste and Cut Commentary**:\\n\\nYou can also use keyboard shortcut to copy/paste and cut any commentary response.",
-            "startEvent": {
-              "route": "/#",
-              "startTime": 1603311981791,
-              "command": "# ## How to Update Commentary\\n\\n**Modify Commentary**: \\n\\nYou can modify commentary by double clicking a commentary response. Try double click me, and you should see an editor open.\\n\\n**Copy/Paste and Cut Commentary**:\\n\\nYou can also use keyboard shortcut to copy/paste and cut any commentary response.",
-              "evaluatorOptions": {
-                "usage": {
-                  "command": "commentary",
-                  "strict": "commentary",
-                  "example": "commentary -f [<markdown file path>]",
-                  "docs": "Commentary",
-                  "optional": [
-                    {
-                      "name": "--title",
-                      "alias": "-t",
-                      "docs": "Title for the commentary"
-                    },
-                    {
-                      "name": "--file",
-                      "alias": "-f",
-                      "docs": "File that contains the texts"
-                    }
-                  ]
-                },
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execType": 0,
-              "execUUID": "46a78b5e-4d09-4fbc-9d90-e30bb52f3c3f"
-            },
-            "completeEvent": {
-              "execType": 0,
-              "completeTime": 1603311981817,
-              "command": "# ## How to Update Commentary\\n\\n**Modify Commentary**: \\n\\nYou can modify commentary by double clicking a commentary response. Try double click me, and you should see an editor open.\\n\\n**Copy/Paste and Cut Commentary**:\\n\\nYou can also use keyboard shortcut to copy/paste and cut any commentary response.",
-              "argvNoOptions": [
-                "#",
-                "  You can also modify the commentary by double clicking the commentary response."
-              ],
-              "parsedOptions": {
-                "_": ["#", "  You can also modify the commentary by double clicking the commentary response."]
-              },
-              "execUUID": "46a78b5e-4d09-4fbc-9d90-e30bb52f3c3f",
-              "cancelled": false,
-              "evaluatorOptions": {
-                "outputOnly": true,
-                "plugin": "plugin-client-common"
-              },
-              "execOptions": {
-                "type": 0,
-                "language": "en-US",
-                "execUUID": "121f4d68-699c-491e-a477-9eae3c06b9e8",
-                "history": 262,
-                "env": {}
-              },
-              "response": {
-                "apiVersion": "kui-shell/v1",
-                "kind": "CommentaryResponse",
-                "props": {
-                  "children": "## How to Update Commentary\n\n**Modify Commentary**: \n\nYou can modify commentary by double clicking a commentary response. Try double click me, and you should see an editor open.\n\n**Copy/Paste and Cut Commentary**:\n\nYou can also use keyboard shortcut to copy/paste and cut any commentary response."
-                }
-              },
-              "responseType": "ScalarResponse",
-              "historyIdx": 262
-            },
-            "isExperimental": false,
-            "isReplay": true,
-            "execUUID": "46a78b5e-4d09-4fbc-9d90-e30bb52f3c3f",
-            "startTime": 1603311981791,
-            "prefersTerminalPresentation": false,
-            "outputOnly": true,
-            "state": "valid-response"
-          }
-        ]
-      },
-      {
-        "uuid": "3_de257cab-7893-5d39-9f8c-248a88026a18",
-        "blocks": [
-          {
-            "response": {
-              "apiVersion": "kui-shell/v1",
-              "kind": "CommentaryResponse",
-              "props": {
-                "children": "##  How to Craft Commentary\n\nThere're two ways to craft commentary:\n\n- Make commentary using existing Markdown file\n- Live edit commentary using Kui's commentary editor\n\n\n\nTo pass a Markdown file to Kui, you can try the following command:\n\n```bash\ncommentary -f [filepath]\n```\n\nTo live edit a commentary, you can try command `#` and craft your commentary in a Monaco Editor.\n\n```bash\n#\n```\n\nYou can also pass a Markdown string direclty to Kui. For example:\n\n```bash\n# **hello world!** \n````"
+                "children": "## Crafting Commentary\n\nIt helps to weave a story around your commands. In Kui, you may do this with Commentary blocks. To pass a Markdown file to Kui, you can try the following command:\n\n```bash\ncommentary -f [filepath]\n```\n\nTo live edit a Commentary block, use the `#` command. You should see an editor pop up, which gives you a preview of your commentary as you type in the editor.\n\nFor one-liners, you can also pass a Markdown string direclty to Kui. For example:\n\n```bash\n# **hello world!** \n````"
               }
             },
             "historyIdx": 252,
             "cwd": "~/Workspace8/kui",
-            "command": "# ##  How to Craft Commentary\\n\\nThere're two ways to craft commentary:\\n\\n- Make commentary using existing Markdown file\\n- Live edit commentary using Kui's commentary editor\\n\\n\\n\\nTo pass a Markdown file to Kui, you can try the following command:\\n\\n```bash\\ncommentary -f [filepath]\\n```\\n\\nTo live edit a commentary, you can try command `#` and craft your commentary in a Monaco Editor.\\n\\n```bash\\n#\\n```\\n\\nYou can also pass a Markdown string direclty to Kui. For example:\\n\\n```bash\\n# **hello world!** \\n````",
+            "command": "# ## Crafting Commentary\\n\\nIt helps to weave a story around your commands. In Kui, you may do this with Commentary blocks. To pass a Markdown file to Kui, you can try the following command:\\n\\n```bash\\ncommentary -f [filepath]\\n```\\n\\nTo live edit a Commentary block, use the `#` command. You should see an editor pop up, which gives you a preview of your commentary as you type in the editor.\\n\\nFor one-liners, you can also pass a Markdown string direclty to Kui. For example:\\n\\n```bash\\n# **hello world!** \\n````",
             "startEvent": {
               "route": "/#",
               "startTime": 1603311220661,
-              "command": "# ##  How to Craft Commentary\\n\\nThere're two ways to craft commentary:\\n\\n- Make commentary using existing Markdown file\\n- Live edit commentary using Kui's commentary editor\\n\\n\\n\\nTo pass a Markdown file to Kui, you can try the following command:\\n\\n```bash\\ncommentary -f [filepath]\\n```\\n\\nTo live edit a commentary, you can try command `#` and craft your commentary in a Monaco Editor.\\n\\n```bash\\n#\\n```\\n\\nYou can also pass a Markdown string direclty to Kui. For example:\\n\\n```bash\\n# **hello world!** \\n````",
+              "command": "# ## Crafting Commentary\\n\\nIt helps to weave a story around your commands. In Kui, you may do this with Commentary blocks. To pass a Markdown file to Kui, you can try the following command:\\n\\n```bash\\ncommentary -f [filepath]\\n```\\n\\nTo live edit a Commentary block, use the `#` command. You should see an editor pop up, which gives you a preview of your commentary as you type in the editor.\\n\\nFor one-liners, you can also pass a Markdown string direclty to Kui. For example:\\n\\n```bash\\n# **hello world!** \\n````",
               "evaluatorOptions": {
                 "usage": {
                   "command": "commentary",
@@ -393,7 +218,7 @@
             "completeEvent": {
               "execType": 0,
               "completeTime": 1603311220670,
-              "command": "# ##  How to Craft Commentary\\n\\nThere're two ways to craft commentary:\\n\\n- Make commentary using existing Markdown file\\n- Live edit commentary using Kui's commentary editor\\n\\n\\n\\nTo pass a Markdown file to Kui, you can try the following command:\\n\\n```bash\\ncommentary -f [filepath]\\n```\\n\\nTo live edit a commentary, you can try command `#` and craft your commentary in a Monaco Editor.\\n\\n```bash\\n#\\n```\\n\\nYou can also pass a Markdown string direclty to Kui. For example:\\n\\n```bash\\n# **hello world!** \\n````",
+              "command": "# ## Crafting Commentary\\n\\nIt helps to weave a story around your commands. In Kui, you may do this with Commentary blocks. To pass a Markdown file to Kui, you can try the following command:\\n\\n```bash\\ncommentary -f [filepath]\\n```\\n\\nTo live edit a Commentary block, use the `#` command. You should see an editor pop up, which gives you a preview of your commentary as you type in the editor.\\n\\nFor one-liners, you can also pass a Markdown string direclty to Kui. For example:\\n\\n```bash\\n# **hello world!** \\n````",
               "argvNoOptions": ["#"],
               "parsedOptions": {
                 "_": ["#"]
@@ -426,6 +251,431 @@
             "execUUID": "549098c1-2625-4d12-a646-0728fb8051bb",
             "startTime": 1603311220661,
             "prefersTerminalPresentation": false,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "### Updating Commentary\n\nYou can modify commentary by double clicking a Commentary block. Try double clicking me, and you should see an editor open. \n\n> **Keyboard Shortcuts**\n>\n> When editing commentary, use **Shift-Enter** as a keyboard shortcut for the Done button, and **Escape** as a keyboard shortcut for the Cancel button."
+              }
+            },
+            "historyIdx": 250,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ### Updating Commentary\\n\\nYou can modify commentary by double clicking a Commentary block. Try double clicking me, and you should see an editor open. \\n\\n> **Keyboard Shortcuts**\\n>\\n> When editing commentary, use **Shift-Enter** as a keyboard shortcut for the Done button, and **Escape** as a keyboard shortcut for the Cancel button.",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1633042448136,
+              "command": "# ### Updating Commentary\\n\\nYou can modify commentary by double clicking a Commentary block. Try double clicking me, and you should see an editor open. \\n\\n> **Keyboard Shortcuts**\\n>\\n> When editing commentary, use **Shift-Enter** as a keyboard shortcut for the Done button, and **Escape** as a keyboard shortcut for the Cancel button.",
+              "redirectDesired": false,
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--base-url",
+                      "alias": "-b",
+                      "docs": "Base URL for images"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "b0933e64-3ab2-4be3-b42c-0e03011b7e60",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "b0933e64-3ab2-4be3-b42c-0e03011b7e60",
+                "history": 250,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1633042448168,
+              "command": "# ### Updating Commentary\\n\\nYou can modify commentary by double clicking a Commentary block. Try double clicking me, and you should see an editor open. \\n\\n> **Keyboard Shortcuts**\\n>\\n> When editing commentary, use **Shift-Enter** as a keyboard shortcut for the Done button, and **Escape** as a keyboard shortcut for the Cancel button.",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "execUUID": "b0933e64-3ab2-4be3-b42c-0e03011b7e60",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "b0933e64-3ab2-4be3-b42c-0e03011b7e60",
+                "history": 250,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "### Updating Commentary\n\nYou can modify commentary by double clicking a Commentary block. Try double clicking me, and you should see an editor open. \n\n> **Keyboard Shortcuts**\n>\n> When editing commentary, use **Shift-Enter** as a keyboard shortcut for the Done button, and **Escape** as a keyboard shortcut for the Cancel button."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 250
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "b0933e64-3ab2-4be3-b42c-0e03011b7e60",
+            "isSectionBreak": false,
+            "originalExecUUID": "b0933e64-3ab2-4be3-b42c-0e03011b7e60",
+            "startTime": 1633042448136,
+            "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "4_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Creating Splits\n\nYou can divide your notebook into sections by splitting the terminal, via the split button at the top of the Kui window. Note how the left-hand column of this notebook has has **inverse colors**. Click on the \"Contrast\" icon in the header of *any* split that you wish to use inverse colors.\n\nWhen you save your notebook, both the split layout and inverse color schemes will be preserved."
+              }
+            },
+            "historyIdx": 251,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ## Creating Splits\\n\\nYou can divide your notebook into sections by splitting the terminal, via the split button at the top of the Kui window. Note how the left-hand column of this notebook has has **inverse colors**. Click on the \"Contrast\" icon in the header of *any* split that you wish to use inverse colors.\\n\\nWhen you save your notebook, both the split layout and inverse color schemes will be preserved.",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1633042539170,
+              "command": "# ## Creating Splits\\n\\nYou can divide your notebook into sections by splitting the terminal, via the split button at the top of the Kui window. Note how the left-hand column of this notebook has has **inverse colors**. Click on the \"Contrast\" icon in the header of *any* split that you wish to use inverse colors.\\n\\nWhen you save your notebook, both the split layout and inverse color schemes will be preserved.",
+              "redirectDesired": false,
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--base-url",
+                      "alias": "-b",
+                      "docs": "Base URL for images"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "fe37e23f-b7ce-4e61-8b82-5b7cb7b324a3",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "fe37e23f-b7ce-4e61-8b82-5b7cb7b324a3",
+                "history": 251,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1633042539178,
+              "command": "# ## Creating Splits\\n\\nYou can divide your notebook into sections by splitting the terminal, via the split button at the top of the Kui window. Note how the left-hand column of this notebook has has **inverse colors**. Click on the \"Contrast\" icon in the header of *any* split that you wish to use inverse colors.\\n\\nWhen you save your notebook, both the split layout and inverse color schemes will be preserved.",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "execUUID": "fe37e23f-b7ce-4e61-8b82-5b7cb7b324a3",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "fe37e23f-b7ce-4e61-8b82-5b7cb7b324a3",
+                "history": 251,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Creating Splits\n\nYou can divide your notebook into sections by splitting the terminal, via the split button at the top of the Kui window. Note how the left-hand column of this notebook has has **inverse colors**. Click on the \"Contrast\" icon in the header of *any* split that you wish to use inverse colors.\n\nWhen you save your notebook, both the split layout and inverse color schemes will be preserved."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 251
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "fe37e23f-b7ce-4e61-8b82-5b7cb7b324a3",
+            "isSectionBreak": false,
+            "originalExecUUID": "fe37e23f-b7ce-4e61-8b82-5b7cb7b324a3",
+            "startTime": 1633042539170,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Reordering Blocks\n\nIf you need to move a block to a better location, first click in the block you wish to move. Then hit Command/Ctrl+X to cut that block out. Then click on the block **after** your new location and hit Command/Ctrl+V to paste it into its new location"
+              }
+            },
+            "historyIdx": 251,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ## Reordering Blocks\\n\\nIf you need to move a block to a better location, first click in the block you wish to move. Then hit Command/Ctrl+X to cut that block out. Then click on the block **after** your new location and hit Command/Ctrl+V to paste it into its new location",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1633042789983,
+              "command": "# ## Reordering Blocks\\n\\nIf you need to move a block to a better location, first click in the block you wish to move. Then hit Command/Ctrl+X to cut that block out. Then click on the block **after** your new location and hit Command/Ctrl+V to paste it into its new location",
+              "redirectDesired": false,
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--base-url",
+                      "alias": "-b",
+                      "docs": "Base URL for images"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "06d694b8-be95-4f2f-a9b8-92ee43c66059",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "06d694b8-be95-4f2f-a9b8-92ee43c66059",
+                "history": 251,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1633042789995,
+              "command": "# ## Reordering Blocks\\n\\nIf you need to move a block to a better location, first click in the block you wish to move. Then hit Command/Ctrl+X to cut that block out. Then click on the block **after** your new location and hit Command/Ctrl+V to paste it into its new location",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "execUUID": "06d694b8-be95-4f2f-a9b8-92ee43c66059",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "06d694b8-be95-4f2f-a9b8-92ee43c66059",
+                "history": 251,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Reordering Blocks\n\nIf you need to move a block to a better location, first click in the block you wish to move. Then hit Command/Ctrl+X to cut that block out. Then click on the block **after** your new location and hit Command/Ctrl+V to paste it into its new location"
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 251
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "06d694b8-be95-4f2f-a9b8-92ee43c66059",
+            "isSectionBreak": false,
+            "originalExecUUID": "06d694b8-be95-4f2f-a9b8-92ee43c66059",
+            "startTime": 1633042789983,
+            "outputOnly": true,
+            "state": "valid-response"
+          },
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "CommentaryResponse",
+              "props": {
+                "children": "## Reordering Splits\n\nFor now, there is no UI for this. If you issue the command `split --swap 1 --swap 2`, Kui will swap the first and second splits. Just remember to use 1-indexed ordinals in the command."
+              }
+            },
+            "historyIdx": 251,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "# ## Reordering Splits\\n\\nFor now, there is no UI for this. If you issue the command `split --swap 1 --swap 2`, Kui will swap the first and second splits. Just remember to use 1-indexed ordinals in the command.",
+            "startEvent": {
+              "route": "/#",
+              "startTime": 1633042879346,
+              "command": "# ## Reordering Splits\\n\\nFor now, there is no UI for this. If you issue the command `split --swap 1 --swap 2`, Kui will swap the first and second splits. Just remember to use 1-indexed ordinals in the command.",
+              "redirectDesired": false,
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "evaluatorOptions": {
+                "usage": {
+                  "command": "commentary",
+                  "strict": "commentary",
+                  "example": "commentary -f [<markdown file path>]",
+                  "docs": "Commentary",
+                  "optional": [
+                    {
+                      "name": "--title",
+                      "alias": "-t",
+                      "docs": "Title for the commentary"
+                    },
+                    {
+                      "name": "--base-url",
+                      "alias": "-b",
+                      "docs": "Base URL for images"
+                    },
+                    {
+                      "name": "--file",
+                      "alias": "-f",
+                      "docs": "File that contains the texts"
+                    }
+                  ]
+                },
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execType": 0,
+              "execUUID": "be44996a-ac5e-424f-962a-5476c3c5039f",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "be44996a-ac5e-424f-962a-5476c3c5039f",
+                "history": 251,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1633042879353,
+              "command": "# ## Reordering Splits\\n\\nFor now, there is no UI for this. If you issue the command `split --swap 1 --swap 2`, Kui will swap the first and second splits. Just remember to use 1-indexed ordinals in the command.",
+              "argvNoOptions": ["#"],
+              "parsedOptions": {
+                "_": ["#"]
+              },
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["#"]],
+                "redirect": ""
+              },
+              "execUUID": "be44996a-ac5e-424f-962a-5476c3c5039f",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "outputOnly": true,
+                "noCoreRedirect": true,
+                "plugin": "plugin-client-common"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "be44996a-ac5e-424f-962a-5476c3c5039f",
+                "history": 251,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "CommentaryResponse",
+                "props": {
+                  "children": "## Reordering Splits\n\nFor now, there is no UI for this. If you issue the command `split --swap 1 --swap 2`, Kui will swap the first and second splits. Just remember to use 1-indexed ordinals in the command."
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 251
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "be44996a-ac5e-424f-962a-5476c3c5039f",
+            "isSectionBreak": false,
+            "originalExecUUID": "be44996a-ac5e-424f-962a-5476c3c5039f",
+            "startTime": 1633042879346,
             "outputOnly": true,
             "state": "valid-response"
           }
