@@ -67,13 +67,14 @@ import {
   SlidersHIcon as Sequence,
   SearchIcon as Search,
   BellIcon as Notification,
+  QuestionIcon as Unknown,
   PlayCircleIcon as Play
 } from '@patternfly/react-icons'
 
 import { Props } from '..'
 
 const size20 = { fontSize: '1rem' }
-const size32 = { fontSize: '32px', padding: '3px' }
+// const size32 = { fontSize: '32px', padding: '3px' }
 const Sidecar = { fontSize: '1.125em' }
 const StatusStripe = Sidecar
 const Pagination = { fontSize: '1.5em' }
@@ -175,13 +176,15 @@ export default function PatternFly4Icons(props: Props) {
     case 'Trash':
       return <Trash {...props} />
     case 'TerminalOnly':
-      return <TerminalOnly style={size32} {...props} />
+      return <TerminalOnly {...props} />
     case 'Theme':
       return <Theme {...props} />
-    case 'Warning':
-      return <Warning {...props} />
+    case 'Unknown':
+      return <Unknown {...props} />
     case 'Up':
       return <Up {...props} />
+    case 'Warning':
+      return <Warning {...props} />
     case 'Waiting':
       return <Waiting {...props} />
     case 'WindowClose':

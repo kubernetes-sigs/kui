@@ -117,6 +117,9 @@ body.still-loading .repl {
 }
 
 /* generic */
+.kui--float-right {
+  float: right;
+}
 .kui--invisible-overlay {
   position: absolute;
   left: 0;
@@ -272,6 +275,9 @@ code.fancy-code.hljs {
 .flex-layout {
   display: flex;
   align-items: center;
+}
+.flex-wrap {
+  flex-wrap: wrap;
 }
 .as-column {
   display: grid;
@@ -467,6 +473,9 @@ body[kui-theme-style] {
   .small-bottom-pad {
     margin-bottom: 1ex;
     display: inline-flex;
+  }
+  .all-pad {
+    padding: 1em;
   }
   .tiny-top-pad {
     margin-top: 0.125em;

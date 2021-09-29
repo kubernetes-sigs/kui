@@ -19,10 +19,10 @@ import { Tab } from '@kui-shell/core'
 interface Props {
   className?: string
   isWidthConstrained?: boolean
-  tab: Tab
+  tab?: Tab
 
   /** The titles of the accordion entries */
-  names: string[]
+  names: (string | React.ReactNode)[]
 
   /**
    * The content for the accordion entries. These are intentionally

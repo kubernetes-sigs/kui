@@ -20,6 +20,7 @@ import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import Group from '../../Group'
 import Options from '../options'
+import service from './CodeEngineService'
 
 function check(args: Arguments): Promise<string | boolean> {
   return args.REPL.qexec<string>('ibmcloud ce project current-name')
@@ -103,12 +104,15 @@ async function fix(args: Arguments<Options>) {
 
 export default {
   group: Group.Compute,
+  service,
+
   label: (checkResult?: false | string) =>
     checkResult === undefined
-      ? 'CodeEngine project'
+      ? 'Selected Project'
       : !checkResult
       ? colors.red('not selected')
       : colors.yellow(checkResult),
+  description: 'To schedule jobs against IBM CodeEngine, you will need to have a selected project',
   needsCloudLogin: true,
   onFail: 'ibmcloud ce project create --name <projectname=superproject>',
   fix,

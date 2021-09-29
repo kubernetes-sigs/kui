@@ -72,6 +72,7 @@ export default class SourceRef extends React.PureComponent<Props> {
               isWidthConstrained={this.props.isWidthConstrained}
               tab={this.props.tab}
               content={content}
+              className="no-padding"
             />
           </div>
         )

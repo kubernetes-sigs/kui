@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import Group from '../Group'
 import { Arguments } from '@kui-shell/core'
+
+import Group from '../Group'
+import service from './S3Service'
 
 async function check({ REPL }: Pick<Arguments, 'REPL'>) {
   await REPL.qexec('vfs fstat /s3/aws')
@@ -24,7 +26,10 @@ async function check({ REPL }: Pick<Arguments, 'REPL'>) {
 
 export default {
   group: Group.Storage,
-  label: 'mounted AWS',
+  service,
+
+  label: 'Valid credentials',
+  description: 'Access to your AWS S3 data is provided via the `/s3/aws` filepath',
   check,
   optional: true
 }

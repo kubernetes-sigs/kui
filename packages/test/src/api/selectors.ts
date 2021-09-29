@@ -157,9 +157,14 @@ export const SPLIT_N = (N: number, inverseColors = false) =>
   `${SPLITS}:nth-child(${N})` + (inverseColors ? INVERTED_COLORS : '')
 export const SPLIT_N_HEADER = (N: number) => `${SPLIT_N(N)} .kui--split-header`
 export const SPLIT_N_CLOSE = (N: number) => `${SPLIT_N_HEADER(N)} .kui--split-close-button`
+export const SPLIT_N_SEND_TO_BOTTOM = (N: number) => `${SPLIT_N_HEADER(N)} .kui--split-bottom-strip-toggle`
 export const SPLIT_N_CLEAR = (N: number) => `${SPLIT_N_HEADER(N)} .kui--split-clear-button`
 export const SPLIT_N_FOCUS = (N: number) => `${SPLITS}:nth-child(${N}) ${current(_PROMPT_BLOCK)} ${_PROMPT}`
 export const SPLIT_N_OUTPUT = (N: number) => `${SPLITS}:nth-child(${N}) .repl-output`
+
+export const SPLIT_N_AS_DEFAULT = (N: number) => `${SPLIT_N(N)}[data-position="default"]`
+export const SPLIT_N_AS_BOTTOM_STRIP = (N: number) => `${SPLIT_N(N)}[data-position="bottom-strip"]`
+
 export const CURRENT_PROMPT_BLOCK_FOR_SPLIT = (splitIndex: number) => `${SPLIT_N(splitIndex)} ${current(_PROMPT_BLOCK)}`
 export const CURRENT_PROMPT_FOR_SPLIT = (splitIndex: number) =>
   `${CURRENT_PROMPT_BLOCK_FOR_SPLIT(splitIndex)} ${_PROMPT}`

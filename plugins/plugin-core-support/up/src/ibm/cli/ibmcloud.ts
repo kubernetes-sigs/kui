@@ -19,6 +19,7 @@ import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import Group from '../../Group'
+import service from '../base/PublicCloudService'
 
 async function check(args: Arguments) {
   try {
@@ -36,9 +37,12 @@ async function check(args: Arguments) {
 }
 
 export default {
+  service,
   group: Group.CLI,
+
   label: (checkResult?: false | string) =>
-    checkResult === undefined ? 'ibmcloud' : !checkResult ? 'not installed' : colors.gray(checkResult),
+    checkResult === undefined ? 'IBM Cloud CLI' : !checkResult ? 'not installed' : colors.gray(checkResult),
+  description: 'The ibmcloud CLI allows access to your IBM Cloud resources',
   check,
   fix:
     process.platform === 'linux'

@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import Group from '../../Group'
 import { Arguments } from '@kui-shell/core'
+
+import Group from '../../Group'
+import service from './CosService'
 
 async function check({ REPL }: Pick<Arguments, 'REPL'>) {
   await REPL.qexec('vfs fstat /s3/ibm/default')
@@ -23,8 +25,12 @@ async function check({ REPL }: Pick<Arguments, 'REPL'>) {
 }
 
 export default {
+  service,
   group: Group.Storage,
-  label: 'mounted IBM Cloud Object Storage default region',
+
+  label: '/s3/ibm/default',
+  description:
+    'Easy access to filepaths witin your default IBM Cloud Object Storage instance is provided via /s3/ibm/default',
   needsCloudLogin: true,
   fix: 'ibmcloud cos bind',
   check

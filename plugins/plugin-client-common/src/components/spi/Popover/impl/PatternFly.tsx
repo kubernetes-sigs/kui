@@ -28,10 +28,12 @@ export default function PatternFlyPopover(props: Props) {
       maxWidth={props.maxWidth}
       minWidth={props.minWidth}
       distance={props.distance}
+      hasNoPadding={props.hasNoPadding || false}
       hasAutoWidth={props.hasAutoWidth}
-      position={props.position}
+      position={props.position || 'auto'}
       bodyContent={props.bodyContent}
       headerContent={props.headerContent}
+      footerContent={props.footerContent}
       onHide={props.onHide}
       onShow={props.onShow}
     >

@@ -60,8 +60,20 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin BottomStrip {
+  &[data-position='bottom-strip'] {
+    @content;
+  }
+}
+
 @mixin ScrollbackBlockList {
   .kui--scrollback-block-list {
+    @content;
+  }
+}
+
+@mixin ScrollbackBlockListInner {
+  .kui--scrollback-block-list-for-sizing {
     @content;
   }
 }
@@ -227,6 +239,14 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin FinishedBlockWithOutputOnly {
+  @include FinishedBlock {
+    &[data-is-output-only] {
+      @content;
+    }
+  }
+}
+
 @mixin FinishedBlockWithInputAndOutput {
   @include FinishedBlock {
     &:not([data-is-output-only]) {
@@ -368,6 +388,12 @@ $action-hover-delay: 210ms;
 /** Output portion of a Block */
 @mixin BlockOutput {
   .repl-output {
+    @content;
+  }
+}
+
+@mixin CommandOutput {
+  .repl-result {
     @content;
   }
 }

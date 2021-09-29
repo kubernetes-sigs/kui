@@ -174,3 +174,42 @@ export function focusAndValidate(this: Common.ISuite, fromSplitIndex: number, to
     }
   })
 }
+
+function checkIsBottomStrip(ctx: Common.ISuite, N: number) {
+  return ctx.app.client.$(Selectors.SPLIT_N_AS_BOTTOM_STRIP(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+}
+
+function checkIsDefault(ctx: Common.ISuite, N: number) {
+  return ctx.app.client.$(Selectors.SPLIT_N_AS_DEFAULT(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+}
+
+export function isBottomStrip(this: Common.ISuite, N: number) {
+  it(`should show split ${N} as being a bottom strip`, () => checkIsBottomStrip(this, N).catch(Common.oops(this, true)))
+}
+
+export function isDefault(this: Common.ISuite, N: number) {
+  it(`should show split ${N} as being a default strip`, () => checkIsDefault(this, N).catch(Common.oops(this, true)))
+}
+
+/** Turn a given split into a bottom-strip split */
+export function doMakeBottomStrip(this: Common.ISuite, inSplit: number, expectedSplitCount = 2) {
+  it(`should turn split ${inSplit} into a bottom strip`, async () => {
+    try {
+      await this.app.client.$(Selectors.SPLIT_N_SEND_TO_BOTTOM(inSplit)).then(_ => _.click())
+
+      await checkIsBottomStrip(this, inSplit)
+
+      // we better not have lost a split
+      await ReplExpect.splitCount(expectedSplitCount)(this.app)
+
+      // and the other splits had better still be default/regular splits
+      for (let idx = 1; idx <= expectedSplitCount; idx++) {
+        if (idx !== inSplit) {
+          await checkIsDefault(this, idx)
+        }
+      }
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
+}

@@ -22,6 +22,14 @@ $expandablesection--spacing: 0.125rem;
   }
 }
 
+@mixin ExpandableSectionIsExpanded {
+  @include ExpandableSection {
+    &.pf-m-expanded {
+      @content;
+    }
+  }
+}
+
 @mixin ExpandableSectionContent {
   @include ExpandableSection {
     .pf-c-expandable-section__content {

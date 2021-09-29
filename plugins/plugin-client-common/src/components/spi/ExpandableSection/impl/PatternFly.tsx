@@ -46,7 +46,7 @@ export default class PatternFlyExpandableSection extends React.PureComponent<Pro
 
   private toggleText() {
     return this.state.isExpanded
-      ? this.props.showLess || strings('Show Less')
+      ? this.props.showLess || this.props.showMore || strings('Show Less')
       : this.props.showMore || strings('Show More')
   }
 
