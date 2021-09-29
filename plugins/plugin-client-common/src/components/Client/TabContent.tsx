@@ -55,6 +55,9 @@ type State = Partial<WithTab> & {
   sessionInitError?: Error
   showSessionInitDone: boolean
 
+  /** Does this tab have a bottom strip layout? */
+  hasBottomStrip: boolean
+
   /** grab a ref (below) so that we can maintain focus */
   _terminal: React.RefObject<ScrollableTerminal>
 }
@@ -88,6 +91,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       tab: React.createRef(),
       sessionInit: 'NotYet',
       showSessionInitDone: true,
+      hasBottomStrip: false,
       _terminal: React.createRef()
     }
   }
@@ -224,6 +228,10 @@ export default class TabContent extends React.PureComponent<Props, State> {
     return 'Please wait while we connect to your cluster'
   }
 
+  /** Enter/exit mode where one split is displayed along the bottom */
+  private readonly _toggleBottomStripMode = () =>
+    this.setState(curState => ({ hasBottomStrip: !curState.hasBottomStrip }))
+
   /** Toggle attribute on Tab DOM */
   private readonly _toggleAttribute = (attr: string) => {
     if (this.state.tab.current) {
@@ -254,6 +262,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
               toggleAttribute={this._toggleAttribute}
               onClear={this._onClear}
               ref={this.state._terminal}
+              hasBottomStrip={this.state.hasBottomStrip}
+              willToggleBottomStripMode={this._toggleBottomStripMode}
             >
               {this.children()}
             </ScrollableTerminal>
@@ -355,7 +365,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.activateHandlers.forEach(handler => handler(this.props.active))
 
     return (
-      <div ref={this.state.tab} className={this.tabClassName()} data-tab-id={this.props.uuid}>
+      <div
+        ref={this.state.tab}
+        className={this.tabClassName()}
+        data-tab-id={this.props.uuid}
+        data-has-bottom-strip={this.state.hasBottomStrip || undefined}
+      >
         {this.body()}
       </div>
     )

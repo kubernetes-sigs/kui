@@ -22,6 +22,7 @@ import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import Group from '../../Group'
 import Options from '../options'
+import service from './PublicCloudService'
 
 async function check(args: Arguments) {
   const res = await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud target --output=json' }))
@@ -42,9 +43,12 @@ async function check(args: Arguments) {
 }
 
 export default {
-  group: Group.Cloud,
+  service,
+  group: Group.Authorization,
+
   label: (checkResult?: false | string) =>
-    checkResult === undefined ? 'ibmcloud target' : checkResult === false ? colors.red('not selected') : checkResult,
+    checkResult === undefined ? 'IBM Cloud Target' : checkResult === false ? colors.red('not selected') : checkResult,
+  description: 'You will need to specify a resource group and region target within IBM Cloud',
   needsCloudLogin: true,
   onFail: 'ibmcloud target -r <region=us-south,eu-de>',
   fix: async ({ REPL, parsedOptions }: Arguments<Options>) => {

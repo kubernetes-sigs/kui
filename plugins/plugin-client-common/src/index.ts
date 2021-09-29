@@ -49,6 +49,7 @@ export { default as Settings } from './components/Client/StatusStripe/Settings'
 export const TagWidget = React.lazy(() => import('./components/Client/StatusStripe/TagWidget'))
 export { default as DropdownWidget } from './components/Client/StatusStripe/DropdownWidget'
 export { default as KuiContext } from './components/Client/context'
+export { default as StatusVisualizer } from './components/Content/StatusVisualizer'
 
 // Content components
 export const Ansi = React.lazy(() => import('./components/Content/Scalar/Ansi'))

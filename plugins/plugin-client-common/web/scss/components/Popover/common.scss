@@ -27,7 +27,7 @@
 body[kui-theme-style] {
   @include Popover {
     min-width: 5rem;
-    max-width: 23rem; /* Carbon does not let us specify this easily via props */
+    max-width: 35rem; /* Carbon does not let us specify this easily via props */
   }
 }
 

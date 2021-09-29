@@ -400,11 +400,11 @@ describe('click and show in splits', function(this: Common.ISuite) {
   count(6)
   clickAndValidate(6)
 
-  splitTheTerminalViaButton(7)
+  /* splitTheTerminalViaButton(7)
   count(7)
   clickAndValidate(7)
 
   splitTheTerminalViaButton(8)
   count(8)
-  clickAndValidate(8)
+  clickAndValidate(8) */
 })

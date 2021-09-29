@@ -21,12 +21,14 @@ type Props = {
   maxWidth?: string
   minWidth?: string
   distance?: number
+  hasNoPadding?: boolean
   hasAutoWidth?: boolean
   triggerClassName?: string
-  position: 'top' | 'top-start' | 'top-end' | 'bottom' | 'left' | 'right' | 'auto'
+  position?: 'top' | 'top-start' | 'top-end' | 'bottom' | 'left' | 'right' | 'auto'
 
   headerContent: ReactNode
   bodyContent: ReactNode
+  footerContent?: ReactNode
   children: ReactElement
 
   onShow?: () => void

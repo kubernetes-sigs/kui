@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import Group from './Group'
 import { Observer } from 'rxjs'
-import { Arguments } from '@kui-shell/core'
+import { Arguments, ParsedOptions } from '@kui-shell/core'
 
-export type CheckerArgs = Pick<Arguments, 'REPL' | 'createErrorStream'>
+import Group from './Group'
+import Service from './Service'
+
+export type CheckerArgs<O extends ParsedOptions = ParsedOptions> = Pick<
+  Arguments<O>,
+  'REPL' | 'createErrorStream' | 'createOutputStream' | 'parsedOptions'
+>
 
 export type CheckResultSuccess = true | string
 export type CheckResult = CheckResultSuccess | false
@@ -27,9 +32,12 @@ export type Stdout = NodeJS.WriteStream & NodeJS.WritableStream
 
 type Checker<T extends CheckResult = CheckResult> = {
   group: Group
+  service: Service
+
   check: (args: CheckerArgs, obs: Observer<string>) => T | Promise<T>
   label: string | ((checkResult: T) => string)
-  fix?: string | ((args: Arguments, onInit: Arguments['execOptions']['onInit']) => T | Promise<T>)
+  description: string // FIXME not optional
+  fix?: string | ((args: CheckerArgs, onInit: Arguments['execOptions']['onInit']) => T | Promise<T>)
   needsCloudLogin?: boolean
   optional?: boolean
 }

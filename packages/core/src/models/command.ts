@@ -106,6 +106,9 @@ export interface CommandOptions extends CapabilityRequirements {
    *
    */
   outputOnly?: boolean
+
+  /** When this command is being replayed, prefer to re-execute if possible */
+  preferReExecute?: boolean
 }
 
 export interface Event {

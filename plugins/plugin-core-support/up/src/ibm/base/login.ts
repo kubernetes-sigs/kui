@@ -19,6 +19,7 @@ import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import Group from '../../Group'
 import Options from '../options'
+import service from './PublicCloudService'
 
 async function check(args: Arguments) {
   await doExecWithStdoutViaPty(Object.assign({}, args, { command: 'ibmcloud account show' }))
@@ -26,8 +27,11 @@ async function check(args: Arguments) {
 }
 
 export default {
-  group: Group.Cloud,
-  label: 'ibmcloud login',
+  service,
+  group: Group.Authorization,
+
+  label: 'IBM Cloud Login',
+  description: 'You will need a valid token to access the IBM Cloud',
   needsCloudLogin: true,
   onFail: 'ibmcloud login',
   fix: async ({ REPL, parsedOptions }: Arguments<Options>, onInit: Arguments['execOptions']['onInit']) => {

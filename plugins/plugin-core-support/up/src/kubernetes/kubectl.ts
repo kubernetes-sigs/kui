@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import colors from 'colors/safe'
+// import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import Group from '../Group'
+import service from './KubectlService'
 
 async function check(args: Arguments) {
   try {
@@ -32,9 +33,12 @@ async function check(args: Arguments) {
 }
 
 export default {
+  service,
   group: Group.CLI,
-  label: (checkResult?: false | string) =>
-    checkResult === undefined ? 'kubectl' : !checkResult ? 'not installed' : colors.gray(checkResult),
+  label: 'kubectl',
+  // (checkResult?: false | string) =>
+  //    checkResult === undefined ? 'Installed' : !checkResult ? 'not installed' : colors.gray(checkResult),
+  description: 'The kubectl CLI allows access to your Kubernetes clusters',
   check,
   fix:
     process.platform === 'linux'

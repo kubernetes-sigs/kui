@@ -15,14 +15,14 @@
  */
 
 import React from 'react'
-import { maybeKuiLink } from '@kui-shell/core'
+import { maybeKuiLink, StatusModelStatus } from '@kui-shell/core'
 
 import Icons, { SupportedIcon } from '../spi/Icons'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
 
 import '../../../web/scss/components/ProgressStepper/_index.scss'
 
-type Status = 'blank' | 'info' | 'minor' | 'current' | 'pending' | 'in-progress' | 'success' | 'warning' | 'error'
+type Status = StatusModelStatus | 'blank' | 'info' | 'minor' | 'current' | 'pending'
 
 function isStatus(status: string): status is Status {
   return (
@@ -34,7 +34,8 @@ function isStatus(status: string): status is Status {
     status === 'in-progress' ||
     status === 'success' ||
     status === 'warning' ||
-    status === 'error'
+    status === 'error' ||
+    status === 'unknown'
   )
 }
 
@@ -43,7 +44,7 @@ type ProgressStepProps = React.PropsWithChildren<{
   className?: string
   title: React.ReactNode
 
-  defaultStatus: Status
+  defaultStatus: Status | Promise<Status>
   liveStatusChannel?: string
 }>
 
@@ -56,7 +57,16 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
     super(props)
 
     this.state = {
-      status: props.defaultStatus
+      status: typeof props.defaultStatus === 'string' ? props.defaultStatus : 'in-progress'
+    }
+
+    if (typeof props.defaultStatus !== 'string') {
+      setTimeout(async () => {
+        if (typeof props.defaultStatus !== 'string') {
+          const status = await props.defaultStatus
+          this.setState({ status })
+        }
+      })
     }
   }
 
@@ -66,7 +76,8 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
     blank: { icon: '' },
     success: { icon: 'Checkmark' },
     warning: { icon: 'Warning', className: 'yellow-text' },
-    error: { icon: 'Error', className: 'yellow-text' },
+    error: { icon: 'Error', className: 'red-text' },
+    unknown: { icon: 'Unknown', className: 'yellow-text' },
     current: { icon: 'Current' },
     pending: { icon: undefined },
     'in-progress': { icon: 'InProgress' }

@@ -54,7 +54,7 @@ $split-bgcolor: var(--color-repl-background);
   flex: 1;
   display: flex;
   overflow: hidden;
-  .kui--scrollback-block-list-for-sizing {
+  @include ScrollbackBlockListInner {
     flex: 1;
     overflow: auto;
   }

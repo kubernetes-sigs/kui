@@ -19,6 +19,8 @@ import { Arguments, encodeComponent } from '@kui-shell/core'
 
 import Group from '../../Group'
 import Options from '../options'
+import service from './CosService'
+import { CheckerArgs } from '../../Checker'
 
 /** @return a --cos-instance command line option, if specified */
 function cosinstance(parsedOptions: Arguments<Options>['parsedOptions']) {
@@ -28,18 +30,21 @@ function cosinstance(parsedOptions: Arguments<Options>['parsedOptions']) {
   return cosinstance
 }
 
-function check({ REPL, parsedOptions }: Pick<Arguments<Options>, 'REPL' | 'parsedOptions' | 'createErrorStream'>) {
+function check({ REPL, parsedOptions }: CheckerArgs<Options>) {
   return REPL.qexec<string>(`ibmcloud cos validate --output name ${cosinstance(parsedOptions)}`)
 }
 
 export default {
+  service,
   group: Group.Storage,
+
   label: (checkResult?: false | string) =>
     checkResult === undefined
-      ? 'IBM Cloud Object Storage credentials'
+      ? 'Valid credentials'
       : !checkResult
       ? colors.red('not configured')
       : colors.yellow(checkResult),
+  description: 'Valid HMAC credentials are needed to access your IBM Cloud Object Storage data',
   needsCloudLogin: true,
   fix: async (args: Arguments<Options>) => {
     await args.REPL.qexec(`ibmcloud cos bind ${cosinstance(args.parsedOptions)}`)

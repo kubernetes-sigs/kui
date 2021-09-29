@@ -30,9 +30,9 @@ $row-height: 1.5em;
   --kui--font-factor: 0.8125/0.875;
 
   /* No "Brand" */
-  @include HeaderNameContainer {
+  /* @include HeaderNameContainer {
     display: none;
-  }
+  } */
 
   @include SideBySide {
     @include LightweightBlocks;

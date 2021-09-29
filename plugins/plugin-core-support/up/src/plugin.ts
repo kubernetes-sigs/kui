@@ -18,6 +18,7 @@ import { Registrar } from '@kui-shell/core'
 
 import Up from './up'
 
-export default function registerUp(registrar: Registrar) {
+export default async function registerUp(registrar: Registrar) {
   registrar.listen('/up', Up, { flags: { boolean: ['fix', 'sso'] } })
+  await import(/* webpackMode: "lazy" */ './prereqs').then(_ => _.default(registrar))
 }

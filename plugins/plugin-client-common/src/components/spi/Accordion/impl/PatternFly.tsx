@@ -47,7 +47,7 @@ export default class PatternFlyAccordion extends React.PureComponent<Props, Stat
     return (
       <Accordion
         asDefinitionList={false}
-        className={`kui--accordion ${this.props.isWidthConstrained ? 'flex-fill' : ''}`}
+        className={`kui--accordion ${this.props.className || ''} ${this.props.isWidthConstrained ? 'flex-fill' : ''}`}
       >
         {this.props.names.map((name, idx) => (
           <div key={idx} className="kui--accordion-item">
@@ -55,13 +55,20 @@ export default class PatternFlyAccordion extends React.PureComponent<Props, Stat
             <AccordionItem>
               <AccordionToggle
                 id={idx.toString()}
+                className="kui--accordion-toggle"
                 onClick={() => {
                   this.setState(curState => ({ expandedIdx: curState.expandedIdx !== idx ? idx : -1 }))
-                  eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
+                  if (this.props.tab) {
+                    eventBus.emitTabLayoutChange(getPrimaryTabId(this.props.tab))
+                  }
                 }}
                 isExpanded={this.state.expandedIdx === idx}
               >
-                {this.state.expandedIdx !== idx ? strings('Show X', name) : strings('Hide X', name)}
+                {typeof name !== 'string'
+                  ? name
+                  : this.state.expandedIdx !== idx
+                  ? strings('Show X', name)
+                  : strings('Hide X', name)}
               </AccordionToggle>
               {this.content(idx)}
             </AccordionItem>
