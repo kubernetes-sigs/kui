@@ -385,6 +385,11 @@ export function hasStartEvent(block: BlockModel): block is BlockModel & WithComm
   return !isAnnouncement(block) && (isProcessing(block) || isOk(block) || isOops(block))
 }
 
+/** @return whether the output of this command execution be redirected to a file */
+export function isOutputRedirected(block: BlockModel): boolean {
+  return hasStartEvent(block) && block.startEvent.redirectDesired
+}
+
 /** @return whether the block is section break */
 export function isSectionBreak(block: BlockModel): block is CompleteBlock & WithSectionBreak {
   return isOk(block) && block.isSectionBreak
