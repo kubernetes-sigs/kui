@@ -15,3 +15,4 @@ kui/tests
 */node_modules/trie-search/dictionary.json
 */node_modules/rxjs/src
 */node_modules/@kui-shell/*/web/*
+*/packages/builder/*
