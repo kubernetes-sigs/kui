@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.2](https://github.com/IBM/kui/compare/v10.6.1...v10.6.2) (2021-09-30)
+
+### Features
+
+- **packages/proxy:** add curl, sed, and git to the kuishell/kui image ([4dcf8ac](https://github.com/IBM/kui/commit/4dcf8ac))
+
 ## [10.6.1](https://github.com/IBM/kui/compare/v10.6.0...v10.6.1) (2021-09-28)
 
 ### Bug Fixes
