@@ -29,6 +29,9 @@ export interface CommandStartEvent {
   echo: boolean
   evaluatorOptions: CommandOptions
   pipeStages: CommandLine['pipeStages']
+
+  /** The output will be redirected to a file; do not display any live output */
+  redirectDesired: boolean
 }
 
 export type ResponseType = 'MultiModalResponse' | 'NavResponse' | 'ScalarResponse' | 'Incomplete' | 'Error'

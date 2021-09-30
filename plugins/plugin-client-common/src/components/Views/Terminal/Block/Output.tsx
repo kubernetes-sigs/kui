@@ -53,6 +53,7 @@ import {
   isCancelled,
   isEmpty,
   isOutputOnly,
+  isOutputRedirected,
   isOops,
   isReplay,
   isWithCompleteEvent
@@ -120,6 +121,8 @@ export default class Output extends React.PureComponent<Props, State> {
     if (hasUUID(this.props.model)) {
       const tabUUID = this.props.uuid
       const execUUID = this.props.model.execUUID
+
+      // done with this part... not done with all parts
       const done = () => {
         this.props.onRender()
         eventChannelUnsafe.emit(`/command/stdout/done/${tabUUID}/${execUUID}`)
@@ -134,21 +137,33 @@ export default class Output extends React.PureComponent<Props, State> {
           nStreamingOutputs: 0
         }
       } else {
-        this.streamingOutput.push(part)
-        setTimeout(() => {
-          this.setState({
-            nStreamingOutputs: this.streamingOutput.length
-          })
-          setTimeout(done, 10)
-        }, 10)
+        if (isOutputRedirected(this.props.model)) {
+          // if we were asked to redirect to a file, then we can
+          // immediately indicate that we are done with this part
+          done()
+        } else {
+          this.streamingOutput.push(part)
+
+          // use setTimeout to introduce hysteresis, so we aren't
+          // forcing a react re-render for a bunch of tiny streaming
+          // updates
+          setTimeout(() => {
+            this.setState({
+              nStreamingOutputs: this.streamingOutput.length
+            })
+            setTimeout(done, 10)
+          }, 10)
+        }
       }
     }
   }
 
   public static getDerivedStateFromProps(props: Props, state: State) {
     if (isProcessing(props.model) && !state.alreadyListen) {
+      // listen for streaming output (unless the output has been redirected to a file)
       const tabUUID = props.uuid
       eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+
       return {
         alreadyListen: true,
         isResultRendered: false,
