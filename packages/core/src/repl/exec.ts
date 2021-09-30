@@ -374,7 +374,7 @@ class InProcessExecutor implements Executor {
         tab,
         route: evaluator.route,
         startTime,
-        command,
+        command: commandUntrimmed,
         pipeStages,
         evaluatorOptions,
         execType,
