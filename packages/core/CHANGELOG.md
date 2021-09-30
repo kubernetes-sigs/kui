@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.3](https://github.com/IBM/kui/compare/v10.6.2...v10.6.3) (2021-09-30)
+
+### Bug Fixes
+
+- redirect to a file also echos the output to the kui terminal ([a2c553f](https://github.com/IBM/kui/commit/a2c553f)), closes [#8089](https://github.com/IBM/kui/issues/8089)
+- **packages/core:** click to edit command line with redirect, and the input edit is missing the redirect part ([09401cc](https://github.com/IBM/kui/commit/09401cc)), closes [#8090](https://github.com/IBM/kui/issues/8090)
+
 ## [10.6.2](https://github.com/IBM/kui/compare/v10.6.1...v10.6.2) (2021-09-30)
 
 **Note:** Version bump only for package @kui-shell/core
