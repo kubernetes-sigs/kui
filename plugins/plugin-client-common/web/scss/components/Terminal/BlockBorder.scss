@@ -36,26 +36,24 @@
     background-color: $focus-color;
   }
 
-  &:focus,
-  &[data-is-focused] {
+  @include BlockFocusAttributes {
     @include BlockBorder {
       opacity: 1;
       background-color: $focus-color;
     }
   }
 }
-@include Block {
-  &:focus,
-  &[data-is-focused] {
-    @include BlockBorder {
-      opacity: 1;
-      background-color: var(--color-table-border3);
-    }
+@include FocusedBlock {
+  @include BlockBorder {
+    opacity: 1;
+    background-color: var(--color-table-border3);
   }
 }
 @include ErrorBlock {
-  @include BlockBorder {
-    opacity: 0.625;
-    background-color: var(--color-red);
+  @include BlockNotFocusedAttributes {
+    @include BlockBorder {
+      opacity: 0.625;
+      background-color: var(--color-red);
+    }
   }
 }
