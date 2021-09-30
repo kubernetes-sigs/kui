@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.4](https://github.com/IBM/kui/compare/v10.6.3...v10.6.4) (2021-09-30)
+
+### Features
+
+- **plugins/plugin-client-common:** Support a "progress stepper" UI in the Markdown component ([641c1e3](https://github.com/IBM/kui/commit/641c1e3)), closes [#8091](https://github.com/IBM/kui/issues/8091)
+
 ## [10.6.3](https://github.com/IBM/kui/compare/v10.6.2...v10.6.3) (2021-09-30)
 
 ### Bug Fixes

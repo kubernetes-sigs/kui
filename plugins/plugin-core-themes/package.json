@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-core-themes",
-  "version": "10.6.3",
+  "version": "10.6.4",
   "description": "Kui plugin offering a standard set of themes",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
