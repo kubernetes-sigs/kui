@@ -14,12 +14,28 @@
  * limitations under the License.
  */
 
+@use 'sass:math';
 @import 'mixins';
+
+$minor-step-size: 0.6875rem;
 
 @include ProgressStep {
   .kui--link-status--icon {
     /* ProgressStep takes care of the status UI, no need for LinkStatus */
     display: none;
+  }
+
+  @include Minor {
+    @include Icon {
+      width: $minor-step-size;
+      height: $minor-step-size;
+      background-color: var(--color-base04);
+      left: calc((var(--pf-c-progress-stepper__step-icon--Width) - #{$minor-step-size}) / 2);
+      position: absolute;
+    }
+    @include Main {
+      margin-top: math.div($minor-step-size, -2);
+    }
   }
 }
 
