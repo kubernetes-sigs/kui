@@ -35,6 +35,7 @@ $bgcolor: var(--color-base06);
 
     h3 {
       padding-bottom: 0;
+      line-height: 1.625em;
     }
     h3 + h4 {
       padding-top: 0;
@@ -64,6 +65,7 @@ $bgcolor: var(--color-base06);
   & > div {
     color: $color;
     background-color: $bgcolor;
+    filter: brightness(2);
   }
 
   h1,

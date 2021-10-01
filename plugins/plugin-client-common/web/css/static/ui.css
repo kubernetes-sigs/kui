@@ -898,10 +898,15 @@ $kui--page-content-paragraph-padding: 0.375em;
   margin-top: 0;
   padding-top: 0;
 }
+.repl {
+  .page-content h3,
+  .page-h3 {
+    color: var(--color-text-01);
+  }
+}
 .page-content h3,
 .page-h3 {
   font-family: var(--font-sans-serif-title);
-  color: var(--color-text-01);
   font-size: 1.375em;
   font-weight: 300;
   letter-spacing: 0;
