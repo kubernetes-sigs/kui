@@ -203,7 +203,7 @@ export default class Tab extends React.PureComponent<Props, State> {
           )}
           {!this.isUsingCommandName() && <span className="kui--tab--label-index"></span>}
         </div>
-
+        {/* TODO: button to toggle edit mode could */}
         {this.props.closeable && (
           <React.Fragment>
             <div className="kui--tab-close" ref={this.closeTabRef} onClick={this._onClickCloseButton}>
