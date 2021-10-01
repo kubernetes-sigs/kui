@@ -17,24 +17,42 @@
 @use 'sass:math';
 @import 'mixins';
 
+$major-step-size: 1.5rem;
 $minor-step-size: 0.6875rem;
+$minor-step-color: var(--color-base05);
 
+@include ProgressStepper {
+  &.pf-c-progress-stepper {
+    --pf-c-progress-stepper__step-icon--Width: #{$major-step-size};
+  }
+}
+
+/* ProgressStep takes care of the status UI, no need for LinkStatus */
 @include ProgressStep {
   .kui--link-status--icon {
-    /* ProgressStep takes care of the status UI, no need for LinkStatus */
     display: none;
+  }
+}
+
+/** Some @starpit overrides */
+@include ProgressStep {
+  @include Icon {
+    border: none;
+  }
+
+  @include Main {
+    margin-left: 0.5rem;
   }
 
   @include Minor {
     @include Icon {
       width: $minor-step-size;
       height: $minor-step-size;
-      background-color: var(--color-base04);
-      left: calc((var(--pf-c-progress-stepper__step-icon--Width) - #{$minor-step-size}) / 2);
-      position: absolute;
+      background-color: $minor-step-color;
+      margin-left: calc((var(--pf-c-progress-stepper__step-icon--Width) - #{$minor-step-size}) / 2);
     }
     @include Main {
-      margin-top: math.div($minor-step-size, -2);
+      margin-top: math.div($minor-step-size, -4);
     }
   }
 }
@@ -193,20 +211,6 @@ $minor-step-size: 0.6875rem;
     --pf-c-progress-stepper__step--m-current__step-title--FontWeight
   );
   --pf-c-progress-stepper__step-title--Color: var(--pf-c-progress-stepper__step--m-current__step-title--Color);
-}
-
-.pf-c-progress-stepper__step:not(:last-of-type) > .pf-c-progress-stepper__step-connector:before {
-  position: absolute;
-  top: var(--pf-c-progress-stepper__step-connector--before--Top);
-  left: var(--pf-c-progress-stepper__step-connector--before--Left);
-  width: var(--pf-c-progress-stepper__step-connector--before--Width);
-  height: var(--pf-c-progress-stepper__step-connector--before--Height);
-  content: '';
-  border-right: var(--pf-c-progress-stepper__step-connector--before--BorderRightWidth) solid
-    var(--pf-c-progress-stepper__step-connector--before--BorderRightColor);
-  border-bottom: var(--pf-c-progress-stepper__step-connector--before--BorderBottomWidth) solid
-    var(--pf-c-progress-stepper__step-connector--before--BorderBottomColor);
-  transform: var(--pf-c-progress-stepper__step-connector--before--Transform);
 }
 
 .pf-c-progress-stepper__step-connector {
