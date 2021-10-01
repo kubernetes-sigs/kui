@@ -171,6 +171,7 @@
 }
 @include CommentaryCard {
   display: flex;
+  font-family: var(--font-sans-serif);
   @include Card {
     flex: 1;
     box-shadow: none;
