@@ -228,7 +228,12 @@ export class TestTable {
           )
           await cell.waitForExist({ timeout: 10000 })
           await cell.scrollIntoView()
+          await cell.moveTo()
+          await cell.waitForClickable({ timeout: 10000 })
           await cell.click()
+
+          // expect 2 splits in total
+          await ReplExpect.splitCount(2)(ctx.app)
         } catch (err) {
           await Common.oops(ctx, true)(err)
         }
