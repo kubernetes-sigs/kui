@@ -22,12 +22,13 @@ import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
 
 import '../../../web/scss/components/ProgressStepper/_index.scss'
 
-type Status = 'blank' | 'info' | 'current' | 'pending' | 'in-progress' | 'success' | 'warning' | 'error'
+type Status = 'blank' | 'info' | 'minor' | 'current' | 'pending' | 'in-progress' | 'success' | 'warning' | 'error'
 
 function isStatus(status: string): status is Status {
   return (
     status === 'blank' ||
     status === 'info' ||
+    status === 'minor' ||
     status === 'current' ||
     status === 'pending' ||
     status === 'in-progress' ||
@@ -42,7 +43,6 @@ type ProgressStepProps = React.PropsWithChildren<{
   className?: string
   title: React.ReactNode
 
-  // kind: 'major' | 'minor'
   defaultStatus: Status
   liveStatusChannel?: string
 }>
@@ -62,6 +62,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
 
   private readonly icons: Record<Status, { icon: SupportedIcon | ''; className?: string }> = {
     info: { icon: 'Info' },
+    minor: { icon: '' },
     blank: { icon: '' },
     success: { icon: 'Checkmark' },
     warning: { icon: 'Warning', className: 'yellow-text' },
@@ -72,7 +73,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
   }
 
   private status() {
-    return `pf-m-${this.state.status}`
+    return [`pf-m-${this.state.status}`]
   }
 
   private icon() {
@@ -104,7 +105,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
   public render() {
     return (
       <li
-        className={['pf-c-progress-stepper__step', 'kui--progress-step', this.status()].join(' ')}
+        className={['pf-c-progress-stepper__step', 'kui--progress-step', ...this.status()].join(' ')}
         aria-label="completed step,"
       >
         <div className="pf-c-progress-stepper__step-connector">
