@@ -1541,6 +1541,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         onMouseDown={this.props.noActiveInput ? scrollback.onMouseDown : undefined}
       >
         <React.Fragment>
+          {/* TODO add conditional => if edit mode, then show split header */}
           {this.state.splits.length > 1 && (
             <SplitHeader onRemove={scrollback.remove} onClear={scrollback.clear} onInvert={scrollback.invert} />
           )}
