@@ -179,6 +179,37 @@ export const expectArray = (expected: Array<string>, failFast = true, subset = f
   }
 }
 
+/** Expand the fold on the given line of a monaco editor */
+export async function clickToExpandMonacoFold(res: AppAndCount, lineIdx: number) {
+  const container =
+    res.splitIndex !== undefined
+      ? `${Selectors.PROMPT_BLOCK_N_FOR_SPLIT(res.count, res.splitIndex)} .kui--tab-content:not([hidden])`
+      : `${Selectors.PROMPT_BLOCK_N(res.count)} .kui--tab-content:not([hidden])`
+
+  console.log('MF1')
+  const selector = `${container} .monaco-editor-wrapper`
+  const wrapper = await res.app.client.$(selector)
+  await wrapper.waitForExist({ timeout: CLI.waitTimeout })
+
+  console.log('MF2')
+  const marginOverlaysSelector = `.margin-view-overlays > div:nth-child(${lineIdx + 1})` // css is 1-indexed
+  const foldingSelector = `${marginOverlaysSelector} .codicon-folding-collapsed`
+  const foldingClickable = await wrapper.$(foldingSelector)
+
+  console.log('MF3')
+  await foldingClickable.waitForExist({ timeout: CLI.waitTimeout })
+
+  console.log('MF4')
+  await foldingClickable.click()
+
+  console.log('MF5')
+  const unfoldingSelector = `${marginOverlaysSelector} .codicon-folding-expanded`
+  const unfoldingClickable = await wrapper.$(unfoldingSelector)
+  await unfoldingClickable.waitForExist({ timeout: CLI.waitTimeout })
+
+  console.log('MF6')
+}
+
 /** get the monaco editor text */
 export const getValueFromMonaco = async (res: AppAndCount, container?: string) => {
   if (!container) {
@@ -252,13 +283,18 @@ export async function tabCount(app: Application): Promise<number> {
 }
 
 /** Close all except the first tab */
-export function closeAllExceptFirstTab(this: Common.ISuite) {
+export function closeAllExceptFirstTab(this: Common.ISuite, expectedInitialNTabs = 2) {
   it('should close all but first tab', async () => {
     try {
-      let nInitialTabs = await tabCount(this.app)
+      await this.app.client.waitUntil(async () => {
+        const currentCount = await tabCount(this.app)
+        return currentCount === expectedInitialNTabs
+      })
 
-      while (nInitialTabs > 1) {
-        const N = nInitialTabs--
+      let nTabs = await tabCount(this.app)
+
+      while (nTabs > 1) {
+        const N = nTabs--
 
         await this.app.client.$(Selectors.TOP_TAB_CLOSE_N(N)).then(_ => _.click())
 

@@ -188,7 +188,7 @@ describe(`kubectl namespace CRUD ${process.env.MOCHA_RUN_TARGET || ''}`, functio
           .then(SidecarExpect.open)
           .then(SidecarExpect.showing(name))
           .then(SidecarExpect.mode('summary'))
-          .then(SidecarExpect.yaml({ Name: name }))
+          .then(SidecarExpect.descriptionList({ Name: name }))
           .catch(Common.oops(this, true))
       })
     }

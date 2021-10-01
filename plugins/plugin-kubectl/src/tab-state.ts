@@ -19,9 +19,6 @@
 import Debug from 'debug'
 import { encodeComponent, getTab, isTopLevelTab, TabState, registerTabState } from '@kui-shell/core'
 
-import kubectl from './controller/cli'
-import { getCurrentDefaultContextName, getCurrentDefaultNamespace } from './controller/kubectl/contexts'
-
 const debug = Debug('plugins/plugin-kubectl/tab-state')
 
 const name = 'plugins/plugin-kubectl'
@@ -43,6 +40,8 @@ async function capture(tabState: TabState) {
   const tab = getTab(parseInt(tabState.uuid))
   if (tab) {
     try {
+      const { getCurrentDefaultContextName, getCurrentDefaultNamespace } = await import('./controller/kubectl/contexts')
+
       const [currentContext, currentNamespace] = await Promise.all([
         getCurrentDefaultContextName(tab),
         getCurrentDefaultNamespace(tab)
@@ -76,12 +75,16 @@ async function restore(tabState: TabState) {
   const namespace = getTabState(tabState, 'namespace')
   const context = getTabState(tabState, 'context')
   try {
+    const { getCurrentDefaultContextName, getCurrentDefaultNamespace } = await import('./controller/kubectl/contexts')
+
     const [currentContext, currentNamespace] = await Promise.all([
       getCurrentDefaultContextName(tab),
       getCurrentDefaultNamespace(tab)
     ])
 
     if (currentContext !== context || currentNamespace !== namespace) {
+      const kubectl = (await import('./controller/cli')).default
+
       await tab.REPL.qexec(`${kubectl} config set-context ${encodeComponent(context)} --namespace=${namespace}`)
       await tab.REPL.qexec(`${kubectl} config use-context ${encodeComponent(context)}`)
     }

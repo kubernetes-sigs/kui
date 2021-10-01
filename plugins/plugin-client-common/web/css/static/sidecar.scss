@@ -107,10 +107,6 @@ $focus-color: var(--color-brand-03);
   }
 }
 
-.minimized [data-view-id] > div:not(.sidecar-bottom-stripe) {
-  display: none !important;
-}
-
 .kui--sidecar.visible.maximized {
   flex-basis: 100%;
 }

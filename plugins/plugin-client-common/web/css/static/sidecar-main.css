@@ -88,7 +88,7 @@ $toolbar-height: 1.5rem;
 }
 
 /* sidecar view-button "flush right" toolbar */
-.sidecar-bottom-stripe-toolbar {
+body[kui-theme-style] .sidecar-bottom-stripe-toolbar {
   display: flex;
   overflow: visible; /* for tooltip visibility */
 
@@ -108,6 +108,10 @@ $toolbar-height: 1.5rem;
     }
   }
 
+  .sidecar-toolbar-text {
+    align-items: center;
+  }
+
   .sidecar-toolbar-text,
   .sidecar-bottom-stripe-mode-bits {
     background-color: var(--color-sidecar-toolbar-background);
@@ -115,7 +119,6 @@ $toolbar-height: 1.5rem;
     height: $toolbar-height;
     line-height: $toolbar-height;
     display: flex;
-    align-items: center;
     flex: 1;
     overflow: visible; /* for tooltip visibility */
   }
@@ -176,33 +179,14 @@ $toolbar-height: 1.5rem;
     }
   }
   .sidecar-bottom-stripe-button {
+    padding: 3px;
+    margin: 1px 0;
     display: flex;
     line-height: 1.5em;
-
-    & > div {
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
+    align-items: center;
 
     button[aria-label="Actions"] {
       padding: 0;
-    }
-
-    & > div,
-    a,
-    button {
-      color: inherit;
-      background-color: transparent;
-      border: none;
-      font-size: inherit;
-      &:hover {
-        cursor: pointer;
-        background: none;
-        [role="tab"] {
-          color: var(--color-base03);
-        }
-      }
     }
 
     [role="tab"] {

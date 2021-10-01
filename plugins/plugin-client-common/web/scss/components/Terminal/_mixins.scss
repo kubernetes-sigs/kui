@@ -110,6 +110,25 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin BlockFocusAttributes {
+  &:focus,
+  &[data-is-focused] {
+    @content;
+  }
+}
+@mixin BlockNotFocusedAttributes {
+  &:not(:focus):not([data-is-focused]) {
+    @content;
+  }
+}
+@mixin FocusedBlock {
+  @include Block {
+    @include BlockFocusAttributes {
+      @content;
+    }
+  }
+}
+
 @mixin SectionBreak {
   @include Block {
     &[data-is-section-break] {
@@ -417,6 +436,13 @@ $action-hover-delay: 210ms;
 /** The Editor while editing a Commentary */
 @mixin CommentaryEditor {
   .kui--commentary-editor {
+    @content;
+  }
+}
+
+/** The spinner element that we place either in the context [x] or near the timestamp/duration element */
+@mixin Spinner {
+  .kui--repl-block-spinner {
     @content;
   }
 }

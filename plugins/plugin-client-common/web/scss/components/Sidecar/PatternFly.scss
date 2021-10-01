@@ -38,3 +38,26 @@
 @include SidecarTopTabSelectedBorder {
   border-color: var(--color-base0C);
 }
+
+/** See https://github.com/kubernetes-sigs/kui/issues/8007 */
+@include SidecarTopTab {
+  flex: 1;
+  display: flex;
+}
+
+/** See https://github.com/kubernetes-sigs/kui/issues/8017 */
+@include SidecarTopTabs {
+  .pf-c-tabs__scroll-button {
+    color: var(--color-text-02);
+    background-color: var(--color-sidecar-header);
+
+    &[disabled] {
+      color: var(--color-base04);
+    }
+
+    &:before {
+      /* this is for the right/left border of the bottom; PF seems to assume some other framing that we don't have */
+      display: none;
+    }
+  }
+}

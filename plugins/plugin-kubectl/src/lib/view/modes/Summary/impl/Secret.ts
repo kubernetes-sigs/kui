@@ -23,15 +23,15 @@
  */
 
 import { age } from './Generic'
+import toDescriptionList from './convert'
 import { Secret } from '../../../../model/resource'
 
 export default function SecretSummary(secret: Secret) {
-  const { metadata, type: Type, data: Data } = secret
+  const { metadata, type: Type } = secret
 
-  return {
+  return toDescriptionList({
     Name: metadata.name,
     Type,
-    Age: age(secret),
-    Data
-  }
+    Age: age(secret)
+  })
 }

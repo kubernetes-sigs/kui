@@ -50,6 +50,7 @@ import getSize from './getSize'
 import SplitHeader from './SplitHeader'
 import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder, tabAlignment } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
+import SessionInitStatus from '../../Client/SessionInitStatus'
 import { onCopy, onCut, onPaste } from './ClipboardTransfer'
 import {
   Active,
@@ -61,7 +62,6 @@ import {
   isRerunable,
   isBeingRerun,
   hasBeenRerun,
-  hasOriginalUUID,
   Processing,
   isActive,
   isAnnouncement,
@@ -76,6 +76,7 @@ import {
   hasStartEvent,
   hasCommand,
   hasUUID,
+  hasOriginalUUID,
   BlockModel
 } from './Block/BlockModel'
 
@@ -121,6 +122,9 @@ type Props = TerminalOptions & {
 
   /** Toggle attribute on Tab DOM */
   toggleAttribute(attr: string): void
+
+  /** Status of the proxy session (for client-server architectures of Kui) */
+  sessionInit: SessionInitStatus
 }
 
 interface State {
@@ -220,7 +224,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       this.state.splits.find(({ blocks }) =>
         blocks.find(_ => {
           if (isLinkified(_) && _.link === link) {
-            const status = !hasBeenRerun(_) ? [0, 0] : isOk(_) ? [1, 0] : [0, 1]
+            const status = !hasBeenRerun(_) ? [0, 0, 0] : isOk(_) ? [1, 0, 0] : [0, 1, 0]
             eventChannelUnsafe.emit(`/link/status/update/${_.link}`, status)
             return true
           }
@@ -350,7 +354,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const scrollback = this.scrollback()
     const welcomeMax = this.props.config.showWelcomeMax
 
-    if (this.props.config.loadingDone && welcomeMax !== undefined) {
+    if (this.props.sessionInit === 'Done' && this.props.config.loadingDone && welcomeMax !== undefined) {
       const welcomed = parseInt(localStorage.getItem(NUM_WELCOMED)) || 0
 
       if ((welcomeMax === -1 || welcomed < welcomeMax) && this.props.config.loadingDone) {
@@ -541,7 +545,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           const uuid = hasUUID(block) ? `${block.execUUID}` : `${v4()}`
           const link = `kui-link-${uuid}`
           block.link = link
-          navigator.clipboard.writeText(`[Link](#${link})`)
+          const linkText = hasCommand(block) ? block.command.slice(0, 20) : 'Link'
+          navigator.clipboard.writeText(`- **[${linkText}](#${link})** *blank*`)
           return {
             blocks: curState.blocks
               .slice(0, idx)
@@ -831,6 +836,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           // execUUID, hence the `findIndex` logic just above, which
           // scans the blocks for an existing execUUID. So: we
           // Transform the rerun block to Processing
+
+          if (isLinkified(block)) {
+            eventChannelUnsafe.emit(`/link/status/update/${block.link}`, [0, 0, 1])
+          }
+
           return {
             blocks: curState.blocks
               .slice(0, rerunIdx) // everything before
@@ -904,7 +914,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
 
             if (isLinkified(finishedBlock)) {
-              const status = !hasBeenRerun(finishedBlock) ? [0, 0] : isOk(finishedBlock) ? [1, 0] : [0, 1]
+              const status = !hasBeenRerun(finishedBlock) ? [0, 0, 0] : isOk(finishedBlock) ? [1, 0, 0] : [0, 1, 0]
 
               eventChannelUnsafe.emit(`/link/status/update/${finishedBlock.link}`, status)
             }
@@ -1475,14 +1485,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
       return (
         <Block
-          key={hasUUID(_) ? _.execUUID : `${idx}-${isActive(_)}-${isCancelled(_)}`}
+          key={
+            hasOriginalUUID(_)
+              ? _.originalExecUUID
+              : hasUUID(_)
+              ? _.execUUID
+              : `${idx}-${isActive(_)}-${isCancelled(_)}`
+          }
           idx={idx}
           isExecutable={isExecutable}
           isSectionBreak={isSectionBreak(_) || undefined}
           displayedIdx={displayedIdx}
           sectionIdx={sectionIdx > 0 ? `${sectionIdx}${subSectionIdx > 0 ? `.${subSectionIdx}` : ''}` : undefined}
           model={_}
-          isBeingRerun={isBeingRerun(_)}
           uuid={scrollback.uuid}
           tab={tab}
           nSplits={this.state.splits.length}
@@ -1540,7 +1555,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public render() {
     return (
-      <div className="repl" id="main-repl">
+      <div className="repl" id="main-repl" data-session-init-status={this.props.sessionInit}>
         <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={this.state.splits.length}>
           {this.state.splits.map((scrollback, sbidx) => this.split(scrollback, sbidx))}
         </div>

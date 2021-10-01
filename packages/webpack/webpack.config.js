@@ -31,6 +31,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserJSPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const { IgnorePlugin, ProvidePlugin } = require('webpack')
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 
 // in case the client has some oddities that require classnames to be preserved
 const terserOptions = process.env.KEEP_CLASSNAMES
@@ -151,13 +152,18 @@ console.log('clientHome', process.env.CLIENT_HOME)
  */
 const plugins = []
 
-// any compression plugins?
-if (CompressionPlugin) {
-  plugins.push(new CompressionPlugin({ deleteOriginalAssets: true }))
+if (process.env.WEBPACK_ANALYZER) {
+  plugins.push(new BundleAnalyzerPlugin())
 }
 
-plugins.push(new IgnorePlugin({ contextRegExp: /\/tests\// }))
-plugins.push(new IgnorePlugin({ contextRegExp: /\/@kui-shell\/build/ }))
+// any compression plugins?
+if (CompressionPlugin) {
+  plugins.push(new CompressionPlugin({ deleteOriginalAssets: true, exclude: /.html$/ }))
+}
+
+const allFiles = /.*/
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/@kui-shell\/build/ }))
 
 if (inBrowser) {
   plugins.push(

@@ -15,10 +15,11 @@
  */
 
 import React from 'react'
+import { Tooltip } from '@patternfly/react-core'
+
 import Props, { isMarkdownProps, isReferenceProps } from '../model'
 
-import Markdown from '../../../Content/Markdown'
-import { Tooltip } from '@patternfly/react-core'
+const Markdown = React.lazy(() => import('../../../Content/Markdown'))
 
 import '../../../../../web/scss/components/Tooltip/PatternFly.scss'
 
@@ -28,6 +29,7 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
   return (
     <Tooltip
       className="kui--tooltip"
+      enableFlip={props.enableFlip}
       isContentLeftAligned={isMarkdown}
       position={props.position || 'auto'}
       entryDelay={props.entryDelay || 200}
@@ -37,7 +39,9 @@ export default function PatternFlyTooltip(props: Props): React.ReactElement {
         isReferenceProps(props) ? (
           props.children
         ) : isMarkdownProps(props) ? (
-          <Markdown nested source={props.markdown} />
+          <React.Suspense fallback={<div />}>
+            <Markdown nested source={props.markdown} />
+          </React.Suspense>
         ) : (
           props.content
         )

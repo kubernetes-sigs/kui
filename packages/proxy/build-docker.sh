@@ -20,12 +20,21 @@ set -e
 set -o pipefail
 
 export CLIENT_HOME=${CLIENT_HOME-$(pwd)}
+PROXY_HOME="$CLIENT_HOME"/node_modules/@kui-shell/proxy
+
 BUILDDIR="$CLIENT_HOME"/dist/webpack
 
 # accepted environment variables
-KUBE_VERSION=${KUBE_VERSION-1.18.3}
-HELM_VERSION=${HELM_VERSION-3.3.4}
-OC_VERSION=${OC_VERSION-4.3.3}
+KUBE_VERSION=${KUBE_VERSION-1.22.1}
+HELM_VERSION=${HELM_VERSION-3.6.3}
+OC_VERSION=${OC_VERSION-4.7.0}
+
+for d in "$PROXY_HOME"/defaults/*.sh; do
+    if [ -f "$d" ]; then
+        echo "Reading defaults $(basename $d)"
+        . "$d"
+    fi
+done
 
 function kubeconfig {
     if [ -n "$INJECT_KUBECONFIG" ] && [ -n "$KUBECONFIG" ]; then
@@ -59,7 +68,8 @@ function webpack {
 function nginx {
     echo "nginx config"
     if [ ! -d "$BUILDDIR"/conf.d ]; then mkdir "$BUILDDIR"/conf.d; fi
-    cp "$CLIENT_HOME"/node_modules/@kui-shell/proxy/conf.d/proxy.conf "$BUILDDIR"/conf.d/default.conf
+    cp "$CLIENT_HOME"/node_modules/@kui-shell/proxy/conf.d/* "$BUILDDIR"/conf.d
+    mv "$BUILDDIR"/conf.d/proxy.conf "$BUILDDIR"/conf.d/default.conf
 
     # this is for configuring tzdata in the Dockerfile
     cp "$CLIENT_HOME"/node_modules/@kui-shell/proxy/preseed.txt "$BUILDDIR"/
@@ -138,7 +148,13 @@ function profiled {
 
 function image {
     echo "docker"
-    (cd "$BUILDDIR" && docker build . -t kuishell/kui --build-arg KUBE_VERSION=$KUBE_VERSION --build-arg HELM_VERSION=$HELM_VERSION --build-arg OC_VERSION=$OC_VERSION $KUBECONFIG_ARG)
+    if [ -f "$CSP" ]; then
+        echo "Loading ContentSecurityPolicy from file $CSP"
+        CSP=$(cat "$CSP")
+    elif [ -n "$CSP" ]; then
+        echo "Loading ContentSecurityPolicy from env $CSP"
+    fi
+    (cd "$BUILDDIR" && docker build . -t kuishell/kui --build-arg CSP="$CSP" --build-arg OPENGRAPH="$OPENGRAPH" --build-arg KUBE_VERSION=$KUBE_VERSION --build-arg HELM_VERSION=$HELM_VERSION --build-arg OC_VERSION=$OC_VERSION $KUBECONFIG_ARG)
 }
 
 if [ "$1" != "dockeronly" ]; then

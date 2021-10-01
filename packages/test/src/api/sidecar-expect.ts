@@ -379,3 +379,36 @@ export function breadcrumbs(breadcrumbs: string[]) {
     return res
   }
 }
+
+/** Expect DescriptionList content in the current tab */
+export const descriptionList = (content: Record<string, number | boolean | string>) => async (res: AppAndCount) => {
+  const container =
+    res.splitIndex !== undefined
+      ? `${Selectors.PROMPT_BLOCK_N_FOR_SPLIT(res.count, res.splitIndex)} .kui--tab-content:not([hidden])`
+      : `${Selectors.PROMPT_BLOCK_N(res.count)} .kui--tab-content:not([hidden])`
+
+  for (const term in content) {
+    let idx = 0
+    await res.app.client.waitUntil(
+      async () => {
+        const expectedDescription = content[term].toString() // the actualDescription will come as a string
+        const actualDescription = await res.app.client
+          .$(`${container} ${Selectors.DLIST_DESCRIPTION_FOR(term)}`)
+          .then(_ => _.getText())
+        if (actualDescription !== expectedDescription) {
+          if (++idx > 5) {
+            console.error(
+              `Still waiting for expectedDescription=${expectedDescription} actualDescription=${actualDescription} `
+            )
+          }
+          return false
+        } else {
+          return true
+        }
+      },
+      { timeout: waitTimeout }
+    )
+  }
+
+  return res
+}

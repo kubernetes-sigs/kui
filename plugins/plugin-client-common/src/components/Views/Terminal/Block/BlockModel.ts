@@ -223,6 +223,10 @@ export function isBeingRerun(block: BlockModel): block is BlockBeingRerun {
   return (block as WithRerun).isRerun === true
 }
 
+export function isProcessingOrBeingRerun(block: BlockModel): block is ProcessingBlock | BlockBeingRerun {
+  return isProcessing(block) || isBeingRerun(block)
+}
+
 export function hasOriginalUUID(block: BlockModel | WithOriginalExecUUID): block is WithOriginalExecUUID {
   return typeof (block as WithOriginalExecUUID).originalExecUUID === 'string'
 }
@@ -379,6 +383,11 @@ export function isOutputOnly(block: BlockModel) {
 /** @return whether the block as a startEvent trait */
 export function hasStartEvent(block: BlockModel): block is BlockModel & WithCommandStart {
   return !isAnnouncement(block) && (isProcessing(block) || isOk(block) || isOops(block))
+}
+
+/** @return whether the output of this command execution be redirected to a file */
+export function isOutputRedirected(block: BlockModel): boolean {
+  return hasStartEvent(block) && block.startEvent.redirectDesired
 }
 
 /** @return whether the block is section break */

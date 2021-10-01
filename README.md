@@ -1,5 +1,3 @@
-# Kui: CLI-driven Graphics for Kubernetes
-
 [![GitHub Stars](https://badgen.net/github/stars/IBM/kui)](https://github.com/IBM/kui/stargazers)
 [![GitHub Forks](https://badgen.net/github/forks/IBM/kui)](https://github.com/IBM/kui/network/members)
 ![ts](https://flat.badgen.net/badge/-/TypeScript?icon=typescript&label&labelColor=blue&color=555555)
@@ -7,9 +5,9 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 [![test](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml/badge.svg)](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml)
 
-> Help us make Kubernetes tools better by filling out a [quick 2
-> minute survey](https://forms.gle/Kq5s9yHcrRW83gw9A) on your tool
-> preferences. Thanks!
+[**Blogs**](https://medium.com/the-graphical-terminal) **|** [**PDF Summary**](docs/presentations/kui-cloudnative-devx-2021.pdf) **|** [**Installation**](#install) **|** [**Custom Graphical CLIs!**](#custom)
+
+# Kui: a Framework for Enhancing CLIs with Graphics
 
 <img width="600" align="right" src="docs/readme/images/kui-experience.gif">
 
@@ -27,11 +25,20 @@ commands **2-3 times faster** than `kubectl` itself.
 
 <img height="185" src="docs/readme/images/grid-watch.gif"><img height="185" src="docs/readme/images/sequence-diagram.png"><img height="185" src="docs/readme/images/pod.png">
 
-## Installing the Pre-built Kui Graphical CLI
+> Help us make Kubernetes tools better by filling out a [quick 2
+> minute survey](https://forms.gle/Kq5s9yHcrRW83gw9A) on your tool
+> preferences. Thanks!
+
+<a name="install">
+
+## Installing Kui for Kubernetes
+
+We offer prebuilt images optimized for an enhanced Kubernetes CLI
+experience.
 
 <img width="575" align="right" src="docs/readme/images/minisplits.png">
 
-To use Kui right away on macOS:
+#### MacOS (Intel and Apple Silicon)
 
 ```bash
 brew install kui
@@ -39,41 +46,40 @@ kubectl kui get pods
 open /Applications/Kui.app
 ```
 
-For other platforms, download one of the following:
+#### Windows and Linux
 
-[Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
+[Download and
+unzip](https://github.com/kubernetes-sigs/kui/releases/latest), then
+add the unzipped directory to your PATH. Now use `kubectl kui` or
+launch the `Kui` executable to use Kui's built-in REPL.
 
-> **Windows Warnings**: Please use forward slashes for filepaths, e.g. c:/users, not c:\users.
+> **Windows Warning**: Please use forward slashes for filepaths, e.g. c:/users, not c:\users.
 
-### Using Kui as a Framework to Make Your Own Custom Graphical CLI
+#### I don't trust the prebuilts
 
-Kui is a framework for adding graphics to CLIs. Kui is a web app,
-which allows for either a hosted client-server architecture, or, via
-[Electron](https://electronjs.org), the distribution of
-double-clickable applications.
+We hear you. Choose your platform (e.g. `mac:amd64`), execute the
+following, then look in `./dist/electron`.
 
-Using this framework, you can design your own Kubernetes enhancements,
-set a custom theme or custom icon, and enhance the commands of your
-favorite CLI. Check out the [template
-repo](https://github.com/kui-shell/KuiClientTemplate). If you
-prototype Kubernetes enhancements that you feel would be generally
-valuable, please PR them back here, for integration into to the [core
+```sh
+git clone git@github.com:kubernetes-sigs/kui.git && cd kui && npm ci && \
+    npm run build:electron:mac:amd64
+```
+
+<a name="custom">
+
+## I Want to Make a Custom Graphical CLI
+
+Kui is a framework for adding graphics to CLIs. Kui allows for either
+a hosted client-server architecture, or the distribution of
+double-clickable applications (via [Electron](https://electronjs.org)).
+
+Using the Kui framework, you can design your own Kubernetes
+enhancements, set a custom theme or custom icon, and enhance the
+commands of your favorite CLI. Check out the [template
+repo](https://github.com/kui-shell/KuiClientTemplate). If your
+enhancements would be generally valuable, please PR them back here,
+e.g. awesome Kubernetes enhancements can be integrated with the [core
 Kubernetes plugin](plugins/plugin-kubectl).
-
-<!--## Kui Showcase
-
-With Kui, watch and `apply` requests present you with live
-tables. Instead of poring over complex YAML, you can browse the facets
-of your resources in a tabbed UI. Drill down, drill up, and view logs
-or the events related just to the resource of interest, again with Kui
-you can just click.
-
-Iterating through a table to find the needle in the haystack? With
-Kui, you can click the rows in rapid succession, and Kui sends the
-details to a side terminal; the main table will not scroll out of
-view. If you are working with
-[jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/),
-you can see a "waterfall" diagram by simply executing `k get jobs`.-->
 
 ## Code of Conduct
 

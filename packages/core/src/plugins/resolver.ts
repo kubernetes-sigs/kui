@@ -85,10 +85,14 @@ const prequire = async (
                 ? await import(/* webpackIgnore: true */ mainPath(module.path))
                 : module.route === 'client'
                 ? await import(
-                    /* webpackMode: "lazy" */ '@kui-shell/clien' + webpackPath(module.route).slice(5) + '/mdist/plugin'
+                    /* webpackChunkName: "client-plugin" */ /* webpackMode: "lazy" */ '@kui-shell/clien' +
+                      webpackPath(module.route).slice(5) +
+                      '/mdist/plugin'
                   )
                 : await import(
-                    /* webpackMode: "lazy" */ '@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/plugin'
+                    /* webpackChunkName: "kui-plugins" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
+                      webpackPath(module.route) +
+                      '/mdist/plugin'
                   )
             const registration: PluginRegistration = registrationRef.default || registrationRef
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)

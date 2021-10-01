@@ -16,6 +16,7 @@
 
 @import 'mixins';
 @import '../DropDown/mixins';
+@import '../Terminal/mixins';
 @import '../common/narrow-window';
 
 $font-size: 0.75rem;
@@ -95,6 +96,7 @@ $z-index: var(--pf-global--ZIndex--xs);
     }
     &:not(.kui--status-stripe-tag-element) {
       &[data-view='warn'],
+      &[data-view='loading'],
       &[data-view='info'] {
         filter: grayscale(0.15) brightness(0.9);
         &:hover {
@@ -107,6 +109,9 @@ $z-index: var(--pf-global--ZIndex--xs);
             background-color: var(--color-yellow);
           }
           &[data-view='info'] {
+            background-color: var(--color-base04);
+          }
+          &[data-view='loading'] {
             font-style: italic;
             background-color: var(--color-base04);
           }
@@ -259,16 +264,28 @@ $z-index: var(--pf-global--ZIndex--xs);
     text-overflow: ellipsis;
   }
 
-  /* tab completions in status stripe input element */
-  .kui--input-stripe .repl-block .kui--tab-completions {
-    bottom: 1.875rem;
-    left: 0;
-    background-color: var(--color-sidecar-background-01);
-    border-bottom: $element-border;
-    z-index: 100;
+  .kui--input-stripe {
+    @include Block {
+      @include InputWrapper {
+        border: none;
+        background: none;
+      }
+      @include BlockBorder {
+        display: none;
+      }
+    }
 
-    .kui--tab-completions--option .bx--btn--primary:focus {
-      border-radius: 4px 4px 0px 0px;
+    /* tab completions in status stripe input element */
+    .kui--tab-completions {
+      bottom: 1.875rem;
+      left: 0;
+      background-color: var(--color-sidecar-background-01);
+      border-bottom: $element-border;
+      z-index: 100;
+
+      .kui--tab-completions--option .bx--btn--primary:focus {
+        border-radius: 4px 4px 0px 0px;
+      }
     }
   }
 

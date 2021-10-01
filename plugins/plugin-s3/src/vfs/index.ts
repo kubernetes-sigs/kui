@@ -548,9 +548,15 @@ class S3VFSResponder extends S3VFS implements VFS {
     fileName: string,
     dstIsFolder: boolean
   ) {
-    const endPoint = /^http/.test(this.options.endPoint) ? this.options.endPoint : `https://${this.options.endPoint}`
+    // note how we use the bucketName.endpoint style of urls
+    // see https://github.com/kubernetes-sigs/kui/issues/8046
+    const proto = this.options.endPoint.match(/(^https?:\/\/)/)
+    const endPoint = (proto
+      ? `${proto[1]}${bucketName}.${this.options.endPoint}`
+      : `https://${bucketName}.${this.options.endPoint}`
+    ).replace(/\.$/, '')
     const folder = dstIsFolder ? fileName : dirname(fileName)
-    const dstDir = !folder ? bucketName : join(bucketName, folder)
+    const dstDir = folder || ''
     if (srcs.find(_ => /index.html$/.test(_.path)) || /index.html$/.test(fileName)) {
       const path = join(dstDir, 'index.html')
       return strings('Published website as', `${endPoint}/${path}`)
@@ -818,16 +824,42 @@ class S3VFSResponder extends S3VFS implements VFS {
   /** rm -rf */
   private async rimraf(bucketName: string): Promise<string> {
     const buckets = await this.listBucketsMatching(bucketName)
+    const errors: string[] = []
     await Promise.all(
       buckets.map(async ({ name: bucketName }) => {
         await this.client.removeObjects(bucketName, await this.objectsIn(bucketName))
-        await this.client.removeBucket(bucketName)
+        await this.client
+          .removeBucket(bucketName)
+          .catch(err => {
+            if (/multi-part upload in progress/.test(err.message)) {
+              // attempt to clean up incomplete uploads
+              // see https://github.com/kubernetes-sigs/kui/issues/8026
+              return new Promise((resolve, reject) => {
+                const stream = this.client.listIncompleteUploads(bucketName)
+                stream.on('end', resolve)
+                stream.on('error', reject)
+                stream.on('data', ({ key }) => {
+                  debug(`Removing multi-part upload ${key} from bucket ${bucketName}`)
+                  this.client.removeIncompleteUpload(bucketName, key)
+                })
+              })
+            }
+            debug(err)
+          })
+          .catch(err => {
+            errors.push(err.message)
+          })
       })
     )
 
-    return buckets.length === 1
-      ? strings('Removed bucket X and its contents', buckets[0].name)
-      : strings('Removed N buckets and their contents', buckets.length)
+    const okMessage =
+      errors.length === buckets.length
+        ? ''
+        : buckets.length === 1
+        ? strings('Removed bucket X and its contents', buckets[0].name)
+        : strings('Removed N buckets and their contents', buckets.length)
+
+    return errors.join('\n') + (errors.length > 0 ? '\n' : '') + okMessage
   }
 
   /** Remove filepath */

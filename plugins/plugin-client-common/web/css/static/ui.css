@@ -75,12 +75,6 @@ body[kui-theme-style] a.plain-anchor {
 }
 
 /* REPL */
-#invisible-global-input {
-  /* element that handles text input while a command is being executed */
-  position: absolute;
-  left: -1000px;
-  top: -1000px;
-}
 body.still-loading .repl {
   opacity: 0;
 }
@@ -216,6 +210,12 @@ webview {
 .blurry [data-balloon]:after {
   /* no tooltips under a blurry element */
   display: none;
+}
+.no-padding {
+  padding: 0;
+}
+.no-margin {
+  margin: 0;
 }
 .present-as-quotation {
   padding: 0.375em 0;
@@ -898,15 +898,19 @@ $kui--page-content-paragraph-padding: 0.375em;
   margin-top: 0;
   padding-top: 0;
 }
+.repl {
+  .page-content h3,
+  .page-h3 {
+    color: var(--color-text-01);
+  }
+}
 .page-content h3,
 .page-h3 {
   font-family: var(--font-sans-serif-title);
-  color: var(--color-text-01);
   font-size: 1.375em;
   font-weight: 300;
   letter-spacing: 0;
   padding: 1em 0 0.5em;
-  line-height: 1.625em;
   margin: 0;
 }
 .page-content h4 {
@@ -1037,6 +1041,9 @@ badge:not(.badge-as-fontawesome):not(.badge-as-image) {
 }
 .yellow-text svg path {
   fill: var(--color-support-03-darker);
+}
+.blue-text {
+  color: var(--color-blue);
 }
 .processing-text {
   color: var(--color-processing) !important;

@@ -162,11 +162,15 @@ commands.forEach(command => {
     const parseError = modifyWithError.bind(undefined, 'parse error', Keys.End, 'could not find expected')
 
     /** modify pod {name} so as to add a label of key=value */
-    const modify = (name: string, key = 'foo', value = 'bar') => {
-      it('should modify the content', async () => {
+    const modify = (name: string, key = 'foo', value = 'bar', needsUnfold = true) => {
+      it(`should modify the content by adding label ${key}=${value}`, async () => {
         try {
           const actualText = await Util.getValueFromMonaco(res)
           const labelsLineIdx = actualText.split(/\n/).indexOf('  labels:')
+
+          if (needsUnfold) {
+            await Util.clickToExpandMonacoFold(res, labelsLineIdx)
+          }
 
           // +2 here because nth-child is indexed from 1, and we want the line after that
           const lineSelector = `${Selectors.SIDECAR(res.count)} .view-lines > .view-line:nth-child(${labelsLineIdx +
@@ -252,9 +256,10 @@ commands.forEach(command => {
       modify(name, 'clickfoo1', 'clickbar1')
       modify(name, 'clickfoo2', 'clickbar2') // after success, should re-modify the resource in the current tab successfully
       validationError(true) // do unsupported edits in the current tab, validate the error alert, and then undo the changes
-      modify(name, 'clickfoo3', 'clickbar3') // after error, should re-modify the resource in the current tab successfully
+      modify(name, 'clickfoo3', 'clickbar3', false) // after error, should re-modify the resource in the current tab successfully
 
-      it('should switch to summary tab, expect no alerts and not editable', async () => {
+      // no longer needed, with DescriptionList summary
+      xit('should switch to summary tab, expect no alerts and not editable', async () => {
         try {
           await this.app.client.$(Selectors.SIDECAR_MODE_BUTTON(res.count, 'summary')).then(async _ => {
             await _.waitForDisplayed()
@@ -316,7 +321,7 @@ commands.forEach(command => {
     modify(nginx)
     modify(nginx, 'foo1', 'bar1') // successfully re-modify the resource in the current tab
     validationError(true) // do unsupported edits in the current tab, and then undo the changes
-    modify(nginx, 'foo2', 'bar2') // after error, successfully re-modify the resource in the current tab
+    modify(nginx, 'foo2', 'bar2', false) // after error, successfully re-modify the resource in the current tab
     parseError() // after sucess, do unsupported edits
 
     it('should refresh', () => Common.refresh(this))

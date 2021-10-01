@@ -188,7 +188,7 @@ export class Kui extends React.PureComponent<Props, State> {
     return (
       <Alert
         hideCloseButton
-        className="kui--terminal-alert kui--connection-lost"
+        className="kui--terminal-alert kui--connection-lost top-pad left-pad right-pad"
         alert={{
           type: 'error',
           title: strings('Lost connection to your cluster'),
@@ -217,7 +217,10 @@ export class Kui extends React.PureComponent<Props, State> {
 
   private defaultLoadingError() {
     return err => (
-      <Alert alert={{ type: 'error', title: strings('Error connecting to your cluster'), body: err.toString() }} />
+      <Alert
+        className="top-pad"
+        alert={{ type: 'error', title: strings('Error connecting to your cluster'), body: err.toString() }}
+      />
     )
   }
 

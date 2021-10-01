@@ -79,6 +79,7 @@
   --color-sidecar-toolbar-background: var(--pf-global--palette--black-300);
 
   --color-text-02: var(--color-base05);
+  --color-brand-01: var(--pf-global--palette--cyan-100);
   --color-brand-02: var(--color-base07);
   --active-tab-color: var(--pf-global--active-color--300);
 
@@ -100,6 +101,7 @@
   @include DarkColors;
   --color-sidecar-background-01: var(--pf-global--palette--black-900);
   --color-sidecar-background-02: var(--pf-global--palette--black-850);
+  --color-selection-background: var(--color-selection-background-dark);
 }
 
 @mixin InvertLightToDarkGenerally {
@@ -185,6 +187,8 @@
     --color-latency-3: #b2b0ea;
     --color-latency-4: #f9e0a2;
     --color-latency-5: #f4b678;
+
+    --color-selection-background: var(--color-selection-background-dark);
 
     @include pf-t-dark;
   }

@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-kubectl",
-  "version": "10.4.0",
+  "version": "10.6.0",
   "description": "Kubernetes visualization plugin for kubernetes",
   "license": "Apache-2.0",
   "keywords": [
@@ -33,7 +33,7 @@
     "debug": "4.3.2",
     "fs-extra": "10.0.0",
     "js-yaml": "4.1.0",
-    "needle": "2.8.0",
+    "needle": "3.0.0",
     "parse-duration": "1.0.0",
     "pluralize": "8.0.0",
     "semver": "7.3.5",

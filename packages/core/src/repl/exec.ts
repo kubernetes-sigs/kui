@@ -370,11 +370,15 @@ class InProcessExecutor implements Executor {
       execOptions.execUUID = execUUID
       const evaluatorOptions = evaluator.options
 
+      // are we asked to redirect the output to a file?
+      const redirectDesired = !noCoreRedirect && !!pipeStages.redirect
+
       this.emitStartEvent({
         tab,
         route: evaluator.route,
         startTime,
-        command,
+        command: commandUntrimmed,
+        redirectDesired,
         pipeStages,
         evaluatorOptions,
         execType,
@@ -451,12 +455,16 @@ class InProcessExecutor implements Executor {
         createOutputStream: execOptions.createOutputStream || (() => this.makeStream(getTabId(tab), execUUID, 'stdout'))
       }
 
+      // COMMAND EXECUTION ABOUT TO COMMENCE. This is where we
+      // actually execute the command line and populate this
+      // `response` variable:
       let response: T | Promise<T> | MixedResponse
-
       const commands = evaluatorOptions.semiExpand === false ? [] : semiSplit(command)
       if (commands.length > 1) {
+        // e.g. "a ; b ; c"
         response = await semicolonInvoke(commands, execOptions)
       } else {
+        // e.g. just "a" or "a > /tmp/foo"
         try {
           response = await Promise.resolve(
             currentEvaluatorImpl.apply<T, O>(commandUntrimmed, execOptions, evaluator, args)
@@ -502,9 +510,14 @@ class InProcessExecutor implements Executor {
         }
       }
 
-      if (!noCoreRedirect && pipeStages.redirect) {
+      // Here is where we handle redirecting the response to a file
+      if (redirectDesired) {
         try {
           await redirectResponse(response, pipeStages.redirect, pipeStages.redirector)
+
+          // mimic "no response", now that we've successfully
+          // redirected the response to a file
+          response = true as T
         } catch (err) {
           response = err
         }

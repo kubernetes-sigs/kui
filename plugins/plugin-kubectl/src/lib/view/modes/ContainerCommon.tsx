@@ -32,6 +32,9 @@ export const HYSTERESIS = 1500
 export type StreamingStatus = 'Live' | 'Paused' | 'Stopped' | 'Error' | 'Idle'
 
 export interface ContainerProps {
+  /** id for the tab */
+  mode: string
+
   args: {
     argsForMode?: Arguments
     argvNoOptions: string[]

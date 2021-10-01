@@ -374,6 +374,9 @@ export default class Editor extends React.PureComponent<Props, State> {
       const editor = Monaco.create(state.wrapper, options)
       setTimeout(async () => {
         editor.setValue(await Editor.extractValue(state.content, props.response, props.repl))
+
+        // initial default folding level; see https://github.com/kubernetes-sigs/kui/issues/8008
+        editor.getAction('editor.foldLevel2').run()
       })
 
       const onZoom = () => {
@@ -382,37 +385,32 @@ export default class Editor extends React.PureComponent<Props, State> {
       eventChannelUnsafe.on('/zoom', onZoom)
       cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
 
-      if (props.sizeToFit) {
-        const sizeToFit = (
-          width?: number,
-          height = Math.min(0.4 * window.innerHeight, Math.max(250, editor.getContentHeight()))
-        ) => {
-          // if we know 1) the height of the content won't change, and
-          // 2) we are running in "simple" mode (this is mostly the case
-          // for inline editor components, as opposed to editor
-          // components that are intended to fill the full view), then:
-          // size the height to fit the content
-          state.wrapper.style.flexBasis = height + 'px'
-        }
+      const sizeToFit = !props.sizeToFit
+        ? () => true
+        : (width?: number, height = Math.min(0.4 * window.innerHeight, Math.max(250, editor.getContentHeight()))) => {
+            // if we know 1) the height of the content won't change, and
+            // 2) we are running in "simple" mode (this is mostly the case
+            // for inline editor components, as opposed to editor
+            // components that are intended to fill the full view), then:
+            // size the height to fit the content
+            state.wrapper.style.flexBasis = height + 'px'
+          }
+
+      sizeToFit()
+
+      const observer = new ResizeObserver(entries => {
+        sizeToFit(entries[0].contentRect.width, entries[0].contentRect.height)
+        editor.layout()
+      })
+      observer.observe(state.wrapper)
+      cleaners.push(() => observer.disconnect())
+
+      const onTabLayoutChange = () => {
         sizeToFit()
-
-        const observer = new ResizeObserver(entries => {
-          sizeToFit(entries[0].contentRect.width, entries[0].contentRect.height)
-          editor.layout()
-        })
-        observer.observe(state.wrapper)
-        cleaners.push(() => observer.disconnect())
-
-        const onTabLayoutChange = () => sizeToFit()
-        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
-      } else {
-        const onTabLayoutChange = () => {
-          editor.layout()
-        }
-        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+        editor.layout()
       }
+      eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+      cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
 
       editor['clearDecorations'] = () => {
         // debug('clearing decorations', editor['__cloudshell_decorations'])

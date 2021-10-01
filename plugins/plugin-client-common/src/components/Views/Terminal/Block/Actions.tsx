@@ -36,11 +36,17 @@ type Props = InputOptions & {
   model?: BlockModel
 }
 
-function Action(props: { onClick: (evt: React.SyntheticEvent) => void; icon: SupportedIcon; title: string }) {
+function Action(props: {
+  onClick: (evt: React.SyntheticEvent) => void
+  icon: SupportedIcon
+  iconB?: SupportedIcon
+  title: string
+}) {
   return (
     <TwoFaceIcon
       a={props.icon}
-      b="Checkmark"
+      b={props.iconB || 'Checkmark'}
+      delay={4000}
       onClick={props.onClick}
       classNameB="green-text"
       className="kui--block-action"
@@ -53,7 +59,9 @@ export default class Actions extends React.PureComponent<Props> {
   private readonly _rerunHandler = () => {
     if (hasUUID(this.props.model)) {
       this.props.tab.REPL.reexec(this.props.command, { execUUID: this.props.model.execUUID })
-      this.props.willUpdateExecutable()
+      if (this.props.willUpdateExecutable) {
+        this.props.willUpdateExecutable()
+      }
     }
   }
 
@@ -65,9 +73,13 @@ export default class Actions extends React.PureComponent<Props> {
       this.props.tab &&
       this.props.command
     ) {
+      if (isBeingRerun(this.props.model)) {
+        return <React.Fragment />
+      }
       return (
         <Action
           icon={icon}
+          iconB="At"
           onClick={this._rerunHandler}
           title={strings(icon === 'Retry' ? 'Re-execute this command' : 'Execute this command')}
         />

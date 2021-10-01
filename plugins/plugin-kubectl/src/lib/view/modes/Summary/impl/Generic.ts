@@ -18,6 +18,7 @@ import prettyPrintDuration from 'pretty-ms'
 import { REPL, Table } from '@kui-shell/core'
 
 import toMap from '../../table-to-map'
+import toDescriptionList from './convert'
 import { KubeResource } from '../../../../model/resource'
 import { withKubeconfigFrom } from '../../../../../controller/kubectl/options'
 
@@ -38,5 +39,5 @@ export default async function GenericSummary(resource: KubeResource, repl: REPL)
     `kubectl get ${resource.kind} ${resource.metadata.name} -n ${resource.metadata.namespace} -o wide`
   )
 
-  return toMap(await repl.qexec<Table>(cmd))
+  return toDescriptionList(toMap(await repl.qexec<Table>(cmd)))
 }

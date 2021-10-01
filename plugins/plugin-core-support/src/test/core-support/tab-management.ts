@@ -125,6 +125,7 @@ describe('core new tab conditional', function(this: Common.ISuite) {
 describe('core new tab onClose', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const closers = [
     // Variant 1: execute `tab close` command
@@ -161,7 +162,7 @@ describe('core new tab onClose', function(this: Common.ISuite) {
     const key = 'foo-' + idx
     const value = '999999-' + idx
 
-    Util.closeAllExceptFirstTab.bind(this)()
+    // Util.closeAllExceptFirstTab.bind(this)(1)
     it(`should successfully open a new tab with onClose handler ${key}=${value}`, async () => {
       try {
         await CLI.command(`tab new --onClose "kuiconfig set ${key} ${value}"`, this.app)

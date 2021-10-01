@@ -15,10 +15,11 @@
  */
 
 import { v4 as uuid } from 'uuid'
-import { fileSync as tmpFile } from 'tmp'
 import { writeFileSync } from 'fs'
+import { strictEqual } from 'assert'
+import { fileSync as tmpFile } from 'tmp'
 
-import { Common, CLI, ReplExpect } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** expect the given folder within the help tree */
 export const header = (folder: string) => folder
@@ -141,11 +142,18 @@ describe(`bash-like commands ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       .catch(Common.oops(this, true))
   )
 
-  Common.pit('should echo ho to a file', () =>
-    CLI.command(`echo ho > "${dirname}"/testTmp`, this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true))
-  )
+  Common.pit('should echo ho to a file', async () => {
+    try {
+      const res = await CLI.command(`echo ho > "${dirname}"/testTmp`, this.app).then(ReplExpect.ok)
+
+      // verify that there is indeed no output in the block
+      // see https://github.com/kubernetes-sigs/kui/issues/8089
+      const txt = await this.app.client.$(Selectors.OUTPUT_N(res.count, res.splitIndex)).then(_ => _.getText())
+      strictEqual(txt.length, 0, 'Expect no output in the block, due to redirect')
+    } catch (err) {
+      await Common.oops(this, true)(err)
+    }
+  })
   Common.pit('should cat that file', () =>
     CLI.command(`cat "${dirname}"/testTmp`, this.app)
       .then(ReplExpect.okWithPtyOutput('ho'))

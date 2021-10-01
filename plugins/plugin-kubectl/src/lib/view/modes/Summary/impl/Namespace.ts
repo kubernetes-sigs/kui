@@ -28,6 +28,7 @@ import { age } from './Generic'
 import { Namespace } from '../../../../model/resource'
 import { withKubeconfigFrom } from '../../../../../controller/kubectl/options'
 import toMap from '../../table-to-map'
+import toDescriptionList from './convert'
 
 const debug = Debug('plugin-kubectl/view/modes/Summary')
 
@@ -52,5 +53,5 @@ export default async function NamespaceSummary(ns: Namespace, repl: REPL) {
     debug('no quota found')
   }
 
-  return summary
+  return toDescriptionList(summary)
 }

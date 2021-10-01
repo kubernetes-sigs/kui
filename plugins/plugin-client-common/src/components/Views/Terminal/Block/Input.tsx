@@ -19,12 +19,12 @@ import prettyPrintDuration from 'pretty-ms'
 import { Tab as KuiTab, doCancel, i18n } from '@kui-shell/core'
 
 import Actions from './Actions'
+import Spinner from './Spinner'
 import onPaste from './OnPaste'
 import onKeyDown from './OnKeyDown'
 import onKeyPress from './OnKeyPress'
 import isInViewport from '../visible'
 import KuiContext from '../../../Client/context'
-import { Plane as Spinner } from './Spinner'
 import { TabCompletionState } from './TabCompletion'
 import ActiveISearch, { onKeyUp } from './ActiveISearch'
 import whenNothingIsSelected from '../../../../util/selection'
@@ -33,13 +33,15 @@ import {
   BlockModel,
   isActive,
   isActiveAndDifferent,
-  isProcessing,
+  isBeingRerun,
+  isProcessingOrBeingRerun as isProcessing,
   isFinished,
   hasCommand,
   isEmpty,
   hasStartEvent,
   isWithCompleteEvent,
   isReplay,
+  hasBeenRerun,
   hasUUID,
   hasValue
 } from './BlockModel'
@@ -185,7 +187,7 @@ export interface State {
 
   /** durationDom, used for counting up duration while Processing */
   counter?: ReturnType<typeof setInterval>
-  durationDom?: HTMLSpanElement
+  durationDom?: React.RefObject<HTMLSpanElement>
 
   /** typeahead completion? */
   typeahead?: string
@@ -336,6 +338,7 @@ export default class Input extends InputProvider {
     this.state = {
       model: props.model,
       isReEdit: false,
+      durationDom: React.createRef(),
       execUUID: hasUUID(props.model) ? props.model.execUUID : undefined,
       prompt: undefined
     }
@@ -348,7 +351,11 @@ export default class Input extends InputProvider {
 
   /** @return the value to be added to the prompt */
   protected static valueToBeDisplayed(props: Props) {
-    return hasValue(props.model) ? props.model.value : hasCommand(props.model) ? props.model.command : ''
+    return !isBeingRerun(props.model) && hasValue(props.model)
+      ? props.model.value
+      : hasCommand(props.model)
+      ? props.model.command
+      : ''
   }
 
   /** Owner wants us to focus on the current prompt */
@@ -364,18 +371,25 @@ export default class Input extends InputProvider {
     )
   }
 
-  private static newCountup(startTime: number, durationDom: HTMLSpanElement) {
+  private static newCountup(startTime: number, durationDom: State['durationDom']) {
     return setInterval(() => {
       const millisSinceStart = (~~(Date.now() - startTime) / 1000) * 1000
-      if (millisSinceStart > 0) {
-        durationDom.innerText = prettyPrintDuration(millisSinceStart)
+      if (millisSinceStart > 0 && durationDom.current) {
+        durationDom.current.innerText = prettyPrintDuration(millisSinceStart)
       }
     }, 1000)
   }
 
   private static updateCountup(props: Props, state: State) {
+    if (isBeingRerun(props.model)) {
+      if (state.counter) {
+        clearInterval(state.counter)
+      }
+      return Input.newCountup(props.model.startTime, state.durationDom)
+    }
+
     const counter = isProcessing(props.model)
-      ? state.counter || (state.durationDom && Input.newCountup(props.model.startTime, state.durationDom))
+      ? state.counter || Input.newCountup(props.model.startTime, state.durationDom)
       : undefined
     if (!counter && state.counter) {
       clearInterval(state.counter)
@@ -697,7 +711,11 @@ export default class Input extends InputProvider {
    *
    */
   private fancyValue(value: string) {
-    if (isWithCompleteEvent(this.props.model) && this.props.model.completeEvent.pipeStages !== undefined) {
+    if (
+      !isBeingRerun(this.props.model) &&
+      isWithCompleteEvent(this.props.model) &&
+      this.props.model.completeEvent.pipeStages !== undefined
+    ) {
       return <FancyPipeline REPL={this.props.tab.REPL} {...this.props.model.completeEvent.pipeStages} />
     } else if (hasStartEvent(this.props.model) && this.props.model.startEvent.pipeStages !== undefined) {
       return <FancyPipeline REPL={this.props.tab.REPL} {...this.props.model.startEvent.pipeStages} />
@@ -710,11 +728,20 @@ export default class Input extends InputProvider {
     console.error(error, errorInfo)
   }
 
+  public componentWillUnmount() {
+    if (this.state.counter) {
+      clearInterval(this.state.counter)
+    }
+  }
+
   /** render a tag for experimental command */
   private experimentalTag() {
     if (this.props.isExperimental) {
       return (
-        <span className="kui--repl-block-right-element left-pad kui--repl-block-experimental-tag-wrapper">
+        <span
+          className="kui--repl-block-right-element left-pad kui--repl-block-experimental-tag-wrapper"
+          key="experimental-tag"
+        >
           <Tag spanclassname="kui--repl-block-experimental-tag" title={strings('HoverExperimentalTag')} type="warning">
             {strings('ExperimentalTag')}
           </Tag>
@@ -726,12 +753,17 @@ export default class Input extends InputProvider {
   /** render the time the block started processing */
   private timestamp() {
     if (!isEmpty(this.props.model) && (isProcessing(this.props.model) || isFinished(this.props.model))) {
-      const replayed = isReplay(this.props.model)
-      const completed = this.props.model.startTime && isWithCompleteEvent(this.props.model)
-      const showingDate = !replayed && completed && !this.props.isWidthConstrained
+      const replayedAndNotRerun =
+        isReplay(this.props.model) && !hasBeenRerun(this.props.model) && !isBeingRerun(this.props.model)
+      const completed =
+        this.props.model.startTime && isWithCompleteEvent(this.props.model) && !isBeingRerun(this.props.model)
+      const showingDate = !replayedAndNotRerun && completed && !this.props.isWidthConstrained
 
-      const now = isWithCompleteEvent(this.props.model) ? this.props.model.completeEvent.completeTime : Date.now()
-      const duration = !replayed && now && prettyPrintDuration(Math.max(0, now - this.props.model.startTime))
+      const now =
+        isWithCompleteEvent(this.props.model) && !isBeingRerun(this.props.model)
+          ? this.props.model.completeEvent.completeTime
+          : Date.now()
+      const duration = !replayedAndNotRerun && now && prettyPrintDuration(Math.max(0, now - this.props.model.startTime))
       const noParen = !showingDate || !duration
       const openParen = noParen ? '' : '('
       const closeParen = noParen ? '' : ')'
@@ -747,7 +779,7 @@ export default class Input extends InputProvider {
             key={isProcessing(this.props.model).toString()}
           >
             {showingDate && new Date(this.props.model.startTime).toLocaleTimeString()}
-            <span className="small-left-pad sub-text" ref={c => this.setState({ durationDom: c })}>
+            <span className="small-left-pad sub-text" ref={this.state.durationDom}>
               {children}
             </span>
           </span>
@@ -758,11 +790,7 @@ export default class Input extends InputProvider {
 
   /** spinner for processing blocks */
   private spinner() {
-    return (
-      <span className="kui--repl-block-spinner">
-        <Spinner />
-      </span>
-    )
+    return <Spinner key="spinner" />
   }
 
   /** error icon for error blocks */

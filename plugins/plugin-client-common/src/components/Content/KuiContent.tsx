@@ -32,19 +32,21 @@ import {
   isFunctionContent,
   isScalarContent,
   isStringDiffContent,
+  isDescriptionList,
   MultiModalResponse,
   ToolbarProps
 } from '@kui-shell/core'
 
 import Eval from './Eval'
-import Editor from './Editor'
-import DiffEditor from './Editor/DiffEditor'
+const Editor = React.lazy(() => import('./Editor'))
+const DiffEditor = React.lazy(() => import('./Editor/DiffEditor'))
 import renderTable from './Table'
 import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
 import { KuiContext } from '../../'
-import RadioTableSpi from '../spi/RadioTable'
+const RadioTableSpi = React.lazy(() => import('../spi/RadioTable'))
+const DescriptionList = React.lazy(() => import('../spi/DescriptionList'))
 
 export type KuiMMRProps = ToolbarProps & {
   tab: KuiTab
@@ -140,6 +142,14 @@ export default class KuiContent extends React.PureComponent<KuiMMRProps, State> 
     } else if (isScalarContent(mode)) {
       if (isReactProvider(mode)) {
         return mode.react({ willUpdateToolbar })
+      } else if (isDescriptionList(mode.content)) {
+        return (
+          <div className="flex-fill flex-layout flex-align-stretch">
+            <div className="scrollable scrollable-auto scrollable-x flex-fill flex-layout flex-align-stretch">
+              <DescriptionList groups={mode.content.spec.groups} className="left-pad right-pad" />
+            </div>
+          </div>
+        )
       } else if (isRadioTable(mode.content)) {
         const radioTable = mode.content
         // ^^^ Notes: Even though isRadioTable(mode.content) checks the type of mode.content,

@@ -48,6 +48,7 @@ const mode: ModeRegistration<KubeResourceWithInvolvedObject> = {
   mode: {
     mode: 'involvedObject',
     label: strings('Show Involved Object'),
+    showRelatedResource: true,
     command,
     kind: 'drilldown'
   }

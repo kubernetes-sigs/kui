@@ -31,6 +31,15 @@ body[kui-theme-style] .monaco-editor .keyword {
   color: var(--color-base0C);
 }
 
+body[kui-theme-style] .monaco-editor {
+  .focused .selected-text {
+    background-color: var(--color-selection-background);
+  }
+  .selected-text {
+    background-color: var(--color-base02);
+  }
+}
+
 body[kui-theme-style] .monaco-editor .mtk6,
 body[kui-theme-style] .monaco-editor .selector-tag,
 body[kui-theme-style] .monaco-editor .title,
@@ -143,7 +152,8 @@ body[kui-theme-style] .cdr.bracket-match {
 /* current line highlight */
 body[kui-theme-style] .monaco-editor .margin-view-overlays .current-line-margin,
 body[kui-theme-style] .monaco-editor .view-overlays .current-line {
-  border-color: var(--color-base03);
+  mix-blend-mode: overlay;
+  border-color: var(--color-sidecar-toolbar-background);
 }
 
 /* cursor */
@@ -152,5 +162,5 @@ body[kui-theme-style] .monaco-editor .cursor {
 }
 
 body[kui-theme-style] .monaco-editor .folded-background {
-  background-color: var(--color-table-border3);
+  background-color: var(--color-base03);
 }

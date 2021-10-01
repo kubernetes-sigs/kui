@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import Group from '../Group'
+import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
+
+import Group from '../Group'
 
 async function check({ REPL }: Pick<Arguments, 'REPL'>) {
   try {
@@ -27,7 +29,8 @@ async function check({ REPL }: Pick<Arguments, 'REPL'>) {
 }
 
 export default {
-  group: Group.CLI,
-  label: 'Cloud: valid KUBECONFIG',
+  group: Group.Cloud,
+  label: (checkResult?: false | string) =>
+    checkResult === undefined ? 'KUBECONFIG' : !checkResult ? 'no valid config found' : colors.gray(checkResult),
   check
 }

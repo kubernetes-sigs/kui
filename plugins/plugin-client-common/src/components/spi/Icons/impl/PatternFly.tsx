@@ -30,6 +30,7 @@ import {
   ColumnsIcon as TerminalPlusSidecar,
   TimesIcon /* WindowCloseIcon */ as WindowClose,
   EditIcon as Edit,
+  InProgressIcon as InProgress,
   ExpandIcon as WindowMaximize,
   CompressIcon as WindowMinimize,
   QuestionCircleIcon /* ToolsIcon */ as Help,
@@ -45,12 +46,13 @@ import {
   EyeIcon as Eye,
   EyeSlashIcon as EyeSlash,
   AtIcon as At,
+  ResourcesFullIcon as Current,
   CodeBranchIcon as CodeBranch,
   ArrowLeftIcon as Back,
   ArrowRightIcon as Forward,
   InfoCircleIcon as Info,
   ExclamationTriangleIcon as Warning,
-  BombIcon as Oops,
+  ExclamationCircleIcon as Oops,
   ListIcon as List,
   LightbulbIcon as Lightbulb,
   ThIcon as Grid,
@@ -101,6 +103,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Contrast {...props} />
     case 'Copy':
       return <Copy {...props} />
+    case 'Current':
+      return <Current {...props} />
     case 'Edit':
       return <Edit {...props} />
     case 'Clear':
@@ -121,6 +125,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Help style={size20} {...props} />
     case 'Info':
       return <Info {...props} />
+    case 'InProgress':
+      return <InProgress {...props} />
     case 'List':
       return <List {...props} />
     case 'Link':

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+@use 'sass:math';
 @import 'mixins';
 
 $input-padding: 1em;
+$margin-for-right-elements: calc(#{math.div(0.875 * $input-padding, $right-element-font-size-factor)} + 1px) 0;
 
 .kui--18px {
   @include ReplayedBlock {
@@ -36,6 +38,21 @@ $input-padding: 1em;
       @include Input {
         padding: #{0.875 * $input-padding} 0;
         padding-right: $input-padding;
+      }
+
+      @include Spinner {
+        margin: $margin-for-right-elements;
+      }
+
+      /** Adjust and always show timestamp */
+      @include BlockTimestamp {
+        margin: $margin-for-right-elements;
+        margin-right: 0.25em;
+      }
+      &:hover {
+        @include BlockTimestamp {
+          opacity: 1;
+        }
       }
     }
 
