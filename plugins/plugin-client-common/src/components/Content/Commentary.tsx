@@ -15,11 +15,12 @@
  */
 
 import React from 'react'
-import { CommentaryResponse, REPL, i18n, isReadOnlyClient } from '@kui-shell/core'
+import { CommentaryResponse, REPL, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
 import Button from '../spi/Button'
 import SimpleEditor from './Editor/SimpleEditor'
+import { MutabilityContext } from '../Client/MutabilityContext'
 
 const strings = i18n('plugin-client-common')
 
@@ -169,17 +170,21 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   private card() {
     return (
-      <span className="kui--commentary-card" onDoubleClick={isReadOnlyClient() ? undefined : this._setEdit}>
-        <Card
-          {...this.props}
-          data-is-editing={this.state.isEdit || undefined}
-          header={this.state.isEdit && strings('Editing Comment as Markdown')}
-          footer={this.state.isEdit && this.toolbar()}
-        >
-          {this.state.textValue}
-          {this.state.isEdit && this.editor()}
-        </Card>
-      </span>
+      <MutabilityContext.Consumer>
+        {value => (
+          <span className="kui--commentary-card" onDoubleClick={!value.editable ? undefined : this._setEdit}>
+            <Card
+              {...this.props}
+              data-is-editing={this.state.isEdit || undefined}
+              header={this.state.isEdit && strings('Editing Comment as Markdown')}
+              footer={this.state.isEdit && this.toolbar()}
+            >
+              {this.state.textValue}
+              {this.state.isEdit && this.editor()}
+            </Card>
+          </span>
+        )}
+      </MutabilityContext.Consumer>
     )
   }
 

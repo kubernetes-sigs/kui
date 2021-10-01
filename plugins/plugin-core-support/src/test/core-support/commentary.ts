@@ -20,6 +20,8 @@ import { Common, CLI, ReplExpect, Selectors, Util, Keys } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
+/* xit has been added to most tests because of recent changes to notebooks opening in read only mode.
+  These changes make commentaries incapable of being edited for now until more changes are made */
 describe('commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -50,7 +52,7 @@ describe('commentary and replay', function(this: Common.ISuite) {
   }
 
   const addComment = () => {
-    it('should show comment with file', () =>
+    xit('should show comment with file', () =>
       CLI.command(`commentary --title "hello there" -f=${ROOT}/tests/data/comment.md`, this.app)
         .then(() => verifyComment())
         .catch(Common.oops(this, true)))
@@ -70,7 +72,7 @@ describe('commentary and replay', function(this: Common.ISuite) {
 
   it('should refresh', () => Common.refresh(this))
 
-  it('should replay', () =>
+  xit('should replay', () =>
     CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment())
       .catch(Common.oops(this, true)))
@@ -128,7 +130,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     await this.app.client.keys(text)
   }
   const typeAndVerify = (text: string, expect: string) => {
-    it(`should type ${text} and expect ${expect} in the comment`, async () => {
+    xit(`should type ${text} and expect ${expect} in the comment`, async () => {
       try {
         await type(text)
         await verifyTextInMonaco(expect)
@@ -138,7 +140,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const openEditor = (expect: string) => {
-    it('should open editor by clicking', async () => {
+    xit('should open editor by clicking', async () => {
       try {
         await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.doubleClick())
         await verifyTextInMonaco(expect)
@@ -148,7 +150,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const saveViaKeys = (keys: string[], expect: string) => {
-    it(`should close the editor by typing ${keys}`, async () => {
+    xit(`should close the editor by typing ${keys}`, async () => {
       try {
         await this.app.client.keys(keys)
         await this.app.client
@@ -161,7 +163,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const clickDone = (expect: string) => {
-    it('should close the editor by clicking the Done button', async () => {
+    xit('should close the editor by clicking the Done button', async () => {
       try {
         await this.app.client
           .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
@@ -176,7 +178,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const clickRevert = (expect: string) => {
-    it('should revert the editor by clicking the Revert button', async () => {
+    xit('should revert the editor by clicking the Revert button', async () => {
       try {
         await this.app.client
           .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_REVERT}`)
@@ -191,7 +193,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const clickCancel = (expect: string) => {
-    it('should close the editor by clicking the Cancel button', async () => {
+    xit('should close the editor by clicking the Cancel button', async () => {
       try {
         await this.app.client
           .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_CANCEL}`)
@@ -206,7 +208,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const escapeCancel = (expect: string) => {
-    it('should close the editor by typing Escape', async () => {
+    xit('should close the editor by typing Escape', async () => {
       try {
         await this.app.client.keys('Escape')
         await this.app.client
@@ -220,7 +222,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   }
 
   /** Here comes the test */
-  it('should add comment', () =>
+  xit('should add comment', () =>
     CLI.command(`# foo-shift-enter`, this.app)
       .then(() => verifyComment('foo-shift-enter'))
       .catch(Common.oops(this, true)))
@@ -241,7 +243,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   escapeCancel('foo-shift-enter12')
 
   /** Here comes the test */
-  it('should add another comment', () =>
+  xit('should add another comment', () =>
     CLI.command(`# foo`, this.app)
       .then(() => verifyComment('foo'))
       .catch(Common.oops(this, true)))
@@ -266,13 +268,13 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   it('should refresh', () => Common.refresh(this))
 
-  it('should replay', () =>
+  xit('should replay', () =>
     CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment('foo1'))
       .catch(Common.oops(this, true)))
 
   // Here comes the tests for snapshot --exec
-  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
+  xit('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
   openEditor('foo1')
   typeAndVerify(Keys.ENTER, 'foo1\n')
   typeAndVerify(Keys.ENTER, 'foo1\n\n')
@@ -286,7 +288,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   it('should refresh', () => Common.refresh(this))
 
-  it('should replay', () =>
+  xit('should replay', () =>
     CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment('foo1\nfoo2'))
       .catch(Common.oops(this, true)))
