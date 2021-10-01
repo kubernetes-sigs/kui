@@ -25,3 +25,21 @@
     @content;
   }
 }
+
+@mixin Minor {
+  &.pf-m-minor {
+    @content;
+  }
+}
+
+@mixin Icon {
+  .pf-c-progress-stepper__step-icon {
+    @content;
+  }
+}
+
+@mixin Main {
+  .pf-c-progress-stepper__step-main {
+    @content;
+  }
+}
