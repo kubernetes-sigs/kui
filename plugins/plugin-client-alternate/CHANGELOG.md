@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.5](https://github.com/kubernetes-sigs/kui/compare/v10.6.4...v10.6.5) (2021-10-01)
+
+**Note:** Version bump only for package @kui-shell/plugin-client-alternate
+
 ## [10.6.4](https://github.com/kubernetes-sigs/kui/compare/v10.6.3...v10.6.4) (2021-09-30)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-alternate

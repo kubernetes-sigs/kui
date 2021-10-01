@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.5](https://github.com/IBM/kui/compare/v10.6.4...v10.6.5) (2021-10-01)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Commentary text sometimes renders with a monospace font ([32ea114](https://github.com/IBM/kui/commit/32ea114)), closes [#8109](https://github.com/IBM/kui/issues/8109)
+- **plugins/plugin-client-common:** minor UI tweaks for progress stepper ([1dd22a3](https://github.com/IBM/kui/commit/1dd22a3)), closes [#8113](https://github.com/IBM/kui/issues/8113)
+- **plugins/plugin-client-common:** Tooltip contrast issues ([a4f6eb3](https://github.com/IBM/kui/commit/a4f6eb3)), closes [#8105](https://github.com/IBM/kui/issues/8105)
+
+### Features
+
+- **plugins/plugin-client-common:** Add support for minor steps to ProgressStepper ([9e81991](https://github.com/IBM/kui/commit/9e81991)), closes [#8103](https://github.com/IBM/kui/issues/8103)
+
 ## [10.6.4](https://github.com/IBM/kui/compare/v10.6.3...v10.6.4) (2021-09-30)
 
 ### Features

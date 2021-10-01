@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.5](https://github.com/IBM/kui/compare/v10.6.4...v10.6.5) (2021-10-01)
+
+### Bug Fixes
+
+- improve color contrast of links in inverted splits ([8cc9bd5](https://github.com/IBM/kui/commit/8cc9bd5)), closes [#8086](https://github.com/IBM/kui/issues/8086)
+
 ## [10.6.4](https://github.com/IBM/kui/compare/v10.6.3...v10.6.4) (2021-09-30)
 
 **Note:** Version bump only for package @kui-shell/plugin-carbon-themes
