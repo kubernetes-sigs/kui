@@ -15,12 +15,13 @@
  */
 
 import React from 'react'
-import { Tab, i18n, isOfflineClient, isReadOnlyClient } from '@kui-shell/core'
+import { Tab, i18n } from '@kui-shell/core'
 
 import { InputOptions } from './Input'
 import { SupportedIcon } from '../../../spi/Icons'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
-import BlockModel, { hasUUID, isOutputOnly, isReplay, isRerunable, hasBeenRerun } from './BlockModel'
+import BlockModel, { hasUUID, isOutputOnly, isRerunable, hasBeenRerun } from './BlockModel'
+import { MutabilityContext } from '../../../Client/MutabilityContext'
 
 const strings = i18n('plugin-client-common')
 
@@ -146,30 +147,37 @@ export default class Actions extends React.PureComponent<Props> {
   } */
 
   public render() {
-    const readonly = isReplay(this.props.model) && isReadOnlyClient()
-
-    if (isReplay(this.props.model)) {
-      if (this.props.isExecutable && !this.props.isSectionBreak) {
-        return (
-          <div className="kui--block-actions-buttons" data-has-been-rerun={hasBeenRerun(this.props.model) || undefined}>
-            {this.rerunAction('Play')}
-          </div>
-        )
-      }
-    } else if (!isOfflineClient()) {
-      return (
-        <div className="kui--block-actions-buttons kui--inverted-color-context">
-          <div className="kui-block-actions-others">
-            {!readonly && !this.props.isSectionBreak && this.copyAction()}
-            {!readonly && this.linkAction()}
-            {/* !readonly && !this.props.isSectionBreak && this.sectionAction() */}
-            {this.props.isExecutable && !this.props.isSectionBreak && this.rerunAction('Play')}
-          </div>
-          {!readonly && this.removeAction()}
-        </div>
-      )
-    }
-
-    return <React.Fragment />
+    return (
+      <MutabilityContext.Consumer>
+        {value => {
+          if (!value.editable && value.executable) {
+            if (this.props.isExecutable && !this.props.isSectionBreak) {
+              return (
+                <div
+                  className="kui--block-actions-buttons"
+                  data-has-been-rerun={hasBeenRerun(this.props.model) || undefined}
+                >
+                  {this.rerunAction('Play')}
+                </div>
+              )
+            }
+          } else if (!value.editable && !value.executable) {
+            return <React.Fragment />
+          } else {
+            return (
+              <div className="kui--block-actions-buttons kui--inverted-color-context">
+                <div className="kui-block-actions-others">
+                  {!this.props.isSectionBreak && this.copyAction()}
+                  {value.editable && this.linkAction()}
+                  {/* !readonly && !this.props.isSectionBreak && this.sectionAction() */}
+                  {value.executable && !this.props.isSectionBreak && this.rerunAction('Play')}
+                </div>
+                {value.editable && this.removeAction()}
+              </div>
+            )
+          }
+        }}
+      </MutabilityContext.Consumer>
+    )
   }
 }

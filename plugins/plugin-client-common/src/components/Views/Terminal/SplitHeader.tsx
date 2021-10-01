@@ -15,10 +15,12 @@
  */
 
 import React from 'react'
-import { i18n, isReadOnlyClient } from '@kui-shell/core'
+import { i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
+import { MutabilityContext } from '../../Client/MutabilityContext'
+
 import '../../../../web/scss/components/Terminal/SplitHeader.scss'
 
 const strings = i18n('plugin-client-common')
@@ -70,14 +72,18 @@ export default class SplitHeader extends React.PureComponent<Props> {
 
   public render() {
     return (
-      !isReadOnlyClient() && (
-        <div className="kui--split-header flex-layout">
-          <div className="flex-fill" />
-          {this.invertButton()}
-          {this.clearButton()}
-          {this.closeButton()}
-        </div>
-      )
+      <MutabilityContext.Consumer>
+        {value =>
+          value.editable && (
+            <div className="kui--split-header flex-layout">
+              <div className="flex-fill" />
+              {this.invertButton()}
+              {this.clearButton()}
+              {this.closeButton()}
+            </div>
+          )
+        }
+      </MutabilityContext.Consumer>
     )
   }
 }

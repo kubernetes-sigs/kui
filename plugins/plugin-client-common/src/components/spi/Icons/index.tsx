@@ -41,6 +41,7 @@ export type SupportedIcon =
   | 'Link'
   | 'Lightbulb'
   | 'Location'
+  | 'Lock'
   | 'MoveUp'
   | 'MoveDown'
   | 'Network'

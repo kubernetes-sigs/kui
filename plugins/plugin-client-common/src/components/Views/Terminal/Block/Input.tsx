@@ -46,6 +46,7 @@ import {
 import { BlockViewTraits, BlockOperationTraits } from './'
 
 import FancyPipeline from './FancyPipeline'
+import { MutabilityContext } from '../../../Client/MutabilityContext'
 
 const Tag = React.lazy(() => import('../../../spi/Tag'))
 const TextArea = React.lazy(() => import('../../../spi/TextArea'))
@@ -644,18 +645,22 @@ export default class Input extends InputProvider {
     // for Processing or Done blocks, render the value as a plain div
     // for Processing, though, we will need an inputOverlay... to capture ctrl+c
     return (
-      <div
-        data-input-count={this.props.idx}
-        className={'repl-input-element-wrapper flex-layout flex-fill'}
-        onClick={
-          isInProgress ? this._restoreFocusToOverlayInput : this.props.isExecutable ? this._onClickFinished : undefined
-        }
-      >
-        {this.fancyValue(value)}
-        {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
-        {isInProgress && this.inputOverlayForProcessingBlocks(value)}
-        {this.inputStatus(value)}
-      </div>
+      <MutabilityContext.Consumer>
+        {mutability => (
+          <div
+            data-input-count={this.props.idx}
+            className={'repl-input-element-wrapper flex-layout flex-fill'}
+            onClick={
+              isInProgress ? this._restoreFocusToOverlayInput : mutability.editable ? this._onClickFinished : undefined
+            }
+          >
+            {this.fancyValue(value)}
+            {value.length === 0 && <span className="kui--repl-input-element-nbsp">&nbsp;</span>}
+            {isInProgress && this.inputOverlayForProcessingBlocks(value)}
+            {this.inputStatus(value)}
+          </div>
+        )}
+      </MutabilityContext.Consumer>
     )
   }
 

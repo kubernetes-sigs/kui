@@ -37,6 +37,7 @@ import {
   TrashAltIcon as Trash,
   LevelUpAltIcon as Up,
   LinkIcon as Link,
+  LockIcon as Lock,
   ArrowUpIcon as MoveUp,
   ArrowDownIcon as MoveDown,
   MapMarkerAltIcon as Location,
@@ -128,6 +129,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Lightbulb {...props} />
     case 'Location':
       return <Location {...props} />
+    case 'Lock':
+      return <Lock {...props} />
     case 'MoveUp':
       return <MoveUp {...props} />
     case 'MoveDown':

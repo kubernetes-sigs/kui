@@ -62,6 +62,7 @@ export default class Tab extends React.PureComponent<Props, State> {
   private _unmounted = false
 
   private readonly closeTabRef = React.createRef<HTMLDivElement>()
+  private readonly lockTabRef = React.createRef<HTMLDivElement>()
 
   private onCommandStart: (evt: Event) => void
   private onCommandComplete: (evt: Event) => void
@@ -168,6 +169,42 @@ export default class Tab extends React.PureComponent<Props, State> {
     this.props.onCloseTab(this.props.idx)
   }
 
+  // private viewMode() {
+  //   // change this on inline expressions when done for neatness
+  //   if( isNotebook(this.props.theFileTheTabIsShowingInRawFormat) && isReadOnlyClient() ) {
+  //     // then show read only mode
+  //   }
+  //   else if ( isNotebook(this.props.theFileTheTabIsShowingInRawFormat) && !isReadOnlyClient() ) {
+  //     // then show edit mode
+  //   }
+  // }
+
+  // private viewModeButton() {
+  //   /* NOT done with this below. I need to find a way to access what file this tab is pointing to */
+  //   return (<React.Fragment>
+  //     <div className ="fa-lock" ref={this.lockTabRef} onClick={this._onClickCloseButton}>
+  //       <Icons icon="Lock" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+  //     </div>
+  //     <Tooltip reference={this.closeTabRef} position="bottom">
+  //       {strings2('Lock this tab', ctrlOrMeta('W'))}
+  //     </Tooltip>
+  //   </React.Fragment>)
+  // }
+
+  private makeCloseButton() {
+    /* NOT done with this below. I need to find a way to access what file this tab is pointing to */
+    return (
+      <React.Fragment>
+        <div className="kui--tab-close" ref={this.closeTabRef} onClick={this._onClickCloseButton}>
+          <Icons icon="WindowClose" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
+        </div>
+        <Tooltip reference={this.closeTabRef} position="bottom">
+          {strings2('Close this tab', ctrlOrMeta('W'))}
+        </Tooltip>
+      </React.Fragment>
+    )
+  }
+
   public render() {
     return (
       <NavItem
@@ -203,17 +240,8 @@ export default class Tab extends React.PureComponent<Props, State> {
           )}
           {!this.isUsingCommandName() && <span className="kui--tab--label-index"></span>}
         </div>
-
-        {this.props.closeable && (
-          <React.Fragment>
-            <div className="kui--tab-close" ref={this.closeTabRef} onClick={this._onClickCloseButton}>
-              <Icons icon="WindowClose" focusable="false" preserveAspectRatio="xMidYMid meet" aria-hidden="true" />
-            </div>
-            <Tooltip reference={this.closeTabRef} position="bottom">
-              {strings2('Close this tab', ctrlOrMeta('W'))}
-            </Tooltip>
-          </React.Fragment>
-        )}
+        {/* { this.viewMode() } */}
+        {this.props.closeable && this.makeCloseButton()}
       </NavItem>
     )
   }
