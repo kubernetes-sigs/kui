@@ -23,6 +23,7 @@ const Confirm = React.lazy(() => import('../Views/Confirm'))
 import getSize from '../Views/Terminal/getSize'
 import SessionInitStatus from './SessionInitStatus'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
+import { MutabilityState, MutabilityContext, initializeState } from './MutabilityContext'
 
 type Cleaner = () => void
 
@@ -60,6 +61,7 @@ type State = Partial<WithTab> & {
 
   /** grab a ref (below) so that we can maintain focus */
   _terminal: React.RefObject<ScrollableTerminal>
+  mutability: MutabilityState
 }
 
 /**
@@ -92,7 +94,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
       sessionInit: 'NotYet',
       showSessionInitDone: true,
       hasBottomStrip: false,
-      _terminal: React.createRef()
+      _terminal: React.createRef(),
+      mutability: initializeState(this.props.snapshot)
     }
   }
 
@@ -365,14 +368,16 @@ export default class TabContent extends React.PureComponent<Props, State> {
     this.activateHandlers.forEach(handler => handler(this.props.active))
 
     return (
-      <div
-        ref={this.state.tab}
-        className={this.tabClassName()}
-        data-tab-id={this.props.uuid}
-        data-has-bottom-strip={this.state.hasBottomStrip || undefined}
-      >
-        {this.body()}
-      </div>
+      <MutabilityContext.Provider value={this.state.mutability}>
+        <div
+          ref={this.state.tab}
+          className={this.tabClassName()}
+          data-tab-id={this.props.uuid}
+          data-has-bottom-strip={this.state.hasBottomStrip || undefined}
+        >
+          {this.body()}
+        </div>
+      </MutabilityContext.Provider>
     )
   }
 }
