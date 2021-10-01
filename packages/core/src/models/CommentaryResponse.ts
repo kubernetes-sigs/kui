@@ -47,7 +47,7 @@ export function isCommentarySectionBreak(entity: Entity): boolean {
 }
 
 export function maybeKuiLink(link: string): string {
-  const linkMatch = link.match('#kui-link-')
+  const linkMatch = link && link.match('#kui-link-')
   if (linkMatch) {
     return linkMatch.input.slice(1)
   }
