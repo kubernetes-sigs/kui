@@ -16,10 +16,21 @@
 
 @import 'mixins';
 
+@mixin LabelKey {
+  .kui--description-list-label-key {
+    @content;
+  }
+}
+
 @include LabelList {
   font-size: 0.75rem;
 
   @include DescriptionListTerm {
     background-color: var(--color-base02);
   }
+}
+
+@include LabelKey {
+  font-weight: 500;
+  color: var(--color-base0D);
 }

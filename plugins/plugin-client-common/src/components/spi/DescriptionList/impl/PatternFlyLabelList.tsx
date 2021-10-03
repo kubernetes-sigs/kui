@@ -31,7 +31,7 @@ export default function PatternFlyDescriptionList(props: Omit<Props, 'as'>) {
       <LabelGroup className="kui--description-list-group" numLabels={10}>
         {props.groups.map((group, idx) => (
           <Label key={idx} className="kui--description-list-term" data-term={group.term}>
-            <span className="map-key">{group.term}</span>
+            <span className="kui--description-list-label-key">{group.term}</span>
             <strong className="slightly-deemphasize small-left-pad small-right-pad">|</strong>
             <span className="map-value">{group.description}</span>
           </Label>
