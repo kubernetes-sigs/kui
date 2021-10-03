@@ -146,7 +146,11 @@ export default class KuiContent extends React.PureComponent<KuiMMRProps, State> 
         return (
           <div className="flex-fill flex-layout flex-align-stretch">
             <div className="scrollable scrollable-auto scrollable-x flex-fill flex-layout flex-align-stretch">
-              <DescriptionList groups={mode.content.spec.groups} className="left-pad right-pad" />
+              <DescriptionList
+                as={mode.content.spec.as}
+                groups={mode.content.spec.groups}
+                className="left-pad right-pad"
+              />
             </div>
           </div>
         )
