@@ -21,6 +21,9 @@ export default interface DescriptionList {
   kind: 'DescriptionList'
 
   spec: {
+    /** Display as a list of key-value pairs (default), or as a list of labels */
+    as?: 'default' | 'labels'
+
     groups: {
       /** The term being described */
       term: string

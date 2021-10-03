@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-.kui--description-list {
+@import 'mixins';
+
+@include DescriptionList {
   /* override terminal rule on .repl */
   white-space: normal;
+
+  @include DescriptionListTerm {
+    font-size: inherit;
+  }
 }

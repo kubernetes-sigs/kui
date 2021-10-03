@@ -42,7 +42,7 @@ function columnModifier(maxWidth: number) {
   }
 }
 
-export default function PatternFlyDescriptionList(props: Props) {
+export default function PatternFlyDescriptionList(props: Omit<Props, 'as'>) {
   const maxWidth = props.groups.reduce(
     (max, group) => Math.max(max, group.term.length /*, group.description.toString().length */),
     0

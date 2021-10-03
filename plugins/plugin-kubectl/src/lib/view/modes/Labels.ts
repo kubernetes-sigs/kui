@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { i18n, ModeRegistration } from '@kui-shell/core'
+import { i18n, ModeRegistration, DescriptionList } from '@kui-shell/core'
+
 import { KubeResource, hasLabels } from '../../model/resource'
 
 const strings = i18n('plugin-kubectl')
@@ -23,11 +24,12 @@ const strings = i18n('plugin-kubectl')
  * Turn the Labels into a DescriptionList
  *
  */
-function content(_, resource: KubeResource) {
+function content(_, resource: KubeResource): DescriptionList {
   return {
-    apiVersion: 'kui-shell/v1' as const,
-    kind: 'DescriptionList' as const,
+    apiVersion: 'kui-shell/v1',
+    kind: 'DescriptionList',
     spec: {
+      as: 'labels',
       groups: Object.keys(resource.metadata.labels)
         .filter(term => resource.metadata.labels[term].length > 0)
         .sort((a, b) => a.length - b.length)

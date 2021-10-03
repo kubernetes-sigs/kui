@@ -17,10 +17,15 @@
 import React from 'react'
 import Props from './model'
 
-const PatternFly4 = React.lazy(() => import('./impl/PatternFly'))
+const PatternFly4DescriptionList = React.lazy(() => import('./impl/PatternFly'))
+const PatternFly4LabelList = React.lazy(() => import('./impl/PatternFlyLabelList'))
 
 export { Props }
 
 export default function DescriptionListSpi(props: Props): React.ReactElement {
-  return <PatternFly4 {...props} />
+  if (!props.as || props.as === 'default') {
+    return <PatternFly4DescriptionList {...props} />
+  } else {
+    return <PatternFly4LabelList {...props} />
+  }
 }
