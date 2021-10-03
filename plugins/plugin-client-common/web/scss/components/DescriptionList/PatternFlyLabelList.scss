@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { DescriptionList } from '@kui-shell/core'
+@import 'mixins';
 
-export default interface Props {
-  className?: string
-  as: DescriptionList['spec']['as']
-  groups: DescriptionList['spec']['groups']
+@include LabelList {
+  font-size: 0.75rem;
+
+  @include DescriptionListTerm {
+    background-color: var(--color-base02);
+  }
 }
