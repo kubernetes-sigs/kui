@@ -187,8 +187,8 @@
 @mixin pf-t-dark {
   --pf-global--Color--dark-100: var(--color-base06);
   --pf-global--Color--dark-200: var(--color-base05);
-  --pf-global--Color--100: var(--pf-global--Color--light-100);
-  --pf-global--Color--200: var(--pf-global--Color--light-200);
+  --pf-global--Color--100: var(--pf-global--Color--dark-100);
+  --pf-global--Color--200: var(--pf-global--Color--dark-200);
   --pf-global--BorderColor--100: var(--pf-global--BorderColor--light-100);
   --pf-global--primary-color--100: var(--pf-global--primary-color--light-100);
   --pf-global--link--Color: var(--pf-global--link--Color--light);
@@ -201,7 +201,7 @@
 @mixin kui-patternfly-alignment-dark {
   @include kui-patternfly-alignment-base;
   --pf-global--palette--black-100: var(--color-base00);
-  --pf-global--palette--black-150: var(--color-base00);
+  --pf-global--palette--black-150: var(--color-base01);
   --pf-global--palette--black-200: var(--color-base01);
   --pf-global--palette--black-300: var(--color-base02);
   --pf-global--palette--black-400: var(--color-base02);
