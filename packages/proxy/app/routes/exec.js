@@ -77,6 +77,14 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
       })
     }
 
+    // pass through process.env.KUI_* to the user
+    // see https://github.com/kubernetes-sigs/kui/issues/8120
+    for (const key in process.env) {
+      if (/^KUI_/.test(key) && !options.env[key]) {
+        options.env[key] = process.env[key]
+      }
+    }
+
     const wsOpen = cmdline === 'bash websocket open'
     if (wsOpen) {
       // N is the random identifier for this connection
