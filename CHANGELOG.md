@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.6](https://github.com/IBM/kui/compare/v10.6.5...v10.6.6) (2021-10-04)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** Small tweaks for LabelList variant UI ([84ce879](https://github.com/IBM/kui/commit/84ce879)), closes [#8118](https://github.com/IBM/kui/issues/8118)
+
+### Features
+
+- **packages/proxy:** pass through KUI\_ env vars from proxy container to user ([5147fb7](https://github.com/IBM/kui/commit/5147fb7)), closes [#8120](https://github.com/IBM/kui/issues/8120)
+- use PatternFly LabelGroup for kubernetes Labels tab ([dcdeb2c](https://github.com/IBM/kui/commit/dcdeb2c)), closes [#8116](https://github.com/IBM/kui/issues/8116)
+
 ## [10.6.5](https://github.com/IBM/kui/compare/v10.6.4...v10.6.5) (2021-10-01)
 
 ### Bug Fixes
