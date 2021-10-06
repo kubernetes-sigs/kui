@@ -28,51 +28,55 @@ $margin-for-right-elements: calc(#{math.div(0.875 * $input-padding, $right-eleme
   }
 }
 
+/** These are special stylings for read only mode, for example, we don't wantt to show all block actions */
 @include Scrollback {
-  @include ReplayedBlock {
-    @include show-block-action-buttons;
+  @include FinishedBlock {
+    @include NotEditableAndExecutable {
+      @include show-block-action-buttons;
 
-    @include InputWrapper {
-      padding-left: $input-padding;
+      @include InputWrapper {
+        padding-left: $input-padding;
 
-      @include Input {
-        padding: #{0.875 * $input-padding} 0;
-        padding-right: $input-padding;
-      }
+        @include Input {
+          padding: #{0.875 * $input-padding} 0;
+          padding-right: $input-padding;
+        }
 
-      @include Spinner {
-        margin: $margin-for-right-elements;
-      }
+        @include Spinner {
+          margin: $margin-for-right-elements;
+        }
 
-      /** Adjust and always show timestamp */
-      @include BlockTimestamp {
-        margin: $margin-for-right-elements;
-        margin-right: 0.25em;
-      }
-      &:hover {
+        /** Adjust and always show timestamp */
         @include BlockTimestamp {
-          opacity: 1;
+          margin: $margin-for-right-elements;
+          margin-right: 0.25em;
+        }
+        &:hover {
+          @include BlockTimestamp {
+            opacity: 1;
+          }
         }
       }
-    }
 
-    @include Context {
-      padding: #{0.875 * $input-padding} 0;
-    }
+      @include Context {
+        padding: #{0.875 * $input-padding} 0;
+      }
 
-    @include BlockActions {
-      position: unset;
-      background-color: transparent;
+      @include BlockActions {
+        position: unset;
+        background-color: transparent;
 
-      &[data-has-been-rerun] {
-        @include BlockAction {
-          color: var(--color-gray);
+        &[data-has-been-rerun] {
+          @include BlockAction {
+            color: var(--color-gray);
+          }
         }
       }
-    }
-    @include BlockAction {
-      font-size: 1.375em;
-      color: var(--color-green);
+
+      @include BlockAction {
+        font-size: 1.375em;
+        color: var(--color-green);
+      }
     }
   }
 }

@@ -45,5 +45,9 @@ export function initializeState(model: TabModel['_snapshot']): MutabilityState {
   }
 }
 
+export function toggleReadOnlyBit(state: MutabilityState): MutabilityState {
+  return { editable: !state.editable, executable: state.executable }
+}
+
 /** Context variable to keep track of tab content viewing mode: edit or read only */
 export const MutabilityContext = React.createContext(defaultState)

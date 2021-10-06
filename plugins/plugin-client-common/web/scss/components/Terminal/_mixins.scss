@@ -259,6 +259,13 @@ $action-hover-delay: 210ms;
   }
 }
 
+/** Use this mixin as a decorator of e.g. ReplayedBlock or FinishedBlock */
+@mixin NotEditableAndExecutable {
+  &[data-is-executable]:not([data-is-editable]) {
+    @content;
+  }
+}
+
 /** Hide the In[1] bits */
 @mixin HideIn {
   @include Block {

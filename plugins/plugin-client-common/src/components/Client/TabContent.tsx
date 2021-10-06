@@ -23,7 +23,7 @@ const Confirm = React.lazy(() => import('../Views/Confirm'))
 import getSize from '../Views/Terminal/getSize'
 import SessionInitStatus from './SessionInitStatus'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
-import { MutabilityState, MutabilityContext, initializeState } from './MutabilityContext'
+import { initializeState, MutabilityContext, MutabilityState, toggleReadOnlyBit } from './MutabilityContext'
 
 type Cleaner = () => void
 
@@ -83,6 +83,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
   /** switching back or away from this tab */
   private activateHandlers: ((isActive: boolean) => void)[] = []
 
+  private readonly toggleEditMode = () => {
+    this.setState(state => ({
+      mutability: toggleReadOnlyBit(state.mutability)
+    }))
+  }
+
   public constructor(props: Props) {
     super(props)
 
@@ -127,6 +133,10 @@ export default class TabContent extends React.PureComponent<Props, State> {
     const onOffline = this.onOffline.bind(this)
     eventBus.onWithTabId('/tab/offline', this.props.uuid, onOffline)
     this.cleaners.push(() => eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
+
+    const onEditToggle = this.toggleEditMode
+    eventBus.onWithTabId('/kui/tab/edit/toggle', this.props.uuid, onEditToggle)
+    this.cleaners.push(() => eventBus.offWithTabId('/kui/tab/edit/toggle', this.props.uuid, onEditToggle))
   }
 
   private async onOffline() {
