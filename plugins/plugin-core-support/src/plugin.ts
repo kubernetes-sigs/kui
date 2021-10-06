@@ -23,6 +23,7 @@ import clear from './lib/cmds/clear'
 import dopar from './lib/cmds/dopar'
 import watch from './lib/cmds/watch'
 import base64 from './lib/cmds/base64'
+import mutable from './lib/cmds/toggle-editability'
 import prompt from './lib/cmds/prompt'
 import replay from './lib/cmds/replay'
 import sleep from './lib/cmds/sleep'
@@ -46,6 +47,7 @@ export default async (commandTree: Registrar) => {
     commandTree.listen('/dopar', dopar),
     watch(commandTree),
     base64(commandTree),
+    mutable(commandTree),
     prompt(commandTree),
     replay(commandTree),
     sleep(commandTree),

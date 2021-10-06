@@ -33,6 +33,7 @@ import {
   hideOutput,
   hasUUID
 } from './BlockModel'
+import { MutabilityContext } from '../../../Client/MutabilityContext'
 
 export type BlockViewTraits = {
   /** number of splits currently in this tab */
@@ -229,40 +230,45 @@ export default class Block extends React.PureComponent<Props, State> {
 
     return (
       (!this.props.noActiveInput || !isActive(this.props.model)) && (
-        <li
-          className={'repl-block ' + (hideOut ? '' : this.props.model.state.toString())}
-          data-is-executale={this.props.isExecutable}
-          data-is-section-break={this.props.isSectionBreak}
-          data-in-sections={this.props.sectionIdx !== undefined || undefined}
-          data-is-maximized={this.state.isMaximized || undefined}
-          data-is-output-only={isOutputOnly(this.props.model) || undefined}
-          data-is-empty={isEmpty(this.props.model) || undefined}
-          data-announcement={isAnnouncement(this.props.model) || undefined}
-          data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
-          data-scrollback-uuid={this.props.uuid}
-          data-input-count={this.props.idx}
-          data-is-focused={this.props.isFocused || undefined}
-          data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
-          data-is-replay={isReplay(this.props.model) || undefined}
-          ref={c => this.setState({ _block: c })}
-          tabIndex={isActive(this.props.model) ? -1 : 1}
-          onClick={this.props.willFocusBlock}
-          onFocus={this.props.onFocus}
-        >
-          <React.Fragment>
-            {isLinkified(this.props.model) && <a id={this.props.model.link} />}
-            {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
-              this.output()
-            ) : isActive(this.props.model) || isEmpty(this.props.model) ? (
-              this.input()
-            ) : (
+        <MutabilityContext.Consumer>
+          {value => (
+            <li
+              className={'repl-block ' + (hideOut ? '' : this.props.model.state.toString())}
+              data-is-executable={value.executable || undefined}
+              data-is-editable={value.editable || undefined}
+              data-is-section-break={this.props.isSectionBreak}
+              data-in-sections={this.props.sectionIdx !== undefined || undefined}
+              data-is-maximized={this.state.isMaximized || undefined}
+              data-is-output-only={isOutputOnly(this.props.model) || undefined}
+              data-is-empty={isEmpty(this.props.model) || undefined}
+              data-announcement={isAnnouncement(this.props.model) || undefined}
+              data-uuid={hasUUID(this.props.model) && this.props.model.execUUID}
+              data-scrollback-uuid={this.props.uuid}
+              data-input-count={this.props.idx}
+              data-is-focused={this.props.isFocused || undefined}
+              data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
+              data-is-replay={isReplay(this.props.model) || undefined}
+              ref={c => this.setState({ _block: c })}
+              tabIndex={isActive(this.props.model) ? -1 : 1}
+              onClick={this.props.willFocusBlock}
+              onFocus={this.props.onFocus}
+            >
               <React.Fragment>
-                {this.input()}
-                {!hideOut && this.output()}
+                {isLinkified(this.props.model) && <a id={this.props.model.link} />}
+                {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
+                  this.output()
+                ) : isActive(this.props.model) || isEmpty(this.props.model) ? (
+                  this.input()
+                ) : (
+                  <React.Fragment>
+                    {this.input()}
+                    {!hideOut && this.output()}
+                  </React.Fragment>
+                )}
               </React.Fragment>
-            )}
-          </React.Fragment>
-        </li>
+            </li>
+          )}
+        </MutabilityContext.Consumer>
       )
     )
   }
