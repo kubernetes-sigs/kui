@@ -18,14 +18,13 @@ import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
 const TIMEOUT = 1000
 
-Common.localDescribe('tab content mutability', function(this: Common.ISuite) {
+Common.localDescribe('notebooks read only mode', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
   const openNotebook = () => {
     it('should open a notebook using a CLI command', async () => {
       try {
-        console.error(`inside it for trying to execute CLI command`)
         await CLI.command('replay /kui/welcome.json', this.app)
           .then(ReplExpect.error(127))
           .catch(Common.oops(this, true))
