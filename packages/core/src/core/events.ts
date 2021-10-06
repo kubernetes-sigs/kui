@@ -160,7 +160,11 @@ class WriteEventBus extends EventBusBase {
     this.eventBus.emit('/status-stripe/change', evt)
   }
 
-  public emitWithTabId(channel: '/tab/offline' | '/tab/close/request', tabId: string, tab?: Tab): void {
+  public emitWithTabId(
+    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
+    tabId: string,
+    tab?: Tab
+  ): void {
     this.eventBus.emit(`${channel}/${tabId}`, tabId, tab)
   }
 }
@@ -347,7 +351,7 @@ class ReadEventBus extends WriteEventBus {
   }
 
   public onWithTabId(
-    channel: '/tab/offline' | '/tab/close/request',
+    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
     tabId: string,
     listener: (tabId: string, tab: Tab) => void
   ): void {
@@ -355,7 +359,7 @@ class ReadEventBus extends WriteEventBus {
   }
 
   public offWithTabId(
-    channel: '/tab/offline' | '/tab/close/request',
+    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
     tabId: string,
     listener: (tabId: string, tab: Tab) => void
   ): void {
@@ -363,7 +367,7 @@ class ReadEventBus extends WriteEventBus {
   }
 
   public onceWithTabId(
-    channel: '/tab/offline' | '/tab/close/request',
+    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
     tabId: string,
     listener: (tabId: string, tab: Tab) => void
   ): void {
