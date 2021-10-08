@@ -621,6 +621,9 @@ body.subwindow .result-as-multi-table-flex-wrap .big-top-pad:not(:last-child) > 
 }
 
 /* spin animation */
+.kui--spin-animation {
+  animation: spin 1s infinite;
+}
 @-moz-keyframes spin {
   100% {
     -moz-transform: rotate(360deg);
