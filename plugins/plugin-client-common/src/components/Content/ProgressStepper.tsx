@@ -80,7 +80,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
     unknown: { icon: 'Unknown', className: 'yellow-text' },
     current: { icon: 'Current' },
     pending: { icon: undefined },
-    'in-progress': { icon: 'InProgress' }
+    'in-progress': { icon: 'InProgress', className: 'kui--spin-animation yellow-text' }
   }
 
   private status() {
