@@ -36,10 +36,6 @@ $minor-step-color: var(--color-base05);
 
 /** Some @starpit overrides */
 @include ProgressStep {
-  @include Icon {
-    border: none;
-  }
-
   @include Main {
     margin-left: 0.5rem;
   }
