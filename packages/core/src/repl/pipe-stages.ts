@@ -32,13 +32,21 @@ export function splitIntoPipeStages(command: string): CommandLine['pipeStages'] 
   // This covers > and >>, but excludes '>' and ">" and \>.
   // WARNING: this regexp uses negaive lookbehind. Firefox only got
   // support for this in Firefox version 78 (released July 30 2020).
-  const redirectPattern = /\d?(?<!["'\\])((>>?)&?\d?)/
+  // const redirectPattern = /\d?(?<!["'\\])((>>?)&?\d?)/
+  const redirectPattern = /\d?((>>?)&?\d?)/ // <-- Safari :(
+  // see https://github.com/kubernetes-sigs/kui/issues/8129 for the Safari issue
 
   const dashDashMatch = command.match(dashDashPattern)
   const pipeStartIdx = dashDashMatch ? dashDashMatch.index + '--'.length : undefined
   const prefix = !dashDashMatch ? '' : command.slice(0, dashDashMatch.index).trim()
 
-  const redirectMatch = command.match(redirectPattern)
+  let redirectMatch = command.match(redirectPattern)
+  // workaround for lack of negative lookbehind in Safari :(
+  if (redirectMatch && redirectMatch.index > 0 && /["'\\]/.test(command[redirectMatch.index - 1])) {
+    // sigh...
+    redirectMatch = undefined
+  }
+
   const pipeEndIdx = redirectMatch ? redirectMatch.index : undefined
   const redirect = !redirectMatch ? '' : command.slice(redirectMatch.index + redirectMatch[0].length).trim()
 
