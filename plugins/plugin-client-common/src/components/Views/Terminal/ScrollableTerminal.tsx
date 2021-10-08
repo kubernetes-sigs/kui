@@ -1337,7 +1337,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
         // splice out this split from the list of all splits in this tab
         const splits = curState.splits.slice(0, idx).concat(curState.splits.slice(idx + 1))
-        console.error('!!!!!REMAININGSPLITS', splits)
 
         if (splits.length === 0) {
           // the last split was removed; notify parent
