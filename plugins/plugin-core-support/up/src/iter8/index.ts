@@ -15,6 +15,7 @@
  */
 
 import CRD from './crd'
+import iter8ctl from './iter8ctl'
 import Operator from './operator-pod'
 
-export default [CRD, Operator]
+export default [iter8ctl, CRD, Operator]
