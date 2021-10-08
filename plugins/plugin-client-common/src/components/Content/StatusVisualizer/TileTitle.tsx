@@ -92,6 +92,9 @@ export default class TileTitle extends React.PureComponent<TileTitleProps, TileT
     }
   }
 
+  /** Stop ScrollableTerminal/Block/Output focus effects */
+  private readonly _stopPropagation = (evt: React.MouseEvent) => evt.stopPropagation()
+
   public render() {
     const title =
       this.props.section.title === 'Other'
@@ -102,7 +105,7 @@ export default class TileTitle extends React.PureComponent<TileTitleProps, TileT
       <strong>
         {title}
         <Popover headerContent={title} bodyContent={<Items items={this.state.items} />} footerContent={this.actions()}>
-          <Icons icon="Info" className="sub-text small-left-pad clickable" />
+          <Icons icon="Info" className="sub-text small-left-pad clickable" onClick={this._stopPropagation} />
         </Popover>
       </strong>
     )
