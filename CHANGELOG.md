@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.7](https://github.com/IBM/kui/compare/v10.6.6...v10.6.7) (2021-10-08)
+
+### Bug Fixes
+
+- small tweaks to StatusVisualizer spacing ([9b36270](https://github.com/IBM/kui/commit/9b36270))
+- **packages/core:** Error on load when running in safari ([4e58a72](https://github.com/IBM/kui/commit/4e58a72)), closes [#8129](https://github.com/IBM/kui/issues/8129)
+- **plugins/plugin-client-common:** ProgressStepper UI has low contrast in light-background splits ([e7dbbcb](https://github.com/IBM/kui/commit/e7dbbcb))
+- **plugins/plugin-client-common:** stop clicks in StatusVisualizer bottom strip from focusing the split ([2f76b34](https://github.com/IBM/kui/commit/2f76b34))
+
+### Features
+
+- **plugins/plugin-client-common:** Animation with a spin effect for in-progress states of ProgressStepper ([77ce6bc](https://github.com/IBM/kui/commit/77ce6bc))
+- **plugins/plugin-core-support:** add iter8ctl to Iter's up ([820111e](https://github.com/IBM/kui/commit/820111e))
+- bottom strip UI and StatusModel UI ([a65b7a7](https://github.com/IBM/kui/commit/a65b7a7)), closes [#8123](https://github.com/IBM/kui/issues/8123)
+
 ## [10.6.6](https://github.com/IBM/kui/compare/v10.6.5...v10.6.6) (2021-10-04)
 
 ### Bug Fixes

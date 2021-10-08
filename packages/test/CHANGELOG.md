@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.7](https://github.com/kubernetes-sigs/kui/compare/v10.6.6...v10.6.7) (2021-10-08)
+
+### Features
+
+- bottom strip UI and StatusModel UI ([a65b7a7](https://github.com/kubernetes-sigs/kui/commit/a65b7a7)), closes [#8123](https://github.com/kubernetes-sigs/kui/issues/8123)
+
 ## [10.6.6](https://github.com/kubernetes-sigs/kui/compare/v10.6.5...v10.6.6) (2021-10-04)
 
 **Note:** Version bump only for package @kui-shell/test

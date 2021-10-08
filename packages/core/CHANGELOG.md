@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.7](https://github.com/IBM/kui/compare/v10.6.6...v10.6.7) (2021-10-08)
+
+### Bug Fixes
+
+- small tweaks to StatusVisualizer spacing ([9b36270](https://github.com/IBM/kui/commit/9b36270))
+- **packages/core:** Error on load when running in safari ([4e58a72](https://github.com/IBM/kui/commit/4e58a72)), closes [#8129](https://github.com/IBM/kui/issues/8129)
+
+### Features
+
+- bottom strip UI and StatusModel UI ([a65b7a7](https://github.com/IBM/kui/commit/a65b7a7)), closes [#8123](https://github.com/IBM/kui/issues/8123)
+
 ## [10.6.6](https://github.com/IBM/kui/compare/v10.6.5...v10.6.6) (2021-10-04)
 
 ### Features
