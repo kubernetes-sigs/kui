@@ -17,9 +17,8 @@
 import React from 'react'
 import { StatusModel, aggregateStatusModelStatus } from '@kui-shell/core'
 
-import { ProgressStepper, ProgressStep } from '../ProgressStepper'
-
 import TileTitle from './TileTitle'
+import { ProgressStepper, ProgressStep } from '../ProgressStepper'
 
 type Props = StatusModel & { className?: string }
 
@@ -51,7 +50,17 @@ export default class StatusVisualizer extends React.PureComponent<Props> {
     )
   }
 
+  private title() {
+    // nothing, yet
+    // return <h3>{this.props.metadata.name}</h3>
+  }
+
   public render() {
-    return <div className="sans-serif flex-layout flex-fill flex-column all-pad">{this.sections()}</div>
+    return (
+      <div className="sans-serif flex-layout flex-fill all-pad">
+        {this.title()}
+        {this.sections()}
+      </div>
+    )
   }
 }

@@ -78,6 +78,9 @@ export default async (commandTree: Registrar) => {
       const sidebarProps: StatusModel = {
         apiVersion: 'kui-shell/v1',
         kind: 'StatusModel',
+        metadata: {
+          name: 'Prerequisites'
+        },
         spec: {
           sections: getUppersAsStatusModel({ REPL, createErrorStream, createOutputStream, parsedOptions }, filter)
         }

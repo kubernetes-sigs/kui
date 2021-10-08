@@ -140,7 +140,7 @@ $bgcolor: var(--color-base01);
     @include Scrollback {
       @include BottomStrip {
         grid-area: B1;
-        min-height: 7rem;
+        min-height: 6rem;
 
         @include FinishedBlock {
           flex: 1;

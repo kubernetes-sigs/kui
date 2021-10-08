@@ -476,6 +476,8 @@ body[kui-theme-style] {
   }
   .all-pad {
     padding: 1em;
+    padding-left: var(--input-padding-left);
+    padding-right: var(--input-padding-left);
   }
   .tiny-top-pad {
     margin-top: 0.125em;
