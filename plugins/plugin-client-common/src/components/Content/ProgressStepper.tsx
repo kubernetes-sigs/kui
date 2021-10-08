@@ -134,7 +134,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
 interface ProgressStepperProps {
   className?: string
   layout?: 'vertical' | 'horizontal' | 'compact'
-  children: ProgressStep[]
+  children: React.ReactElement<ProgressStep> | React.ReactElement<ProgressStep>[]
 }
 
 export class ProgressStepper extends React.PureComponent<ProgressStepperProps> {
