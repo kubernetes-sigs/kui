@@ -51,6 +51,9 @@ export interface Section {
 export default interface StatusModel {
   apiVersion: 'kui-shell/v1'
   kind: 'StatusModel'
+  metadata: {
+    name: string
+  }
   spec: {
     sections: Section[]
   }
