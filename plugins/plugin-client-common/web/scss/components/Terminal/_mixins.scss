@@ -78,9 +78,15 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin NotFocusedSplitAttributes {
+  &:not([data-is-focused]) {
+    @content;
+  }
+}
+
 @mixin NotFocusedSplit {
   @include Scrollback {
-    &:not([data-is-focused]):not([data-is-minisplit]) {
+    @include NotFocusedSplitAttributes {
       @content;
     }
   }
