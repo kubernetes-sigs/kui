@@ -47,7 +47,7 @@ $z-index: var(--pf-global--ZIndex--xs);
   &[data-type='blue'] {
     color: $fg-type-blue;
     background-color: $bg-type-blue;
-    filter: grayscale(0.5);
+    filter: grayscale(0.75);
     @include StatusStripeElement {
       color: $fg-type-blue;
     }
