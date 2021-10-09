@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.8](https://github.com/IBM/kui/compare/v10.6.7...v10.6.8) (2021-10-09)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** BottomStrip splits min height 6rem -> 7rem ([e44d787](https://github.com/IBM/kui/commit/e44d787))
+- **plugins/plugin-client-common:** improve coloring for progress stepper in some themes ([ab39629](https://github.com/IBM/kui/commit/ab39629))
+- **plugins/plugin-client-common:** in bottom strip, show split header when the split is focused ([826107e](https://github.com/IBM/kui/commit/826107e))
+- **plugins/plugin-client-common:** In dark themes, Hints can have low contrast ([e69c6b7](https://github.com/IBM/kui/commit/e69c6b7))
+- improved replaying StatusModels in an offline notebook ([02d7f9a](https://github.com/IBM/kui/commit/02d7f9a))
+- **plugins/plugin-client-common:** remove debugging leftover ([1f2ec7c](https://github.com/IBM/kui/commit/1f2ec7c))
+
 ## [10.6.7](https://github.com/IBM/kui/compare/v10.6.6...v10.6.7) (2021-10-08)
 
 ### Bug Fixes

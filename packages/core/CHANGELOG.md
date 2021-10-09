@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.6.8](https://github.com/IBM/kui/compare/v10.6.7...v10.6.8) (2021-10-09)
+
+### Bug Fixes
+
+- improved replaying StatusModels in an offline notebook ([02d7f9a](https://github.com/IBM/kui/commit/02d7f9a))
+
 ## [10.6.7](https://github.com/IBM/kui/compare/v10.6.6...v10.6.7) (2021-10-08)
 
 ### Bug Fixes
