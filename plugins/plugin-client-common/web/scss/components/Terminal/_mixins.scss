@@ -78,7 +78,7 @@ $action-hover-delay: 210ms;
   }
 }
 
-@mixin NotFocusedSplitAttributes {
+@mixin IsNotFocusedSplit {
   &:not([data-is-focused]) {
     @content;
   }
@@ -86,7 +86,7 @@ $action-hover-delay: 210ms;
 
 @mixin NotFocusedSplit {
   @include Scrollback {
-    @include NotFocusedSplitAttributes {
+    @include IsNotFocusedSplit {
       @content;
     }
   }
@@ -277,9 +277,15 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin IsReplayedBlock {
+  &[data-is-replay] {
+    @content;
+  }
+}
+
 @mixin ReplayedBlock {
   @include FinishedBlock {
-    &[data-is-replay] {
+    @include IsReplayedBlock {
       @content;
     }
   }

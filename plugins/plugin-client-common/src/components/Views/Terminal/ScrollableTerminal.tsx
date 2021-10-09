@@ -1561,6 +1561,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           model={_}
           uuid={scrollback.uuid}
           tab={tab}
+          splitPosition={scrollback.position}
           nSplits={this.state.splits.length}
           noActiveInput={this.props.noActiveInput || isOfflineClient()}
           onFocus={scrollback.onFocus}

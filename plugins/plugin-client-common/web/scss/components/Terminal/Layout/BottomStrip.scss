@@ -142,7 +142,7 @@ $bgcolor: var(--color-base01);
         grid-area: B1;
         min-height: 6rem;
 
-        @include NotFocusedSplitAttributes {
+        @include IsNotFocusedSplit {
           @include SplitHeader {
             display: none;
           }

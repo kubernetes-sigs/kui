@@ -52,7 +52,12 @@ class Item extends React.PureComponent<ItemProps, ItemState> {
   public static getDerivedStateFromProps(props: ItemProps, state?: ItemState) {
     if (!state) {
       return {
-        status: 'unknown' as const
+        status:
+          typeof props.status === 'string'
+            ? props.status
+            : typeof props.status.cached === 'string'
+            ? props.status.cached
+            : ('unknown' as const)
       }
     } else {
       return state
@@ -62,8 +67,8 @@ class Item extends React.PureComponent<ItemProps, ItemState> {
   public componentDidMount() {
     if (this.state.status === 'unknown' && typeof this.props.status !== 'string') {
       setTimeout(async () => {
-        if (typeof this.props.status !== 'string') {
-          const status = await this.props.status()
+        if (typeof this.props.status !== 'string' && this.state.status === 'unknown') {
+          const status = await this.props.status.statusFn()
           this.setState({ status })
         }
       })

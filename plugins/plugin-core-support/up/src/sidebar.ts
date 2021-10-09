@@ -93,12 +93,14 @@ export default function getUppersAsStatusModel(args: CheckerArgs, filter?: Filte
       tile.items.push({
         title: typeof upper.label === 'string' ? upper.label : upper.label(undefined),
         description: upper.description,
-        status: async () => {
-          try {
-            const resp = await doCheck(args, undefined, upper, undefined)
-            return resp.ok ? 'success' : 'error'
-          } catch (err) {
-            return 'error'
+        status: {
+          statusFn: async () => {
+            try {
+              const resp = await doCheck(args, undefined, upper, undefined)
+              return resp.ok ? 'success' : 'error'
+            } catch (err) {
+              return 'error'
+            }
           }
         }
       })
