@@ -142,6 +142,12 @@ $bgcolor: var(--color-base01);
         grid-area: B1;
         min-height: 6rem;
 
+        @include NotFocusedSplitAttributes {
+          @include SplitHeader {
+            display: none;
+          }
+        }
+
         @include FinishedBlock {
           flex: 1;
 
@@ -181,10 +187,6 @@ $bgcolor: var(--color-base01);
         }
         @include Grid {
           grid-template-columns: repeat(auto-fill, minmax(1.25em, auto)) !important;
-        }
-
-        @include SplitHeader {
-          display: none;
         }
 
         @include ScrollbackBlockList {
