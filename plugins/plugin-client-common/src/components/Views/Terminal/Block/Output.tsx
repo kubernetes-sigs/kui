@@ -28,6 +28,7 @@ import {
   isMarkdownResponse,
   isMixedResponse,
   isMultiModalResponse,
+  isStatusModel,
   isNavResponse,
   isXtermResponse,
   isTable,
@@ -60,6 +61,7 @@ import {
 } from './BlockModel'
 
 import Actions from './Actions'
+import SplitPosition from '../SplitPosition'
 import Scalar from '../../../Content/Scalar/' // !! DO NOT MAKE LAZY. See https://github.com/IBM/kui/issues/6758
 import KuiContext from '../../../Client/context'
 import { Maximizable } from '../../Sidecar/width'
@@ -80,6 +82,9 @@ type Props = {
 
   /** Block ordinal to be displayed to user */
   displayedIdx?: number
+
+  /** Position of the enclosing split. Default: SplitPosition.default */
+  splitPosition?: SplitPosition
 
   model: ProcessingBlock | FinishedBlock
   onRender: () => void
@@ -316,6 +321,7 @@ export default class Output extends React.PureComponent<Props, State> {
         isMarkdownResponse(response) ||
         (typeof response === 'string' && response.length > 0) ||
         typeof response === 'number' ||
+        isStatusModel(response) ||
         isTable(response) ||
         isMixedResponse(response) ||
         (isXtermResponse(response) && response.rows && response.rows.length !== 0) ||
@@ -389,6 +395,7 @@ export default class Output extends React.PureComponent<Props, State> {
     ) : (
       <ExpandableSection
         className="flex-fill"
+        expanded={this.props.splitPosition === 'bottom-strip' /* Default expanded for bottom strip positioning */}
         showMore={strings('Show Sample Output')}
         showLess={strings('Hide Sample Output')}
       >

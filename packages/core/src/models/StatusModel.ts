@@ -21,7 +21,12 @@ export type Status = 'success' | 'in-progress' | 'warning' | 'error' | 'unknown'
 export interface LineItem {
   title: string
   description: string
-  status: Status | (() => Promise<Status>)
+  status:
+    | Status
+    | {
+        statusFn: () => Promise<Status>
+        cached?: Status
+      }
 }
 
 export interface TileAction {
@@ -122,8 +127,23 @@ function unionStatus(rollup: Status, status: Status): Status {
 }
 
 /** Roll up the status of the LineItems */
-export function aggregateStatusModelStatus(tile: Tile): Promise<Status> {
-  return Promise.all(tile.items.map(_ => (typeof _.status === 'string' ? _.status : _.status()))).then(_ =>
-    _.reduce(unionStatus, 'unknown')
+export async function aggregateStatusModelStatus(tile: Tile): Promise<Status> {
+  const statuses = await Promise.all(
+    tile.items.map(_ =>
+      typeof _.status === 'string'
+        ? _.status
+        : typeof _.status.cached === 'string'
+        ? _.status.cached
+        : _.status.statusFn()
+    )
   )
+
+  statuses.forEach((status, idx) => {
+    const orig = tile.items[idx]
+    if (typeof orig.status !== 'string' && typeof orig.status.cached !== 'string') {
+      orig.status.cached = status
+    }
+  })
+
+  return statuses.reduce(unionStatus, 'unknown')
 }
