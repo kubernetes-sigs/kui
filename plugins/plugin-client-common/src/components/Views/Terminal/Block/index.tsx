@@ -18,6 +18,7 @@ import React from 'react'
 import { Tab as KuiTab, eventBus, eventChannelUnsafe } from '@kui-shell/core'
 
 import Width from '../../Sidecar/width'
+import SplitPosition from '../SplitPosition'
 import Input, { InputOptions } from './Input'
 import Output from './Output'
 import {
@@ -90,6 +91,9 @@ type Props = InputOptions & {
 
   /** Is this block the one currently displayed in a MiniSplit */
   isVisibleInMiniSplit?: boolean
+
+  /** Position of the enclosing split. Default: SplitPosition.default */
+  splitPosition?: SplitPosition
 
   noOutput?: boolean
   onOutputRender?: () => void
@@ -166,6 +170,7 @@ export default class Block extends React.PureComponent<Props, State> {
           idx={this.props.idx}
           model={this.props.model}
           isSectionBreak={this.props.isSectionBreak}
+          splitPosition={this.props.splitPosition}
           willRemove={this.props.willRemove}
           willChangeSize={this._willChangeSize}
           onRender={this._onOutputRender}
