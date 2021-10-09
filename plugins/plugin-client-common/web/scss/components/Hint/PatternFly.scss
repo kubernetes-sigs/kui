@@ -17,6 +17,12 @@
 @import 'mixins';
 
 .kui {
+  body[kui-theme-style='dark'] {
+    @include HintBody {
+      color: var(--color-base00);
+    }
+  }
+
   @include HintBody {
     font-size: inherit;
     font-family: var(--font-sans-serif);
