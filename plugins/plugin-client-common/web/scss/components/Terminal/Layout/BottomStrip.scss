@@ -18,7 +18,11 @@
 @import '../../Table/mixins';
 @import '../../TopLevelTab/mixins';
 
+/** Special background color for BottomStrip splits */
 $bgcolor: var(--color-base01);
+
+/** Minimum height of a BottomStrip splits */
+$min-height: 7rem;
 
 @include NotebookTab {
   @include HasBottomStrip {
@@ -140,7 +144,7 @@ $bgcolor: var(--color-base01);
     @include Scrollback {
       @include BottomStrip {
         grid-area: B1;
-        min-height: 6rem;
+        min-height: $min-height;
 
         @include IsNotFocusedSplit {
           @include SplitHeader {
