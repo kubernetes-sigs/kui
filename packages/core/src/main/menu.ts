@@ -85,6 +85,11 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
       },
       { type: 'separator' },
       {
+        label: 'Toggle Edit Mode',
+        click: () => tellRendererToExecute('tab edit toggle --current-tab')
+        // TODO find exactly what keyboard shortcut => accelerator: 'CommandOrControl+E'
+      },
+      {
         label: 'Save as Notebook...',
         click: saveAsNotebook,
         accelerator: 'CommandOrControl+S'
