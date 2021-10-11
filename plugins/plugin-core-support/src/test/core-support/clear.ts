@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import { Common, CLI, Keys, ReplExpect, Selectors, SidecarExpect } from '@kui-shell/test'
-
-export function doClear(this: Common.ISuite, residualBlockCount = 1, splitIndex = 1) {
-  return CLI.commandInSplit('clear', this.app, splitIndex)
-    .then(() => ReplExpect.consoleToBeClear(this.app, residualBlockCount, splitIndex))
-    .then(() => SidecarExpect.closed)
-    .catch(Common.oops(this, true))
-}
+import { Common, CLI, Keys, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 describe(`clear the console from scratch ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  const clear = doClear.bind(this)
+  const clear = Util.doClear.bind(this)
 
   it('should clear the console from scratch', () => clear())
   it('should use echo via kuiecho', () =>
@@ -40,7 +33,7 @@ describe(`clear the console ${process.env.MOCHA_RUN_TARGET || ''}`, function(thi
   before(Common.before(this))
   after(Common.after(this))
 
-  const clear = doClear.bind(this)
+  const clear = Util.doClear.bind(this)
 
   interface PromptOptions {
     enteredString?: string

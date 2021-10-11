@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, Selectors, Util } from '@kui-shell/test'
 
 const TIMEOUT = 1000
 
 Common.localDescribe('notebooks read only mode', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)
 
   const openNotebook = () => {
-    it('should open a notebook using a CLI command', async () => {
-      try {
-        await CLI.command('replay /kui/welcome.json', this.app)
-          .then(ReplExpect.error(127))
-          .catch(Common.oops(this, true))
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
+    it('should open a notebook using a CLI command', () =>
+      CLI.command('replay /kui/welcome.json', this.app).catch(Common.oops(this, true)))
   }
 
   const splitHeadersCheck = () => {
@@ -63,7 +57,7 @@ Common.localDescribe('notebooks read only mode', function(this: Common.ISuite) {
         // For notebooks being used for this test, the block at split index 2 will be used
         const splitIndex = 2
 
-        const N = (await CLI.lastBlock(this.app, splitIndex)).count
+        const N = (await CLI.lastBlock(this.app, splitIndex, 1, true)).count
 
         // the replay button should be showing
         await this.app.client

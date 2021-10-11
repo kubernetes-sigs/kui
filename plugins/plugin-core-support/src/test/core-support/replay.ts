@@ -32,6 +32,9 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
   const testTabLabel1 = 'test1'
   const testTabLabel2 = 'test2'
 
+  const clearScreen = () => it('should clear the terminal', () => Util.doClear.bind(this)())
+  const closeAllButFirst = Util.closeAllExceptFirstTab.bind(this)
+
   const doReplay = (testTabLabel: string) => {
     it('should replay', async () => {
       try {
@@ -46,7 +49,7 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
         let idx = 0
         await this.app.client.waitUntil(
           async () => {
-            const txt = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
+            const txt = await this.app.client.$(Selectors.OUTPUT_LAST_IN_NOTEBOOK()).then(_ => _.getText())
             if (++idx > 5) {
               console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
             }
@@ -60,15 +63,21 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
     })
   }
 
+  const doSomethingToGetInterestingContent = () => {
+    clearScreen()
+
+    it(`should base64 ${base64Input}`, () =>
+      CLI.command(`base64 ${base64Input}`, this.app)
+        .then(ReplExpect.okWithString(base64Output))
+        .catch(Common.oops(this, true)))
+  }
+
   it(`should open new tab with title ${testTabLabel1}`, () =>
     CLI.command(`tab new --title ${testTabLabel1}`, this.app)
       .then(() => CLI.waitForSession(this))
       .catch(Common.oops(this)))
 
-  it(`should base64 ${base64Input}`, () =>
-    CLI.command(`base64 ${base64Input}`, this.app)
-      .then(ReplExpect.okWithString(base64Output))
-      .catch(Common.oops(this, true)))
+  doSomethingToGetInterestingContent()
 
   it('should snapshot without specifying title', () =>
     CLI.command(`snapshot ${file}`, this.app)
@@ -77,7 +86,13 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
 
   // clear the tabs so there isn't a tab naming `testTabLabel1`
   it('should refresh', () => Common.refresh(this))
+  closeAllButFirst()
   doReplay(testTabLabel1)
+
+  it('should switch back to the first tab, so we can grab another snapshot', () =>
+    Util.switchToTopLevelTabViaClick(this, 1))
+
+  doSomethingToGetInterestingContent()
 
   it(`should snapshot with title ${testTabLabel2}`, () =>
     CLI.command(`snapshot ${file} --title ${testTabLabel2}`, this.app)
@@ -88,7 +103,7 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
   it('should refresh', () => Common.refresh(this))
   doReplay(testTabLabel2)
 
-  it('should snapshot again but without specifying title', () =>
+  /* it('should snapshot again but without specifying title', () =>
     CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
@@ -97,10 +112,10 @@ describe(`snapshot and replay with title ${process.env.MOCHA_RUN_TARGET || ''}`,
   // Without refreshing, the second tab can't be opened due to tab name duplication.
   it('should refresh', () => Common.refresh(this))
 
-  doReplay(testTabLabel2)
+  doReplay(testTabLabel2) */
 })
 
-describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+describe(`plain snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -133,14 +148,14 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
         .$(Selectors.STATUS_STRIPE_TYPE('blue'))
         .then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 
-      const res = await CLI.command('version', this.app)
+      // const res = await CLI.command('version', this.app)
 
       // verify the base64 command replay
-      await CLI.expandNth(this.app, res.count - 2)
+      await CLI.expandLast(this.app, undefined, 2)
       let idx = 0
       await this.app.client.waitUntil(
         async () => {
-          const txt = await this.app.client.$(Selectors.OUTPUT_N(res.count - 2)).then(_ => _.getText())
+          const txt = await this.app.client.$(Selectors.OUTPUT_LAST_IN_NOTEBOOK(2)).then(_ => _.getText())
           if (++idx > 5) {
             console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
           }
@@ -148,13 +163,16 @@ describe(`snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
         },
         { timeout: CLI.waitTimeout }
       )
-
-      // verify the about replay
-      await SidecarExpect.notOpen(res)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
   })
+
+  it('should switch to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
+  it('should make the second tab editable', () =>
+    CLI.command('tab edit toggle 2', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
 
   it('should clear and show default status stripe', async () => {
     await CLI.command('clear', this.app).then(() => ReplExpect.consoleToBeClear(this.app))
@@ -200,7 +218,7 @@ describe(`snapshot and replay with cancelled blocks ${process.env.MOCHA_RUN_TARG
       let idx = 0
       await this.app.client.waitUntil(
         async () => {
-          const txt = await this.app.client.$(Selectors.PROMPT_LAST).then(_ => _.getText())
+          const txt = await this.app.client.$(Selectors.PROMPT_LAST_IN_NOTEBOOK()).then(_ => _.getText())
           if (++idx > 5) {
             console.error(`still waiting for expected=${command}; actual=${txt}`)
           }
@@ -239,7 +257,7 @@ describe(`snapshot and replay with empty blocks ${process.env.MOCHA_RUN_TARGET |
       let idx = 0
       await this.app.client.waitUntil(
         async () => {
-          const txt = await this.app.client.$(Selectors.PROMPT_LAST).then(_ => _.getText())
+          const txt = await this.app.client.$(Selectors.PROMPT_LAST_IN_NOTEBOOK()).then(_ => _.getText())
           if (++idx > 5) {
             console.error(`still waiting for expected=${command}; actual=${txt}`)
           }
@@ -293,11 +311,17 @@ describe(`split-snapshot-replay ${process.env.MOCHA_RUN_TARGET || ''}`, async fu
       await this.app.client.waitUntil(
         async () => {
           // commands in split1: [session connect in browser],base64, split, version
-          const base64InSplit1 = await this.app.client.$(Selectors.OUTPUT_LAST_FOR_SPLIT(1)).then(_ => _.getText())
+          const base64InSplit1 = await this.app.client
+            .$(Selectors.OUTPUT_LAST_FOR_SPLIT_IN_NOTEBOOK(1))
+            .then(_ => _.getText())
           // commands in split2: base64,version
-          const base64InSplit2 = await this.app.client.$(Selectors.OUTPUT_LAST_FOR_SPLIT(2)).then(_ => _.getText())
+          const base64InSplit2 = await this.app.client
+            .$(Selectors.OUTPUT_LAST_FOR_SPLIT_IN_NOTEBOOK(2))
+            .then(_ => _.getText())
 
-          const base64InSplit3 = await this.app.client.$(Selectors.OUTPUT_LAST_FOR_SPLIT(3)).then(_ => _.getText())
+          const base64InSplit3 = await this.app.client
+            .$(Selectors.OUTPUT_LAST_FOR_SPLIT_IN_NOTEBOOK(3))
+            .then(_ => _.getText())
 
           if (++idx > 5) {
             console.error(
@@ -347,7 +371,7 @@ Common.proxyDescribe(`core snapshot and replay by query ${process.env.MOCHA_RUN_
       let idx = 0
       await this.app.client.waitUntil(
         async () => {
-          const txt = await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText())
+          const txt = await this.app.client.$(Selectors.OUTPUT_LAST_IN_NOTEBOOK()).then(_ => _.getText())
           if (++idx > 5) {
             console.error(`still waiting for expected=${base64Output}; actual=${txt}`)
           }

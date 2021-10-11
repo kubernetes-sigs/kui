@@ -220,12 +220,14 @@ export async function nOfCurrentBlock(app: Application, splitIndex = 1) {
 }
 
 /** Index of last executed block */
-export async function lastBlock(app: Application, splitIndex = 1): Promise<AppAndCount> {
+export async function lastBlock(app: Application, splitIndex = 1, N = 1, inNotebook = false): Promise<AppAndCount> {
   return {
     app,
     splitIndex: splitIndex,
     count: parseInt(
-      await app.client.$(Selectors.PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)).then(_ => _.getAttribute(Selectors.N_ATTR)),
+      await app.client
+        .$(Selectors.PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex, N, inNotebook))
+        .then(_ => _.getAttribute(Selectors.N_ATTR)),
       10
     )
   }
@@ -239,8 +241,8 @@ export async function expandNth(app: Application, N: number, splitIndex = 1) {
 }
 
 /** Click to expand the last replayed sample output */
-export async function expandLast(app: Application, splitIndex = 1) {
-  const expando = await app.client.$(Selectors.EXPANDABLE_OUTPUT_LAST(splitIndex))
+export async function expandLast(app: Application, splitIndex = 1, N = 1) {
+  const expando = await app.client.$(Selectors.EXPANDABLE_OUTPUT_LAST_IN_NOTEBOOK(splitIndex, N))
   await expando.waitForExist()
   await expando.click()
 }
