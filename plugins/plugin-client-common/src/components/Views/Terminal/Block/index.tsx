@@ -154,9 +154,12 @@ export default class Block extends React.PureComponent<Props, State> {
     if (this.props.onOutputRender) {
       this.props.onOutputRender()
     }
-    if (this.props.noActiveInput && this.state._block) {
+
+    // oof: this is for bottom input clients... but it messes up
+    // notebooks, constantly scrolling to bottom...
+    /* if (this.props.noActiveInput && this.state._block) {
       this.state._block.scrollIntoView()
-    }
+    } */
   }
 
   private readonly _onOutputRender = this.onOutputRender.bind(this)

@@ -288,7 +288,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           }
         }
 
-        setTimeout(() => newScrollback.facade.scrollToTop())
         return newScrollback
       })
 
@@ -471,6 +470,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       willUpdateExecutable: undefined,
       willInsertSection: undefined,
       tabRefFor: undefined,
+      scrollableRef: undefined,
 
       position: opts.position || 'default',
       willToggleBottomStripMode: undefined
@@ -662,6 +662,20 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
     }
 
+    /** Reference for the scrollable part of the Split; helpful for scrollToTop/Bottom */
+    state.scrollableRef = (ref: HTMLElement) => {
+      if (ref) {
+        state.facade.scrollToBottom = () => {
+          ref.scrollTop = ref.scrollHeight
+        }
+
+        state.facade.scrollToTop = () => {
+          ref.scrollTop = 0
+        }
+      }
+    }
+
+    /** Reference for the entire Split */
     state.tabRefFor = (ref: HTMLElement) => {
       const scrollback = state
       if (ref) {
@@ -671,14 +685,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         scrollback.facade.splitCount = () => this.state.splits.length
         scrollback.facade.hasSideBySideTerminals = () => {
           return !!this.state.splits.find((_, sbidx) => this.isASideBySide(sbidx))
-        }
-
-        scrollback.facade.scrollToBottom = () => {
-          ref.scrollTop = ref.scrollHeight
-        }
-
-        scrollback.facade.scrollToTop = () => {
-          ref.scrollTop = 0
         }
 
         scrollback.facade.addClass = (cls: string) => {
@@ -1563,7 +1569,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           tab={tab}
           splitPosition={scrollback.position}
           nSplits={this.state.splits.length}
-          noActiveInput={this.props.noActiveInput || isOfflineClient()}
+          noActiveInput={this.props.noActiveInput}
           onFocus={scrollback.onFocus}
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
@@ -1599,9 +1605,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       key: tab.uuid,
       'data-scrollback-id': tab.uuid,
       ref: scrollback.tabRefFor,
-      onClick: !this.props.noActiveInput ? scrollback.onClick : undefined,
+      onClick: scrollback.onClick, // fancier for bottom input (just below, too)? !this.props.noActiveInput ? scrollback.onClick : undefined,
       onMouseDown:
-        scrollback.position === 'bottom-strip' || this.props.noActiveInput ? scrollback.onMouseDown : undefined
+        scrollback.position === 'bottom-strip' /* || this.props.noActiveInput */ ? scrollback.onMouseDown : undefined
     }
 
     const children = (
@@ -1614,9 +1620,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             willToggleBottomStripMode={!this.props.hasBottomStrip && scrollback.willToggleBottomStripMode}
           />
         )}
-        <ul className="kui--scrollback-block-list">
-          <div className="kui--scrollback-block-list-for-sizing">{this.blocks(tab, scrollback, sbidx)}</div>
-        </ul>
+        <div className="kui--scrollback-block-list">
+          <ul className="kui--scrollback-block-list-for-sizing" ref={scrollback.scrollableRef}>
+            {this.blocks(tab, scrollback, sbidx)}
+          </ul>
+        </div>
       </React.Fragment>
     )
 

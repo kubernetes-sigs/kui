@@ -17,13 +17,11 @@
 import {
   eventBus,
   getPrimaryTabId,
-  getTab,
   isReadOnlyClient,
   KResponse,
   ParsedOptions,
   Registrar,
-  StatusStripeChangeEvent,
-  Tab
+  StatusStripeChangeEvent
 } from '@kui-shell/core'
 
 interface EditOptions extends ParsedOptions {
@@ -43,17 +41,13 @@ const usage = {
   optional: [{ name: '--current-tab', alias: '-c', boolean: true, docs: 'Toggle edit mode on current tab' }]
 }
 
-function getTabByIndex(argvNoOptions: string[]): Tab {
+function getTabIndex(argvNoOptions: string[]): number {
   const index = parseInt(argvNoOptions[argvNoOptions.length - 1], 10)
 
   if (isNaN(index)) {
     throw new Error(`4th argument is not a number. Expected type number`)
   } else {
-    const tmpTab = getTab(index)
-    if (tmpTab === undefined || tmpTab === null) {
-      throw new Error('Could not find tab with give index ' + index)
-    }
-    return tmpTab
+    return index
   }
 }
 
@@ -71,10 +65,15 @@ export default function(registrar: Registrar) {
           throw new Error('Too many arguments. Expected: tab edit toggle tabIndexNum')
         }
 
-        const desiredTab = parsedOptions.c ? tab : getTabByIndex(argvNoOptions)
+        if (parsedOptions.c) {
+          // we have the uuid
+          eventBus.emitWithTabId('/kui/tab/edit/toggle', getPrimaryTabId(tab))
+        } else {
+          // we only have the index, so we need to broadcast for help
+          // the event expects 0-indexed, our controller takes 1-indexed
+          eventBus.emit('/kui/tab/edit/toggle/index', getTabIndex(argvNoOptions) - 1)
+        }
 
-        const uuid = getPrimaryTabId(desiredTab)
-        eventBus.emitWithTabId('/kui/tab/edit/toggle', uuid, desiredTab)
         return 'Successfully toggled edit mode'
       },
       { usage, flags: { alias: { 'current-tab': ['c'] }, boolean: ['c'] } }

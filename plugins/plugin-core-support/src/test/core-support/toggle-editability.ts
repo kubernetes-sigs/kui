@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 
 const TIMEOUT = 10000
 
 Common.localDescribe('toggle edit mode', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const openNotebook = () => {
-    it('should open a notebook using a CLI command', async () => {
-      try {
-        await CLI.command('replay /kui/welcome.json', this.app)
-          .then(ReplExpect.error(127))
-          .catch(Common.oops(this, true))
-        await this.app.client.$(Selectors.TOP_TAB_N(1)).then(_ => _.click())
-      } catch (err) {
-        return Common.oops(this, true)(err)
-      }
-    })
+    it('should open a notebook using a CLI command', () =>
+      CLI.command('replay /kui/welcome.json', this.app).catch(Common.oops(this, true)))
   }
 
   const argvCountCLICommandCheck = () => {
@@ -58,13 +51,22 @@ Common.localDescribe('toggle edit mode', function(this: Common.ISuite) {
       await CLI.command('tab edit toggle ' + invalidTabNum, this.app).then(
         ReplExpect.error('Could not find tab with give index ' + invalidTabNum)
       )
-      await CLI.command('tab edit toggle 2', this.app).then(
-        ReplExpect.okWithPtyOutput('Successfully toggled edit mode')
-      )
-      await CLI.command('tab edit toggle 1', this.app).then(
-        ReplExpect.okWithPtyOutput('Successfully toggled edit mode')
-      )
     })
+  }
+
+  const successfulToggles = () => {
+    it('should create a new tab to perform the toggles', () =>
+      Util.clickNewTabButton(this, 3).catch(Common.oops(this, true)))
+
+    it('should successfully toggle tab 2', () =>
+      CLI.command('tab edit toggle 2', this.app)
+        .then(ReplExpect.okWithString('Successfully toggled edit mode'))
+        .catch(Common.oops(this, true)))
+
+    it('should successfully toggle tab 1', () =>
+      CLI.command('tab edit toggle 1', this.app)
+        .then(ReplExpect.okWithString('Successfully toggled edit mode'))
+        .catch(Common.oops(this, true)))
   }
 
   const blockActionsNonNotebook = () => {
@@ -164,15 +166,21 @@ Common.localDescribe('toggle edit mode', function(this: Common.ISuite) {
 
   // Tests begin here
   openNotebook()
+  it('should switch to tab 1', () => Util.switchToTopLevelTabViaClick(this, 1))
   argvCountCLICommandCheck()
   tabNotANumCheck()
   tabInvalidNumCheck()
 
+  // where we actually toggle to readonly mode
+  successfulToggles()
+
   // The following tests are for non-notebook tabs
+  it('should switch to tab 1', () => Util.switchToTopLevelTabViaClick(this, 1))
   blockActionsNonNotebook()
   doubleClickNonNotebook()
 
   // The following tests are for notebooks
+  it('should switch to tab 2', () => Util.switchToTopLevelTabViaClick(this, 2))
   splitHeadersCheck()
   blockActionsAvailable()
   doubleClick()

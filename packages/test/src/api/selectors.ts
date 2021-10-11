@@ -173,8 +173,31 @@ export const PROMPT_BLOCK_N_FOR_SPLIT = (N: number, splitIndex: number) =>
   `${SPLIT_N(splitIndex)} ${_PROMPT_BLOCK_N(N)}`
 export const PROMPT_N_FOR_SPLIT = (N: number, splitIndex: number) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_PROMPT}`
-export const PROMPT_BLOCK_LAST_FOR_SPLIT = (splitIndex = 1) => `${PROMPT_BLOCK_FOR_SPLIT(splitIndex)}:nth-last-child(2)`
+
+// in notebooks, there is no active block, hence the nth-last-child(1)
+export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
+export const PROMPT_BLOCK_LAST_IN_NOTEBOOK = (N = 1) => `${PROMPT_BLOCK}:nth-last-child(${N})`
+export const PROMPT_BLOCK_LAST_FOR_SPLIT_IN_NOTEBOOK = (splitIndex = 1, N = 1) =>
+  `${PROMPT_BLOCK_FOR_SPLIT(splitIndex)}:nth-last-child(${N})`
+export const PROMPT_BLOCK_LAST_FOR_SPLIT = (splitIndex = 1, N = 1, inNotebook = false) => {
+  if (!inNotebook) {
+    return `${PROMPT_BLOCK_FOR_SPLIT(splitIndex)}:nth-last-child(${N + 1})`
+  } else {
+    return PROMPT_BLOCK_LAST_FOR_SPLIT_IN_NOTEBOOK(splitIndex, N)
+  }
+}
+export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
+export const PROMPT_LAST_IN_NOTEBOOK = (N = 1) => `${PROMPT_BLOCK_LAST_IN_NOTEBOOK(N)} .repl-input-element`
 export const OUTPUT_LAST_FOR_SPLIT = (splitIndex: number) => `${PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)} .repl-result`
+export const OUTPUT_LAST_FOR_SPLIT_IN_NOTEBOOK = (splitIndex: number, N = 1) =>
+  `${PROMPT_BLOCK_LAST_FOR_SPLIT_IN_NOTEBOOK(splitIndex, N)} .repl-result`
+export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
+export const OUTPUT_LAST_IN_NOTEBOOK = (N = 1) => `${PROMPT_BLOCK_LAST_IN_NOTEBOOK(N)} .repl-result`
+export const OUTPUT_LAST_STREAMING = `${PROMPT_BLOCK_LAST} [data-stream]`
+export const OUTPUT_LAST_STREAMING_IN_NOTEBOOK = `${PROMPT_BLOCK_LAST_IN_NOTEBOOK} [data-stream]`
+
+export const OUTPUT_LAST_PTY = OUTPUT_LAST
+export const OUTPUT_LAST_PTY_IN_NOTEBOOK = OUTPUT_LAST_IN_NOTEBOOK
 
 /**
  * Terminal card
@@ -189,7 +212,6 @@ export const OUTPUT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPL
 export const OUTPUT_N_STREAMING = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} [data-stream]`
 export const OUTPUT_N_PTY = (N: number) => OUTPUT_N(N)
-export const PROMPT_BLOCK_LAST = `${PROMPT_BLOCK}:nth-last-child(2)`
 export const EXPERIMENTAL_PROMPT_BLOCK_TAG = `${PROMPT_BLOCK_LAST} .kui--repl-block-experimental-tag`
 export const PROMPT_BLOCK_FINAL = `${PROMPT_BLOCK}:nth-last-child(1)`
 export const OVERFLOW_MENU = '.kui--repl-block-right-element.kui--toolbar-button-with-icon'
@@ -203,11 +225,7 @@ export const COMMAND_COPY_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--bl
 export const COMMAND_COPY_DONE_BUTTON = (N: number) => `${PROMPT_BLOCK_N(N)} .kui--block-action [icon="Checkmark"]`
 export const COMMAND_RERUN_BUTTON = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--block-action [icon="Play"]`
-export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
-export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
-export const OUTPUT_LAST_STREAMING = `${PROMPT_BLOCK_LAST} [data-stream]`
-export const OUTPUT_LAST_PTY = OUTPUT_LAST
 export const LIST_RESULTS_N = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result tbody tr`
 
@@ -366,8 +384,12 @@ export const EXPANDABLE_OUTPUT_N = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--expandable-section button`
 export const EXPANDABLE_OUTPUT_LAST = (splitIndex = 1) =>
   `${PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)} .kui--expandable-section button`
+export const EXPANDABLE_OUTPUT_LAST_IN_NOTEBOOK = (splitIndex = 1, N = 1) =>
+  `${PROMPT_BLOCK_LAST_FOR_SPLIT_IN_NOTEBOOK(splitIndex, N)} .kui--expandable-section button`
 
 /** DescriptionList */
 export const DLIST = '.kui--description-list'
 export const DLIST_DESCRIPTION_FOR = (term: string) =>
   `.kui--description-list-term[data-term=${term}] + .kui--description-list-description`
+
+export const tabButtonSelector = '#new-tab-button'

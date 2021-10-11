@@ -54,18 +54,21 @@ describe(`kubectl replay ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: 
       console.error('snapshoting')
       await CLI.command(`snapshot ${file}`, this.app).then(ReplExpect.justOK)
 
-      console.error('replaying')
+      console.error('refreshing')
       await Common.refresh(this)
 
+      console.error('replaying')
       await CLI.command(`replay ${file}`, this.app)
 
       await CLI.expandLast(this.app)
 
-      await waitForRed(this.app, `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`)
+      await waitForRed(this.app, `${Selectors.OUTPUT_LAST_IN_NOTEBOOK()} ${Selectors.BY_NAME('nginx')}`)
     } catch (err) {
       await Common.oops(this, true)(err)
     }
   })
+
+  it('should switch to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
 
   deleteNS(this, ns, 'kubectl')
 })
@@ -95,7 +98,7 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
       await this.app.client.waitUntil(
         async () => {
           const errorMessage = await this.app.client
-            .$(`${Selectors.OUTPUT_LAST}.oops[data-status-code="409"]`)
+            .$(`${Selectors.OUTPUT_LAST_IN_NOTEBOOK()}.oops[data-status-code="409"]`)
             .then(_ => _.getText())
           return errorMessage.includes('pods "nginx"')
         },
@@ -106,6 +109,7 @@ describe(`kubectl replay with re-execution ${process.env.MOCHA_RUN_TARGET || ''}
     }
   })
 
+  it('should switch to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
   deleteNS(this, ns, 'kubectl')
 })
 
@@ -133,20 +137,24 @@ describe(`kubectl replay with clicks ${process.env.MOCHA_RUN_TARGET || ''}`, asy
 
       await CLI.expandLast(this.app)
 
-      await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')}`).then(_ => _.waitForDisplayed())
+      await this.app.client
+        .$(`${Selectors.OUTPUT_LAST_IN_NOTEBOOK()} ${Selectors.BY_NAME('nginx')}`)
+        .then(_ => _.waitForDisplayed())
       await Util.openSidecarByClick(
         this,
-        `${Selectors.OUTPUT_LAST} ${Selectors.BY_NAME('nginx')} .clickable`,
+        `${Selectors.OUTPUT_LAST_IN_NOTEBOOK()} ${Selectors.BY_NAME('nginx')} .clickable`,
         'nginx',
         defaultModeForGet,
         undefined,
-        1 // replayed clicks currently don't support opening in a split; see https://github.com/IBM/kui/issues/6785
+        1, // replayed clicks currently don't support opening in a split; see https://github.com/IBM/kui/issues/6785
+        true // we are in a notebook
       )
     } catch (err) {
       await Common.oops(this, true)(err)
     }
   })
 
+  it('should switch to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
   deleteNS(this, ns, 'kubectl')
 })
 
@@ -177,11 +185,14 @@ describe(`kubectl replay with grid table ${process.env.MOCHA_RUN_TARGET || ''}`,
 
       await CLI.expandLast(this.app)
 
-      await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors._TABLE_AS_GRID}`).then(_ => _.waitForDisplayed())
+      await this.app.client
+        .$(`${Selectors.OUTPUT_LAST_IN_NOTEBOOK()} ${Selectors._TABLE_AS_GRID}`)
+        .then(_ => _.waitForDisplayed())
     } catch (err) {
       await Common.oops(this, true)(err)
     }
   })
 
+  it('should switch to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
   deleteNS(this, ns, 'kubectl')
 })

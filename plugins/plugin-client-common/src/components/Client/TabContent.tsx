@@ -277,6 +277,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
               ref={this.state._terminal}
               hasBottomStrip={this.state.hasBottomStrip}
               willToggleBottomStripMode={this._toggleBottomStripMode}
+              noActiveInput={this.props.noActiveInput || !this.state.mutability.editable}
             >
               {this.children()}
             </ScrollableTerminal>

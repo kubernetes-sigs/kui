@@ -88,6 +88,7 @@ class WriteEventBus extends EventBusBase {
   public emit(channel: '/tab/new/request', evt?: NewTabRequestEvent): void
   public emit(channel: '/tab/switch/request', idx: number): void
   public emit(channel: '/tab/switch/request/done', args: { idx: number; tab: TabState }): void
+  public emit(channel: '/kui/tab/edit/toggle/index', idx: number): void
   public emit(channel: string, args?: any) {
     return this.eventBus.emit(channel, args)
   }
@@ -178,10 +179,16 @@ class ReadEventBus extends WriteEventBus {
   public on(channel: '/tab/new/request', listener: (evt: NewTabRequestEvent) => void): void
   public on(channel: '/tab/switch/request', listener: (tabId: number) => void): void
   public on(channel: '/tab/switch/request/done', listener: (tabId: number, tabState: TabState) => void): void
+  public on(channel: '/kui/tab/edit/toggle/index', listener: (idx: number) => void): void
   public on(channel: string, listener: any) {
     return this.eventBus.on(channel, listener)
   }
 
+  public off(channel: '/tab/new', listener: (tab: Tab) => void): void
+  public off(channel: '/tab/new/request', listener: (evt: NewTabRequestEvent) => void): void
+  public off(channel: '/tab/switch/request', listener: (tabId: number) => void): void
+  public off(channel: '/tab/switch/request/done', listener: (tabId: number, tabState: TabState) => void): void
+  public off(channel: '/kui/tab/edit/toggle/index', listener: (idx: number) => void): void
   public off(channel: string, listener: any) {
     return this.eventBus.off(channel, listener)
   }

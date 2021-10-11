@@ -383,13 +383,15 @@ export async function openSidecarByClick(
   name: string,
   mode?: string,
   activationId?: string,
-  splitIndex = 2 // after we click, we expect two splits
+  splitIndex = 2, // after we click, we expect two splits
+  inNotebook = false
 ) {
   const app = ctx.app
 
   // Note! if we already have 2 splits, we need to grab the count before we click! see https://github.com/IBM/kui/issues/6636
   const currentSplitCount = (await app.client.$$(Selectors.SPLITS)).length
-  const currentLastBlockIdx = currentSplitCount === splitIndex ? (await CLI.lastBlock(app, splitIndex)).count : -1
+  const currentLastBlockIdx =
+    currentSplitCount === splitIndex ? (await CLI.lastBlock(app, splitIndex, 1, inNotebook)).count : -1
 
   // now click on the table row
   const clickOn = await app.client.$(selector)
@@ -402,11 +404,11 @@ export async function openSidecarByClick(
 
   // expect sidecar shown in the last blck of the second split
   await app.client.waitUntil(async () => {
-    const sidecarRes = await CLI.lastBlock(app, splitIndex)
+    const sidecarRes = await CLI.lastBlock(app, splitIndex, 1, inNotebook)
     return sidecarRes.count > currentLastBlockIdx
   })
 
-  const sidecarRes = await CLI.lastBlock(app, splitIndex)
+  const sidecarRes = await CLI.lastBlock(app, splitIndex, 1, inNotebook)
   await SidecarExpect.open(sidecarRes).then(SidecarExpect.showing(name, activationId))
 
   if (mode) {
@@ -467,4 +469,29 @@ export function doCancel(this: Common.ISuite, cmd = '') {
         .then(input => assert.strictEqual(input, cmd))
     )
     .catch(Common.oops(this, true))
+}
+
+export function switchToTopLevelTabViaClick(ctx: Common.ISuite, N: number) {
+  return ctx.app.client
+    .$(Selectors.TOP_TAB_N_CLICKABLE(N))
+    .then(_ => _.click())
+    .then(() => ctx.app.client.$(Selectors.TAB_SELECTED_N(N)))
+    .then(_ => _.waitForDisplayed())
+    .catch(Common.oops(ctx, true))
+}
+
+export function doClear(this: Common.ISuite, residualBlockCount = 1, splitIndex = 1) {
+  return CLI.commandInSplit('clear', this.app, splitIndex)
+    .then(() => ReplExpect.consoleToBeClear(this.app, residualBlockCount, splitIndex))
+    .then(() => SidecarExpect.closed)
+    .catch(Common.oops(this, true))
+}
+
+export function clickNewTabButton(ctx: Common.ISuite, expectedNewTabIndex: number) {
+  return ctx.app.client
+    .$(Selectors.tabButtonSelector)
+    .then(_ => _.click())
+    .then(() => ctx.app.client.$(Selectors.TAB_SELECTED_N(expectedNewTabIndex)))
+    .then(_ => _.waitForDisplayed())
+    .then(() => CLI.waitForRepl(ctx.app)) // should have an active repl
 }

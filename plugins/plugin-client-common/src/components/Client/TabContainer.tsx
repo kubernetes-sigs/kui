@@ -69,6 +69,13 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     eventBus.on('/tab/switch/request', (idx: number) => {
       this.onSwitchTab(idx)
     })
+
+    eventBus.on('/kui/tab/edit/toggle/index', (idx: number) => {
+      const tab = this.state.tabs[idx]
+      if (tab && tab.uuid) {
+        eventBus.emitWithTabId('/kui/tab/edit/toggle', tab.uuid)
+      }
+    })
   }
 
   /** save tab state such as CWD prior to a tab switch */

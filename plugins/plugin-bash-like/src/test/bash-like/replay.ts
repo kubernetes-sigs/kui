@@ -48,7 +48,7 @@ describe(`bash-like snapshot and replay ${process.env.MOCHA_RUN_TARGET || ''}`, 
       let idx = 0
       await this.app.client.waitUntil(
         async () => {
-          const txt = await this.app.client.$(Selectors.OUTPUT_LAST_PTY).then(_ => _.getText())
+          const txt = await this.app.client.$(Selectors.OUTPUT_LAST_PTY_IN_NOTEBOOK()).then(_ => _.getText())
           if (++idx > 5) {
             console.error(`still waiting for expected=${curentDirectory}; actual=${txt}`)
           }

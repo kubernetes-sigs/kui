@@ -74,7 +74,12 @@ type ScrollbackState = ScrollbackOptions & {
   willInsertSection: (idx: number) => void
   willLinkifyBlock: (idx: number) => void
   willUpdateExecutable: () => void
-  tabRefFor: (ref: HTMLElement) => void
+
+  /** Reference for the entire Split */
+  tabRefFor(ref: HTMLElement): void
+
+  /** Reference for the scrollable part of the Split; helpful for scrollToTop/Bottom */
+  scrollableRef(ref: HTMLElement): void
 }
 
 export default ScrollbackState
