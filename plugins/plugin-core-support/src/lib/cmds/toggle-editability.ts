@@ -18,6 +18,7 @@ import {
   eventBus,
   getPrimaryTabId,
   getTab,
+  isReadOnlyClient,
   KResponse,
   ParsedOptions,
   Registrar,
@@ -58,23 +59,25 @@ function getTabByIndex(argvNoOptions: string[]): Tab {
 
 /** Command registration */
 export default function(registrar: Registrar) {
-  // register the `tab edit toggle` command
-  registrar.listen<KResponse, EditOptions>(
-    '/tab/edit/toggle',
-    ({ tab, argvNoOptions, parsedOptions }) => {
-      if (!parsedOptions.c && argvNoOptions.length < 4) {
-        throw new Error('Not enough arguments. Expected: tab edit toggle tabIndexNum')
-      }
-      if (argvNoOptions.length > 4) {
-        throw new Error('Too many arguments. Expected: tab edit toggle tabIndexNum')
-      }
+  if (!isReadOnlyClient()) {
+    // register the `tab edit toggle` command
+    registrar.listen<KResponse, EditOptions>(
+      '/tab/edit/toggle',
+      ({ tab, argvNoOptions, parsedOptions }) => {
+        if (!parsedOptions.c && argvNoOptions.length < 4) {
+          throw new Error('Not enough arguments. Expected: tab edit toggle tabIndexNum')
+        }
+        if (argvNoOptions.length > 4) {
+          throw new Error('Too many arguments. Expected: tab edit toggle tabIndexNum')
+        }
 
-      const desiredTab = parsedOptions.c ? tab : getTabByIndex(argvNoOptions)
+        const desiredTab = parsedOptions.c ? tab : getTabByIndex(argvNoOptions)
 
-      const uuid = getPrimaryTabId(desiredTab)
-      eventBus.emitWithTabId('/kui/tab/edit/toggle', uuid, desiredTab)
-      return 'Successfully toggled edit mode'
-    },
-    { usage, flags: { alias: { 'current-tab': ['c'] }, boolean: ['c'] } }
-  )
+        const uuid = getPrimaryTabId(desiredTab)
+        eventBus.emitWithTabId('/kui/tab/edit/toggle', uuid, desiredTab)
+        return 'Successfully toggled edit mode'
+      },
+      { usage, flags: { alias: { 'current-tab': ['c'] }, boolean: ['c'] } }
+    )
+  }
 }
