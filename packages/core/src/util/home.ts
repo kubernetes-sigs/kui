@@ -37,5 +37,17 @@ export const expandHomeDir = function(path: string): string {
 
 export default expandHomeDir
 
-export const cwd = () =>
-  process.env.VIRTUAL_CWD || (inBrowser() ? process.env.PWD || process.env.HOME || '/' : process.cwd().slice(0))
+export const cwd = () => {
+  try {
+    return (
+      process.env.VIRTUAL_CWD || (inBrowser() ? process.env.PWD || process.env.HOME || '/' : process.cwd().slice(0))
+    )
+  } catch (err) {
+    // it could be that the underlying directory disappeared
+    // see https://github.com/kubernetes-sigs/kui/issues/8160
+    console.error(err)
+
+    // fallback plan:
+    return process.env.PWD || process.env.HOME || _homedir || '/'
+  }
+}
