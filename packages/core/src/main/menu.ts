@@ -23,6 +23,7 @@ import open from './open'
 import saveAsNotebook from './save'
 import tellRendererToExecute from './tell'
 import { openNotebook, loadClientNotebooksMenuDefinition, clientNotebooksDefinitionToElectron } from './notebooks'
+import { isOfflineClient, isReadOnlyClient } from '..'
 
 const isDev = false
 
@@ -86,6 +87,7 @@ export const install = (createWindow: (executeThisArgvPlease?: string[]) => void
       { type: 'separator' },
       {
         label: 'Toggle Edit Mode',
+        enabled: !(isReadOnlyClient() || isOfflineClient()),
         click: () => tellRendererToExecute('tab edit toggle --current-tab')
         // TODO find exactly what keyboard shortcut => accelerator: 'CommandOrControl+E'
       },

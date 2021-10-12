@@ -17,6 +17,7 @@
 import {
   eventBus,
   getPrimaryTabId,
+  isOfflineClient,
   isReadOnlyClient,
   KResponse,
   ParsedOptions,
@@ -53,7 +54,7 @@ function getTabIndex(argvNoOptions: string[]): number {
 
 /** Command registration */
 export default function(registrar: Registrar) {
-  if (!isReadOnlyClient()) {
+  if (!(isReadOnlyClient() || isOfflineClient())) {
     // register the `tab edit toggle` command
     registrar.listen<KResponse, EditOptions>(
       '/tab/edit/toggle',
