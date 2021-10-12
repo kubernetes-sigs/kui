@@ -100,20 +100,25 @@ export default function(registrar: Registrar) {
   registrar.listen<KResponse, ReplayOptions>(
     '/replay',
     async ({ argvNoOptions, parsedOptions, REPL }) => {
-      const filepath = expandHomeDir(argvNoOptions[1])
-      const model = await loadNotebook(REPL, filepath)
+      const filepaths = argvNoOptions.slice(1).map(_ => expandHomeDir(_))
+      const models = await Promise.all(filepaths.map(filepath => loadNotebook(REPL, filepath)))
 
-      if (!isNotebook(model)) {
-        console.error('invalid notebook', model)
-        throw new Error('Invalid notebook')
+      const valid = models.map(_ => isNotebook(_))
+      const nInvalid = models.reduce((N, valid) => (N += valid ? 0 : 1), 0)
+      if (nInvalid > 0) {
+        const invalids = filepaths.filter((_, idx) => !valid[idx])
+        console.error('invalid notebooks', invalids)
+        throw new Error(invalids.length === 1 ? 'Invalid notebook' : `Invalid notebooks: ${invalids.join(' ')}`)
       } else {
-        const message = formatMessage(model)
-        const titleOption = model.metadata.name ? `--title "${model.metadata.name}"` : ''
+        const messages = models.map(formatMessage)
+        const titles = models.map(model => (model.metadata.name ? model.metadata.name : ''))
+        const titleOptions =
+          titles.length === 0 || titles.every(_ => _.length === 0) ? '' : `--title "${titles.join(',')}"`
 
         if (parsedOptions['new-window'] && inElectron()) {
           // the electron bits are sequestered in plugin-electron, to
           // avoid pulling in electron for purely browser-based clients
-          return REPL.qexec(`replay-electron ${filepath}`)
+          return REPL.qexec(`replay-electron ${filepaths}`)
         } else {
           if (parsedOptions['close-current-tab'] || parsedOptions.c) {
             // see https://github.com/IBM/kui/issues/5929
@@ -121,11 +126,12 @@ export default function(registrar: Registrar) {
           }
 
           return REPL.qexec(
-            `tab new --snapshot "${filepath}" --quiet --status-stripe-type ${parsedOptions['status-stripe'] ||
-              'blue'} ${titleOption}`,
+            `tab new --snapshot "${filepaths.join(',')}" --quiet --status-stripe-type ${parsedOptions[
+              'status-stripe'
+            ] || 'blue'} ${titleOptions}`,
             undefined,
             undefined,
-            { data: { 'status-stripe-message': message } }
+            { data: { 'status-stripe-message': messages.length === 1 ? messages[0] : messages } }
           )
         }
       }
