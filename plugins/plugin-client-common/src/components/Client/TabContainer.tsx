@@ -62,8 +62,15 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       activeIdx: 0
     }
 
-    eventBus.on('/tab/new/request', (evt?: NewTabRequestEvent) => {
-      this.onNewTab(evt)
+    eventBus.on('/tab/new/request', (evt: NewTabRequestEvent) => {
+      evt.tabs.forEach(spec => this.onNewTab(spec, evt.background))
+
+      if (!evt.background && evt.tabs.length > 1) {
+        // make sure the *first* of the new tabs is active
+        this.setState(curState => ({
+          activeIdx: curState.tabs.length - evt.tabs.length
+        }))
+      }
     })
 
     eventBus.on('/tab/switch/request', (idx: number) => {
@@ -144,21 +151,21 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  private newTabModel(evt: NewTabRequestEvent = {}) {
+  private newTabModel(spec: NewTabRequestEvent['tabs'][0] = {}, background = false) {
     // !this.state means: if this is the very first tab we've ever
     // !created, *and* we were given an initial title (via
     // !this.props.title), then use that
     const model = new TabModel(
       undefined,
-      evt.statusStripeDecoration,
-      evt.background,
-      evt.title || (!this.state && this.props.title ? this.props.title : undefined),
+      spec.statusStripeDecoration,
+      background,
+      spec.title || (!this.state && this.props.title ? this.props.title : undefined),
       undefined,
       undefined,
-      evt.cmdline,
-      evt.onClose,
-      evt.exec,
-      evt.snapshot
+      spec.cmdline,
+      spec.onClose,
+      spec.exec,
+      spec.snapshot
     )
     this.listenForTabClose(model)
     return model
@@ -168,13 +175,13 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * New Tab event
    *
    */
-  private onNewTab(evt: NewTabRequestEvent = {}) {
+  private onNewTab(spec: NewTabRequestEvent['tabs'][0] = {}, background = false) {
     // if we already have a tab with this title, and this isn't a
     // background tab, then switch to it
-    if (evt.title) {
-      const existingIdx = this.state.tabs.findIndex(_ => _.title === evt.title)
+    if (spec.title) {
+      const existingIdx = this.state.tabs.findIndex(_ => _.title === spec.title)
       if (existingIdx >= 0) {
-        if (!evt.background) {
+        if (!background) {
           this.onSwitchTab(existingIdx)
         }
         return
@@ -183,11 +190,11 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
     this.captureState()
 
-    const model = this.newTabModel(evt)
+    const model = this.newTabModel(spec, background)
 
     this.setState(curState => ({
       tabs: curState.tabs.concat(model),
-      activeIdx: !evt.background ? curState.tabs.length : curState.activeIdx
+      activeIdx: !background ? curState.tabs.length : curState.activeIdx
     }))
   }
 

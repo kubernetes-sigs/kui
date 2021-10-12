@@ -75,10 +75,13 @@ export default function plugin(commandTree: Registrar) {
    */
   commandTree.listen<
     KResponse,
-    Pick<NewTabRequestEvent, 'cmdline' | 'title' | 'onClose'> & {
+    Pick<NewTabRequestEvent['tabs'][0], 'cmdline' | 'onClose'> & {
       /** Set the status stripe decorations */
       'status-stripe-type'?: StatusStripeChangeEvent['type']
-      'status-stripe-message'?: string
+      'status-stripe-message'?: string | string[]
+
+      /** Tab titles; comma separated for multi-open */
+      title?: string
 
       /** Open with qexec? */
       quiet?: boolean
@@ -120,30 +123,40 @@ export default function plugin(commandTree: Registrar) {
       const message =
         args.parsedOptions['status-stripe-message'] ||
         (args.execOptions.data ? args.execOptions.data['status-stripe-message'] : undefined)
-      const statusStripeDecoration = { type: args.parsedOptions['status-stripe-type'], message }
+      const messages = Array.isArray(message) ? message : [message]
+      const statusStripeDecorations = messages.map(message => ({
+        type: args.parsedOptions['status-stripe-type'],
+        message
+      }))
+
+      const titles = args.parsedOptions.title ? args.parsedOptions.title.split(/,/) : undefined
 
       // this is our response to the user if the tab was created
       // successfully
       const ok = {
-        content: args.parsedOptions.title
-          ? strings('Created a new tab named X', args.parsedOptions.title)
-          : strings('Created a new tab'),
+        content: !titles
+          ? strings('Created a new tab')
+          : Array.isArray(titles) && titles.length > 1
+          ? strings('Created new tabs', args.parsedOptions.title)
+          : strings('Created a new tab named X', Array.isArray(titles) ? titles[0] : titles),
         contentType: 'text/markdown'
       }
 
       const file = args.parsedOptions.snapshot || args.parsedOptions.s
       if (file) {
         // caller wants to open a given snapshot by file in the new tab
-        const filepath = expandHomeDir(file)
-        const snapshot = await loadSnapshotBuffer(args.REPL, filepath)
+        const filepaths = file.split(/,/).map(file => expandHomeDir(file))
+        const snapshot = await Promise.all(filepaths.map(filepath => loadSnapshotBuffer(args.REPL, filepath)))
 
         return new Promise(resolve => {
           eventBus.emit('/tab/new/request', {
-            statusStripeDecoration,
-            snapshot,
-            title: args.parsedOptions.title,
             background: args.parsedOptions.bg,
-            onClose: args.parsedOptions.onClose
+            tabs: snapshot.map((snapshot, idx) => ({
+              snapshot,
+              title: titles ? titles[idx] : undefined,
+              onClose: args.parsedOptions.onClose,
+              statusStripeDecoration: statusStripeDecorations[idx]
+            }))
           })
           resolve(ok)
         })
@@ -151,12 +164,14 @@ export default function plugin(commandTree: Registrar) {
         // caller wants to invoke a given command line in the new tab
         return new Promise(resolve => {
           eventBus.emit('/tab/new/request', {
-            statusStripeDecoration,
-            title: args.parsedOptions.title,
             background: args.parsedOptions.bg,
-            cmdline: args.parsedOptions.cmdline,
-            exec: args.parsedOptions.quiet ? 'qexec' : 'pexec',
-            onClose: args.parsedOptions.onClose
+            tabs: (titles || ['']).map((title, idx) => ({
+              title,
+              statusStripeDecoration: statusStripeDecorations[idx],
+              cmdline: args.parsedOptions.cmdline,
+              exec: args.parsedOptions.quiet ? 'qexec' : 'pexec',
+              onClose: args.parsedOptions.onClose
+            }))
           })
 
           resolve(ok)
@@ -164,10 +179,12 @@ export default function plugin(commandTree: Registrar) {
       } else {
         // default case: tab opens without invoking a command line
         eventBus.emit('/tab/new/request', {
-          statusStripeDecoration,
-          title: args.parsedOptions.title,
           background: args.parsedOptions.bg,
-          onClose: args.parsedOptions.onClose
+          tabs: statusStripeDecorations.map((statusStripeDecoration, idx) => ({
+            statusStripeDecoration,
+            title: titles ? titles[idx] : undefined,
+            onClose: args.parsedOptions.onClose
+          }))
         })
         return ok
       }

@@ -61,26 +61,28 @@ class EventBusBase {
 }
 
 export interface NewTabRequestEvent {
-  /** Optionally specify color and message to display in the StatusStripe */
-  statusStripeDecoration?: StatusStripeChangeEvent
-
-  /** Optional tab title */
-  title?: string
-
   /** Optionally specify to create the new tab without switching to it */
   background?: boolean
 
-  /** Optionally execute a command in the new tab */
-  cmdline?: string
+  tabs: {
+    /** Optionally specify color and message to display in the StatusStripe */
+    statusStripeDecoration?: StatusStripeChangeEvent
 
-  /** Optionally open a snapshot file in the new tab */
-  snapshot?: Buffer
+    /** Optional tab title */
+    title?: string
 
-  /** Execute the command line with qexec or pexec? Default: pexec. */
-  exec?: 'pexec' | 'qexec'
+    /** Optionally execute a command in the new tab */
+    cmdline?: string
 
-  /** Optionally execute a command when the tab is closed */
-  onClose?: string
+    /** Execute the command line with qexec or pexec? Default: pexec. */
+    exec?: 'pexec' | 'qexec'
+
+    /** Optionally open a snapshot file in the new tab */
+    snapshot?: Buffer
+
+    /** Optionally execute a command when the tab is closed */
+    onClose?: string
+  }[]
 }
 
 class WriteEventBus extends EventBusBase {
