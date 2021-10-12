@@ -210,10 +210,8 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     if (tab) {
       const { kubectl, getTabState } = await import('@kui-shell/plugin-kubectl')
 
-      const currentContextSpec = getTabState(tab, 'context')
-      if (currentContextSpec) {
-        const currentContext = currentContextSpec.metadata.name
-
+      const currentContext = getTabState(tab, 'context')
+      if (currentContext) {
         this.setState(curState => ({
           currentContext,
           options: this.options(currentContext, curState.allContexts, kubectl),

@@ -88,12 +88,20 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     try {
       const { kubectl, getCurrentDefaultNamespace } = await import('@kui-shell/plugin-kubectl')
 
+      if (this.unmounted) {
+        return
+      }
+
       const [currentNamespace, allNamespaces] = await Promise.all([
         getCurrentDefaultNamespace(tab),
         tab.REPL.qexec<string>(`${kubectl} get ns -o name`).then(_ =>
           _.split(/\n/).map(_ => _.replace(/^namespace\//, ''))
         )
       ])
+
+      if (this.unmounted) {
+        return
+      }
 
       if (currentNamespace) {
         this.setState({
@@ -122,6 +130,9 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     const { tab } = args
     if (tab) {
       const { getTabState } = await import('@kui-shell/plugin-kubectl')
+      if (this.unmounted) {
+        return
+      }
       const currentNamespace = getTabState(tab, 'namespace')
       if (currentNamespace) {
         this.setState({
