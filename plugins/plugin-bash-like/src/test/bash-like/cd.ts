@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { dirSync } from 'tmp'
 import { v4 as uuid } from 'uuid'
 import { dirname, join, normalize } from 'path'
 
@@ -141,6 +142,39 @@ describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
   pit(`should execute cd ${ROOT}`, () =>
     CLI.command(`cd ${ROOT}`, this.app)
       .then(ReplExpect.okWithString(ROOT))
+      .catch(Common.oops(this, true))
+  )
+})
+
+// see https://github.com/kubernetes-sigs/kui/issues/8160
+describe(`remove current directory ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const { name: tmp } = dirSync()
+
+  pit(`should cd to our tmp dir ${tmp}`, () =>
+    CLI.command(`cd ${tmp}`, this.app)
+      .then(ReplExpect.okWithString(tmp))
+      .catch(Common.oops(this, true))
+  )
+
+  pit(`should remove our tmp dir ${tmp}`, () =>
+    CLI.command(`rm -rf ${tmp}`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
+  )
+
+  pit(`should still show pwd as ${tmp}`, () =>
+    CLI.command(`pwd`, this.app)
+      .then(ReplExpect.okWithString(tmp))
+      .catch(Common.oops(this, true))
+  )
+
+  // webpack-dev-server seems to crash if we don't do this; should be dev only :(
+  pit(`should cd back home`, () =>
+    CLI.command(`cd`, this.app)
+      .then(ReplExpect.okWithString(expandHomeDir('~')))
       .catch(Common.oops(this, true))
   )
 })
