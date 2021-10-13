@@ -80,6 +80,9 @@ export interface NewTabRequestEvent {
     /** Optionally open a snapshot file in the new tab */
     snapshot?: Buffer
 
+    /** Replace the contents of the current tab with that of the given snapshot? */
+    replaceCurrentTab?: boolean
+
     /** Optionally execute a command when the tab is closed */
     onClose?: string
   }[]

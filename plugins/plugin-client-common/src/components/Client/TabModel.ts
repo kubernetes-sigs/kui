@@ -30,7 +30,7 @@ export default class TabModel {
   public constructor(
     private readonly _uuid = uuid(),
     private readonly desiredStatusStripeDecoration?: StatusStripeChangeEvent,
-    background?: boolean,
+    doNotChangeActiveTab?: boolean,
     private readonly _title?: string,
     private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
     private readonly _buttons: TopTabButton[] = [],
@@ -42,7 +42,7 @@ export default class TabModel {
   ) {
     this._state.capture()
 
-    if (!background) {
+    if (!doNotChangeActiveTab) {
       this._state.updateStatusStripe()
     }
   }

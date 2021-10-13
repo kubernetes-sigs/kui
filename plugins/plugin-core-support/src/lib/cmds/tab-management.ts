@@ -99,6 +99,9 @@ export default function plugin(commandTree: Registrar) {
       /** Optionally open a snapshot file in the new tab */
       snapshot?: string
       s?: string
+
+      /** Replace the contents of the current tab with that of the first snapshot? */
+      r?: boolean
     }
   >(
     '/tab/new',
@@ -153,6 +156,7 @@ export default function plugin(commandTree: Registrar) {
             background: args.parsedOptions.bg,
             tabs: snapshot.map((snapshot, idx) => ({
               snapshot,
+              replaceCurrentTab: args.parsedOptions.r && idx === 0,
               title: titles ? titles[idx] : undefined,
               onClose: args.parsedOptions.onClose,
               statusStripeDecoration: statusStripeDecorations[idx]
@@ -198,11 +202,12 @@ export default function plugin(commandTree: Registrar) {
           { name: '--snapshot', alias: '-s', docs: 'Snapshot file to display in the new tab' },
           { name: '--status-stripe-type', docs: 'Desired status stripe coloration', allowed: ['default', 'blue'] },
           { name: '--status-stripe-message', docs: 'Desired status stripe message' },
-          { name: '--title', alias: '-t', docs: 'Title to display in the UI' }
+          { name: '--title', alias: '-t', docs: 'Title to display in the UI' },
+          { name: '-r', docs: 'Replace the contents of the current tab with that of the given (first) snapshot' }
         ]
       },
       flags: {
-        boolean: ['bg', 'b', 'quiet', 'q']
+        boolean: ['bg', 'b', 'quiet', 'q', 'r']
       }
     }
   )
