@@ -41,11 +41,13 @@ const replayUsage = {
       { name: '--freshen', alias: '-f', boolean: true, docs: 'Regenerate snapshot' },
       { name: '--new-window', alias: '-w', boolean: true, docs: 'Replay in a new window (Electron only)' },
       { name: '--close-current-tab', alias: '-c', boolean: true, docs: 'Also close the current tab' },
+      { name: '--replace-current-tab', alias: '-r', boolean: true, docs: 'Replace the content of the current tab' },
       { name: '--status-stripe', docs: 'Modify status stripe', allowed: ['default', 'blue', 'yellow', 'red'] }
     ]
   },
   flags: {
-    boolean: ['new-window', 'w', 'freshen', 'f', 'close-current-tab', 'c']
+    alias: { 'new-window': ['w'], freshen: ['f'], 'close-current-tab': ['c'], 'replace-current-tab': ['r'] },
+    boolean: ['new-window', 'w', 'freshen', 'f', 'close-current-tab', 'c', 'replace-current-tab', 'r']
   }
 }
 
@@ -120,7 +122,7 @@ export default function(registrar: Registrar) {
           // avoid pulling in electron for purely browser-based clients
           return REPL.qexec(`replay-electron ${filepaths}`)
         } else {
-          if (parsedOptions['close-current-tab'] || parsedOptions.c) {
+          if (parsedOptions.c) {
             // see https://github.com/IBM/kui/issues/5929
             await REPL.qexec('tab close')
           }
@@ -128,7 +130,7 @@ export default function(registrar: Registrar) {
           return REPL.qexec(
             `tab new --snapshot "${filepaths.join(',')}" --quiet --status-stripe-type ${parsedOptions[
               'status-stripe'
-            ] || 'blue'} ${titleOptions}`,
+            ] || 'blue'} ${titleOptions} ${parsedOptions.r ? ' -r' : ''}`,
             undefined,
             undefined,
             { data: { 'status-stripe-message': messages.length === 1 ? messages[0] : messages } }

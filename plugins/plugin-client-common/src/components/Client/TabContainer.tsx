@@ -63,10 +63,31 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     }
 
     eventBus.on('/tab/new/request', (evt: NewTabRequestEvent) => {
-      evt.tabs.forEach(spec => this.onNewTab(spec, evt.background))
+      // the protocol is: if we are opening multiple tabs in the
+      // "foreground", then make sure the *first* of the new tabs is
+      // active
+      const weWillAssertActiveTab = !evt.background && evt.tabs.length > 1
 
-      if (!evt.background && evt.tabs.length > 1) {
-        // make sure the *first* of the new tabs is active
+      evt.tabs.forEach((spec, idx) => {
+        // re: the `&& idx > 0` part: we do want the *first* tab to assert activeness
+        const doNotChangeActiveTab = evt.background || (weWillAssertActiveTab && idx > 0)
+
+        if (spec.replaceCurrentTab) {
+          this.setState(({ tabs, activeIdx }) => ({
+            tabs: [
+              ...tabs.slice(0, activeIdx),
+              this.newTabModel(spec, doNotChangeActiveTab),
+              ...tabs.slice(activeIdx + 1)
+            ]
+          }))
+        } else {
+          this.onNewTab(spec, doNotChangeActiveTab)
+        }
+      })
+
+      if (weWillAssertActiveTab) {
+        // here is where make sure the *first* of the new tabs is
+        // active
         this.setState(curState => ({
           activeIdx: curState.tabs.length - evt.tabs.length
         }))
@@ -151,15 +172,15 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     })
   }
 
-  private newTabModel(spec: NewTabRequestEvent['tabs'][0] = {}, background = false) {
+  private newTabModel(spec: NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false) {
     // !this.state means: if this is the very first tab we've ever
     // !created, *and* we were given an initial title (via
     // !this.props.title), then use that
     const model = new TabModel(
       undefined,
       spec.statusStripeDecoration,
-      background,
-      spec.title || (!this.state && this.props.title ? this.props.title : undefined),
+      doNotChangeActiveTab,
+      spec.title || this.props.title,
       undefined,
       undefined,
       spec.cmdline,
@@ -175,13 +196,13 @@ export default class TabContainer extends React.PureComponent<Props, State> {
    * New Tab event
    *
    */
-  private onNewTab(spec: NewTabRequestEvent['tabs'][0] = {}, background = false) {
+  private onNewTab(spec: NewTabRequestEvent['tabs'][0] = {}, doNotChangeActiveTab = false) {
     // if we already have a tab with this title, and this isn't a
     // background tab, then switch to it
     if (spec.title) {
       const existingIdx = this.state.tabs.findIndex(_ => _.title === spec.title)
       if (existingIdx >= 0) {
-        if (!background) {
+        if (!doNotChangeActiveTab) {
           this.onSwitchTab(existingIdx)
         }
         return
@@ -190,11 +211,11 @@ export default class TabContainer extends React.PureComponent<Props, State> {
 
     this.captureState()
 
-    const model = this.newTabModel(spec, background)
+    const model = this.newTabModel(spec, doNotChangeActiveTab)
 
     this.setState(curState => ({
       tabs: curState.tabs.concat(model),
-      activeIdx: !background ? curState.tabs.length : curState.activeIdx
+      activeIdx: !doNotChangeActiveTab ? curState.tabs.length : curState.activeIdx
     }))
   }
 
