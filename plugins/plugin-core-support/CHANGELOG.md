@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.3](https://github.com/IBM/kui/compare/v10.7.2...v10.7.3) (2021-10-13)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** multi-notebook replays result in incorrect status stripe ([e45a214](https://github.com/IBM/kui/commit/e45a214)), closes [#8167](https://github.com/IBM/kui/issues/8167)
+
 ## [10.7.2](https://github.com/IBM/kui/compare/v10.7.1...v10.7.2) (2021-10-13)
 
 ### Bug Fixes

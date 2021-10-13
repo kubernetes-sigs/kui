@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.3](https://github.com/IBM/kui/compare/v10.7.2...v10.7.3) (2021-10-13)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** avoid loading "loading icon" in electron clients ([d6f21a3](https://github.com/IBM/kui/commit/d6f21a3)), closes [#8169](https://github.com/IBM/kui/issues/8169)
+- **plugins/plugin-client-common:** multi-notebook replays result in incorrect status stripe ([e45a214](https://github.com/IBM/kui/commit/e45a214)), closes [#8167](https://github.com/IBM/kui/issues/8167)
+- **plugins/plugin-client-common:** Notebook layout for 2-split was inconsistent with 3-split ([6e68bd3](https://github.com/IBM/kui/commit/6e68bd3))
+- **plugins/plugin-client-common:** odd scroll to bottom behavior ([4308b33](https://github.com/IBM/kui/commit/4308b33)), closes [#8174](https://github.com/IBM/kui/issues/8174)
+
 ## [10.7.2](https://github.com/IBM/kui/compare/v10.7.1...v10.7.2) (2021-10-13)
 
 ### Bug Fixes
