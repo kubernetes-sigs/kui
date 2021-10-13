@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.2](https://github.com/IBM/kui/compare/v10.7.1...v10.7.2) (2021-10-13)
+
+### Bug Fixes
+
+- **packages/core:** kui "whitescreens" if underlying working directory is removed ([5d066a4](https://github.com/IBM/kui/commit/5d066a4)), closes [#8160](https://github.com/IBM/kui/issues/8160)
+
 ## [10.7.1](https://github.com/IBM/kui/compare/v10.7.0...v10.7.1) (2021-10-12)
 
 **Note:** Version bump only for package @kui-shell/plugin-bash-like

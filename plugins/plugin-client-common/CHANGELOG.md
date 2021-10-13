@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.2](https://github.com/IBM/kui/compare/v10.7.1...v10.7.2) (2021-10-13)
+
+### Features
+
+- allow `replay` command to open multiple notebooks ([352e167](https://github.com/IBM/kui/commit/352e167)), closes [#8162](https://github.com/IBM/kui/issues/8162)
+
+### BREAKING CHANGES
+
+- This PR is a breaking change to the new tab event model: it is now an array, rather than a singleton.
+
 ## [10.7.1](https://github.com/IBM/kui/compare/v10.7.0...v10.7.1) (2021-10-12)
 
 **Note:** Version bump only for package @kui-shell/plugin-client-common

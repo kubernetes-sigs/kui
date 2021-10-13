@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.2](https://github.com/kubernetes-sigs/kui/compare/v10.7.1...v10.7.2) (2021-10-13)
+
+**Note:** Version bump only for package @kui-shell/plugin-iter8
+
 ## [10.7.1](https://github.com/kubernetes-sigs/kui/compare/v10.7.0...v10.7.1) (2021-10-12)
 
 **Note:** Version bump only for package @kui-shell/plugin-iter8
