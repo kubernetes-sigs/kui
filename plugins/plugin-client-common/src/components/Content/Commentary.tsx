@@ -19,7 +19,7 @@ import { CommentaryResponse, REPL, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
 import Button from '../spi/Button'
-import SimpleEditor from './Editor/SimpleEditor'
+const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 import { MutabilityContext } from '../Client/MutabilityContext'
 
 const strings = i18n('plugin-client-common')
@@ -220,18 +220,20 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   private editor() {
     return (
-      <SimpleEditor
-        tabUUID={this.props.tabUUID}
-        content={this.state.textValue}
-        className="kui--source-ref-editor kui--commentary-editor"
-        readonly={false}
-        simple
-        onSave={this._onSaveFromEditor}
-        onCancel={this._onCancelFromEditor}
-        onContentChange={this._onContentChange}
-        contentType="markdown"
-        scrollIntoView={this.props.isPartOfMiniSplit}
-      />
+      <React.Suspense fallback={<div />}>
+        <SimpleEditor
+          tabUUID={this.props.tabUUID}
+          content={this.state.textValue}
+          className="kui--source-ref-editor kui--commentary-editor"
+          readonly={false}
+          simple
+          onSave={this._onSaveFromEditor}
+          onCancel={this._onCancelFromEditor}
+          onContentChange={this._onContentChange}
+          contentType="markdown"
+          scrollIntoView={this.props.isPartOfMiniSplit}
+        />
+      </React.Suspense>
     )
   }
 
