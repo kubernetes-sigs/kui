@@ -25,7 +25,7 @@ import defaultMonacoOptions, { Options as MonacoOptions } from './lib/defaults'
 import '../../../../web/scss/components/Editor/Editor.scss'
 
 type Props = Pick<MonacoOptions, 'fontSize'> & {
-  tabUUID: string
+  tabUUID?: string
   content: string
   contentType: string
   simple?: boolean

@@ -15,12 +15,15 @@
  */
 
 import React from 'react'
-import { CodeEditor, CodeEditorProps, Language } from '@patternfly/react-code-editor'
+import SimpleEditor from '../../../Content/Editor/SimpleEditor'
+
+// ugh: does not support lazy loading
+// import { CodeEditor, CodeEditorProps, Language } from '@patternfly/react-code-editor'
 
 import Props from '../model'
 
 export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
-  private readonly _monacoOptions: CodeEditorProps['options'] = {
+  private readonly _monacoOptions /*: CodeEditorProps['options'] */ = {
     cursorStyle: 'block',
     lineDecorationsWidth: 0,
     renderFinalNewline: false,
@@ -30,16 +33,22 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
 
   private language() {
     const { language } = this.props
-    return Language[language === 'sh' || language === 'bash' ? 'shell' : language] || Language.plaintext
+    // return Language[language === 'sh' || language === 'bash' ? 'shell' : language] || Language.plaintext
+    return language || 'text'
   }
 
   private height() {
     return this.props.height || (this.props.value && this.props.value.split(/\n/).length * 20 + 'px') || '20px'
   }
 
+  private readonly style = {
+    padding: '0.5em',
+    backgroundColor: 'var(--color-base00)'
+  }
+
   public render() {
     return (
-      <CodeEditor
+      /*      <CodeEditor
         isReadOnly
         isLineNumbersVisible={false}
         isCopyEnabled={this.props.isCopyEnabled || false}
@@ -50,7 +59,18 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
         language={this.language()}
         code={this.props.value}
         options={this._monacoOptions}
-      />
+      /> */
+
+      <div style={this.style}>
+        <SimpleEditor
+          simple
+          readonly
+          minHeight={0}
+          fontSizeAdjust={12 / 14}
+          content={this.props.value}
+          contentType={this.language()}
+        />
+      </div>
     )
   }
 }
