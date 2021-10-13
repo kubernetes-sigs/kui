@@ -28,16 +28,16 @@ $min-height: 7rem;
   @include HasBottomStrip {
     @include Split(3) {
       @include Rows(8);
-      @include Columns(3);
+      @include Columns(4);
       grid-template-areas:
-        'T1 T2 T2'
-        'T1 T2 T2'
-        'T1 T2 T2'
-        'T1 T2 T2'
-        'T1 T2 T2'
-        'T1 T2 T2'
-        'T1 T2 T2'
-        'T1 B1 B1';
+        'T1 T2 T2 T2'
+        'T1 T2 T2 T2'
+        'T1 T2 T2 T2'
+        'T1 T2 T2 T2'
+        'T1 T2 T2 T2'
+        'T1 T2 T2 T2'
+        'T1 T2 T2 T2'
+        'T1 B1 B1 B1';
     }
 
     @include Split(4) {

@@ -20,8 +20,8 @@
 @include NotebookTab {
   @include Split(2) {
     @include Rows(1);
-    @include Columns(3);
-    grid-template-areas: 'T1 T2 T2';
+    @include Columns(4);
+    grid-template-areas: 'T1 T2 T2 T2';
   }
 
   @include Split(3) {
