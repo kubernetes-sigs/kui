@@ -33,7 +33,6 @@ import {
   ThemeProperties
 } from '@kui-shell/core'
 
-import Card from '../spi/Card'
 import KuiContext from './context'
 import CommonClientProps from './props/Common'
 import KuiConfiguration from './KuiConfiguration'
@@ -42,8 +41,7 @@ import { TabContainer, Loading, Alert } from '../..'
 import loadUserSettings, { on as onUserSettingsChange } from './UserSettings'
 
 const InputStripe = React.lazy(() => import('./InputStripe'))
-
-import KuiIcon from '../../../icons/png/WelcomeLight.png'
+const LoadingCard = React.lazy(() => import('./LoadingCard'))
 
 const debug = Debug('<Kui/>')
 const strings = i18n('client')
@@ -199,20 +197,7 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   private defaultLoadingDone() {
-    return (repl: REPL) =>
-      !inBrowser() ? (
-        undefined
-      ) : (
-        <Card
-          titleInHeader
-          bodyInHeader
-          title={strings('Successfully connected to your cluster')}
-          repl={repl}
-          icon={KuiIcon}
-        >
-          {strings('loadingDone:content')}
-        </Card>
-      )
+    return (repl: REPL) => (!inBrowser() ? undefined : <LoadingCard repl={repl} />)
   }
 
   private defaultLoadingError() {
