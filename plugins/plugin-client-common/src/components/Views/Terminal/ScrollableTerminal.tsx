@@ -517,7 +517,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       if (!this.props.noActiveInput) {
         // if we are using inline input, then scroll to the bottom
         // whenever an output is rendered in this split
-        setTimeout(() => state.facade.scrollToBottom())
+        // problematic, see https://github.com/kubernetes-sigs/kui/issues/8174
+        // setTimeout(() => state.facade.scrollToBottom())
       }
     }
 
@@ -666,6 +667,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     state.scrollableRef = (ref: HTMLElement) => {
       if (ref) {
         state.facade.scrollToBottom = () => {
+          console.error('!!!!!!!!')
           ref.scrollTop = ref.scrollHeight
         }
 
