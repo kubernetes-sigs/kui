@@ -9,6 +9,7 @@
     "splits": [
       {
         "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
+        "position": "default",
         "inverseColors": true,
         "blocks": [
           {
@@ -92,6 +93,7 @@
       },
       {
         "uuid": "3_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "position": "default",
         "blocks": [
           {
             "response": {
@@ -166,7 +168,6 @@
             "isReplay": true,
             "execUUID": "2a4ee59d-e4ea-4068-8fcd-0d3926565c12",
             "isSectionBreak": false,
-            "originalExecUUID": "2a4ee59d-e4ea-4068-8fcd-0d3926565c12",
             "outputOnly": true,
             "state": "valid-response"
           },
@@ -616,7 +617,6 @@
             "isReplay": true,
             "execUUID": "abd598d1-d010-486a-9a03-9a91f0fdcfdf",
             "isSectionBreak": false,
-            "originalExecUUID": "abd598d1-d010-486a-9a03-9a91f0fdcfdf",
             "startTime": 1603210685723,
             "outputOnly": false,
             "state": "valid-response"
@@ -696,7 +696,6 @@
             "isReplay": true,
             "execUUID": "cb9e75c4-24c0-4441-8b6d-fa638b778f88",
             "isSectionBreak": false,
-            "originalExecUUID": "cb9e75c4-24c0-4441-8b6d-fa638b778f88",
             "startTime": 1602868891388,
             "outputOnly": true,
             "state": "valid-response"
@@ -1355,7 +1354,6 @@
             "isReplay": true,
             "execUUID": "bfaa4e59-08bc-45aa-8366-994ca22afb0a",
             "isSectionBreak": false,
-            "originalExecUUID": "bfaa4e59-08bc-45aa-8366-994ca22afb0a",
             "startTime": 1603210688746,
             "outputOnly": false,
             "state": "valid-response"
@@ -1435,7 +1433,6 @@
             "isReplay": true,
             "execUUID": "478d4f12-243e-4205-b15d-12eef496355a",
             "isSectionBreak": false,
-            "originalExecUUID": "478d4f12-243e-4205-b15d-12eef496355a",
             "startTime": 1602891188650,
             "outputOnly": true,
             "state": "valid-response"
@@ -1916,6 +1913,155 @@
             "startTime": 1602890227992,
             "prefersTerminalPresentation": false,
             "outputOnly": true,
+            "state": "valid-response"
+          }
+        ]
+      },
+      {
+        "uuid": "3_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+        "position": "bottom-strip",
+        "blocks": [
+          {
+            "response": {
+              "apiVersion": "kui-shell/v1",
+              "kind": "StatusModel",
+              "metadata": {
+                "name": "Prerequisites"
+              },
+              "spec": {
+                "sections": [
+                  {
+                    "title": "Kubernetes",
+                    "tiles": [
+                      {
+                        "title": "",
+                        "description": "CLI and Cluster config",
+                        "items": [
+                          {
+                            "title": "kubectl",
+                            "description": "The kubectl CLI allows access to your Kubernetes clusters",
+                            "status": {
+                              "cached": "success"
+                            }
+                          },
+                          {
+                            "title": "Connected to cluster",
+                            "description": "A valid KUBECONFIG environment variable allows authorized access to your Kubernetes clusters",
+                            "status": {
+                              "cached": "success"
+                            }
+                          }
+                        ],
+                        "actions": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "historyIdx": 91,
+            "cwd": "~/git/whisk/nickm/kui",
+            "command": "prereqs --provider Kubernetes",
+            "startEvent": {
+              "route": "/prereqs",
+              "startTime": 1634235449847,
+              "command": "prereqs --provider Kubernetes",
+              "redirectDesired": false,
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["prereqs", "--provider", "Kubernetes"]],
+                "redirect": ""
+              },
+              "evaluatorOptions": {
+                "needsUI": true,
+                "preferReExecute": true,
+                "plugin": "plugin-core-support/up"
+              },
+              "execType": 0,
+              "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
+                "history": 91,
+                "env": {}
+              }
+            },
+            "completeEvent": {
+              "execType": 0,
+              "completeTime": 1634235449857,
+              "command": "prereqs --provider Kubernetes",
+              "argvNoOptions": ["prereqs"],
+              "parsedOptions": {
+                "_": ["prereqs"],
+                "provider": "Kubernetes"
+              },
+              "pipeStages": {
+                "prefix": "",
+                "stages": [["prereqs", "--provider", "Kubernetes"]],
+                "redirect": ""
+              },
+              "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
+              "cancelled": false,
+              "evaluatorOptions": {
+                "needsUI": true,
+                "preferReExecute": true,
+                "plugin": "plugin-core-support/up"
+              },
+              "execOptions": {
+                "type": 0,
+                "language": "en-US",
+                "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
+                "history": 91,
+                "env": {}
+              },
+              "response": {
+                "apiVersion": "kui-shell/v1",
+                "kind": "StatusModel",
+                "metadata": {
+                  "name": "Prerequisites"
+                },
+                "spec": {
+                  "sections": [
+                    {
+                      "title": "Kubernetes",
+                      "tiles": [
+                        {
+                          "title": "",
+                          "description": "CLI and Cluster config",
+                          "items": [
+                            {
+                              "title": "kubectl",
+                              "description": "The kubectl CLI allows access to your Kubernetes clusters",
+                              "status": {
+                                "cached": "success"
+                              }
+                            },
+                            {
+                              "title": "Connected to cluster",
+                              "description": "A valid KUBECONFIG environment variable allows authorized access to your Kubernetes clusters",
+                              "status": {
+                                "cached": "success"
+                              }
+                            }
+                          ],
+                          "actions": []
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              "responseType": "ScalarResponse",
+              "historyIdx": 91
+            },
+            "isExperimental": false,
+            "isReplay": true,
+            "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
+            "isSectionBreak": false,
+            "originalExecUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
+            "startTime": 1634235449847,
+            "outputOnly": false,
             "state": "valid-response"
           }
         ]
