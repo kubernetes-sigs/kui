@@ -18,7 +18,7 @@ import { dirSync } from 'tmp'
 import { v4 as uuid } from 'uuid'
 import { dirname, join, normalize } from 'path'
 
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
 import { expandHomeDir } from '@kui-shell/core'
 
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
@@ -175,6 +175,39 @@ describe(`remove current directory ${process.env.MOCHA_RUN_TARGET || ''}`, funct
   pit(`should cd back home`, () =>
     CLI.command(`cd`, this.app)
       .then(ReplExpect.okWithString(expandHomeDir('~')))
+      .catch(Common.oops(this, true))
+  )
+})
+
+// see https://github.com/kubernetes-sigs/kui/issues/8173
+describe(`remove current directory with tab switch ${process.env.MOCHA_RUN_TARGET ||
+  ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
+
+  const { name: tmp } = dirSync()
+
+  pit(`should cd to our tmp dir ${tmp}`, () =>
+    CLI.command(`cd ${tmp}`, this.app)
+      .then(ReplExpect.okWithString(tmp))
+      .catch(Common.oops(this, true))
+  )
+
+  pit('should create new tab', () => Util.clickNewTabButton(this, 2))
+  pit('should switch to that tab', () => Util.switchToTopLevelTabViaClick(this, 2))
+
+  pit(`should remove our tmp dir ${tmp}`, () =>
+    CLI.command(`rmdir ${tmp}`, this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true))
+  )
+
+  pit('should switch back to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
+
+  pit(`should show parent of pwd as ${tmp}`, () =>
+    CLI.command(`pwd`, this.app)
+      .then(ReplExpect.okWithString(dirname(tmp)))
       .catch(Common.oops(this, true))
   )
 })

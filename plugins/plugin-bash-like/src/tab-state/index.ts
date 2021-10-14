@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { TabState, cwd as kuiCwd, registerTabState, inBrowser } from '@kui-shell/core'
+import { TabState, cwd as kuiCwd, fallbackCWD, registerTabState, inBrowser } from '@kui-shell/core'
 
 import getTabState from './get'
 import { apiVersion, name } from './key'
@@ -43,8 +43,19 @@ const restore = (tab: TabState) => {
       debug('changing cwd', process.env.PWD, cwd)
       process.env.PWD = cwd
     } else {
-      debug('changing cwd', process.cwd(), cwd)
-      process.chdir(cwd)
+      try {
+        debug('changing cwd', cwd)
+        process.chdir(cwd)
+      } catch (err) {
+        console.error(`Error in chdir, using fallback plan: ${fallbackCWD(cwd)}`, err)
+        try {
+          process.chdir(fallbackCWD(cwd))
+        } catch (err) {
+          // wow, things really are weird, then
+          console.error(err)
+          process.chdir(fallbackCWD())
+        }
+      }
     }
   }
 }

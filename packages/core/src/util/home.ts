@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { homedir as home } from 'os'
 
 import { inBrowser } from '../core/capabilities'
@@ -37,6 +37,15 @@ export const expandHomeDir = function(path: string): string {
 
 export default expandHomeDir
 
+/** In case of error, e.g. removed CWD, this is our fallback plan */
+export function fallbackCWD(cwd?: string) {
+  if (cwd) {
+    return dirname(cwd)
+  } else {
+    return process.env.HOME || _homedir || '/'
+  }
+}
+
 export const cwd = () => {
   try {
     return (
@@ -45,9 +54,9 @@ export const cwd = () => {
   } catch (err) {
     // it could be that the underlying directory disappeared
     // see https://github.com/kubernetes-sigs/kui/issues/8160
-    console.error(err)
+    console.error('Using fallback plan due to error', err)
 
     // fallback plan:
-    return process.env.PWD || process.env.HOME || _homedir || '/'
+    return fallbackCWD()
   }
 }

@@ -286,7 +286,7 @@ export {
 
 // Util
 export { findFileWithViewer, findFile, isSpecialDirectory } from './core/find-file'
-export { expandHomeDir, cwd } from './util/home'
+export { expandHomeDir, cwd, fallbackCWD } from './util/home'
 export { flatten } from './core/utility'
 export { promiseEach } from './util/async'
 export { isHTML, isPromise } from './util/types'
