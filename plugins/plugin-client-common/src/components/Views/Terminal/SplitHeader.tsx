@@ -19,6 +19,7 @@ import { i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
+import SplitPosition from './SplitPosition'
 import { MutabilityContext } from '../../Client/MutabilityContext'
 
 import '../../../../web/scss/components/Terminal/SplitHeader.scss'
@@ -32,6 +33,9 @@ interface Props {
 
   /** Toggle whether we have a bottom strip split */
   willToggleBottomStripMode(): void
+
+  /** Position of the enclosing Split */
+  position: SplitPosition
 }
 
 /** Render a header for the given split */
@@ -66,8 +70,11 @@ export default class SplitHeader extends React.PureComponent<Props> {
             onClick={this.props.willToggleBottomStripMode}
           >
             <Icons
-              className="kui--split-bottom-strip-toggle kui--split-header-button kui--rotate-180"
               icon="TerminalOnly"
+              className={
+                'kui--split-bottom-strip-toggle kui--split-header-button' +
+                (this.props.position !== 'bottom-strip' ? ' kui--rotate-180' : '')
+              }
             />
           </a>
         </Tooltip>
