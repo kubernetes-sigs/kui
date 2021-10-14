@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.7.6](https://github.com/IBM/kui/compare/v10.7.5...v10.7.6) (2021-10-14)
+
+### Bug Fixes
+
+- **plugins/plugin-client-common:** leftover debugging in ScrollableTerminal ([dd18670](https://github.com/IBM/kui/commit/dd18670))
+
 ## [10.7.5](https://github.com/IBM/kui/compare/v10.7.4...v10.7.5) (2021-10-14)
 
 **Note:** Version bump only for package kui-shell
