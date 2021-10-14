@@ -1610,10 +1610,14 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       <React.Fragment>
         {this.state.splits.length > 1 && (
           <SplitHeader
-            onRemove={!this.props.hasBottomStrip || this.state.splits.length > 2 ? scrollback.remove : undefined}
+            position={scrollback.position}
+            onRemove={!this.props.hasBottomStrip || this.state.splits.length >= 2 ? scrollback.remove : undefined}
             onClear={scrollback.clear}
             onInvert={scrollback.invert}
-            willToggleBottomStripMode={!this.props.hasBottomStrip && scrollback.willToggleBottomStripMode}
+            willToggleBottomStripMode={
+              (!this.props.hasBottomStrip || scrollback.position === 'bottom-strip') &&
+              scrollback.willToggleBottomStripMode
+            }
           />
         )}
         <div className="kui--scrollback-block-list">
