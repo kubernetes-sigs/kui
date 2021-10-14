@@ -666,14 +666,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     /** Reference for the scrollable part of the Split; helpful for scrollToTop/Bottom */
     state.scrollableRef = (ref: HTMLElement) => {
       if (ref) {
-        state.facade.scrollToBottom = () => {
-          console.error('!!!!!!!!')
-          ref.scrollTop = ref.scrollHeight
-        }
-
-        state.facade.scrollToTop = () => {
-          ref.scrollTop = 0
-        }
+        state.facade.scrollToTop = () => (ref.scrollTop = 0)
+        state.facade.scrollToBottom = () => (ref.scrollTop = ref.scrollHeight)
       }
     }
 
