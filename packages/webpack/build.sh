@@ -42,7 +42,7 @@ echo "staging directory: $STAGING"
 CLIENT_HOME="$(pwd)"
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 BUILDER_HOME="$CLIENT_HOME"/node_modules/@kui-shell/builder
-BUILDDIR="$CLIENT_HOME"/dist/webpack
+BUILDDIR=${BUILDDIR-"$CLIENT_HOME"/dist/webpack}
 
 APPDIR="$STAGING"/node_modules/@kui-shell
 CORE_HOME="$STAGING"/node_modules/@kui-shell/core
