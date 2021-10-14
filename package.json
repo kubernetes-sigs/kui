@@ -68,11 +68,9 @@
     "@kui-shell/plugin-git": "file:plugins/plugin-git",
     "@kui-shell/plugin-iter8": "file:plugins/plugin-iter8",
     "@kui-shell/plugin-kubectl": "file:plugins/plugin-kubectl",
-    "@kui-shell/plugin-kubectl-flow-views": "file:plugins/plugin-kubectl-flow-views",
     "@kui-shell/plugin-patternfly4-themes": "file:plugins/plugin-patternfly4-themes",
     "@kui-shell/plugin-proxy-support": "file:plugins/plugin-proxy-support",
     "@kui-shell/plugin-s3": "file:plugins/plugin-s3",
-    "@kui-shell/plugin-wskflow": "file:plugins/plugin-wskflow",
     "@kui-shell/react": "file:packages/react"
   },
   "devDependencies": {

@@ -26,13 +26,7 @@
       "path": "plugins/plugin-git"
     },
     {
-      "path": "plugins/plugin-wskflow"
-    },
-    {
       "path": "plugins/plugin-kubectl"
-    },
-    {
-      "path": "plugins/plugin-kubectl-flow-views"
     },
     {
       "path": "plugins/plugin-proxy-support"
