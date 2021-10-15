@@ -20,8 +20,6 @@ import { Common, CLI, ReplExpect, Selectors, Util, Keys } from '@kui-shell/test'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
-/* xit has been added to most tests because of recent changes to notebooks opening in read only mode.
-  These changes make commentaries incapable of being edited for now until more changes are made */
 describe('commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -52,30 +50,36 @@ describe('commentary and replay', function(this: Common.ISuite) {
   }
 
   const addComment = () => {
-    xit('should show comment with file', () =>
+    it('should show comment with file', () => {
       CLI.command(`commentary --title "hello there" -f=${ROOT}/tests/data/comment.md`, this.app)
         .then(() => verifyComment())
-        .catch(Common.oops(this, true)))
+        .catch(Common.oops(this, true))
+    })
   }
 
   addComment()
-  it('should show version', () =>
+  it('should show version', () => {
     CLI.command('version', this.app)
       .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
   addComment()
 
-  it('should snapshot', () =>
+  it('should snapshot', () => {
     CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
 
-  it('should refresh', () => Common.refresh(this))
+  it('should refresh', () => {
+    Common.refresh(this)
+  })
 
-  xit('should replay', () =>
+  it('should replay', () => {
     CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment())
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
 })
 
 describe('edit commentary and replay', function(this: Common.ISuite) {
@@ -130,7 +134,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     await this.app.client.keys(text)
   }
   const typeAndVerify = (text: string, expect: string) => {
-    xit(`should type ${text} and expect ${expect} in the comment`, async () => {
+    it(`should type ${text} and expect ${expect} in the comment`, async () => {
       try {
         await type(text)
         await verifyTextInMonaco(expect)
@@ -140,7 +144,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const openEditor = (expect: string) => {
-    xit('should open editor by clicking', async () => {
+    it('should open editor by clicking', async () => {
       try {
         await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.doubleClick())
         await verifyTextInMonaco(expect)
@@ -150,7 +154,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const saveViaKeys = (keys: string[], expect: string) => {
-    xit(`should close the editor by typing ${keys}`, async () => {
+    it(`should close the editor by typing ${keys}`, async () => {
       try {
         await this.app.client.keys(keys)
         await this.app.client
@@ -163,7 +167,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const clickDone = (expect: string) => {
-    xit('should close the editor by clicking the Done button', async () => {
+    it('should close the editor by clicking the Done button', async () => {
       try {
         await this.app.client
           .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
@@ -178,7 +182,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const clickRevert = (expect: string) => {
-    xit('should revert the editor by clicking the Revert button', async () => {
+    it('should revert the editor by clicking the Revert button', async () => {
       try {
         await this.app.client
           .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_REVERT}`)
@@ -193,7 +197,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const clickCancel = (expect: string) => {
-    xit('should close the editor by clicking the Cancel button', async () => {
+    it('should close the editor by clicking the Cancel button', async () => {
       try {
         await this.app.client
           .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_CANCEL}`)
@@ -208,7 +212,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     })
   }
   const escapeCancel = (expect: string) => {
-    xit('should close the editor by typing Escape', async () => {
+    it('should close the editor by typing Escape', async () => {
       try {
         await this.app.client.keys('Escape')
         await this.app.client
@@ -222,7 +226,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   }
 
   /** Here comes the test */
-  xit('should add comment', () =>
+  it('should add comment', () =>
     CLI.command(`# foo-shift-enter`, this.app)
       .then(() => verifyComment('foo-shift-enter'))
       .catch(Common.oops(this, true)))
@@ -243,7 +247,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   escapeCancel('foo-shift-enter12')
 
   /** Here comes the test */
-  xit('should add another comment', () =>
+  it('should add another comment', () =>
     CLI.command(`# foo`, this.app)
       .then(() => verifyComment('foo'))
       .catch(Common.oops(this, true)))
@@ -261,35 +265,37 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   clickRevert('foo1')
   clickCancel('foo1')
 
-  it('should snapshot', () =>
+  it('should snapshot', () => {
     CLI.command(`snapshot ${file}`, this.app)
       .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
 
-  it('should refresh', () => Common.refresh(this))
-
-  xit('should replay', () =>
+  it('should replay', async () => {
     CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment('foo1'))
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
 
   // Here comes the tests for snapshot --exec
-  xit('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
+  it('should sleep', async () => {
+    await new Promise(resolve => setTimeout(resolve, 4000))
+  })
   openEditor('foo1')
   typeAndVerify(Keys.ENTER, 'foo1\n')
   typeAndVerify(Keys.ENTER, 'foo1\n\n')
   typeAndVerify('foo2', 'foo1\n\nfoo2')
   clickDone('foo1\nfoo2')
 
+  it('should refresh', () => Common.refresh(this))
   it('should snapshot with --exec', () =>
     CLI.command(`snapshot ${file} --exec`, this.app)
       .then(ReplExpect.justOK)
       .catch(Common.oops(this, true)))
 
-  it('should refresh', () => Common.refresh(this))
-
-  xit('should replay', () =>
+  it('should replay', () => {
     CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment('foo1\nfoo2'))
-      .catch(Common.oops(this, true)))
+      .catch(Common.oops(this, true))
+  })
 })
