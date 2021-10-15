@@ -416,6 +416,7 @@ module.exports = {
     devMiddleware: {
       writeToDisk: !inBrowser
     },
+    host: '0.0.0.0',
     allowedHosts:
       'all' /* webpack 4.43 -> 4.44 seemed to require this, otherwise console errors WDS Disconnected, and no auto-reload on save+recompile */,
     port
@@ -513,7 +514,11 @@ module.exports = {
   output: {
     globalObject: 'self', // for monaco
     filename: mode === 'production' ? '[name].[contenthash].bundle.js' : '[name].bundle.js',
-    publicPath: contextRoot || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
+
+    // live watching should never use a contextRoot, otherwise you
+    // will get "Cannot GET /" errors
+    publicPath:
+      (process.env.WATCH !== 'true' && contextRoot) || (inBrowser ? '/' : mode === 'production' ? '' : `${buildDir}/`),
     path: outputPath
   }
 }

@@ -22,6 +22,8 @@ set -o pipefail
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 export CLIENT_HOME=$(cd "$SCRIPTDIR"/../../ && pwd)
 
+export KUI_BUILDDIR=${BUILDDIR-"$CLIENT_HOME"/dist/webpack}
+
 if [ -d "$SCRIPTDIR"/../@kui-shell ]; then
     # normally, this is in node_modules/.bin
     MODULE_HOME=$(cd "$SCRIPTDIR"/../@kui-shell && pwd)
@@ -37,9 +39,7 @@ HEADLESS_CONFIG="$MODULE_HOME"/webpack/headless-webpack.config.js
 
 THEME="${MODULE_HOME}"/client
 
-pushd "$CLIENT_HOME"
-  rm -rf dist/webpack
-popd
+rm -rf "$KUI_BUILDDIR"/dist/webpack/*
 
 if [ -n "$OPEN" ]; then
     OPEN="--open"
@@ -73,4 +73,6 @@ fi
 
 if [ "$WATCH_ARGS" = "open" ]; then
     npm run open
+elif [ "$WATCH_ARGS" = "wait" ]; then
+    wait
 fi
