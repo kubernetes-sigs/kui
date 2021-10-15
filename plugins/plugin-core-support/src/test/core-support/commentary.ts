@@ -28,20 +28,16 @@ describe('commentary and replay', function(this: Common.ISuite) {
 
   const file = Util.uniqueFileForSnapshot()
 
-  const verifyComment = () => {
+  const verifyComment = (inNotebook = true) => {
     return this.app.client.waitUntil(
       async () => {
-        await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.waitForDisplayed())
+        const lastOutput = inNotebook ? Selectors.OUTPUT_LAST_IN_NOTEBOOK() : Selectors.OUTPUT_LAST
 
-        const title = await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD_TITLE}`)
-          .then(_ => _.getText())
-        const head1 = await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h1`)
-          .then(_ => _.getText())
-        const head2 = await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD} h2`)
-          .then(_ => _.getText())
+        await this.app.client.$(`${lastOutput} ${Selectors.TERMINAL_CARD}`).then(_ => _.waitForDisplayed())
+
+        const title = await this.app.client.$(`${lastOutput} ${Selectors.TERMINAL_CARD_TITLE}`).then(_ => _.getText())
+        const head1 = await this.app.client.$(`${lastOutput} ${Selectors.TERMINAL_CARD} h1`).then(_ => _.getText())
+        const head2 = await this.app.client.$(`${lastOutput} ${Selectors.TERMINAL_CARD} h2`).then(_ => _.getText())
 
         return (
           title === 'hello there' && head1 === 'The Kui Framework for Graphical Terminals' && head2 === 'Installation'
@@ -52,9 +48,9 @@ describe('commentary and replay', function(this: Common.ISuite) {
   }
 
   const addComment = () => {
-    xit('should show comment with file', () =>
+    it('should show comment with file', () =>
       CLI.command(`commentary --title "hello there" -f=${ROOT}/tests/data/comment.md`, this.app)
-        .then(() => verifyComment())
+        .then(() => verifyComment(false))
         .catch(Common.oops(this, true)))
   }
 
@@ -72,7 +68,7 @@ describe('commentary and replay', function(this: Common.ISuite) {
 
   it('should refresh', () => Common.refresh(this))
 
-  xit('should replay', () =>
+  it('should replay', () =>
     CLI.command(`replay ${file}`, this.app)
       .then(() => verifyComment())
       .catch(Common.oops(this, true)))
@@ -81,17 +77,19 @@ describe('commentary and replay', function(this: Common.ISuite) {
 describe('edit commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
+  Util.closeAllExceptFirstTab.bind(this)()
 
   const file = Util.uniqueFileForSnapshot()
 
-  const verifyComment = (expectedText: string) => {
+  const lastOutput = (inNotebook: boolean) => (inNotebook ? Selectors.OUTPUT_LAST_IN_NOTEBOOK() : Selectors.OUTPUT_LAST)
+  const verifyComment = (expectedText: string, inNotebook: boolean) => {
+    const output = lastOutput(inNotebook)
+
     let idx = 0
     return this.app.client.waitUntil(
       async () => {
-        await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.waitForDisplayed())
-        const actualText = await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`)
-          .then(_ => _.getText())
+        await this.app.client.$(`${output} ${Selectors.TERMINAL_CARD}`).then(_ => _.waitForDisplayed())
+        const actualText = await this.app.client.$(`${output} ${Selectors.TERMINAL_CARD}`).then(_ => _.getText())
 
         if (++idx > 5) {
           console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
@@ -103,11 +101,11 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     )
   }
 
-  const verifyTextInMonaco = (expectedText: string) => {
+  const verifyTextInMonaco = (expectedText: string, inNotebook: boolean) => {
     let idx = 0
     return this.app.client.waitUntil(
       async () => {
-        const actualText = await Util.getValueFromMonaco({ app: this.app, count: -1 }, Selectors.OUTPUT_LAST)
+        const actualText = await Util.getValueFromMonaco({ app: this.app, count: -1 }, lastOutput(inNotebook))
 
         if (++idx > 5) {
           console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
@@ -120,8 +118,8 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   }
 
   /** set the monaco editor text */
-  const type = async (text: string): Promise<void> => {
-    const selector = `${Selectors.OUTPUT_LAST} .monaco-editor-wrapper .view-lines`
+  const type = async (text: string, inNotebook: boolean): Promise<void> => {
+    const selector = `${lastOutput(inNotebook)} .monaco-editor-wrapper .view-lines`
     await this.app.client.$(selector).then(async _ => {
       await _.click()
       await _.waitForEnabled()
@@ -129,92 +127,92 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
     await this.app.client.keys(text)
   }
-  const typeAndVerify = (text: string, expect: string) => {
-    xit(`should type ${text} and expect ${expect} in the comment`, async () => {
+  const typeAndVerify = (text: string, expect: string, inNotebook: boolean) => {
+    it(`should type ${text} and expect ${expect} in the comment`, async () => {
       try {
-        await type(text)
-        await verifyTextInMonaco(expect)
+        await type(text, inNotebook)
+        await verifyTextInMonaco(expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
   }
-  const openEditor = (expect: string) => {
-    xit('should open editor by clicking', async () => {
+  const openEditor = (expect: string, inNotebook: boolean) => {
+    it('should open editor by clicking', async () => {
       try {
-        await this.app.client.$(`${Selectors.OUTPUT_LAST} ${Selectors.TERMINAL_CARD}`).then(_ => _.doubleClick())
-        await verifyTextInMonaco(expect)
+        await this.app.client.$(`${lastOutput(inNotebook)} ${Selectors.TERMINAL_CARD}`).then(_ => _.doubleClick())
+        await verifyTextInMonaco(expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
   }
-  const saveViaKeys = (keys: string[], expect: string) => {
-    xit(`should close the editor by typing ${keys}`, async () => {
+  const saveViaKeys = (keys: string[], expect: string, inNotebook: boolean) => {
+    it(`should close the editor by typing ${keys}`, async () => {
       try {
         await this.app.client.keys(keys)
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR}`)
           .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
-        await verifyComment(expect)
+        await verifyComment(expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
   }
-  const clickDone = (expect: string) => {
-    xit('should close the editor by clicking the Done button', async () => {
+  const clickDone = (expect: string, inNotebook: boolean) => {
+    it('should close the editor by clicking the Done button', async () => {
       try {
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR_BUTTON_DONE}`)
           .then(_ => _.click())
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR}`)
           .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
-        await verifyComment(expect)
+        await verifyComment(expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
   }
-  const clickRevert = (expect: string) => {
-    xit('should revert the editor by clicking the Revert button', async () => {
+  const clickRevert = (expect: string, inNotebook: boolean) => {
+    it('should revert the editor by clicking the Revert button', async () => {
       try {
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_REVERT}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR_BUTTON_REVERT}`)
           .then(_ => _.click())
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR}`)
           .then(_ => _.waitForDisplayed()) // still open!
-        await verifyTextInMonaco(expect)
+        await verifyTextInMonaco(expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
   }
-  const clickCancel = (expect: string) => {
-    xit('should close the editor by clicking the Cancel button', async () => {
+  const clickCancel = (expect: string, inNotebook: boolean) => {
+    it('should close the editor by clicking the Cancel button', async () => {
       try {
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR_BUTTON_CANCEL}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR_BUTTON_CANCEL}`)
           .then(_ => _.click())
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR}`)
           .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
-        await verifyComment(expect)
+        await verifyComment(expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
     })
   }
-  const escapeCancel = (expect: string) => {
-    xit('should close the editor by typing Escape', async () => {
+  const escapeCancel = (expect: string, inNotebook: boolean) => {
+    it('should close the editor by typing Escape', async () => {
       try {
         await this.app.client.keys('Escape')
         await this.app.client
-          .$(`${Selectors.OUTPUT_LAST} ${Selectors.COMMENTARY_EDITOR}`)
+          .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR}`)
           .then(_ => _.waitForDisplayed({ timeout: 500, reverse: true }))
-        await verifyComment(expect)
+        await verifyComment(expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -222,44 +220,44 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   }
 
   /** Here comes the test */
-  xit('should add comment', () =>
+  it('should add comment', () =>
     CLI.command(`# foo-shift-enter`, this.app)
-      .then(() => verifyComment('foo-shift-enter'))
+      .then(() => verifyComment('foo-shift-enter', false))
       .catch(Common.oops(this, true)))
 
   // test shift-enter to save
-  openEditor('foo-shift-enter')
-  typeAndVerify('1', 'foo-shift-enter1')
-  saveViaKeys(['Shift', 'Enter'], 'foo-shift-enter1')
+  openEditor('foo-shift-enter', false)
+  typeAndVerify('1', 'foo-shift-enter1', false)
+  saveViaKeys(['Shift', 'Enter'], 'foo-shift-enter1', false)
 
   // test cmdctrl+s to save
-  openEditor('foo-shift-enter1')
-  typeAndVerify('2', 'foo-shift-enter12')
-  saveViaKeys([Keys.ctrlOrMeta, 's'], 'foo-shift-enter12')
+  openEditor('foo-shift-enter1', false)
+  typeAndVerify('2', 'foo-shift-enter12', false)
+  saveViaKeys([Keys.ctrlOrMeta, 's'], 'foo-shift-enter12', false)
 
   // test Escape to cancel
-  openEditor('foo-shift-enter12')
-  typeAndVerify('3', 'foo-shift-enter123')
-  escapeCancel('foo-shift-enter12')
+  openEditor('foo-shift-enter12', false)
+  typeAndVerify('3', 'foo-shift-enter123', false)
+  escapeCancel('foo-shift-enter12', false)
 
   /** Here comes the test */
-  xit('should add another comment', () =>
+  it('should add another comment', () =>
     CLI.command(`# foo`, this.app)
-      .then(() => verifyComment('foo'))
+      .then(() => verifyComment('foo', false))
       .catch(Common.oops(this, true)))
 
-  openEditor('foo')
-  typeAndVerify('1', 'foo1')
-  clickDone('foo1')
+  openEditor('foo', false)
+  typeAndVerify('1', 'foo1', false)
+  clickDone('foo1', false)
 
-  openEditor('foo1')
-  typeAndVerify('2', 'foo12')
-  clickCancel('foo1')
+  openEditor('foo1', false)
+  typeAndVerify('2', 'foo12', false)
+  clickCancel('foo1', false)
 
-  openEditor('foo1')
-  typeAndVerify('3', 'foo13')
-  clickRevert('foo1')
-  clickCancel('foo1')
+  openEditor('foo1', false)
+  typeAndVerify('3', 'foo13', false)
+  clickRevert('foo1', false)
+  clickCancel('foo1', false)
 
   it('should snapshot', () =>
     CLI.command(`snapshot ${file}`, this.app)
@@ -268,18 +266,32 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   it('should refresh', () => Common.refresh(this))
 
-  xit('should replay', () =>
+  it('should replay', () =>
     CLI.command(`replay ${file}`, this.app)
-      .then(() => verifyComment('foo1'))
+      .then(() => verifyComment('foo1', true))
       .catch(Common.oops(this, true)))
 
+  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
+
+  // in order to make more changes to the notebook, we need to execute
+  // a command to toggle its editability; so we switch back to the
+  // first to do so
+  it('should switch to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
+  it('should make the second tab editable', () =>
+    CLI.command('tab edit toggle 2', this.app)
+      .then(ReplExpect.ok)
+      .catch(Common.oops(this, true)))
+  it('should switch back to the second tab', () => Util.switchToTopLevelTabViaClick(this, 2))
+
+  // it('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
+  it('should wait for the edit toggle to take effect', () => CLI.waitForRepl(this.app).catch(Common.oops(this, true)))
+
   // Here comes the tests for snapshot --exec
-  xit('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
-  openEditor('foo1')
-  typeAndVerify(Keys.ENTER, 'foo1\n')
-  typeAndVerify(Keys.ENTER, 'foo1\n\n')
-  typeAndVerify('foo2', 'foo1\n\nfoo2')
-  clickDone('foo1\nfoo2')
+  openEditor('foo1', false)
+  typeAndVerify(Keys.ENTER, 'foo1\n', false)
+  typeAndVerify(Keys.ENTER, 'foo1\n\n', false)
+  typeAndVerify('foo2', 'foo1\n\nfoo2', false)
+  clickDone('foo1\nfoo2', false)
 
   it('should snapshot with --exec', () =>
     CLI.command(`snapshot ${file} --exec`, this.app)
@@ -288,8 +300,8 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   it('should refresh', () => Common.refresh(this))
 
-  xit('should replay', () =>
+  it('should replay', () =>
     CLI.command(`replay ${file}`, this.app)
-      .then(() => verifyComment('foo1\nfoo2'))
+      .then(() => verifyComment('foo1\nfoo2', true))
       .catch(Common.oops(this, true)))
 })
