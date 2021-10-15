@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
-import { exprcreateMode, decisionMode } from './models/renderCreateExpr'
-import { metricListMode, metricYamlMode } from './models/metrics'
 import { notebookVFS } from '@kui-shell/plugin-core-support'
+import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
+
+import { metricListMode, metricYamlMode } from './models/metrics'
+import { exprcreateMode, decisionMode } from './models/renderCreateExpr'
 
 export default async (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
     await registrar.registerModes(exprcreateMode, decisionMode, metricListMode, metricYamlMode)
 
     notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/iter8'] })
-    notebookVFS.cp(undefined, ['plugin://plugin-iter8/notebooks/welcome.json'], '/kui/iter8/')
+    notebookVFS.cp(
+      undefined,
+      ['plugin://plugin-iter8/notebooks/welcome.json', 'plugin://plugin-iter8/notebooks/tutorial1.json'],
+      '/kui/iter8/'
+    )
   }
 }
