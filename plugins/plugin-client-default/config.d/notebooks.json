@@ -6,14 +6,9 @@
     {
       "label": "Kubernetes",
       "submenu": [
-        {
-          "label": "Kubernetes",
-          "submenu": [
-            { "notebook": "CRUD Operations", "filepath": "/kui/kubernetes/crud-operations.json" },
-            { "notebook": "Working with Jobs", "filepath": "/kui/kubernetes/create-jobs.json" },
-            { "notebook": "Deploying Applications", "filepath": "/kui/kubernetes/deploy-applications.json" }
-          ]
-        }
+        { "notebook": "CRUD Operations", "filepath": "/kui/kubernetes/crud-operations.json" },
+        { "notebook": "Working with Jobs", "filepath": "/kui/kubernetes/create-jobs.json" },
+        { "notebook": "Deploying Applications", "filepath": "/kui/kubernetes/deploy-applications.json" }
       ]
     },
     {
