@@ -160,8 +160,14 @@ body.still-loading .repl {
   flex: 1;
   min-width: 0; /* so that reducing the width of the window causes a reflow; sigh */
 }
+.kui--rotate-90 {
+  transform: rotate(90deg);
+}
 .kui--rotate-180 {
   transform: rotate(180deg);
+}
+.kui--rotate-270 {
+  transform: rotate(270deg);
 }
 .kui--rotate-180-then-flip {
   transform: scaleY(-1);

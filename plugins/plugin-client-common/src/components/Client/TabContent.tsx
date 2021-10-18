@@ -56,6 +56,9 @@ type State = Partial<WithTab> & {
   sessionInitError?: Error
   showSessionInitDone: boolean
 
+  /** Does this tab have a left strip layout? */
+  hasLeftStrip: boolean
+
   /** Does this tab have a bottom strip layout? */
   hasBottomStrip: boolean
 
@@ -99,6 +102,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       tab: React.createRef(),
       sessionInit: 'NotYet',
       showSessionInitDone: true,
+      hasLeftStrip: false,
       hasBottomStrip: false,
       _terminal: React.createRef(),
       mutability: initializeState(this.props.snapshot)
@@ -241,6 +245,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
     return 'Please wait while we connect to your cluster'
   }
 
+  /** Enter/exit mode where one split is displayed along the left */
+  private readonly _toggleLeftStripMode = () => this.setState(curState => ({ hasLeftStrip: !curState.hasLeftStrip }))
+
   /** Enter/exit mode where one split is displayed along the bottom */
   private readonly _toggleBottomStripMode = () =>
     this.setState(curState => ({ hasBottomStrip: !curState.hasBottomStrip }))
@@ -275,7 +282,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
               toggleAttribute={this._toggleAttribute}
               onClear={this._onClear}
               ref={this.state._terminal}
+              hasLeftStrip={this.state.hasLeftStrip}
               hasBottomStrip={this.state.hasBottomStrip}
+              willToggleLeftStripMode={this._toggleLeftStripMode}
               willToggleBottomStripMode={this._toggleBottomStripMode}
               noActiveInput={this.props.noActiveInput || !this.state.mutability.editable}
             >
@@ -384,6 +393,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
           ref={this.state.tab}
           className={this.tabClassName()}
           data-tab-id={this.props.uuid}
+          data-has-left-strip={this.state.hasLeftStrip || undefined}
           data-has-bottom-strip={this.state.hasBottomStrip || undefined}
         >
           {this.body()}

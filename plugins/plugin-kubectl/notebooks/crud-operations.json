@@ -9,7 +9,7 @@
     "splits": [
       {
         "uuid": "3_c57e811f-2da8-557e-a402-9f0950407675",
-        "position": "default",
+        "position": "left-strip",
         "inverseColors": true,
         "blocks": [
           {
@@ -1964,7 +1964,7 @@
             "command": "prereqs --provider Kubernetes",
             "startEvent": {
               "route": "/prereqs",
-              "startTime": 1634235449847,
+              "startTime": 1634591352346,
               "command": "prereqs --provider Kubernetes",
               "redirectDesired": false,
               "pipeStages": {
@@ -1977,19 +1977,20 @@
                 "preferReExecute": true,
                 "plugin": "plugin-core-support/up"
               },
-              "execType": 0,
+              "execType": 3,
               "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
+                "echo": true,
+                "type": 3,
                 "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
                 "history": 91,
                 "env": {}
-              }
+              },
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1634235449857,
+              "execType": 3,
+              "completeTime": 1634591352384,
               "command": "prereqs --provider Kubernetes",
               "argvNoOptions": ["prereqs"],
               "parsedOptions": {
@@ -2003,14 +2004,15 @@
               },
               "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
               "cancelled": false,
+              "echo": true,
               "evaluatorOptions": {
                 "needsUI": true,
                 "preferReExecute": true,
                 "plugin": "plugin-core-support/up"
               },
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
+                "echo": true,
+                "type": 3,
                 "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
                 "history": 91,
                 "env": {}
@@ -2057,10 +2059,10 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
+            "execUUID": "7d6a9dcc-43b8-461c-b076-d703c4245a09",
             "isSectionBreak": false,
             "originalExecUUID": "aaaacb2b-70bf-45cb-bbed-da97bca9de70",
-            "startTime": 1634235449847,
+            "startTime": 1634591352346,
             "outputOnly": false,
             "state": "valid-response"
           }
