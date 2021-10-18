@@ -15,6 +15,7 @@
  */
 
 import { notStrictEqual, strictEqual, ok } from 'assert'
+import { SplitPosition } from '@kui-shell/plugin-client-common'
 import { CLI, Common, ReplExpect, Selectors } from '@kui-shell/test'
 
 /** The actual split terminal via button impl; splitViaButton is the mocha test wrapper */
@@ -175,12 +176,20 @@ export function focusAndValidate(this: Common.ISuite, fromSplitIndex: number, to
   })
 }
 
+function checkIsLeftStrip(ctx: Common.ISuite, N: number) {
+  return ctx.app.client.$(Selectors.SPLIT_N_AS_LEFT_STRIP(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+}
+
 function checkIsBottomStrip(ctx: Common.ISuite, N: number) {
   return ctx.app.client.$(Selectors.SPLIT_N_AS_BOTTOM_STRIP(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
 }
 
 function checkIsDefault(ctx: Common.ISuite, N: number) {
   return ctx.app.client.$(Selectors.SPLIT_N_AS_DEFAULT(N)).then(_ => _.waitForExist({ timeout: CLI.waitTimeout }))
+}
+
+export function isLeftStrip(this: Common.ISuite, N: number) {
+  it(`should show split ${N} as being a left strip`, () => checkIsLeftStrip(this, N).catch(Common.oops(this, true)))
 }
 
 export function isBottomStrip(this: Common.ISuite, N: number) {
@@ -191,13 +200,24 @@ export function isDefault(this: Common.ISuite, N: number) {
   it(`should show split ${N} as being a default strip`, () => checkIsDefault(this, N).catch(Common.oops(this, true)))
 }
 
-/** Turn a given split into a bottom-strip split */
-export function doMakeBottomStrip(this: Common.ISuite, inSplit: number, expectedSplitCount = 2) {
-  it(`should turn split ${inSplit} into a bottom strip`, async () => {
+/** Toggle the position of the given split */
+export function doToggleSplitPosition(
+  this: Common.ISuite,
+  expectedPosition: SplitPosition = 'bottom-strip',
+  inSplit: number,
+  expectedSplitCount = 2
+) {
+  it(`should turn split ${inSplit} into a ${expectedPosition} strip`, async () => {
     try {
-      await this.app.client.$(Selectors.SPLIT_N_SEND_TO_BOTTOM(inSplit)).then(_ => _.click())
+      await this.app.client.$(Selectors.SPLIT_N_POSITION_TOGGLE(inSplit)).then(_ => _.click())
 
-      await checkIsBottomStrip(this, inSplit)
+      if (expectedPosition === 'bottom-strip') {
+        await checkIsBottomStrip(this, inSplit)
+      } else if (expectedPosition === 'left-strip') {
+        await checkIsLeftStrip(this, inSplit)
+      } else {
+        await checkIsDefault(this, inSplit)
+      }
 
       // we better not have lost a split
       await ReplExpect.splitCount(expectedSplitCount)(this.app)

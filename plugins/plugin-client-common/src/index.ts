@@ -92,3 +92,5 @@ export function inDebugMode() {
     process.env.RUNNING_SHELL_TEST
   )
 }
+
+export { default as SplitPosition } from './components/Views/Terminal/SplitPosition'
