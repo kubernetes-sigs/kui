@@ -38,7 +38,7 @@ const install = 'ibmcloud plugin install cloud-object-storage'
 
 export default {
   service,
-  group: Group.CLI,
+  group: Group.CLIPlugin,
 
   label: (checkResult?: false | string) =>
     checkResult === undefined ? 'Installed CLI plugin' : !checkResult ? 'not installed' : colors.gray(checkResult),
