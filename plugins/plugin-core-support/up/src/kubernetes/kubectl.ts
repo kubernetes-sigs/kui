@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// import colors from 'colors/safe'
+import colors from 'colors/safe'
 import { Arguments } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
@@ -35,9 +35,8 @@ async function check(args: Arguments) {
 export default {
   service,
   group: Group.CLI,
-  label: 'kubectl',
-  // (checkResult?: false | string) =>
-  //    checkResult === undefined ? 'Installed' : !checkResult ? 'not installed' : colors.gray(checkResult),
+  label: (checkResult?: false | string) =>
+    checkResult === undefined ? 'kubectl' : !checkResult ? 'not installed' : colors.gray(checkResult),
   description: 'The kubectl CLI allows access to your Kubernetes clusters',
   check,
   fix:
