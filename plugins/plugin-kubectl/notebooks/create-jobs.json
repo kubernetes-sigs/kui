@@ -7,8 +7,8 @@
   "spec": {
     "splits": [
       {
-        "uuid": "4_c57e811f-2da8-557e-a402-9f0950407675",
-        "position": "default",
+        "uuid": "2_c57e811f-2da8-557e-a402-9f0950407675",
+        "position": "left-strip",
         "inverseColors": true,
         "blocks": [
           {
@@ -172,7 +172,7 @@
         ]
       },
       {
-        "uuid": "4_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
+        "uuid": "2_0a9586b6-2f57-5d3b-9619-b5cdb6a76d53",
         "position": "default",
         "blocks": [
           {
@@ -14959,7 +14959,7 @@
         ]
       },
       {
-        "uuid": "4_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
+        "uuid": "2_cd0d8750-9c3b-5e47-bb06-8b8fe6c85bfb",
         "position": "bottom-strip",
         "blocks": [
           {
@@ -15005,7 +15005,7 @@
             "command": "prereqs --provider Kubernetes",
             "startEvent": {
               "route": "/prereqs",
-              "startTime": 1634235489364,
+              "startTime": 1634591379193,
               "command": "prereqs --provider Kubernetes",
               "redirectDesired": false,
               "pipeStages": {
@@ -15018,19 +15018,20 @@
                 "preferReExecute": true,
                 "plugin": "plugin-core-support/up"
               },
-              "execType": 0,
+              "execType": 3,
               "execUUID": "832b7c72-8e29-4767-90dc-00076f2f5e8d",
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
+                "echo": true,
+                "type": 3,
                 "execUUID": "832b7c72-8e29-4767-90dc-00076f2f5e8d",
                 "history": 250,
                 "env": {}
-              }
+              },
+              "echo": true
             },
             "completeEvent": {
-              "execType": 0,
-              "completeTime": 1634235489373,
+              "execType": 3,
+              "completeTime": 1634591379373,
               "command": "prereqs --provider Kubernetes",
               "argvNoOptions": ["prereqs"],
               "parsedOptions": {
@@ -15044,14 +15045,15 @@
               },
               "execUUID": "832b7c72-8e29-4767-90dc-00076f2f5e8d",
               "cancelled": false,
+              "echo": true,
               "evaluatorOptions": {
                 "needsUI": true,
                 "preferReExecute": true,
                 "plugin": "plugin-core-support/up"
               },
               "execOptions": {
-                "type": 0,
-                "language": "en-US",
+                "echo": true,
+                "type": 3,
                 "execUUID": "832b7c72-8e29-4767-90dc-00076f2f5e8d",
                 "history": 250,
                 "env": {}
@@ -15098,10 +15100,10 @@
             },
             "isExperimental": false,
             "isReplay": true,
-            "execUUID": "832b7c72-8e29-4767-90dc-00076f2f5e8d",
+            "execUUID": "bb11e433-0c85-4c4f-aaeb-9b81cbe5639e",
             "isSectionBreak": false,
             "originalExecUUID": "832b7c72-8e29-4767-90dc-00076f2f5e8d",
-            "startTime": 1634235489364,
+            "startTime": 1634591379193,
             "outputOnly": false,
             "state": "valid-response"
           }

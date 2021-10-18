@@ -36,8 +36,20 @@
   }
 }
 
-@mixin HasBottomStrip {
-  &[data-has-bottom-strip] {
+@mixin HasOnlyBottomStrip {
+  &[data-has-bottom-strip]:not([data-has-left-strip]) {
+    @content;
+  }
+}
+
+@mixin HasOnlyLeftStrip {
+  &[data-has-left-strip]:not([data-has-bottom-strip]) {
+    @content;
+  }
+}
+
+@mixin HasLeftAndBottomStrips {
+  &[data-has-left-strip][data-has-bottom-strip] {
     @content;
   }
 }

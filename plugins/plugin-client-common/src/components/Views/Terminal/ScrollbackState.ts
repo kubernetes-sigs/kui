@@ -32,7 +32,7 @@ type ScrollbackState = ScrollbackOptions & {
 
   /** Display as strip along the bottom */
   position: SplitPosition
-  willToggleBottomStripMode(): void
+  willToggleSplitPosition(): void
 
   /** tab facade */
   facade?: KuiTab
