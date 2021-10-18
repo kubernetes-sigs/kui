@@ -60,6 +60,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin LeftStrip {
+  &[data-position='left-strip'] {
+    @content;
+  }
+}
+
 @mixin BottomStrip {
   &[data-position='bottom-strip'] {
     @content;

@@ -19,3 +19,11 @@ import { NewSplitRequest } from '@kui-shell/core'
 type SplitPosition = NewSplitRequest['options']['position']
 
 export default SplitPosition
+
+export interface SplitPositionProps {
+  /** Are we to display one of the splits as a left strip? */
+  hasLeftStrip: boolean
+
+  /** Are we to display one of the splits as a bottom strip? */
+  hasBottomStrip: boolean
+}

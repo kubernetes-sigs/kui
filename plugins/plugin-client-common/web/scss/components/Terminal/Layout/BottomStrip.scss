@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,53 +24,8 @@ $bgcolor: var(--color-base01);
 /** Minimum height of a BottomStrip splits */
 $min-height: 7rem;
 
-@include NotebookTab {
-  @include HasBottomStrip {
-    @include Split(3) {
-      @include Rows(8);
-      @include Columns(4);
-      grid-template-areas:
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 B1 B1 B1';
-    }
-
-    @include Split(4) {
-      @include Rows(8);
-      @include Columns(4);
-      grid-template-areas:
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 T2 T2 T2'
-        'T1 T3 T3 T3'
-        'T1 T3 T3 T3'
-        'T1 T3 T3 T3'
-        'T1 T3 T3 T3'
-        'T1 B1 B1 B1';
-    }
-    @include Split(5) {
-      @include Rows(8);
-      @include Columns(8);
-      grid-template-areas:
-        'T1 T1 T2 T2 T2 T3 T3 T3'
-        'T1 T1 T2 T2 T2 T3 T3 T3'
-        'T1 T1 T2 T2 T2 T3 T3 T3'
-        'T1 T1 T4 T4 T4 T4 T4 T4'
-        'T1 T1 T4 T4 T4 T4 T4 T4'
-        'T1 T1 T4 T4 T4 T4 T4 T4'
-        'T1 T1 T4 T4 T4 T4 T4 T4'
-        'T1 T1 B1 B1 B1 B1 B1 B1';
-    }
-  }
-}
-
 @include TopLevelTab {
-  @include HasBottomStrip {
+  @include HasOnlyBottomStrip {
     @include Split(2) {
       @include Rows(8);
       @include Columns(1);
@@ -140,80 +95,80 @@ $min-height: 7rem;
         'T4 T4 T4 T5 T5 T5'
         'B1 B1 B1 B1 B1 B1';
     }
+  }
+}
 
-    @include Scrollback {
-      @include BottomStrip {
-        grid-area: B1;
-        min-height: $min-height;
+@include Scrollback {
+  @include BottomStrip {
+    grid-area: B1;
+    min-height: $min-height;
 
-        @include IsNotFocusedSplit {
-          @include SplitHeader {
-            display: none;
-          }
+    @include IsNotFocusedSplit {
+      @include SplitHeader {
+        display: none;
+      }
+    }
+
+    @include FinishedBlock {
+      flex: 1;
+
+      @include BlockBorder {
+        display: none;
+      }
+
+      /* Don't show input for not-focused Blocks */
+      @include BlockNotFocusedAttributes {
+        @include BlockInput {
+          display: none;
         }
 
-        @include FinishedBlock {
+        margin: 0;
+        padding: 0;
+        @include BlockOutput {
           flex: 1;
-
-          @include BlockBorder {
-            display: none;
-          }
-
-          /* Don't show input for not-focused Blocks */
-          @include BlockNotFocusedAttributes {
-            @include BlockInput {
-              display: none;
-            }
-
-            margin: 0;
-            padding: 0;
-            @include BlockOutput {
-              flex: 1;
-              margin: 0;
-              padding: 0;
-            }
-
-            @include BlockOutput {
-              @include Context {
-                display: none;
-              }
-            }
-          }
-        }
-
-        /* grids should wrap, rather than be rectilinear */
-        @include TableAsGrid {
-          flex: 1;
-        }
-        @include TableCard {
-          flex: 1;
-          background-color: $bgcolor;
-        }
-        @include Grid {
-          grid-template-columns: repeat(auto-fill, minmax(1.25em, auto)) !important;
-        }
-
-        @include ScrollbackBlockList {
           margin: 0;
           padding: 0;
-          background-color: $bgcolor;
         }
 
-        @include ScrollbackBlockListInner {
-          display: flex;
-        }
-
-        @include ActiveBlock {
-          flex: 1;
-          &:not(:first-child) {
+        @include BlockOutput {
+          @include Context {
             display: none;
           }
         }
-
-        @include CommandOutput {
-          flex: 1;
-        }
       }
+    }
+
+    /* grids should wrap, rather than be rectilinear */
+    @include TableAsGrid {
+      flex: 1;
+    }
+    @include TableCard {
+      flex: 1;
+      background-color: $bgcolor;
+    }
+    @include Grid {
+      grid-template-columns: repeat(auto-fill, minmax(1.25em, auto)) !important;
+    }
+
+    @include ScrollbackBlockList {
+      margin: 0;
+      padding: 0;
+      background-color: $bgcolor;
+    }
+
+    @include ScrollbackBlockListInner {
+      display: flex;
+    }
+
+    @include ActiveBlock {
+      flex: 1;
+      &:not(:first-child) {
+        display: none;
+      }
+    }
+
+    @include CommandOutput {
+      flex: 1;
     }
   }
 }

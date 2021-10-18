@@ -20,7 +20,8 @@ import {
   close,
   closeViaButton,
   expectSplits,
-  doMakeBottomStrip,
+  doToggleSplitPosition,
+  isLeftStrip,
   isBottomStrip,
   isDefault,
   splitViaButton
@@ -32,18 +33,39 @@ describe(`bottom strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   Util.closeAllExceptFirstTab.bind(this)()
 
   const splitTheTerminalViaButton = splitViaButton.bind(this)
-  const makeBottomStrip = doMakeBottomStrip.bind(this)
+  const togglePosition = doToggleSplitPosition.bind(this)
   const closeViaCommand = close.bind(this)
   const closeTheSplit = closeViaButton.bind(this)
+  const leftStrip = isLeftStrip.bind(this)
   const bottomStrip = isBottomStrip.bind(this)
   const defaultSplit = isDefault.bind(this)
   const count = expectSplits.bind(this)
 
+  // DEFAULT -> DEFAULT+DEFAULT
   count(1)
   splitTheTerminalViaButton(2)
   count(2)
 
-  makeBottomStrip(1)
+  // DEFAULT+DEFAULT -> BOTTOM+DEFAULT
+  togglePosition('bottom-strip', 1)
+  count(2)
+  bottomStrip(1)
+  defaultSplit(2)
+
+  // BOTTOM+DEFAULT -> LEFT+DEFAULT
+  togglePosition('left-strip', 1)
+  count(2)
+  leftStrip(1)
+  defaultSplit(2)
+
+  // LEFT+DEFAULT -> DEFAULT+DEFAULT
+  togglePosition('default', 1)
+  count(2)
+  defaultSplit(1)
+  defaultSplit(2)
+
+  // (round robin!) DEFAULT+DEFAULT -> BOTTOM+DEFAULT
+  togglePosition('bottom-strip', 1)
   count(2)
   bottomStrip(1)
   defaultSplit(2)
@@ -69,7 +91,7 @@ describe(`bottom strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     count(1)
     splitTheTerminalViaButton(2)
     count(2)
-    makeBottomStrip(2)
+    togglePosition('bottom-strip', 2)
     defaultSplit(1)
     bottomStrip(2)
     closeViaCommand(1, 1) // close the first split, which is the default split
@@ -82,7 +104,7 @@ describe(`bottom strip splits ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
     count(1)
     splitTheTerminalViaButton(2)
     count(2)
-    makeBottomStrip(1) // 1 this time
+    togglePosition('bottom-strip', 1) // 1 this time
     bottomStrip(1)
     defaultSplit(2)
     closeViaCommand(1, 1) // close the first split, which is the bottom strip
