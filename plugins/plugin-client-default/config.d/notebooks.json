@@ -19,7 +19,7 @@
       ]
     },
     {
-      "label": "Dashboards",
+      "label": "Experimental Ideas",
       "submenu": [
         { "notebook": "Kubernetes Dashboard", "filepath": "/kui/kubernetes/dashboard.json" },
         { "notebook": "Popeye Dashboard", "filepath": "/kui/kubernetes/popeye.json" }
