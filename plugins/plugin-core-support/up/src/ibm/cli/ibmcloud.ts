@@ -46,8 +46,8 @@ export default {
   check,
   fix:
     process.platform === 'linux'
-      ? 'curl -L https://clis.ng.bluemix.net/install/linux | bash - '
+      ? 'curl -fsSL https://clis.cloud.ibm.com/install/linux | sh'
       : process.platform === 'darwin'
-      ? 'curl -L https://clis.ng.bluemix.net/install/osx | bash - '
-      : 'curl -L https://clis.ng.bluemix.net/install/powershell | bash - '
+      ? 'curl -fsSL https://clis.cloud.ibm.com/install/osx | sh'
+      : "iex(New-Object Net.WebClient).DownloadString('https://clis.cloud.ibm.com/install/powershell')"
 }
