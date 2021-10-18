@@ -20,6 +20,7 @@ import { Observable, Observer } from 'rxjs'
 import { Arguments, Streamable } from '@kui-shell/core'
 
 import Options from './options'
+import Provider from './Provider'
 import checkers from './registrar'
 import Group, { GroupPriority } from './Group'
 import Checker, { CheckerArgs, CheckResult, Stdout } from './Checker'
@@ -34,19 +35,27 @@ export function success() {
   return `  ${colors.green('\u2713')}`
 }
 
-export function formatLabel<T extends CheckResult>(label: Checker['label'], checkResult: T): string {
+export function formatLabel<T extends CheckResult>({ label, service }: Checker, checkResult: T, color = true): string {
   const labelText = typeof label === 'string' ? label : label(checkResult)
 
-  return labelText // .replace(/^([^:]+:)/, (_, p1) => colors.cyan(p1))
+  const A = Provider[service.provider]
+  const B = service.label
+  const C = labelText
+
+  const AA = color ? colors.dim(colors.blue(A)) : A
+  const BB = color ? colors.dim(colors.blue(B)) : B
+  const CC = C
+
+  return `${AA}${BB ? ` ${BB}` : ''}: ${CC}` // .replace(/^([^:]+:)/, (_, p1) => colors.cyan(p1))
 }
 
 type Status = { ok: boolean; message: string }
 
-async function toStatus({ label }: Checker, checkResultP: ReturnType<Checker['check']>): Promise<Status> {
+async function toStatus(checker: Checker, checkResultP: ReturnType<Checker['check']>): Promise<Status> {
   const checkResult = await checkResultP
   return {
     ok: typeof checkResult === 'string' || checkResult === true,
-    message: formatLabel(label, checkResult)
+    message: formatLabel(checker, checkResult)
   }
 }
 
@@ -99,7 +108,7 @@ function listrTaskForChecker(
 ) {
   return (_: Checker, tidx: number) => {
     const idx = gidx + tidx
-    const title = formatLabel(_.label, undefined)
+    const title = formatLabel(_, undefined)
 
     return {
       title,
@@ -154,7 +163,7 @@ export async function checkPrerequistes(
         task.newListr(
           checkers(args)
             .filter(_ => _.group === Group[group])
-            .sort((a, b) => formatLabel(a.label, undefined).localeCompare(formatLabel(b.label, undefined)))
+            .sort((a, b) => formatLabel(a, undefined).localeCompare(formatLabel(b, undefined)))
             .map(listrTaskForChecker(args, stdout, fixErrors, gidx * nGroups)),
           options
         )
