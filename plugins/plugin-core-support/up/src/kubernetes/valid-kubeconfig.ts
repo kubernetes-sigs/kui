@@ -31,7 +31,7 @@ async function check({ REPL }: Pick<Arguments, 'REPL'>) {
 
 export default {
   service,
-  group: Group.CLI,
+  group: Group.Authorization,
   label: (checkResult?: false | string) =>
     checkResult === undefined
       ? 'Connected to cluster'
