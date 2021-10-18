@@ -19,7 +19,17 @@ enum Group {
   Compute,
   Authorization,
   CLI,
+  CLIPlugin,
   Operator
+}
+
+export const GroupPriority = {
+  CLI: 0,
+  CLIPlugin: 1,
+  Authorization: 2,
+  Operator: 3,
+  Compute: 4,
+  Storage: 4
 }
 
 export default Group

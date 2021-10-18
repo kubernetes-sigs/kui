@@ -19,9 +19,9 @@ import colors from 'colors/safe'
 import { Observable, Observer } from 'rxjs'
 import { Arguments, Streamable } from '@kui-shell/core'
 
-import Group from './Group'
 import Options from './options'
 import checkers from './registrar'
+import Group, { GroupPriority } from './Group'
 import Checker, { CheckerArgs, CheckResult, Stdout } from './Checker'
 
 /** indicator of failure */
@@ -144,7 +144,7 @@ export async function checkPrerequistes(
   // top-level grouping
   const groups = Object.values(Group)
     .filter(_ => isNaN(Number(_)))
-    .sort()
+    .sort((a, b) => GroupPriority[a] - GroupPriority[b])
   const nGroups = groups.length
 
   const tasks = new Listr<Pick<Status, 'ok'>[]>(
