@@ -107,7 +107,7 @@ export function splitFor(topLevelTab: Tab) {
     return topLevelTab
   } else {
     return (((topLevelTab || document).querySelector(
-      (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback:not([data-is-minisplit])'
+      (topLevelTab ? '' : '.kui--tab-content.visible') + ' .kui--scrollback[data-position="default"]'
     ) as any) as {
       facade: Tab
     }).facade

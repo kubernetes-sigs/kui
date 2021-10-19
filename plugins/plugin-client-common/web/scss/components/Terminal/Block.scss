@@ -289,9 +289,6 @@
   }
 }
 
-@include MiniSplit {
-  @include HideIn;
-}
 @include SideBySide {
   @include HideIn;
 }

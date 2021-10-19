@@ -142,12 +142,6 @@
 @include narrow-window {
   @include FullWidthInScrollback;
 }
-@include MiniSplit {
-  @include FullWidth;
-  @include Commentary {
-    display: flex;
-  }
-}
 
 @include Commentary {
   @include BlockLinks;

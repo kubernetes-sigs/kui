@@ -30,8 +30,6 @@ type Props = {
 
   /** state of the Block, e.g. Processing? Active/accepting input? */
   model: BlockModel
-
-  isPartOfMiniSplit?: boolean
 }
 
 export default class SourceRef extends React.PureComponent<Props> {
@@ -55,30 +53,24 @@ export default class SourceRef extends React.PureComponent<Props> {
     const { model } = this.props
 
     if (model && isWithCompleteEvent(model) && isTable(model.response) && hasSourceReferences(model.response)) {
-      // Note that we currently do not render source refs in
-      // minisplit. See https://github.com/IBM/kui/issues/6750
-      if (!this.props.isPartOfMiniSplit) {
-        const sourceRef = model.response.kuiSourceRef
-        const names = sourceRef.templates.concat(sourceRef.customization || []).map(_ => basename(_.filepath))
-        const content = sourceRef.templates
-          .map(_ => this.sourceRefContent(_.data, _.contentType))
-          .concat(sourceRef.customization ? this.sourceRefContent(sourceRef.customization.data, 'yaml') : [])
+      const sourceRef = model.response.kuiSourceRef
+      const names = sourceRef.templates.concat(sourceRef.customization || []).map(_ => basename(_.filepath))
+      const content = sourceRef.templates
+        .map(_ => this.sourceRefContent(_.data, _.contentType))
+        .concat(sourceRef.customization ? this.sourceRefContent(sourceRef.customization.data, 'yaml') : [])
 
-        return (
-          <div className="repl-input-sourceref">
-            <div className="repl-context"></div>
-            <Accordion
-              names={names}
-              isWidthConstrained={this.props.isWidthConstrained}
-              tab={this.props.tab}
-              content={content}
-              className="no-padding"
-            />
-          </div>
-        )
-      } else {
-        return <React.Fragment />
-      }
+      return (
+        <div className="repl-input-sourceref">
+          <div className="repl-context"></div>
+          <Accordion
+            names={names}
+            isWidthConstrained={this.props.isWidthConstrained}
+            tab={this.props.tab}
+            content={content}
+            className="no-padding"
+          />
+        </div>
+      )
     } else {
       return <React.Fragment />
     }

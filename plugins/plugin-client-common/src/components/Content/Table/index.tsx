@@ -29,7 +29,6 @@ export default function renderTable(
   toolbars = false,
   asGrid = false,
   onRender?: (hasContent: boolean) => void,
-  isPartOfMiniSplit = false,
   isWidthConstrained = false
 ) {
   if (isWatchable(response)) {
@@ -47,7 +46,6 @@ export default function renderTable(
               toolbars={toolbars}
               asGrid={asGrid}
               onRender={onRender}
-              isPartOfMiniSplit={isPartOfMiniSplit}
               isWidthConstrained={isWidthConstrained}
             />
           )}
@@ -70,7 +68,6 @@ export default function renderTable(
                 toolbars={toolbars}
                 asGrid={asGrid}
                 onRender={onRender}
-                isPartOfMiniSplit={isPartOfMiniSplit}
                 isWidthConstrained={isWidthConstrained}
               />
             )

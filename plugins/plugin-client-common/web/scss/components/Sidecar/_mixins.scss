@@ -84,14 +84,6 @@
   }
 }
 
-@mixin NestedLeftNavInMinisplit {
-  @include MiniSplit {
-    @include NestedLeftNav {
-      @content;
-    }
-  }
-}
-
 @mixin NotMaximized {
   &:not(.maximized) {
     @content;

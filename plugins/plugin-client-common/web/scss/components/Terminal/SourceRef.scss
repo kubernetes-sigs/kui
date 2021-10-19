@@ -65,12 +65,6 @@
   min-width: calc(55rem * 12 / 14); /* source ref font size is 12px; Sidecar is 55rem */
   height: 20rem;
 }
-@include MiniSplit {
-  @include FullWidthEditor;
-  @include Editor {
-    height: 15rem !important; /* re: important, see https://github.com/IBM/kui/issues/5744 */
-  }
-}
 @include narrow-window {
   @include FullWidthEditor;
 }

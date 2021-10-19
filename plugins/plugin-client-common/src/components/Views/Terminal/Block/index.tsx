@@ -42,7 +42,6 @@ export type BlockViewTraits = {
 
   isExperimental?: boolean
   isFocused?: boolean
-  isPartOfMiniSplit?: boolean
   isWidthConstrained?: boolean
 
   /** Handler for: User clicked to focus on this block */
@@ -89,9 +88,6 @@ type Props = InputOptions & {
   tab: KuiTab
 
   noActiveInput?: boolean
-
-  /** Is this block the one currently displayed in a MiniSplit */
-  isVisibleInMiniSplit?: boolean
 
   /** Position of the enclosing split. Default: SplitPosition.default */
   splitPosition?: SplitPosition
@@ -180,7 +176,6 @@ export default class Block extends React.PureComponent<Props, State> {
           onRender={this._onOutputRender}
           willUpdateCommand={this.props.willUpdateCommand}
           willInsertSection={this.props.willInsertSection}
-          isPartOfMiniSplit={this.props.isPartOfMiniSplit}
           isWidthConstrained={this.props.isWidthConstrained}
           willFocusBlock={this.props.willFocusBlock}
         />
@@ -254,7 +249,6 @@ export default class Block extends React.PureComponent<Props, State> {
               data-scrollback-uuid={this.props.uuid}
               data-input-count={this.props.idx}
               data-is-focused={this.props.isFocused || undefined}
-              data-is-visible-in-minisplit={this.props.isVisibleInMiniSplit || undefined}
               data-is-replay={isReplay(this.props.model) || undefined}
               ref={c => this.setState({ _block: c })}
               tabIndex={isActive(this.props.model) ? -1 : 1}
