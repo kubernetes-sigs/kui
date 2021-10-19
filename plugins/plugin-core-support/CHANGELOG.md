@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.8.1](https://github.com/IBM/kui/compare/v10.8.0...v10.8.1) (2021-10-19)
+
+### Bug Fixes
+
+- **plugins/plugin-core-support:** `up --fix` executes Authorization steps in poor order ([f2edf1f](https://github.com/IBM/kui/commit/f2edf1f))
+- **plugins/plugin-core-support:** `up` command uses alphabetical ordering ([4f79c46](https://github.com/IBM/kui/commit/4f79c46))
+- **plugins/plugin-core-support:** `up` output does not clarify which service is being presented ([dfd12ca](https://github.com/IBM/kui/commit/dfd12ca))
+- **plugins/plugin-core-support:** IBM CodeEngine "up" ordering incorrect ([0c198e0](https://github.com/IBM/kui/commit/0c198e0))
+- **plugins/plugin-core-support:** up checks kubeconfig before verifying kubectl is installed ([b8ed516](https://github.com/IBM/kui/commit/b8ed516))
+- **plugins/plugin-core-support:** update ibmcloud CLI download links ([1ae8a29](https://github.com/IBM/kui/commit/1ae8a29))
+
+### Features
+
+- add support for left strip positioning of terminal splits ([cc56ae1](https://github.com/IBM/kui/commit/cc56ae1)), closes [#8202](https://github.com/IBM/kui/issues/8202)
+
 # [10.8.0](https://github.com/IBM/kui/compare/v4.5.0...v10.8.0) (2021-10-15)
 
 ### Bug Fixes

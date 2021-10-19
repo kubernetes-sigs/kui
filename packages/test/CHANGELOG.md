@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.8.1](https://github.com/kubernetes-sigs/kui/compare/v10.8.0...v10.8.1) (2021-10-19)
+
+### Features
+
+- add support for left strip positioning of terminal splits ([cc56ae1](https://github.com/kubernetes-sigs/kui/commit/cc56ae1)), closes [#8202](https://github.com/kubernetes-sigs/kui/issues/8202)
+
 # [10.8.0](https://github.com/kubernetes-sigs/kui/compare/v4.5.0...v10.8.0) (2021-10-15)
 
 ### Bug Fixes
