@@ -150,18 +150,12 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
         debug('pageup')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, -height)
-      } else if (this.props.isPartOfMiniSplit) {
-        // in minisplits, pageup means navigate to previous Block
-        this.props.navigateTo('previous')
       }
     } else if (char === KeyCodes.PAGEDOWN) {
       if (inBrowser()) {
         debug('pagedown')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, +height)
-      } else if (this.props.isPartOfMiniSplit) {
-        // in minisplits, pageup means navigate to next Block
-        this.props.navigateTo('next')
       }
     } else if (
       (char === KeyCodes.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
