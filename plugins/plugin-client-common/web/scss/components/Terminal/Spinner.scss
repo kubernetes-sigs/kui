@@ -17,13 +17,6 @@
 @use 'sass:math';
 @import 'mixins';
 
-/** When in a minisplit, there is no timestamp/timer, so we need to add a margin-right */
-@include MiniSplit {
-  @include Spinner {
-    margin-right: $repl-context-margin-right;
-  }
-}
-
 @include Spinner {
   --sk-size: 0.75em;
   --sk-color: var(--active-tab-color);

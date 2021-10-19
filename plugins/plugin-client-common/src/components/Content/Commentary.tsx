@@ -33,7 +33,6 @@ interface State {
 
 type Props = CommentaryResponse['props'] & {
   tabUUID: string
-  isPartOfMiniSplit: boolean
   willUpdateResponse?: (text: string) => void
   willRemove?: () => void
   willUpdateCommand?: (command: string) => void
@@ -231,7 +230,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
           onCancel={this._onCancelFromEditor}
           onContentChange={this._onContentChange}
           contentType="markdown"
-          scrollIntoView={this.props.isPartOfMiniSplit}
+          scrollIntoView={false}
         />
       </React.Suspense>
     )

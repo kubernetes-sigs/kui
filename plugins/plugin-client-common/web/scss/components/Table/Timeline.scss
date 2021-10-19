@@ -92,15 +92,6 @@
   height: 19.6875rem; /* 16:9, see 35rem above */
 }
 
-@include MiniSplit {
-  .kui--timeline-occupancy-line {
-    padding: 0;
-  }
-  .kui--timeline-buckets {
-    height: 100%;
-  }
-}
-
 .kui--timeline-bucket {
   flex: 1;
   display: flex;
