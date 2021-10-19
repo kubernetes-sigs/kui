@@ -52,6 +52,7 @@ type Props = TabContentOptions &
   }
 
 type State = Partial<WithTab> & {
+  active: boolean
   sessionInit: SessionInitStatus
   sessionInitError?: Error
   showSessionInitDone: boolean
@@ -99,6 +100,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
+      active: props.active,
       tab: React.createRef(),
       sessionInit: 'NotYet',
       showSessionInitDone: true,
@@ -109,17 +111,35 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }
   }
 
+  public static getDerivedStateFromProps(props: Props, state: State) {
+    const isNowActive = props.active
+    const isCurrentlyActive = state.active
+    state.active = props.active
+
+    if (isNowActive && !isCurrentlyActive) {
+      // see https://github.com/kubernetes-sigs/kui/issues/8208
+      TabContent.delayedFocus(state, 0)
+    }
+
+    return state
+  }
+
+  public static delayedFocus(state: State, delayMillis = 300) {
+    if (state.active) {
+      setTimeout(() => {
+        if (state.active && state._terminal.current) {
+          state._terminal.current.doFocusIfNeeded()
+        }
+      }, delayMillis)
+    }
+  }
+
   public componentDidMount() {
     this.oneTimeInit()
 
     const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
-
-      setTimeout(() => {
-        if (this.state._terminal.current) {
-          this.state._terminal.current.doFocusIfNeeded()
-        }
-      }, 300)
+      TabContent.delayedFocus(this.state)
 
       try {
         if (this.props.onTabReady) {
@@ -321,7 +341,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       return React.cloneElement(node, {
         key,
         uuid: this.props.uuid,
-        active: this.props.active
+        active: this.state.active
       })
     } else {
       return node
@@ -354,13 +374,13 @@ export default class TabContent extends React.PureComponent<Props, State> {
   private tabClassName() {
     return (
       'kui--tab-content' +
-      (this.props.active ? ' visible' : '') +
+      (this.state.active ? ' visible' : '') +
       (!this.state.tabClassList ? '' : ' ' + Object.keys(this.state.tabClassList).join(' '))
     )
   }
 
   private body() {
-    if (!this.props.active && !this._firstRenderDone) {
+    if (!this.state.active && !this._firstRenderDone) {
       return <React.Fragment />
     }
 
@@ -385,7 +405,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    this.activateHandlers.forEach(handler => handler(this.props.active))
+    this.activateHandlers.forEach(handler => handler(this.state.active))
 
     return (
       <MutabilityContext.Provider value={this.state.mutability}>
