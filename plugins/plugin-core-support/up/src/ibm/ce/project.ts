@@ -103,7 +103,7 @@ async function fix(args: Arguments<Options>) {
 }
 
 export default {
-  group: Group.Compute,
+  group: Group.ServiceAuthorization,
   service,
 
   label: (checkResult?: false | string) =>
