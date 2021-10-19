@@ -28,7 +28,7 @@ async function check(args: Arguments) {
 
 export default {
   service,
-  group: Group.Authorization,
+  group: Group.CloudAuthorization,
 
   label: 'IBM Cloud Login',
   description: 'You will need a valid token to access the IBM Cloud',

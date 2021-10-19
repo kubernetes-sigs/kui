@@ -47,7 +47,7 @@ async function fix(args: Arguments<Options>) {
 }
 
 export default {
-  group: Group.Authorization,
+  group: Group.ServiceAuthorization,
   service,
 
   label: (checkResult?: false | string) =>
