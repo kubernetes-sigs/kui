@@ -230,7 +230,6 @@ export default class Output extends React.PureComponent<Props, State> {
                 tab={this.props.tab}
                 execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
                 response={part}
-                isPartOfMiniSplit={this.props.isPartOfMiniSplit}
                 isWidthConstrained={this.props.isWidthConstrained}
                 willChangeSize={this.props.willChangeSize}
                 willUpdateCommand={this._willUpdateCommand}
@@ -279,7 +278,6 @@ export default class Output extends React.PureComponent<Props, State> {
                 execUUID={hasUUID(this.props.model) && this.props.model.execUUID}
                 response={this.props.model.response}
                 completeEvent={this.props.model.completeEvent}
-                isPartOfMiniSplit={this.props.isPartOfMiniSplit}
                 isWidthConstrained={this.props.isWidthConstrained}
                 willChangeSize={this.props.willChangeSize}
                 willFocusBlock={this.props.willFocusBlock}
@@ -405,7 +403,7 @@ export default class Output extends React.PureComponent<Props, State> {
 
     return (
       <div className={'repl-output ' + (hasContent ? ' repl-result-has-content' : '')}>
-        {!this.props.isPartOfMiniSplit && hasContent && this.ctx()}
+        {hasContent && this.ctx()}
         {content}
         {this.actions()}
       </div>

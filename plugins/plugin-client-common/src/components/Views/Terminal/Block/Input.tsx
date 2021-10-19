@@ -266,7 +266,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
                 {active && ']'}
               </span>
             ) : (
-              config.prompt || (this.props.isPartOfMiniSplit ? '\u276f' : '/')
+              config.prompt || '/'
             )}
           </span>
         )}
@@ -321,12 +321,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
           </div>
           {this.state && this.state.tabCompletion && this.state.tabCompletion.render()}
         </div>
-        <SourceRef
-          tab={this.props.tab}
-          isWidthConstrained={this.props.isWidthConstrained}
-          model={this.props.model}
-          isPartOfMiniSplit={this.props.isPartOfMiniSplit}
-        />
+        <SourceRef tab={this.props.tab} isWidthConstrained={this.props.isWidthConstrained} model={this.props.model} />
       </React.Suspense>
     )
   }
@@ -819,7 +814,7 @@ export default class Input extends InputProvider {
 
   /** Should we show the spinner in the In[...] context area, or in the [<input/> ...] area? */
   private showSpinnerInContext() {
-    return !this.props.isPartOfMiniSplit && !this.props.isWidthConstrained
+    return !this.props.isWidthConstrained
   }
 
   /** Experimental tag, timestamp, etc. */

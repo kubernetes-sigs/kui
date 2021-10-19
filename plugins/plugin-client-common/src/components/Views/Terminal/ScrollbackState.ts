@@ -27,7 +27,6 @@ export type ScrollbackOptions = NewSplitRequest['options']
 type ScrollbackState = ScrollbackOptions & {
   uuid: string
   blocks: BlockModel[]
-  forceMiniSplit: boolean
   nSectionBreak: number
 
   /** Display as strip along the bottom */
@@ -46,12 +45,6 @@ type ScrollbackState = ScrollbackOptions & {
   /** cleanup routines for this split */
   cleaners: Cleaner[]
 
-  /**
-   * Block index (into this.blocks) to show in a MiniSplit. Must be a
-   * negative number, interpreted as an index from the end.
-   */
-  showThisIdxInMiniSplit: number
-
   /** Remove this scrollback (memoized handler) */
   remove: () => void
 
@@ -66,7 +59,6 @@ type ScrollbackState = ScrollbackOptions & {
   onMouseDown: (evt: React.MouseEvent<HTMLElement, MouseEvent>) => void
   onFocus: (evt: React.FocusEvent) => void
   onOutputRender: () => void
-  navigateTo: (dir: 'first' | 'last' | 'previous' | 'next') => void
   setActiveBlock: (c: Block) => void
   willFocusBlock: (evt: React.SyntheticEvent) => void
   willRemoveBlock: (evt: React.SyntheticEvent, idx?: number) => void

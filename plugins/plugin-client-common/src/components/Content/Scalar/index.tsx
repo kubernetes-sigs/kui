@@ -158,7 +158,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
             {...response.props}
             repl={tab.REPL}
             tabUUID={getPrimaryTabId(tab)}
-            isPartOfMiniSplit={this.props.isPartOfMiniSplit}
             onRender={this._onRender}
             willRemove={this.props.willRemove}
             willUpdateCommand={this.props.willUpdateCommand}
@@ -178,9 +177,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
     } else if (isTable(response)) {
       const renderBottomToolbar = true
       const isLargeTable = response.body.length >= 50
-      const isLargeMiniTable = this.props.isPartOfMiniSplit && response.body.length > 5
       const renderGrid =
-        (isLargeTable || isLargeMiniTable) &&
+        isLargeTable &&
         (response.allowedPresentations === undefined || response.allowedPresentations.indexOf('grid') >= 0)
       return renderTable(
         tab,
@@ -190,7 +188,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
         renderBottomToolbar,
         renderGrid,
         this._onRender,
-        this.props.isPartOfMiniSplit,
         this.props.isWidthConstrained
       )
       // ^^^ Notes: typescript doesn't like this, and i don't know why:

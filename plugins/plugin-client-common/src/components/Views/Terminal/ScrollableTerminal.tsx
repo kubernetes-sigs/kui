@@ -449,13 +449,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return []
   }
 
+  /** @return the number of splits with `position=default` */
+  private numDefaultSplits() {
+    return this.state.splits.reduce((N, _) => (N += _.position === 'default' ? 1 : 0), 0)
+  }
+
   private scrollback(sbuuid = this.allocateUUIDForScrollback(), opts: ScrollbackOptions = {}): ScrollbackState {
     const state: ScrollbackState = {
       uuid: sbuuid,
       cleaners: [],
-      forceMiniSplit: false,
       inverseColors: opts.inverseColors,
-      showThisIdxInMiniSplit: -2,
       blocks: this.restoreBlocks(sbuuid).concat([Active()]),
       nSectionBreak: 0,
       remove: undefined,
@@ -465,7 +468,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       onMouseDown: undefined,
       onFocus: undefined,
       onOutputRender: undefined,
-      navigateTo: undefined,
       setActiveBlock: undefined,
       willFocusBlock: undefined,
       willRemoveBlock: undefined,
@@ -524,25 +526,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         // problematic, see https://github.com/kubernetes-sigs/kui/issues/8174
         // setTimeout(() => state.facade.scrollToBottom())
       }
-    }
-
-    /** Update the viewport to show a particular entry */
-    state.navigateTo = (dir: 'first' | 'last' | 'previous' | 'next') => {
-      this.splice(sbuuid, ({ blocks, showThisIdxInMiniSplit }) => {
-        const newIdx =
-          dir === 'first'
-            ? 0
-            : dir === 'last'
-            ? -2
-            : dir === 'previous'
-            ? Math.max(-blocks.length, showThisIdxInMiniSplit - 1)
-            : Math.min(-2, showThisIdxInMiniSplit + 1)
-
-        return {
-          blocks,
-          showThisIdxInMiniSplit: newIdx
-        }
-      })
     }
 
     /** Update the active block */
@@ -683,9 +666,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         scrollback.facade.getSize = getSize.bind(ref)
 
         scrollback.facade.splitCount = () => this.state.splits.length
-        scrollback.facade.hasSideBySideTerminals = () => {
-          return !!this.state.splits.find((_, sbidx) => this.isASideBySide(sbidx))
-        }
+        scrollback.facade.hasSideBySideTerminals = () => this.numDefaultSplits() > 1
 
         scrollback.facade.addClass = (cls: string) => {
           ref.classList.add(cls)
@@ -761,7 +742,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const originalIdx = this.state.splits.length - idx - 1
         return (
           split &&
-          !this.isMiniSplit(split, originalIdx) &&
+          this.isOkSplitForContent(originalIdx) &&
           (excludedIndex === undefined || originalIdx !== excludedIndex)
         )
       })
@@ -812,11 +793,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
   }
 
+  /** Some splits may not be ideal receptacles for arbitrary content */
+  private isOkSplitForContent(idx: number): boolean {
+    return this.state.splits[idx].position === 'default'
+  }
+
   /**
-   * For click handlers in minisplits, we want to direct the command
-   * execution UI to a plain terminal, if that is possible.
+   * We want to direct the command execution UI to a default-position
+   * terminal.
    *
-   * @return the sbuuid of a plain split, if the given split is a minisplit, and for a ClickHandler event
+   * @return the sbuuid of a default-position split
    *
    */
   private redirectToPlainSplitIfNeeded(
@@ -828,8 +814,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       const idx = this.findSplit(this.state, sbuuid)
       // note: idx may be < 0 if we are executing a command in-flight,
       // e.g. executing a command in another split
-      if (idx >= 0 && this.isMiniSplit(this.state.splits[idx], idx)) {
-        // <-- this is a minisplit
+      if (idx >= 0 && !this.isOkSplitForContent(idx)) {
+        // then this is not a preferred target for displaying content
         const plainSplit = this.findMainSplit()
         if (plainSplit) {
           // <-- we found a plain split!
@@ -1251,7 +1237,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
         eventBus.emitTabLayoutChange(sbuuid, {
           isSidecarNowHidden: false,
-          isWidthConstrained: this.isWidthConstrained(newScrollback, insertIdx)
+          isWidthConstrained: this.isWidthConstrained(newScrollback)
         })
 
         return {
@@ -1433,10 +1419,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return blocks.findIndex(b => isActive(b))
   }
 
-  private isASideBySide(sbidx: number) {
-    return this.theseAreSideBySide[this.state.splits.length][sbidx]
-  }
-
   private tabFor(scrollback: ScrollbackState): KuiTab {
     if (!scrollback.facade) {
       const { uuid } = scrollback
@@ -1478,58 +1460,19 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return scrollback.facade
   }
 
-  /**
-   * This map keeps track of which split indices are minisplits. The
-   * primary index is the current split count. That gives an array
-   * which indicates whether the given scrollback index is a
-   * minisplit.
-   *
-   * NOTE: minsplits are disable for now; see: https://github.com/kubernetes-sigs/kui/issues/7307
-   */
-  private readonly theseAreMiniSplits = {
-    1: [false], // 1 split, not-minisplit
-    2: [false, false], // 2 splits, both not-minisplit
-    3: [false, false, false], // etc.
-    4: [false, false, false, false],
-    5: [false, false, false, false, false],
-    6: [false, false, false, false, false, false],
-    7: [false, false, false, false, false, false, false],
-    8: [false, false, false, false, false, false, false, false]
-  }
-
-  /**
-   * Same, but keeping track of when we have two splits arranged
-   * horizontally side-by-side.
-   *
-   */
-  private readonly theseAreSideBySide = {
-    1: [false], // 1 split, not-minisplit
-    2: [true, true], // 2 splits, both not-minisplit
-    3: [true, true, false], // etc.
-    4: [true, true, true, true],
-    5: [true, true, true, true, true],
-    6: [true, true, true, true, true, true],
-    7: [true, true, true, true, true, true, true],
-    8: [true, true, true, true, true, true, true, true]
-  }
-
-  /** Present the given scrollback as a minisplit? */
-  private isMiniSplit(scrollback: ScrollbackState, sbidx: number) {
-    return scrollback.forceMiniSplit || this.theseAreMiniSplits[this.state.splits.length][sbidx] || undefined
-  }
-
   /** Is this scrollback not-100% width? */
-  private isWidthConstrained(scrollback: ScrollbackState, sbidx: number) {
-    return this.props.config.isPopup || this.isMiniSplit(scrollback, sbidx) || this.isASideBySide(sbidx)
+  private isWidthConstrained(scrollback: ScrollbackState) {
+    return (
+      this.props.config.isPopup ||
+      scrollback.position === 'left-strip' ||
+      (scrollback.position === 'default' && this.numDefaultSplits() > 1)
+    )
   }
 
   /** Render the blocks in one split */
   private blocks(tab: KuiTab, scrollback: ScrollbackState, sbidx: number) {
     const blocks = scrollback.blocks
-    const nBlocks = blocks.length
-
-    const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
-    const isWidthConstrained = this.isWidthConstrained(scrollback, sbidx)
+    const isWidthConstrained = this.isWidthConstrained(scrollback)
 
     // running tally for In[_idx_]
     let displayedIdx = 0
@@ -1550,19 +1493,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       } else {
         if (!isAnnouncement(_) && !isOutputOnly(_)) {
           subSectionIdx++
-        }
-      }
-
-      if (isMiniSplit) {
-        const isVisibleInMiniSplit =
-          isActive(_) ||
-          isProcessing(_) ||
-          (scrollback.showThisIdxInMiniSplit >= 0
-            ? idx === scrollback.showThisIdxInMiniSplit
-            : idx === scrollback.showThisIdxInMiniSplit + nBlocks)
-
-        if (!isVisibleInMiniSplit) {
-          return
         }
       }
 
@@ -1610,11 +1540,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           willUpdateExecutable={scrollback.willUpdateExecutable}
           isExperimental={hasCommand(_) && _.isExperimental}
           isFocused={isFocused}
-          isPartOfMiniSplit={isMiniSplit}
-          isVisibleInMiniSplit={true}
           isWidthConstrained={isWidthConstrained}
           onOutputRender={scrollback.onOutputRender}
-          navigateTo={scrollback.navigateTo}
           ref={scrollback.setActiveBlock}
         />
       )
@@ -1624,12 +1551,10 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Render one split */
   private split(scrollback: ScrollbackState, sbidx: number) {
     const tab = this.tabFor(scrollback)
-    const isMiniSplit = this.isMiniSplit(scrollback, sbidx)
-    const isWidthConstrained = this.isWidthConstrained(scrollback, sbidx)
+    const isWidthConstrained = this.isWidthConstrained(scrollback)
 
     const props = {
       className: 'kui--scrollback' + (scrollback.inverseColors ? ' kui--inverted-color-context' : ''),
-      'data-is-minisplit': isMiniSplit,
       'data-is-width-constrained': isWidthConstrained || undefined,
       'data-is-focused': sbidx === this.state.focusedIdx || undefined,
       'data-position': scrollback.position,
