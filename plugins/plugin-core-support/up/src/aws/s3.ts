@@ -25,7 +25,7 @@ async function check({ REPL }: Pick<Arguments, 'REPL'>) {
 }
 
 export default {
-  group: Group.Storage,
+  group: Group.ServiceAuthorization,
   service,
 
   label: 'Valid credentials',
