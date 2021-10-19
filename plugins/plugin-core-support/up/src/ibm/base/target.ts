@@ -44,7 +44,7 @@ async function check(args: Arguments) {
 
 export default {
   service,
-  group: Group.Authorization,
+  group: Group.CloudTarget,
 
   label: (checkResult?: false | string) =>
     checkResult === undefined ? 'IBM Cloud Target' : checkResult === false ? colors.red('not selected') : checkResult,

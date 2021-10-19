@@ -36,7 +36,7 @@ function check({ REPL, parsedOptions }: CheckerArgs<Options>) {
 
 export default {
   service,
-  group: Group.Storage,
+  group: Group.ServiceAuthorization,
 
   label: (checkResult?: false | string) =>
     checkResult === undefined

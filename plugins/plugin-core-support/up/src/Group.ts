@@ -17,7 +17,10 @@
 enum Group {
   Storage,
   Compute,
-  Authorization,
+  CloudAuthorization,
+  CloudTarget,
+  ClusterAuthorization,
+  ServiceAuthorization,
   CLI,
   CLIPlugin,
   Operator
@@ -26,10 +29,13 @@ enum Group {
 export const GroupPriority = {
   CLI: 0,
   CLIPlugin: 1,
-  Authorization: 2,
-  Operator: 3,
-  Compute: 4,
-  Storage: 4
+  CloudAuthorization: 2,
+  CloudTarget: 3,
+  ClusterAuthorization: 4,
+  ServiceAuthorization: 5,
+  Operator: 6,
+  Compute: 7,
+  Storage: 7
 }
 
 export default Group
