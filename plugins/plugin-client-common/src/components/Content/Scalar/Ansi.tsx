@@ -25,10 +25,9 @@ interface Props {
   onRender?: () => void
 }
 
+/** Special overrides for CSS classes; otherwise, we will use the raw values from `anser`, e.g. "italic" and "underline" and "strikethrough" */
 const decos = {
-  dim: 'sub-text semi-transparent',
-  strikethrough: 'strikethrough',
-  italic: 'italic'
+  dim: 'sub-text semi-transparent'
 }
 
 function tagOf(entry: AnserJsonEntry) {
@@ -38,7 +37,7 @@ function tagOf(entry: AnserJsonEntry) {
 function classOf(entry: AnserJsonEntry) {
   const fg = entry.fg ? entry.fg.replace(/^ansi-(.*)/, 'ansi-$1-fg') : ''
   const bg = entry.bg ? entry.bg.replace(/^ansi-(.*)/, 'ansi-$1-bg') : ''
-  const deco = entry.decorations.map(_ => decos[_] || '')
+  const deco = entry.decorations.map(_ => decos[_] || _)
 
   return `${fg} ${bg} ${deco.join(' ')}`
 }
@@ -67,7 +66,7 @@ export default function Ansi(props: Props) {
   }
 
   return (
-    <pre className={props.className} style={{ margin: 0 }}>
+    <pre className={props.className} style={{ margin: 0, wordBreak: 'break-all' }}>
       {model.map(
         (_, idx) => _.content && React.createElement(tagOf(_), { key: idx, className: classOf(_) }, content(_.content))
       )}
