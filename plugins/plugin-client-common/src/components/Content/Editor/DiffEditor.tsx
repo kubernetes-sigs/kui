@@ -102,8 +102,8 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
         readOnly: true,
         renderSideBySide: props.renderSideBySide
       }
-      const overrides: Monaco.IDiffEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
-      const options: Monaco.IDiffEditorConstructionOptions = Object.assign(
+      const overrides: Monaco.IStandaloneDiffEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
+      const options: Monaco.IStandaloneDiffEditorConstructionOptions = Object.assign(
         defaultMonacoOptions(providedOptions),
         providedOptions,
         overrides
