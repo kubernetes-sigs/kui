@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.8.2](https://github.com/IBM/kui/compare/v10.8.1...v10.8.2) (2021-10-21)
+
+### Features
+
+- **plugins/plugin-core-support:** add minimum version check to IBM CodeEngine prereq checker ([aafb1d4](https://github.com/IBM/kui/commit/aafb1d4)), closes [#8216](https://github.com/IBM/kui/issues/8216)
+
 ## [10.8.1](https://github.com/IBM/kui/compare/v10.8.0...v10.8.1) (2021-10-19)
 
 ### Bug Fixes

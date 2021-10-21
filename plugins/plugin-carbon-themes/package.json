@@ -1,6 +1,6 @@
 {
   "name": "@kui-shell/plugin-carbon-themes",
-  "version": "10.8.1",
+  "version": "10.8.2",
   "description": "Kui plugin offering a Carbon Components-inspired set of themes",
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
