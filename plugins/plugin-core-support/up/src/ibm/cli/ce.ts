@@ -28,7 +28,16 @@ async function check(args: Arguments) {
         Object.assign({}, args, { command: 'ibmcloud plugin show code-engine --output json' })
       )
     )
-    return `v${Version.Major}.${Version.Minor}.${Version.Build}`
+
+    const version = `v${Version.Major}.${Version.Minor}.${Version.Build}`
+    if (Version.Major < 1 || Version.Minor < 6) {
+      return {
+        ok: false,
+        message: `Your IBM Cloud CodeEngine CLI plugin is too old. Got ${version}. Expected >= 1.6.0`
+      }
+    } else {
+      return version
+    }
   } catch (err) {
     return false
   }

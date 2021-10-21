@@ -26,7 +26,7 @@ export type CheckerArgs<O extends ParsedOptions = ParsedOptions> = Pick<
 >
 
 export type CheckResultSuccess = true | string
-export type CheckResult = CheckResultSuccess | false
+export type CheckResult = CheckResultSuccess | { ok: boolean; message: string } | false
 
 export type Stdout = NodeJS.WriteStream & NodeJS.WritableStream
 
