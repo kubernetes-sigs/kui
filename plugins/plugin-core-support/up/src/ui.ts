@@ -53,10 +53,12 @@ type Status = { ok: boolean; message: string }
 
 async function toStatus(checker: Checker, checkResultP: ReturnType<Checker['check']>): Promise<Status> {
   const checkResult = await checkResultP
-  return {
-    ok: typeof checkResult === 'string' || checkResult === true,
-    message: formatLabel(checker, checkResult)
-  }
+  return typeof checkResult === 'object'
+    ? checkResult
+    : {
+        ok: typeof checkResult === 'string' || checkResult === true,
+        message: formatLabel(checker, checkResult)
+      }
 }
 
 export default async function doCheck<T extends CheckResult>(
@@ -127,7 +129,7 @@ function listrTaskForChecker(
               }
             })
             .catch(err => {
-              ctx[idx] = { ok: false }
+              ctx[idx] = { ok: false, message: err.message }
               obs.error(err)
             })
             .finally(() => obs.complete())
