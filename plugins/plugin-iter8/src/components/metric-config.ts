@@ -33,7 +33,7 @@ export const ITER8_METRIC_NAMES = {
   ratio: ['iter8_mean_latency', 'iter8_error_rate']
 }
 
-export async function getMetricConfig(args: Arguments) {
+export async function getMetricConfig(args: Pick<Arguments, 'REPL'>) {
   return await args.REPL.qexec(`kubectl get configmaps -n iter8 iter8config-metrics -o yaml`)
 }
 
@@ -53,18 +53,18 @@ export class GetMetricConfig {
   private cmetrics
   private rmetrics
 
-  public async getmetrics(args: Arguments) {
+  public async getmetrics(args: Pick<Arguments, 'REPL'>) {
     return await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o yaml`)
   }
 
-  public async getCounterMetrics(args: Arguments) {
+  public async getCounterMetrics(args: Pick<Arguments, 'REPL'>) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['counter_metrics.yaml']
     const { load } = await import('js-yaml')
     return load(res) as CounterMetrics
   }
 
-  public async getRatioMetrics(args: Arguments) {
+  public async getRatioMetrics(args: Pick<Arguments, 'REPL'>) {
     const res = (await args.REPL.qexec<MetricConfigMap>(`kubectl get configmaps -n iter8 iter8config-metrics -o json`))
       .data['ratio_metrics.yaml']
     const { load } = await import('js-yaml')

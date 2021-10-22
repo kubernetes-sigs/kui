@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react'
-import { ModeRegistration } from '@kui-shell/core'
+
+import { ModeRegistration, Tab } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
 import { getMetricConfig } from '../components/metric-config'
-const MetricDetailsMode = React.lazy(() => import('../modes/get-metrics'))
 
 async function getMetricsYaml(args) {
   const { dump } = await import('js-yaml')
@@ -28,18 +27,6 @@ async function getMetricsYaml(args) {
   return dump(res)
 }
 
-function getMetricDetailsMode(tab) {
-  return {
-    react: function renderComponent() {
-      return (
-        <React.Suspense fallback={<div />}>
-          <MetricDetailsMode {...tab} />
-        </React.Suspense>
-      )
-    }
-  }
-}
-
 function verifyMetricResponse(resource: KubeResource): boolean {
   return resource.kind === 'Command' && resource.metadata.name === 'Metric Command'
 }
@@ -48,7 +35,7 @@ const metricListMode: ModeRegistration<KubeResource> = {
   when: verifyMetricResponse,
   mode: {
     mode: 'Metric List',
-    content: getMetricDetailsMode
+    content: (tab: Tab) => import('./MetricsUI').then(_ => _.default(tab))
   }
 }
 

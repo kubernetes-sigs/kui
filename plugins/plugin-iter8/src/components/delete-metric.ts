@@ -20,9 +20,14 @@ import { Arguments } from '@kui-shell/core'
 import { removeExtraneousMetaData } from './metric-config'
 import { CounterMetrics, RatioMetrics } from './metric-config-types'
 
-export default function deleteMetric(configMap: any, metricName: string, type: MetricTypes, args: Arguments): boolean {
+export default function deleteMetric(
+  configMap: any,
+  metricName: string,
+  type: MetricTypes,
+  args: Pick<Arguments, 'REPL'>
+): boolean {
   try {
-    // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig(args)
+    // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig({ REPL })
     const counterMetrics = load(configMap.data['counter_metrics.yaml']) as CounterMetrics
     const ratioMetrics = load(configMap.data['ratio_metrics.yaml']) as RatioMetrics
     const newConfigMap = removeExtraneousMetaData(configMap)

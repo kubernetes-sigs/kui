@@ -170,7 +170,7 @@ async function copySignableBits(buildPath, electronVersion, targetPlatform, targ
   // copy in the headless build?
   if (process.env.KUI_HEADLESS_WEBPACK) {
     const source = process.env.HEADLESS_BUILDDIR
-    const target = join(buildPath, '..', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
+    const target = join(buildPath, 'dist', basename(source)) // e.g. buildPath is Contents/Resources/app on macOS
     console.log(`Copying in headless build for ${targetPlatform} ${targetArch} to ${target}`)
     await emptyDir(target)
     await copy(source, target)
@@ -208,9 +208,7 @@ function package(baseArgs /*: { dir: string, name: string, platform: string, arc
     // asar is desirable, as it packs the zillions of node_modules
     // files into a single file; faster installation on users'
     // machines; but we have to be careful w.r.t. native modules
-    asar: {
-      unpack: '*.{node,dll,exe}' // <-- avoids loading/signing issues with native modules
-    },
+    asar: false,
 
     // lifecycle hooks to copy in our extra bits
     afterCopy: [serialHooks([buildWebpack.bind(baseArgs), copyNodePty, copySignableBits.bind(baseArgs)])]

@@ -80,12 +80,8 @@ export default async (prescan: PrescanModel) => {
             : isHeadless() && !process.env.KUI_HEADLESS_WEBPACK
             ? await import(/* webpackIgnore: true */ mainPath(module.path))
             : module.route === 'client'
-            ? require(/* webpackMode: "lazy" */ '@kui-shell/client/' + 'mdist/preload')
-            : await import(
-                /* webpackChunkName: "kui-plugin" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
-                  webpackPath(module.route) +
-                  '/mdist/preload'
-              )
+            ? require('@kui-shell/client/' + 'mdist/preload')
+            : await import('@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/preload')
         debug('preloading capabilities.2 %s', module.path)
         const registration: CapabilityRegistration = registrationRef.registerCapability
         if (registration && typeof registration === 'function') {

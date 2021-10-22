@@ -322,7 +322,7 @@ console.log('webpack plugins', plugins)
 // the 'commonjs node-pty' syntax, see
 // https://github.com/webpack/webpack/issues/4238
 const externals = !inBrowser
-  ? { 'node-pty': 'commonjs node-pty' }
+  ? ['node-pty']
   : [
       'tape', // modules/composer/node_modules/safer-buffer
       'dns', // modules/openwhisk/node_modules/retry/example/dns.js
@@ -424,6 +424,14 @@ module.exports = {
   optimization,
   module: {
     rules: kuiPluginRules.concat([
+      // patternfly has some huge image assets for demos; we can't use IgnorePlugin, because about-modal-box.css uses this demo image. sigh
+      {
+        test: new RegExp(
+          `\\${path.sep}@patternfly\\${path.sep}react-styles\\${path.sep}css\\${path.sep}assets\\${path.sep}images\\${path.sep}pfbg_.*\\.jpg$`
+        ),
+        use: 'ignore-loader'
+      },
+
       // ignore commonjs bits
       {
         test: new RegExp(`\\${path.sep}node_modules\\${path.sep}@kui-shell\\${path.sep}\\.*\\${path.sep}dist`),

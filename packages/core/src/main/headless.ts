@@ -47,13 +47,6 @@ process.on('exit', code => {
   debug('exiting', code)
 })
 
-let argStart = 1
-if (process.env.DEVMODE) {
-  // then we're running in dev mode, where the app is started with
-  // an extra argument, e.g. "electron ."
-  argStart = 2
-}
-
 const commandContextPattern = /--command-context/
 let commandContext: string
 
@@ -243,6 +236,9 @@ export const main = async (
     commandContext = ourCommandContext
   }
 
+  const dashDash = rawArgv.indexOf('--')
+  const argStart = dashDash >= 0 ? dashDash + 1 : 1
+
   const argv = rawArgv
     .slice(argStart)
     .filter(
@@ -309,7 +305,7 @@ export const main = async (
         .join(' ')
         .trim()
       if (cmd && cmd.length > 0) {
-        debug('about to execute command')
+        debug('about to execute command', cmd)
         return evaluate(cmd).catch(maybeRetry)
       } else {
         debug('exiting, no command')

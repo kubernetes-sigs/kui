@@ -27,6 +27,7 @@ import {
   Screen
 } from 'electron'
 
+import { join } from 'path'
 import windowDefaults, { popupWindowDefaults } from '../webapp/defaults'
 import ISubwindowPrefs from '../models/SubwindowPrefs'
 import { webpackPath } from '../plugins/path'
@@ -158,7 +159,7 @@ export function createWindow(
       '@kui-shell/client/config.d/icons.json'
     )
 
-    const { screen, BrowserWindow } = await import('electron')
+    const { screen, BrowserWindow, app } = await import('electron')
     const position =
       subwindowPrefs && subwindowPrefs.position
         ? await subwindowPrefs.position()
@@ -184,8 +185,11 @@ export function createWindow(
     // note that this requires show: false above
     opts.webPreferences.zoomFactor = 1
 
-    const { dirname, join } = await import('path')
-    const root = dirname(require.resolve('@kui-shell/prescan.json'))
+    // when jumping directly to the UI from bash, getAppPath() may
+    // include dist/headless; if so, we need to back out of that
+    const appPath = app.getAppPath()
+    const root = join(appPath, /dist\/headless$/.test(appPath) ? '../../' : '', 'node_modules/@kui-shell')
+
     if (process.platform === 'linux') {
       const icon = join(root, 'build', filesystem.linux)
       opts.icon = icon
@@ -326,10 +330,7 @@ export function createWindow(
 
     // and load the index.html of the app.
     const urlSpec = {
-      pathname: join(
-        root,
-        `build/index${process.env.KUI_TEST_PARALLEL && process.env.PORT_OFFSET ? process.env.PORT_OFFSET : ''}.html`
-      ),
+      pathname: join(root, 'build', 'index.html'),
       protocol: 'file:',
       search: commandContext ? `?${commandContext}` : '',
       slashes: true
@@ -444,7 +445,7 @@ export function createWindow(
         debug('invoke', message)
 
         try {
-          const mod = await import('@kui-shell/plugin-' + webpackPath(message.module) + '/dist/index.js')
+          const mod = await import('@kui-shell/plugin-' + webpackPath(message.module) + '/mdist/electron-main.js')
           debug('invoke got module')
 
           const returnValue = await mod[message.main || 'main'](message.args, event.sender)
@@ -577,6 +578,7 @@ export async function initElectron(
       // debug issues with spawning the subprocess by passing
       // DEBUG=* or DEBUG=main
       const env = Object.assign({}, process.env, windowOptions)
+      delete env.KUI_GRAPHICS
       delete env.KUI_HEADLESS
       delete env.ELECTRON_RUN_AS_NODE
 

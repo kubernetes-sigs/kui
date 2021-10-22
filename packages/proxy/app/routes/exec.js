@@ -68,7 +68,6 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
         PWD: cwd,
         LOCALE: locale,
         DEBUG: process.env.DEBUG,
-        DEVMODE: true,
         TRAVIS_JOB_ID: process.env.TRAVIS_JOB_ID,
         KUBECONFIG: process.env.KUBECONFIG,
         KUI_HEADLESS: true,
@@ -101,7 +100,7 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
       const { wss } = await wssMain(N, server, port, cookie)
 
       debug('spawning subprocess')
-      const child = spawn(process.argv[0], [mainPath, 'bash', 'websocket', 'stdio'], options)
+      const child = spawn(process.argv[0], [mainPath, '--', 'bash', 'websocket', 'stdio'], options)
 
       child.on('error', err => {
         console.error('error spawning subprocess', err)

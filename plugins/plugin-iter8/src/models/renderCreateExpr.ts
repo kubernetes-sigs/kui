@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ModeRegistration } from '@kui-shell/core'
-import { KubeResource } from '@kui-shell/plugin-kubectl'
 
-import { renderForm, renderDecisionTab } from '../modes/render'
+import { ModeRegistration, Tab } from '@kui-shell/core'
+import { KubeResource } from '@kui-shell/plugin-kubectl'
 
 // Checks the correct command response
 function verifyResponse(resource: KubeResource): boolean {
@@ -28,7 +27,7 @@ const exprcreateMode: ModeRegistration<KubeResource> = {
   when: verifyResponse,
   mode: {
     mode: 'Experiment Setup',
-    content: renderForm
+    content: (tab: Tab) => import('../modes/render').then(_ => _.renderForm(tab))
   }
 }
 // Model for Decision Tab View
@@ -36,7 +35,7 @@ const decisionMode: ModeRegistration<KubeResource> = {
   when: verifyResponse,
   mode: {
     mode: 'Decision',
-    content: renderDecisionTab
+    content: (tab: Tab) => import('../modes/render').then(_ => _.renderDecisionTab(tab))
   }
 }
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { notebookVFS } from '@kui-shell/plugin-core-support'
 import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
 
 import { metricListMode, metricYamlMode } from './models/metrics'
@@ -24,6 +23,7 @@ export default async (registrar: PreloadRegistrar) => {
   if (!isHeadless()) {
     await registrar.registerModes(exprcreateMode, decisionMode, metricListMode, metricYamlMode)
 
+    const { notebookVFS } = await import('@kui-shell/plugin-core-support')
     notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/iter8'] })
     notebookVFS.cp(
       undefined,

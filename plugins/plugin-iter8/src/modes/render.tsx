@@ -15,11 +15,12 @@
  */
 
 import React from 'react'
+import { Tab } from '@kui-shell/core'
 
 const ExprBase = React.lazy(() => import('../modes/exprForm'))
 const DecisionBase = React.lazy(() => import('../modes/decisionForm'))
 
-export function renderForm(tab) {
+export function renderForm(tab: Tab) {
   return {
     react: function renderComponent() {
       return (
@@ -31,7 +32,7 @@ export function renderForm(tab) {
   }
 }
 
-export function renderDecisionTab(tab) {
+export function renderDecisionTab(tab: Tab) {
   return {
     react: function renderComponent() {
       return (

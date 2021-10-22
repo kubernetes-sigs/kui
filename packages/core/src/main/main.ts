@@ -38,10 +38,10 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
   const N = argv.length
   const isRunningHeadless = !!process.env.KUI_HEADLESS || (argv[N - 3] === 'bash' && argv[N - 2] === 'websocket')
 
-  if (!isRunningHeadless) {
+  if (!isRunningHeadless || !!process.env.KUI_FORCE_GRAPHICS) {
     // then spawn the electron graphics
-    debug('shortcut to graphics')
-    const { getCommand, initElectron } = await import('./spawn-electron')
+    debug('shortcut to graphics', argv)
+    const { getCommand, initElectron } = await import(/* webpackChunkName: "electron-main" */ './spawn-electron')
     const { argv: strippedArgv, subwindowPlease, subwindowPrefs } = getCommand(argv, async () => import('electron'))
     initElectron(
       strippedArgv,
@@ -51,7 +51,7 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
     )
   } else {
     // otherwise, don't spawn the graphics; stay in headless mode
-    const { initHeadless } = await import('./headless')
+    const { initHeadless } = await import(/* webpackChunkName: "headless-main" */ './headless')
     const result = await initHeadless(argv, false, isRunningHeadless, execOptions).catch(err => {
       if (env.KUI_REPL_MODE) {
         const errResponse = Object.assign(
@@ -91,10 +91,4 @@ export const main = async (argv: string[], env = process.env, execOptions?: Exec
   debug('all done here, the rest is async')
 }
 
-// initElectron respawns us with electron enabled; in this case,
-// main.ts will be evaluated outside of a require context, so we need
-// to bootstrap things, as follows:
-if (require.main === module) {
-  debug('it looks like this is the main entry point, rather than a require')
-  main(process.argv, process.env, process.env.KUI_EXEC_OPTIONS && JSON.parse(process.env.KUI_EXEC_OPTIONS))
-}
+main(process.argv, process.env, process.env.KUI_EXEC_OPTIONS && JSON.parse(process.env.KUI_EXEC_OPTIONS))
