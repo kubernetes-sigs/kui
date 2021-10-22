@@ -18,7 +18,7 @@ const fs = require('fs')
 const path = require('path')
 
 const mode = process.env.MODE || 'development'
-const target = process.env.HEADLESS_TARGET || 'node'
+const target = process.env.HEADLESS_TARGET || 'electron-main'
 const TerserJSPlugin = require('terser-webpack-plugin')
 const { IgnorePlugin } = require('webpack')
 
@@ -62,26 +62,29 @@ const plugins = []
 
 // ignore these bits for headless
 const allFiles = /.*/
+plugins.push(new IgnorePlugin({ resourceRegExp: /\.css/, contextRegExp: /@kui-shell/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /\.scss/, contextRegExp: /@kui-shell/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
-plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/@kui-shell\/build/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/notebooks\// }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-charts/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-core/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-icons/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-table/ }))
+
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /@kui-shell\/build/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /@kui-shell\/plugin-\w+-themes/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /plugin-client-common/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /plugin-electron-components/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /@kui-shell\/plugin-electron-components/ }))
 ;[
   /^d3$/,
   /^elkjs\/lib\/elk.bundled.js$/,
-  /^react$/,
+  /^react(-.*)?$/,
   /^jquery$/,
-  /^electron$/,
+  // /^electron$/,
   /^monaco-editor$/,
-  /^@patternfly\/react-core$/,
-  /^@patternfly\/react-chart$/,
-  /^@patternfly\/react-table$/
+  /^xterm$/
 ].forEach(resourceRegExp => plugins.push(new IgnorePlugin({ resourceRegExp })))
-;[
-  /plugin-wskflow/,
-  /plugin-\w+-themes/,
-  /plugin-client-common/,
-  // /plugin-kubectl-flow-views/,
-  /plugin-electron-components/
-].forEach(resourceRegExp => plugins.push(new IgnorePlugin({ resourceRegExp, contextRegExp: /@kui-shell/ })))
 
 /**
  * Define the set of bundle entry points; there is one default entry
@@ -155,43 +158,19 @@ plugins.push({
 })
 
 // zip after emit, so we get a dist/headless.zip
-plugins.push(
-  new ZipPlugin({
-    filename: 'headless.zip', // ZipPlugin by default names it based on the name of the main bundle
-    path: '..', // ZipPlugin seems to treat this as relative to the output path specified below
-    include: /.*/ // ZipPlugin by default only includes the main bundle file
-  })
-)
+if (process.env.KUI_BUILD_HEADLESS_ZIP) {
+  plugins.push(
+    new ZipPlugin({
+      filename: 'headless.zip', // ZipPlugin by default names it based on the name of the main bundle
+      path: '..', // ZipPlugin seems to treat this as relative to the output path specified below
+      include: /.*/ // ZipPlugin by default only includes the main bundle file
+    })
+  )
+}
 
 // console.log('webpack plugins', plugins)
 
-// Notes: we want to pull
-// node-pty in as a commonjs external module; this
-// is because node-pty has binary bits, and we are building one set of
-// bundles for all electron platforms. If, in the future, we decide to
-// rebuild the bundles for each platform, we can remove this 'commonjs
-// node-pty...' bit, and, below, restore the `rule` pertaining to
-// node-pty (i will leave that rule in the code here, for now, though
-// commented out; just make sure to remove the commonjs bit here, and
-// uncomment the node-pty rule below, if you decide to rebuild the
-// bundles, once for each platform, in the future). The kui issue
-// covering this topic is here:
-// https://github.com/IBM/kui/issues/3381; and if you're curious about
-// the 'commonjs node-pty' syntax, see
-// https://github.com/webpack/webpack/issues/4238
-const externals = [
-  /* 'd3',
-  'elkjs',
-  'react',
-  'jquery',
-  'electron',
-  'monaco-editor',
-  '@patternfly/react-core': '',
-  '@patternfly/react-chart',
-  '@patternfly/react-table', */
-  { 'node-pty': 'commonjs node-pty' }
-]
-
+const externals = []
 kuiPluginExternals.forEach(_ => {
   externals[_] = _
 })
@@ -206,8 +185,8 @@ module.exports = {
   target,
   mode,
   node: {
-    __filename: true,
-    __dirname: true
+    __filename: true
+    //    __dirname: true <-- node-loader is not compatible with this
   },
   externals,
   resolve: {
@@ -216,6 +195,10 @@ module.exports = {
   optimization,
   module: {
     rules: kuiPluginRules.concat([
+      {
+        test: /\.node$/,
+        loader: 'node-loader'
+      },
       // ignore commonjs bits
       {
         test: new RegExp(`\\${path.sep}node_modules\\${path.sep}@kui-shell\\${path.sep}\\.*\\${path.sep}dist`),
@@ -285,7 +268,7 @@ module.exports = {
       { test: /\.png$/, use: 'ignore-loader' },
       { test: /\.svg$/, use: 'ignore-loader' },
       { test: /\.sh$/, use: 'raw-loader' },
-      { test: /\.html$/, use: 'raw-loader' },
+      { test: /\.html$/, type: 'raw-loader' },
       { test: /\.yaml$/, use: 'raw-loader' },
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
     ])
@@ -297,7 +280,6 @@ module.exports = {
     publicPath: '',
     path: outputPath,
     library: {
-      name: productName.toLowerCase(),
       type: 'commonjs'
     }
   }

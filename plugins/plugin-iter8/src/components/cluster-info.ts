@@ -20,7 +20,7 @@ import { KubeResource, KubeItems } from '@kui-shell/plugin-kubectl'
 export default class GetKubeInfo {
   private rawOutput = ''
 
-  public async getNamespace(args: Arguments): Promise<{ id: string; text: string }[]> {
+  public async getNamespace(args: Pick<Arguments, 'REPL'>): Promise<{ id: string; text: string }[]> {
     return (await args.REPL.qexec<KubeItems<KubeResource>>(`kubectl get ns -o json`)).items
       .map(ns => ns.metadata.name)
       .map((name, i) => ({
@@ -29,7 +29,7 @@ export default class GetKubeInfo {
       }))
   }
 
-  public async getSvc(ns: string, args: Arguments): Promise<{ id: string; text: string }[]> {
+  public async getSvc(ns: string, args: Pick<Arguments, 'REPL'>): Promise<{ id: string; text: string }[]> {
     return (await args.REPL.qexec<KubeItems<KubeResource>>(`kubectl get svc -n ${ns} -o yaml`)).items
       .map(svc => svc.metadata.name)
       .map((name, i) => ({
@@ -38,7 +38,11 @@ export default class GetKubeInfo {
       }))
   }
 
-  public async getDeployment(ns: string, svc: string, args: Arguments): Promise<{ id: string; text: string }[]> {
+  public async getDeployment(
+    ns: string,
+    svc: string,
+    args: Pick<Arguments, 'REPL'>
+  ): Promise<{ id: string; text: string }[]> {
     return (await args.REPL.qexec<KubeItems<KubeResource>>(`kubectl get deployments -n ${ns} -o yaml`)).items
       .map(d => d.metadata.name)
       .map((name, i) => ({

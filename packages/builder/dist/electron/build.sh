@@ -40,7 +40,7 @@ export KUI_HEADLESS_WEBPACK
 # ignore these files when bundling the ASAR (this is a regexp, not glob pattern)
 # see the electron-packager docs for --ignore
 #
-export IGNORE='(~$)|(\.ts$)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(jquery)|(/node_modules/d3)|(/node_modules/elkjs)|(monaco-editor)|(xterm)|(bak\.json)|(packages/.*/mdist)|(plugins/.*/mdist)|(plugins/.*/web)|(@kui-shell/.*/mdist)|(node_modules/.*/fonts/)|(\.scss$)|(\.woff$)|(/node_modules/@carbon)|(/node_modules/@patternfly)|(/node_modules/@emotion)|(/node_modules/babel-plugin-emotion)|(/node_modules/core-js)|(/node_modules/cssstyle)|(/node_modules/lodash)|(/node_modules/carbon-icons)|(/node_modules/@fortawesome)|(/node_modules/@babel)|(/node_modules/carbon-components)|(/node_modules/node-pty/deps)|(/node_modules/@kui-shell/plugin-.*/node_modules/)|(node_modules/trie-search/dictionary.json)|(node_modules/react-dom)|(node_modules/ramda)|(node_modules/underscore)|(node_modules/esprima)|(node_modules/micromark)|(node_modules/readline/test)|(node_modules/apexcharts)|(node_modules/victory-*)|(packages/builder)|(packages/test)|(tmp/)|(CHANGELOG.md)|(tsconfig.*)|(package-lock.json)|(/plugins/.*/src)|(/plugins/.*/dist/test)|(/packages/.*/src)|(/plugins/.*/notebooks\/)|(/plugins/.*/components)|(/docs)|(/packages/proxy)'
+export IGNORE='(~$)|(\.ts$)|(\.vscode)|(\.github)|(\.git)|(lerna\.json)|(@types)|(tsconfig\.json)|(webpack\.config\.json)|(\.cache)|(\.map$)|(bak\.json)|(packages)|(plugins)|(\.scss$)|(\.woff$)|(tmp/)|(CHANGELOG.md)|(tsconfig.*)|(package-lock.json)|(/docs)|(/node_modules/(?!(node-pty/build|@kui-shell/build)))|(/tools)|(/bin)|(/design)|(/dist/webpack)'
 
 #
 # client version; note rcedit.exe fails if the VERSION is "dev"
@@ -253,9 +253,15 @@ function builddeps {
     echo "Using CLIENT_NAME=$CLIENT_NAME"
 }
 
+# make sure we have an electron-compatible node-pty
+function pty {
+    npx kui-pty-rebuild electron
+}
+
 # this is the main routine
 function build {
     echo "builddeps" && builddeps
+    echo "pty" && pty
 
     win32 x64
 

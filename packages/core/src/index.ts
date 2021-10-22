@@ -295,7 +295,7 @@ export { isHTML, isPromise } from './util/types'
 export { tellMain } from './webapp/electron-events'
 
 // main
-export { main } from './main/main'
+// export { main } from './main/main'
 export { default as boot, bootIntoSandbox } from './webapp/bootstrap/boot'
 
 // Sessions

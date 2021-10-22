@@ -144,14 +144,13 @@ const waitTimeout = parseInt(process.env.TIMEOUT) || 60000
 
 const prepareElectron = (popup: string[]) => {
   const Application = require('spectron').Application
-  const electron = require('electron') // relative to __dirname
-  const appMain = process.env.APP_MAIN || '../../node_modules/@kui-shell/core/dist/main/main.js' // relative to the tests/ directory
+  const electron = require('electron')
 
   const opts: SpectronOptions = {
     env: {},
     chromeDriverArgs: ['--no-sandbox'],
-    // chromeDriverLogPath: '/tmp/cd.log',
-    // webdriverLogPath: '/tmp',
+    chromeDriverLogPath: '/tmp/cd.log',
+    webdriverLogPath: '/tmp',
     startTimeout: parseInt(process.env.TIMEOUT) || 60000, // see https://github.com/IBM/kui/issues/2227
     waitTimeout
   }
@@ -184,7 +183,8 @@ const prepareElectron = (popup: string[]) => {
     console.log(`Using build-based assets: ${process.env.TEST_FROM_BUILD}`)
     opts['path'] = process.env.TEST_FROM_BUILD
   } else {
-    console.log('Using filesystem-based assets')
+    const appMain = process.env.APP_MAIN || join(process.env.TEST_SUITE_ROOT, '../..')
+    console.log('Using filesystem-based assets', appMain)
     opts['path'] = electron // this means spectron will use electron located in node_modules
     opts['args'] = [appMain] // in this mode, we need to specify the main.js to use
   }

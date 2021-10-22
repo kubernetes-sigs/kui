@@ -10,71 +10,86 @@
 #
 #
 
-# export KUI_HEADLESS=true
+# If for some reason, you want to test the transition from headless to
+#   graphics; the first says: run headless, the second says but jump to UI,
+#   and the third asks to use electron as our node.
+# Otherwise, we will launch electron-as-electron, and won't run
+#   through the headless-to-graphics transition in spawn-electron.ts.
+#export KUI_HEADLESS=true
+#export KUI_FORCE_GRAPHICS=true
+#export ELECTRON_RUN_AS_NODE=true
+
+# use a special window sizing and positioning
+export KUI_POPUP_WINDOW_RESIZE=true
+
+# not very important options to electron
 export NODE_NO_WARNINGS=1
-# export ELECTRON_RUN_AS_NODE=true
 export NODE_OPTIONS="--no-warnings"
 
 # This tells the core Kui plugin resolver that we are using webpack to
-# build our headless bundles, not the old headless hacks
-# export KUI_HEADLESS_WEBPACK=true
+# build our headless bundles, not the old headless hacks.
+export KUI_HEADLESS_WEBPACK=true
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)                                                              
 
-if [ -f ./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
-    # development mode
-    NODE=./node_modules/electron/dist/Electron.app/Contents/MacOS/Electron
-    HEADLESS=./dist/headless
+if [ -f "${SCRIPTDIR}"/../node_modules/electron/dist/Electron.app/Contents/MacOS/Electron ]; then
+    # development mode on macOS
+    NODE="${SCRIPTDIR}"/../node_modules/electron/dist/Electron.app/Contents/MacOS/Electron
+    HEADLESS="${SCRIPTDIR}"/../dist/headless
+elif [ -f "${SCRIPTDIR}"/../node_modules/electron/dist/electron ]; then
+    # development mode on Linux
+    NODE="${SCRIPTDIR}"/../node_modules/electron/dist/electron
+    HEADLESS="${SCRIPTDIR}"/../dist/headless
 elif [ -f /Applications/Kui.app/Contents/MacOS/Kui ]; then
     # Kui installed in /Applications on macOS
     BASE=/Applications/Kui.app
     NODE="$BASE/Contents/MacOS/Kui"
-    HEADLESS=$BASE/Contents/Resources/headless
+    HEADLESS=$BASE/Contents/Resources/app/dist/headless
 elif [ -f ./Kui.app/Contents/MacOS/Kui ]; then
     # Kui installed in CWD on macOS
     BASE="$PWD/Kui.app"
     NODE="$BASE/Contents/MacOS/Kui"
-    HEADLESS="$BASE/Contents/Resources/headless"
+    HEADLESS="$BASE/Contents/Resources/app/dist/headless"
 elif [ -f /usr/local/bin/Kui/Kui ]; then
     # Kui installed in /usr/local/bin on Linux or Windows
     BASE=/usr/local/bin/Kui
     NODE="$BASE/Kui"
-    HEADLESS="$BASE/headless"
+    HEADLESS="$BASE/app/dist/headless"
 elif [ -f ./Kui/Kui ]; then
     # Kui installed in CWD on Linux or Windows
     BASE="$PWD/Kui"
     NODE="$BASE/Kui"
-    HEADLESS="$BASE/headless"
+    HEADLESS="$BASE/app/dist/headless"
 elif [ -f ./Kui ]; then
     # Kui installed in CWD on Linux or Windows (variant)
     BASE="$PWD"
     NODE="$BASE/Kui"
-    HEADLESS="$BASE/headless"
+    HEADLESS="$BASE/app/dist/headless"
 elif [ -f "$SCRIPTDIR/Kui.app/Contents/MacOS/Kui" ]; then
     # Kui installed in SCRIPTDIR on macOS
     BASE="$SCRIPTDIR/Kui.app"
     NODE="$BASE/Contents/MacOS/Kui"
-    HEADLESS="$BASE/Contents/Resources/headless"
+    HEADLESS="$BASE/Contents/Resources/app/dist/headless"
 elif [ -f "$SCRIPTDIR/Kui/Kui" ]; then
     # Kui installed in SCRIPTDIR on Linux or Windows
     BASE="$SCRIPTDIR/Kui"
     NODE="$BASE/Kui"
-    HEADLESS="$BASE/headless"
+    HEADLESS="$BASE/app/dist/headless"
 elif [ -f "$SCRIPTDIR/Kui" ]; then
     # Kui installed in SCRIPTDIR on Linux or Windows (variant)
     BASE="$SCRIPTDIR"
     NODE="$BASE/Kui"
-    HEADLESS="$BASE/headless"
+    HEADLESS="$BASE/app/dist/headless"
 elif [ -f "$KUI_HOME/Kui.app/Contents/MacOS/Kui" ]; then
     # Kui installed in KUI_HOME on macOS
     BASE="$KUI_HOME/Kui.app"
     NODE="$BASE/Contents/MacOS/Kui"
-    HEADLESS="$BASE/Contents/Resources/headless"
+    HEADLESS="$BASE/Contents/Resources/app/dist/headless"
 elif [ -f "$KUI_HOME/Kui" ]; then
     # Kui installed in KUI_HOME on Linux or Windows
     BASE="$KUI_HOME"
     NODE="$BASE/Kui"
-    HEADLESS="$BASE/headless"
+    HEADLESS="$BASE/app/dist/headless"
 else
     echo "Error: Could not find Kui. Try setting KUI_HOME=/path/to/Kui"
     exit 1
@@ -83,8 +98,4 @@ fi
 # This points the headless->electron launcher to our Electron
 export KUI_ELECTRON_HOME="${KUI_ELECTRON_HOME-$NODE}"
 
-# for when we switch over to webpack headless builds:
-# exec "$NODE" -e 'require("'$HEADLESS'/kui.min.js").kiwi.main(process.argv)' . -- kubectl $@
-
-# for now
-exec "$NODE" . -- ${KUI_COMMAND_PREFIX-kubectl} $@
+exec "$NODE" "$HEADLESS"/kui.min.js -- kubectl $@

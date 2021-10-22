@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { eventChannelUnsafe } from '@kui-shell/core'
+import { eventChannelUnsafe, Tab } from '@kui-shell/core'
 // Component imports
 import { Alert, Button, Icons, Loading } from '@kui-shell/plugin-client-common'
 import { Caption, TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table'
@@ -72,7 +72,9 @@ const renderTable = (props: TableProps) => (
   </React.Fragment>
 )
 
-export default class DecisionBase extends React.Component<{}, DecisionState> {
+type Props = Tab
+
+export default class DecisionBase extends React.Component<Props, DecisionState> {
   private _isMounted = false
   private winner = ''
   // For displaying Traffic Suggestion Section
@@ -91,9 +93,9 @@ export default class DecisionBase extends React.Component<{}, DecisionState> {
   private advancedStatisticsObject = {}
   private advancedStatisticsNames = {}
   private advancedStatiticsHeaders = []
-  private args
+  private args: Props
 
-  public constructor(props) {
+  public constructor(props: Props) {
     super(props)
     this.args = props
     this.state = {

@@ -16,6 +16,7 @@
 
 import React from 'react'
 import { load, dump } from 'js-yaml'
+import { Tab } from '@kui-shell/core'
 import { Button, Icons } from '@kui-shell/plugin-client-common'
 import { Caption, TableComposable, Tbody, Tr, Td } from '@patternfly/react-table'
 import {
@@ -322,9 +323,11 @@ function createBasicStringDropdownOptions(values: string[]): DropdownOptions {
   return rs
 }
 
-export default class MetricDetailsMode extends React.Component<{}, MetricDetailsState> {
-  private args
-  public constructor(props) {
+type Props = Tab
+
+export default class MetricDetailsMode extends React.Component<Props, MetricDetailsState> {
+  private args: Props
+  public constructor(props: Props) {
     super(props)
     this.args = props
     try {

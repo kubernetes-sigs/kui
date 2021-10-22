@@ -84,16 +84,8 @@ const prequire = async (
                 : isHeadless() && !process.env.KUI_HEADLESS_WEBPACK
                 ? await import(/* webpackIgnore: true */ mainPath(module.path))
                 : module.route === 'client'
-                ? await import(
-                    /* webpackChunkName: "client-plugin" */ /* webpackMode: "lazy" */ '@kui-shell/clien' +
-                      webpackPath(module.route).slice(5) +
-                      '/mdist/plugin'
-                  )
-                : await import(
-                    /* webpackChunkName: "kui-plugins" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
-                      webpackPath(module.route) +
-                      '/mdist/plugin'
-                  )
+                ? await import('@kui-shell/clien' + webpackPath(module.route).slice(5) + '/mdist/plugin')
+                : await import('@kui-shell/plugin-' + webpackPath(module.route) + '/mdist/plugin')
             const registration: PluginRegistration = registrationRef.default || registrationRef
             const combinedOptions = Object.assign({ usage: prescan.usage, docs: prescan.docs }, options)
 

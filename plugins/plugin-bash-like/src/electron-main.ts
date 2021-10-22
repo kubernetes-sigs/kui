@@ -14,16 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Map a asynchronous function to an array sequentially from front to
- * back.
- *
- */
-export async function promiseEach<T, R>(arr: T[], fn: (t: T, idx: number) => R | Promise<R>): Promise<R[]> {
-  const result = []
-  let idx = 0
-  for (const item of arr) {
-    result.push(await fn(item, idx++))
-  }
-  return result
-}
+export { initMainPty } from './pty/electron-main-channel'

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { eventChannelUnsafe } from '@kui-shell/core'
+import { eventChannelUnsafe, Tab } from '@kui-shell/core'
 // Component Imports
 import {
   ActionGroup,
@@ -43,14 +43,16 @@ import MultiSelect from './MultiSelect'
  * Data models for the state object in ExprForm
  */
 
-export default class ExprBase extends React.Component<{}, Formstate> {
+type Props = Tab
+
+export default class ExprBase extends React.Component<Props, Formstate> {
   // imported class of methods from /components
   private kubeMethods = new GetKubeInfo()
   private GetMetricConfig = new GetMetricConfig()
   // Lists of dropdown menu items
-  private args
+  private args: Props
 
-  public constructor(props) {
+  public constructor(props: Props) {
     super(props)
     this.args = props
     this.state = {

@@ -18,28 +18,28 @@ import _ from 'lodash'
 import { Arguments } from '@kui-shell/core'
 import { KubeResource } from '@kui-shell/plugin-kubectl'
 
-export async function kubectlApplyRule(rule, args: Arguments) {
+export async function kubectlApplyRule(rule, { REPL }: Pick<Arguments, 'REPL'>) {
   delete rule['originatingCommand']
   delete rule['kuiRawData']
   delete rule['isKubeResource']
   const { dump } = await import('js-yaml')
   const yamlRule = dump(rule)
 
-  return await args.REPL.qexec(`cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`)
+  return await REPL.qexec(`cat <<"EOF" | kubectl apply -f -\n${yamlRule}\nEOF`)
 }
 
-async function getLabelInfo(label, args: Arguments) {
-  var deployment = await args.REPL.qexec<KubeResource>(
+async function getLabelInfo(label, { REPL }: Pick<Arguments, 'REPL'>) {
+  var deployment = await REPL.qexec<KubeResource>(
     `kubectl get deployments -n ${label['destination_workload_namespace']} ${label['destination_workload']} -o json`
   )
   return deployment['spec']['template']['metadata']['labels']
 }
 
-async function getportnumber(svc, ns, args: Arguments) {
-  return (await args.REPL.qexec(`kubectl get svc -n ${ns} ${svc} -o json`))['spec']['ports'][0]['port']
+async function getportnumber(svc, ns, { REPL }: Pick<Arguments, 'REPL'>) {
+  return (await REPL.qexec(`kubectl get svc -n ${ns} ${svc} -o json`))['spec']['ports'][0]['port']
 }
 
-export function applyTrafficSplit(userDecision, args: Arguments) {
+export function applyTrafficSplit(userDecision, { REPL }: Pick<Arguments, 'REPL'>) {
   var destinationRule = {}
   destinationRule = {
     apiVersion: 'networking.istio.io/v1alpha3',
@@ -68,16 +68,16 @@ export function applyTrafficSplit(userDecision, args: Arguments) {
       } else if (key === 'hostGateways') {
         continue
       }
-      let [l] = await Promise.all([getLabelInfo(value['version_labels'], args)])
+      let [l] = await Promise.all([getLabelInfo(value['version_labels'], { REPL })])
       destinationRule['spec']['subsets'].push({ labels: l, name: key })
     }
     console.log('Applying Destination Rule')
-    kubectlApplyRule(destinationRule, args)
-    applyVirtualService(destinationRule, userDecision, args)
+    kubectlApplyRule(destinationRule, { REPL })
+    applyVirtualService(destinationRule, userDecision, { REPL })
   })
 }
 
-export function applyVirtualService(dr, userDecision, args: Arguments) {
+export function applyVirtualService(dr, userDecision, { REPL }: Pick<Arguments, 'REPL'>) {
   var virtualService = {}
   virtualService = {
     apiVersion: 'networking.istio.io/v1alpha3',
@@ -103,7 +103,9 @@ export function applyVirtualService(dr, userDecision, args: Arguments) {
     }
   }
   setTimeout(async () => {
-    const [port] = await Promise.all([getportnumber(userDecision.service_name, userDecision.service_namespace, args)])
+    const [port] = await Promise.all([
+      getportnumber(userDecision.service_name, userDecision.service_namespace, { REPL })
+    ])
     const subsets = dr['spec']['subsets']
     virtualService['spec']['http'][0]['route'] = []
     for (let i = 0; i < subsets.length; i++) {
@@ -113,7 +115,7 @@ export function applyVirtualService(dr, userDecision, args: Arguments) {
       })
     }
     console.log('Applying Virtual Service')
-    kubectlApplyRule(virtualService, args)
+    kubectlApplyRule(virtualService, { REPL })
   })
 }
 

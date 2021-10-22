@@ -20,5 +20,3 @@ export { StdioChannelWebsocketSide } from './pty/stdio-channel'
 export { getSessionForTab } from './pty/sessionCache'
 export { dispatchToShell as doExecWithPty, doExecWithStdoutViaPty } from './lib/cmds/catchall'
 export { default as getTabState } from './tab-state/get'
-
-export { initMainPty } from './pty/electron-main-channel'

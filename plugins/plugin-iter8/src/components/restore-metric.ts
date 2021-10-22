@@ -24,7 +24,7 @@ export default function restoreMetric(
   configMap: any,
   metric: CounterMetric | RatioMetric,
   type: MetricTypes,
-  args: Arguments
+  args: Pick<Arguments, 'REPL'>
 ): boolean {
   try {
     // const { configMap, counterMetrics, ratioMetrics } = getMetricConfig()

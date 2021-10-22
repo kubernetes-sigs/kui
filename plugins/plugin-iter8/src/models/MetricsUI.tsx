@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Kubernetes Authors
+ * Copyright 2020 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * Map a asynchronous function to an array sequentially from front to
- * back.
- *
- */
-export async function promiseEach<T, R>(arr: T[], fn: (t: T, idx: number) => R | Promise<R>): Promise<R[]> {
-  const result = []
-  let idx = 0
-  for (const item of arr) {
-    result.push(await fn(item, idx++))
+import React from 'react'
+import { Tab } from '@kui-shell/core'
+
+const MetricDetailsMode = React.lazy(() => import('../modes/get-metrics'))
+
+export default function getMetricDetailsMode(tab: Tab) {
+  return {
+    react: function renderComponent() {
+      return (
+        <React.Suspense fallback={<div />}>
+          <MetricDetailsMode {...tab} />
+        </React.Suspense>
+      )
+    }
   }
-  return result
 }

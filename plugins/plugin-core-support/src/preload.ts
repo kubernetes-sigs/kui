@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import Debug from 'debug'
-const debug = Debug('plugins/core-support/preload')
-debug('loading')
-
 import { isHeadless, inProxy, PreloadRegistration } from '@kui-shell/core'
 
 /**
@@ -39,5 +35,3 @@ const registration: PreloadRegistration = () => {
 }
 
 export default registration
-
-debug('finished loading')
