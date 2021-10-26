@@ -18,9 +18,10 @@
 
 export KUI_USE_HTTP=${KUI_USE_HTTP-true}
 export KUI_PROXY_COHOSTED=true
+export CLIENT_HOME=/usr/share/nginx/html/kui
 
 # start kui proxy
-(cd /usr/share/nginx/html/kui && npx start-proxy) &
+(cd $CLIENT_HOME && npx start-proxy) &
 
 # start nginx
 #exec nginx -g 'pid /tmp/nginx.pid; daemon off;'

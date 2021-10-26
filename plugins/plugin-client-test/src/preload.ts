@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
-
-// mount a fake VFS to test tab completion
-import { mount } from '@kui-shell/plugin-bash-like/fs'
-import { NotebookVFS } from '@kui-shell/plugin-core-support'
+import { PreloadRegistrar, isHeadless, inProxy } from '@kui-shell/core'
 
 import {
   mode1,
@@ -38,28 +34,35 @@ export default async (registrar: PreloadRegistrar) => {
     registrar.registerBadges(badge1, badge2, badge3)
   }
 
-  // make some a fake VFS (using NotebookVFS as the impl) for testing tab completion
-  const vfsfun = new NotebookVFS('/tmpo')
-  vfsfun.mkdir({ argvNoOptions: ['mkdir', '/tmpo/D1'] })
-  vfsfun.mkdir({ argvNoOptions: ['mkdir', '/tmpo/D2'] })
-  mount(vfsfun)
+  if (!isHeadless() || inProxy()) {
+    // mount a fake VFS to test tab completion
+    const [{ mount }, { NotebookVFS, notebookVFS }] = await Promise.all([
+      import('@kui-shell/plugin-bash-like/fs'),
+      import('@kui-shell/plugin-core-support')
+    ])
 
-  // nested (still fake) VFS mounts
-  const vfsnest1 = new NotebookVFS('/kuifake/fake1')
-  vfsnest1.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake1/E1'] })
-  vfsnest1.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake1/E2'] })
-  const vfsnest2 = new NotebookVFS('/kuifake/fake2')
-  vfsnest2.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake2/F1'] })
-  vfsnest2.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake2/F2'] })
-  mount(vfsnest1)
-  mount(vfsnest2)
+    // make some a fake VFS (using NotebookVFS as the impl) for testing tab completion
+    const vfsfun = new NotebookVFS('/tmpo')
+    vfsfun.mkdir({ argvNoOptions: ['mkdir', '/tmpo/D1'] })
+    vfsfun.mkdir({ argvNoOptions: ['mkdir', '/tmpo/D2'] })
+    mount(vfsfun)
 
-  // mount notebooks
-  try {
-    const { notebookVFS } = await import('@kui-shell/plugin-core-support')
-    notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/test'] })
-    notebookVFS.cp(undefined, ['plugin://client/notebooks/ls.json'], '/kui/test')
-  } catch (err) {
-    console.error('Error mounting test notebooks', err)
+    // nested (still fake) VFS mounts
+    const vfsnest1 = new NotebookVFS('/kuifake/fake1')
+    vfsnest1.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake1/E1'] })
+    vfsnest1.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake1/E2'] })
+    const vfsnest2 = new NotebookVFS('/kuifake/fake2')
+    vfsnest2.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake2/F1'] })
+    vfsnest2.mkdir({ argvNoOptions: ['mkdir', '/kuifake/fake2/F2'] })
+    mount(vfsnest1)
+    mount(vfsnest2)
+
+    // mount notebooks
+    try {
+      notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/test'] })
+      notebookVFS.cp(undefined, ['plugin://client/notebooks/ls.json'], '/kui/test')
+    } catch (err) {
+      console.error('Error mounting test notebooks', err)
+    }
   }
 }

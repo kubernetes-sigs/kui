@@ -15,7 +15,7 @@
  */
 
 const debug = require('debug')('proxy/exec')
-const { dirname, join } = require('path')
+const { join } = require('path')
 const { exec, spawn } = require('child_process')
 const express = require('express')
 const { v4: uuid } = require('uuid')
@@ -23,7 +23,7 @@ const { parse: parseCookie } = require('cookie')
 
 const sessionKey = 'kui_websocket_auth'
 
-const mainPath = join(dirname(require.resolve('@kui-shell/core')), 'main/main.js')
+const mainPath = join(process.env.CLIENT_HOME, 'dist/headless/kui.min.js')
 const { main: wssMain } = require('@kui-shell/plugin-bash-like')
 const { StdioChannelWebsocketSide } = require('@kui-shell/plugin-bash-like')
 
@@ -71,6 +71,7 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
         TRAVIS_JOB_ID: process.env.TRAVIS_JOB_ID,
         KUBECONFIG: process.env.KUBECONFIG,
         KUI_HEADLESS: true,
+        KUI_HEADLESS_WEBPACK: true,
         KUI_REPL_MODE: 'stdout',
         KUI_EXEC_OPTIONS: JSON.stringify(execOptions)
       })

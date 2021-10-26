@@ -65,7 +65,6 @@ const allFiles = /.*/
 plugins.push(new IgnorePlugin({ resourceRegExp: /\.css/, contextRegExp: /@kui-shell/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /\.scss/, contextRegExp: /@kui-shell/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
-plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/notebooks\// }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-charts/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-core/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-icons/ }))
@@ -94,9 +93,11 @@ plugins.push(new IgnorePlugin({ resourceRegExp: /@kui-shell\/plugin-electron-com
  * an example of this.
  *
  */
-const main = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/core/mdist/main/main.js')
+const kuiHeadlessMain = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/core/mdist/main/main.js')
+const kuiProxyMain = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell/proxy/app/bin/www')
+
 const pluginBase = path.join(process.env.CLIENT_HOME, 'node_modules/@kui-shell')
-console.log('main', main)
+console.log('main', kuiHeadlessMain)
 console.log('pluginBase', pluginBase)
 const allKuiPlugins = fs.readdirSync(pluginBase)
 const kuiPluginRules = []
@@ -132,8 +133,6 @@ allKuiPlugins.forEach(dir => {
     return {}
   }
 })
-const entry = main
-console.log('entry', entry)
 
 const { productName } = require('@kui-shell/client/config.d/name.json')
 console.log(`productName=${productName}`)
@@ -147,6 +146,7 @@ plugins.push({
       // touch the lockfile to indicate that we are done
       try {
         if (process.env.LOCKFILE) {
+          console.log('Kui Headless webpack build done, touching lockfile', process.env.LOCKFILE)
           fs.closeSync(fs.openSync(process.env.LOCKFILE, 'w'))
         }
       } catch (err) {
@@ -175,7 +175,7 @@ kuiPluginExternals.forEach(_ => {
   externals[_] = _
 })
 
-module.exports = {
+const config = (entry, target, extraPlugins = [], nameSuffix = '') => ({
   context: process.env.CLIENT_HOME,
   stats: {
     // while developing, you should set this to true
@@ -192,12 +192,26 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
   },
+  watchOptions: {
+    ignored: [
+      '**/dist/headless/**',
+      '**/dist/webpack/**',
+      '**/dist/electron**',
+      '**/*.d.ts',
+      '**/*.js.map',
+      '**/node_modules/**',
+      '**/clients/default/**'
+    ]
+  },
   optimization,
   module: {
     rules: kuiPluginRules.concat([
       {
         test: /\.node$/,
-        loader: 'node-loader'
+        loader: 'node-loader',
+        options: {
+          name: `[name]${nameSuffix}.[ext]`
+        }
       },
       // ignore commonjs bits
       {
@@ -273,14 +287,29 @@ module.exports = {
       { test: /JSONStream\/index.js$/, use: 'shebang-loader' }
     ])
   },
-  plugins,
+
+  plugins: plugins.concat(extraPlugins),
+
   // stats: 'verbose',
   output: {
-    filename: productName.toLowerCase() + '.min.js',
+    filename: productName.toLowerCase() + nameSuffix + '.min.js',
     publicPath: '',
     path: outputPath,
     library: {
       type: 'commonjs'
     }
   }
+})
+
+const ignoreNotebooks = [new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/notebooks\// })]
+
+if (process.env.TARGET !== 'electron-renderer') {
+  // with a kui-proxy backed client, we need notebooks in the "main"
+  console.log('Watching electron-main and kui-proxy')
+  const electronMain = config(kuiHeadlessMain, 'node')
+  const proxy = config(kuiProxyMain, 'node', ignoreNotebooks, '-proxy')
+  module.exports = [electronMain, proxy]
+} else {
+  console.log('Watching electron-main')
+  module.exports = config(kuiHeadlessMain, 'electron-main', ignoreNotebooks)
 }

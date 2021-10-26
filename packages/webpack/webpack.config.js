@@ -91,10 +91,6 @@ console.log('contextRoot?', contextRoot)
 console.log('explicit compression option?', webCompress || '<not set>')
 console.log('bundle compression disabled?', noCompression)
 
-// darwin/macos seems to have high cpu utilization without poll
-const pollInterval = undefined // process.platform === 'darwin' && (process.env.WEBPACK_POLL_INTERVAL || 2000)
-console.log('webpack poll interval', pollInterval)
-
 const defaultConnectCSP = `http://localhost:8081 http://localhost:9953 ws://localhost:8081 ws://localhost:${port} http://localhost:${port}`
 
 const contentSecurityPolicyForDevServer =
@@ -295,6 +291,7 @@ plugins.push({
       // touch the lockfile to indicate that we are done
       try {
         if (process.env.LOCKFILE) {
+          console.log('Kui Client webpack build done, touching lockfile', process.env.LOCKFILE)
           fs.closeSync(fs.openSync(process.env.LOCKFILE, 'w'))
         }
       } catch (err) {
@@ -400,8 +397,15 @@ module.exports = {
     fallback
   },
   watchOptions: {
-    poll: pollInterval,
-    ignored: ['**/*.d.ts', '**/*.js.map', '**/node_modules/**', '**/clients/default/**']
+    ignored: [
+      '**/dist/headless/**',
+      '**/dist/webpack/**',
+      '**/dist/electron**',
+      '**/*.d.ts',
+      '**/*.js.map',
+      '**/node_modules/**',
+      '**/clients/default/**'
+    ]
   },
   devServer: {
     headers: { 'Access-Control-Allow-Origin': '*', 'Set-Cookie': 'KUI_PROXY_COHOSTED=false' },
