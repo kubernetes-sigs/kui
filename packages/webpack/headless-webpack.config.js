@@ -196,7 +196,7 @@ const config = (entry, target, extraPlugins = [], nameSuffix = '') => ({
     ignored: [
       '**/dist/headless/**',
       '**/dist/webpack/**',
-      '**/dist/electron**',
+      '**/dist/electron/**',
       '**/*.d.ts',
       '**/*.js.map',
       '**/node_modules/**',
@@ -305,11 +305,11 @@ const ignoreNotebooks = [new IgnorePlugin({ resourceRegExp: allFiles, contextReg
 
 if (process.env.TARGET !== 'electron-renderer') {
   // with a kui-proxy backed client, we need notebooks in the "main"
-  console.log('Watching electron-main and kui-proxy')
+  console.log('Processing webpack electron-main and kui-proxy', process.env.TARGET)
   const electronMain = config(kuiHeadlessMain, 'node')
   const proxy = config(kuiProxyMain, 'node', ignoreNotebooks, '-proxy')
   module.exports = [electronMain, proxy]
 } else {
-  console.log('Watching electron-main')
+  console.log('Processing webpack for electron-main')
   module.exports = config(kuiHeadlessMain, 'electron-main', ignoreNotebooks)
 }

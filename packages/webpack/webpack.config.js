@@ -400,7 +400,7 @@ module.exports = {
     ignored: [
       '**/dist/headless/**',
       '**/dist/webpack/**',
-      '**/dist/electron**',
+      '**/dist/electron/**',
       '**/*.d.ts',
       '**/*.js.map',
       '**/node_modules/**',

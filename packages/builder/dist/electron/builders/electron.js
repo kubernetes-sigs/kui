@@ -73,7 +73,7 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
     asyncs.push(
       new Promise((resolve, reject) => {
         exec(
-          `KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
+          `TARGET=electron-renderer KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/headless-webpack.config.js"`,
           (err, stdout, stderr) => {
             console.log('stdout', stdout)
             if (err) {
@@ -92,7 +92,7 @@ async function buildWebpack(buildPath, electronVersion, targetPlatform, targetAr
   asyncs.push(
     new Promise((resolve, reject) => {
       exec(
-        `KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" TARGET=electron-renderer MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/webpack.config.js"`,
+        `TARGET=electron-renderer KUI_MAIN="${CLIENT_HOME}/node_modules/@kui-shell/react" KUI_BUILDER_HOME="${CLIENT_HOME}/node_modules/@kui-shell/builder" TARGET=electron-renderer MODE=production CLIENT_HOME="${CLIENT_HOME}" KUI_STAGE="${buildPath}" npx --no-install webpack-cli --mode=production --config "${CLIENT_HOME}/node_modules/@kui-shell/webpack/webpack.config.js"`,
         (err, stdout, stderr) => {
           console.log('stdout', stdout)
           if (err) {

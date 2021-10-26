@@ -58,10 +58,12 @@ if [ -n "$KUI_HEADLESS_WEBPACK" ]; then
     fi
 
     LOCKFILE=$LOCKFILE2 npx --no-install webpack watch --progress --config "$HEADLESS_CONFIG" &
+    echo $! > /tmp/kuiwatch-headless.pid
 fi
 
 echo "Watching Kui Client bundles via webpack"
 LOCKFILE=$LOCKFILE npx --no-install webpack serve --progress --config "$CONFIG" $OPEN &
+echo $! > /tmp/kuiwatch-client.pid
 
 if [ -n "$LOCKFILE" ]; then
     # don't exit until the dev server is ready
@@ -79,4 +81,13 @@ if [ "$WATCH_ARGS" = "open" ]; then
     npm run open
 elif [ "$WATCH_ARGS" = "wait" ]; then
     wait
+fi
+
+if [ -n "$KUI_HEADLESS_WEBPACK" ] && [ "$TARGET" != "electron-renderer" ]; then
+    npm run proxy &
+
+    if [ -z "$RUNNING_KUI_TEST" ]; then
+       # otherwise, the tests won't start...
+       wait
+    fi
 fi
