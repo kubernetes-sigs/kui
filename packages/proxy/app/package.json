@@ -16,10 +16,10 @@
     "plugin"
   ],
   "scripts": {
-    "start": "bin/www"
+    "start": "start.sh"
   },
   "bin": {
-    "start-proxy": "bin/www"
+    "start-proxy": "start.sh"
   },
   "main": "bin/www",
   "dependencies": {

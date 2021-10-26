@@ -41,7 +41,8 @@ start() {
     echo "$PID" > /tmp/kuiproxy.pid
     echo "start proxy $PID"
 
-    cd "$ROOT"/packages/proxy && ./app/bin/www &
+    export CLIENT_HOME="$ROOT"
+    cd "$ROOT"/packages/proxy && /usr/bin/env node "$ROOT"/dist/headless/kui-proxy.min.js &
     SUB=$!
     echo $SUB > /tmp/kuiproxy_subprocess.pid
 

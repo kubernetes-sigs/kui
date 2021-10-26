@@ -18,4 +18,4 @@
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
 
-cd "$SCRIPTDIR"/../app && npm ci && PORT=8081 KUI_USE_HTTP=true ./bin/www
+cd "$SCRIPTDIR"/../app && npm ci && PORT=8081 KUI_USE_HTTP=true /usr/bin/env node ../../dist/headless/kui-proxy.min.js

@@ -59,10 +59,9 @@ function kubeconfig {
 }
 
 function webpack {
-    if [ ! -d "$BUILDDIR" ]; then
-        echo "Building webpack bundles"
-        npx kui-build-webpack
-    fi
+    echo "Building webpack bundles"
+    rm -rf "$BUILDDIR"/*
+    KUI_PROXY_WEBPACK=true KUI_HEADLESS_WEBPACK=true npx kui-build-webpack
 }
 
 function nginx {
@@ -82,46 +81,11 @@ function proxy {
     cp -a "$CLIENT_HOME"/node_modules/@kui-shell/proxy/app "$BUILDDIR"/kui
 }
 
-function ptyKui {
-    echo "pty for kui"
-    PTYDIR="$BUILDDIR"/kui/node_modules/node-pty/build/Release
-    mkdir -p "$PTYDIR" && \
-        cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty/build/linux-x64/electron/pty.node.gz "$PTYDIR" && \
-        gunzip "$PTYDIR"/pty.node.gz
-    # ^^ travis does not seem to have gzcat, which would make the above command marginally more simple
-}
-
 function copyKui {
     echo "copy kui"
     rm -rf "$BUILDDIR"/kui && mkdir "$BUILDDIR"/kui
-    tar -C "$CLIENT_HOME" -h -cf - --exclude '**/mdist/' packages plugins | tar -C "$BUILDDIR"/kui -xf -
-    cp "$CLIENT_HOME"/{package,package-lock}.json "$BUILDDIR"/kui/
-}
-
-function installKui {
-    echo "install kui"
-    # we have to hack out dependencies manually because npm uninstall doesn't know how limit itself to just a scissor cut.
-    # (cd "$BUILDDIR"/kui && node -e 'const pjson = require("./package.json"); const remove = ["@kui-shell/plugin-editor", "@kui-shell/plugin-wskflow", "@kui-shell/plugin-client-common", "@kui-shell/plugin-client-default", "@kui-shell/plugin-carbon-themes", "@kui-shell/plugin-core-themes"]; remove.forEach(_ => delete pjson.dependencies[_]); require("fs").writeFileSync("package.json", JSON.stringify(pjson, undefined, 2))')
-
-    (cd "$BUILDDIR"/kui && npm ci --only=production --ignore-scripts)
-
-    cp "$CLIENT_HOME"/node_modules/@kui-shell/prescan.json "$BUILDDIR"/kui/node_modules/@kui-shell/prescan.json
-}
-
-function removeLink {
-    KUI_LINK="$CLIENT_HOME"/node_modules/@kui-shell/proxy/kui
-    if [ -L "$KUI_LINK" ]; then
-        echo "removing kui link"
-        rm -f "$KUI_LINK"
-        RESTORE_KUI_LINK=true
-    fi
-}
-
-function restoreLink {
-    if [ -n "$RESTORE_KUI_LINK" ]; then
-        echo "restoring kui link"
-        git checkout packages/proxy/kui
-    fi
+    mkdir -p "$BUILDDIR"/kui/dist && cp -a "$CLIENT_HOME"/dist/headless "$BUILDDIR"/kui/dist
+    cp "$CLIENT_HOME"/package.json "$BUILDDIR"/kui/
 }
 
 function cleanKui {
@@ -133,11 +97,7 @@ function kui {
     echo "kui"
     webpack
     cleanKui
-    removeLink
     copyKui
-    installKui
-    ptyKui
-    restoreLink
 }
 
 function profiled {
@@ -154,7 +114,9 @@ function image {
     elif [ -n "$CSP" ]; then
         echo "Loading ContentSecurityPolicy from env $CSP"
     fi
-    (cd "$BUILDDIR" && docker build . -t kuishell/kui --build-arg CSP="$CSP" --build-arg OPENGRAPH="$OPENGRAPH" --build-arg KUBE_VERSION=$KUBE_VERSION --build-arg HELM_VERSION=$HELM_VERSION --build-arg OC_VERSION=$OC_VERSION $KUBECONFIG_ARG)
+
+    NODE_PTY_VERSION=$(npm view node-pty version)
+    (cd "$BUILDDIR" && docker build . -t kuishell/kui --build-arg CSP="$CSP" --build-arg OPENGRAPH="$OPENGRAPH" --build-arg KUBE_VERSION=$KUBE_VERSION --build-arg HELM_VERSION=$HELM_VERSION --build-arg OC_VERSION=$OC_VERSION $KUBECONFIG_ARG --build-arg NODE_PTY_VERSION=$NODE_PTY_VERSION)
 }
 
 if [ "$1" != "dockeronly" ]; then

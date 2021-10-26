@@ -23,7 +23,8 @@
 # 1) the kui client and proxy server on port 9080
 #
 
-# uncomment if you need extra logging from the proxy
-# DEBUG="-e DEBUG=*"
+if [ -n "$DEBUG" ]; then
+    DEBUG="-e DEBUG=$DEBUG"
+fi
 
 docker run --name kui -e KUBECONFIG=${KUBECONFIG//$HOME/\/root} $DEBUG --rm -p 9080:9080 kuishell/kui

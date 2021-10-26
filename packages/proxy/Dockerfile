@@ -51,6 +51,9 @@ ENV KUI_HELM_CLIENTS_DIR=/usr/local/bin
 # Note: Latest version of helm may be found at:
 # https://github.com/kubernetes/helm/releases
 
+ARG NODE_PTY_VERSION
+ENV NODE_PTY_VERSION=$NODE_PTY_VERSION
+
 # nginx port
 EXPOSE 80/tcp
 
@@ -62,11 +65,14 @@ COPY . /usr/share/nginx/html
 # copy in our nginx configs
 COPY conf.d/default.conf /tmp/default-template.conf
 
+# build-essential and python are needed by the "npty" line, to rebuild
+# the node-pty binaries
+
 RUN debconf-set-selections /tmp/preseed.txt && \
     rm -f /etc/timezone /etc/localtime && \
-    apt update && apt install -y --no-install-recommends sed git tzdata nginx ca-certificates bash git python build-essential curl upx gettext-base && \
-    cd /usr/share/nginx/html/kui/node_modules/node-pty && npm run install && \
+    apt update && apt install -y --no-install-recommends build-essential python sed git tzdata nginx ca-certificates bash git python build-essential curl upx gettext-base && \
     cd /usr/share/nginx/html/kui && npm link ./app --no-package-lock && \
+    (cd /tmp && mkdir npty && cd npty && npm init -y && npm install node-pty@$NODE_PTY_VERSION && cd /usr/share/nginx/html/kui/dist/headless && cp /tmp/npty/node_modules/node-pty/build/Release/pty.node . && cp pty.node pty-proxy.node) && \
     curl -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl && chmod +x kubectl && mv kubectl /usr/local/bin/kubectl && upx /usr/local/bin/kubectl && \
     curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zxf - && mv linux-amd64/helm /usr/local/bin/helm && chmod +x /usr/local/bin/helm && upx /usr/local/bin/helm && rm -rf linux-amd64 && \
     curl -L https://mirror.openshift.com/pub/openshift-v4/clients/ocp/${OC_VERSION}/openshift-client-linux.tar.gz | tar zxf - && \

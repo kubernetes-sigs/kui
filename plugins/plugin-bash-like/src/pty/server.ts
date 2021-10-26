@@ -100,7 +100,7 @@ const verifySession = (expectedCookie: SessionCookie) => {
 const getPort = (): Promise<number> =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise(async (resolve, reject) => {
-    const { createServer } = await import('net')
+    const { createServer } = (await import('net')).default
 
     const iter = () => {
       const port = portRange
@@ -515,7 +515,7 @@ export const main = async (
   if (cachedWss) {
     return cachedPort
   } else {
-    const WebSocket = await import('ws')
+    const WebSocket = (await import('ws')).default
 
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async resolve => {
