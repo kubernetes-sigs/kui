@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-console.error('!!!!!SED')
 import React from 'react'
 import { editor as Monaco, KeyMod, KeyCode } from 'monaco-editor'
 
