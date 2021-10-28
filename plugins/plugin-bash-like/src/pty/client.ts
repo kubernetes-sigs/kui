@@ -26,10 +26,10 @@ import {
   Tab,
   Abortable,
   FlowControllable,
-  eventChannelUnsafe,
   XtermResponse,
   CodedError,
   inBrowser,
+  Events,
   ExecType,
   ExecOptions,
   disableInputQueueing
@@ -68,7 +68,7 @@ function bumpGeneration() {
 }
 if (window) {
   window.addEventListener('resize', bumpGeneration)
-  eventChannelUnsafe.on('/zoom', bumpGeneration)
+  Events.eventChannelUnsafe.on('/zoom', bumpGeneration)
 }
 function getCachedSize(tab: Tab): Size {
   const cachedSize: Size = tab['_kui_pty_cachedSize']
@@ -533,8 +533,8 @@ async function initOnMessage(
         sawCode = /File exists/i.test(msg.data)
           ? 409
           : /no such/i.test(msg.data) || /not found/i.test(msg.data)
-          ? 404
-          : sawCode
+            ? 404
+            : sawCode
 
         // setTimeout helps with batching
         setTimeout(() => {
@@ -796,7 +796,7 @@ const getOrCreateChannel = async (
     // when the websocket has closed, notify the user
 
     if (inBrowser()) {
-      const onClose = function(evt) {
+      const onClose = function (evt) {
         debug('channel has closed', evt.target, uuid)
         ws.removeEventListener('close', onClose)
         if (!tab.state.closed) {
@@ -873,10 +873,10 @@ export const doExec = (
           // theming
           // injectFont(terminal) // inject once on startup
           const doInjectTheme = () => injectFont(terminal, true)
-          eventChannelUnsafe.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
+          Events.eventChannelUnsafe.on('/theme/change', doInjectTheme) // and re-inject when the theme changes
 
           resizer = new Resizer(terminal, tab, execOptions, ourUUID)
-          eventChannelUnsafe.once(`/command/stdout/done/${tab.uuid}/${execOptions.execUUID}`, () => {
+          Events.eventChannelUnsafe.once(`/command/stdout/done/${tab.uuid}/${execOptions.execUUID}`, () => {
             resizer.resize()
           })
 
@@ -888,11 +888,11 @@ export const doExec = (
             injectFont(terminal, true)
             resizer.resize()
           }
-          eventChannelUnsafe.on('/zoom', doZoom)
+          Events.eventChannelUnsafe.on('/zoom', doZoom)
 
           const cleanupEventHandlers = () => {
-            eventChannelUnsafe.off('/zoom', doZoom)
-            eventChannelUnsafe.off('/theme/change', doInjectTheme)
+            Events.eventChannelUnsafe.off('/zoom', doZoom)
+            Events.eventChannelUnsafe.off('/theme/change', doInjectTheme)
           }
 
           // heuristic for hiding empty rows

@@ -20,10 +20,10 @@ import {
   cwd,
   expandHomeDir,
   Arguments,
+  Events,
   ParsedOptions,
   REPL,
   Table,
-  eventBus,
   getCurrentTab,
   inBrowser
 } from '@kui-shell/core'
@@ -187,7 +187,7 @@ export function mount(vfs: VFS | VFSProducingFunction, placeholderMountPath?: st
         if (!tab) {
           try {
             let debounce = false
-            eventBus.on('/tab/new', async tab => {
+            Events.eventBus.on('/tab/new', async tab => {
               try {
                 if (!debounce) {
                   debounce = true

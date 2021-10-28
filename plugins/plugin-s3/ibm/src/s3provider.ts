@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { REPL, eventChannelUnsafe } from '@kui-shell/core'
+import { Events, REPL } from '@kui-shell/core'
 import { ProviderInitializer, UnsupportedS3ProviderError } from '@kui-shell/plugin-s3'
 
 import Geos from './model/geos'
@@ -46,7 +46,7 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
   try {
     if (!listeningAlready) {
       listeningAlready = true
-      eventChannelUnsafe.on(updateChannel, () => {
+      Events.eventChannelUnsafe.on(updateChannel, () => {
         currentConfig = undefined
         reinit()
       })

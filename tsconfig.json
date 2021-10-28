@@ -52,5 +52,14 @@
     {
       "path": "plugins/plugin-iter8"
     }
-  ]
+  ],
+  "typedocOptions": {
+    "entryPoints": ["packages/core", "packages/test", "plugins/*"],
+    "entryPointStrategy": "packages",
+    "out": "docs/api",
+    "githubPages": false,
+    "readme": "none",
+    "name": "Kui API Documentation",
+    "includeVersion": true
+  }
 }

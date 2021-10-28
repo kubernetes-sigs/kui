@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, eventChannelUnsafe } from '@kui-shell/core'
+import { Arguments, Events, Registrar } from '@kui-shell/core'
 
 import flags from './flags'
 import { doExecWithPty } from './exec'
@@ -42,18 +42,18 @@ export function emitKubectlConfigChangeEvent(
   context?: string
 ) {
   try {
-    eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace, context)
+    Events.eventChannelUnsafe.emit(kubectlConfigChangeChannel, type, namespace, context)
   } catch (err) {
     console.error('Error in onKubectlConfigChangeEvent handler', err)
   }
 }
 
 export function onKubectlConfigChangeEvents(handler: Handler) {
-  eventChannelUnsafe.on(kubectlConfigChangeChannel, handler)
+  Events.eventChannelUnsafe.on(kubectlConfigChangeChannel, handler)
 }
 
 export function offKubectlConfigChangeEvents(handler: Handler) {
-  eventChannelUnsafe.off(kubectlConfigChangeChannel, handler)
+  Events.eventChannelUnsafe.off(kubectlConfigChangeChannel, handler)
 }
 
 /**
@@ -68,8 +68,8 @@ function emitChangeEventIfNeeded(args: Arguments<KubeOptions>) {
     verb === 'set' || verb === 'use-context' || (verb === 'set-context' && !args.parsedOptions.current)
       ? 'NewContext'
       : verb === 'set-context' || verb === 'set-cluster' || verb === 'set-credentials' || verb === 'rename-context'
-      ? 'AlteredContext'
-      : undefined
+        ? 'AlteredContext'
+        : undefined
 
   if (change) {
     emitKubectlConfigChangeEvent(

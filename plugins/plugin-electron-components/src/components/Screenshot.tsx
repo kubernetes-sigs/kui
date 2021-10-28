@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { Event, NativeImage } from 'electron'
-import { i18n, eventChannelUnsafe } from '@kui-shell/core'
+import { Events, i18n } from '@kui-shell/core'
 import { Alert, Button } from '@kui-shell/plugin-client-common'
 
 import '../../web/scss/components/Screenshot/Screenshot.scss'
@@ -60,7 +60,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
       isActive: false
     }
 
-    eventChannelUnsafe.on('/screenshot/element', (element: HTMLElement) => {
+    Events.eventChannelUnsafe.on('/screenshot/element', (element: HTMLElement) => {
       this.onClickScreenshotRegion(element)
     })
   }

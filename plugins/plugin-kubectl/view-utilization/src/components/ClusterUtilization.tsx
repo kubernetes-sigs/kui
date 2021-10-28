@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import React from 'react'
 
-import { getCurrentTab, wireToStandardEvents } from '@kui-shell/core'
+import { Events, getCurrentTab } from '@kui-shell/core'
 import { ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 import { NodeSummary, BarColor, Bar, BarContainer } from '..'
 
@@ -69,7 +69,7 @@ export default class ClusterUtilization extends React.PureComponent<Props, State
    */
   public componentDidMount() {
     this.reportClusterUtilization()
-    wireToStandardEvents(this.reportClusterUtilization.bind(this))
+    Events.wireToStandardEvents(this.reportClusterUtilization.bind(this))
   }
 
   public render() {

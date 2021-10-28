@@ -19,7 +19,7 @@ import React from 'react'
 import { Tabs, Tab, TabTitleText } from '@patternfly/react-core'
 
 import {
-  eventChannelUnsafe,
+  Events,
   Tab as KuiTab,
   ToolbarText,
   MultiModalMode,
@@ -214,11 +214,11 @@ export default class TopNavSidecar extends BaseSidecar<MultiModalResponse, TopNa
   private broadcastFocusChange(idx: number) {
     // de-focus the old mode
     const oldMode = this.current.tabs[this.current.currentTabIndex]
-    eventChannelUnsafe.emit(`/mode/focus/off/tab/${this.props.uuid}/mode/${oldMode.mode}`, oldMode)
+    Events.eventChannelUnsafe.emit(`/mode/focus/off/tab/${this.props.uuid}/mode/${oldMode.mode}`, oldMode)
 
     // re-focus the new mode
     const newMode = this.current.tabs[idx]
-    eventChannelUnsafe.emit(`/mode/focus/on/tab/${this.props.uuid}/mode/${newMode.mode}`, newMode)
+    Events.eventChannelUnsafe.emit(`/mode/focus/on/tab/${this.props.uuid}/mode/${newMode.mode}`, newMode)
   }
 
   /** eventKey property for a Tab */

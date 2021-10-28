@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { eventChannelUnsafe } from '@kui-shell/core'
+import { Events } from '@kui-shell/core'
 
 const debug = Debug('plugins/bash-like/pty/ui')
 
@@ -25,7 +25,7 @@ const debug = Debug('plugins/bash-like/pty/ui')
  */
 export function setOffline() {
   debug('setOffline')
-  eventChannelUnsafe.emit('/proxy/offline')
+  Events.eventChannelUnsafe.emit('/proxy/offline')
 }
 
 /**
@@ -34,5 +34,5 @@ export function setOffline() {
  */
 export function setOnline() {
   debug('setOnline')
-  eventChannelUnsafe.emit('/proxy/online')
+  Events.eventChannelUnsafe.emit('/proxy/online')
 }

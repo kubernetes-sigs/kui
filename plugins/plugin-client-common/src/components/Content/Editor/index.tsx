@@ -21,6 +21,7 @@ import { IDisposable, editor as Monaco, Range } from 'monaco-editor'
 import { File, isFile } from '@kui-shell/plugin-bash-like/fs'
 import {
   Button,
+  Events,
   REPL,
   EditableSpec,
   SaveError,
@@ -29,8 +30,6 @@ import {
   ToolbarProps,
   MultiModalResponse,
   encodeComponent,
-  eventChannelUnsafe,
-  eventBus,
   i18n
 } from '@kui-shell/core'
 
@@ -382,8 +381,8 @@ export default class Editor extends React.PureComponent<Props, State> {
       const onZoom = () => {
         editor.updateOptions({ fontSize: getKuiFontSize() })
       }
-      eventChannelUnsafe.on('/zoom', onZoom)
-      cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
+      Events.eventChannelUnsafe.on('/zoom', onZoom)
+      cleaners.push(() => Events.eventChannelUnsafe.off('/zoom', onZoom))
 
       const sizeToFit = !props.sizeToFit
         ? () => true
@@ -409,8 +408,8 @@ export default class Editor extends React.PureComponent<Props, State> {
         sizeToFit()
         editor.layout()
       }
-      eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-      cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+      Events.eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+      cleaners.push(() => Events.eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
 
       editor['clearDecorations'] = () => {
         // debug('clearing decorations', editor['__cloudshell_decorations'])

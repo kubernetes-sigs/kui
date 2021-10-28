@@ -18,13 +18,13 @@ import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
 import { Td } from '@patternfly/react-table'
 import {
+  Events,
   split,
   Table as KuiTable,
   Cell as KuiCell,
   Row as KuiRow,
   Tab,
   REPL,
-  eventBus,
   pexecInCurrentTab,
   isHeadless
 } from '@kui-shell/core'
@@ -69,8 +69,8 @@ export function onClickForCell(
     return whenNothingIsSelected((evt: React.MouseEvent) => {
       evt.stopPropagation()
       selectRow()
-      eventBus.emitCommandStart(handler.startEvent)
-      eventBus.emitCommandComplete(handler.completeEvent)
+      Events.eventBus.emitCommandStart(handler.startEvent)
+      Events.eventBus.emitCommandComplete(handler.completeEvent)
       return false
     })
   } else if (handler) {

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { eventChannelUnsafe, i18n } from '@kui-shell/core'
+import { Events, i18n } from '@kui-shell/core'
 
 import Icon from '../spi/Icons'
 import Tooltip from '../spi/Tooltip'
@@ -33,14 +33,14 @@ interface State {
 }
 
 export function subscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
-  eventChannelUnsafe.on(`/link/status/update/${link}`, statusUpdateHandler)
+  Events.eventChannelUnsafe.on(`/link/status/update/${link}`, statusUpdateHandler)
 
   // request the first update
-  eventChannelUnsafe.emit(`/link/status/get`, link)
+  Events.eventChannelUnsafe.emit(`/link/status/get`, link)
 }
 
 export function unsubscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
-  eventChannelUnsafe.off(`/link/status/update/${link}`, statusUpdateHandler)
+  Events.eventChannelUnsafe.off(`/link/status/update/${link}`, statusUpdateHandler)
 }
 
 export default class TaskStatus extends React.PureComponent<Props, State> {

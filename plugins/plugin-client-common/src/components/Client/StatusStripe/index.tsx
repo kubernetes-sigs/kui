@@ -18,7 +18,7 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react'
-import { eventBus, pexecInCurrentTab, i18n, StatusStripeChangeEvent } from '@kui-shell/core'
+import { Events, pexecInCurrentTab, i18n } from '@kui-shell/core'
 
 import Settings from './Settings'
 import Icons from '../../spi/Icons'
@@ -29,14 +29,16 @@ import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 
 const strings = i18n('plugin-client-common')
 
-type State = StatusStripeChangeEvent
+type State = Events.StatusStripeChangeEvent
 export type Props = Partial<State> & {
   noHelp?: boolean
   noSettings?: boolean
 }
 
 /** see https://github.com/microsoft/TypeScript/issues/10485 */
-function hasType(evt: Partial<StatusStripeChangeEvent>): evt is Pick<Required<StatusStripeChangeEvent>, 'type'> {
+function hasType(
+  evt: Partial<Events.StatusStripeChangeEvent>
+): evt is Pick<Required<Events.StatusStripeChangeEvent>, 'type'> {
   return evt.type !== undefined
 }
 
@@ -45,13 +47,15 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-    eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
+    Events.eventBus.onStatusStripeChangeRequest(this.onChangeRequest.bind(this))
 
     this.state = this.withStateDefaults(props)
   }
 
   /** Overlay default values for required state variables */
-  private withStateDefaults(evt: Partial<StatusStripeChangeEvent>): Omit<Required<StatusStripeChangeEvent>, 'message'> {
+  private withStateDefaults(
+    evt: Partial<Events.StatusStripeChangeEvent>
+  ): Omit<Required<Events.StatusStripeChangeEvent>, 'message'> {
     if (hasType(evt)) {
       return evt
     } else {
@@ -60,7 +64,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
   }
 
   /** Status Stripe change request */
-  private onChangeRequest(evt: StatusStripeChangeEvent) {
+  private onChangeRequest(evt: Events.StatusStripeChangeEvent) {
     this.setState(this.withStateDefaults(evt))
   }
 

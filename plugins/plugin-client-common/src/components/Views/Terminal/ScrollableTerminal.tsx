@@ -18,9 +18,8 @@ import { v4, v5 } from 'uuid'
 import React from 'react'
 
 import {
+  Events,
   i18n,
-  eventBus,
-  eventChannelUnsafe,
   isAbortableResponse,
   ScalarResponse,
   Tab as KuiTab,
@@ -40,8 +39,7 @@ import {
   executeSequentially,
   isWatchable,
   promiseEach,
-  Notebook,
-  SnapshotRequestEvent
+  Notebook
 } from '@kui-shell/core'
 
 import ScrollbackState, { ScrollbackOptions, Cleaner } from './ScrollbackState'
@@ -228,12 +226,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   }
 
   private initLinkEvents() {
-    eventChannelUnsafe.on('/link/status/get', (link: string) => {
+    Events.eventChannelUnsafe.on('/link/status/get', (link: string) => {
       this.state.splits.find(({ blocks }) =>
         blocks.find(_ => {
           if (isLinkified(_) && _.link === link) {
             const status = !hasBeenRerun(_) ? [0, 0, 0] : isOk(_) ? [1, 0, 0] : [0, 1, 0]
-            eventChannelUnsafe.emit(`/link/status/update/${_.link}`, status)
+            Events.eventChannelUnsafe.emit(`/link/status/update/${_.link}`, status)
             return true
           }
         })
@@ -319,7 +317,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   /** Listen for snapshot request events */
   private initSnapshotEvents() {
-    const onSnapshot = async (evt: SnapshotRequestEvent) => {
+    const onSnapshot = async (evt: Events.SnapshotRequestEvent) => {
       const splits = this.state.splits.map(({ inverseColors, position, blocks, uuid }) => {
         const { filter = () => true } = evt
 
@@ -375,8 +373,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       evt.cb(Buffer.from(data))
     }
 
-    eventBus.onSnapshotRequest(onSnapshot, getTabId(this.props.tab))
-    this.cleaners.push(() => eventBus.offSnapshotRequest(onSnapshot, getTabId(this.props.tab)))
+    Events.eventBus.onSnapshotRequest(onSnapshot, getTabId(this.props.tab))
+    this.cleaners.push(() => Events.eventBus.offSnapshotRequest(onSnapshot, getTabId(this.props.tab)))
   }
 
   /** add welcome blocks at the top of scrollback */
@@ -390,7 +388,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       if ((welcomeMax === -1 || welcomed < welcomeMax) && this.props.config.loadingDone) {
         const announcement = this.props.config.loadingDone(this.props.tab.REPL)
         if (announcement) {
-          eventBus.emitCommandComplete({
+          Events.eventBus.emitCommandComplete({
             tab: this.props.tab,
             historyIdx: -1,
             command: 'welcome',
@@ -721,8 +719,8 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       // propagating to the split before we remove it
       setTimeout(() => this.removeSplit(sbuuid))
     }
-    eventBus.onceWithTabId('/tab/close/request', sbuuid, onTabCloseRequest)
-    state.cleaners.push(() => eventBus.offWithTabId('/tab/close/request', sbuuid, onTabCloseRequest))
+    Events.eventBus.onceWithTabId('/tab/close/request', sbuuid, onTabCloseRequest)
+    state.cleaners.push(() => Events.eventBus.offWithTabId('/tab/close/request', sbuuid, onTabCloseRequest))
 
     if (opts.cmdline) {
       setTimeout(() => {
@@ -893,7 +891,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           // Transform the rerun block to Processing
 
           if (isLinkified(block)) {
-            eventChannelUnsafe.emit(`/link/status/update/${block.link}`, [0, 0, 1])
+            Events.eventChannelUnsafe.emit(`/link/status/update/${block.link}`, [0, 0, 1])
           }
 
           return {
@@ -971,7 +969,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             if (isLinkified(finishedBlock)) {
               const status = !hasBeenRerun(finishedBlock) ? [0, 0, 0] : isOk(finishedBlock) ? [1, 0, 0] : [0, 1, 0]
 
-              eventChannelUnsafe.emit(`/link/status/update/${finishedBlock.link}`, status)
+              Events.eventChannelUnsafe.emit(`/link/status/update/${finishedBlock.link}`, status)
             }
 
             const blocks = curState.blocks
@@ -1092,7 +1090,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       } else {
         scrollback.facade.state.restore()
       }
-      eventBus.emitSplitSwitch(scrollback.facade)
+      Events.eventBus.emitSplitSwitch(scrollback.facade)
     }
 
     this.setState(curState => {
@@ -1118,16 +1116,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     const onCompleteForSplitFromUser = this.onExecEnd.bind(this, state.uuid, false)
     const onCompleteForSplitFromReplay = this.onExecEnd.bind(this, state.uuid, true)
 
-    eventBus.onCommandStart(state.uuid, onStartForSplitFromUser)
-    eventBus.onCommandStart(state.uuid, onStartForSplitFromReplay, true)
+    Events.eventBus.onCommandStart(state.uuid, onStartForSplitFromUser)
+    Events.eventBus.onCommandStart(state.uuid, onStartForSplitFromReplay, true)
 
-    eventBus.onCommandComplete(state.uuid, onCompleteForSplitFromUser)
-    eventBus.onCommandComplete(state.uuid, onCompleteForSplitFromReplay, true)
+    Events.eventBus.onCommandComplete(state.uuid, onCompleteForSplitFromUser)
+    Events.eventBus.onCommandComplete(state.uuid, onCompleteForSplitFromReplay, true)
 
-    state.cleaners.push(() => eventBus.offCommandStart(state.uuid, onStartForSplitFromUser))
-    state.cleaners.push(() => eventBus.offCommandStart(state.uuid, onStartForSplitFromReplay))
-    state.cleaners.push(() => eventBus.offCommandComplete(state.uuid, onCompleteForSplitFromUser))
-    state.cleaners.push(() => eventBus.offCommandComplete(state.uuid, onCompleteForSplitFromReplay))
+    state.cleaners.push(() => Events.eventBus.offCommandStart(state.uuid, onStartForSplitFromUser))
+    state.cleaners.push(() => Events.eventBus.offCommandStart(state.uuid, onStartForSplitFromReplay))
+    state.cleaners.push(() => Events.eventBus.offCommandComplete(state.uuid, onCompleteForSplitFromUser))
+    state.cleaners.push(() => Events.eventBus.offCommandComplete(state.uuid, onCompleteForSplitFromReplay))
   }
 
   /**
@@ -1138,9 +1136,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     this.hookIntoREPL(state)
 
     const clear = this.clear.bind(this, state.uuid)
-    eventChannelUnsafe.on(`/terminal/clear/${state.uuid}`, clear)
+    Events.eventChannelUnsafe.on(`/terminal/clear/${state.uuid}`, clear)
     state.cleaners.push(() => {
-      eventChannelUnsafe.off(`/terminal/clear/${state.uuid}`, clear)
+      Events.eventChannelUnsafe.off(`/terminal/clear/${state.uuid}`, clear)
     })
 
     // terminate watchable jobs when the window is closed
@@ -1235,7 +1233,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           .concat(newScrollback)
           .concat(splits.slice(insertIdx))
 
-        eventBus.emitTabLayoutChange(sbuuid, {
+        Events.eventBus.emitTabLayoutChange(sbuuid, {
           isSidecarNowHidden: false,
           isWidthConstrained: this.isWidthConstrained(newScrollback)
         })
@@ -1333,7 +1331,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           })
         }
 
-        eventBus.emitTabLayoutChange(sbuuid)
+        Events.eventBus.emitTabLayoutChange(sbuuid)
 
         if (idx === curState.splits.length - 1) {
           // If we are removing the last split, we can safely
@@ -1364,13 +1362,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         if (splits.length === 0) {
           // the last split was removed; notify parent
           const parent = this.props.tab
-          eventBus.emitWithTabId('/tab/close/request', parent.uuid, parent)
+          Events.eventBus.emitWithTabId('/tab/close/request', parent.uuid, parent)
         }
 
         const focusedIdx = idx === 0 ? 0 : idx - 1
 
         if (splits.length === 1) {
-          eventBus.emitTabLayoutChange(splits[focusedIdx].uuid, {
+          Events.eventBus.emitTabLayoutChange(splits[focusedIdx].uuid, {
             isSidecarNowHidden: false,
             isWidthConstrained: false
           })
@@ -1380,7 +1378,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       }
     })
 
-    setTimeout(() => eventChannelUnsafe.emit('/zoom'))
+    setTimeout(() => Events.eventChannelUnsafe.emit('/zoom'))
   }
 
   /**

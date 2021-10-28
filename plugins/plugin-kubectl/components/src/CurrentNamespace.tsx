@@ -24,7 +24,7 @@ import {
   TextWithIconWidgetOptions
 } from '@kui-shell/plugin-client-common'
 
-import { eventBus, i18n, eventChannelUnsafe, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
+import { Events, i18n, getTab, Tab, TabState, pexecInCurrentTab } from '@kui-shell/core'
 
 import { KubeContext } from '@kui-shell/plugin-kubectl'
 
@@ -78,7 +78,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
     const tab = getTab(typeof idx === 'string' ? undefined : idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
-        eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentNamespace())
+        Events.eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentNamespace())
       }
       return
     } else if (this.debounce()) {
@@ -151,13 +151,13 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   public componentDidMount() {
     this.unmounted = false
     if (!ready) {
-      eventBus.once('/tab/new', this.handler)
+      Events.eventBus.once('/tab/new', this.handler)
     } else {
       this.handler()
     }
-    eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
+    Events.eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
-    eventBus.onAnyCommandComplete(this.handler)
+    Events.eventBus.onAnyCommandComplete(this.handler)
     import('@kui-shell/plugin-kubectl').then(_ => _.onKubectlConfigChangeEvents(this.handler))
   }
 
@@ -174,10 +174,10 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
   /** Bye! */
   public componentWillUnmount() {
     this.unmounted = true
-    eventBus.off('/tab/new', this.handler)
-    eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
+    Events.eventBus.off('/tab/new', this.handler)
+    Events.eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
-    eventBus.offAnyCommandComplete(this.handler)
+    Events.eventBus.offAnyCommandComplete(this.handler)
     import('@kui-shell/plugin-kubectl').then(_ => _.offKubectlConfigChangeEvents(this.handler))
   }
 

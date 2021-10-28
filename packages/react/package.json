@@ -8,6 +8,7 @@
     "url": "https://github.com/IBM/kui/issues/new"
   },
   "main": "dist/index.js",
+  "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "repository": {

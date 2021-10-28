@@ -18,7 +18,7 @@
 
 import Debug from 'debug'
 
-import { eventBus, inBrowser, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
+import { Events, inBrowser, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
 
 import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -109,8 +109,8 @@ async function newSessionForTab(tab: Tab) {
 /** Connection to Kui proxy has been severed */
 export function invalidateSession(tab: Tab) {
   invalidateCache(tab)
-  eventBus.emit('/tab/offline', tab)
-  eventBus.emitWithTabId(`/tab/offline`, tab.state.uuid)
+  Events.eventBus.emit('/tab/offline', tab)
+  Events.eventBus.emitWithTabId(`/tab/offline`, tab.state.uuid)
 }
 
 /**

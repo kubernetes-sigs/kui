@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, SymbolTable, eventBus } from '@kui-shell/core'
+import { Arguments, Events, Registrar, SymbolTable } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from './catchall'
 
 /**
@@ -34,7 +34,7 @@ const exportCommand = async (args: Arguments) => {
   curDic[key] = value
 
   SymbolTable.write(tab, curDic)
-  eventBus.emitEnvUpdate(key, value)
+  Events.eventBus.emitEnvUpdate(key, value)
 
   return true
 }

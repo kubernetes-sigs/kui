@@ -17,6 +17,7 @@
     "plugin"
   ],
   "main": "dist/index.js",
+  "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "publishConfig": {

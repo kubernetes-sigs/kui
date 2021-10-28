@@ -18,7 +18,11 @@ import React from 'react'
 import commonPathPrefix from 'common-path-prefix'
 import { TableComposable, Tbody, Tr, Td } from '@patternfly/react-table'
 
-import { i18n, encodeComponent } from '@kui-shell/core'
+import {
+  // Events,
+  i18n,
+  encodeComponent
+} from '@kui-shell/core'
 import { eventBus, Mount, getCurrentMounts } from '@kui-shell/plugin-s3'
 import {
   Ansi,
@@ -97,13 +101,13 @@ export default class S3Mounts extends React.PureComponent<Props, State> {
    */
   public componentDidMount() {
     eventBus.on('/s3/configuration/update', this.handler)
-    // wireToStandardEvents(this.handler)
+    // Events.wireToStandardEvents(this.handler)
   }
 
   /** Make sure to unsubscribe! */
   public componentWillUnmount() {
     eventBus.off('/s3/configuration/update', this.handler)
-    // unwireToStandardEvents(this.handler)
+    // Events.unwireToStandardEvents(this.handler)
   }
 
   /** @return the header for the Popover component */

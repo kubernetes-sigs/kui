@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { eventChannelUnsafe, Tab } from '@kui-shell/core'
+import { Events, Tab } from '@kui-shell/core'
+
 // Component imports
 import { Alert, Button, Icons, Loading } from '@kui-shell/plugin-client-common'
 import { Caption, TableComposable, Thead, Tbody, Th, Tr, Td } from '@patternfly/react-table'
@@ -134,7 +135,7 @@ export default class DecisionBase extends React.Component<Props, DecisionState> 
   public componentDidMount() {
     console.log('Mounted Decision tab')
     this._isMounted = true
-    eventChannelUnsafe.on('/get/decision', formstate => {
+    Events.eventChannelUnsafe.on('/get/decision', formstate => {
       this.setState({
         edgeService: formstate.edgeServiceInformation.edgeService,
         hostGateways: formstate.edgeServiceInformation.hostGateways,

@@ -16,14 +16,12 @@
 
 import {
   Arguments,
+  Events,
   expandHomeDir,
-  eventBus,
   getPrimaryTabId,
   i18n,
   KResponse,
   Registrar,
-  NewTabRequestEvent,
-  StatusStripeChangeEvent,
   Tab
 } from '@kui-shell/core'
 
@@ -43,7 +41,7 @@ const usage = {
  */
 function closeTab(tab: Tab, closeAllSplits: boolean) {
   const uuid = closeAllSplits ? getPrimaryTabId(tab) : tab.uuid
-  eventBus.emitWithTabId('/tab/close/request', uuid, tab)
+  Events.eventBus.emitWithTabId('/tab/close/request', uuid, tab)
   return true
 }
 
@@ -63,7 +61,7 @@ export default function plugin(commandTree: Registrar) {
     '/tab/switch',
     ({ argvNoOptions }) => {
       const idx = parseInt(argvNoOptions[argvNoOptions.length - 1], 10)
-      eventBus.emit('/tab/switch/request', idx - 1)
+      Events.eventBus.emit('/tab/switch/request', idx - 1)
       return true
     },
     { usage }
@@ -75,9 +73,9 @@ export default function plugin(commandTree: Registrar) {
    */
   commandTree.listen<
     KResponse,
-    Pick<NewTabRequestEvent['tabs'][0], 'cmdline' | 'onClose'> & {
+    Pick<Events.NewTabRequestEvent['tabs'][0], 'cmdline' | 'onClose'> & {
       /** Set the status stripe decorations */
-      'status-stripe-type'?: StatusStripeChangeEvent['type']
+      'status-stripe-type'?: Events.StatusStripeChangeEvent['type']
       'status-stripe-message'?: string | string[]
 
       /** Tab titles; comma separated for multi-open */
@@ -140,8 +138,8 @@ export default function plugin(commandTree: Registrar) {
         content: !titles
           ? strings('Created a new tab')
           : Array.isArray(titles) && titles.length > 1
-          ? strings('Created new tabs', args.parsedOptions.title)
-          : strings('Created a new tab named X', Array.isArray(titles) ? titles[0] : titles),
+            ? strings('Created new tabs', args.parsedOptions.title)
+            : strings('Created a new tab named X', Array.isArray(titles) ? titles[0] : titles),
         contentType: 'text/markdown'
       }
 
@@ -152,7 +150,7 @@ export default function plugin(commandTree: Registrar) {
         const snapshot = await Promise.all(filepaths.map(filepath => loadSnapshotBuffer(args.REPL, filepath)))
 
         return new Promise(resolve => {
-          eventBus.emit('/tab/new/request', {
+          Events.eventBus.emit('/tab/new/request', {
             background: args.parsedOptions.bg,
             tabs: snapshot.map((snapshot, idx) => ({
               snapshot,
@@ -167,7 +165,7 @@ export default function plugin(commandTree: Registrar) {
       } else if (args.parsedOptions.cmdline) {
         // caller wants to invoke a given command line in the new tab
         return new Promise(resolve => {
-          eventBus.emit('/tab/new/request', {
+          Events.eventBus.emit('/tab/new/request', {
             background: args.parsedOptions.bg,
             tabs: (titles || ['']).map((title, idx) => ({
               title,
@@ -182,7 +180,7 @@ export default function plugin(commandTree: Registrar) {
         })
       } else {
         // default case: tab opens without invoking a command line
-        eventBus.emit('/tab/new/request', {
+        Events.eventBus.emit('/tab/new/request', {
           background: args.parsedOptions.bg,
           tabs: statusStripeDecorations.map((statusStripeDecoration, idx) => ({
             statusStripeDecoration,

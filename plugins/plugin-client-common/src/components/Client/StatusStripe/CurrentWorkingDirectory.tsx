@@ -17,7 +17,7 @@
 import React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '../../../'
-import { cwd, inBrowser, wireToStandardEvents, unwireToStandardEvents, i18n } from '@kui-shell/core'
+import { cwd, Events, inBrowser, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-client-common')
 
@@ -61,12 +61,12 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
    */
   public componentDidMount() {
     this.handler()
-    wireToStandardEvents(this.handler)
+    Events.wireToStandardEvents(this.handler)
   }
 
   /** Make sure to unsubscribe! */
   public componentWillUnmount() {
-    unwireToStandardEvents(this.handler)
+    Events.unwireToStandardEvents(this.handler)
   }
 
   public render() {
