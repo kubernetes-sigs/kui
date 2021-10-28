@@ -251,7 +251,7 @@ export class SingleKindDirectWatcher extends DirectWatcher implements Abortable,
   private async initFooterUpdates() {
     // first: we need to fetch the initial table (so that we have a resourceVersion)
     const events = (
-      await fetchFile(this.args.REPL, this.formatEventUrl(), { headers: headersForTableRequest })
+      await fetchFile(this.args, this.formatEventUrl(), { headers: headersForTableRequest })
     )[0] as MetaTable
 
     if (isMetaTable(events)) {

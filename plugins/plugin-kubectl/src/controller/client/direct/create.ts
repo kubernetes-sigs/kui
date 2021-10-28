@@ -70,7 +70,6 @@ export default async function createDirect(
       kind === 'Namespace' &&
       version === 'v1' &&
       names.length > 0 &&
-      !args.parsedOptions.context &&
       !args.parsedOptions.kubeconfig
     ) {
       // WARNING: this is namespace-specific for now!
@@ -91,10 +90,10 @@ export default async function createDirect(
         .join(',')
       debug('attempting create namespace direct', names, urls)
 
-      const responses = await fetchFile(args.REPL, urls, { method: 'post', headers, returnErrors: true, data })
+      const responses = await fetchFile(args, urls, { method: 'post', headers, returnErrors: true, data })
 
       // then dissect it into errors and non-errors; the last true means return, don't throw, errors
-      const { errors, okIndices, ok } = await handleErrors(responses, formatUrl, kind, args.REPL, true)
+      const { errors, okIndices, ok } = await handleErrors(responses, formatUrl, kind, args, true)
       if (ok.length === 0) {
         // all errors? then tell the user about them (no need to re-invoke the CLI)
         if (errors.length > 0 && errors.every(is404or409)) {
