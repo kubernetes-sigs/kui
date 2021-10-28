@@ -38,6 +38,9 @@
     },
     {
       "path": "view-utilization"
+    },
+    {
+      "path": "fs"
     }
   ]
 }

@@ -98,13 +98,18 @@ function registerOnQuit(state: Omit<State, 'onQuitHandler'>): State {
  * @return the State of the kubectl proxy
  *
  */
-async function startProxy(command: SupportedCommand): Promise<State> {
+async function startProxy(command: SupportedCommand, context: string): Promise<State> {
   const { spawn } = await import('child_process')
   return new Promise<State>((resolve, reject) => {
     const iter = (port = 8001, retryCount = 0) => {
       try {
-        debug('attempting to spawn kubectl proxy on port', port)
-        const process = spawn(command, ['proxy', '--keepalive=120s', '--port', port.toString()])
+        debug(`attempting to spawn kubectl proxy on port=${port} context=${context || 'default'}`)
+        const args = ['proxy', '--keepalive=120s', '--port', port.toString()]
+        if (context) {
+          args.push('--context')
+          args.push(context)
+        }
+        const process = spawn(command, args)
         let myState: State
 
         // to make sure we don't smash the global variable on exit
@@ -170,10 +175,10 @@ async function startProxy(command: SupportedCommand): Promise<State> {
 /** Wrapper around `startProxy` that deals with the currentProxyState variable */
 function initProxyState(command: SupportedCommand, context: string) {
   if (!currentProxyState[command]) {
-    const myProxyState = startProxy(command)
+    const myProxyState = startProxy(command, context)
     currentProxyState[command] = { [context]: myProxyState }
   } else if (!currentProxyState[command][context]) {
-    const myProxyState = startProxy(command)
+    const myProxyState = startProxy(command, context)
     currentProxyState[command][context] = myProxyState
   }
 

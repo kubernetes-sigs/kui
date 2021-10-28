@@ -109,9 +109,12 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
         try {
           const kconfig = parseYAML(getKUBECONFIG().toString())
           const newOnesFilepath = path.join(path.dirname(getKUBECONFIGFilepath()), 'forTesting.yml')
+          console.log('temporary kubeconfig', newOnesFilepath)
 
-          kconfig['contexts'][0].context.namespace = ns
-          kconfig['contexts'][0].name = contextName
+          // smash in our namespace and contextName
+          const currentContext = kconfig['contexts'].find(_ => _.name === kconfig['current-context'])
+          currentContext.context.namespace = ns
+          currentContext.name = contextName
           writeFileSync(newOnesFilepath, dump(kconfig))
 
           await this.app.client.execute(

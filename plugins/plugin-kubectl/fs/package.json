@@ -1,0 +1,39 @@
+{
+  "name": "@kui-shell/plugin-kubectl",
+  "version": "1.0.1",
+  "description": "Kubernetes semantic filesystem",
+  "license": "Apache-2.0",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "helm",
+    "cli",
+    "ui",
+    "kui",
+    "plugin"
+  ],
+  "author": "@starpit",
+  "homepage": "https://github.com/IBM/kui#readme",
+  "bugs": {
+    "url": "https://github.com/IBM/kui/issues/new"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IBM/kui.git"
+  },
+  "main": "dist/index.js",
+  "module": "mdist/index.js",
+  "types": "mdist/index.d.ts",
+  "dependencies": {
+    "@kui-shell/core": "8.0.6",
+    "@IBM/kui": "*",
+    "debug": "4.1.1"
+  },
+  "krew": {
+    "commandPrefix": "kubeui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "89de9f78e8a1a2bdd29d2e17d7c608ab006c6d32"
+}

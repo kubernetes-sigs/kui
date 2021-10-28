@@ -18,6 +18,7 @@ import Debug from 'debug'
 import { REPL as REPLType, Table, Row, RawResponse, Arguments, Registrar, UsageModel, KResponse } from '@kui-shell/core'
 
 import flags from './flags'
+import KubeOptions from './options'
 import apiVersion from './apiVersion'
 import { doExecWithTable } from './exec'
 import { KubeContext } from '../../lib/model/resource'
@@ -74,35 +75,66 @@ export async function getCurrentContextName({ REPL }: { REPL: REPLType }): Promi
 }
 
 /** Extract the namespace from the current context */
-let currentDefaultNamespaceCache: Promise<string>
-let currentDefaultContextCache: Promise<string>
+const currentDefaultNamespaceCache: Record<string, Promise<string>> = {} // map from contextName to namespace
+let currentDefaultContextCache: Promise<string> // contextName
 
-onKubectlConfigChangeEvents((type, namespace, context) => {
+onKubectlConfigChangeEvents(async (type, namespace, context) => {
   if (type === 'SetNamespaceOrContext') {
+    if (!context) {
+      context = await currentDefaultContextCache
+    }
     if (typeof namespace === 'string' && namespace.length > 0) {
-      currentDefaultNamespaceCache = Promise.resolve(namespace)
+      currentDefaultNamespaceCache[context] = Promise.resolve(namespace)
     } else {
       // invalidate cache
-      currentDefaultNamespaceCache = undefined
+      currentDefaultNamespaceCache[context] = undefined
     }
 
     if (typeof context === 'string' && context.length > 0) {
       currentDefaultContextCache = Promise.resolve(context)
     } else {
       // invalidate cache
-      currentDefaultContextCache = undefined
+      currentDefaultContextCache[context] = undefined
     }
   }
 })
-export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }): Promise<string> {
-  if (currentDefaultNamespaceCache) {
-    return currentDefaultNamespaceCache
+
+export type ContextArgs = Pick<Arguments, 'REPL'> & Partial<Pick<Arguments<KubeOptions>, 'parsedOptions'>>
+
+/** @return the relevant context for the given args/command line */
+export function getCurrentDefaultContextName({ REPL, parsedOptions }: ContextArgs): string | Promise<string> {
+  if (parsedOptions && parsedOptions.context) {
+    return parsedOptions.context
+  } else if (currentDefaultContextCache) {
+    return currentDefaultContextCache
   }
 
   // eslint-disable-next-line no-async-promise-executor
-  currentDefaultNamespaceCache = new Promise(async resolve => {
-    const cmdline = `kubectl config view --minify --output "jsonpath={..namespace}"`
-    const ns = await REPL.qexec<string | number>(cmdline)
+  currentDefaultContextCache = new Promise(async resolve => {
+    const context = await getCurrentContextName({ REPL }).catch(err => {
+      if (err.code !== 404 && !/command not found/.test(err.message)) {
+        debug('error determining default context', err)
+      }
+      return ''
+    })
+
+    resolve(context)
+  })
+
+  return currentDefaultContextCache
+}
+
+/** @return the relevant namespace for the given args/command line */
+export async function getCurrentDefaultNamespace(args: ContextArgs): Promise<string> {
+  const contextName = await getCurrentDefaultContextName(args)
+  if (currentDefaultNamespaceCache[contextName]) {
+    return currentDefaultNamespaceCache[contextName]
+  }
+
+  // eslint-disable-next-line no-async-promise-executor
+  currentDefaultNamespaceCache[contextName] = new Promise(async resolve => {
+    const cmdline = `kubectl config view --minify --context ${contextName} --output "jsonpath={..namespace}"`
+    const ns = await args.REPL.qexec<string | number>(cmdline)
       .then(_ns => {
         const ns = typeof _ns === 'number' ? _ns.toString() : _ns // ns might be number
 
@@ -124,27 +156,7 @@ export async function getCurrentDefaultNamespace({ REPL }: { REPL: REPLType }): 
     resolve(ns ? ns.trim() : 'default')
   })
 
-  return currentDefaultNamespaceCache
-}
-
-export function getCurrentDefaultContextName({ REPL }: { REPL: REPLType }): Promise<string> {
-  if (currentDefaultContextCache) {
-    return currentDefaultContextCache
-  }
-
-  // eslint-disable-next-line no-async-promise-executor
-  currentDefaultContextCache = new Promise(async resolve => {
-    const context = await getCurrentContextName({ REPL }).catch(err => {
-      if (err.code !== 404 && !/command not found/.test(err.message)) {
-        debug('error determining default context', err)
-      }
-      return ''
-    })
-
-    resolve(context)
-  })
-
-  return currentDefaultContextCache
+  return currentDefaultNamespaceCache[contextName]
 }
 
 /**

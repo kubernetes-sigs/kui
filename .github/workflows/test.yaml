@@ -21,6 +21,7 @@ env:
   WINDOW_HEIGHT: 1050
   RUNNING_KUI_TEST: true
   KUI_USE_PROXY: true
+  KUI_SFS: true # feature toggle for /k8s vfs
   MINIO_VERSION: minio_20210214040133.0.0
   MINIO_SHA256: d5d9489262b532158a6dfd3f093de685854d83e0caf02ccef2e3d83294cb8eda
 

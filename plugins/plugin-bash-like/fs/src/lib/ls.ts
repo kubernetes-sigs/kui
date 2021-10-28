@@ -81,8 +81,8 @@ function prettyTime(ms: number): string {
 
 interface TheLsOptions {
   l: boolean // wide output
-  a: boolean // list with dots except for . and ..
-  A: boolean // list with dots
+  a: boolean // list with dots
+  A: boolean // list with dots except for . and ..
   C: boolean // print out file type e.g. * suffix for executables
   S: boolean // sort by size
   r: boolean // reverse sort order
@@ -222,6 +222,7 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
     css: cssOf(_),
     onclickExec: 'pexec' as const,
     onclick: `${_.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : 'open'} ${encodeComponent(_.path)}`,
+    drilldownTo: _.dirent.isDirectory ? ('this-split' as const) : undefined, // keep in-split for directory navigation
     attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))
 
@@ -254,7 +255,6 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
     noSort: true,
     defaultPresentation,
     allowedPresentations,
-    drilldownTo: 'this-split',
     style: wide ? undefined : TableStyle.Light
   }
 }
@@ -298,7 +298,12 @@ const doLs = (cmd: string) => async (opts: Arguments<LsOptions>): Promise<number
     opts.parsedOptions.l = true
   }
 
-  const entries = (await opts.REPL.rexec<GlobStats[]>(cmdline)).content
+  const allEntries = (await opts.REPL.rexec<GlobStats[]>(cmdline)).content
+  const entries = opts.parsedOptions.a
+    ? allEntries
+    : opts.parsedOptions.A
+    ? allEntries.filter(_ => _.name !== '.' && _.name !== '..')
+    : allEntries.filter(_ => _.name.charAt(0) !== '.')
 
   if (entries.length === 0) {
     const isDirs = entries.map(_ => _.dirent.isDirectory)

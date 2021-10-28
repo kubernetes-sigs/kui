@@ -15,13 +15,14 @@
  */
 
 import Debug from 'debug'
-import { Arguments, ParsedOptions, Registrar, REPL } from '@kui-shell/core'
+import { Arguments, Registrar } from '@kui-shell/core'
 
+import KubeOptions from './kubectl/options'
 import { openStream, fetchFile, fetchFileString } from '../lib/util/fetch-file'
 
 const debug = Debug('plugin-kubectl/controller/fetch-file')
 
-interface Options extends ParsedOptions {
+type Options = KubeOptions & {
   kustomize?: boolean
 }
 
@@ -42,11 +43,14 @@ async function isFile(filepath: string): Promise<boolean> {
   })
 }
 
-async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: string; dir?: string }> {
+async function fetchKustomizeString(
+  args: Parameters<typeof fetchFileString>[0],
+  uri: string
+): Promise<{ data: string; dir?: string }> {
   const [isFile0, { join }] = await Promise.all([isFile(uri), import('path')])
 
   if (isFile0) {
-    return { data: await fetchFileString(repl, uri)[0] }
+    return { data: await fetchFileString(args, uri)[0] }
   } else {
     const k1 = join(uri, 'kustomization.yml')
     const k2 = join(uri, 'kustomization.yaml')
@@ -55,11 +59,11 @@ async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: st
     const [isFile1, isFile2, isFile3] = await Promise.all([isFile(k1), isFile(k2), isFile(k3)])
     const dir = uri // if we are here, then `uri` is a directory
     if (isFile1) {
-      return { data: (await fetchFileString(repl, k1))[0] || '', dir }
+      return { data: (await fetchFileString(args, k1))[0] || '', dir }
     } else if (isFile2) {
-      return { data: (await fetchFileString(repl, k2))[0] || '', dir }
+      return { data: (await fetchFileString(args, k2))[0] || '', dir }
     } else if (isFile3) {
-      return { data: (await fetchFileString(repl, k3))[0] || '', dir }
+      return { data: (await fetchFileString(args, k3))[0] || '', dir }
     }
   }
 }
@@ -72,7 +76,7 @@ async function fetchKustomizeString(repl: REPL, uri: string): Promise<{ data: st
 export default (registrar: Registrar) => {
   registrar.listen(
     `/_openstream`,
-    async (args: Arguments<Options>) => {
+    async (args: Arguments<KubeOptions>) => {
       const uri = args.argvNoOptions[args.argvNoOptions.indexOf('_openstream') + 1]
       const headers =
         typeof args.execOptions.data === 'object' && !Buffer.isBuffer(args.execOptions.data)
@@ -113,15 +117,17 @@ export default (registrar: Registrar) => {
 
   registrar.listen(
     `/_fetchfile`,
-    async ({ argvNoOptions, parsedOptions, REPL, execOptions }: Arguments<Options>) => {
+    async (args: Arguments<Options>) => {
+      const { argvNoOptions, parsedOptions, execOptions } = args
+
       const uri = argvNoOptions[argvNoOptions.indexOf('_fetchfile') + 1]
       const opts =
         typeof execOptions.data === 'object' && !Buffer.isBuffer(execOptions.data) ? execOptions.data : undefined
 
       if (!parsedOptions.kustomize) {
-        return { mode: 'raw', content: await fetchFile(REPL, uri, opts) }
+        return { mode: 'raw', content: await fetchFile(args, uri, opts) }
       } else {
-        return { mode: 'raw', content: await fetchKustomizeString(REPL, uri) }
+        return { mode: 'raw', content: await fetchKustomizeString(args, uri) }
       }
     },
     { requiresLocal: true, flags: { boolean: ['kustomize'] } }
