@@ -22,7 +22,6 @@ import {
   Arguments,
   CodedError,
   ExecOptions,
-  REPL,
   isHeadless,
   inBrowser,
   hasProxy,
@@ -32,8 +31,10 @@ import {
 
 import JSONStream from './json'
 import getProxyState from '../../controller/client/proxy'
-import { KubeOptions, isRecursive } from '../../controller/kubectl/options'
-import { getCurrentDefaultContextName } from '../../controller/kubectl/contexts'
+import { KubeOptions as _KubeOptions, isRecursive } from '../../controller/kubectl/options'
+import { getCurrentDefaultContextName, ContextArgs } from '../../controller/kubectl/contexts'
+
+type KubeOptions = Pick<_KubeOptions, 'context'>
 
 const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
@@ -46,7 +47,7 @@ const openshiftScheme = /^openshift:\/\//
 const kubernetesScheme = /^kubernetes:\/\//
 
 /** Instantiate a kubernetes:// scheme with the current kubectl proxy state */
-async function rescheme(url: string, args: Pick<Arguments, 'REPL'>): Promise<string> {
+async function rescheme(url: string, args: ContextArgs): Promise<string> {
   const context = await getCurrentDefaultContextName(args)
   if (kubernetesScheme.test(url)) {
     const { baseUrl } = await getProxyState('kubectl', context)
@@ -65,7 +66,7 @@ export interface ObjectStream<T extends object> {
 }
 
 export async function openStream<T extends object>(
-  args: Pick<Arguments, 'REPL'>,
+  args: ContextArgs,
   url: string,
   mgmt: Pick<ExecOptions, 'onInit' | 'onReady' | 'onExit'>,
   headers?: Record<string, string>
@@ -140,7 +141,7 @@ interface FetchOptions<Data extends BodyData | BodyData[]> {
 }
 
 export async function _needle(
-  repl: REPL,
+  args: ContextArgs,
   url: string,
   opts?: FetchOptions<BodyData>,
   retryCount = 0
@@ -148,7 +149,7 @@ export async function _needle(
   if (!inBrowser()) {
     const method = (opts && opts.method) || 'get'
     const headers = Object.assign({ connection: 'keep-alive' }, opts.headers)
-    debug('fetch via needle', method, headers)
+    debug('fetch via needle', method, headers, url)
 
     // internal usage: test kui's error handling of apiServer
     if (process.env.TRAVIS_CHAOS_TESTING) {
@@ -160,12 +161,12 @@ export async function _needle(
     }
 
     try {
-      const { statusCode, body } = await needle(method, await rescheme(url, { REPL: repl }), opts.data, {
+      const { statusCode, body } = await needle(method, await rescheme(url, args), opts.data, {
         json: true,
         follow_max: 10,
         headers
       })
-      debug('fetch via needle done', statusCode)
+      debug('fetch via needle done', statusCode, url)
       return { statusCode, body }
     } catch (err) {
       if (err.code === 'ECONNREFUSED' && retryCount < MAX_ECONNREFUSED_RETRIES) {
@@ -175,7 +176,7 @@ export async function _needle(
         return new Promise((resolve, reject) => {
           setTimeout(async () => {
             try {
-              _needle(repl, url, opts, retryCount + 1).then(resolve, reject)
+              _needle(args, url, opts, retryCount + 1).then(resolve, reject)
             } catch (err) {
               reject(err)
             }
@@ -196,8 +197,12 @@ export async function _needle(
       throw new Error(strings('Unable to fetch remote file'))
     } else {
       debug('fetch via proxy')
-      const body = (await repl.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(url)}`, { data: opts }))
-        .content[0]
+      const context = await getCurrentDefaultContextName(args)
+      const body = (
+        await args.REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(url)} --context ${context}`, {
+          data: opts
+        })
+      ).content[0]
       return {
         statusCode: 200,
         body
@@ -206,10 +211,10 @@ export async function _needle(
   }
 }
 
-async function fetchRemote(repl: REPL, url: string, opts?: FetchOptions<BodyData>) {
+async function fetchRemote(args: ContextArgs, url: string, opts?: FetchOptions<BodyData>) {
   debug('fetchRemote', url, opts)
   const fetchOnce = () =>
-    _needle(repl, url, opts).then(_ => {
+    _needle(args, url, opts).then(_ => {
       if (_.statusCode === 0 || _.statusCode === 200 || typeof _.body !== 'string') {
         return _.body
       } else {
@@ -253,7 +258,7 @@ export function isReturnedError(file: FetchedFile): file is ReturnedError {
  *
  */
 export async function fetchFile(
-  repl: REPL,
+  args: ContextArgs,
   url: string,
   opts?: FetchOptions<BodyData | BodyData[]>
 ): Promise<FetchedFile[]> {
@@ -266,7 +271,7 @@ export async function fetchFile(
       if (httpScheme.test(url) || kubernetesScheme.test(url) || openshiftScheme.test(url)) {
         debug('fetch remote', url)
         return fetchRemote(
-          repl,
+          args,
           url,
           Object.assign({}, opts, { data: Array.isArray(opts.data) ? opts.data[idx] : opts.data })
         ).catch(err => {
@@ -280,7 +285,7 @@ export async function fetchFile(
       } else {
         const filepath = url
         debug('fetch local', filepath)
-        const stats = (await repl.rexec<{ data: string }>(`vfs fstat ${repl.encodeComponent(filepath)} --with-data`))
+        const stats = (await args.REPL.rexec<{ data: string }>(`vfs fstat ${encodeComponent(filepath)} --with-data`))
           .content
         return stats.data
       }
@@ -293,11 +298,11 @@ export async function fetchFile(
 
 /** same as fetchFile, but returning a string rather than a Buffer */
 export async function fetchFileString(
-  repl: REPL,
+  args: ContextArgs,
   url: string,
   headers?: Record<string, string>
 ): Promise<(void | string)[]> {
-  const files = await fetchFile(repl, url, { headers })
+  const files = await fetchFile(args, url, { headers })
   return files.map(_ => {
     try {
       return _ ? (typeof _ === 'string' ? _ : Buffer.isBuffer(_) ? _.toString() : JSON.stringify(_)) : undefined
@@ -308,9 +313,12 @@ export async function fetchFileString(
   })
 }
 
-export async function fetchFileKustomize(repl: REPL, url: string): Promise<{ data: string; dir?: string }> {
+export async function fetchFileKustomize(args: ContextArgs, url: string): Promise<{ data: string; dir?: string }> {
+  const context = await getCurrentDefaultContextName(args)
   const stats = (
-    await repl.rexec<{ data: string; dir?: string }>(`_fetchfile ${repl.encodeComponent(url)} --kustomize`)
+    await args.REPL.rexec<{ data: string; dir?: string }>(
+      `_fetchfile ${encodeComponent(url)} --kustomize --context ${context}`
+    )
   ).content
   return stats
 }
@@ -320,7 +328,7 @@ export async function fetchFileKustomize(repl: REPL, url: string): Promise<{ dat
  */
 export async function fetchRawFiles(args: Arguments<KubeOptions>, filepath: string) {
   if (filepath.match(/http(s)?:\/\//)) {
-    return fetchRemote(args.REPL, filepath)
+    return fetchRemote(args, filepath)
   } else {
     const path = args.REPL.encodeComponent(filepath)
     const resourceStats = (
@@ -360,7 +368,7 @@ export async function fetchFilesVFS(
     : filepaths.join(' ')
   const paths = new Set((await args.REPL.rexec<DirEntry[]>(`vfs ls ${path}`)).content.map(_ => _.path))
 
-  const raw = await fetchFileString(args.REPL, paths.size === 0 ? filepaths.join(',') : Array.from(paths).join(','))
+  const raw = await fetchFileString(args, paths.size === 0 ? filepaths.join(',') : Array.from(paths).join(','))
 
   return raw.map((data, idx) => {
     if (data) {
@@ -377,7 +385,7 @@ export async function fetchKusto(args: Arguments<KubeOptions>, kusto: string) {
   const [{ load }, { join }, raw] = await Promise.all([
     import('js-yaml'),
     import('path'),
-    fetchFileKustomize(args.REPL, kusto)
+    fetchFileKustomize(args, kusto)
   ])
 
   const kustomization = load(raw.data) as Kustomization

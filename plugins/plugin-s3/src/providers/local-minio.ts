@@ -66,7 +66,7 @@ async function init(repl: REPL, reinit: () => void) {
     try {
       // try pining minio to see if it is reachable
       await fetchFileString(
-        repl,
+        { REPL: repl },
         `${provider.useSSL ? 'https' : 'http'}://${provider.endPoint}:${provider.port}/minio/health/live`
       )
 

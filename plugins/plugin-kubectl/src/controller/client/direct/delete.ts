@@ -39,7 +39,6 @@ export default async function deleteDirect(args: Arguments<KubeOptions>, _kind?:
     !getLabel(args) &&
     !args.parsedOptions['dry-run'] &&
     !args.parsedOptions['field-selector'] &&
-    !args.parsedOptions.context &&
     !args.parsedOptions.kubeconfig
   ) {
     const explainedKind = await (_kind ||
@@ -56,10 +55,10 @@ export default async function deleteDirect(args: Arguments<KubeOptions>, _kind?:
       const urls = names.map(formatUrl.bind(undefined, true, false)).join(',')
       debug('attempting delete direct', urls)
 
-      const responses = await fetchFile(args.REPL, urls, { method: 'delete', headers, returnErrors: true, data })
+      const responses = await fetchFile(args, urls, { method: 'delete', headers, returnErrors: true, data })
 
       // then dissect it into errors and non-errors
-      const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
+      const { errors, ok } = await handleErrors(responses, formatUrl, kind, args)
       if (ok.length === 0) {
         if (errors.length > 0 && errors.every(is404)) {
           // all 404 errors? then tell the user about them (no need to re-invoke the CLI)

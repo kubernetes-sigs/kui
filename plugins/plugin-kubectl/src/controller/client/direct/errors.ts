@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { CodedError, isCodedError, REPL } from '@kui-shell/core'
+import { Arguments, CodedError, isCodedError } from '@kui-shell/core'
 
 import URLFormatter from './url'
+import KubeOptions from '../../kubectl/options'
 import { headersForPlainRequest } from './headers'
 import { Status, isStatus } from '../../../lib/model/resource'
 import { fetchFile, FetchedFile, isReturnedError, ReturnedError } from '../../../lib/util/fetch-file'
@@ -46,7 +47,7 @@ export default async function handleErrors(
   responses: FetchedFile[],
   formatUrl: URLFormatter,
   kind: string,
-  repl: REPL,
+  args: Pick<Arguments<KubeOptions>, 'REPL' | 'parsedOptions'>,
   returnErrors = false
 ): Promise<WithErrors> {
   const withErrors: (string | Buffer | object | CodedError)[] = await Promise.all(
@@ -68,10 +69,10 @@ export default async function handleErrors(
 
             const opts = { headers: headersForPlainRequest }
             const [nsData, kindData] = await Promise.all([
-              fetchFile(repl, nsUrl, opts)
+              fetchFile(args, nsUrl, opts)
                 .then(_ => _[0])
                 .catch(err => JSON.parse(err.message)),
-              fetchFile(repl, kindUrl, opts)
+              fetchFile(args, kindUrl, opts)
                 .then(_ => _[0])
                 .catch(err => JSON.parse(err.message))
             ])

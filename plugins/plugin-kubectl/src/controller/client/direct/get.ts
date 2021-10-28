@@ -60,13 +60,13 @@ export async function getTable(
   const isCusto = isCustomColumns(fmt)
   if (fmt === 'wide' || fmt === 'default' || isCusto) {
     // first, fetch the data; we pass returnErrors=true here, so that we can assemble 404s properly
-    const responses = await fetchFile(args.REPL, urls, {
+    const responses = await fetchFile(args, urls, {
       headers: isCusto ? headersForPlainRequest : headersForTableRequest,
       returnErrors: true
     })
 
     // then dissect it into errors and non-errors
-    const { errors, ok } = await handleErrors(responses, formatUrl, kind, args.REPL)
+    const { errors, ok } = await handleErrors(responses, formatUrl, kind, args)
 
     if (isCusto) {
       const list = ok.reduce<KubeItems>((list, data) => {
@@ -182,19 +182,13 @@ export async function get(
   }
 
   /** 3. entity request with kind and name, e.g. `get pod nginx -o yaml` */
-  if (
-    !isTableRequest(args) &&
-    !isFileRequest &&
-    args.parsedOptions.kubeconfig === undefined &&
-    args.parsedOptions.context === undefined &&
-    isEntityAndNameFormat
-  ) {
+  if (!isTableRequest(args) && !isFileRequest && args.parsedOptions.kubeconfig === undefined && isEntityAndNameFormat) {
     const formatUrl = await urlFormatterFor(drilldownCommand, namespace, args, explainedKind)
     const urls = names.length === 0 ? formatUrl(true, true) : names.map(formatUrl.bind(undefined, true, true)).join(',')
 
     let response: string | Buffer | object
     try {
-      response = (await fetchFile(args.REPL, urls, { headers: { accept: 'application/json' } }))[0]
+      response = (await fetchFile(args, urls, { headers: { accept: 'application/json' } }))[0]
     } catch (err) {
       response = tryParseAsStatus(err.code, err.message)
       if (!isStatus(response)) {
