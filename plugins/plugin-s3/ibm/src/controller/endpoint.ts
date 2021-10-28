@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, RadioTable, encodeComponent, eventChannelUnsafe, expandHomeDir } from '@kui-shell/core'
+import { Arguments, Events, RadioTable, encodeComponent, expandHomeDir } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import filepath from './filepath'
@@ -45,7 +45,7 @@ async function doSetEndpoint(args: Arguments, endpoint: string) {
     data: JSON.stringify(config, undefined, 2)
   })
 
-  eventChannelUnsafe.emit(updateChannel)
+  Events.eventChannelUnsafe.emit(updateChannel)
 
   return `Setting IBM Cloud Object Storage endpoint to [${endpoint}](${endpoint})`
 }

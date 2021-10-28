@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NewTabRequestEvent, StatusStripeChangeEvent, TabState } from '@kui-shell/core'
+import { Events, TabState } from '@kui-shell/core'
 
 /** cheapo uuid; we only need single-threaded uniqueness */
 let _uuidCounter = 1
@@ -29,14 +29,14 @@ export interface TopTabButton<P extends { key: string } = { key: string }> {
 export default class TabModel {
   public constructor(
     private readonly _uuid = uuid(),
-    private readonly desiredStatusStripeDecoration?: StatusStripeChangeEvent,
+    private readonly desiredStatusStripeDecoration?: Events.StatusStripeChangeEvent,
     doNotChangeActiveTab?: boolean,
     private readonly _title?: string,
     private readonly _state = new TabState(_uuid, desiredStatusStripeDecoration),
     private readonly _buttons: TopTabButton[] = [],
     private readonly _initialCommandLine?: string,
     private readonly _onClose?: string,
-    private readonly _exec?: NewTabRequestEvent['tabs'][0]['exec'],
+    private readonly _exec?: Events.NewTabRequestEvent['tabs'][0]['exec'],
     /** If field is defined then this is the serialized form of the notebook to be displayed on this tab */
     private readonly _snapshot?: Buffer
   ) {

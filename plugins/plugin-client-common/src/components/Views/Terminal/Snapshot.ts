@@ -19,10 +19,10 @@ import { v4 as uuid } from 'uuid'
 import {
   CommandStartEvent,
   CommandCompleteEvent,
+  Events,
   Notebook,
   isNotebook,
   isWatchable,
-  eventBus,
   Tab,
   Table,
   isTable,
@@ -99,8 +99,8 @@ export function snapshot(block: FinishedBlock): FinishedBlock {
     const tab = block.startEvent.tab
       ? block.startEvent.tab.uuid
       : block.completeEvent.tab
-      ? block.completeEvent.tab.uuid
-      : undefined
+        ? block.completeEvent.tab.uuid
+        : undefined
     const startEvent = Object.assign({}, block.startEvent, { tab })
 
     const completeEvent = Object.assign(
@@ -197,7 +197,7 @@ export function tabAlignment(block: FinishedBlock, tab: Tab): FinishedBlock {
 
 export class FlightRecorder {
   // eslint-disable-next-line no-useless-constructor
-  public constructor(private readonly tab: Tab, private readonly splits: Split[]) {}
+  public constructor(private readonly tab: Tab, private readonly splits: Split[]) { }
 
   private async recordTable(table: Table) {
     await Promise.all(
@@ -218,16 +218,16 @@ export class FlightRecorder {
               Object.assign(onclickHome.onclick, { completeEvent })
             }
 
-            eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
-            eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
+            Events.eventBus.onCommandStart(fakeTab.uuid, onCommandStart)
+            Events.eventBus.onCommandComplete(fakeTab.uuid, onCommandComplete)
 
             try {
               await fakeTab.REPL.pexec(command, { tab: fakeTab })
             } catch (err) {
               console.error('Error recording click', command, err)
             } finally {
-              eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
-              eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
+              Events.eventBus.offCommandStart(fakeTab.uuid, onCommandStart)
+              Events.eventBus.offCommandComplete(fakeTab.uuid, onCommandComplete)
             }
           }
         }

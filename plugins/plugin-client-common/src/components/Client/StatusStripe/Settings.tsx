@@ -17,7 +17,7 @@
 import React from 'react'
 import {
   encodeComponent,
-  eventChannelUnsafe,
+  Events,
   flatten,
   getPersistedThemeChoice,
   i18n,
@@ -47,7 +47,7 @@ export default class Settings extends React.PureComponent<Props, State> {
 
     this.recomputeThemeList()
 
-    eventChannelUnsafe.on('/theme/change', ({ theme }: { theme: string }) => {
+    Events.eventChannelUnsafe.on('/theme/change', ({ theme }: { theme: string }) => {
       this.setState({ currentTheme: theme })
     })
   }

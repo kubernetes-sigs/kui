@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
-import { Arguments, ExecType, ParsedOptions, encodeComponent, eventChannelUnsafe, expandHomeDir } from '@kui-shell/core'
+import { Arguments, Events, ExecType, ParsedOptions, encodeComponent, expandHomeDir } from '@kui-shell/core'
 
 import findLocal from './local'
 import filepath from './filepath'
@@ -66,7 +66,7 @@ async function bind(
     debug('configuring cos creds')
     await save({ REPL }, config)
 
-    setTimeout(() => eventChannelUnsafe.emit(updateChannel))
+    setTimeout(() => Events.eventChannelUnsafe.emit(updateChannel))
 
     return config
   }

@@ -18,17 +18,7 @@ import React from 'react'
 import { basename, dirname, join } from 'path'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import {
-  wireToStandardEvents,
-  unwireToStandardEvents,
-  eventBus,
-  getCurrentTab,
-  inBrowser,
-  i18n,
-  encodeComponent,
-  pexecInCurrentTab,
-  CodedError
-} from '@kui-shell/core'
+import { Events, getCurrentTab, inBrowser, i18n, encodeComponent, pexecInCurrentTab, CodedError } from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
 const strings2 = i18n('plugin-git')
@@ -137,17 +127,17 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
     this.unmounted = false
 
     if (inBrowser()) {
-      eventBus.once('/tab/new', this.handler)
+      Events.eventBus.once('/tab/new', this.handler)
     } else {
       this.handler()
     }
-    wireToStandardEvents(this.handler)
+    Events.wireToStandardEvents(this.handler)
   }
 
   /** Make sure to unsubscribe! */
   public componentWillUnmount() {
     this.unmounted = true
-    unwireToStandardEvents(this.handler)
+    Events.unwireToStandardEvents(this.handler)
   }
 
   /** @return the header for the Popover component */

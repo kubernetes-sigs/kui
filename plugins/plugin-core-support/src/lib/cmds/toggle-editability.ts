@@ -15,19 +15,18 @@
  */
 
 import {
-  eventBus,
+  Events,
   getPrimaryTabId,
   isOfflineClient,
   isReadOnlyClient,
   KResponse,
   ParsedOptions,
   Registrar,
-  StatusStripeChangeEvent
 } from '@kui-shell/core'
 
 interface EditOptions extends ParsedOptions {
   'new-window': boolean
-  'status-stripe': StatusStripeChangeEvent['type']
+  'status-stripe': Events.StatusStripeChangeEvent['type']
   current?: boolean
   c?: boolean
 }
@@ -53,7 +52,7 @@ function getTabIndex(argvNoOptions: string[]): number {
 }
 
 /** Command registration */
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   if (!(isReadOnlyClient() || isOfflineClient())) {
     // register the `tab edit toggle` command
     registrar.listen<KResponse, EditOptions>(
@@ -68,11 +67,11 @@ export default function(registrar: Registrar) {
 
         if (parsedOptions.c) {
           // we have the uuid
-          eventBus.emitWithTabId('/kui/tab/edit/toggle', getPrimaryTabId(tab))
+          Events.eventBus.emitWithTabId('/kui/tab/edit/toggle', getPrimaryTabId(tab))
         } else {
           // we only have the index, so we need to broadcast for help
           // the event expects 0-indexed, our controller takes 1-indexed
-          eventBus.emit('/kui/tab/edit/toggle/index', getTabIndex(argvNoOptions) - 1)
+          Events.eventBus.emit('/kui/tab/edit/toggle/index', getTabIndex(argvNoOptions) - 1)
         }
 
         return 'Successfully toggled edit mode'

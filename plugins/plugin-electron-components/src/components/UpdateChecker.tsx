@@ -24,7 +24,7 @@
 import React from 'react'
 import needle from 'needle'
 
-import { eventChannelUnsafe, getCurrentTab, pexecInCurrentTab, i18n } from '@kui-shell/core'
+import { Events, getCurrentTab, pexecInCurrentTab, i18n } from '@kui-shell/core'
 import { TextWithIconWidget as Widget, TextWithIconWidgetProps, Markdown } from '@kui-shell/plugin-client-common'
 
 import '../../web/scss/components/UpdateChecker/_index.scss'
@@ -195,7 +195,7 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
       const tab = getCurrentTab()
       if (!tab || !tab.REPL) {
         if (tab && !tab.REPL) {
-          eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.getCurrentVersion())
+          Events.eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.getCurrentVersion())
         }
         return
       }

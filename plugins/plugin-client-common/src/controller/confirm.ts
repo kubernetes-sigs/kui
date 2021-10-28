@@ -15,7 +15,7 @@
  */
 
 import {
-  eventChannelUnsafe,
+  Events,
   getPrimaryTabId,
   Registrar,
   ExecType,
@@ -71,8 +71,8 @@ export default async (commandTree: Registrar) => {
           }
         }
 
-        eventChannelUnsafe.once(responseChannel, onConfirm)
-        eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
+        Events.eventChannelUnsafe.once(responseChannel, onConfirm)
+        Events.eventChannelUnsafe.emit(requestChannel, { command, asking, execUUID })
       }),
     { usage, incognito: ['popup'] }
   )

@@ -15,7 +15,7 @@
  */
 
 import {
-  eventBus,
+  Events,
   expandHomeDir,
   inElectron,
   Arguments,
@@ -23,7 +23,6 @@ import {
   KResponse,
   ParsedOptions,
   Registrar,
-  StatusStripeChangeEvent,
   Notebook,
   isNotebook,
   getPrimaryTabId
@@ -70,7 +69,7 @@ const snapshotUsage = {
 
 interface ReplayOptions extends ParsedOptions {
   'new-window': boolean
-  'status-stripe': StatusStripeChangeEvent['type']
+  'status-stripe': Events.StatusStripeChangeEvent['type']
 }
 
 interface SnapshotOptions extends ParsedOptions {
@@ -97,7 +96,7 @@ async function loadNotebook(REPL: Arguments['REPL'], filepath: string): Promise<
 }
 
 /** Command registration */
-export default function(registrar: Registrar) {
+export default function (registrar: Registrar) {
   // register the `replay` command
   registrar.listen<KResponse, ReplayOptions>(
     '/replay',
@@ -129,7 +128,7 @@ export default function(registrar: Registrar) {
 
           return REPL.qexec(
             `tab new --snapshot "${filepaths.join(',')}" --quiet --status-stripe-type ${parsedOptions[
-              'status-stripe'
+            'status-stripe'
             ] || 'blue'} ${titleOptions} ${parsedOptions.r ? ' -r' : ''}`,
             undefined,
             undefined,
@@ -150,7 +149,7 @@ export default function(registrar: Registrar) {
         const seenExecUUIDs: Record<string, boolean> = {}
 
         const ourMainTab = getPrimaryTabId(tab)
-        eventBus.emitSnapshotRequest(
+        Events.eventBus.emitSnapshotRequest(
           {
             filter: (evt: CommandStartEvent) => {
               if (!seenExecUUIDs[evt.execUUID]) {

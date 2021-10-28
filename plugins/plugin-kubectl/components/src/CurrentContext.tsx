@@ -17,17 +17,7 @@
 import React from 'react'
 
 import { ViewLevel, Select, TextWithIconWidget, TextWithIconWidgetOptions } from '@kui-shell/plugin-client-common'
-import {
-  eventBus,
-  eventChannelUnsafe,
-  getCurrentTab,
-  getTab,
-  Tab,
-  TabState,
-  encodeComponent,
-  pexecInCurrentTab,
-  i18n
-} from '@kui-shell/core'
+import { Events, getCurrentTab, getTab, Tab, TabState, encodeComponent, pexecInCurrentTab, i18n } from '@kui-shell/core'
 import { KubeContext } from '@kui-shell/plugin-kubectl'
 
 type Props = TextWithIconWidgetOptions
@@ -57,7 +47,7 @@ function KubernetesIcon() {
 }
 
 export let ready = false
-eventBus.once('/tab/new', () => (ready = true))
+Events.eventBus.once('/tab/new', () => (ready = true))
 
 export default class CurrentContext extends React.PureComponent<Props, State> {
   private readonly handler = this.reportCurrentContext.bind(this)
@@ -175,7 +165,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     const tab = getTab(typeof idx === 'string' ? undefined : idx)
     if (!tab || !tab.REPL) {
       if (tab && !tab.REPL) {
-        eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentContext())
+        Events.eventChannelUnsafe.once(`/tab/new/${tab.uuid}`, () => this.reportCurrentContext())
       }
       return
     } else if (this.debounce()) {
@@ -300,13 +290,13 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
     this.unmounted = false
 
     if (!ready) {
-      eventBus.once('/tab/new', this.handler)
+      Events.eventBus.once('/tab/new', this.handler)
     } else {
       this.handler()
     }
-    eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
+    Events.eventBus.on('/tab/switch/request/done', this.handlerNotCallingKubectl)
 
-    eventBus.onAnyCommandComplete(this.handler)
+    Events.eventBus.onAnyCommandComplete(this.handler)
 
     import('@kui-shell/plugin-kubectl').then(_ => _.onKubectlConfigChangeEvents(this.handlerForConfigChange))
   }
@@ -314,9 +304,9 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
   /** Bye! */
   public componentWillUnmount() {
     this.unmounted = true
-    eventBus.off('/tab/new', this.handler)
-    eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
-    eventBus.offAnyCommandComplete(this.handler)
+    Events.eventBus.off('/tab/new', this.handler)
+    Events.eventBus.off('/tab/switch/request/done', this.handlerNotCallingKubectl)
+    Events.eventBus.offAnyCommandComplete(this.handler)
     import('@kui-shell/plugin-kubectl').then(_ => _.offKubectlConfigChangeEvents(this.handlerForConfigChange))
   }
 

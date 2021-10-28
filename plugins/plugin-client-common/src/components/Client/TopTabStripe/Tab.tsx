@@ -17,9 +17,8 @@
 import React from 'react'
 import {
   i18n,
-  eventBus,
-  eventChannelUnsafe,
   Event,
+  Events,
   ExecType,
   Theme,
   getDefaultTheme,
@@ -97,9 +96,9 @@ export default class Tab extends React.PureComponent<Props, State> {
   }
 
   private removeCommandEvaluationListeners() {
-    eventBus.offCommandStart(this.props.uuid, this.onCommandStart)
-    eventBus.offCommandComplete(this.props.uuid, this.onCommandStart)
-    eventChannelUnsafe.off('/theme/change', this.onThemeChange)
+    Events.eventBus.offCommandStart(this.props.uuid, this.onCommandStart)
+    Events.eventBus.offCommandComplete(this.props.uuid, this.onCommandStart)
+    Events.eventChannelUnsafe.off('/theme/change', this.onThemeChange)
   }
 
   /**
@@ -146,9 +145,9 @@ export default class Tab extends React.PureComponent<Props, State> {
       }
     }
 
-    eventBus.onCommandStart(this.props.uuid, this.onCommandStart)
-    eventBus.onCommandComplete(this.props.uuid, this.onCommandComplete)
-    eventChannelUnsafe.on('/theme/change', this.onThemeChange)
+    Events.eventBus.onCommandStart(this.props.uuid, this.onCommandStart)
+    Events.eventBus.onCommandComplete(this.props.uuid, this.onCommandComplete)
+    Events.eventChannelUnsafe.on('/theme/change', this.onThemeChange)
   }
 
   private isUsingCommandName() {

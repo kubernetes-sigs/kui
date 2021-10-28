@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Tab as KuiTab, eventBus, eventChannelUnsafe } from '@kui-shell/core'
+import { Events, Tab as KuiTab } from '@kui-shell/core'
 
 import Width from '../../Sidecar/width'
 import SplitPosition from '../SplitPosition'
@@ -137,7 +137,7 @@ export default class Block extends React.PureComponent<Props, State> {
       isMaximized: width === Width.Maximized
     })
     setTimeout(() => {
-      eventBus.emitTabLayoutChange(this.props.tab.uuid)
+      Events.eventBus.emitTabLayoutChange(this.props.tab.uuid)
       if (this.state._block) {
         this.state._block.scrollIntoView(true)
       }
@@ -186,7 +186,7 @@ export default class Block extends React.PureComponent<Props, State> {
   private willScreenshot() {
     setTimeout(() => {
       const element = this.state._block.querySelector('.kui--screenshotable') || this.state._block
-      eventChannelUnsafe.emit('/screenshot/element', element)
+      Events.eventChannelUnsafe.emit('/screenshot/element', element)
     })
   }
 

@@ -20,13 +20,13 @@
 import Debug from 'debug'
 import React from 'react'
 import {
+  Events,
   i18n,
   REPL,
   Theme,
   pexecInCurrentTab,
   encodeComponent,
   inBrowser,
-  eventChannelUnsafe,
   findThemeByName,
   getPersistedThemeChoice,
   getDefaultTheme,
@@ -112,7 +112,7 @@ export class Kui extends React.PureComponent<Props, State> {
       })
     })
 
-    eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
+    Events.eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
     setTimeout(async () => {
       const { theme } = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
       this.setState(curState => {

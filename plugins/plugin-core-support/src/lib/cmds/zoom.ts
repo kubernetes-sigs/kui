@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { UsageError, Arguments, Registrar } from '@kui-shell/core'
-
+import { Events, UsageError, Arguments, Registrar } from '@kui-shell/core'
 import '../../../web/css/static/zoom.css'
 
 const MAX_ZOOM_IN = 12
@@ -123,8 +122,7 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
     event.preventDefault()
     reset()
     setTimeout(async () => {
-      const { eventChannelUnsafe } = await import('@kui-shell/core')
-      eventChannelUnsafe.emit('/zoom', 1)
+      Events.eventChannelUnsafe.emit('/zoom', 1)
     }, 100)
   } else if ((char === keys.ZOOM_IN || char === keys.ZOOM_OUT) && (event.ctrlKey || event.metaKey) && !event.shiftKey) {
     // zooming
@@ -134,8 +132,7 @@ const listener = async (event: KeyboardEvent): Promise<void> => {
     const newZoom = parseInt(main.getAttribute('data-zoom') || '1', 10) + factor
     _set(newZoom)
     setTimeout(async () => {
-      const { eventChannelUnsafe } = await import('@kui-shell/core')
-      eventChannelUnsafe.emit('/zoom', newZoom)
+      Events.eventChannelUnsafe.emit('/zoom', newZoom)
     }, 100)
   }
 }

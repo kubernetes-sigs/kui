@@ -79,18 +79,7 @@ import * as pc from './core/usage/pretty-code'
 export { pc }
 
 // eventChannelUnsafe
-export {
-  default as eventChannelUnsafe,
-  wireToTabEvents,
-  wireToStandardEvents,
-  unwireToTabEvents,
-  unwireToStandardEvents,
-  eventBus,
-  NewTabRequestEvent,
-  SnapshotRequestEvent,
-  StatusStripeChangeEvent,
-  TabLayoutChangeEvent
-} from './core/events'
+export * from './api'
 
 // i18n
 export { fromMap as i18nFromMap, default as i18n } from './util/i18n'

@@ -15,7 +15,8 @@
  */
 
 import React from 'react'
-import { eventChannelUnsafe, Tab } from '@kui-shell/core'
+import { Events, Tab } from '@kui-shell/core'
+
 // Component Imports
 import {
   ActionGroup,
@@ -294,7 +295,7 @@ export default class ExprBase extends React.Component<Props, Formstate> {
     const time = d.toISOString()
     const jsonOutput = getRequestModel(time, this.state, this.args)
     // Transmit data to Decision form using eventBus
-    eventChannelUnsafe.emit('/get/decision', jsonOutput)
+    Events.eventChannelUnsafe.emit('/get/decision', jsonOutput)
   }
 
   // Cancels form submission event caused by "Enter" press

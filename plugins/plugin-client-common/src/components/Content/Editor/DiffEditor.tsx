@@ -18,7 +18,7 @@ import React from 'react'
 import { extname } from 'path'
 import { editor as Monaco } from 'monaco-editor'
 
-import { eventChannelUnsafe, eventBus, MultiModalResponse, TabLayoutChangeEvent } from '@kui-shell/core'
+import { Events, MultiModalResponse } from '@kui-shell/core'
 import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import getKuiFontSize from './lib/fonts'
@@ -133,8 +133,8 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
       const onZoom = () => {
         editor.updateOptions({ fontSize: getKuiFontSize() })
       }
-      eventChannelUnsafe.on('/zoom', onZoom)
-      cleaners.push(() => eventChannelUnsafe.off('/zoom', onZoom))
+      Events.eventChannelUnsafe.on('/zoom', onZoom)
+      cleaners.push(() => Events.eventChannelUnsafe.off('/zoom', onZoom))
 
       if (props.sizeToFit) {
         const sizeToFit = (
@@ -157,7 +157,7 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
         observer.observe(state.wrapper)
         cleaners.push(() => observer.disconnect())
 
-        const onTabLayoutChange = (evt: TabLayoutChangeEvent) => {
+        const onTabLayoutChange = (evt: Events.TabLayoutChangeEvent) => {
           sizeToFit()
           if (evt.isWidthConstrained) {
             editor.updateOptions({ renderSideBySide: false })
@@ -165,10 +165,10 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
             editor.updateOptions({ renderSideBySide: props.renderSideBySide })
           }
         }
-        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+        Events.eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+        cleaners.push(() => Events.eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
       } else {
-        const onTabLayoutChange = (evt: TabLayoutChangeEvent) => {
+        const onTabLayoutChange = (evt: Events.TabLayoutChangeEvent) => {
           editor.layout()
           if (evt.isWidthConstrained) {
             editor.updateOptions({ renderSideBySide: false })
@@ -176,8 +176,8 @@ export default class DiffEditor extends React.PureComponent<Props, State> {
             editor.updateOptions({ renderSideBySide: props.renderSideBySide })
           }
         }
-        eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
-        cleaners.push(() => eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
+        Events.eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
+        cleaners.push(() => Events.eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
       }
 
       state.wrapper['getValueForTests'] = () => {

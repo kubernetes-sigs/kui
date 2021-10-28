@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { wireToStandardEvents } from '@kui-shell/core'
+import { Events } from '@kui-shell/core'
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
 
 interface Props {
@@ -58,7 +58,7 @@ export default class CounterWidget extends React.PureComponent<Props, State> {
    *
    */
   public componentDidMount() {
-    wireToStandardEvents(this.update.bind(this))
+    Events.wireToStandardEvents(this.update.bind(this))
   }
 
   public render() {

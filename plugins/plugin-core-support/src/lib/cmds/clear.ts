@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { isHeadless, eventChannelUnsafe, getTabId, Arguments, Registrar } from '@kui-shell/core'
+import { Events, isHeadless, getTabId, Arguments, Registrar } from '@kui-shell/core'
 
 const clear = ({ tab }: Arguments) => {
   if (!isHeadless()) {
     setTimeout(() => {
-      eventChannelUnsafe.emit(`/terminal/clear/${getTabId(tab)}`)
-      eventChannelUnsafe.emit(`/close/views/${getTabId(tab)}`)
+      Events.eventChannelUnsafe.emit(`/terminal/clear/${getTabId(tab)}`)
+      Events.eventChannelUnsafe.emit(`/close/views/${getTabId(tab)}`)
     })
   }
 

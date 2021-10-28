@@ -17,6 +17,7 @@
 import React from 'react'
 
 import {
+  Events,
   i18n,
   isAbortableResponse,
   isCodedError,
@@ -32,7 +33,6 @@ import {
   isNavResponse,
   isXtermResponse,
   isTable,
-  eventChannelUnsafe,
   Tab as KuiTab,
   Stream,
   Streamable
@@ -130,7 +130,7 @@ export default class Output extends React.PureComponent<Props, State> {
       // done with this part... not done with all parts
       const done = () => {
         this.props.onRender()
-        eventChannelUnsafe.emit(`/command/stdout/done/${tabUUID}/${execUUID}`)
+        Events.eventChannelUnsafe.emit(`/command/stdout/done/${tabUUID}/${execUUID}`)
       }
 
       // part === null: the controller wants to clear any prior output
@@ -167,7 +167,7 @@ export default class Output extends React.PureComponent<Props, State> {
     if (isProcessing(props.model) && !state.alreadyListen) {
       // listen for streaming output (unless the output has been redirected to a file)
       const tabUUID = props.uuid
-      eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+      Events.eventChannelUnsafe.on(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
 
       return {
         alreadyListen: true,
@@ -178,7 +178,7 @@ export default class Output extends React.PureComponent<Props, State> {
       const tabUUID = props.uuid
 
       if (!isEmpty(props.model)) {
-        eventChannelUnsafe.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
+        Events.eventChannelUnsafe.off(`/command/stdout/${tabUUID}/${props.model.execUUID}`, state.streamingConsumer)
       }
 
       return {

@@ -5,6 +5,7 @@
   "license": "Apache-2.0",
   "author": "Nick Mitchell",
   "main": "dist/index.js",
+  "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "scripts": {

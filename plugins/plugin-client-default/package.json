@@ -3,6 +3,7 @@
   "version": "10.7.0",
   "description": "Kui plugin that offers client defintion",
   "main": "dist/index.js",
+  "typedocMain": "src/index.ts",
   "module": "mdist/index.js",
   "types": "mdist/index.d.ts",
   "license": "Apache-2.0",

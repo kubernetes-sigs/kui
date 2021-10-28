@@ -19,16 +19,7 @@ import { v4 as uuid } from 'uuid'
 import { FitAddon } from 'xterm-addon-fit'
 import { Terminal as XTerminal, ITheme } from 'xterm'
 
-import {
-  Job,
-  Streamable,
-  TabLayoutChangeEvent,
-  ToolbarText,
-  i18n,
-  eventBus,
-  isResizable,
-  eventChannelUnsafe
-} from '@kui-shell/core'
+import { Events, Job, Streamable, ToolbarText, i18n, isResizable } from '@kui-shell/core'
 
 import { inDebugMode, Loading } from '@kui-shell/plugin-client-common'
 
@@ -128,21 +119,21 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
       this.doXon()
     }
     const focusOnEvent = `/mode/focus/on/tab/${uuid}/mode/${this.mode()}`
-    eventChannelUnsafe.on(focusOnEvent, focus)
-    this.cleaners.push(() => eventChannelUnsafe.off(focusOnEvent, focus))
+    Events.eventChannelUnsafe.on(focusOnEvent, focus)
+    this.cleaners.push(() => Events.eventChannelUnsafe.off(focusOnEvent, focus))
 
     const xoff = this.doXoff.bind(this)
     const focusOffEvent = `/mode/focus/off/tab/${uuid}/mode/${this.mode()}`
-    eventChannelUnsafe.on(focusOffEvent, xoff)
-    this.cleaners.push(() => eventChannelUnsafe.off(focusOffEvent, xoff))
+    Events.eventChannelUnsafe.on(focusOffEvent, xoff)
+    this.cleaners.push(() => Events.eventChannelUnsafe.off(focusOffEvent, xoff))
 
     const resizeListener = this.onWindowResize.bind(this)
     window.addEventListener('resize', resizeListener)
     this.cleaners.push(() => window.removeEventListener('resize', resizeListener))
 
     const layoutListener = this.onTabLayoutChange.bind(this)
-    eventBus.onTabLayoutChange(uuid, layoutListener)
-    this.cleaners.push(() => eventBus.offTabLayoutChange(uuid, layoutListener))
+    Events.eventBus.onTabLayoutChange(uuid, layoutListener)
+    this.cleaners.push(() => Events.eventBus.offTabLayoutChange(uuid, layoutListener))
   }
 
   /** Which container should we focus on by default? */
@@ -242,7 +233,7 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
     }
   }
 
-  private onTabLayoutChange(evt: TabLayoutChangeEvent) {
+  private onTabLayoutChange(evt: Events.TabLayoutChangeEvent) {
     if (this.state.xterm && !evt.isSidecarNowHidden) {
       this.state.doResize()
     }
@@ -546,8 +537,8 @@ export default class Terminal<S extends TerminalState = TerminalState> extends C
 
     const inject = () => Terminal.injectTheme(xterm, dom)
     inject()
-    eventChannelUnsafe.on('/theme/change', inject)
-    perTerminalCleaners.push(() => eventChannelUnsafe.on('/theme/change', inject))
+    Events.eventChannelUnsafe.on('/theme/change', inject)
+    perTerminalCleaners.push(() => Events.eventChannelUnsafe.on('/theme/change', inject))
 
     const fitAddon = new FitAddon()
     xterm.loadAddon(fitAddon)

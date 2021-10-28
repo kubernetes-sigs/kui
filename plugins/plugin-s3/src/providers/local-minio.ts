@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { eventBus, REPL } from '@kui-shell/core'
+import { Events, REPL } from '@kui-shell/core'
 import { fetchFileString } from '@kui-shell/plugin-kubectl'
 
 import Provider, { ProviderInitializer } from './model'
@@ -50,12 +50,12 @@ let alreadyReportedCannotConnect = false
 
 async function init(repl: REPL, reinit: () => void) {
   if (!listeningAlready) {
-    eventBus.onEnvUpdate('MINIO_ACCESS_KEY', value => {
+    Events.eventBus.onEnvUpdate('MINIO_ACCESS_KEY', value => {
       localStorage.setItem(localStorageAccessKey, value)
       reinit()
     })
 
-    eventBus.onEnvUpdate('MINIO_SECRET_KEY', value => {
+    Events.eventBus.onEnvUpdate('MINIO_SECRET_KEY', value => {
       localStorage.setItem(localStorageSecretKey, value)
       reinit()
     })

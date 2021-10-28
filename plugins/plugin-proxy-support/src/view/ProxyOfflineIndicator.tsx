@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { eventChannelUnsafe, inBrowser, i18n } from '@kui-shell/core'
+import { Events, inBrowser, i18n } from '@kui-shell/core'
 import { TagWidget } from '@kui-shell/plugin-client-common'
 
 import ProxyConfig from '@kui-shell/client/config.d/proxy.json'
@@ -52,12 +52,12 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
     const onOnline = () => {
       this.setState({ offline: false })
     }
-    eventChannelUnsafe.on('/proxy/online', onOnline)
-    this.cleaners.push(() => eventChannelUnsafe.off('/proxy/online', onOnline))
+    Events.eventChannelUnsafe.on('/proxy/online', onOnline)
+    this.cleaners.push(() => Events.eventChannelUnsafe.off('/proxy/online', onOnline))
 
     const onOffline = () => this.setState({ offline: true })
-    eventChannelUnsafe.on('/proxy/offline', onOffline)
-    this.cleaners.push(() => eventChannelUnsafe.off('/proxy/offline', onOffline))
+    Events.eventChannelUnsafe.on('/proxy/offline', onOffline)
+    this.cleaners.push(() => Events.eventChannelUnsafe.off('/proxy/offline', onOffline))
   }
 
   public componentWillUnmount() {
