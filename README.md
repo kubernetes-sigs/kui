@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 [![test](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml/badge.svg)](https://github.com/kubernetes-sigs/kui/actions/workflows/test.yaml)
 
-[**Blogs**](https://medium.com/the-graphical-terminal) **|** [**PDF Summary**](docs/presentations/kui-cloudnative-devx-2021.pdf) **|** [**Installation**](#install) **|** [**Custom Graphical CLIs!**](#custom)
+[**Blogs**](https://medium.com/the-graphical-terminal) **|** [**PDF Summary**](docs/presentations/kui-cloudnative-devx-2021.pdf) **|** [**Installation**](#install) **|** [**API**](docs/api/README.md) **|** [**Custom Graphical CLIs**](#custom)
 
 # Kui: a Framework for Enhancing CLIs with Graphics
 
