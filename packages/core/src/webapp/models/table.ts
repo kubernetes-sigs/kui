@@ -84,6 +84,8 @@ export class Row {
 
   onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any
 
+  drilldownTo?: 'side-split' | 'this-split' | 'new-window'
+
   css?: string
 
   outerCSS?: string
@@ -105,6 +107,8 @@ export class Cell {
   outerCSS?: string
 
   onclick?: any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+  drilldownTo?: 'side-split' | 'this-split' | 'new-window'
 
   key?: string
 
