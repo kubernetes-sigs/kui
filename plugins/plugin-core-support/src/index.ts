@@ -16,4 +16,5 @@
 
 // this file defines the external API
 
+export { default as TrieVFS } from './notebooks/vfs/TrieVFS'
 export { NotebookVFS, default as notebookVFS } from './notebooks/vfs'

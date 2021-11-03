@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import TrieSearch from 'trie-search'
-import micromatch from 'micromatch'
-import { basename, dirname, join } from './posix'
-import { FStat, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, flatten, Notebook, isNotebook } from '@kui-shell/core'
+import { Notebook, isNotebook } from '@kui-shell/core'
+import { VFS, mount } from '@kui-shell/plugin-bash-like/fs'
+
+import TrieVFS, { Leaf, Directory } from './TrieVFS'
 
 interface Tutorial {
   name: string
@@ -29,160 +27,26 @@ interface Tutorial {
   nameForDisplay: string
 }
 
-interface BaseEntry {
-  mountPath: string
-  isDirectory?: boolean
-}
+type NotebookLeaf = Leaf<Notebook | { srcFilepath: string }>
+type NotebookEntry = Directory | NotebookLeaf
 
-type Directory = BaseEntry
-
-interface Leaf extends BaseEntry {
-  data: Notebook | { srcFilepath: string }
-}
-
-type Entry = Leaf | Directory
-
-function isLeaf(entry: Entry): entry is Leaf {
-  return (entry as Leaf).data !== undefined
-}
-
-const uid = -1
-const gid = -1
-const username = ''
-
-export class NotebookVFS implements VFS {
-  public readonly isLocal = false
-  public readonly isVirtual = true
-
-  protected readonly prefix = new RegExp(`^${this.mountPath}\\/?`)
-
-  private readonly trie: TrieSearch<Directory | Leaf> = new TrieSearch()
-
-  // eslint-disable-next-line no-useless-constructor
-  public constructor(public readonly mountPath = '/kui') {}
-
-  /** Turn an ls-style glob into a nodejs-style regexp */
-  private glob2RegExp(filepath: string): string {
-    return filepath.replace(/\//g, '\\/').replace(/\*/g, '.*')
+export class NotebookVFS extends TrieVFS<NotebookLeaf['data']> implements VFS {
+  protected viewer() {
+    return 'replay'
   }
 
-  private dirPattern(filepath: string): RegExp {
-    // /kui/kubernetes -> /\/kui\/kubernetes/[^/]*$/
-    if (filepath.charAt(filepath.length - 1) === '/') {
-      return new RegExp(`^${this.glob2RegExp(filepath)}[^/]+$`)
-    } else {
-      return this.dirPattern(filepath + '/')
-    }
+  protected async nameForDisplay(name: string, entry: NotebookEntry): Promise<string> {
+    const data = this.isLeaf(entry) ? await this.load(entry.data) : undefined
+    return data && data.metadata ? data.metadata.name || name : name
   }
 
-  /** Looks in the trie for any matches for the given filepath, handling the "contents of directory" case */
-  private find(filepath: string, dashD = false, exact = false): Entry[] {
-    const dirPattern = this.dirPattern(filepath)
-    const flexMatches = this.trie
-      .get(filepath.replace(/\*.*$/, ''))
-      .filter(_ =>
-        exact ? _.mountPath === filepath : micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath)
-      )
-    if (dashD) {
-      return flexMatches.filter(_ => _.isDirectory)
-    } else if (exact) {
-      return flexMatches
-    } else {
-      return flexMatches.filter(_ => _.mountPath !== filepath)
-    }
-  }
-
-  /** Looks in the trie for a single precise match */
-  private async findExact(filepath: string, withData: boolean): Promise<FStat> {
-    const possibleMatches = this.find(filepath, false, true)
-
-    if (possibleMatches.length > 1) {
-      const msg = 'Multiple matches'
-      console.error(msg, possibleMatches)
-      throw new Error(msg)
-    } else if (possibleMatches.length === 0) {
-      const flexMatches = this.find(filepath, false, false)
-      if (filepath === this.mountPath || flexMatches.find(_ => _.mountPath.startsWith(filepath))) {
-        // then this is either a match against the mount position or an interior directory
-        return {
-          viewer: 'ls',
-          filepath,
-          fullpath: filepath,
-          size: 0,
-          isDirectory: true
-        }
-      }
-    } else {
-      const entry = possibleMatches[0]
-      const data = isLeaf(entry) ? await this.load(entry.data) : undefined
-
-      return {
-        viewer: 'replay',
-        filepath: entry.mountPath,
-        fullpath: entry.mountPath,
-        size: isLeaf(entry)
-          ? /\.json$/.test(entry.mountPath)
-            ? JSON.stringify(data, undefined, 2).length
-            : data.toString().length
-          : 0,
-        isDirectory: !isLeaf(entry),
-        data:
-          withData && isLeaf(entry)
-            ? /\.json$/.test(entry.mountPath)
-              ? JSON.stringify(data, undefined, 2)
-              : data.toString()
-            : undefined
-      }
-    }
-  }
-
-  private async enumerate({ entries }: { entries: Entry[] }) {
-    return Promise.all(
-      entries.map(async (mount: Entry) => {
-        const name = basename(mount.mountPath)
-        const data = isLeaf(mount) ? await this.load(mount.data) : undefined
-        const nameForDisplay = data && data.metadata ? data.metadata.name || name : name
-        const isDir = !isLeaf(mount)
-
-        return {
-          name,
-          nameForDisplay,
-          path: mount.mountPath,
-          stats: {
-            size: 0,
-            mtimeMs: 0,
-            mode: 0,
-            uid,
-            gid
-          },
-          dirent: {
-            mount: { isLocal: this.isLocal, mountPath: this.mountPath },
-            isFile: !isDir,
-            isDirectory: isDir,
-            isSymbolicLink: false,
-            isSpecial: false,
-            isExecutable: false,
-            permissions: '',
-            username
-          }
-        }
-      })
-    )
-  }
-
-  public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
-    return flatten(
-      await Promise.all(
-        filepaths
-          .map(filepath => ({ filepath, entries: this.find(filepath, parsedOptions.d) }))
-          .filter(_ => _.entries.length > 0)
-          .map(_ => this.enumerate(_))
-      )
-    )
+  protected async loadAsString(leaf: NotebookLeaf): Promise<string> {
+    const notebook = await this.load(leaf.data)
+    return /\.json$/.test(leaf.mountPath) ? JSON.stringify(notebook, undefined, 2) : notebook.toString()
   }
 
   /** Load Notebook data from bundles */
-  private async load(data: Leaf['data']): Promise<Notebook> {
+  private async load(data: NotebookLeaf['data']): Promise<Notebook> {
     if (isNotebook(data)) {
       return data
     } else {
@@ -213,7 +77,7 @@ export class NotebookVFS implements VFS {
                 /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
               ))
 
-          return data as Notebook
+          return data.default
         } catch (err) {
           console.error(err)
           throw new Error(`Unable to load Notebook: ${err.message}`)
@@ -222,89 +86,6 @@ export class NotebookVFS implements VFS {
         throw new Error('Unsupported filepath for Notebook')
       }
     }
-  }
-
-  /** Insert filepath into directory */
-  public cp(_, srcFilepaths: string[], dstFilepath: string): Promise<string> {
-    return Promise.all(
-      srcFilepaths.map(srcFilepath => {
-        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.json$/)
-        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.json$/)
-        const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
-        const match = match1 || match2 || match3
-        if (match) {
-          const extension = match1 || match2 ? '.json' : '.md'
-
-          const dir = dirname(dstFilepath)
-          if (!this.trie.get(dir)) {
-            throw new Error(`Directory does not exist: ${dir}`)
-          } else {
-            const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
-            const mountPath = join(dstFilepath, file + extension)
-            this.trie.map(mountPath, { mountPath, data: { srcFilepath } })
-          }
-        } else {
-          throw new Error(`Unable to copy given source into the notebooks VFS: ${srcFilepath}`)
-        }
-      })
-    ).then(() => 'ok')
-  }
-
-  /** Remove filepath */
-  public rm(): ReturnType<VFS['rm']> {
-    throw new Error('Unsupported operation')
-  }
-
-  /** Fetch contents */
-  public async fstat(
-    opts: Pick<Arguments, 'REPL' | 'parsedOptions'>,
-    filepath: string,
-    withData: boolean,
-    enoentOk: boolean
-  ): Promise<FStat> {
-    const entry = await this.findExact(filepath, withData)
-    if (!entry) {
-      if (enoentOk) {
-        // i don't think it makes sense to ignore ENOENT for this VFS
-      }
-
-      const error: CodedError = new Error(`File not found: ${filepath}`)
-      error.code = 404
-      throw error
-    } else {
-      return entry
-    }
-  }
-
-  public async fwrite(opts: Pick<Arguments, 'REPL'>, filepath: string, data: string | Buffer) {
-    throw new Error('Unsupported operation')
-  }
-
-  /** Fetch content slice */
-  public async fslice(filename: string, offset: number, length: number): Promise<string> {
-    const entry = await this.findExact(filename, true)
-    if (entry.data) {
-      const buffer = Buffer.from(entry.data)
-      if (offset > buffer.length) {
-        throw new Error(`notebook fslice: reach file end`)
-      } else {
-        const end = !length ? buffer.length : length + offset
-        return buffer.slice(offset, end).toString()
-      }
-    } else {
-      throw new Error(`fslice: data not found ${filename}`)
-    }
-  }
-
-  /** Create a directory/bucket */
-  public async mkdir(opts: Pick<Arguments, 'argvNoOptions'>): Promise<void> {
-    const mountPath = opts.argvNoOptions[opts.argvNoOptions.indexOf('mkdir') + 1]
-    this.trie.map(mountPath, { mountPath, isDirectory: true })
-  }
-
-  /** Remove a directory/bucket */
-  public rmdir(): Promise<void> {
-    throw new Error('Unsupported operation')
   }
 }
 
