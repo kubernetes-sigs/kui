@@ -29,11 +29,12 @@ import kube from './kube'
 import istio from './istio'
 import calico from './calico'
 import knative from './knative'
+import rancher from './rancher'
 import openshift from './openshift'
 import operators from './operators'
 
 /** Make sure to add any new files to this array */
-const isInternal: string[] = [...ibm, ...kube, ...istio, ...calico, ...knative, ...openshift, ...operators]
+const isInternal: string[] = [...ibm, ...kube, ...istio, ...calico, ...knative, ...rancher, ...openshift, ...operators]
 
 /** Format a regex string from the internal namespaces list e.g. /(kube-node-lease|kube-public)/ */
 
