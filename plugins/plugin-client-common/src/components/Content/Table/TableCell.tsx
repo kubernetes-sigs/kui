@@ -53,7 +53,10 @@ export function onClickForCell(
   cell?: KuiCell,
   opts?: Pick<KuiTable, 'drilldownTo'> & { selectRow?: () => void }
 ): CellOnClickHandler {
-  const { drilldownTo = 'side-split', selectRow = () => undefined } = opts || {}
+  const { selectRow = () => undefined } = opts || {}
+
+  // precedence order of drilldownTo protocol, with a default to drill down to a side split
+  const drilldownTo = (cell && cell.drilldownTo) || row.drilldownTo || (opts && opts.drilldownTo) || 'side-split'
 
   const handler = cell && cell.onclick ? cell.onclick : row.onclick
   if (handler === false) {
