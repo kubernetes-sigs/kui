@@ -100,6 +100,8 @@ export {
   withNamespaceBreadcrumb
 } from './lib/view/formatTable'
 
+export { getPodsCommand } from './lib/view/modes/pods'
+
 export { default as logsMode } from './lib/view/modes/logs-mode-id'
 
 export { isUsage, doHelp, withHelp } from './lib/util/help'

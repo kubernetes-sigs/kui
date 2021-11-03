@@ -16,23 +16,30 @@
 
 import { Arguments, Tab, ModeRegistration, Table } from '@kui-shell/core'
 
+import kubectl from '../../../controller/cli'
 import { getCommandFromArgs } from '../../util/util'
 import { selectorToString } from '../../util/selectors'
 import { KubeOptions } from '../../../controller/kubectl/options'
 import { KubeResource, isKubeResource, isDeployment, isReplicaSet } from '../../model/resource'
+
+export function getPodsCommand(resource: KubeResource, args?: Pick<Arguments, 'argvNoOptions'>) {
+  const { selector } = resource.spec
+
+  return selector
+    ? `${!args ? kubectl : getCommandFromArgs(args)} get pods ${selectorToString(selector)} -n "${
+        resource.metadata.namespace
+      }"`
+    : `${!args ? kubectl : getCommandFromArgs(args)} get pods ${resource.status.podName} -n "${
+        resource.metadata.namespace
+      }"`
+}
 
 /**
  * Render the tabular pods view
  *
  */
 async function renderPods(tab: Tab, resource: KubeResource, args: Arguments<KubeOptions>): Promise<Table> {
-  const { selector } = resource.spec
-
-  const getPods = selector
-    ? `${getCommandFromArgs(args)} get pods ${selectorToString(selector)} -n "${resource.metadata.namespace}"`
-    : `${getCommandFromArgs(args)} get pods ${resource.status.podName} -n "${resource.metadata.namespace}"`
-
-  const tableModel = tab.REPL.qexec<Table>(getPods)
+  const tableModel = tab.REPL.qexec<Table>(getPodsCommand(resource, args))
   return tableModel
 }
 

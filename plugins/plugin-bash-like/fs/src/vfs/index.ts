@@ -84,7 +84,7 @@ export interface VFS {
 
   /** Remove filepath */
   rm(
-    opts: Pick<Arguments, 'command' | 'REPL' | 'parsedOptions' | 'execOptions'>,
+    opts: Pick<Arguments, 'command' | 'tab' | 'REPL' | 'parsedOptions' | 'execOptions'>,
     filepath: string,
     recursive?: boolean
   ): Promise<string | boolean>
