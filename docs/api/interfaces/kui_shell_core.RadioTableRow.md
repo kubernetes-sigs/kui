@@ -19,7 +19,7 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:33](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/RadioTable.ts#L33)
+[packages/core/src/models/RadioTable.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L33)
 
 ---
 
@@ -29,4 +29,4 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:32](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/RadioTable.ts#L32)
+[packages/core/src/models/RadioTable.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L32)

@@ -24,4 +24,4 @@
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:36](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/mmr/content-types.ts#L36)
+[packages/core/src/models/mmr/content-types.ts:36](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L36)

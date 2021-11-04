@@ -41,7 +41,7 @@ calls will _not_ participate in view stacking.
 
 #### Defined in
 
-[packages/core/src/models/repl.ts:58](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/repl.ts#L58)
+[packages/core/src/models/repl.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/repl.ts#L58)
 
 ---
 
@@ -65,7 +65,7 @@ functions, quoting and escaping as necessary.
 
 #### Defined in
 
-[packages/core/src/models/repl.ts:71](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/repl.ts#L71)
+[packages/core/src/models/repl.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/repl.ts#L71)
 
 ---
 
@@ -96,7 +96,7 @@ the REPL interaction to appear on the console.
 
 #### Defined in
 
-[packages/core/src/models/repl.ts:48](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/repl.ts#L48)
+[packages/core/src/models/repl.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/repl.ts#L48)
 
 ---
 
@@ -129,7 +129,7 @@ emitting output to the console.
 
 #### Defined in
 
-[packages/core/src/models/repl.ts:27](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/repl.ts#L27)
+[packages/core/src/models/repl.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/repl.ts#L27)
 
 ---
 
@@ -158,7 +158,7 @@ Evaluate a command and place the result in the current active view for the given
 
 #### Defined in
 
-[packages/core/src/models/repl.ts:64](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/repl.ts#L64)
+[packages/core/src/models/repl.ts:64](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/repl.ts#L64)
 
 ---
 
@@ -188,7 +188,7 @@ want the original model back, not the view-oriented model.
 
 #### Defined in
 
-[packages/core/src/models/repl.ts:40](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/repl.ts#L40)
+[packages/core/src/models/repl.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/repl.ts#L40)
 
 ---
 
@@ -212,4 +212,4 @@ Split the given string into an argv
 
 #### Defined in
 
-[packages/core/src/models/repl.ts:80](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/repl.ts#L80)
+[packages/core/src/models/repl.ts:80](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/repl.ts#L80)

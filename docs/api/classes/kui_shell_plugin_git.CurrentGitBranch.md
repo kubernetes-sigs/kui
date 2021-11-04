@@ -76,7 +76,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:39](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L39)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:39](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L39)
 
 ## Properties
 
@@ -88,7 +88,7 @@ So we don't handle events after unmounting
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:50](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L50)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:50](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L50)
 
 ---
 
@@ -126,7 +126,7 @@ node_modules/@types/react/index.d.ts:473
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:37](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L37)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:37](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L37)
 
 ---
 
@@ -138,7 +138,7 @@ Avoid recomputation for a flurry of events
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:60](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L60)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:60](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L60)
 
 ---
 
@@ -234,7 +234,7 @@ node_modules/@types/react/index.d.ts:455
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:51](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L51)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:51](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L51)
 
 • `Private` `set` **unmounted**(`umm`): `void`
 
@@ -250,7 +250,7 @@ node_modules/@types/react/index.d.ts:455
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:55](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L55)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:55](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L55)
 
 ## Methods
 
@@ -381,7 +381,7 @@ UI for changing branches
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:230](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L230)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:230](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L230)
 
 ---
 
@@ -403,7 +403,7 @@ UI for changes represented by `statusModel`
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:195](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L195)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:195](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L195)
 
 ---
 
@@ -452,7 +452,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:126](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L126)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:126](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L126)
 
 ---
 
@@ -572,7 +572,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:138](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L138)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:138](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L138)
 
 ---
 
@@ -625,7 +625,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:61](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L61)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:61](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L61)
 
 ---
 
@@ -702,7 +702,7 @@ desired Popover model
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:222](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L222)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:222](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L222)
 
 ---
 
@@ -718,7 +718,7 @@ the body for the Popover component
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:157](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L157)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:157](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L157)
 
 ---
 
@@ -734,7 +734,7 @@ the header for the Popover component
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:144](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L144)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:144](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L144)
 
 ---
 
@@ -752,7 +752,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:238](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L238)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:238](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L238)
 
 ---
 
@@ -768,7 +768,7 @@ Check the current branch, and the dirtiness thereof.
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:73](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L73)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:73](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L73)
 
 ---
 
@@ -850,7 +850,7 @@ a model of `git status -s`
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:169](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L169)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:169](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L169)
 
 ---
 
@@ -872,4 +872,4 @@ UI that summarizes the `statusModel` changes
 
 #### Defined in
 
-[plugins/plugin-git/src/CurrentGitBranch.tsx:184](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-git/src/CurrentGitBranch.tsx#L184)
+[plugins/plugin-git/src/CurrentGitBranch.tsx:184](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-git/src/CurrentGitBranch.tsx#L184)

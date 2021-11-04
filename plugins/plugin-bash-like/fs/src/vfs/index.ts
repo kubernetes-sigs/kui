@@ -16,17 +16,7 @@
 
 import slash from 'slash'
 import { isAbsolute, join } from 'path'
-import {
-  cwd,
-  expandHomeDir,
-  Arguments,
-  Events,
-  ParsedOptions,
-  REPL,
-  Table,
-  getCurrentTab,
-  inBrowser
-} from '@kui-shell/core'
+import { Arguments, Events, ParsedOptions, REPL, Table, getCurrentTab, inBrowser, Util } from '@kui-shell/core'
 
 import { FStat } from '../lib/fstat'
 import { KuiGlobOptions, GlobStats } from '../lib/glob'
@@ -220,7 +210,7 @@ export function mount(vfs: VFS | VFSProducingFunction, placeholderMountPath?: st
 
 /** @return the absolute path to `filepath` */
 export function absolute(filepath: string): string {
-  return isAbsolute(expandHomeDir(filepath.toString())) ? filepath : join(cwd(), filepath.toString())
+  return isAbsolute(Util.expandHomeDir(filepath.toString())) ? filepath : join(Util.cwd(), filepath.toString())
 }
 
 /** Lookup compiatible matching mount */
@@ -314,7 +304,7 @@ export async function multiFindMount(
   checkClient = false
 ): Promise<{ filepaths: string[]; mount: VFS }[]> {
   if (filepaths.length === 0) {
-    return multiFindMount([cwd()], checkClient)
+    return multiFindMount([Util.cwd()], checkClient)
   }
 
   return (

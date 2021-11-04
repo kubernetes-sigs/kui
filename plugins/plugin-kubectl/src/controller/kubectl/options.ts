@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, ExecOptions, expandHomeDir, ParsedOptions } from '@kui-shell/core'
+import { Arguments, ExecOptions, ParsedOptions, Util } from '@kui-shell/core'
 
 import { FinalState } from '../../lib/model/states'
 import { getCurrentDefaultNamespace } from './contexts'
@@ -323,7 +323,7 @@ export function withKubeconfigFrom(args: Pick<Arguments<KubeOptions>, 'parsedOpt
   let extras = ' '
 
   if (args.parsedOptions.kubeconfig && !/--kubeconfig/.test(cmdline)) {
-    extras += ` --kubeconfig ${expandHomeDir(args.parsedOptions.kubeconfig)}`
+    extras += ` --kubeconfig ${Util.expandHomeDir(args.parsedOptions.kubeconfig)}`
   }
 
   if (args.parsedOptions.context && !/--context/.test(cmdline)) {

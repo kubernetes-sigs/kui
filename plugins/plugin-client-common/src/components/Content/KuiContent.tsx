@@ -23,7 +23,6 @@ import {
   Tab as KuiTab,
   Content,
   encodeComponent,
-  isHTML,
   isRadioTable,
   isReactProvider,
   isStringWithOptionalContentType,
@@ -34,7 +33,8 @@ import {
   isStringDiffContent,
   isDescriptionList,
   MultiModalResponse,
-  ToolbarProps
+  ToolbarProps,
+  Util
 } from '@kui-shell/core'
 
 import Eval from './Eval'
@@ -169,7 +169,7 @@ export default class KuiContent extends React.PureComponent<KuiMMRProps, State> 
         // ^^^ Notes: typescript doesn't like this, and i don't know why:
         // "is not assignable to type IntrinsicAttributes..."
         // <PaginatedTable {...props} />
-      } else if (isHTML(mode.content)) {
+      } else if (Util.isHTML(mode.content)) {
         return <HTMLDom content={mode.content} />
       } else {
         console.error('Unsupported scalar content', mode)

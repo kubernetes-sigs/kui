@@ -17,7 +17,7 @@
 import React from 'react'
 import { basename } from 'path'
 import prettyMillis from 'pretty-ms'
-import { REPL, Row, Tab, Table, flatten, i18n, prettyPrintBytes as safePrettyPrintBytes } from '@kui-shell/core'
+import { REPL, Row, Tab, Table, i18n, Util } from '@kui-shell/core'
 
 import Bar from './Bar'
 import ErrorCell from './ErrorCell'
@@ -29,6 +29,8 @@ import KuiConfiguration from '../../Client/KuiConfiguration'
 import '../../../../web/scss/components/Table/SequenceDiagram/_index.scss'
 
 const strings = i18n('plugin-client-common')
+
+const safePrettyPrintBytes = Util.prettyPrintBytes
 
 interface Props {
   response: Table
@@ -453,9 +455,9 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
     const durationColoring = new DefaultColoring(this.props.response)
     const durationColor = durationColoring.durationCss.bind(durationColoring)
 
-    return flatten(
+    return Util.flatten(
       this.state.intervals.map((interval, intervalIdx) =>
-        flatten(
+        Util.flatten(
           interval.rows.map((row, rowIdx) => {
             const startDate = new Date(row.attributes[idx1].value)
             const startMillis = startDate.getTime()

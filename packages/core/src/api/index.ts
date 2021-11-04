@@ -16,3 +16,9 @@
 
 import * as Events from './Events'
 export { Events }
+
+import * as Util from './Util'
+export { Util }
+
+import * as Themes from './Themes'
+export { Themes }

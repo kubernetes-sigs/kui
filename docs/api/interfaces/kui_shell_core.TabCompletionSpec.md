@@ -24,7 +24,7 @@ so far.
 
 #### Defined in
 
-[packages/core/src/repl/tab-completion.ts:29](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/repl/tab-completion.ts#L29)
+[packages/core/src/repl/tab-completion.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/tab-completion.ts#L29)
 
 ---
 
@@ -37,4 +37,4 @@ argument that is to be completed.
 
 #### Defined in
 
-[packages/core/src/repl/tab-completion.ts:35](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/repl/tab-completion.ts#L35)
+[packages/core/src/repl/tab-completion.ts:35](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/tab-completion.ts#L35)

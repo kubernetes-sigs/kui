@@ -62,7 +62,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:42](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L42)
+[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:42](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L42)
 
 ## Properties
 
@@ -74,7 +74,7 @@ Cleanups for event listener registrations
 
 #### Defined in
 
-[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:40](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L40)
+[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:40](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L40)
 
 ---
 
@@ -196,7 +196,7 @@ To help maintain state across unmounts
 
 #### Defined in
 
-[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:37](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L37)
+[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:37](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L37)
 
 ## Methods
 
@@ -477,7 +477,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:63](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L63)
+[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:63](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L63)
 
 ---
 
@@ -592,7 +592,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:70](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L70)
+[plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx:70](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-proxy-support/src/view/ProxyOfflineIndicator.tsx#L70)
 
 ---
 

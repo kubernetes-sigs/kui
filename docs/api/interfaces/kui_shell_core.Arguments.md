@@ -43,7 +43,7 @@ The full set of data passed to a command handler
 
 #### Defined in
 
-[packages/core/src/models/command.ts:180](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L180)
+[packages/core/src/models/command.ts:180](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L180)
 
 ---
 
@@ -60,7 +60,7 @@ that pays attention to backslash escaping and quotations
 
 #### Defined in
 
-[packages/core/src/models/command.ts:146](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L146)
+[packages/core/src/models/command.ts:146](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L146)
 
 ---
 
@@ -76,7 +76,7 @@ the residual of `argv` without `parsedOptions`
 
 #### Defined in
 
-[packages/core/src/models/command.ts:151](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L151)
+[packages/core/src/models/command.ts:151](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L151)
 
 ---
 
@@ -89,7 +89,7 @@ EXPERT MODE: The REPL block in which this command was initiated
 
 #### Defined in
 
-[packages/core/src/models/command.ts:204](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L204)
+[packages/core/src/models/command.ts:204](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L204)
 
 ---
 
@@ -105,7 +105,7 @@ the raw command string, as given by the user
 
 #### Defined in
 
-[packages/core/src/models/command.ts:141](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L141)
+[packages/core/src/models/command.ts:141](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L141)
 
 ---
 
@@ -117,7 +117,7 @@ Same as createOutputStream, but for stderr
 
 #### Defined in
 
-[packages/core/src/models/command.ts:198](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L198)
+[packages/core/src/models/command.ts:198](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L198)
 
 ---
 
@@ -131,7 +131,7 @@ and the command.
 
 #### Defined in
 
-[packages/core/src/models/command.ts:193](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L193)
+[packages/core/src/models/command.ts:193](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L193)
 
 ---
 
@@ -144,7 +144,7 @@ influence the execution of another.
 
 #### Defined in
 
-[packages/core/src/models/command.ts:186](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L186)
+[packages/core/src/models/command.ts:186](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L186)
 
 ---
 
@@ -158,7 +158,7 @@ extensions)
 
 #### Defined in
 
-[packages/core/src/models/command.ts:211](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L211)
+[packages/core/src/models/command.ts:211](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L211)
 
 ---
 
@@ -175,7 +175,7 @@ options such as `--option key value`
 
 #### Defined in
 
-[packages/core/src/models/command.ts:167](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L167)
+[packages/core/src/models/command.ts:167](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L167)
 
 ---
 
@@ -200,7 +200,7 @@ pipeline stages, e.g. if command='a b --foo|c', the pipeStages=[['a','b, '--foo'
 
 #### Defined in
 
-[packages/core/src/models/command.ts:156](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L156)
+[packages/core/src/models/command.ts:156](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L156)
 
 ---
 
@@ -212,4 +212,4 @@ The tab context in which the command was initiated
 
 #### Defined in
 
-[packages/core/src/models/command.ts:178](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L178)
+[packages/core/src/models/command.ts:178](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L178)

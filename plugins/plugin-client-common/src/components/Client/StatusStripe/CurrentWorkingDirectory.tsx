@@ -17,7 +17,7 @@
 import React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '../../../'
-import { cwd, Events, inBrowser, i18n } from '@kui-shell/core'
+import { Events, inBrowser, i18n, Util } from '@kui-shell/core'
 
 const strings = i18n('plugin-client-common')
 
@@ -47,7 +47,7 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
    *
    */
   private async reportCurrentDirectory() {
-    const dir = cwd()
+    const dir = Util.cwd()
     this.setState({
       text: dir ? (dir === process.env.HOME ? dir : dir.replace(process.env.HOME, '~')) : undefined,
       viewLevel: dir ? 'normal' : 'hidden'

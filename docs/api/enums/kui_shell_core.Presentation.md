@@ -34,7 +34,7 @@ content: ...
 
 #### Defined in
 
-[packages/core/src/webapp/views/presentation.ts:32](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/presentation.ts#L32)
+[packages/core/src/webapp/views/presentation.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/presentation.ts#L32)
 
 ---
 
@@ -44,7 +44,7 @@ content: ...
 
 #### Defined in
 
-[packages/core/src/webapp/views/presentation.ts:33](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/presentation.ts#L33)
+[packages/core/src/webapp/views/presentation.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/presentation.ts#L33)
 
 ---
 
@@ -54,7 +54,7 @@ content: ...
 
 #### Defined in
 
-[packages/core/src/webapp/views/presentation.ts:35](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/presentation.ts#L35)
+[packages/core/src/webapp/views/presentation.ts:35](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/presentation.ts#L35)
 
 ---
 
@@ -64,7 +64,7 @@ content: ...
 
 #### Defined in
 
-[packages/core/src/webapp/views/presentation.ts:36](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/presentation.ts#L36)
+[packages/core/src/webapp/views/presentation.ts:36](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/presentation.ts#L36)
 
 ---
 
@@ -74,4 +74,4 @@ content: ...
 
 #### Defined in
 
-[packages/core/src/webapp/views/presentation.ts:34](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/presentation.ts#L34)
+[packages/core/src/webapp/views/presentation.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/presentation.ts#L34)

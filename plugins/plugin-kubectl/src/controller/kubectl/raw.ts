@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { spawn } from 'child_process'
 
-import { Arguments, expandHomeDir, split, CodedError, inBrowser, ExecOptions, Registrar } from '@kui-shell/core'
+import { Arguments, split, CodedError, inBrowser, ExecOptions, Registrar, Util } from '@kui-shell/core'
 
 import flags from './flags'
 import RawResponse from './response'
@@ -34,7 +34,7 @@ function expand(args: Args, option: FilepathOption) {
   if (idx >= 0) {
     const orig = args.argv[idx + 1]
     if (orig) {
-      args.argv[idx + 1] = expandHomeDir(orig)
+      args.argv[idx + 1] = Util.expandHomeDir(orig)
     }
   }
 }
@@ -50,7 +50,7 @@ function expandTildes(args: Args, env: Arguments['execOptions']['env']) {
   expand(args, args.parsedOptions.k ? 'k' : 'kustomize')
 
   if (env.HOME) {
-    env.HOME = expandHomeDir(env.HOME)
+    env.HOME = Util.expandHomeDir(env.HOME)
   }
 }
 

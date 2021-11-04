@@ -14,16 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Arguments,
-  Events,
-  expandHomeDir,
-  getPrimaryTabId,
-  i18n,
-  KResponse,
-  Registrar,
-  Tab
-} from '@kui-shell/core'
+import { Arguments, Events, getPrimaryTabId, i18n, KResponse, Registrar, Tab, Util } from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
@@ -138,15 +129,15 @@ export default function plugin(commandTree: Registrar) {
         content: !titles
           ? strings('Created a new tab')
           : Array.isArray(titles) && titles.length > 1
-            ? strings('Created new tabs', args.parsedOptions.title)
-            : strings('Created a new tab named X', Array.isArray(titles) ? titles[0] : titles),
+          ? strings('Created new tabs', args.parsedOptions.title)
+          : strings('Created a new tab named X', Array.isArray(titles) ? titles[0] : titles),
         contentType: 'text/markdown'
       }
 
       const file = args.parsedOptions.snapshot || args.parsedOptions.s
       if (file) {
         // caller wants to open a given snapshot by file in the new tab
-        const filepaths = file.split(/,/).map(file => expandHomeDir(file))
+        const filepaths = file.split(/,/).map(file => Util.expandHomeDir(file))
         const snapshot = await Promise.all(filepaths.map(filepath => loadSnapshotBuffer(args.REPL, filepath)))
 
         return new Promise(resolve => {

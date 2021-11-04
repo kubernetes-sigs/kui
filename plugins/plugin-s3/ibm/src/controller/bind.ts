@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
-import { Arguments, Events, ExecType, ParsedOptions, encodeComponent, expandHomeDir } from '@kui-shell/core'
+import { Arguments, Events, ExecType, ParsedOptions, encodeComponent, Util } from '@kui-shell/core'
 
 import findLocal from './local'
 import filepath from './filepath'
@@ -31,7 +31,7 @@ import ServiceInstance from '../model/ServiceInstance'
 const debug = Debug('plugin-ibmcloud/cos/bind')
 
 async function save({ REPL }: Pick<Arguments, 'REPL'>, config: Config) {
-  await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(expandHomeDir(filepath()))}`, {
+  await REPL.rexec<{ data: string }>(`fwrite ${REPL.encodeComponent(Util.expandHomeDir(filepath()))}`, {
     data: JSON.stringify(config, undefined, 2)
   })
 }

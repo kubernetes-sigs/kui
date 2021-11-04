@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Events, RadioTable, encodeComponent, expandHomeDir } from '@kui-shell/core'
+import { Arguments, Events, RadioTable, encodeComponent, Util } from '@kui-shell/core'
 import { doExecWithStdoutViaPty } from '@kui-shell/plugin-bash-like'
 
 import filepath from './filepath'
@@ -41,7 +41,7 @@ async function doSetEndpoint(args: Arguments, endpoint: string) {
   // config["Default Region"] = await REPL.qexec('ibmcloud cos config region default')
   // console.error('heelo', config)
 
-  await args.REPL.rexec<{ data: string }>(`fwrite ${encodeComponent(expandHomeDir(filepath()))}`, {
+  await args.REPL.rexec<{ data: string }>(`fwrite ${encodeComponent(Util.expandHomeDir(filepath()))}`, {
     data: JSON.stringify(config, undefined, 2)
   })
 

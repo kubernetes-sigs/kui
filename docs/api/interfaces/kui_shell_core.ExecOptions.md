@@ -74,7 +74,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:86](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L86)
+[packages/core/src/models/execOptions.ts:86](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L86)
 
 ---
 
@@ -84,7 +84,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:58](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L58)
+[packages/core/src/models/execOptions.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L58)
 
 ---
 
@@ -94,7 +94,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:78](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L78)
+[packages/core/src/models/execOptions.ts:78](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L78)
 
 ---
 
@@ -104,7 +104,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:52](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L52)
+[packages/core/src/models/execOptions.ts:52](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L52)
 
 ---
 
@@ -114,7 +114,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:89](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L89)
+[packages/core/src/models/execOptions.ts:89](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L89)
 
 ---
 
@@ -124,7 +124,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:80](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L80)
+[packages/core/src/models/execOptions.ts:80](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L80)
 
 ---
 
@@ -134,7 +134,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:90](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L90)
+[packages/core/src/models/execOptions.ts:90](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L90)
 
 ---
 
@@ -144,7 +144,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:53](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L53)
+[packages/core/src/models/execOptions.ts:53](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L53)
 
 ---
 
@@ -154,7 +154,7 @@
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:55](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L55)
+[packages/core/src/models/execOptions.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L55)
 
 ---
 
@@ -166,7 +166,7 @@ pass through uninterpreted data
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:31](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L31)
+[packages/core/src/models/execOptions.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L31)
 
 ---
 
@@ -176,7 +176,7 @@ pass through uninterpreted data
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:47](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L47)
+[packages/core/src/models/execOptions.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L47)
 
 ---
 
@@ -186,7 +186,7 @@ pass through uninterpreted data
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:68](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L68)
+[packages/core/src/models/execOptions.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L68)
 
 ---
 
@@ -196,7 +196,7 @@ pass through uninterpreted data
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:105](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L105)
+[packages/core/src/models/execOptions.ts:105](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L105)
 
 ---
 
@@ -208,7 +208,7 @@ environment variable map
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:40](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L40)
+[packages/core/src/models/execOptions.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L40)
 
 ---
 
@@ -218,7 +218,7 @@ environment variable map
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:76](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L76)
+[packages/core/src/models/execOptions.ts:76](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L76)
 
 ---
 
@@ -230,7 +230,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:28](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L28)
+[packages/core/src/models/execOptions.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L28)
 
 ---
 
@@ -240,7 +240,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:70](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L70)
+[packages/core/src/models/execOptions.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L70)
 
 ---
 
@@ -250,7 +250,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:51](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L51)
+[packages/core/src/models/execOptions.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L51)
 
 ---
 
@@ -260,7 +260,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:67](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L67)
+[packages/core/src/models/execOptions.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L67)
 
 ---
 
@@ -270,7 +270,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:87](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L87)
+[packages/core/src/models/execOptions.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L87)
 
 ---
 
@@ -280,7 +280,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:63](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L63)
+[packages/core/src/models/execOptions.ts:63](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L63)
 
 ---
 
@@ -290,7 +290,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:57](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L57)
+[packages/core/src/models/execOptions.ts:57](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L57)
 
 ---
 
@@ -300,7 +300,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:45](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L45)
+[packages/core/src/models/execOptions.ts:45](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L45)
 
 ---
 
@@ -310,7 +310,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:49](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L49)
+[packages/core/src/models/execOptions.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L49)
 
 ---
 
@@ -320,7 +320,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:69](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L69)
+[packages/core/src/models/execOptions.ts:69](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L69)
 
 ---
 
@@ -330,7 +330,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:59](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L59)
+[packages/core/src/models/execOptions.ts:59](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L59)
 
 ---
 
@@ -340,7 +340,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:65](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L65)
+[packages/core/src/models/execOptions.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L65)
 
 ---
 
@@ -350,7 +350,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:46](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L46)
+[packages/core/src/models/execOptions.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L46)
 
 ---
 
@@ -360,7 +360,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:81](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L81)
+[packages/core/src/models/execOptions.ts:81](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L81)
 
 ---
 
@@ -370,7 +370,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:64](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L64)
+[packages/core/src/models/execOptions.ts:64](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L64)
 
 ---
 
@@ -380,7 +380,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:84](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L84)
+[packages/core/src/models/execOptions.ts:84](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L84)
 
 ---
 
@@ -390,7 +390,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:83](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L83)
+[packages/core/src/models/execOptions.ts:83](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L83)
 
 ---
 
@@ -400,7 +400,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:82](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L82)
+[packages/core/src/models/execOptions.ts:82](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L82)
 
 ---
 
@@ -410,7 +410,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:104](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L104)
+[packages/core/src/models/execOptions.ts:104](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L104)
 
 ---
 
@@ -427,7 +427,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:66](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L66)
+[packages/core/src/models/execOptions.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L66)
 
 ---
 
@@ -437,7 +437,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:93](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L93)
+[packages/core/src/models/execOptions.ts:93](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L93)
 
 ---
 
@@ -447,7 +447,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:60](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L60)
+[packages/core/src/models/execOptions.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L60)
 
 ---
 
@@ -457,7 +457,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:73](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L73)
+[packages/core/src/models/execOptions.ts:73](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L73)
 
 ---
 
@@ -467,7 +467,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:62](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L62)
+[packages/core/src/models/execOptions.ts:62](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L62)
 
 ---
 
@@ -477,7 +477,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:79](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L79)
+[packages/core/src/models/execOptions.ts:79](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L79)
 
 ---
 
@@ -487,7 +487,7 @@ execution UUID
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:56](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L56)
+[packages/core/src/models/execOptions.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L56)
 
 ---
 
@@ -499,7 +499,7 @@ true, if you wish a qexec to return rendered HTML; default is false, meaning you
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:43](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L43)
+[packages/core/src/models/execOptions.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L43)
 
 ---
 
@@ -509,7 +509,7 @@ true, if you wish a qexec to return rendered HTML; default is false, meaning you
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:61](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L61)
+[packages/core/src/models/execOptions.ts:61](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L61)
 
 ---
 
@@ -519,7 +519,7 @@ true, if you wish a qexec to return rendered HTML; default is false, meaning you
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:72](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L72)
+[packages/core/src/models/execOptions.ts:72](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L72)
 
 ---
 
@@ -529,7 +529,7 @@ true, if you wish a qexec to return rendered HTML; default is false, meaning you
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:71](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L71)
+[packages/core/src/models/execOptions.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L71)
 
 ---
 
@@ -539,7 +539,7 @@ true, if you wish a qexec to return rendered HTML; default is false, meaning you
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:85](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L85)
+[packages/core/src/models/execOptions.ts:85](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L85)
 
 ---
 
@@ -551,7 +551,7 @@ force execution in a given tab?
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:25](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L25)
+[packages/core/src/models/execOptions.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L25)
 
 ---
 
@@ -561,7 +561,7 @@ force execution in a given tab?
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:74](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L74)
+[packages/core/src/models/execOptions.ts:74](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L74)
 
 ---
 
@@ -580,7 +580,7 @@ pass watch state variables to subcommands being watched
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:34](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L34)
+[packages/core/src/models/execOptions.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L34)
 
 ## Methods
 
@@ -602,7 +602,7 @@ on job exit, pass the exitCode
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:102](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L102)
+[packages/core/src/models/execOptions.ts:102](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L102)
 
 ---
 
@@ -624,7 +624,7 @@ on job init, pass the job, and get back a stdout; i.e. just before the PTY is br
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:96](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L96)
+[packages/core/src/models/execOptions.ts:96](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L96)
 
 ---
 
@@ -646,7 +646,7 @@ on job ready, i.e. after the PTY is up, but before any data has been processed
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:99](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L99)
+[packages/core/src/models/execOptions.ts:99](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L99)
 
 ---
 
@@ -666,7 +666,7 @@ on job ready, i.e. after the PTY is up, but before any data has been processed
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:92](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L92)
+[packages/core/src/models/execOptions.ts:92](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L92)
 
 ---
 
@@ -686,4 +686,4 @@ on job ready, i.e. after the PTY is up, but before any data has been processed
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:91](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/execOptions.ts#L91)
+[packages/core/src/models/execOptions.ts:91](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L91)

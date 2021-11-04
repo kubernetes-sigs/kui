@@ -18,7 +18,7 @@ import TrieSearch from 'trie-search'
 import micromatch from 'micromatch'
 
 import { FStat, VFS } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, flatten } from '@kui-shell/core'
+import { Arguments, CodedError, Util } from '@kui-shell/core'
 
 import { basename, dirname, join } from './posix'
 
@@ -48,7 +48,7 @@ export default abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>
   protected readonly trie: TrieSearch<Directory | L> = new TrieSearch()
 
   // eslint-disable-next-line no-useless-constructor
-  public constructor(public readonly mountPath = '/kui') {}
+  public constructor(public readonly mountPath = '/kui') { }
 
   protected abstract loadAsString(leaf: L): Promise<string>
 
@@ -167,7 +167,7 @@ export default abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>
   }
 
   public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
-    return flatten(
+    return Util.flatten(
       await Promise.all(
         filepaths
           .map(filepath => ({ filepath, entries: this.find(filepath, parsedOptions.d) }))

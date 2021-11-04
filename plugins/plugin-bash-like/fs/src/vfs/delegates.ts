@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { basename } from 'path'
-import { Arguments, CodedError, cwd, flatten } from '@kui-shell/core'
+import { Arguments, CodedError, Util } from '@kui-shell/core'
 import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
 
 const debug = Debug('plugin/bash-like/fs/vfs/delegates')
@@ -105,7 +105,7 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
  *
  */
 export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry[]> {
-  const filepaths = parameters[1].length === 0 ? [cwd()] : parameters[1].map(absolute)
+  const filepaths = parameters[1].length === 0 ? [Util.cwd()] : parameters[1].map(absolute)
 
   const mounts = await multiFindMount(filepaths, true)
   const vfsContentP = Promise.all(
@@ -123,13 +123,13 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
         }
       }
     })
-  ).then(flatten)
+  ).then(Util.flatten)
 
   // the first maintains the mapping from input to mountContent: DirEntry[][]
   // the second flattens this down to a DirEntry[]
   const mountContentPerInput = Promise.all(filepaths.map(lsMounts))
 
-  const mountContent = flatten(await mountContentPerInput)
+  const mountContent = Util.flatten(await mountContentPerInput)
   if (mounts.length === 0 && mountContent.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${filepaths}`)
     err.code = 404

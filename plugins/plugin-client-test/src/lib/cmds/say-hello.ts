@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, CommandOptions, Registrar, ParsedOptions, KResponse, prettyPrintTime } from '@kui-shell/core'
+import { Arguments, CommandOptions, Registrar, ParsedOptions, KResponse, Util } from '@kui-shell/core'
 
 interface Options extends ParsedOptions {
   grumble?: number
@@ -46,16 +46,16 @@ const sayMixed = (args: Arguments<Options>) => {
 }
 
 const sayTime1 = () => {
-  return prettyPrintTime(new Date())
+  return Util.prettyPrintTime(new Date())
 }
 const sayTime2 = () => {
-  return prettyPrintTime(new Date().toLocaleString())
+  return Util.prettyPrintTime(new Date().toLocaleString())
 }
 const sayTime3 = async () => {
   const t1 = new Date().getTime()
   await new Promise(resolve => setTimeout(resolve, 100))
   const t2 = new Date().getTime()
-  return prettyPrintTime(t2, 'long', t1)
+  return Util.prettyPrintTime(t2, 'long', t1)
 }
 
 const options: CommandOptions = { isExperimental: true }

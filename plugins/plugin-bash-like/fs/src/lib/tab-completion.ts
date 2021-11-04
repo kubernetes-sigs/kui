@@ -21,10 +21,10 @@ import {
   Arguments,
   CommandLine,
   Registrar,
-  expandHomeDir,
   registerTabCompletionEnumerator,
   TabCompletionSpec,
-  CompletionResponse
+  CompletionResponse,
+  Util
 } from '@kui-shell/core'
 
 import { ls } from '../vfs/delegates'
@@ -96,7 +96,7 @@ async function doComplete(args: Arguments) {
   if (dirname) {
     try {
       // Note: by passing a: true, we effect an `ls -a`, which will give us dot files
-      const dirToScan = expandHomeDir(dirname)
+      const dirToScan = Util.expandHomeDir(dirname)
       const fileList = await ls({ tab: args.tab, REPL: args.REPL, parsedOptions: { a: true } }, [dirToScan])
       const _matchingFiles = findMatchingFilesFrom(await fileList, dirToScan, last, lastIsDir)
       const matchingFiles = _matchingFiles && _matchingFiles.length !== 0 ? _matchingFiles : []

@@ -23,7 +23,6 @@ import {
   isCodedError,
   isCommentaryResponse,
   isTabLayoutModificationResponse,
-  isHTML,
   isRadioTable,
   isReactResponse,
   isMarkdownResponse,
@@ -35,7 +34,8 @@ import {
   isTable,
   Tab as KuiTab,
   Stream,
-  Streamable
+  Streamable,
+  Util
 } from '@kui-shell/core'
 
 import { BlockViewTraits, BlockOperationTraits } from './'
@@ -315,7 +315,7 @@ export default class Output extends React.PureComponent<Props, State> {
         isCommentaryResponse(response) ||
         isTabLayoutModificationResponse(response) ||
         isReactResponse(response) ||
-        isHTML(response) ||
+        Util.isHTML(response) ||
         isMarkdownResponse(response) ||
         (typeof response === 'string' && response.length > 0) ||
         typeof response === 'number' ||

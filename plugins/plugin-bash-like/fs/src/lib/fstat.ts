@@ -16,7 +16,7 @@
 
 import { readFile, stat } from 'fs'
 
-import { Arguments, ParsedOptions, CodedError, expandHomeDir } from '@kui-shell/core'
+import { Arguments, ParsedOptions, CodedError, Util } from '@kui-shell/core'
 
 export interface FStat {
   viewer: string
@@ -54,7 +54,7 @@ export const fstat = ({
 }: Pick<Arguments<FStatOptions>, 'argvNoOptions' | 'parsedOptions'>) => {
   const filepath = argvNoOptions[1]
   const viewer = 'open'
-  const fullpath = expandHomeDir(filepath)
+  const fullpath = Util.expandHomeDir(filepath)
 
   const prettyFullPath = fullpath.replace(new RegExp(`^${process.env.HOME}`), '~')
 

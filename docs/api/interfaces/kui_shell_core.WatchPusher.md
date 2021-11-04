@@ -33,7 +33,7 @@ The entire underlying model has disappared
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:62](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L62)
+[packages/core/src/core/jobs/watchable.ts:62](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L62)
 
 ---
 
@@ -49,7 +49,7 @@ A batch of calls to `update` is complete
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:53](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L53)
+[packages/core/src/core/jobs/watchable.ts:53](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L53)
 
 ---
 
@@ -65,7 +65,7 @@ No more updates will be performed
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:59](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L59)
+[packages/core/src/core/jobs/watchable.ts:59](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L59)
 
 ---
 
@@ -85,7 +85,7 @@ No more updates will be performed
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:67](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L67)
+[packages/core/src/core/jobs/watchable.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L67)
 
 ---
 
@@ -107,7 +107,7 @@ The header model has changed
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:65](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L65)
+[packages/core/src/core/jobs/watchable.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L65)
 
 ---
 
@@ -129,7 +129,7 @@ The given keyed row is gone
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:56](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L56)
+[packages/core/src/core/jobs/watchable.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L56)
 
 ---
 
@@ -151,7 +151,7 @@ set table body
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:50](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L50)
+[packages/core/src/core/jobs/watchable.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L50)
 
 ---
 
@@ -174,4 +174,4 @@ set table body
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:47](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/jobs/watchable.ts#L47)
+[packages/core/src/core/jobs/watchable.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L47)

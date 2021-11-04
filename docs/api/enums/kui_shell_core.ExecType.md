@@ -25,7 +25,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:43](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L43)
+[packages/core/src/models/command.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L43)
 
 ---
 
@@ -35,7 +35,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:44](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L44)
+[packages/core/src/models/command.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L44)
 
 ---
 
@@ -45,7 +45,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:45](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L45)
+[packages/core/src/models/command.ts:45](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L45)
 
 ---
 
@@ -55,4 +55,4 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:42](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L42)
+[packages/core/src/models/command.ts:42](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L42)

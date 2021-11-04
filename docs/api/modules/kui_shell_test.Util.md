@@ -62,7 +62,7 @@ Click the specified button action button
 
 #### Defined in
 
-[packages/test/src/api/util.ts:317](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L317)
+[packages/test/src/api/util.ts:317](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L317)
 
 ---
 
@@ -83,7 +83,7 @@ Click the specified button action button
 
 #### Defined in
 
-[packages/test/src/api/util.ts:490](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L490)
+[packages/test/src/api/util.ts:490](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L490)
 
 ---
 
@@ -107,7 +107,7 @@ Click a sidecar button with `selector`
 
 #### Defined in
 
-[packages/test/src/api/util.ts:446](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L446)
+[packages/test/src/api/util.ts:446](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L446)
 
 ---
 
@@ -131,7 +131,7 @@ Click sidecar mode button by `mode`
 
 #### Defined in
 
-[packages/test/src/api/util.ts:435](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L435)
+[packages/test/src/api/util.ts:435](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L435)
 
 ---
 
@@ -154,7 +154,7 @@ Expand the fold on the given line of a monaco editor
 
 #### Defined in
 
-[packages/test/src/api/util.ts:183](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L183)
+[packages/test/src/api/util.ts:183](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L183)
 
 ---
 
@@ -176,7 +176,7 @@ Close all except the first tab
 
 #### Defined in
 
-[packages/test/src/api/util.ts:286](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L286)
+[packages/test/src/api/util.ts:286](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L286)
 
 ---
 
@@ -198,7 +198,7 @@ Click the section button on a block, and expect it to be a section
 
 #### Defined in
 
-[packages/test/src/api/util.ts:340](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L340)
+[packages/test/src/api/util.ts:340](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L340)
 
 ---
 
@@ -218,7 +218,7 @@ Click the section button on a block, and expect it to be a section
 
 #### Defined in
 
-[packages/test/src/api/util.ts:453](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L453)
+[packages/test/src/api/util.ts:453](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L453)
 
 ---
 
@@ -239,7 +239,7 @@ Click the section button on a block, and expect it to be a section
 
 #### Defined in
 
-[packages/test/src/api/util.ts:483](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L483)
+[packages/test/src/api/util.ts:483](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L483)
 
 ---
 
@@ -263,7 +263,7 @@ Execute `command` and expect a table with `name`
 
 #### Defined in
 
-[packages/test/src/api/util.ts:371](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L371)
+[packages/test/src/api/util.ts:371](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L371)
 
 ---
 
@@ -299,7 +299,7 @@ is the given actual array the same as the given expected array?
 
 #### Defined in
 
-[packages/test/src/api/util.ts:157](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L157)
+[packages/test/src/api/util.ts:157](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L157)
 
 ---
 
@@ -335,7 +335,7 @@ is the given struct2 the same as the given struct2 (given as a string)
 
 #### Defined in
 
-[packages/test/src/api/util.ts:119](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L119)
+[packages/test/src/api/util.ts:119](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L119)
 
 ---
 
@@ -368,7 +368,7 @@ is the given struct2 the same as the given struct2 (given as a string)
 
 #### Defined in
 
-[packages/test/src/api/util.ts:105](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L105)
+[packages/test/src/api/util.ts:105](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L105)
 
 ---
 
@@ -403,7 +403,7 @@ is the given struct2 the same as the given struct2 (given as a string)
 
 #### Defined in
 
-[packages/test/src/api/util.ts:253](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L253)
+[packages/test/src/api/util.ts:253](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L253)
 
 ---
 
@@ -437,7 +437,7 @@ is the given struct2 the same as the given struct2 (given as a string)
 
 #### Defined in
 
-[packages/test/src/api/util.ts:132](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L132)
+[packages/test/src/api/util.ts:132](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L132)
 
 ---
 
@@ -470,7 +470,7 @@ is the given struct2 the same as the given struct2 (given as a string)
 
 #### Defined in
 
-[packages/test/src/api/util.ts:154](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L154)
+[packages/test/src/api/util.ts:154](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L154)
 
 ---
 
@@ -493,7 +493,7 @@ get the monaco editor text
 
 #### Defined in
 
-[packages/test/src/api/util.ts:214](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L214)
+[packages/test/src/api/util.ts:214](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L214)
 
 ---
 
@@ -519,7 +519,7 @@ and then open sidecar by clicking the `name`
 
 #### Defined in
 
-[packages/test/src/api/util.ts:426](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L426)
+[packages/test/src/api/util.ts:426](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L426)
 
 ---
 
@@ -541,7 +541,7 @@ Click the section button on a block, and expect it to be a section
 
 #### Defined in
 
-[packages/test/src/api/util.ts:335](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L335)
+[packages/test/src/api/util.ts:335](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L335)
 
 ---
 
@@ -567,7 +567,7 @@ Click the section button on a block, and expect it to be a section
 
 #### Defined in
 
-[packages/test/src/api/util.ts:380](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L380)
+[packages/test/src/api/util.ts:380](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L380)
 
 ---
 
@@ -589,7 +589,7 @@ Output of the given block
 
 #### Defined in
 
-[packages/test/src/api/util.ts:363](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L363)
+[packages/test/src/api/util.ts:363](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L363)
 
 ---
 
@@ -611,7 +611,7 @@ Click the close button on a block, and expect it to be gone
 
 #### Defined in
 
-[packages/test/src/api/util.ts:330](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L330)
+[packages/test/src/api/util.ts:330](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L330)
 
 ---
 
@@ -633,7 +633,7 @@ Click the section button on a block, and expect it to be a section
 
 #### Defined in
 
-[packages/test/src/api/util.ts:345](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L345)
+[packages/test/src/api/util.ts:345](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L345)
 
 ---
 
@@ -667,7 +667,7 @@ Switch sidecar tab
 
 #### Defined in
 
-[packages/test/src/api/util.ts:350](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L350)
+[packages/test/src/api/util.ts:350](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L350)
 
 ---
 
@@ -688,7 +688,7 @@ Switch sidecar tab
 
 #### Defined in
 
-[packages/test/src/api/util.ts:474](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L474)
+[packages/test/src/api/util.ts:474](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L474)
 
 ---
 
@@ -710,7 +710,7 @@ the current number of tabs
 
 #### Defined in
 
-[packages/test/src/api/util.ts:280](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L280)
+[packages/test/src/api/util.ts:280](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L280)
 
 ---
 
@@ -724,7 +724,7 @@ the current number of tabs
 
 #### Defined in
 
-[packages/test/src/api/util.ts:312](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L312)
+[packages/test/src/api/util.ts:312](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L312)
 
 ---
 
@@ -745,4 +745,4 @@ the current number of tabs
 
 #### Defined in
 
-[packages/test/src/api/util.ts:248](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/util.ts#L248)
+[packages/test/src/api/util.ts:248](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L248)

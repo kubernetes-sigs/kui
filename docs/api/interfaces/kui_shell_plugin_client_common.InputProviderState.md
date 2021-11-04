@@ -30,7 +30,7 @@ durationDom, used for counting up duration while Processing
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:189](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L189)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:189](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L189)
 
 ---
 
@@ -40,7 +40,7 @@ durationDom, used for counting up duration while Processing
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:190](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L190)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:190](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L190)
 
 ---
 
@@ -52,7 +52,7 @@ the execution ID for this prompt, if any
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:177](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L177)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:177](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L177)
 
 ---
 
@@ -64,7 +64,7 @@ did user click to re-edit the input?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:174](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L174)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:174](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L174)
 
 ---
 
@@ -76,7 +76,7 @@ state of active reverse-i-search
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:183](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L183)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:183](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L183)
 
 ---
 
@@ -88,7 +88,7 @@ Copy from props; to help with getDerivedStateFromProps
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:165](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L165)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:165](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L165)
 
 ---
 
@@ -100,7 +100,7 @@ is the input in multi-line mode? if true, use text area rather than in-line inpu
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:168](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L168)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:168](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L168)
 
 ---
 
@@ -112,7 +112,7 @@ did user paste multiline texts
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:171](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L171)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:171](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L171)
 
 ---
 
@@ -124,7 +124,7 @@ DOM element for prompt; set via `ref` in render() below
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:180](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L180)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:180](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L180)
 
 ---
 
@@ -136,7 +136,7 @@ state of tab completion
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:186](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L186)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:186](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L186)
 
 ---
 
@@ -148,4 +148,4 @@ typeahead completion?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:193](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L193)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:193](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L193)

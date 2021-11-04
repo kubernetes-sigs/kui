@@ -18,8 +18,6 @@ import Debug from 'debug'
 import { basename, dirname } from 'path'
 
 import {
-  findFile,
-  expandHomeDir,
   isHeadless,
   inProxy,
   i18n,
@@ -27,7 +25,8 @@ import {
   Arguments,
   Registrar,
   KResponse,
-  ParsedOptions
+  ParsedOptions,
+  Util
 } from '@kui-shell/core'
 import File from './File'
 import { contentTypeOf } from './open'
@@ -64,7 +63,7 @@ export function showResponseAsMMR(filepath: string, data: string): MultiModalRes
     spec: {
       filepath,
       size: 0,
-      fullpath: findFile(expandHomeDir(filepath))
+      fullpath: Util.findFile(Util.expandHomeDir(filepath))
     }
   }
 

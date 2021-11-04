@@ -32,4 +32,4 @@ Trait that defines an involvedObject, e.g. for Events
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:468](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L468)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:468](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L468)

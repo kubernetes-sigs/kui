@@ -15,16 +15,7 @@
  */
 
 import React from 'react'
-import {
-  i18n,
-  Event,
-  Events,
-  ExecType,
-  Theme,
-  getDefaultTheme,
-  getPersistedThemeChoice,
-  findThemeByName
-} from '@kui-shell/core'
+import { i18n, Event, Events, ExecType, Themes } from '@kui-shell/core'
 import { NavItem } from '@patternfly/react-core'
 
 import Icons from '../../spi/Icons'
@@ -78,7 +69,9 @@ export default class Tab extends React.PureComponent<Props, State> {
 
     if (!props.topTabNames) {
       setTimeout(async () => {
-        const { theme } = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
+        const { theme } = await Themes.findThemeByName(
+          (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
+        )
         if (theme.topTabNames && !this._unmounted) {
           this.setState({
             topTabNames: theme.topTabNames
@@ -137,7 +130,7 @@ export default class Tab extends React.PureComponent<Props, State> {
       }
     }
 
-    this.onThemeChange = ({ themeModel }: { themeModel: Theme }) => {
+    this.onThemeChange = ({ themeModel }: { themeModel: Themes.Theme }) => {
       if (!this._unmounted) {
         this.setState({
           topTabNames: themeModel.topTabNames || 'fixed'

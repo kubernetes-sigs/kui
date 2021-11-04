@@ -14,15 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  Arguments,
-  CommentaryResponse,
-  ParsedOptions,
-  Registrar,
-  UsageModel,
-  findFile,
-  expandHomeDir
-} from '@kui-shell/core'
+import { Arguments, CommentaryResponse, ParsedOptions, Registrar, UsageModel, Util } from '@kui-shell/core'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
 
 /**
@@ -63,7 +55,7 @@ const usage: UsageModel = {
 }
 
 export async function fetchMarkdownFile(filepath: string, args: Arguments): Promise<string> {
-  const fullpath = findFile(expandHomeDir(filepath))
+  const fullpath = Util.findFile(Util.expandHomeDir(filepath))
   const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
 
   if (suffix !== 'md') {

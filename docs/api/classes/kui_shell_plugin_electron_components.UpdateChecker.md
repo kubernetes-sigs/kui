@@ -68,7 +68,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:108](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L108)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:108](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L108)
 
 ## Properties
 
@@ -307,7 +307,7 @@ node_modules/@types/react/index.d.ts:771
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:157](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L157)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:157](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L157)
 
 ---
 
@@ -323,7 +323,7 @@ Ping the release feed to check for the latest release
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:130](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L130)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:130](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L130)
 
 ---
 
@@ -369,7 +369,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:208](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L208)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:208](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L208)
 
 ---
 
@@ -489,7 +489,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:213](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L213)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:213](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L213)
 
 ---
 
@@ -544,7 +544,7 @@ User has acknoledged the notification
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:245](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L245)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:245](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L245)
 
 ---
 
@@ -584,7 +584,7 @@ What version are we running?
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:193](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L193)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:193](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L193)
 
 ---
 
@@ -632,7 +632,7 @@ Initialize a timer that periodically checks for updates
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:123](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L123)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:123](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L123)
 
 ---
 
@@ -648,7 +648,7 @@ Given current state, is an update available?
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:220](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L220)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:220](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L220)
 
 ---
 
@@ -681,7 +681,7 @@ Given current state, is an update available?
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:159](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L159)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:159](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L159)
 
 ---
 
@@ -699,7 +699,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:257](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L257)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:257](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L257)
 
 ---
 
@@ -781,4 +781,4 @@ Text for update available notification
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:240](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L240)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:240](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L240)

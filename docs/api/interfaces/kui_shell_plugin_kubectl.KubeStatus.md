@@ -31,7 +31,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:55](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L55)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L55)
 
 ---
 
@@ -41,7 +41,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:49](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L49)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L49)
 
 ---
 
@@ -51,7 +51,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:59](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L59)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:59](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L59)
 
 ---
 
@@ -61,7 +61,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:58](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L58)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L58)
 
 ---
 
@@ -71,7 +71,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:46](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L46)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L46)
 
 ---
 
@@ -81,7 +81,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:50](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L50)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L50)
 
 ---
 
@@ -91,7 +91,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:51](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L51)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L51)
 
 ---
 
@@ -101,7 +101,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:52](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L52)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:52](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L52)
 
 ---
 
@@ -111,7 +111,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:54](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L54)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:54](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L54)
 
 ---
 
@@ -121,7 +121,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:53](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L53)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:53](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L53)
 
 ---
 
@@ -131,7 +131,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:48](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L48)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L48)
 
 ---
 
@@ -141,7 +141,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:47](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L47)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L47)
 
 ---
 
@@ -151,7 +151,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:56](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L56)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L56)
 
 ---
 
@@ -161,4 +161,4 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:57](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L57)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:57](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L57)

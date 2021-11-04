@@ -17,7 +17,7 @@
 import React from 'react'
 import { Divider, Select, SelectGroup, SelectOption } from '@patternfly/react-core'
 
-import { flatten, pexecInCurrentTab } from '@kui-shell/core'
+import { pexecInCurrentTab, Util } from '@kui-shell/core'
 
 import Props, { SelectOptions, isGrouped, isDivider } from '../model'
 
@@ -65,7 +65,7 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
   }
 
   private readonly _onClicks = isGrouped(this.props)
-    ? flatten(
+    ? Util.flatten(
         this.props.groups.map(group =>
           isDivider(group) ? [] : group.options.map(option => this.onClick.bind(this, option))
         )

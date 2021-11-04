@@ -28,7 +28,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:25](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L25)
+[packages/core/src/models/CellShould.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L25)
 
 ---
 
@@ -38,7 +38,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:26](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L26)
+[packages/core/src/models/CellShould.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L26)
 
 ---
 
@@ -48,7 +48,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:24](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L24)
+[packages/core/src/models/CellShould.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L24)
 
 ---
 
@@ -58,7 +58,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:31](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L31)
+[packages/core/src/models/CellShould.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L31)
 
 ---
 
@@ -68,7 +68,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:28](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L28)
+[packages/core/src/models/CellShould.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L28)
 
 ---
 
@@ -78,7 +78,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:30](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L30)
+[packages/core/src/models/CellShould.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L30)
 
 ---
 
@@ -88,7 +88,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:29](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L29)
+[packages/core/src/models/CellShould.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L29)
 
 ---
 
@@ -98,7 +98,7 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:23](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L23)
+[packages/core/src/models/CellShould.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L23)
 
 ---
 
@@ -108,4 +108,4 @@ Hints to improve visualization of table cells
 
 #### Defined in
 
-[packages/core/src/models/CellShould.ts:22](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/CellShould.ts#L22)
+[packages/core/src/models/CellShould.ts:22](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CellShould.ts#L22)

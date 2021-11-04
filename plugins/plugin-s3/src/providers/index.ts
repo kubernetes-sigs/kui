@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { flatten, REPL } from '@kui-shell/core'
+import { REPL, Util } from '@kui-shell/core'
 
 import Provider, { ProviderInitializer, UnsupportedS3ProviderError } from './model'
 
@@ -37,7 +37,7 @@ export function addProviderInitializer(providerInitializers: ProviderInitializer
 }
 
 export default async function findAvailableProviders(repl: REPL, reinit: () => void): Promise<Provider[]> {
-  const candidates = flatten(
+  const candidates = Util.flatten(
     await Promise.all(
       providers.map(async ({ init }) => {
         try {

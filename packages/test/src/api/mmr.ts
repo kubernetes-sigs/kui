@@ -16,7 +16,7 @@
 
 import { ok } from 'assert'
 import { Application } from 'spectron'
-import { promiseEach, BadgeSpec } from '@kui-shell/core'
+import { BadgeSpec, Util } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -439,7 +439,7 @@ export class TestMMR {
             await ReplExpect.ok({ app, count })
             await SidecarExpect.open({ app, count })
 
-            await promiseEach(drilldownButtons, async (button, index) => {
+            await Util.promiseEach(drilldownButtons, async (button, index) => {
               // the button should be clickable
               const buttonSelector = Selectors.SIDECAR_TOOLBAR_BUTTON(res.count, button.mode)
               const buttonElt = await app.client.$(buttonSelector)

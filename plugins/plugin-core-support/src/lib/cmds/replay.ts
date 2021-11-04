@@ -16,7 +16,6 @@
 
 import {
   Events,
-  expandHomeDir,
   inElectron,
   Arguments,
   CommandStartEvent,
@@ -25,7 +24,8 @@ import {
   Registrar,
   Notebook,
   isNotebook,
-  getPrimaryTabId
+  getPrimaryTabId,
+  Util
 } from '@kui-shell/core'
 
 /** For the Kui command registration: enforce one mandatory positional parameter */
@@ -96,12 +96,12 @@ async function loadNotebook(REPL: Arguments['REPL'], filepath: string): Promise<
 }
 
 /** Command registration */
-export default function (registrar: Registrar) {
+export default function(registrar: Registrar) {
   // register the `replay` command
   registrar.listen<KResponse, ReplayOptions>(
     '/replay',
     async ({ argvNoOptions, parsedOptions, REPL }) => {
-      const filepaths = argvNoOptions.slice(1).map(_ => expandHomeDir(_))
+      const filepaths = argvNoOptions.slice(1).map(_ => Util.expandHomeDir(_))
       const models = await Promise.all(filepaths.map(filepath => loadNotebook(REPL, filepath)))
 
       const valid = models.map(_ => isNotebook(_))
@@ -128,7 +128,7 @@ export default function (registrar: Registrar) {
 
           return REPL.qexec(
             `tab new --snapshot "${filepaths.join(',')}" --quiet --status-stripe-type ${parsedOptions[
-            'status-stripe'
+              'status-stripe'
             ] || 'blue'} ${titleOptions} ${parsedOptions.r ? ' -r' : ''}`,
             undefined,
             undefined,
@@ -159,7 +159,7 @@ export default function (registrar: Registrar) {
             },
             cb: async (snapshot: Buffer) => {
               try {
-                const filepath = expandHomeDir(argvNoOptions[argvNoOptions.indexOf('snapshot') + 1])
+                const filepath = Util.expandHomeDir(argvNoOptions[argvNoOptions.indexOf('snapshot') + 1])
                 await REPL.rexec<{ data: string }>(`vfs fwrite ${REPL.encodeComponent(filepath)}`, {
                   data: Buffer.from(snapshot).toString()
                 })

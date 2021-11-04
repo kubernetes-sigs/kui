@@ -20,7 +20,7 @@ import { dump, load as parseYAML } from 'js-yaml'
 import * as path from 'path'
 import * as assert from 'assert'
 
-import { expandHomeDir } from '@kui-shell/core'
+import { Util as Utils } from '@kui-shell/core'
 import { Common, CLI, ReplExpect, SidecarExpect, Selectors, Util } from '@kui-shell/test'
 import { remotePodYaml, waitForGreen, createNS, defaultModeForGet } from '@kui-shell/plugin-kubectl/tests/lib/k8s/utils'
 
@@ -86,7 +86,7 @@ Common.localDescribe('kubectl context switching', function(this: Common.ISuite) 
       })
     }
 
-    const defaultFilepath = expandHomeDir('~/.kube/config')
+    const defaultFilepath = Utils.expandHomeDir('~/.kube/config')
     const getKUBECONFIGFilepath = (): string => {
       if (process.env.KUBECONFIG) {
         const kconfigEnv = process.env.KUBECONFIG.slice(0)

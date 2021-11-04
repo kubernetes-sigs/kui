@@ -39,7 +39,7 @@ Component-specific Options
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:28](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L28)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:28](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L28)
 
 ---
 
@@ -49,7 +49,7 @@ Component-specific Options
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:40](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L40)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:40](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L40)
 
 ---
 
@@ -59,7 +59,7 @@ Component-specific Options
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:41](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L41)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:41](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L41)
 
 ---
 
@@ -69,7 +69,7 @@ Component-specific Options
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:43](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L43)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:43](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L43)
 
 ---
 
@@ -81,7 +81,7 @@ popover properties specified by client
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:46](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L46)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:46](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L46)
 
 ---
 
@@ -97,7 +97,7 @@ popover position override specified by container (not client)?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:31](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L31)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:31](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L31)
 
 ---
 
@@ -107,7 +107,7 @@ popover position override specified by container (not client)?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:36](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L36)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:36](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L36)
 
 ---
 
@@ -117,7 +117,7 @@ popover position override specified by container (not client)?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:42](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L42)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:42](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L42)
 
 ---
 
@@ -127,7 +127,7 @@ popover position override specified by container (not client)?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:39](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L39)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:39](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L39)
 
 ---
 
@@ -137,4 +137,4 @@ popover position override specified by container (not client)?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:37](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L37)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:37](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L37)

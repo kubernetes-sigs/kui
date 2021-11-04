@@ -29,7 +29,7 @@ fontawesome icon representation.
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:31](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/registrar/badges.ts#L31)
+[packages/core/src/webapp/views/registrar/badges.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L31)
 
 ---
 
@@ -39,7 +39,7 @@ fontawesome icon representation.
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:29](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/registrar/badges.ts#L29)
+[packages/core/src/webapp/views/registrar/badges.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L29)
 
 ---
 
@@ -49,7 +49,7 @@ fontawesome icon representation.
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:30](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/registrar/badges.ts#L30)
+[packages/core/src/webapp/views/registrar/badges.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L30)
 
 ---
 
@@ -59,7 +59,7 @@ fontawesome icon representation.
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:28](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/registrar/badges.ts#L28)
+[packages/core/src/webapp/views/registrar/badges.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L28)
 
 ## Methods
 
@@ -73,4 +73,4 @@ fontawesome icon representation.
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:32](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/registrar/badges.ts#L32)
+[packages/core/src/webapp/views/registrar/badges.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L32)

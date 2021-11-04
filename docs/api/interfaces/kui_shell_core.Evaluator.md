@@ -27,4 +27,4 @@ Evaluator
 
 #### Defined in
 
-[packages/core/src/models/command.ts:228](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L228)
+[packages/core/src/models/command.ts:228](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L228)

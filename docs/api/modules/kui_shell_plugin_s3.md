@@ -43,7 +43,7 @@
 
 #### Defined in
 
-[plugins/plugin-s3/src/providers/model.ts:43](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-s3/src/providers/model.ts#L43)
+[plugins/plugin-s3/src/providers/model.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-s3/src/providers/model.ts#L43)
 
 ---
 
@@ -53,7 +53,7 @@
 
 #### Defined in
 
-[plugins/plugin-s3/src/providers/model.ts:23](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-s3/src/providers/model.ts#L23)
+[plugins/plugin-s3/src/providers/model.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-s3/src/providers/model.ts#L23)
 
 ## Properties
 
@@ -79,7 +79,7 @@
 
 #### Defined in
 
-[plugins/plugin-s3/src/providers/index.ts:35](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-s3/src/providers/index.ts#L35)
+[plugins/plugin-s3/src/providers/index.ts:35](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-s3/src/providers/index.ts#L35)
 
 ---
 
@@ -95,7 +95,7 @@ a list of the providers, with info about mount status for each
 
 #### Defined in
 
-[plugins/plugin-s3/src/vfs/responders.ts:39](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-s3/src/vfs/responders.ts#L39)
+[plugins/plugin-s3/src/vfs/responders.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-s3/src/vfs/responders.ts#L39)
 
 ---
 
@@ -121,4 +121,4 @@ will allow access to public AWS s3 buckets.
 
 #### Defined in
 
-[plugins/plugin-s3/src/vfs/responders.ts:96](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-s3/src/vfs/responders.ts#L96)
+[plugins/plugin-s3/src/vfs/responders.ts:96](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-s3/src/vfs/responders.ts#L96)

@@ -15,7 +15,7 @@
  */
 
 import { resolve, basename } from 'path'
-import { Arguments, Menu, Registrar, expandHomeDir, i18n } from '@kui-shell/core'
+import { Arguments, Menu, Registrar, i18n, Util } from '@kui-shell/core'
 
 import flags from './flags'
 import { kindPartOf } from './fqn'
@@ -37,7 +37,7 @@ function prepare(args: Arguments<KubeOptions>): string {
   if (!filepath) {
     return args.command
   } else {
-    return args.command.replace(new RegExp(filepath, 'g'), expandHomeDir(filepath))
+    return args.command.replace(new RegExp(filepath, 'g'), Util.expandHomeDir(filepath))
   }
 }
 

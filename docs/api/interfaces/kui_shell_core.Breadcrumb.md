@@ -19,7 +19,7 @@
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:22](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/NavResponse.ts#L22)
+[packages/core/src/models/NavResponse.ts:22](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L22)
 
 ---
 
@@ -29,4 +29,4 @@
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:21](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/NavResponse.ts#L21)
+[packages/core/src/models/NavResponse.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L21)
