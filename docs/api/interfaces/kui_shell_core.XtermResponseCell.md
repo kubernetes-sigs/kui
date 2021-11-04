@@ -21,7 +21,7 @@
 
 #### Defined in
 
-[packages/core/src/models/XtermResponse.ts:29](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/XtermResponse.ts#L29)
+[packages/core/src/models/XtermResponse.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/XtermResponse.ts#L29)
 
 ---
 
@@ -31,7 +31,7 @@
 
 #### Defined in
 
-[packages/core/src/models/XtermResponse.ts:27](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/XtermResponse.ts#L27)
+[packages/core/src/models/XtermResponse.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/XtermResponse.ts#L27)
 
 ---
 
@@ -41,7 +41,7 @@
 
 #### Defined in
 
-[packages/core/src/models/XtermResponse.ts:30](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/XtermResponse.ts#L30)
+[packages/core/src/models/XtermResponse.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/XtermResponse.ts#L30)
 
 ---
 
@@ -51,4 +51,4 @@
 
 #### Defined in
 
-[packages/core/src/models/XtermResponse.ts:28](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/XtermResponse.ts#L28)
+[packages/core/src/models/XtermResponse.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/XtermResponse.ts#L28)

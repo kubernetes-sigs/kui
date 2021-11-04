@@ -21,7 +21,7 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:57](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/StatusModel.ts#L57)
+[packages/core/src/models/StatusModel.ts:57](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L57)
 
 ---
 
@@ -31,7 +31,7 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:58](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/StatusModel.ts#L58)
+[packages/core/src/models/StatusModel.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L58)
 
 ---
 
@@ -47,7 +47,7 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:59](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/StatusModel.ts#L59)
+[packages/core/src/models/StatusModel.ts:59](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L59)
 
 ---
 
@@ -63,4 +63,4 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:62](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/StatusModel.ts#L62)
+[packages/core/src/models/StatusModel.ts:62](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L62)

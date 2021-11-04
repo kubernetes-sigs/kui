@@ -72,7 +72,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:56](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L56)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:56](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L56)
 
 ## Properties
 
@@ -82,7 +82,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:185](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L185)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:185](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L185)
 
 ---
 
@@ -92,7 +92,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:50](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L50)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:50](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L50)
 
 ---
 
@@ -138,7 +138,7 @@ node_modules/@types/react/index.d.ts:473
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:49](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L49)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:49](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L49)
 
 ---
 
@@ -185,7 +185,7 @@ node_modules/@types/react/index.d.ts:504
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:53](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L53)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:53](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L53)
 
 ---
 
@@ -217,7 +217,7 @@ node_modules/@types/react/index.d.ts:499
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:54](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L54)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:54](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L54)
 
 ---
 
@@ -388,7 +388,7 @@ screen defined by the extent of the given dom.
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:102](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L102)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:102](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L102)
 
 ---
 
@@ -402,7 +402,7 @@ screen defined by the extent of the given dom.
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:181](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L181)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:181](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L181)
 
 ---
 
@@ -626,7 +626,7 @@ Transition back to a normal state, where are aren't ready to capture a screensho
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:69](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L69)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:69](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L69)
 
 ---
 
@@ -698,7 +698,7 @@ Render an Alert to tell the user what we captured
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:188](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L188)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:188](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L188)
 
 ---
 
@@ -720,7 +720,7 @@ User has clicked on a region to be captured
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:82](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L82)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:82](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L82)
 
 ---
 
@@ -738,7 +738,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:208](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L208)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:208](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L208)
 
 ---
 
@@ -754,7 +754,7 @@ User has clicked on the Save to Desktop button
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:148](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L148)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:148](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L148)
 
 ---
 
@@ -770,7 +770,7 @@ Inside of the ToastNotification, render a Save to Desktop button
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:168](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Screenshot.tsx#L168)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:168](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Screenshot.tsx#L168)
 
 ---
 

@@ -25,7 +25,7 @@
 
 #### Defined in
 
-[packages/test/src/api/common.ts:277](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L277)
+[packages/test/src/api/common.ts:277](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L277)
 
 ---
 
@@ -35,7 +35,7 @@
 
 #### Defined in
 
-[packages/test/src/api/common.ts:279](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L279)
+[packages/test/src/api/common.ts:279](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L279)
 
 ---
 
@@ -45,7 +45,7 @@
 
 #### Defined in
 
-[packages/test/src/api/common.ts:278](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L278)
+[packages/test/src/api/common.ts:278](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L278)
 
 ## Methods
 
@@ -59,7 +59,7 @@
 
 #### Defined in
 
-[packages/test/src/api/common.ts:280](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L280)
+[packages/test/src/api/common.ts:280](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L280)
 
 ---
 
@@ -73,4 +73,4 @@
 
 #### Defined in
 
-[packages/test/src/api/common.ts:281](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L281)
+[packages/test/src/api/common.ts:281](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L281)

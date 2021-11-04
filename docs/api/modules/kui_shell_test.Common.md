@@ -42,7 +42,7 @@ non-headless targets in travis use the clients/default version
 
 #### Defined in
 
-[packages/test/src/api/common.ts:577](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L577)
+[packages/test/src/api/common.ts:577](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L577)
 
 ## Functions
 
@@ -65,7 +65,7 @@ This is the method that will be called when a test completes
 
 #### Defined in
 
-[packages/test/src/api/common.ts:387](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L387)
+[packages/test/src/api/common.ts:387](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L387)
 
 ---
 
@@ -88,7 +88,7 @@ This is the method that will be called before a test begins
 
 #### Defined in
 
-[packages/test/src/api/common.ts:288](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L288)
+[packages/test/src/api/common.ts:288](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L288)
 
 ---
 
@@ -111,7 +111,7 @@ only execute the test suite in an environment that has docker
 
 #### Defined in
 
-[packages/test/src/api/common.ts:544](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L544)
+[packages/test/src/api/common.ts:544](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L544)
 
 ---
 
@@ -134,7 +134,7 @@ only execute the test suite in local
 
 #### Defined in
 
-[packages/test/src/api/common.ts:539](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L539)
+[packages/test/src/api/common.ts:539](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L539)
 
 ---
 
@@ -157,7 +157,7 @@ only execute the test in local
 
 #### Defined in
 
-[packages/test/src/api/common.ts:534](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L534)
+[packages/test/src/api/common.ts:534](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L534)
 
 ---
 
@@ -190,7 +190,7 @@ only execute the test in local
 
 #### Defined in
 
-[packages/test/src/api/common.ts:430](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L430)
+[packages/test/src/api/common.ts:430](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L430)
 
 ---
 
@@ -213,7 +213,7 @@ only execute the test suite in electron or proxy+browser clients
 
 #### Defined in
 
-[packages/test/src/api/common.ts:562](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L562)
+[packages/test/src/api/common.ts:562](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L562)
 
 ---
 
@@ -236,7 +236,7 @@ only execute the test in electron or proxy+browser client
 
 #### Defined in
 
-[packages/test/src/api/common.ts:572](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L572)
+[packages/test/src/api/common.ts:572](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L572)
 
 ---
 
@@ -259,7 +259,7 @@ only execute the test suite in proxy+browser clients
 
 #### Defined in
 
-[packages/test/src/api/common.ts:557](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L557)
+[packages/test/src/api/common.ts:557](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L557)
 
 ---
 
@@ -282,7 +282,7 @@ only execute the test in proxy+browser client
 
 #### Defined in
 
-[packages/test/src/api/common.ts:567](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L567)
+[packages/test/src/api/common.ts:567](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L567)
 
 ---
 
@@ -306,7 +306,7 @@ reload the app
 
 #### Defined in
 
-[packages/test/src/api/common.ts:253](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L253)
+[packages/test/src/api/common.ts:253](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L253)
 
 ---
 
@@ -329,7 +329,7 @@ only execute the test in non-proxy browser
 
 #### Defined in
 
-[packages/test/src/api/common.ts:552](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L552)
+[packages/test/src/api/common.ts:552](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L552)
 
 ---
 
@@ -351,7 +351,7 @@ restart the app
 
 #### Defined in
 
-[packages/test/src/api/common.ts:234](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L234)
+[packages/test/src/api/common.ts:234](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L234)
 
 ---
 
@@ -365,4 +365,4 @@ restart the app
 
 #### Defined in
 
-[packages/test/src/api/common.ts:585](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/common.ts#L585)
+[packages/test/src/api/common.ts:585](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L585)

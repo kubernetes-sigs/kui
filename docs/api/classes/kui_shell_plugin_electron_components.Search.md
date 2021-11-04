@@ -76,7 +76,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:34](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L34)
+[plugins/plugin-electron-components/src/components/Search.tsx:34](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L34)
 
 ## Properties
 
@@ -86,7 +86,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:32](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L32)
+[plugins/plugin-electron-components/src/components/Search.tsx:32](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L32)
 
 ---
 
@@ -96,7 +96,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:80](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L80)
+[plugins/plugin-electron-components/src/components/Search.tsx:80](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L80)
 
 ---
 
@@ -106,7 +106,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:125](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L125)
+[plugins/plugin-electron-components/src/components/Search.tsx:125](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L125)
 
 ---
 
@@ -116,7 +116,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:139](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L139)
+[plugins/plugin-electron-components/src/components/Search.tsx:139](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L139)
 
 ---
 
@@ -126,7 +126,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:154](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L154)
+[plugins/plugin-electron-components/src/components/Search.tsx:154](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L154)
 
 ---
 
@@ -371,7 +371,7 @@ node_modules/@types/react/index.d.ts:771
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:167](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L167)
+[plugins/plugin-electron-components/src/components/Search.tsx:167](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L167)
 
 ---
 
@@ -593,7 +593,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:119](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L119)
+[plugins/plugin-electron-components/src/components/Search.tsx:119](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L119)
 
 ---
 
@@ -613,7 +613,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:92](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L92)
+[plugins/plugin-electron-components/src/components/Search.tsx:92](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L92)
 
 ---
 
@@ -685,7 +685,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:112](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L112)
+[plugins/plugin-electron-components/src/components/Search.tsx:112](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L112)
 
 ---
 
@@ -699,7 +699,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:57](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L57)
+[plugins/plugin-electron-components/src/components/Search.tsx:57](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L57)
 
 ---
 
@@ -713,7 +713,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:81](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L81)
+[plugins/plugin-electron-components/src/components/Search.tsx:81](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L81)
 
 ---
 
@@ -727,7 +727,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:126](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L126)
+[plugins/plugin-electron-components/src/components/Search.tsx:126](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L126)
 
 ---
 
@@ -741,7 +741,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:140](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L140)
+[plugins/plugin-electron-components/src/components/Search.tsx:140](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L140)
 
 ---
 
@@ -755,7 +755,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:155](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L155)
+[plugins/plugin-electron-components/src/components/Search.tsx:155](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L155)
 
 ---
 
@@ -773,7 +773,7 @@ React.Component.render
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:182](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L182)
+[plugins/plugin-electron-components/src/components/Search.tsx:182](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L182)
 
 ---
 
@@ -787,7 +787,7 @@ React.Component.render
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:174](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L174)
+[plugins/plugin-electron-components/src/components/Search.tsx:174](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L174)
 
 ---
 
@@ -869,4 +869,4 @@ stop findInPage, and clear selections in page
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:48](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-electron-components/src/components/Search.tsx#L48)
+[plugins/plugin-electron-components/src/components/Search.tsx:48](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-electron-components/src/components/Search.tsx#L48)

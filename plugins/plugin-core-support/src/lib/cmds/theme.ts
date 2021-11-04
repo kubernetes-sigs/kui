@@ -16,21 +16,7 @@
 
 import Debug from 'debug'
 
-import {
-  i18n,
-  RadioTable,
-  CellShould,
-  Arguments,
-  Registrar,
-  getPersistedThemeChoice,
-  findThemeByName,
-  switchToTheme,
-  resetToDefaultTheme,
-  getDefaultTheme,
-  Theme,
-  uiThemes,
-  flatten
-} from '@kui-shell/core'
+import { i18n, RadioTable, CellShould, Arguments, Registrar, Themes, uiThemes, Util } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/theme')
@@ -85,15 +71,15 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
   // settings.themes model; e.g. they previously selected a theme that
   // has since been eliminated
   const currentTheme = async () => {
-    const chosenTheme = (await getPersistedThemeChoice()) || (await getDefaultTheme())
-    return findThemeByName(chosenTheme) ? chosenTheme : getDefaultTheme()
+    const chosenTheme = (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
+    return Themes.findThemeByName(chosenTheme) ? chosenTheme : Themes.getDefaultTheme()
   }
   debug('currentTheme', await currentTheme())
   // debug('theme list', uiThemes())
 
-  const body = flatten(
+  const body = Util.flatten(
     (await uiThemes()).map(({ plugin, themes }) =>
-      themes.map((theme: Theme) => ({
+      themes.map((theme: Themes.Theme) => ({
         nameIdx: 0,
         cells: [
           { value: theme.name },
@@ -133,7 +119,7 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
 const set = async ({ argvNoOptions }: Arguments) => {
   const theme = argvNoOptions[argvNoOptions.indexOf('set') + 1]
   debug('set', theme)
-  await switchToTheme(theme)
+  await Themes.switchToTheme(theme)
   return true
 }
 
@@ -159,11 +145,15 @@ export const plugin = (commandTree: Registrar) => {
   })
 
   // returns the current persisted theme choice; helpful for debugging
-  commandTree.listen('/theme/current', async () => (await getPersistedThemeChoice()) || strings('theme.currentTheme'), {
-    hidden: true
-  }) // for debugging
+  commandTree.listen(
+    '/theme/current',
+    async () => (await Themes.getPersistedThemeChoice()) || strings('theme.currentTheme'),
+    {
+      hidden: true
+    }
+  ) // for debugging
 
-  commandTree.listen('/theme/reset', resetToDefaultTheme, {
+  commandTree.listen('/theme/reset', Themes.resetToDefaultTheme, {
     usage: usage.reset
   })
 }

@@ -18,4 +18,4 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:318](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L318)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:318](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L318)

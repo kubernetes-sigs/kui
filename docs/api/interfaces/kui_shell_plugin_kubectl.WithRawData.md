@@ -97,7 +97,7 @@ packages/core/mdist/models/entity.d.ts:23
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:182](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L182)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:182](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L182)
 
 ---
 

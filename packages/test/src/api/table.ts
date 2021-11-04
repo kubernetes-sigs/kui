@@ -15,7 +15,7 @@
  */
 
 import * as assert from 'assert'
-import { promiseEach, Table, Row } from '@kui-shell/core'
+import { Table, Row, Util } from '@kui-shell/core'
 
 import * as Common from './common'
 import * as CLI from './cli'
@@ -97,7 +97,7 @@ export class TestTable {
       try {
         const count = command ? await CLI.command(command, ctx.app).then(_ => _.count) : self.outputCount
 
-        await promiseEach(expectRow, async row => {
+        await Util.promiseEach(expectRow, async row => {
           const rowSelector = `${Selectors.OUTPUT_N(count)} ${Selectors.BY_NAME(row.name)}`
           await (await ctx.app.client.$(rowSelector)).waitForExist()
 
@@ -157,7 +157,7 @@ export class TestTable {
               await res.app.client.$(Selectors.TABLE_AS_SEQUENCE(res.count)).then(_ => _.waitForDisplayed())
 
               if (validation.bars) {
-                await promiseEach(validation.bars, async width => {
+                await Util.promiseEach(validation.bars, async width => {
                   res.app.client.waitUntil(async () => {
                     return res.app.client
                       .$(Selectors.TABLE_AS_SEQUENCE_BAR_WIDTH(res.count, width))

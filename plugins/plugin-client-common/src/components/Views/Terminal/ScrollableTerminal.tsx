@@ -38,8 +38,8 @@ import {
   isExecutableClient,
   executeSequentially,
   isWatchable,
-  promiseEach,
-  Notebook
+  Notebook,
+  Util
 } from '@kui-shell/core'
 
 import ScrollbackState, { ScrollbackOptions, Cleaner } from './ScrollbackState'
@@ -262,7 +262,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         }
 
         if (model.metadata.preferReExecute) {
-          promiseEach(split.blocks, async _ => {
+          Util.promiseEach(split.blocks, async _ => {
             if (hasStartEvent(_)) {
               await newScrollback.facade.REPL.reexec(_.startEvent.command, { execUUID: _.startEvent.execUUID })
             }

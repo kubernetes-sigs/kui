@@ -62,18 +62,18 @@ export class NotebookVFS extends TrieVFS<NotebookLeaf['data']> implements VFS {
           const data = await (match1
             ? import(
                 /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
-                  match1[1] +
-                  '/notebooks/' +
-                  file +
-                  '.json'
-              )
+              match1[1] +
+              '/notebooks/' +
+              file +
+              '.json'
+            )
             : match2
-            ? import(
+              ? import(
                 /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
-                  file +
-                  '.json'
+                file +
+                '.json'
               )
-            : import(
+              : import(
                 /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
               ))
 

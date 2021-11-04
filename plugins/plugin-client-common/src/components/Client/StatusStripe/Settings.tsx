@@ -15,15 +15,7 @@
  */
 
 import React from 'react'
-import {
-  encodeComponent,
-  Events,
-  flatten,
-  getPersistedThemeChoice,
-  i18n,
-  pexecInCurrentTab,
-  uiThemes
-} from '@kui-shell/core'
+import { encodeComponent, Events, i18n, pexecInCurrentTab, Themes, uiThemes, Util } from '@kui-shell/core'
 
 import DropdownWidget, { Props as DropdownWidgetProps } from './DropdownWidget'
 
@@ -54,10 +46,10 @@ export default class Settings extends React.PureComponent<Props, State> {
 
   private async recomputeThemeList() {
     const [currentTheme, themes] = await Promise.all([
-      getPersistedThemeChoice(),
+      Themes.getPersistedThemeChoice(),
       uiThemes()
         .then(_ => _.map(({ themes }) => themes))
-        .then(flatten)
+        .then(Util.flatten)
     ])
 
     this.setState({

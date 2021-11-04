@@ -49,7 +49,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:30](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L30)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L30)
 
 ## Accessors
 
@@ -63,7 +63,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:58](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L58)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L58)
 
 ---
 
@@ -77,7 +77,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:74](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L74)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:74](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L74)
 
 ---
 
@@ -91,7 +91,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:66](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L66)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L66)
 
 ---
 
@@ -105,7 +105,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:82](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L82)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:82](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L82)
 
 ---
 
@@ -119,7 +119,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:70](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L70)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L70)
 
 ---
 
@@ -133,7 +133,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:78](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L78)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:78](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L78)
 
 ---
 
@@ -147,7 +147,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:54](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L54)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:54](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L54)
 
 ---
 
@@ -161,7 +161,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:62](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L62)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:62](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L62)
 
 ---
 
@@ -175,7 +175,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:50](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L50)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L50)
 
 ## Methods
 
@@ -195,4 +195,4 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:86](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/TabModel.ts#L86)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:86](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L86)

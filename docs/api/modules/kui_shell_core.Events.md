@@ -48,7 +48,7 @@
 
 #### Defined in
 
-[packages/core/src/core/events.ts:39](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L39)
+[packages/core/src/core/events.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L39)
 
 ---
 
@@ -65,7 +65,7 @@
 
 #### Defined in
 
-[packages/core/src/core/events.ts:34](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L34)
+[packages/core/src/core/events.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L34)
 
 ---
 
@@ -82,7 +82,7 @@
 
 #### Defined in
 
-[packages/core/src/core/events.ts:50](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L50)
+[packages/core/src/core/events.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L50)
 
 ## Variables
 
@@ -92,7 +92,7 @@
 
 #### Defined in
 
-[packages/core/src/core/events.ts:396](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L396)
+[packages/core/src/core/events.ts:396](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L396)
 
 ---
 
@@ -102,7 +102,7 @@
 
 #### Defined in
 
-[packages/core/src/core/events.ts:29](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L29)
+[packages/core/src/core/events.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L29)
 
 ## Functions
 
@@ -124,7 +124,7 @@ Unhook
 
 #### Defined in
 
-[packages/core/src/core/events.ts:433](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L433)
+[packages/core/src/core/events.ts:433](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L433)
 
 ---
 
@@ -146,7 +146,7 @@ Unhook
 
 #### Defined in
 
-[packages/core/src/core/events.ts:412](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L412)
+[packages/core/src/core/events.ts:412](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L412)
 
 ---
 
@@ -169,7 +169,7 @@ interaction events.
 
 #### Defined in
 
-[packages/core/src/core/events.ts:423](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L423)
+[packages/core/src/core/events.ts:423](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L423)
 
 ---
 
@@ -191,4 +191,4 @@ Hook an event listener up to tab events.
 
 #### Defined in
 
-[packages/core/src/core/events.ts:402](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/events.ts#L402)
+[packages/core/src/core/events.ts:402](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L402)

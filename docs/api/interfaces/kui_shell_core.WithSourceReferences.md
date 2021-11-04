@@ -18,4 +18,4 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:236](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L236)
+[packages/core/src/models/entity.ts:236](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L236)

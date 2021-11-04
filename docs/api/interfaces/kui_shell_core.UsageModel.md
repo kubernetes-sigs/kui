@@ -61,7 +61,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:852](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L852)
+[packages/core/src/core/usage-error.ts:852](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L852)
 
 ---
 
@@ -71,7 +71,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:835](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L835)
+[packages/core/src/core/usage-error.ts:835](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L835)
 
 ---
 
@@ -81,7 +81,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:831](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L831)
+[packages/core/src/core/usage-error.ts:831](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L831)
 
 ---
 
@@ -91,7 +91,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:837](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L837)
+[packages/core/src/core/usage-error.ts:837](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L837)
 
 ---
 
@@ -101,7 +101,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:846](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L846)
+[packages/core/src/core/usage-error.ts:846](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L846)
 
 ---
 
@@ -111,7 +111,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:847](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L847)
+[packages/core/src/core/usage-error.ts:847](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L847)
 
 ---
 
@@ -121,7 +121,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:848](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L848)
+[packages/core/src/core/usage-error.ts:848](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L848)
 
 ---
 
@@ -131,7 +131,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:828](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L828)
+[packages/core/src/core/usage-error.ts:828](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L828)
 
 ---
 
@@ -141,7 +141,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:842](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L842)
+[packages/core/src/core/usage-error.ts:842](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L842)
 
 ---
 
@@ -151,7 +151,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:839](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L839)
+[packages/core/src/core/usage-error.ts:839](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L839)
 
 ---
 
@@ -161,7 +161,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:841](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L841)
+[packages/core/src/core/usage-error.ts:841](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L841)
 
 ---
 
@@ -175,7 +175,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/models/command.ts:262](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L262)
+[packages/core/src/models/command.ts:262](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L262)
 
 ---
 
@@ -185,7 +185,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:840](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L840)
+[packages/core/src/core/usage-error.ts:840](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L840)
 
 ---
 
@@ -195,7 +195,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:830](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L830)
+[packages/core/src/core/usage-error.ts:830](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L830)
 
 ---
 
@@ -205,7 +205,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:844](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L844)
+[packages/core/src/core/usage-error.ts:844](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L844)
 
 ---
 
@@ -215,7 +215,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:856](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L856)
+[packages/core/src/core/usage-error.ts:856](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L856)
 
 ---
 
@@ -229,7 +229,7 @@ CapabilityRequirements.needsUI
 
 #### Defined in
 
-[packages/core/src/models/command.ts:259](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L259)
+[packages/core/src/models/command.ts:259](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L259)
 
 ---
 
@@ -243,7 +243,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/models/command.ts:261](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L261)
+[packages/core/src/models/command.ts:261](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L261)
 
 ---
 
@@ -253,7 +253,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:819](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L819)
+[packages/core/src/core/usage-error.ts:819](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L819)
 
 ---
 
@@ -263,7 +263,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:822](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L822)
+[packages/core/src/core/usage-error.ts:822](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L822)
 
 ---
 
@@ -273,7 +273,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:855](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L855)
+[packages/core/src/core/usage-error.ts:855](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L855)
 
 ---
 
@@ -283,7 +283,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:825](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L825)
+[packages/core/src/core/usage-error.ts:825](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L825)
 
 ---
 
@@ -293,7 +293,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:854](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L854)
+[packages/core/src/core/usage-error.ts:854](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L854)
 
 ---
 
@@ -303,7 +303,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:850](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L850)
+[packages/core/src/core/usage-error.ts:850](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L850)
 
 ---
 
@@ -313,7 +313,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:849](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L849)
+[packages/core/src/core/usage-error.ts:849](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L849)
 
 ---
 
@@ -323,7 +323,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:851](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L851)
+[packages/core/src/core/usage-error.ts:851](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L851)
 
 ---
 
@@ -333,7 +333,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:853](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L853)
+[packages/core/src/core/usage-error.ts:853](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L853)
 
 ---
 
@@ -347,7 +347,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/models/command.ts:260](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L260)
+[packages/core/src/models/command.ts:260](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L260)
 
 ---
 
@@ -357,7 +357,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:843](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L843)
+[packages/core/src/core/usage-error.ts:843](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L843)
 
 ---
 
@@ -367,7 +367,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:845](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L845)
+[packages/core/src/core/usage-error.ts:845](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L845)
 
 ---
 
@@ -377,7 +377,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:838](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L838)
+[packages/core/src/core/usage-error.ts:838](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L838)
 
 ---
 
@@ -387,7 +387,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:832](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L832)
+[packages/core/src/core/usage-error.ts:832](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L832)
 
 ---
 
@@ -397,7 +397,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:833](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L833)
+[packages/core/src/core/usage-error.ts:833](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L833)
 
 ---
 
@@ -407,7 +407,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:836](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L836)
+[packages/core/src/core/usage-error.ts:836](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L836)
 
 ## Methods
 
@@ -427,4 +427,4 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:816](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/core/usage-error.ts#L816)
+[packages/core/src/core/usage-error.ts:816](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L816)

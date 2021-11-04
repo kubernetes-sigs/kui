@@ -23,7 +23,7 @@ import { basename, dirname, join } from 'path'
 import { Client, ItemBucketMetadata } from 'minio'
 
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-import { Arguments, CodedError, REPL, encodeComponent, expandHomeDir, flatten, i18n } from '@kui-shell/core'
+import { Arguments, CodedError, REPL, encodeComponent, Util, i18n } from '@kui-shell/core'
 
 import split from './split'
 import { username, uid, gid } from './username'
@@ -185,7 +185,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   public async ls({ parsedOptions }: Parameters<VFS['ls']>[0], filepaths: string[]) {
     await this.initDone
-    return flatten(
+    return Util.flatten(
       await Promise.all(
         filepaths
           .map(_ => _.replace(this.s3Prefix, this.subdir ? this.subdir + '/' : '').replace(/\/\/$/, '/'))
@@ -266,7 +266,7 @@ class S3VFSResponder extends S3VFS implements VFS {
 
       // we now have matching buckets; next, enumerate objects in those buckets
       // should we be passing displayFullPath here, for the wildcard case?
-      return flatten(
+      return Util.flatten(
         await Promise.all(buckets.map(bucketName => this.listObjectsMatching(bucketName, prefix, pattern, dashD)))
       )
     } else {
@@ -609,7 +609,7 @@ class S3VFSResponder extends S3VFS implements VFS {
     dstFilepath: string
   ) {
     const sources = REPL.rexec<GlobStats[]>(`vfs ls ${srcFilepaths.map(_ => encodeComponent(_)).join(' ')}`)
-    dstFilepath = expandHomeDir(dstFilepath)
+    dstFilepath = Util.expandHomeDir(dstFilepath)
 
     // NOTE: intentionally not lstat; we want what is referenced by
     // the symlink

@@ -69,7 +69,7 @@ export const isSpecialDirectory = (filepath: string) => basename(filepath).charA
  * Behaves like `findFile` with an extra call to `commandPrefix`
  *
  */
-export const findFileWithViewer = (
+const findFileWithViewer = (
   filepath: string,
   { safe = false, keepRelative = false } = {}
 ): { resolved: string; viewer?: string } => {

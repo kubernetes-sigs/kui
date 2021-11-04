@@ -24,7 +24,6 @@ import {
   getPrimaryTabId,
   i18n,
   isCommentaryResponse,
-  isHTML,
   isMarkdownResponse,
   isMultiModalResponse,
   isNavResponse,
@@ -36,7 +35,8 @@ import {
   isMixedResponse,
   isXtermResponse,
   isStatusModel,
-  isUsageError
+  isUsageError,
+  Util
 } from '@kui-shell/core'
 
 const Ansi = React.lazy(() => import('./Ansi'))
@@ -204,7 +204,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
     } else if (isReactResponse(response)) {
       this.onRender()
       return response.react
-    } else if (isHTML(response)) {
+    } else if (Util.isHTML(response)) {
       // ^^^ intentionally using an "else" so that typescript double
       // checks that we've covered every case of ScalarResponse
       this.onRender()

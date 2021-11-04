@@ -16,14 +16,13 @@
 
 import {
   Arguments,
-  expandHomeDir,
-  findFile,
   i18n,
   KResponse,
   Registrar,
   SupportedStringContent,
   Mode,
-  MultiModalResponse
+  MultiModalResponse,
+  Util
 } from '@kui-shell/core'
 import { doExecWithPty } from '@kui-shell/plugin-bash-like'
 import { File, FStat } from '@kui-shell/plugin-bash-like/fs'
@@ -53,7 +52,7 @@ async function gitDiff(args: Arguments): Promise<KResponse> {
   try {
     const { argvNoOptions, REPL } = args
     const filepath = argvNoOptions[argvNoOptions.indexOf('diff') + 1]
-    const fullpath = findFile(expandHomeDir(filepath))
+    const fullpath = Util.findFile(Util.expandHomeDir(filepath))
     const name = basename(filepath)
     const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
     const enclosingDirectory = dirname(filepath)

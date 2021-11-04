@@ -18,7 +18,7 @@ import { userInfo } from 'os'
 import { stat, Stats, constants } from 'fs'
 import { VFS } from '../vfs'
 
-import { i18n, isHeadless, expandHomeDir, CodedError, Arguments, ParsedOptions } from '@kui-shell/core'
+import { i18n, isHeadless, CodedError, Arguments, ParsedOptions, Util } from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
 
@@ -128,7 +128,7 @@ export async function kuiglob(
   // traverse
   const inputs = argvNoOptions
     .slice(argvNoOptions.indexOf('kuiglob') + 1)
-    .map(expandHomeDir) // ~ -> /home/me/
+    .map(Util.expandHomeDir) // ~ -> /home/me/
     .map(_ => _.replace(/([^\\])"/g, '$1')) // /tmp/"foo bar" -> /tmp/foo bar
 
   const stats = inputs.length === 0 ? [] : await Promise.all(inputs.map(isDir))

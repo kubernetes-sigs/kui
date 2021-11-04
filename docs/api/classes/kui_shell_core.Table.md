@@ -64,7 +64,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:212](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L212)
+[packages/core/src/webapp/models/table.ts:216](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L216)
 
 ## Properties
 
@@ -76,7 +76,7 @@ Allowed presentations?
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:161](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L161)
+[packages/core/src/webapp/models/table.ts:165](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L165)
 
 ---
 
@@ -86,7 +86,7 @@ Allowed presentations?
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:142](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L142)
+[packages/core/src/webapp/models/table.ts:146](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L146)
 
 ---
 
@@ -96,7 +96,7 @@ Allowed presentations?
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:200](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L200)
+[packages/core/src/webapp/models/table.ts:204](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L204)
 
 ---
 
@@ -108,7 +108,7 @@ Column index to be interpreted as a time to initialize the computation
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:170](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L170)
+[packages/core/src/webapp/models/table.ts:174](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L174)
 
 ---
 
@@ -120,7 +120,7 @@ Coloring strategy for e.g. 'grid' and 'sequence-diagram' and 'histogram'
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:182](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L182)
+[packages/core/src/webapp/models/table.ts:186](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L186)
 
 ---
 
@@ -132,7 +132,7 @@ Column index to be interpreted as a complete timestamp column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:179](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L179)
+[packages/core/src/webapp/models/table.ts:183](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L183)
 
 ---
 
@@ -144,7 +144,7 @@ Default presentation?
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:158](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L158)
+[packages/core/src/webapp/models/table.ts:162](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L162)
 
 ---
 
@@ -158,7 +158,7 @@ Should drilldowns go to a side split, or to this split? Default:
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:155](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L155)
+[packages/core/src/webapp/models/table.ts:159](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L159)
 
 ---
 
@@ -170,7 +170,7 @@ Column index to be interpreted as a duration column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:167](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L167)
+[packages/core/src/webapp/models/table.ts:171](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L171)
 
 ---
 
@@ -180,7 +180,7 @@ Column index to be interpreted as a duration column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:202](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L202)
+[packages/core/src/webapp/models/table.ts:206](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L206)
 
 ---
 
@@ -190,7 +190,7 @@ Column index to be interpreted as a duration column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:206](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L206)
+[packages/core/src/webapp/models/table.ts:210](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L210)
 
 ---
 
@@ -200,7 +200,7 @@ Column index to be interpreted as a duration column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:210](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L210)
+[packages/core/src/webapp/models/table.ts:214](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L214)
 
 ---
 
@@ -210,7 +210,7 @@ Column index to be interpreted as a duration column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:208](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L208)
+[packages/core/src/webapp/models/table.ts:212](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L212)
 
 ---
 
@@ -220,7 +220,7 @@ Column index to be interpreted as a duration column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:188](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L188)
+[packages/core/src/webapp/models/table.ts:192](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L192)
 
 ---
 
@@ -230,7 +230,7 @@ Column index to be interpreted as a duration column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:186](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L186)
+[packages/core/src/webapp/models/table.ts:190](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L190)
 
 ---
 
@@ -242,7 +242,7 @@ Markdown cells?
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:145](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L145)
+[packages/core/src/webapp/models/table.ts:149](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L149)
 
 ---
 
@@ -256,7 +256,7 @@ all. [Default: 6]
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:195](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L195)
+[packages/core/src/webapp/models/table.ts:199](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L199)
 
 ---
 
@@ -266,7 +266,7 @@ all. [Default: 6]
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:197](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L197)
+[packages/core/src/webapp/models/table.ts:201](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L201)
 
 ---
 
@@ -278,7 +278,7 @@ Column index to be interpreted as a time spent in a run queue
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:173](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L173)
+[packages/core/src/webapp/models/table.ts:177](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L177)
 
 ---
 
@@ -290,7 +290,7 @@ This field helps with watching/paginating
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:148](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L148)
+[packages/core/src/webapp/models/table.ts:152](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L152)
 
 ---
 
@@ -302,7 +302,7 @@ Column index to be interpreted as a start timestamp column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:176](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L176)
+[packages/core/src/webapp/models/table.ts:180](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L180)
 
 ---
 
@@ -314,7 +314,7 @@ Column index to be interpreted as a status column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:164](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L164)
+[packages/core/src/webapp/models/table.ts:168](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L168)
 
 ---
 
@@ -324,7 +324,7 @@ Column index to be interpreted as a status column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:184](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L184)
+[packages/core/src/webapp/models/table.ts:188](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L188)
 
 ---
 
@@ -334,7 +334,7 @@ Column index to be interpreted as a status column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:204](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L204)
+[packages/core/src/webapp/models/table.ts:208](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L208)
 
 ---
 
@@ -344,4 +344,4 @@ Column index to be interpreted as a status column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:199](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/models/table.ts#L199)
+[packages/core/src/webapp/models/table.ts:203](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L203)

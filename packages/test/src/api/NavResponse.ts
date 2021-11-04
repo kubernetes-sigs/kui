@@ -19,7 +19,7 @@ import * as ReplExpect from './repl-expect'
 import * as SidecarExpect from './sidecar-expect'
 import * as Selectors from './selectors'
 import { expectArray } from './util'
-import { promiseEach, Breadcrumb } from '@kui-shell/core'
+import { Breadcrumb, Util } from '@kui-shell/core'
 import { productName } from '@kui-shell/client/config.d/name.json'
 
 interface Param {
@@ -109,7 +109,7 @@ export class TestNavResponse {
               return res
             })
             .then(res =>
-              promiseEach(commandLinks, async link => {
+              Util.promiseEach(commandLinks, async link => {
                 const commandLink = await this.app.client.$(Selectors.SIDECAR_NAV_COMMAND_LINKS(res.count, link.label))
                 await commandLink.waitForDisplayed()
                 await commandLink.click()

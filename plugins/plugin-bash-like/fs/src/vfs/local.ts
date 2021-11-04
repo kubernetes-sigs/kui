@@ -16,7 +16,7 @@
 
 import { createGunzip } from 'zlib'
 import { createReadStream } from 'fs'
-import { Arguments, CodedError, expandHomeDir } from '@kui-shell/core'
+import { Arguments, CodedError, Util } from '@kui-shell/core'
 
 import { VFS, mount } from '.'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
@@ -82,7 +82,7 @@ class LocalVFS implements VFS {
 
   /** Fetch content slice */
   public async fslice(filepath: string, offset: number, _length: number): Promise<string> {
-    const fullpath = expandHomeDir(filepath)
+    const fullpath = Util.expandHomeDir(filepath)
 
     return new Promise((resolve, reject) => {
       let data = ''

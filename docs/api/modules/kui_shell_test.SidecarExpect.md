@@ -74,7 +74,7 @@ Expect the given badge to exist in the sidecar header
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:71](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L71)
+[packages/test/src/api/sidecar-expect.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L71)
 
 ---
 
@@ -106,7 +106,7 @@ Expect the given badge to exist in the sidecar header
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:369](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L369)
+[packages/test/src/api/sidecar-expect.ts:369](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L369)
 
 ---
 
@@ -140,7 +140,7 @@ Expect the given badge to exist in the sidecar header
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:91](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L91)
+[packages/test/src/api/sidecar-expect.ts:91](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L91)
 
 ---
 
@@ -162,7 +162,7 @@ either minimized or fully closed
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:60](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L60)
+[packages/test/src/api/sidecar-expect.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L60)
 
 ---
 
@@ -196,7 +196,7 @@ either minimized or fully closed
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:181](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L181)
+[packages/test/src/api/sidecar-expect.ts:181](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L181)
 
 ---
 
@@ -230,7 +230,7 @@ Expect DescriptionList content in the current tab
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:384](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L384)
+[packages/test/src/api/sidecar-expect.ts:384](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L384)
 
 ---
 
@@ -265,7 +265,7 @@ expect a form in the sidecar content
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:260](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L260)
+[packages/test/src/api/sidecar-expect.ts:260](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L260)
 
 ---
 
@@ -287,7 +287,7 @@ fully closed, not just minimized
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:52](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L52)
+[packages/test/src/api/sidecar-expect.ts:52](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L52)
 
 ---
 
@@ -320,7 +320,7 @@ fully closed, not just minimized
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:145](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L145)
+[packages/test/src/api/sidecar-expect.ts:145](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L145)
 
 ---
 
@@ -342,7 +342,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:65](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L65)
+[packages/test/src/api/sidecar-expect.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L65)
 
 ---
 
@@ -374,7 +374,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:153](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L153)
+[packages/test/src/api/sidecar-expect.ts:153](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L153)
 
 ---
 
@@ -406,7 +406,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:98](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L98)
+[packages/test/src/api/sidecar-expect.ts:98](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L98)
 
 ---
 
@@ -438,7 +438,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:157](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L157)
+[packages/test/src/api/sidecar-expect.ts:157](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L157)
 
 ---
 
@@ -471,7 +471,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:143](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L143)
+[packages/test/src/api/sidecar-expect.ts:143](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L143)
 
 ---
 
@@ -504,7 +504,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:147](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L147)
+[packages/test/src/api/sidecar-expect.ts:147](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L147)
 
 ---
 
@@ -536,7 +536,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:150](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L150)
+[packages/test/src/api/sidecar-expect.ts:150](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L150)
 
 ---
 
@@ -556,7 +556,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:37](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L37)
+[packages/test/src/api/sidecar-expect.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L37)
 
 ---
 
@@ -576,7 +576,7 @@ close the sidecar by ESCAPE key
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:25](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L25)
+[packages/test/src/api/sidecar-expect.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L25)
 
 ---
 
@@ -599,7 +599,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:33](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L33)
+[packages/test/src/api/sidecar-expect.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L33)
 
 ---
 
@@ -619,7 +619,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:44](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L44)
+[packages/test/src/api/sidecar-expect.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L44)
 
 ---
 
@@ -640,7 +640,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:247](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L247)
+[packages/test/src/api/sidecar-expect.ts:247](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L247)
 
 ---
 
@@ -679,7 +679,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:281](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L281)
+[packages/test/src/api/sidecar-expect.ts:281](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L281)
 
 ---
 
@@ -711,7 +711,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:366](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L366)
+[packages/test/src/api/sidecar-expect.ts:366](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L366)
 
 ---
 
@@ -744,7 +744,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:360](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L360)
+[packages/test/src/api/sidecar-expect.ts:360](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L360)
 
 ---
 
@@ -776,7 +776,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:363](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L363)
+[packages/test/src/api/sidecar-expect.ts:363](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L363)
 
 ---
 
@@ -798,7 +798,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:227](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L227)
+[packages/test/src/api/sidecar-expect.ts:227](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L227)
 
 ---
 
@@ -830,7 +830,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:201](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L201)
+[packages/test/src/api/sidecar-expect.ts:201](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L201)
 
 ---
 
@@ -863,7 +863,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:206](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L206)
+[packages/test/src/api/sidecar-expect.ts:206](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L206)
 
 ---
 
@@ -898,7 +898,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:124](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L124)
+[packages/test/src/api/sidecar-expect.ts:124](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L124)
 
 ---
 
@@ -934,7 +934,7 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:112](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L112)
+[packages/test/src/api/sidecar-expect.ts:112](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L112)
 
 ---
 
@@ -966,4 +966,4 @@ Same as open(), but in the block proceding the given block
 
 #### Defined in
 
-[packages/test/src/api/sidecar-expect.ts:235](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/test/src/api/sidecar-expect.ts#L235)
+[packages/test/src/api/sidecar-expect.ts:235](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/sidecar-expect.ts#L235)

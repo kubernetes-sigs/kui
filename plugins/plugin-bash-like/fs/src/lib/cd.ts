@@ -20,7 +20,7 @@
  *
  */
 
-import { cwd, inBrowser, Arguments, Registrar, i18n, expandHomeDir } from '@kui-shell/core'
+import { inBrowser, Arguments, Registrar, i18n, Util } from '@kui-shell/core'
 import { localFilepath } from './usage-helpers'
 import { absolute, findMount } from '../vfs'
 
@@ -46,7 +46,7 @@ const cd = async (args: Arguments) => {
     throw new Error(`cd: not a directory: ${dirAsProvided}`)
   }
 
-  const dir = !dirAsProvided ? expandHomeDir('~') : dirAsProvided === '-' ? process.env.OLDPWD : dirAsProvided
+  const dir = !dirAsProvided ? Util.expandHomeDir('~') : dirAsProvided === '-' ? process.env.OLDPWD : dirAsProvided
 
   const mount = await findMount(dir, undefined, true)
   try {
@@ -60,8 +60,8 @@ const cd = async (args: Arguments) => {
         process.env.OLDPWD = ''
       }
 
-      const OLDPWD = cwd() // remember it for when we're done
-      const newDir = expandHomeDir(fullpath)
+      const OLDPWD = Util.cwd() // remember it for when we're done
+      const newDir = Util.expandHomeDir(fullpath)
 
       if (isLocal && !inBrowser()) {
         process.chdir(newDir)

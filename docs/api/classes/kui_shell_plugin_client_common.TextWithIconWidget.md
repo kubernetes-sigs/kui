@@ -101,7 +101,7 @@ node_modules/@types/react/index.d.ts:480
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:97](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L97)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:97](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L97)
 
 ---
 
@@ -550,7 +550,7 @@ Render the content (excluding any popover/tooltip wrappers) part
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:51](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L51)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:51](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L51)
 
 ---
 
@@ -624,7 +624,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:107](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L107)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:107](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L107)
 
 ---
 

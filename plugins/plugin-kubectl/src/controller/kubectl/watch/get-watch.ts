@@ -28,7 +28,7 @@ import {
   Watcher,
   WatchPusher,
   i18n,
-  flatten
+  Util
 } from '@kui-shell/core'
 
 import { kindPart } from '../fqn'
@@ -399,7 +399,7 @@ class KubectlWatcher implements Abortable, Watcher {
       return {
         title: tables[0].title,
         header: tables[0].header,
-        body: flatten(tables.map(_ => _.body))
+        body: Util.flatten(tables.map(_ => _.body))
       }
     }
   }

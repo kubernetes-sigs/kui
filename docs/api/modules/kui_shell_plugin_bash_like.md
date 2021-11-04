@@ -36,7 +36,7 @@ Command handler that dispatches to an outer shell
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:26](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L26)
+[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L26)
 
 ---
 
@@ -64,7 +64,7 @@ Execute the given command using a pty, but return a string
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:103](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L103)
+[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:103](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L103)
 
 ---
 
@@ -86,7 +86,7 @@ Return the session for the given tab
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/sessionCache.ts:38](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-bash-like/src/pty/sessionCache.ts#L38)
+[plugins/plugin-bash-like/src/pty/sessionCache.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/sessionCache.ts#L38)
 
 ---
 
@@ -107,7 +107,7 @@ Return the session for the given tab
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/tab-state/get.ts:21](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-bash-like/src/tab-state/get.ts#L21)
+[plugins/plugin-bash-like/src/tab-state/get.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/tab-state/get.ts#L21)
 
 ---
 
@@ -130,4 +130,4 @@ Return the session for the given tab
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/server.ts:509](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-bash-like/src/pty/server.ts#L509)
+[plugins/plugin-bash-like/src/pty/server.ts:509](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/server.ts#L509)

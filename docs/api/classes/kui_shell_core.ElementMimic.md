@@ -61,7 +61,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:76](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L76)
+[packages/core/src/util/element-mimic.ts:76](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L76)
 
 ---
 
@@ -71,7 +71,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:54](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L54)
+[packages/core/src/util/element-mimic.ts:54](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L54)
 
 ---
 
@@ -81,7 +81,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:72](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L72)
+[packages/core/src/util/element-mimic.ts:72](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L72)
 
 ---
 
@@ -91,7 +91,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:70](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L70)
+[packages/core/src/util/element-mimic.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L70)
 
 ---
 
@@ -101,7 +101,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:64](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L64)
+[packages/core/src/util/element-mimic.ts:64](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L64)
 
 ---
 
@@ -111,7 +111,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:62](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L62)
+[packages/core/src/util/element-mimic.ts:62](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L62)
 
 ---
 
@@ -121,7 +121,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:60](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L60)
+[packages/core/src/util/element-mimic.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L60)
 
 ---
 
@@ -131,7 +131,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:58](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L58)
+[packages/core/src/util/element-mimic.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L58)
 
 ---
 
@@ -141,7 +141,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:66](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L66)
+[packages/core/src/util/element-mimic.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L66)
 
 ---
 
@@ -151,7 +151,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:74](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L74)
+[packages/core/src/util/element-mimic.ts:74](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L74)
 
 ---
 
@@ -165,7 +165,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:68](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L68)
+[packages/core/src/util/element-mimic.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L68)
 
 ---
 
@@ -175,7 +175,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:56](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L56)
+[packages/core/src/util/element-mimic.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L56)
 
 ## Methods
 
@@ -189,7 +189,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:118](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L118)
+[packages/core/src/util/element-mimic.ts:118](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L118)
 
 ---
 
@@ -209,7 +209,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:82](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L82)
+[packages/core/src/util/element-mimic.ts:82](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L82)
 
 ---
 
@@ -223,7 +223,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:105](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L105)
+[packages/core/src/util/element-mimic.ts:105](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L105)
 
 ---
 
@@ -237,7 +237,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:78](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L78)
+[packages/core/src/util/element-mimic.ts:78](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L78)
 
 ---
 
@@ -257,7 +257,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:86](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L86)
+[packages/core/src/util/element-mimic.ts:86](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L86)
 
 ---
 
@@ -278,7 +278,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:122](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L122)
+[packages/core/src/util/element-mimic.ts:122](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L122)
 
 ---
 
@@ -298,7 +298,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:146](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L146)
+[packages/core/src/util/element-mimic.ts:146](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L146)
 
 ---
 
@@ -318,7 +318,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:136](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L136)
+[packages/core/src/util/element-mimic.ts:136](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L136)
 
 ---
 
@@ -332,7 +332,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:114](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L114)
+[packages/core/src/util/element-mimic.ts:114](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L114)
 
 ---
 
@@ -352,7 +352,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:110](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L110)
+[packages/core/src/util/element-mimic.ts:110](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L110)
 
 ---
 
@@ -366,7 +366,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:130](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L130)
+[packages/core/src/util/element-mimic.ts:130](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L130)
 
 ---
 
@@ -380,7 +380,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:95](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L95)
+[packages/core/src/util/element-mimic.ts:95](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L95)
 
 ---
 
@@ -400,7 +400,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:99](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L99)
+[packages/core/src/util/element-mimic.ts:99](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L99)
 
 ---
 
@@ -421,7 +421,7 @@
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:90](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L90)
+[packages/core/src/util/element-mimic.ts:90](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L90)
 
 ---
 
@@ -441,4 +441,4 @@ dom is ElementMimic
 
 #### Defined in
 
-[packages/core/src/util/element-mimic.ts:155](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/util/element-mimic.ts#L155)
+[packages/core/src/util/element-mimic.ts:155](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/element-mimic.ts#L155)

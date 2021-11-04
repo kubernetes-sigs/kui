@@ -27,7 +27,7 @@ The name part of a metadata bearing resource.
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:47](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L47)
+[packages/core/src/models/entity.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L47)
 
 ---
 
@@ -47,4 +47,4 @@ The name part of a metadata bearing resource.
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:49](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L49)
+[packages/core/src/models/entity.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L49)

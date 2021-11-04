@@ -54,7 +54,7 @@ An incomplete set of kubectl options
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:273](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L273)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:273](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L273)
 
 ---
 
@@ -78,7 +78,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:274](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L274)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:274](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L274)
 
 ---
 
@@ -88,7 +88,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:285](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L285)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:285](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L285)
 
 ---
 
@@ -98,7 +98,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:276](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L276)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:276](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L276)
 
 ---
 
@@ -108,7 +108,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:286](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L286)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:286](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L286)
 
 ---
 
@@ -118,7 +118,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:277](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L277)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:277](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L277)
 
 ---
 
@@ -128,7 +128,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:280](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L280)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:280](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L280)
 
 ---
 
@@ -138,7 +138,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:303](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L303)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:303](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L303)
 
 ---
 
@@ -148,7 +148,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:304](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L304)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:304](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L304)
 
 ---
 
@@ -158,7 +158,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:309](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L309)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:309](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L309)
 
 ---
 
@@ -168,7 +168,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:310](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L310)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:310](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L310)
 
 ---
 
@@ -178,7 +178,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:306](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L306)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:306](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L306)
 
 ---
 
@@ -188,7 +188,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:278](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L278)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:278](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L278)
 
 ---
 
@@ -198,7 +198,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:307](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L307)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:307](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L307)
 
 ---
 
@@ -208,7 +208,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:300](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L300)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:300](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L300)
 
 ---
 
@@ -218,7 +218,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:301](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L301)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:301](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L301)
 
 ---
 
@@ -228,7 +228,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:312](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L312)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:312](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L312)
 
 ---
 
@@ -238,7 +238,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:282](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L282)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:282](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L282)
 
 ---
 
@@ -248,7 +248,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:283](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L283)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:283](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L283)
 
 ---
 
@@ -258,7 +258,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:288](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L288)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:288](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L288)
 
 ---
 
@@ -268,7 +268,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:289](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L289)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:289](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L289)
 
 ---
 
@@ -278,7 +278,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:297](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L297)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:297](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L297)
 
 ---
 
@@ -288,7 +288,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:298](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L298)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:298](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L298)
 
 ---
 
@@ -298,7 +298,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:314](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L314)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:314](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L314)
 
 ---
 
@@ -308,7 +308,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:291](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L291)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:291](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L291)
 
 ---
 
@@ -318,7 +318,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:295](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L295)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:295](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L295)
 
 ---
 
@@ -328,7 +328,7 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:292](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L292)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:292](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L292)
 
 ---
 
@@ -338,4 +338,4 @@ packages/core/mdist/models/command.d.ts:79
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:293](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L293)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:293](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L293)

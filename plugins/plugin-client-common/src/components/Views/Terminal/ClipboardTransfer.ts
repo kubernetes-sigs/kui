@@ -15,7 +15,7 @@
  */
 
 import { v4 } from 'uuid'
-import { CommandStartEvent, CommandCompleteEvent, Events, ScalarResponse, flatten, getTabId } from '@kui-shell/core'
+import { CommandStartEvent, CommandCompleteEvent, Events, ScalarResponse, getTabId, Util } from '@kui-shell/core'
 import ScrollableTerminal, { getSelectionText } from './ScrollableTerminal'
 import { isNotebookImpl } from './Snapshot'
 import { FinishedBlock, hasStartEvent, isWithCompleteEvent } from './Block/BlockModel'
@@ -144,7 +144,7 @@ export function onCopy(this: ScrollableTerminal, evt: ClipboardEvent, onSuccess?
             console.error('invalid snapshot', snapshot)
             throw new Error('Invalid snapshot')
           } else {
-            const blocks = flatten(
+            const blocks = Util.flatten(
               snapshot.spec.splits.map(split => {
                 return split.blocks
               })

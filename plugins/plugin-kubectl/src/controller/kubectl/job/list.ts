@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Registrar, isTable, flatten } from '@kui-shell/core'
+import { Registrar, isTable, Util } from '@kui-shell/core'
 
 import { doGet, getFlags } from '../get'
 import { capitalize } from '../../../lib/view/modes/table-to-map'
@@ -28,8 +28,8 @@ const defaultLimit = 200
  *
  */
 function variantsOf(kind: string, version: string, group: string): string[] {
-  return flatten(
-    flatten([kind, `${kind}s`].map(kind => [kind, capitalize(kind)])).map(kind => [
+  return Util.flatten(
+    Util.flatten([kind, `${kind}s`].map(kind => [kind, capitalize(kind)])).map(kind => [
       kind,
       `${kind}.${group}`,
       `${kind}.${version}.${group}`

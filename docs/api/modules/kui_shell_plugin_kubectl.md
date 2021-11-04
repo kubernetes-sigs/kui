@@ -80,6 +80,7 @@
 - [getLabelForArgv](kui_shell_plugin_kubectl.md#getlabelforargv)
 - [getNamespace](kui_shell_plugin_kubectl.md#getnamespace)
 - [getNamespaceForArgv](kui_shell_plugin_kubectl.md#getnamespaceforargv)
+- [getPodsCommand](kui_shell_plugin_kubectl.md#getpodscommand)
 - [getTabState](kui_shell_plugin_kubectl.md#gettabstate)
 - [getTransformer](kui_shell_plugin_kubectl.md#gettransformer)
 - [getter](kui_shell_plugin_kubectl.md#getter)
@@ -119,7 +120,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:421](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L421)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:421](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L421)
 
 ---
 
@@ -135,7 +136,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:544](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L544)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:544](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L544)
 
 ---
 
@@ -154,7 +155,7 @@ The basic Kubernetes resource
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:194](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L194)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:194](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L194)
 
 ---
 
@@ -174,7 +175,7 @@ automatically.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:238](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L238)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:238](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L238)
 
 ## Properties
 
@@ -216,7 +217,7 @@ memory and cpu parsing
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/parse.ts:144](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/util/parse.ts#L144)
+[plugins/plugin-kubectl/src/lib/util/parse.ts:144](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/util/parse.ts#L144)
 
 ---
 
@@ -226,7 +227,7 @@ memory and cpu parsing
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/flags.ts:66](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/flags.ts#L66)
+[plugins/plugin-kubectl/src/controller/kubectl/flags.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/flags.ts#L66)
 
 ## Functions
 
@@ -257,7 +258,7 @@ jsonpath or go-template? I think so from the latter?
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:513](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L513)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:513](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L513)
 
 ---
 
@@ -281,7 +282,7 @@ Register a command listener
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/describe.ts:48](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/describe.ts#L48)
+[plugins/plugin-kubectl/src/controller/kubectl/describe.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/describe.ts#L48)
 
 ---
 
@@ -314,7 +315,7 @@ Register a command listener
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/create.ts:34](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/create.ts#L34)
+[plugins/plugin-kubectl/src/controller/kubectl/create.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/create.ts#L34)
 
 ---
 
@@ -346,7 +347,7 @@ Register a command listener
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/delete.ts:41](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/delete.ts#L41)
+[plugins/plugin-kubectl/src/controller/kubectl/delete.ts:41](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/delete.ts#L41)
 
 ---
 
@@ -371,7 +372,7 @@ stdout, and discards the exit code and stderr.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:163](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L163)
+[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:163](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L163)
 
 ---
 
@@ -392,7 +393,7 @@ stdout, and discards the exit code and stderr.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec-to-markdown.ts:24](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/exec-to-markdown.ts#L24)
+[plugins/plugin-kubectl/src/controller/kubectl/exec-to-markdown.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/exec-to-markdown.ts#L24)
 
 ---
 
@@ -424,7 +425,7 @@ Execute the given command using a pty
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:107](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L107)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:107](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L107)
 
 ---
 
@@ -455,7 +456,7 @@ Execute the given command using a pty
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:282](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L282)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:282](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L282)
 
 ---
 
@@ -500,7 +501,7 @@ poll until the given FinalState is reached.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:259](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L259)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:259](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L259)
 
 ---
 
@@ -531,7 +532,7 @@ Behaves as does `exec`, except that it projects out just the
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:86](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L86)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:86](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L86)
 
 ---
 
@@ -560,7 +561,7 @@ Execute the given command using a pty, but return a string
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:158](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L158)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:158](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L158)
 
 ---
 
@@ -596,7 +597,7 @@ Behaves as does `exec`, except that it projects out just the
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:223](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L223)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:223](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L223)
 
 ---
 
@@ -632,7 +633,7 @@ get-as-entity, or get-as-custom, depending on the `-o` flag.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/get.ts:332](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L332)
+[plugins/plugin-kubectl/src/controller/kubectl/get.ts:331](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L331)
 
 ---
 
@@ -660,7 +661,7 @@ get-as-entity, or get-as-custom, depending on the `-o` flag.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/help.ts:467](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/util/help.ts#L467)
+[plugins/plugin-kubectl/src/lib/util/help.ts:467](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/util/help.ts#L467)
 
 ---
 
@@ -680,7 +681,7 @@ get-as-entity, or get-as-custom, depending on the `-o` flag.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:134](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L134)
+[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:134](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L134)
 
 ---
 
@@ -712,7 +713,7 @@ get-as-entity, or get-as-custom, depending on the `-o` flag.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/run.ts:40](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/run.ts#L40)
+[plugins/plugin-kubectl/src/controller/kubectl/run.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/run.ts#L40)
 
 ---
 
@@ -734,13 +735,13 @@ get-as-entity, or get-as-custom, depending on the `-o` flag.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/config.ts:39](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L39)
+[plugins/plugin-kubectl/src/controller/kubectl/config.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L39)
 
 ---
 
 ### fetchFileString
 
-▸ **fetchFileString**(`repl`, `url`, `headers?`): `Promise`<(`void` \| `string`)[]\>
+▸ **fetchFileString**(`args`, `url`, `headers?`): `Promise`<(`void` \| `string`)[]\>
 
 same as fetchFile, but returning a string rather than a Buffer
 
@@ -748,7 +749,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 | Name       | Type                          |
 | :--------- | :---------------------------- |
-| `repl`     | `default`                     |
+| `args`     | `ContextArgs`                 |
 | `url`      | `string`                      |
 | `headers?` | `Record`<`string`, `string`\> |
 
@@ -758,7 +759,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/fetch-file.ts:295](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/util/fetch-file.ts#L295)
+[plugins/plugin-kubectl/src/lib/util/fetch-file.ts:300](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/util/fetch-file.ts#L300)
 
 ---
 
@@ -778,7 +779,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/flags.ts:44](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/flags.ts#L44)
+[plugins/plugin-kubectl/src/controller/kubectl/flags.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/flags.ts#L44)
 
 ---
 
@@ -809,7 +810,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:210](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L210)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:210](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L210)
 
 ---
 
@@ -832,7 +833,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/fqn.ts:93](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/fqn.ts#L93)
+[plugins/plugin-kubectl/src/controller/kubectl/fqn.ts:93](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/fqn.ts#L93)
 
 ---
 
@@ -852,7 +853,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/fqn.ts:101](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/fqn.ts#L101)
+[plugins/plugin-kubectl/src/controller/kubectl/fqn.ts:101](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/fqn.ts#L101)
 
 ---
 
@@ -875,7 +876,7 @@ a list of `KubeContext` for all known contexts
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:67](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L67)
+[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L68)
 
 ---
 
@@ -898,7 +899,7 @@ a list of `KubeContext` for all known contexts
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/get.ts:183](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L183)
+[plugins/plugin-kubectl/src/controller/kubectl/get.ts:183](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L183)
 
 ---
 
@@ -918,7 +919,7 @@ a list of `KubeContext` for all known contexts
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/util.ts:115](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/util/util.ts#L115)
+[plugins/plugin-kubectl/src/lib/util/util.ts:115](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/util/util.ts#L115)
 
 ---
 
@@ -941,7 +942,7 @@ e.g. for kubectl logs
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:229](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L229)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:229](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L229)
 
 ---
 
@@ -964,7 +965,7 @@ a `KubeContext` representing the current context
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:55](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L55)
+[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L56)
 
 ---
 
@@ -985,49 +986,51 @@ a `KubeContext` representing the current context
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:71](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L71)
+[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:72](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L72)
 
 ---
 
 ### getCurrentDefaultContextName
 
-▸ **getCurrentDefaultContextName**(`__namedParameters`): `Promise`<`string`\>
+▸ **getCurrentDefaultContextName**(`__namedParameters`): `string` \| `Promise`<`string`\>
 
 #### Parameters
 
-| Name                     | Type      |
-| :----------------------- | :-------- |
-| `__namedParameters`      | `Object`  |
-| `__namedParameters.REPL` | `default` |
+| Name                | Type          |
+| :------------------ | :------------ |
+| `__namedParameters` | `ContextArgs` |
 
 #### Returns
 
-`Promise`<`string`\>
+`string` \| `Promise`<`string`\>
+
+the relevant context for the given args/command line
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:130](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L130)
+[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:105](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L105)
 
 ---
 
 ### getCurrentDefaultNamespace
 
-▸ **getCurrentDefaultNamespace**(`__namedParameters`): `Promise`<`string`\>
+▸ **getCurrentDefaultNamespace**(`args`): `Promise`<`string`\>
 
 #### Parameters
 
-| Name                     | Type      |
-| :----------------------- | :-------- |
-| `__namedParameters`      | `Object`  |
-| `__namedParameters.REPL` | `default` |
+| Name   | Type          |
+| :----- | :------------ |
+| `args` | `ContextArgs` |
 
 #### Returns
 
 `Promise`<`string`\>
 
+the relevant namespace for the given args/command line
+
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:97](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L97)
+[plugins/plugin-kubectl/src/controller/kubectl/contexts.ts:128](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/contexts.ts#L128)
 
 ---
 
@@ -1051,7 +1054,7 @@ e.g. Pod
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/explain.ts:329](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/explain.ts#L329)
+[plugins/plugin-kubectl/src/controller/kubectl/explain.ts:329](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/explain.ts#L329)
 
 ---
 
@@ -1071,7 +1074,7 @@ e.g. Pod
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:144](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L144)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:144](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L144)
 
 ---
 
@@ -1091,7 +1094,7 @@ e.g. Pod
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:169](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L169)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:169](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L169)
 
 ---
 
@@ -1113,7 +1116,7 @@ the namespace as expressed in the command line, or the default from context
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:206](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L206)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:206](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L206)
 
 ---
 
@@ -1136,7 +1139,28 @@ provided by the user in their command line.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:214](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L214)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:214](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L214)
+
+---
+
+### getPodsCommand
+
+▸ **getPodsCommand**(`resource`, `args?`): `string`
+
+#### Parameters
+
+| Name       | Type                                                                                                                                              |
+| :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `resource` | [`KubeResource`](kui_shell_plugin_kubectl.md#kuberesource)<[`KubeStatus`](../interfaces/kui_shell_plugin_kubectl.KubeStatus.md), `KubeMetadata`\> |
+| `args?`    | `Pick`<`EvaluatorArgs`<`ParsedOptions`\>, `"argvNoOptions"`\>                                                                                     |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[plugins/plugin-kubectl/src/lib/view/modes/pods.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/view/modes/pods.ts#L25)
 
 ---
 
@@ -1157,7 +1181,7 @@ provided by the user in their command line.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/tab-state.ts:27](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/tab-state.ts#L27)
+[plugins/plugin-kubectl/src/tab-state.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/tab-state.ts#L27)
 
 ---
 
@@ -1180,7 +1204,7 @@ KubeResource -> MultiModalResponse view transformer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/get.ts:403](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L403)
+[plugins/plugin-kubectl/src/controller/kubectl/get.ts:402](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L402)
 
 ---
 
@@ -1204,7 +1228,7 @@ Register a command listener
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/get.ts:466](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L466)
+[plugins/plugin-kubectl/src/controller/kubectl/get.ts:465](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/get.ts#L465)
 
 ---
 
@@ -1228,7 +1252,7 @@ parsed properly.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:183](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L183)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:183](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L183)
 
 ---
 
@@ -1250,7 +1274,7 @@ entity is KubeResource<KubeStatus, KubeMetadata\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:530](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L530)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:530](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L530)
 
 ---
 
@@ -1272,7 +1296,7 @@ whether the given resource is an instance of a Deployment
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:427](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L427)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:427](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L427)
 
 ---
 
@@ -1292,7 +1316,7 @@ whether the given resource is an instance of a Deployment
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:317](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L317)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:317](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L317)
 
 ---
 
@@ -1312,7 +1336,7 @@ whether the given resource is an instance of a Deployment
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:112](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L112)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:112](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L112)
 
 ---
 
@@ -1334,7 +1358,7 @@ whether the given resource is an instance of a Deploymemt
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:399](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L399)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:399](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L399)
 
 ---
 
@@ -1354,7 +1378,7 @@ resource is KubeItems<KubeResource<KubeStatus, KubeMetadata\>\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:552](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L552)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:552](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L552)
 
 ---
 
@@ -1381,7 +1405,7 @@ resource is KubeItems<Item\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:560](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L560)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:560](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L560)
 
 ---
 
@@ -1403,7 +1427,7 @@ entity is KubeResource<KubeStatus, KubeMetadata\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:214](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L214)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:214](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L214)
 
 ---
 
@@ -1425,7 +1449,7 @@ whether the given resource is an instance of a Pod
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:335](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L335)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:335](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L335)
 
 ---
 
@@ -1445,7 +1469,7 @@ resource is PodList
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:556](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L556)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:556](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L556)
 
 ---
 
@@ -1465,7 +1489,7 @@ resource is Secret<Record<string, any\>\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:760](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/model/resource.ts#L760)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:760](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L760)
 
 ---
 
@@ -1485,7 +1509,7 @@ resource is Secret<Record<string, any\>\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:118](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L118)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:118](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L118)
 
 ---
 
@@ -1505,7 +1529,7 @@ resource is Secret<Record<string, any\>\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/help.ts:465](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/util/help.ts#L465)
+[plugins/plugin-kubectl/src/lib/util/help.ts:465](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/util/help.ts#L465)
 
 ---
 
@@ -1525,7 +1549,7 @@ resource is Secret<Record<string, any\>\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:122](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L122)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:122](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L122)
 
 ---
 
@@ -1545,7 +1569,7 @@ resource is Secret<Record<string, any\>\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/config.ts:55](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L55)
+[plugins/plugin-kubectl/src/controller/kubectl/config.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L55)
 
 ---
 
@@ -1565,7 +1589,7 @@ resource is Secret<Record<string, any\>\>
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/config.ts:51](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L51)
+[plugins/plugin-kubectl/src/controller/kubectl/config.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L51)
 
 ---
 
@@ -1587,7 +1611,7 @@ Separate the app and generated parts of a resource name
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/name.ts:23](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/util/name.ts#L23)
+[plugins/plugin-kubectl/src/lib/util/name.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/util/name.ts#L23)
 
 ---
 
@@ -1609,7 +1633,7 @@ Find the column splits
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:147](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L147)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:147](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L147)
 
 ---
 
@@ -1630,7 +1654,7 @@ Find the column splits
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/apply-subcommands.ts:108](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/apply-subcommands.ts#L108)
+[plugins/plugin-kubectl/src/controller/kubectl/apply-subcommands.ts:108](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/apply-subcommands.ts#L108)
 
 ---
 
@@ -1651,7 +1675,7 @@ Find the column splits
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/config.ts:101](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L101)
+[plugins/plugin-kubectl/src/controller/kubectl/config.ts:101](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/config.ts#L101)
 
 ---
 
@@ -1672,7 +1696,7 @@ Find the column splits
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/edit.ts:279](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/edit.ts#L279)
+[plugins/plugin-kubectl/src/controller/kubectl/edit.ts:279](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/edit.ts#L279)
 
 ---
 
@@ -1706,7 +1730,7 @@ Display the given string as a REPL table
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:459](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L459)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:459](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L459)
 
 ---
 
@@ -1727,7 +1751,7 @@ Display the given string as a REPL table
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:126](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L126)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:126](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L126)
 
 ---
 
@@ -1755,7 +1779,7 @@ Wrap the given command handler `this` with a help dispatcher.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/help.ts:487](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/util/help.ts#L487)
+[plugins/plugin-kubectl/src/lib/util/help.ts:487](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/util/help.ts#L487)
 
 ---
 
@@ -1778,7 +1802,7 @@ Copy over any kubeconfig/context/cluster/namespace specifications from the given
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/options.ts:322](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L322)
+[plugins/plugin-kubectl/src/controller/kubectl/options.ts:322](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/controller/kubectl/options.ts#L322)
 
 ---
 
@@ -1801,4 +1825,4 @@ Change the namespace breadcrumb of the given maybe-Table
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:602](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L602)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:602](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L602)

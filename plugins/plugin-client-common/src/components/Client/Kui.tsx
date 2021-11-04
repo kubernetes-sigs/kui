@@ -19,19 +19,7 @@
 
 import Debug from 'debug'
 import React from 'react'
-import {
-  Events,
-  i18n,
-  REPL,
-  Theme,
-  pexecInCurrentTab,
-  encodeComponent,
-  inBrowser,
-  findThemeByName,
-  getPersistedThemeChoice,
-  getDefaultTheme,
-  ThemeProperties
-} from '@kui-shell/core'
+import { Events, i18n, REPL, pexecInCurrentTab, encodeComponent, inBrowser, Themes } from '@kui-shell/core'
 
 import KuiContext from './context'
 import CommonClientProps from './props/Common'
@@ -47,7 +35,7 @@ const debug = Debug('<Kui/>')
 const strings = i18n('client')
 const Popup = React.lazy(() => import(/* webpackMode: "lazy" */ './Popup'))
 
-const defaultThemeProperties: ThemeProperties = {
+const defaultThemeProperties: Themes.ThemeProperties = {
   components: 'patternfly',
   topTabNames: 'fixed'
 }
@@ -114,7 +102,9 @@ export class Kui extends React.PureComponent<Props, State> {
 
     Events.eventChannelUnsafe.on('/theme/change', this.onThemeChange.bind(this))
     setTimeout(async () => {
-      const { theme } = await findThemeByName((await getPersistedThemeChoice()) || (await getDefaultTheme()))
+      const { theme } = await Themes.findThemeByName(
+        (await Themes.getPersistedThemeChoice()) || (await Themes.getDefaultTheme())
+      )
       this.setState(curState => {
         const stateWithThemeProps = Object.assign({}, theme, curState)
         debug('state with theme props', stateWithThemeProps)
@@ -228,7 +218,7 @@ export class Kui extends React.PureComponent<Props, State> {
     return behavior
   }
 
-  private onThemeChange({ themeModel }: { themeModel: Theme }) {
+  private onThemeChange({ themeModel }: { themeModel: Themes.Theme }) {
     this.setState(curState => {
       // note the priority order, from highest to lowest:
       //  1) any properties defined by the theme (since we just switched themes)

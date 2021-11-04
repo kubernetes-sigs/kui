@@ -19,7 +19,7 @@ import { v4 as uuid } from 'uuid'
 import { dirname, join, normalize } from 'path'
 
 import { Common, CLI, ReplExpect, Selectors, Util } from '@kui-shell/test'
-import { expandHomeDir } from '@kui-shell/core'
+import { Util as Utils } from '@kui-shell/core'
 
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 const rootRelative = (dir: string) => join(ROOT, dir)
@@ -36,7 +36,7 @@ describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
     CLI.command('pwd', this.app)
       .then(ReplExpect.okWithAny)
       .then(async () => {
-        initialDirectory = expandHomeDir(await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText()))
+        initialDirectory = Utils.expandHomeDir(await this.app.client.$(Selectors.OUTPUT_LAST).then(_ => _.getText()))
       })
       .catch(Common.oops(this, true))
   )
@@ -135,7 +135,7 @@ describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
 
   pit(`should execute cd without arguments`, () =>
     CLI.command('cd', this.app)
-      .then(ReplExpect.okWithString(expandHomeDir('~')))
+      .then(ReplExpect.okWithString(Utils.expandHomeDir('~')))
       .catch(Common.oops(this, true))
   )
 
@@ -174,7 +174,7 @@ describe(`remove current directory ${process.env.MOCHA_RUN_TARGET || ''}`, funct
   // webpack-dev-server seems to crash if we don't do this; should be dev only :(
   pit(`should cd back home`, () =>
     CLI.command(`cd`, this.app)
-      .then(ReplExpect.okWithString(expandHomeDir('~')))
+      .then(ReplExpect.okWithString(Utils.expandHomeDir('~')))
       .catch(Common.oops(this, true))
   )
 })

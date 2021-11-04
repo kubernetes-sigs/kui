@@ -28,7 +28,7 @@ then add the given sidecar mode
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/modes.ts:40](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/registrar/modes.ts#L40)
+[packages/core/src/webapp/views/registrar/modes.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/modes.ts#L40)
 
 ---
 
@@ -38,4 +38,4 @@ then add the given sidecar mode
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/modes.ts:39](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/webapp/views/registrar/modes.ts#L39)
+[packages/core/src/webapp/views/registrar/modes.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/modes.ts#L39)

@@ -20,13 +20,12 @@ import { basename, dirname } from 'path'
 import {
   MultiModalResponse,
   MultiModalMode as Mode,
-  findFile,
-  expandHomeDir,
   i18n,
   Arguments,
   Registrar,
   KResponse,
-  SupportedStringContent
+  SupportedStringContent,
+  Util
 } from '@kui-shell/core'
 
 import File from './File'
@@ -62,7 +61,7 @@ async function open(args: Arguments): Promise<KResponse> {
   const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
   debug('open', filepath)
 
-  const fullpath = findFile(expandHomeDir(filepath))
+  const fullpath = Util.findFile(Util.expandHomeDir(filepath))
 
   // suffix excluding gzip extension
   const suffix = filepath.replace(/\.gz$/, '').replace(/^.+\.(\w+)/, '$1')

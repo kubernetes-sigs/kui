@@ -27,9 +27,9 @@ import {
   Watcher,
   WatchPusher,
   WithSourceReferences,
-  flatten,
   isTable,
-  i18n
+  i18n,
+  Util
 } from '@kui-shell/core'
 
 import toSourceRefs from './source'
@@ -79,7 +79,7 @@ async function getResourcesReferencedByFile(
   const { isFor } = fileOfWithDetail(args)
   const [{ loadAll }, raw] = await Promise.all([import('js-yaml'), fetchFilesVFS(args, file, true)])
 
-  const models = flatten(raw.map(_ => loadAll(_.data) as KubeResource[]))
+  const models = Util.flatten(raw.map(_ => loadAll(_.data) as KubeResource[]))
   const resourcesToWaitFor = models
     .filter(_ => _.metadata)
     .map(({ apiVersion, kind, metadata: { name, namespace = namespaceFromCommandLine } }) => {

@@ -23,7 +23,7 @@ Should we offer a Clear button? Default: false
 
 #### Defined in
 
-[packages/core/src/models/editable.ts:30](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/editable.ts#L30)
+[packages/core/src/models/editable.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/editable.ts#L30)
 
 ---
 
@@ -35,7 +35,7 @@ Should the editor be opened in read-only mode? Default: false
 
 #### Defined in
 
-[packages/core/src/models/editable.ts:27](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/editable.ts#L27)
+[packages/core/src/models/editable.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/editable.ts#L27)
 
 ---
 
@@ -54,7 +54,7 @@ Button and Controller to handle reverts
 
 #### Defined in
 
-[packages/core/src/models/editable.ts:39](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/editable.ts#L39)
+[packages/core/src/models/editable.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/editable.ts#L39)
 
 ---
 
@@ -73,4 +73,4 @@ Button and Controller to handle saves
 
 #### Defined in
 
-[packages/core/src/models/editable.ts:33](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/editable.ts#L33)
+[packages/core/src/models/editable.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/editable.ts#L33)

@@ -7,6 +7,7 @@
 ### Classes
 
 - [NotebookVFS](../classes/kui_shell_plugin_core_support.NotebookVFS.md)
+- [TrieVFS](../classes/kui_shell_plugin_core_support.TrieVFS.md)
 
 ### Variables
 
@@ -20,4 +21,4 @@
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:311](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L311)
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:92](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L92)

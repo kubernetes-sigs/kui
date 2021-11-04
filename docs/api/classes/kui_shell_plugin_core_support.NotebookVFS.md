@@ -4,6 +4,12 @@
 
 [@kui-shell/plugin-core-support](../modules/kui_shell_plugin_core_support.md).NotebookVFS
 
+## Hierarchy
+
+- [`TrieVFS`](kui_shell_plugin_core_support.TrieVFS.md)<`NotebookLeaf`[``"data"``]\>
+
+  ↳ **`NotebookVFS`**
+
 ## Implements
 
 - `VFS`
@@ -25,19 +31,18 @@
 ### Methods
 
 - [cp](kui_shell_plugin_core_support.NotebookVFS.md#cp)
-- [dirPattern](kui_shell_plugin_core_support.NotebookVFS.md#dirpattern)
-- [enumerate](kui_shell_plugin_core_support.NotebookVFS.md#enumerate)
-- [find](kui_shell_plugin_core_support.NotebookVFS.md#find)
-- [findExact](kui_shell_plugin_core_support.NotebookVFS.md#findexact)
 - [fslice](kui_shell_plugin_core_support.NotebookVFS.md#fslice)
 - [fstat](kui_shell_plugin_core_support.NotebookVFS.md#fstat)
 - [fwrite](kui_shell_plugin_core_support.NotebookVFS.md#fwrite)
-- [glob2RegExp](kui_shell_plugin_core_support.NotebookVFS.md#glob2regexp)
+- [isLeaf](kui_shell_plugin_core_support.NotebookVFS.md#isleaf)
 - [load](kui_shell_plugin_core_support.NotebookVFS.md#load)
+- [loadAsString](kui_shell_plugin_core_support.NotebookVFS.md#loadasstring)
 - [ls](kui_shell_plugin_core_support.NotebookVFS.md#ls)
 - [mkdir](kui_shell_plugin_core_support.NotebookVFS.md#mkdir)
+- [nameForDisplay](kui_shell_plugin_core_support.NotebookVFS.md#namefordisplay)
 - [rm](kui_shell_plugin_core_support.NotebookVFS.md#rm)
 - [rmdir](kui_shell_plugin_core_support.NotebookVFS.md#rmdir)
+- [viewer](kui_shell_plugin_core_support.NotebookVFS.md#viewer)
 
 ## Constructors
 
@@ -51,9 +56,13 @@
 | :---------- | :------- | :------------ |
 | `mountPath` | `string` | `'/kui'`      |
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[constructor](kui_shell_plugin_core_support.TrieVFS.md#constructor)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:62](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L62)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L51)
 
 ## Properties
 
@@ -65,9 +74,13 @@
 
 VFS.isLocal
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[isLocal](kui_shell_plugin_core_support.TrieVFS.md#islocal)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:54](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L54)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L43)
 
 ---
 
@@ -79,9 +92,13 @@ VFS.isLocal
 
 VFS.isVirtual
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[isVirtual](kui_shell_plugin_core_support.TrieVFS.md#isvirtual)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:55](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L55)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L44)
 
 ---
 
@@ -93,25 +110,37 @@ VFS.isVirtual
 
 VFS.mountPath
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[mountPath](kui_shell_plugin_core_support.TrieVFS.md#mountpath)
+
 ---
 
 ### prefix
 
 • `Protected` `Readonly` **prefix**: `RegExp`
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[prefix](kui_shell_plugin_core_support.TrieVFS.md#prefix)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:57](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L57)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L46)
 
 ---
 
 ### trie
 
-• `Private` `Readonly` **trie**: `any`
+• `Protected` `Readonly` **trie**: `any`
+
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[trie](kui_shell_plugin_core_support.TrieVFS.md#trie)
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:59](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L59)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L48)
 
 ## Methods
 
@@ -137,97 +166,13 @@ Insert filepath into directory
 
 VFS.cp
 
-#### Defined in
+#### Inherited from
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:228](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L228)
-
----
-
-### dirPattern
-
-▸ `Private` **dirPattern**(`filepath`): `RegExp`
-
-#### Parameters
-
-| Name       | Type     |
-| :--------- | :------- |
-| `filepath` | `string` |
-
-#### Returns
-
-`RegExp`
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[cp](kui_shell_plugin_core_support.TrieVFS.md#cp)
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:69](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L69)
-
----
-
-### enumerate
-
-▸ `Private` **enumerate**(`__namedParameters`): `Promise`<{ `dirent`: { `isDirectory`: `boolean` = isDir; `isExecutable`: `boolean` = false; `isFile`: `boolean` = !isDir; `isSpecial`: `boolean` = false; `isSymbolicLink`: `boolean` = false; `mount`: { `isLocal`: `boolean` ; `mountPath`: `string` } ; `permissions`: `string` = ''; `username`: `string` } ; `name`: `string` ; `nameForDisplay`: `string` ; `path`: `string` = mount.mountPath; `stats`: { `gid`: `number` ; `mode`: `number` = 0; `mtimeMs`: `number` = 0; `size`: `number` = 0; `uid`: `number` } }[]\>
-
-#### Parameters
-
-| Name                        | Type      |
-| :-------------------------- | :-------- |
-| `__namedParameters`         | `Object`  |
-| `__namedParameters.entries` | `Entry`[] |
-
-#### Returns
-
-`Promise`<{ `dirent`: { `isDirectory`: `boolean` = isDir; `isExecutable`: `boolean` = false; `isFile`: `boolean` = !isDir; `isSpecial`: `boolean` = false; `isSymbolicLink`: `boolean` = false; `mount`: { `isLocal`: `boolean` ; `mountPath`: `string` } ; `permissions`: `string` = ''; `username`: `string` } ; `name`: `string` ; `nameForDisplay`: `string` ; `path`: `string` = mount.mountPath; `stats`: { `gid`: `number` ; `mode`: `number` = 0; `mtimeMs`: `number` = 0; `size`: `number` = 0; `uid`: `number` } }[]\>
-
-#### Defined in
-
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:139](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L139)
-
----
-
-### find
-
-▸ `Private` **find**(`filepath`, `dashD?`, `exact?`): `Entry`[]
-
-Looks in the trie for any matches for the given filepath, handling the "contents of directory" case
-
-#### Parameters
-
-| Name       | Type      | Default value |
-| :--------- | :-------- | :------------ |
-| `filepath` | `string`  | `undefined`   |
-| `dashD`    | `boolean` | `false`       |
-| `exact`    | `boolean` | `false`       |
-
-#### Returns
-
-`Entry`[]
-
-#### Defined in
-
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:79](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L79)
-
----
-
-### findExact
-
-▸ `Private` **findExact**(`filepath`, `withData`): `Promise`<`FStat`\>
-
-Looks in the trie for a single precise match
-
-#### Parameters
-
-| Name       | Type      |
-| :--------- | :-------- |
-| `filepath` | `string`  |
-| `withData` | `boolean` |
-
-#### Returns
-
-`Promise`<`FStat`\>
-
-#### Defined in
-
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:96](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L96)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:181](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L181)
 
 ---
 
@@ -253,9 +198,13 @@ Fetch content slice
 
 VFS.fslice
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[fslice](kui_shell_plugin_core_support.TrieVFS.md#fslice)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:284](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L284)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:238](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L238)
 
 ---
 
@@ -282,9 +231,13 @@ Fetch contents
 
 VFS.fstat
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[fstat](kui_shell_plugin_core_support.TrieVFS.md#fstat)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:259](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L259)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:212](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L212)
 
 ---
 
@@ -308,31 +261,37 @@ VFS.fstat
 
 VFS.fwrite
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[fwrite](kui_shell_plugin_core_support.TrieVFS.md#fwrite)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:279](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L279)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:233](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L233)
 
 ---
 
-### glob2RegExp
+### isLeaf
 
-▸ `Private` **glob2RegExp**(`filepath`): `string`
-
-Turn an ls-style glob into a nodejs-style regexp
+▸ `Protected` **isLeaf**(`entry`): entry is Leaf<Notebook \| Object\>
 
 #### Parameters
 
-| Name       | Type     |
-| :--------- | :------- |
-| `filepath` | `string` |
+| Name    | Type                                                              |
+| :------ | :---------------------------------------------------------------- |
+| `entry` | `BaseEntry` \| `Leaf`<`Notebook` \| { `srcFilepath`: `string` }\> |
 
 #### Returns
 
-`string`
+entry is Leaf<Notebook \| Object\>
+
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[isLeaf](kui_shell_plugin_core_support.TrieVFS.md#isleaf)
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:65](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L65)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L65)
 
 ---
 
@@ -354,13 +313,37 @@ Load Notebook data from bundles
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:185](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L185)
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L49)
+
+---
+
+### loadAsString
+
+▸ `Protected` **loadAsString**(`leaf`): `Promise`<`string`\>
+
+#### Parameters
+
+| Name   | Type           |
+| :----- | :------------- |
+| `leaf` | `NotebookLeaf` |
+
+#### Returns
+
+`Promise`<`string`\>
+
+#### Overrides
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[loadAsString](kui_shell_plugin_core_support.TrieVFS.md#loadasstring)
+
+#### Defined in
+
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L43)
 
 ---
 
 ### ls
 
-▸ **ls**(`__namedParameters`, `filepaths`): `Promise`<{ `dirent`: { `isDirectory`: `boolean` = isDir; `isExecutable`: `boolean` = false; `isFile`: `boolean` = !isDir; `isSpecial`: `boolean` = false; `isSymbolicLink`: `boolean` = false; `mount`: { `isLocal`: `boolean` ; `mountPath`: `string` } ; `permissions`: `string` = ''; `username`: `string` } ; `name`: `string` ; `nameForDisplay`: `string` ; `path`: `string` = mount.mountPath; `stats`: { `gid`: `number` ; `mode`: `number` = 0; `mtimeMs`: `number` = 0; `size`: `number` = 0; `uid`: `number` } }[]\>
+▸ **ls**(`__namedParameters`, `filepaths`): `Promise`<{ `dirent`: { `isDirectory`: `boolean` = isDir; `isExecutable`: `boolean` ; `isFile`: `boolean` = !isDir; `isSpecial`: `boolean` = false; `isSymbolicLink`: `boolean` = false; `mount`: { `isLocal`: `boolean` ; `mountPath`: `string` } ; `permissions`: `string` = ''; `username`: `string` } ; `name`: `string` ; `nameForDisplay`: `string` ; `path`: `string` = mount.mountPath; `stats`: { `gid`: `number` ; `mode`: `number` = 0; `mtimeMs`: `number` = 0; `size`: `number` = 0; `uid`: `number` } }[]\>
 
 #### Parameters
 
@@ -371,15 +354,19 @@ Load Notebook data from bundles
 
 #### Returns
 
-`Promise`<{ `dirent`: { `isDirectory`: `boolean` = isDir; `isExecutable`: `boolean` = false; `isFile`: `boolean` = !isDir; `isSpecial`: `boolean` = false; `isSymbolicLink`: `boolean` = false; `mount`: { `isLocal`: `boolean` ; `mountPath`: `string` } ; `permissions`: `string` = ''; `username`: `string` } ; `name`: `string` ; `nameForDisplay`: `string` ; `path`: `string` = mount.mountPath; `stats`: { `gid`: `number` ; `mode`: `number` = 0; `mtimeMs`: `number` = 0; `size`: `number` = 0; `uid`: `number` } }[]\>
+`Promise`<{ `dirent`: { `isDirectory`: `boolean` = isDir; `isExecutable`: `boolean` ; `isFile`: `boolean` = !isDir; `isSpecial`: `boolean` = false; `isSymbolicLink`: `boolean` = false; `mount`: { `isLocal`: `boolean` ; `mountPath`: `string` } ; `permissions`: `string` = ''; `username`: `string` } ; `name`: `string` ; `nameForDisplay`: `string` ; `path`: `string` = mount.mountPath; `stats`: { `gid`: `number` ; `mode`: `number` = 0; `mtimeMs`: `number` = 0; `size`: `number` = 0; `uid`: `number` } }[]\>
 
 #### Implementation of
 
 VFS.ls
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[ls](kui_shell_plugin_core_support.TrieVFS.md#ls)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:173](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L173)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:169](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L169)
 
 ---
 
@@ -403,9 +390,38 @@ Create a directory/bucket
 
 VFS.mkdir
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[mkdir](kui_shell_plugin_core_support.TrieVFS.md#mkdir)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:300](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L300)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:254](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L254)
+
+---
+
+### nameForDisplay
+
+▸ `Protected` **nameForDisplay**(`name`, `entry`): `Promise`<`string`\>
+
+#### Parameters
+
+| Name    | Type            |
+| :------ | :-------------- |
+| `name`  | `string`        |
+| `entry` | `NotebookEntry` |
+
+#### Returns
+
+`Promise`<`string`\>
+
+#### Overrides
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[nameForDisplay](kui_shell_plugin_core_support.TrieVFS.md#namefordisplay)
+
+#### Defined in
+
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L38)
 
 ---
 
@@ -423,9 +439,13 @@ Remove filepath
 
 VFS.rm
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[rm](kui_shell_plugin_core_support.TrieVFS.md#rm)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:254](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L254)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:207](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L207)
 
 ---
 
@@ -443,6 +463,28 @@ Remove a directory/bucket
 
 VFS.rmdir
 
+#### Inherited from
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[rmdir](kui_shell_plugin_core_support.TrieVFS.md#rmdir)
+
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:306](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L306)
+[plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts:260](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/TrieVFS.ts#L260)
+
+---
+
+### viewer
+
+▸ `Protected` **viewer**(): `string`
+
+#### Returns
+
+`string`
+
+#### Overrides
+
+[TrieVFS](kui_shell_plugin_core_support.TrieVFS.md).[viewer](kui_shell_plugin_core_support.TrieVFS.md#viewer)
+
+#### Defined in
+
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L34)

@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { basename } from 'path'
-import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, WatchPusher, flatten } from '@kui-shell/core'
+import { Abortable, Arguments, CodedError, Row, Table, Watchable, Watcher, WatchPusher, Util } from '@kui-shell/core'
 
 import { Group } from './group'
 import { getTable } from './get'
@@ -253,7 +253,7 @@ export default async function watchMulti(
     const header = undefined // unifyHeaders([].concat(...tables.map(_ => _.table.header)))
     const body = unifyRows(
       [].concat(...tables.map(_ => _.table.body)),
-      flatten(
+      Util.flatten(
         groups.map(_ =>
           Array(_.names.length)
             .fill(0)

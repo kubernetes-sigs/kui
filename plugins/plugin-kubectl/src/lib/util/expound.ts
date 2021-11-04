@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { flatten } from '@kui-shell/core'
+import { Util } from '@kui-shell/core'
 import { capitalize } from '../view/modes/table-to-map'
 
 /** job -> [job, jobs, Job, Jobs] */
 function expoundKind(kind: string, short?: string) {
-  return flatten([kind, `${kind}s`].concat(short ? [short] : []).map(kind => [kind, capitalize(kind)]))
+  return Util.flatten([kind, `${kind}s`].concat(short ? [short] : []).map(kind => [kind, capitalize(kind)]))
 }
 
 /**
@@ -31,6 +31,6 @@ export default function expound(kind: string, short?: string, version?: string, 
   if (!version) {
     return expoundKind(kind, short)
   } else {
-    return flatten(expoundKind(kind, short).map(kind => [kind, `${kind}.${group}`, `${kind}.${version}.${group}`]))
+    return Util.flatten(expoundKind(kind, short).map(kind => [kind, `${kind}.${group}`, `${kind}.${version}.${group}`]))
   }
 }

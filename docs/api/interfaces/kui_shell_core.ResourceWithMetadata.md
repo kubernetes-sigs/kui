@@ -45,7 +45,7 @@ identifies a resource
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:64](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L64)
+[packages/core/src/models/entity.ts:64](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L64)
 
 ---
 
@@ -55,7 +55,7 @@ identifies a resource
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:81](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L81)
+[packages/core/src/models/entity.ts:81](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L81)
 
 ---
 
@@ -65,7 +65,7 @@ identifies a resource
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:82](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L82)
+[packages/core/src/models/entity.ts:82](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L82)
 
 ---
 
@@ -79,7 +79,7 @@ identifies a resource
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:47](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L47)
+[packages/core/src/models/entity.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L47)
 
 ---
 
@@ -103,7 +103,7 @@ identifies a resource
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:49](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L49)
+[packages/core/src/models/entity.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L49)
 
 ---
 
@@ -113,7 +113,7 @@ identifies a resource
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:71](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L71)
+[packages/core/src/models/entity.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L71)
 
 ---
 
@@ -134,7 +134,7 @@ family of onclick handlers
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:74](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L74)
+[packages/core/src/models/entity.ts:74](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L74)
 
 ---
 
@@ -144,7 +144,7 @@ family of onclick handlers
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:84](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L84)
+[packages/core/src/models/entity.ts:84](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L84)
 
 ---
 
@@ -156,7 +156,7 @@ name hash, e.g. the hash part of auto-generated names, or an openwhisk activatio
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:70](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L70)
+[packages/core/src/models/entity.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L70)
 
 ---
 
@@ -166,7 +166,7 @@ name hash, e.g. the hash part of auto-generated names, or an openwhisk activatio
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:83](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L83)
+[packages/core/src/models/entity.ts:83](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L83)
 
 ---
 
@@ -178,4 +178,4 @@ optional designation of resource version
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:67](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/entity.ts#L67)
+[packages/core/src/models/entity.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L67)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, CodedError, ExecType, MultiModalResponse, Registrar, flatten, i18n } from '@kui-shell/core'
+import { Arguments, CodedError, ExecType, MultiModalResponse, Registrar, i18n, Util } from '@kui-shell/core'
 import {
   isUsage,
   doHelp,
@@ -127,7 +127,7 @@ async function transformSingle(
 
 /** Multiple-resource response. We've already assured that we have >= 1 item via isKubeItemsOfKind(). */
 async function transformMulti(defaultMode: string, args: Arguments<KubeOptions>, items: KubePartial<Pod>[]) {
-  const containers = flatten(
+  const containers = Util.flatten(
     items.map(pod => {
       return pod.spec.containers.map(container =>
         Object.assign({}, container, { name: `${pod.metadata.name}:${container.name}` })

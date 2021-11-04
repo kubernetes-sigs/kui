@@ -110,8 +110,7 @@ export function History(tab: string | Tab) {
 export { HistoryModel, HistoryLine } from './models/history'
 
 // pretty printing
-export { prettyPrintTime } from './webapp/util/time'
-export { default as prettyPrintBytes } from './webapp/util/bytes'
+export * from './api'
 
 // registrars
 export {
@@ -155,14 +154,7 @@ export {
 export { default as TabState, registerTabState } from './models/tab-state'
 
 // Themes
-export { default as Theme, ThemeProperties } from './webapp/themes/Theme'
-export { findByName as findThemeByName } from './webapp/themes/find'
-export { getDefault as getDefaultTheme } from './webapp/themes/default'
-export {
-  switchTo as switchToTheme,
-  getPersistedThemeChoice,
-  resetToDefault as resetToDefaultTheme
-} from './webapp/themes/persistence'
+export * from './api'
 
 // CLI
 export { Block } from './webapp/models/block'
@@ -274,11 +266,7 @@ export {
 } from './models/RadioTable'
 
 // Util
-export { findFileWithViewer, findFile, isSpecialDirectory } from './core/find-file'
-export { expandHomeDir, cwd, fallbackCWD } from './util/home'
-export { flatten } from './core/utility'
-export { promiseEach } from './util/async'
-export { isHTML, isPromise } from './util/types'
+export * from './api'
 
 // Electron
 export { tellMain } from './webapp/electron-events'

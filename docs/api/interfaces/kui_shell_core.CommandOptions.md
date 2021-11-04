@@ -49,7 +49,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:85](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L85)
+[packages/core/src/models/command.ts:85](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L85)
 
 ---
 
@@ -59,7 +59,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:64](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L64)
+[packages/core/src/models/command.ts:64](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L64)
 
 ---
 
@@ -73,7 +73,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/models/command.ts:262](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L262)
+[packages/core/src/models/command.ts:262](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L262)
 
 ---
 
@@ -83,7 +83,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/models/command.ts:79](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L79)
+[packages/core/src/models/command.ts:79](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L79)
 
 ---
 
@@ -93,7 +93,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/models/command.ts:67](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L67)
+[packages/core/src/models/command.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L67)
 
 ---
 
@@ -103,7 +103,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/models/command.ts:87](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L87)
+[packages/core/src/models/command.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L87)
 
 ---
 
@@ -113,7 +113,7 @@ CapabilityRequirements.fullscreen
 
 #### Defined in
 
-[packages/core/src/models/command.ts:70](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L70)
+[packages/core/src/models/command.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L70)
 
 ---
 
@@ -125,7 +125,7 @@ is this an interior node ("directory", versus a leaf-node with a command handler
 
 #### Defined in
 
-[packages/core/src/models/command.ts:82](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L82)
+[packages/core/src/models/command.ts:82](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L82)
 
 ---
 
@@ -137,7 +137,7 @@ Is the command experimental? e.g. initial release, lack of test coverage
 
 #### Defined in
 
-[packages/core/src/models/command.ts:102](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L102)
+[packages/core/src/models/command.ts:102](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L102)
 
 ---
 
@@ -147,7 +147,7 @@ Is the command experimental? e.g. initial release, lack of test coverage
 
 #### Defined in
 
-[packages/core/src/models/command.ts:84](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L84)
+[packages/core/src/models/command.ts:84](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L84)
 
 ---
 
@@ -161,7 +161,7 @@ CapabilityRequirements.needsUI
 
 #### Defined in
 
-[packages/core/src/models/command.ts:259](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L259)
+[packages/core/src/models/command.ts:259](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L259)
 
 ---
 
@@ -173,7 +173,7 @@ does this command accept no arguments of any sort (neither positional nor option
 
 #### Defined in
 
-[packages/core/src/models/command.ts:55](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L55)
+[packages/core/src/models/command.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L55)
 
 ---
 
@@ -187,7 +187,7 @@ CapabilityRequirements.noAuthOk
 
 #### Defined in
 
-[packages/core/src/models/command.ts:261](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L261)
+[packages/core/src/models/command.ts:261](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L261)
 
 ---
 
@@ -199,7 +199,7 @@ controller wants to handle redirect
 
 #### Defined in
 
-[packages/core/src/models/command.ts:93](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L93)
+[packages/core/src/models/command.ts:93](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L93)
 
 ---
 
@@ -209,7 +209,7 @@ controller wants to handle redirect
 
 #### Defined in
 
-[packages/core/src/models/command.ts:90](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L90)
+[packages/core/src/models/command.ts:90](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L90)
 
 ---
 
@@ -221,7 +221,7 @@ Is the command only want to show output and hide input?
 
 #### Defined in
 
-[packages/core/src/models/command.ts:108](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L108)
+[packages/core/src/models/command.ts:108](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L108)
 
 ---
 
@@ -231,7 +231,7 @@ Is the command only want to show output and hide input?
 
 #### Defined in
 
-[packages/core/src/models/command.ts:88](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L88)
+[packages/core/src/models/command.ts:88](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L88)
 
 ---
 
@@ -241,7 +241,7 @@ Is the command only want to show output and hide input?
 
 #### Defined in
 
-[packages/core/src/models/command.ts:89](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L89)
+[packages/core/src/models/command.ts:89](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L89)
 
 ---
 
@@ -253,7 +253,7 @@ When this command is being replayed, prefer to re-execute if possible
 
 #### Defined in
 
-[packages/core/src/models/command.ts:111](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L111)
+[packages/core/src/models/command.ts:111](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L111)
 
 ---
 
@@ -267,7 +267,7 @@ CapabilityRequirements.requiresLocal
 
 #### Defined in
 
-[packages/core/src/models/command.ts:260](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L260)
+[packages/core/src/models/command.ts:260](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L260)
 
 ---
 
@@ -279,7 +279,7 @@ Semicolon-expand the command line? Default: true
 
 #### Defined in
 
-[packages/core/src/models/command.ts:58](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L58)
+[packages/core/src/models/command.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L58)
 
 ---
 
@@ -289,7 +289,7 @@ Semicolon-expand the command line? Default: true
 
 #### Defined in
 
-[packages/core/src/models/command.ts:86](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L86)
+[packages/core/src/models/command.ts:86](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L86)
 
 ---
 
@@ -299,7 +299,7 @@ Semicolon-expand the command line? Default: true
 
 #### Defined in
 
-[packages/core/src/models/command.ts:61](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L61)
+[packages/core/src/models/command.ts:61](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L61)
 
 ---
 
@@ -309,7 +309,7 @@ Semicolon-expand the command line? Default: true
 
 #### Defined in
 
-[packages/core/src/models/command.ts:73](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L73)
+[packages/core/src/models/command.ts:73](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L73)
 
 ---
 
@@ -321,7 +321,7 @@ model to view transformer
 
 #### Defined in
 
-[packages/core/src/models/command.ts:96](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L96)
+[packages/core/src/models/command.ts:96](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L96)
 
 ---
 
@@ -331,4 +331,4 @@ model to view transformer
 
 #### Defined in
 
-[packages/core/src/models/command.ts:76](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/command.ts#L76)
+[packages/core/src/models/command.ts:76](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L76)

@@ -26,7 +26,7 @@ import {
   isCommentaryResponse,
   isCommentarySectionBreak,
   isXtermErrorResponse,
-  cwd as kuiCwd
+  Util
 } from '@kui-shell/core'
 
 export const enum BlockState {
@@ -117,7 +117,7 @@ export default BlockModel
 
 /** Capture the current working directory */
 function cwd() {
-  const dir = kuiCwd()
+  const dir = Util.cwd()
   return dir ? dir.replace(process.env.HOME, '~') : undefined
 }
 

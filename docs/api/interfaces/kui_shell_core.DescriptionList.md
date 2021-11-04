@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[packages/core/src/models/DescriptionList.ts:20](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/DescriptionList.ts#L20)
+[packages/core/src/models/DescriptionList.ts:20](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/DescriptionList.ts#L20)
 
 ---
 
@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[packages/core/src/models/DescriptionList.ts:21](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/DescriptionList.ts#L21)
+[packages/core/src/models/DescriptionList.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/DescriptionList.ts#L21)
 
 ---
 
@@ -47,4 +47,4 @@
 
 #### Defined in
 
-[packages/core/src/models/DescriptionList.ts:23](https://github.com/mra-ruiz/kui/blob/a3b5e3edf/packages/core/src/models/DescriptionList.ts#L23)
+[packages/core/src/models/DescriptionList.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/DescriptionList.ts#L23)
