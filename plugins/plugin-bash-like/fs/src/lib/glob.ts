@@ -59,6 +59,7 @@ interface RawGlobStats extends BaseStats {
 }
 
 export interface GlobStats extends BaseStats {
+  viewer?: string
   nameForDisplay: string
   dirent: DirentStats
 }

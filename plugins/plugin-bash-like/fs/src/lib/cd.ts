@@ -21,8 +21,10 @@
  */
 
 import { inBrowser, Arguments, Registrar, i18n, Util } from '@kui-shell/core'
+
+import CommandsFS from '../vfs/CommandsFS'
+import { VFS, absolute, findMount } from '../vfs'
 import { localFilepath } from './usage-helpers'
-import { absolute, findMount } from '../vfs'
 
 const strings = i18n('plugin-bash-like')
 
@@ -33,6 +35,41 @@ const usage = {
     title: strings('cdUsageTitle'),
     header: strings('cdUsageHeader'),
     optional: localFilepath
+  }
+}
+
+async function failFastCd(dir: string, dirAsProvided: string, args: Arguments, mount: VFS) {
+  const { isDirectory, fullpath } = !mount
+    ? { isDirectory: true, fullpath: absolute(dir) }
+    : await mount.fstat(args, absolute(dir))
+  const isLocal = mount && mount.isLocal
+
+  if (isDirectory) {
+    if (process.env.OLDPWD === undefined) {
+      process.env.OLDPWD = ''
+    }
+
+    const OLDPWD = Util.cwd() // remember it for when we're done
+    const newDir = Util.expandHomeDir(fullpath)
+
+    if (isLocal && !inBrowser()) {
+      process.chdir(newDir)
+    }
+
+    process.env.OLDPWD = OLDPWD
+    process.env.PWD = newDir
+    if (isLocal) {
+      delete process.env.VIRTUAL_CWD
+    } else {
+      process.env.VIRTUAL_CWD = newDir
+    }
+
+    if (args.tab.state) {
+      args.tab.state.capture()
+    }
+    return newDir
+  } else {
+    throw new Error(`cd: not a directory: ${dirAsProvided}`)
   }
 }
 
@@ -50,41 +87,15 @@ const cd = async (args: Arguments) => {
 
   const mount = await findMount(dir, undefined, true)
   try {
-    const { isDirectory, fullpath } = !mount
-      ? { isDirectory: true, fullpath: absolute(dir) }
-      : await mount.fstat(args, absolute(dir))
-    const isLocal = mount && mount.isLocal
-
-    if (isDirectory) {
-      if (process.env.OLDPWD === undefined) {
-        process.env.OLDPWD = ''
-      }
-
-      const OLDPWD = Util.cwd() // remember it for when we're done
-      const newDir = Util.expandHomeDir(fullpath)
-
-      if (isLocal && !inBrowser()) {
-        process.chdir(newDir)
-      }
-
-      process.env.OLDPWD = OLDPWD
-      process.env.PWD = newDir
-      if (isLocal) {
-        delete process.env.VIRTUAL_CWD
-      } else {
-        process.env.VIRTUAL_CWD = newDir
-      }
-
-      if (args.tab.state) {
-        args.tab.state.capture()
-      }
-      return newDir
-    } else {
-      throw new Error(`cd: not a directory: ${dirAsProvided}`)
-    }
+    return await failFastCd(dir, dirAsProvided, args, mount)
   } catch (err) {
     if (err.message && err.message.includes('no such file or directory')) {
-      throw new Error(`cd: no such file or directory: ${dirAsProvided}`)
+      // consult CommandsFS
+      try {
+        return await failFastCd(dir, dirAsProvided, args, CommandsFS)
+      } catch (err2) {
+        throw new Error(`cd: no such file or directory: ${dirAsProvided}`)
+      }
     } else {
       throw err
     }

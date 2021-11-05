@@ -19,6 +19,8 @@ import { basename } from 'path'
 import { Arguments, CodedError, Util } from '@kui-shell/core'
 import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
 
+import CommandsFS from './CommandsFS'
+
 const debug = Debug('plugin/bash-like/fs/vfs/delegates')
 
 /** '/a/b/c' -> 3 */
@@ -50,6 +52,14 @@ function removeDuplicates(args: { mountPath: VFS['mountPath']; isLocal: VFS['isL
   return args.filter(({ mountPath }, idx) => args.findIndex(_ => _.mountPath === mountPath) === idx)
 }
 
+const blankStats: DirEntry['stats'] = {
+  size: 0,
+  mtimeMs: 0,
+  uid: 0,
+  gid: 0,
+  mode: 0
+}
+
 /**
  * `ls` handler for mounts
  *
@@ -75,13 +85,7 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
         name: basename(mountPath),
         nameForDisplay: basename(mountPath),
         path: mountPath,
-        stats: {
-          size: 0,
-          mtimeMs: 0,
-          uid: 0,
-          gid: 0,
-          mode: 0
-        },
+        stats: blankStats,
         dirent: {
           mount: { isLocal, tags, mountPath },
           isFile: false,
@@ -125,16 +129,23 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
     })
   ).then(Util.flatten)
 
-  // the first maintains the mapping from input to mountContent: DirEntry[][]
-  // the second flattens this down to a DirEntry[]
+  // this maintains the mapping from input to mountContent: DirEntry[][]
   const mountContentPerInput = Promise.all(filepaths.map(lsMounts))
 
+  // fire off the ls of Kui registered commands
+  const commandContentPromise = CommandsFS.ls(parameters[0], filepaths)
+
+  // and this flattens that down to a DirEntry[]
   const mountContent = Util.flatten(await mountContentPerInput)
+
   if (mounts.length === 0 && mountContent.length === 0) {
     const err: CodedError = new Error(`VFS not mounted: ${filepaths}`)
     err.code = 404
     throw err
   }
+
+  // all matching Kui commands
+  const commandContent = await commandContentPromise
 
   const vfsContent = (await vfsContentP).filter(_ => _)
   if (mountContent.length === 0) {
@@ -143,11 +154,12 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
       // all directories (and no -d); only then is an empty response valid.
       // Otherwise, we need to report a 404.
     }
-    return vfsContent
+    return vfsContent.concat(commandContent)
   } else {
-    return mountContent.concat(vfsContent).sort((a, b) => {
-      return a.name.localeCompare(b.name)
-    })
+    return mountContent
+      .concat(vfsContent)
+      .concat(commandContent)
+      .sort((a, b) => a.name.localeCompare(b.name))
   }
 }
 
