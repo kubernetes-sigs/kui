@@ -47,6 +47,7 @@ import { PrescanUsage } from '../plugins/prescan'
 import { PluginResolver } from '../plugins/resolver'
 
 import { getModelInternal } from '../commands/tree'
+import { registerTypeahead } from '../commands/typeahead'
 import { Context, getCurrentContext } from '../commands/context'
 debug('finished loading modules')
 
@@ -187,6 +188,9 @@ const _listen = <T extends KResponse, O extends ParsedOptions>(
 
     leaf.$ = (handler as any) as CommandHandler<T, O>
     leaf.route = route
+
+    // populate the typeahead trie
+    registerTypeahead(route)
 
     return leaf as Command<T, O>
   }
@@ -586,6 +590,17 @@ export const read = async <T extends KResponse, O extends ParsedOptions>(
   if (!noRetry) {
     await resolver.resolve(`/${argv.join('/')}`, { tryCatchalls: false })
     cmd = await internalRead(root, argv, tryCatchalls)
+  }
+
+  if (!cmd && /\.?\//.test(argv[0])) {
+    // Look for slashes instead of spaces. e.g. if the user types
+    // /a/b/c, and there is a registered command route /a/b/c,
+    // ... then we should resolve that command as a kui command
+    const { cwd } = await import('../util/home')
+    const exe = argv[0].replace(/^\.\//, cwd() + '/')
+    const argv2 = exe.split(/\//).slice(1)
+    await resolver.resolve(exe, { tryCatchalls: false })
+    cmd = await internalRead(root, argv2, tryCatchalls)
   }
 
   if (!cmd) {

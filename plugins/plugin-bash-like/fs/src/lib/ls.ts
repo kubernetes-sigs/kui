@@ -221,7 +221,9 @@ function toTable(entries: GlobStats[], args: Arguments<LsOptions>): Table {
     name: nameOf(_),
     css: cssOf(_),
     onclickExec: 'pexec' as const,
-    onclick: `${_.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : 'open'} ${encodeComponent(_.path)}`,
+    onclick: `${
+      _.dirent.isDirectory ? (args.parsedOptions.l ? 'ls -l' : 'ls') : _.viewer !== undefined ? _.viewer : 'open'
+    } ${encodeComponent(_.path)}`,
     drilldownTo: _.dirent.isDirectory ? ('this-split' as const) : undefined, // keep in-split for directory navigation
     attributes: attrs(_, args, hasPermissions, hasSize, hasUid, hasGid, hasMtime)
   }))

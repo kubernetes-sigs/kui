@@ -21,6 +21,8 @@ import { getCurrentContext } from '../commands/context'
 const trie = new TrieSearch<string>() // Command<KResponse, ParsedOptions>>()
 const trieWithoutContext = new TrieSearch<string>() // Command<KResponse, ParsedOptions>>()
 
+export { trie as commandsTrie }
+
 /**
  * Enter newly registered command in the trie
  *
@@ -37,7 +39,7 @@ export function registerTypeahead(route: string) {
  * relevant suffix of `route`, expressed with whitespace.
  *
  */
-function typeaheadMatch(base: string[], route: string | void): string | void {
+function extend(base: string[], route: string | void): string | void {
   if (route) {
     const that = route.split(/\//)
     const N = Math.min(base.length, that.length)
@@ -77,6 +79,18 @@ function findMinimalCommonPrefix(matches: string[]): string | void {
   }
 }
 
+function typeaheadMatch(prefix: string): string[] {
+  if (prefix.length === 0) {
+    return []
+  } else {
+    // look up first without context, then with implicit context
+    const try1 = trieWithoutContext.get(prefix)
+    const results = try1.length === 0 ? trie.get(prefix) : try1
+
+    return Array.from(new Set(results))
+  }
+}
+
 /**
  * Typeahead find lookup
  *
@@ -84,23 +98,16 @@ function findMinimalCommonPrefix(matches: string[]): string | void {
  *
  */
 export default function typeahead(prefix: string): string[] {
-  if (prefix.length === 0) {
-    return []
+  const desired = `${prefix.charAt(0) === '/' ? '' : '/'}${prefix
+    .replace(/^\s+/, '')
+    .split(/\s+/)
+    .join('/')}`
+
+  const match = findMinimalCommonPrefix(typeaheadMatch(desired))
+  const maybe = extend(desired.split(/\//), match)
+  if (maybe) {
+    return [maybe]
   } else {
-    const desired = `/${prefix
-      .replace(/^\s+/, '')
-      .split(/\s+/)
-      .join('/')}`
-
-    // look up first without context, then with implicit context
-    const try1 = trieWithoutContext.get(desired)
-    const results = try1.length === 0 ? trie.get(desired) : try1
-
-    const maybe = typeaheadMatch(desired.split(/\//), findMinimalCommonPrefix(results /* .map(_ => _.route) */))
-    if (maybe) {
-      return [maybe]
-    } else {
-      return []
-    }
+    return []
   }
 }

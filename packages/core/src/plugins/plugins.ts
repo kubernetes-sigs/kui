@@ -49,7 +49,10 @@ let prescan: PrescanModel
 try {
   prescan = require('@kui-shell/prescan.json') as PrescanModel // the result of unify(basePrescan, userPrescan)
 
-  // populate the typeahead trie
+  // populate the typeahead trie from prescan (in command-tree, we
+  // register again for dynamic command registrations); but we need
+  // this here, so that the commands trie is populated before commands
+  // are executed
   if (prescan && prescan.commandToPlugin) {
     Object.keys(prescan.commandToPlugin).forEach(registerTypeahead)
   }

@@ -23,6 +23,7 @@ export interface FStat {
   filepath: string
   fullpath: string
   isDirectory: boolean
+  isExecutable?: boolean
   size: number
   data?: string
 }

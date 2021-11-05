@@ -32,7 +32,7 @@ export {
 export { CapabilityRegistration } from './models/plugin'
 
 // Commands
-export { default as typeahead } from './commands/typeahead'
+export { default as typeahead, commandsTrie } from './commands/typeahead'
 export {
   CommandHandler,
   CommandOptions,
