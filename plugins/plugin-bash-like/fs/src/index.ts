@@ -18,4 +18,7 @@ export { FStat } from './lib/fstat'
 export { GlobStats } from './lib/glob'
 export { default as File, isFile } from './lib/File'
 
+import * as TrieVFS from './vfs/TrieVFS'
+export { TrieVFS }
+
 export { VFS, mount, DirEntry, ParallelismOptions } from './vfs'

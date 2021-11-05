@@ -15,9 +15,7 @@
  */
 
 import { Notebook, isNotebook } from '@kui-shell/core'
-import { VFS, mount } from '@kui-shell/plugin-bash-like/fs'
-
-import TrieVFS, { Leaf, Directory } from './TrieVFS'
+import { TrieVFS, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 
 interface Tutorial {
   name: string
@@ -27,10 +25,10 @@ interface Tutorial {
   nameForDisplay: string
 }
 
-type NotebookLeaf = Leaf<Notebook | { srcFilepath: string }>
-type NotebookEntry = Directory | NotebookLeaf
+type NotebookLeaf = TrieVFS.Leaf<Notebook | { srcFilepath: string }>
+type NotebookEntry = TrieVFS.Directory | NotebookLeaf
 
-export class NotebookVFS extends TrieVFS<NotebookLeaf['data']> implements VFS {
+export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implements VFS {
   protected viewer() {
     return 'replay'
   }
@@ -62,18 +60,18 @@ export class NotebookVFS extends TrieVFS<NotebookLeaf['data']> implements VFS {
           const data = await (match1
             ? import(
                 /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
-              match1[1] +
-              '/notebooks/' +
-              file +
-              '.json'
-            )
-            : match2
-              ? import(
-                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
-                file +
-                '.json'
+                  match1[1] +
+                  '/notebooks/' +
+                  file +
+                  '.json'
               )
-              : import(
+            : match2
+            ? import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.json'
+              )
+            : import(
                 /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
               ))
 

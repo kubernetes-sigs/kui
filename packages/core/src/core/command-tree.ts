@@ -47,6 +47,7 @@ import { PrescanUsage } from '../plugins/prescan'
 import { PluginResolver } from '../plugins/resolver'
 
 import { getModelInternal } from '../commands/tree'
+import { registerTypeahead } from '../commands/typeahead'
 import { Context, getCurrentContext } from '../commands/context'
 debug('finished loading modules')
 
@@ -187,6 +188,9 @@ const _listen = <T extends KResponse, O extends ParsedOptions>(
 
     leaf.$ = (handler as any) as CommandHandler<T, O>
     leaf.route = route
+
+    // populate the typeahead trie
+    registerTypeahead(route)
 
     return leaf as Command<T, O>
   }

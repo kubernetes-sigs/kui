@@ -26,7 +26,6 @@ import { KuiPlugin } from '../models/plugin'
 import { userDataDir } from '../core/userdata'
 // import { isHeadless } from '../core/capabilities'
 import { setPluginResolver } from '../core/command-tree'
-import { registerTypeahead } from '../commands/typeahead'
 
 debug('modules loaded')
 
@@ -48,11 +47,6 @@ let basePrescan: PrescanModel // without any user-installed plugins
 let prescan: PrescanModel
 try {
   prescan = require('@kui-shell/prescan.json') as PrescanModel // the result of unify(basePrescan, userPrescan)
-
-  // populate the typeahead trie
-  if (prescan && prescan.commandToPlugin) {
-    Object.keys(prescan.commandToPlugin).forEach(registerTypeahead)
-  }
 } catch (err) {
   debug(err)
 }

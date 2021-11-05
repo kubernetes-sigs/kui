@@ -17,9 +17,9 @@
 import TrieSearch from 'trie-search'
 import micromatch from 'micromatch'
 
-import { FStat, VFS } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, CodedError, Util } from '@kui-shell/core'
 
+import { FStat, VFS } from '..'
 import { basename, dirname, join } from './posix'
 
 const uid = -1
@@ -39,18 +39,16 @@ export interface Leaf<D extends any> {
   data: D
 }
 
-export default abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implements VFS {
+export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implements VFS {
   public readonly isLocal = false
   public readonly isVirtual = true
 
   protected readonly prefix = new RegExp(`^${this.mountPath}\\/?`)
 
-  protected readonly trie: TrieSearch<Directory | L> = new TrieSearch()
-
   // eslint-disable-next-line no-useless-constructor
-  public constructor(public readonly mountPath = '/kui') { }
+  public constructor(public readonly mountPath = '/kui', protected readonly trie = new TrieSearch<Directory | L>()) {}
 
-  protected abstract loadAsString(leaf: L): Promise<string>
+  protected abstract loadAsString(leaf: L): string | Promise<string>
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected nameForDisplay(name: string, entry: Directory | L): string | Promise<string> {
@@ -80,14 +78,16 @@ export default abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>
     }
   }
 
+  protected trieGet(filepath: string): BaseEntry[] {
+    return this.trie.get(filepath)
+  }
+
   /** Looks in the trie for any matches for the given filepath, handling the "contents of directory" case */
   private find(filepath: string, dashD = false, exact = false): (Directory | L)[] {
     const dirPattern = this.dirPattern(filepath)
-    const flexMatches = this.trie
-      .get(filepath.replace(/\*.*$/, ''))
-      .filter(_ =>
-        exact ? _.mountPath === filepath : micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath)
-      )
+    const flexMatches = this.trieGet(filepath.replace(/\*.*$/, '')).filter(_ =>
+      exact ? _.mountPath === filepath : micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath)
+    )
     if (dashD) {
       return flexMatches.filter(_ => _.isDirectory)
     } else if (exact) {
@@ -128,6 +128,7 @@ export default abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>
         fullpath: entry.mountPath,
         size: data ? data.length : 0,
         isDirectory,
+        isExecutable: this.isLeaf(entry) && entry.isExecutable,
         data: (withData && data) || undefined
       }
     }
@@ -144,6 +145,7 @@ export default abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>
           name,
           nameForDisplay,
           path: mount.mountPath,
+          viewer: this.isLeaf(mount) ? this.viewer(mount) : undefined,
           stats: {
             size: 0,
             mtimeMs: 0,
@@ -189,7 +191,7 @@ export default abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>
           const extension = match1 || match2 ? '.json' : '.md'
 
           const dir = dirname(dstFilepath)
-          if (!this.trie.get(dir)) {
+          if (!this.trieGet(dir)) {
             throw new Error(`Directory does not exist: ${dir}`)
           } else {
             const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
