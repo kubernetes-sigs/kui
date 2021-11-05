@@ -88,12 +88,13 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
     const flexMatches = this.trieGet(filepath.replace(/\*.*$/, '')).filter(_ =>
       exact ? _.mountPath === filepath : micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath)
     )
+
     if (dashD) {
       return flexMatches.filter(_ => _.isDirectory)
     } else if (exact) {
       return flexMatches
     } else {
-      return flexMatches.filter(_ => _.mountPath !== filepath)
+      return flexMatches
     }
   }
 

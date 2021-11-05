@@ -25,6 +25,11 @@ describe(`directory listing of commands ${process.env.MOCHA_RUN_TARGET || ''}`, 
       .then(ReplExpect.okWith('rmdir'))
       .catch(Common.oops(this, true)))
 
+  it('should ls /rmdir and see /rmdir', () =>
+    CLI.command('ls -l /rmdir', this.app)
+      .then(ReplExpect.okWith('rmdir'))
+      .catch(Common.oops(this, true)))
+
   it('should cd to /', () =>
     CLI.command(`cd /`, this.app)
       .then(ReplExpect.okWithString('/'))
@@ -32,6 +37,11 @@ describe(`directory listing of commands ${process.env.MOCHA_RUN_TARGET || ''}`, 
 
   it('should ls and see rmdir', () =>
     CLI.command('ls -l', this.app)
+      .then(ReplExpect.okWith('rmdir'))
+      .catch(Common.oops(this, true)))
+
+  it('should ls rmdir and see rmdir', () =>
+    CLI.command('ls -l rmdir', this.app)
       .then(ReplExpect.okWith('rmdir'))
       .catch(Common.oops(this, true)))
 })
