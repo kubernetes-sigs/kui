@@ -588,6 +588,17 @@ export const read = async <T extends KResponse, O extends ParsedOptions>(
     cmd = await internalRead(root, argv, tryCatchalls)
   }
 
+  if (!cmd && /\//.test(argv[0])) {
+    // Look for slashes instead of spaces. e.g. if the user types
+    // /a/b/c, and there is a registered command route /a/b/c,
+    // ... then we should resolve that command as a kui command
+    const { cwd } = await import('../util/home')
+    const exe = argv[0].replace(/^\.\//, cwd())
+    const argv2 = exe.split(/\//).slice(1)
+    await resolver.resolve(exe, { tryCatchalls: false })
+    cmd = await internalRead(root, argv2, tryCatchalls)
+  }
+
   if (!cmd) {
     // command not found, but maybe we can find partial matches
     // that might be helpful?
