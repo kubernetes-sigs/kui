@@ -94,7 +94,7 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
     } else if (exact) {
       return flexMatches
     } else {
-      return flexMatches
+      return flexMatches.filter(_ => !_.isDirectory || _.mountPath !== filepath)
     }
   }
 

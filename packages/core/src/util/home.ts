@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-import { dirname, join } from 'path'
+import { dirname, join, isAbsolute } from 'path'
 import { homedir as home } from 'os'
 
 import { inBrowser } from '../core/capabilities'
 
 const _homedir = home()
-
-export const expandHomeDir = function(path: string): string {
-  const homedir = (_homedir === '/' && process.env.HOME) || _homedir
-
-  if (!path || !path.slice) {
-    return path
-  } else if (path === '~') {
-    return homedir
-  } else if (path.slice(0, 2) !== '~/' && path.slice(0, 2) !== '~\\') {
-    return path
-  } else {
-    return join(homedir, path.slice(2))
-  }
-}
-
-export default expandHomeDir
 
 /** In case of error, e.g. removed CWD, this is our fallback plan */
 export function fallbackCWD(cwd?: string) {
@@ -60,3 +44,19 @@ export const cwd = () => {
     return fallbackCWD()
   }
 }
+
+export const expandHomeDir = function(path: string): string {
+  const homedir = (_homedir === '/' && process.env.HOME) || _homedir
+
+  if (!path || !path.slice) {
+    return path
+  } else if (path === '~') {
+    return homedir
+  } else if (path.slice(0, 2) !== '~/' && path.slice(0, 2) !== '~\\') {
+    return isAbsolute(path) ? path : join(cwd(), path)
+  } else {
+    return join(homedir, path.slice(2))
+  }
+}
+
+export default expandHomeDir

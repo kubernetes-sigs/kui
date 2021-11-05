@@ -27,7 +27,39 @@ export default (component: string | number | boolean, quote = '"'): string => {
     component.charAt(0) !== quote &&
     component.charAt(component.length - 1) !== quote
   ) {
-    return `${quote}${component}${quote}`
+    let quoted = ''
+    let inBackslash = false
+    let inTheirQuote = false
+    let inOurQuote = false
+    let inSpace = false
+    for (let idx = 0; idx < component.length; idx++) {
+      const c = component.charAt(idx)
+
+      const escaped = inBackslash
+      inBackslash = false
+
+      if (/\s/.test(c) && !escaped) {
+        inSpace = true
+        if (!inTheirQuote) {
+          inOurQuote = true
+          quoted += quote
+        }
+      } else if (c === '\\') {
+        inBackslash = true
+      } else {
+        if (inSpace && inOurQuote) {
+          quoted += quote
+          inOurQuote = false
+        }
+        inSpace = false
+        if (c === quote && !escaped) {
+          inTheirQuote = !inTheirQuote
+        }
+      }
+
+      quoted += c
+    }
+    return quoted
   } else {
     return component.toString()
   }

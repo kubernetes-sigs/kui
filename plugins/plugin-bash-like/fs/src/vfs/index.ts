@@ -15,7 +15,6 @@
  */
 
 import slash from 'slash'
-import { isAbsolute, join } from 'path'
 import { Arguments, Events, ParsedOptions, REPL, Table, getCurrentTab, inBrowser, Util } from '@kui-shell/core'
 
 import { FStat } from '../lib/fstat'
@@ -210,7 +209,7 @@ export function mount(vfs: VFS | VFSProducingFunction, placeholderMountPath?: st
 
 /** @return the absolute path to `filepath` */
 export function absolute(filepath: string): string {
-  return isAbsolute(Util.expandHomeDir(filepath.toString())) ? filepath : join(Util.cwd(), filepath.toString())
+  return Util.expandHomeDir(filepath.toString())
 }
 
 /** Lookup compiatible matching mount */
