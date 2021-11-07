@@ -35,6 +35,26 @@ function doCdTests(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 }
 
+describe(`CommandFS: ls command subdirectories ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it('ls /test and see string* command', () =>
+    CLI.command('ls /test', this.app)
+      .then(ReplExpect.okWithString('string*'))
+      .catch(Common.oops(this, true)))
+
+  it('ls /test and see bin/ directory', () =>
+    CLI.command('ls /test', this.app)
+      .then(ReplExpect.okWithString('bin/'))
+      .catch(Common.oops(this, true)))
+
+  it('ls /test/bin and see testing-subdirectory* command', () =>
+    CLI.command('ls /test/bin', this.app)
+      .then(ReplExpect.okWithString('testing-subdirectory*'))
+      .catch(Common.oops(this, true)))
+})
+
 describe(`CommandFS: execute commands via slashes ${process.env.MOCHA_RUN_TARGET ||
   ''}`, function(this: Common.ISuite) {
   before(Common.before(this))

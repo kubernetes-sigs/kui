@@ -26,9 +26,10 @@ const uid = -1
 const gid = -1
 const username = ''
 
-interface BaseEntry {
+export interface BaseEntry {
   mountPath: string
   isDirectory?: boolean
+  isExecutable?: boolean
 }
 
 export type Directory = BaseEntry
@@ -70,7 +71,7 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
   }
 
   private dirPattern(filepath: string): RegExp {
-    // /kui/kubernetes -> /\/kui\/kubernetes/[^/]*$/
+    // /kui/kubernetes -> /\/kui\/kubernetes/[^/]+$/
     if (filepath.charAt(filepath.length - 1) === '/') {
       return new RegExp(`^${this.glob2RegExp(filepath)}[^/]+$`)
     } else {

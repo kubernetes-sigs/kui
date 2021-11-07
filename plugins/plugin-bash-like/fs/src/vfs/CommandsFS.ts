@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { commandsTrie } from '@kui-shell/core'
+import { dirname } from 'path'
+import { commandsTrie, Util } from '@kui-shell/core'
 
 import { VFS } from '..'
-import { TrieVFS, Leaf, Directory } from './TrieVFS'
+import { TrieVFS, Leaf, Directory, BaseEntry } from './TrieVFS'
 
 class CommandsFS extends TrieVFS<string> {
   public constructor() {
@@ -26,19 +27,39 @@ class CommandsFS extends TrieVFS<string> {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   protected isLeaf(entry: Directory | Leaf<string>): entry is Leaf<string> {
-    return true
+    return super.isLeaf(entry) || !entry.isDirectory
   }
 
   protected loadAsString() {
     return ''
   }
 
-  protected trieGet(filepath: string) {
-    return this.trie.get(filepath).map(mountPath => ({
+  protected trieGet(filepath: string): BaseEntry[] {
+    return this.fillInParents(filepath, Array.from(new Set(this.trie.get(filepath))).map(this.direntry))
+  }
+
+  private parentsOf(mountPath: string, enclosing: string): BaseEntry[] {
+    const parents = []
+    mountPath = dirname(mountPath)
+    while (mountPath.length > enclosing.length) {
+      parents.push({ mountPath, isDirectory: true })
+      mountPath = dirname(mountPath)
+    }
+
+    return parents
+  }
+
+  private fillInParents(filepath: string, entries: BaseEntry[]) {
+    const parents = Util.flatten(entries.map(_ => this.parentsOf(_.mountPath, filepath)))
+    return entries.concat(parents)
+  }
+
+  private direntry(mountPath: string) {
+    return {
       mountPath,
       isDirectory: false,
       isExecutable: true
-    }))
+    }
   }
 
   protected viewer() {
