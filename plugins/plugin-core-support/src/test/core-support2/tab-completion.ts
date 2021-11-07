@@ -26,7 +26,6 @@ import { dirSync as tmpDirSync } from 'tmp'
 import { dirname, join } from 'path'
 const ROOT = dirname(require.resolve('@kui-shell/core/tests/package.json'))
 
-// temporarily, seeing if this gets us green
 describe('Tab completion core', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
@@ -41,8 +40,6 @@ describe('Tab completion core', function(this: Common.ISuite) {
   const tmp2 = tmpDirSync()
   touch(join(tmp2.name, 'foo bar1'))
   touch(join(tmp2.name, 'foo bar2'))
-
-  Common.localIt('should tab complete the the /kui/ vfs', () => tabby(this, `ls /ku`, `ls /kui/`))
 
   Common.localIt('should tab complete the ../../packages/core directory', () =>
     tabby(this, `lls ${ROOT}/../../../packages/co`, `lls ${ROOT}/../../../packages/core/`)

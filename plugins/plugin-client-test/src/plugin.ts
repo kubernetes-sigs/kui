@@ -47,4 +47,7 @@ export default async (registrar: Registrar) => {
     watchUntil(registrar),
     table(registrar)
   ])
+
+  // so we can test ls /test and see bin
+  registrar.listen('/test/bin/testing-subdirectory', () => 'hello world from subdirectory')
 }
