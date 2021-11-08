@@ -75,7 +75,7 @@ export async function getTable(
             ? (JSON.parse(data.toString()) as KubeItems)
             : (data as KubeItems)
 
-        if (!list) {
+        if (!list || !list.items) {
           // first table response
           return thisList
         } else {
