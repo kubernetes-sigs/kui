@@ -103,7 +103,7 @@ describe(`kubectl source ref ${process.env.MOCHA_RUN_TARGET || ''}`, function(th
       let isExpanded = false // default isExpanded?
       for (let idx = 0; idx < 5; idx++) {
         console.error(`SRK2.${idx}`)
-        await confirm(isExpanded, 'Deployment')
+        await confirm(isExpanded, 'ConfigMap')
         console.error(`SRK3.${idx}`)
         isExpanded = await toggle(isExpanded)
         console.error(`SRK4.${idx}`)

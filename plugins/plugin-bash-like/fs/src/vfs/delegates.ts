@@ -104,6 +104,12 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
   }
 }
 
+function removeDuplicates2(vfses: DirEntry[]): DirEntry[] {
+  // nice nodejs; set.add doesn't indicate whether something was added??
+  const set = new Set()
+  return vfses.filter(_ => !set.has(_.path) && set.add(_.path))
+}
+
 /**
  * ls delegate
  *
@@ -144,23 +150,18 @@ export async function ls(...parameters: Parameters<VFS['ls']>): Promise<DirEntry
     throw err
   }
 
-  // all matching Kui commands
+  // all matching Kui commands, i.e. CommandFS
   const commandContent = await commandContentPromise
 
+  // over all vfs, including CommandFS
   const vfsContent = (await vfsContentP).filter(_ => _)
-  if (mountContent.length === 0) {
-    if (vfsContent.length === 0) {
-      // TODO: if no matches, we need to check whether the filepaths are
-      // all directories (and no -d); only then is an empty response valid.
-      // Otherwise, we need to report a 404.
-    }
-    return vfsContent.concat(commandContent)
-  } else {
-    return mountContent
-      .concat(vfsContent)
-      .concat(commandContent)
-      .sort((a, b) => a.name.localeCompare(b.name))
-  }
+
+  // TODO: if no matches, we need to check whether the filepaths are
+  // all directories (and no -d); only then is an empty response valid.
+  // Otherwise, we need to report a 404.
+  return removeDuplicates2(vfsContent.concat(commandContent).concat(mountContent)).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  )
 }
 
 /**
