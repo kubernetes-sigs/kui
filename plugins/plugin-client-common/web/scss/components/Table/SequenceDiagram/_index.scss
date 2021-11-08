@@ -107,7 +107,7 @@ body[kui-theme-style] {
     tr:not(.kui--interval-start),
     tr:not(.kui--interval-start):hover {
       td {
-        border: none;
+        border: 1px solid transparent;
       }
     }
     tr.kui--sequence-diagram-data-row:hover {
