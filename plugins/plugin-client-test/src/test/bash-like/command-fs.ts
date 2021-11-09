@@ -49,6 +49,12 @@ describe(`CommandFS: ls command subdirectories ${process.env.MOCHA_RUN_TARGET ||
       .then(ReplExpect.okWithString('bin/'))
       .catch(Common.oops(this, true)))
 
+  // test path normalization
+  it('ls /test/bin/.. and see bin/ directory', () =>
+    CLI.command('ls /test/bin/..', this.app)
+      .then(ReplExpect.okWithString('bin/'))
+      .catch(Common.oops(this, true)))
+
   it('ls /test/bin and see testing-subdirectory* command', () =>
     CLI.command('ls /test/bin', this.app)
       .then(ReplExpect.okWithString('testing-subdirectory*'))
