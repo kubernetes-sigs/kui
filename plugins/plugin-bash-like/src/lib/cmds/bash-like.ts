@@ -40,6 +40,7 @@ function doSpawn(
   return new Promise(async (resolve, reject) => {
     try {
       const options: SpawnOptions = {
+        cwd: execOptions.cwd,
         env: Object.assign({}, process.env, execOptions['env'] || {})
       }
 
@@ -83,6 +84,7 @@ export const doExec = (
     try {
       const options: ChildProcessExecOptions = {
         maxBuffer: 1 * 1024 * 1024,
+        cwd: execOptions.cwd,
         env: Object.assign({}, process.env, execOptions.env || {})
       }
       if (process.env.SHELL) {

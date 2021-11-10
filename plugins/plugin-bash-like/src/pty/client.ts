@@ -533,8 +533,8 @@ async function initOnMessage(
         sawCode = /File exists/i.test(msg.data)
           ? 409
           : /no such/i.test(msg.data) || /not found/i.test(msg.data)
-            ? 404
-            : sawCode
+          ? 404
+          : sawCode
 
         // setTimeout helps with batching
         setTimeout(() => {
@@ -770,7 +770,7 @@ const getOrCreateChannel = async (
       uuid,
       rows: terminal ? terminal.rows : 80,
       cols: terminal ? terminal.cols : 40,
-      cwd: process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
+      cwd: execOptions.cwd || process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
       env: Object.keys(env).length > 0 && env // VERY IMPORTANT: don't send an empty process.env
     }
     debug('exec after open', msg)
@@ -796,7 +796,7 @@ const getOrCreateChannel = async (
     // when the websocket has closed, notify the user
 
     if (inBrowser()) {
-      const onClose = function (evt) {
+      const onClose = function(evt) {
         debug('channel has closed', evt.target, uuid)
         ws.removeEventListener('close', onClose)
         if (!tab.state.closed) {
