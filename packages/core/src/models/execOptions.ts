@@ -36,6 +36,9 @@ export interface ExecOptions {
     accumulator: Record<string, any>
   }
 
+  /** cwd? */
+  cwd?: string
+
   /** environment variable map */
   env?: Record<string, string>
 
