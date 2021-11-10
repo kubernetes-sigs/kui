@@ -219,7 +219,8 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
     withData: boolean,
     enoentOk: boolean
   ): Promise<FStat> {
-    const entry = await this.findExact(filepath, withData)
+    const entry =
+      (await this.findExact(filepath.replace(/\/$/, ''), withData)) || (await this.findExact(filepath + '/', withData))
     if (!entry) {
       if (enoentOk) {
         // i don't think it makes sense to ignore ENOENT for this VFS
