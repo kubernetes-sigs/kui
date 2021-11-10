@@ -16,7 +16,8 @@
 
 // this file defines the external API
 export { main } from './pty/server'
-export { StdioChannelWebsocketSide } from './pty/stdio-channel'
 export { getSessionForTab } from './pty/sessionCache'
-export { dispatchToShell as doExecWithPty, doExecWithStdoutViaPty } from './lib/cmds/catchall'
+export { default as doExecPipe } from './lib/cmds/pipe'
 export { default as getTabState } from './tab-state/get'
+export { StdioChannelWebsocketSide } from './pty/stdio-channel'
+export { dispatchToShell as doExecWithPty, doExecWithStdoutViaPty } from './lib/cmds/catchall'
