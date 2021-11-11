@@ -40,7 +40,7 @@ that pays attention to backslash escaping and quotations
 
 #### Defined in
 
-[packages/core/src/models/command.ts:146](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L146)
+[packages/core/src/models/command.ts:146](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L146)
 
 ---
 
@@ -52,7 +52,7 @@ the residual of `argv` without `parsedOptions`
 
 #### Defined in
 
-[packages/core/src/models/command.ts:151](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L151)
+[packages/core/src/models/command.ts:151](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L151)
 
 ---
 
@@ -64,7 +64,7 @@ the raw command string, as given by the user
 
 #### Defined in
 
-[packages/core/src/models/command.ts:141](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L141)
+[packages/core/src/models/command.ts:141](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L141)
 
 ---
 
@@ -77,7 +77,7 @@ options such as `--option key value`
 
 #### Defined in
 
-[packages/core/src/models/command.ts:167](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L167)
+[packages/core/src/models/command.ts:167](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L167)
 
 ---
 
@@ -98,4 +98,4 @@ pipeline stages, e.g. if command='a b --foo|c', the pipeStages=[['a','b, '--foo'
 
 #### Defined in
 
-[packages/core/src/models/command.ts:156](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L156)
+[packages/core/src/models/command.ts:156](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L156)

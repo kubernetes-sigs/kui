@@ -46,7 +46,7 @@ KubeResource.apiVersion
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:375](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L375)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:375](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L375)
 
 ---
 
@@ -88,7 +88,7 @@ KubeResource.isKubeResource
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:205](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L205)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:205](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L205)
 
 ---
 
@@ -102,7 +102,7 @@ KubeResource.isSimulacrum
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:204](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L204)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:204](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L204)
 
 ---
 
@@ -116,7 +116,7 @@ KubeResource.kind
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:376](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L376)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:376](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L376)
 
 ---
 
@@ -130,7 +130,7 @@ KubeResource.kuiRawData
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:182](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L182)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:182](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L182)
 
 ---
 
@@ -197,7 +197,7 @@ KubeResource.originatingCommand
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:203](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L203)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:203](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L203)
 
 ---
 
@@ -251,7 +251,7 @@ KubeResource.spec
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:377](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L377)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:377](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L377)
 
 ---
 
@@ -274,7 +274,7 @@ KubeResource.status
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:387](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L387)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:387](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-kubectl/src/lib/model/resource.ts#L387)
 
 ---
 

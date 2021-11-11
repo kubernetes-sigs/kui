@@ -25,7 +25,7 @@ Label for e.g. Button UI
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L34)
+[packages/core/src/models/StatusModel.ts:34](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/StatusModel.ts#L34)
 
 ## Methods
 
@@ -47,7 +47,7 @@ Should the button be shown?
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L37)
+[packages/core/src/models/StatusModel.ts:37](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/StatusModel.ts#L37)
 
 ---
 
@@ -69,4 +69,4 @@ What happens when the button is clicked? @return updated items
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L40)
+[packages/core/src/models/StatusModel.ts:40](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/StatusModel.ts#L40)

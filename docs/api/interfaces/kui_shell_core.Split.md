@@ -21,7 +21,7 @@ Split the given string into an argv
 
 #### Defined in
 
-[packages/core/src/repl/split.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/split.ts#L46)
+[packages/core/src/repl/split.ts:46](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/split.ts#L46)
 
 ---
 
@@ -31,4 +31,4 @@ Split the given string into an argv
 
 #### Defined in
 
-[packages/core/src/repl/split.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/split.ts#L47)
+[packages/core/src/repl/split.ts:47](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/split.ts#L47)

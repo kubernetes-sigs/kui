@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L23)
+[packages/core/src/core/usage/pretty-code.ts:23](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L23)
 
 ---
 
@@ -57,7 +57,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L70)
+[packages/core/src/core/usage/pretty-code.ts:70](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L70)
 
 ---
 
@@ -77,7 +77,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L27)
+[packages/core/src/core/usage/pretty-code.ts:27](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L27)
 
 ---
 
@@ -97,7 +97,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L31)
+[packages/core/src/core/usage/pretty-code.ts:31](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L31)
 
 ---
 
@@ -117,7 +117,7 @@
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L87)
+[packages/core/src/core/usage/pretty-code.ts:87](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L87)
 
 ---
 
@@ -139,7 +139,7 @@ pretty-printed version of the given bash pipeline
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L43)
+[packages/core/src/core/usage/pretty-code.ts:43](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L43)
 
 ---
 
@@ -159,7 +159,7 @@ pretty-printed version of the given bash pipeline
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:81](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L81)
+[packages/core/src/core/usage/pretty-code.ts:81](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L81)
 
 ---
 
@@ -179,7 +179,7 @@ pretty-printed version of the given bash pipeline
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L37)
+[packages/core/src/core/usage/pretty-code.ts:37](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L37)
 
 ---
 
@@ -199,4 +199,4 @@ pretty-printed version of the given bash pipeline
 
 #### Defined in
 
-[packages/core/src/core/usage/pretty-code.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/pretty-code.ts#L60)
+[packages/core/src/core/usage/pretty-code.ts:60](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/pretty-code.ts#L60)

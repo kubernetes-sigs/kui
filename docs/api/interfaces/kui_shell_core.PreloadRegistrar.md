@@ -42,7 +42,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:329](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L329)
+[packages/core/src/models/command.ts:329](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L329)
 
 ## Methods
 
@@ -76,7 +76,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:348](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L348)
+[packages/core/src/models/command.ts:348](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L348)
 
 ---
 
@@ -109,7 +109,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:324](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L324)
+[packages/core/src/models/command.ts:324](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L324)
 
 ---
 
@@ -143,7 +143,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:330](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L330)
+[packages/core/src/models/command.ts:330](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L330)
 
 ---
 
@@ -171,7 +171,7 @@ sidecar badges
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L34)
+[packages/core/src/models/plugin.ts:34](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L34)
 
 ---
 
@@ -197,7 +197,7 @@ sidecar badges
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:35](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L35)
+[packages/core/src/models/plugin.ts:35](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L35)
 
 ---
 
@@ -225,7 +225,7 @@ sidecar modes
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L30)
+[packages/core/src/models/plugin.ts:30](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L30)
 
 ---
 
@@ -251,7 +251,7 @@ sidecar modes
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L31)
+[packages/core/src/models/plugin.ts:31](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L31)
 
 ---
 
@@ -273,7 +273,7 @@ session initializers
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L38)
+[packages/core/src/models/plugin.ts:38](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L38)
 
 ---
 
@@ -305,7 +305,7 @@ session initializers
 
 #### Defined in
 
-[packages/core/src/models/command.ts:342](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L342)
+[packages/core/src/models/command.ts:342](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L342)
 
 ---
 
@@ -338,7 +338,7 @@ session initializers
 
 #### Defined in
 
-[packages/core/src/models/command.ts:343](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L343)
+[packages/core/src/models/command.ts:343](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L343)
 
 ---
 
@@ -372,4 +372,4 @@ session initializers
 
 #### Defined in
 
-[packages/core/src/models/command.ts:336](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L336)
+[packages/core/src/models/command.ts:336](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L336)

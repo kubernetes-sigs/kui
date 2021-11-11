@@ -28,7 +28,7 @@ Apply the given evaluator to the given arguments
 
 #### Defined in
 
-[packages/core/src/repl/types.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/types.ts#L40)
+[packages/core/src/repl/types.ts:40](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/types.ts#L40)
 
 ## Methods
 
@@ -58,4 +58,4 @@ Apply the given evaluator to the given arguments
 
 #### Defined in
 
-[packages/core/src/repl/types.ts:41](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/types.ts#L41)
+[packages/core/src/repl/types.ts:41](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/types.ts#L41)

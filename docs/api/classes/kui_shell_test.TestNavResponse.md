@@ -32,7 +32,7 @@
 
 #### Defined in
 
-[packages/test/src/api/NavResponse.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/NavResponse.ts#L39)
+[packages/test/src/api/NavResponse.ts:39](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/NavResponse.ts#L39)
 
 ## Properties
 
@@ -52,4 +52,4 @@
 
 #### Defined in
 
-[packages/test/src/api/NavResponse.ts:41](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/NavResponse.ts#L41)
+[packages/test/src/api/NavResponse.ts:41](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/NavResponse.ts#L41)

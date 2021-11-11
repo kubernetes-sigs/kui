@@ -58,7 +58,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:95](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L95)
+[packages/core/src/webapp/models/table.ts:95](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L95)
 
 ## Properties
 
@@ -68,7 +68,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L24)
+[packages/core/src/webapp/models/table.ts:24](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L24)
 
 ---
 
@@ -78,7 +78,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:77](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L77)
+[packages/core/src/webapp/models/table.ts:77](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L77)
 
 ---
 
@@ -88,7 +88,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:89](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L89)
+[packages/core/src/webapp/models/table.ts:89](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L89)
 
 ---
 
@@ -98,7 +98,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:93](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L93)
+[packages/core/src/webapp/models/table.ts:93](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L93)
 
 ---
 
@@ -108,7 +108,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L87)
+[packages/core/src/webapp/models/table.ts:87](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L87)
 
 ---
 
@@ -118,7 +118,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:53](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L53)
+[packages/core/src/webapp/models/table.ts:53](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L53)
 
 ---
 
@@ -128,7 +128,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L55)
+[packages/core/src/webapp/models/table.ts:55](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L55)
 
 ---
 
@@ -138,7 +138,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L65)
+[packages/core/src/webapp/models/table.ts:65](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L65)
 
 ---
 
@@ -150,7 +150,7 @@ does this row represent a recently deleted resource?
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:45](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L45)
+[packages/core/src/webapp/models/table.ts:45](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L45)
 
 ---
 
@@ -162,7 +162,7 @@ the key-value pair for the first column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L39)
+[packages/core/src/webapp/models/table.ts:39](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L39)
 
 ---
 
@@ -172,7 +172,7 @@ the key-value pair for the first column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L67)
+[packages/core/src/webapp/models/table.ts:67](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L67)
 
 ---
 
@@ -182,7 +182,7 @@ the key-value pair for the first column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L40)
+[packages/core/src/webapp/models/table.ts:40](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L40)
 
 ---
 
@@ -192,7 +192,7 @@ the key-value pair for the first column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:61](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L61)
+[packages/core/src/webapp/models/table.ts:61](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L61)
 
 ---
 
@@ -202,7 +202,7 @@ the key-value pair for the first column
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:42](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L42)
+[packages/core/src/webapp/models/table.ts:42](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L42)
 
 ---
 
@@ -214,7 +214,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L30)
+[packages/core/src/webapp/models/table.ts:30](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L30)
 
 ---
 
@@ -224,7 +224,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:85](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L85)
+[packages/core/src/webapp/models/table.ts:85](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L85)
 
 ---
 
@@ -234,7 +234,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:83](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L83)
+[packages/core/src/webapp/models/table.ts:83](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L83)
 
 ---
 
@@ -244,7 +244,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:81](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L81)
+[packages/core/src/webapp/models/table.ts:81](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L81)
 
 ---
 
@@ -254,7 +254,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:91](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L91)
+[packages/core/src/webapp/models/table.ts:91](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L91)
 
 ---
 
@@ -264,7 +264,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L49)
+[packages/core/src/webapp/models/table.ts:49](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L49)
 
 ---
 
@@ -274,7 +274,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:69](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L69)
+[packages/core/src/webapp/models/table.ts:69](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L69)
 
 ---
 
@@ -284,7 +284,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:63](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L63)
+[packages/core/src/webapp/models/table.ts:63](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L63)
 
 ---
 
@@ -294,7 +294,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L51)
+[packages/core/src/webapp/models/table.ts:51](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L51)
 
 ---
 
@@ -304,7 +304,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:75](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L75)
+[packages/core/src/webapp/models/table.ts:75](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L75)
 
 ---
 
@@ -314,7 +314,7 @@ optional associated metadata for the corresponding resource
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:79](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L79)
+[packages/core/src/webapp/models/table.ts:79](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L79)
 
 ---
 
@@ -326,7 +326,7 @@ uniquely identifies this row in a given table; if not defined, we will use the n
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L27)
+[packages/core/src/webapp/models/table.ts:27](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L27)
 
 ---
 
@@ -344,7 +344,7 @@ uniquely identifies this row in a given table; if not defined, we will use the n
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:57](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L57)
+[packages/core/src/webapp/models/table.ts:57](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L57)
 
 ---
 
@@ -362,7 +362,7 @@ uniquely identifies this row in a given table; if not defined, we will use the n
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:59](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L59)
+[packages/core/src/webapp/models/table.ts:59](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L59)
 
 ---
 
@@ -372,7 +372,7 @@ uniquely identifies this row in a given table; if not defined, we will use the n
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L71)
+[packages/core/src/webapp/models/table.ts:71](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L71)
 
 ---
 
@@ -382,7 +382,7 @@ uniquely identifies this row in a given table; if not defined, we will use the n
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L47)
+[packages/core/src/webapp/models/table.ts:47](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L47)
 
 ---
 
@@ -392,4 +392,4 @@ uniquely identifies this row in a given table; if not defined, we will use the n
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:73](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L73)
+[packages/core/src/webapp/models/table.ts:73](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L73)

@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/views/toolbar-text.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/toolbar-text.ts#L33)
+[packages/core/src/webapp/views/toolbar-text.ts:33](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/toolbar-text.ts#L33)
 
 ---
 
@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/views/toolbar-text.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/toolbar-text.ts#L32)
+[packages/core/src/webapp/views/toolbar-text.ts:32](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/toolbar-text.ts#L32)
 
 ---
 
@@ -40,4 +40,4 @@
 
 #### Defined in
 
-[packages/core/src/webapp/views/toolbar-text.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/toolbar-text.ts#L31)
+[packages/core/src/webapp/views/toolbar-text.ts:31](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/toolbar-text.ts#L31)

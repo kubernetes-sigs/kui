@@ -23,7 +23,7 @@ corresponding row in the UI.
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L43)
+[packages/core/src/models/RadioTable.ts:43](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L43)
 
 ---
 
@@ -33,4 +33,4 @@ corresponding row in the UI.
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L44)
+[packages/core/src/models/RadioTable.ts:44](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L44)

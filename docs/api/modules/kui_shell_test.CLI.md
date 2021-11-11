@@ -38,7 +38,7 @@
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L24)
+[packages/test/src/api/cli.ts:24](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L24)
 
 ---
 
@@ -48,7 +48,7 @@
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L25)
+[packages/test/src/api/cli.ts:25](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L25)
 
 ## Functions
 
@@ -76,7 +76,7 @@ Execute a CLI command, and return the data-input-count of that command
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L56)
+[packages/test/src/api/cli.ts:56](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L56)
 
 ---
 
@@ -100,7 +100,7 @@ Execute the given command in the given split
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:102](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L102)
+[packages/test/src/api/cli.ts:102](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L102)
 
 ---
 
@@ -123,7 +123,7 @@ See headless.js for the analogous headless implementation.
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:179](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L179)
+[packages/test/src/api/cli.ts:179](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L179)
 
 ---
 
@@ -147,7 +147,7 @@ Click to expand the last replayed sample output
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:244](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L244)
+[packages/test/src/api/cli.ts:244](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L244)
 
 ---
 
@@ -171,7 +171,7 @@ Click to expand the last replayed sample output
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:237](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L237)
+[packages/test/src/api/cli.ts:237](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L237)
 
 ---
 
@@ -204,7 +204,7 @@ Click to expand the last replayed sample output
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:181](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L181)
+[packages/test/src/api/cli.ts:181](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L181)
 
 ---
 
@@ -229,7 +229,7 @@ text repl input context text
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:193](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L193)
+[packages/test/src/api/cli.ts:193](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L193)
 
 ---
 
@@ -262,7 +262,7 @@ text repl input context text
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:199](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L199)
+[packages/test/src/api/cli.ts:199](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L199)
 
 ---
 
@@ -283,7 +283,7 @@ text repl input context text
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:157](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L157)
+[packages/test/src/api/cli.ts:157](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L157)
 
 ---
 
@@ -307,7 +307,7 @@ grab focus for the repl
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L28)
+[packages/test/src/api/cli.ts:28](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L28)
 
 ---
 
@@ -332,7 +332,7 @@ Index of last executed block
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:223](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L223)
+[packages/test/src/api/cli.ts:223](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L223)
 
 ---
 
@@ -362,7 +362,7 @@ wait for the result of a cli.command
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:169](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L169)
+[packages/test/src/api/cli.ts:169](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L169)
 
 ---
 
@@ -385,7 +385,7 @@ the "N" of the current block
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:215](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L215)
+[packages/test/src/api/cli.ts:215](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L215)
 
 ---
 
@@ -407,7 +407,7 @@ the "N" of the current block
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:115](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L115)
+[packages/test/src/api/cli.ts:115](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L115)
 
 ---
 
@@ -429,7 +429,7 @@ wait for the repl to be active
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:128](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L128)
+[packages/test/src/api/cli.ts:128](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L128)
 
 ---
 
@@ -452,4 +452,4 @@ Wait, if needed, for a proxy session
 
 #### Defined in
 
-[packages/test/src/api/cli.ts:141](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/cli.ts#L141)
+[packages/test/src/api/cli.ts:141](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/cli.ts#L141)

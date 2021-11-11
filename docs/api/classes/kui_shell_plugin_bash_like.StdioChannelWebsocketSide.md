@@ -70,7 +70,7 @@ EventEmitter.constructor
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L46)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:46](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L46)
 
 ## Properties
 
@@ -84,7 +84,7 @@ Channel.readyState
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L40)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:40](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L40)
 
 ---
 
@@ -94,7 +94,7 @@ Channel.readyState
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:42](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L42)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:42](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L42)
 
 ---
 
@@ -104,7 +104,7 @@ Channel.readyState
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L44)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:44](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L44)
 
 ---
 
@@ -163,7 +163,7 @@ Channel.close
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:144](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L144)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:144](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L144)
 
 ---
 
@@ -245,7 +245,7 @@ node_modules/@types/node/events.d.ts:29
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L51)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:51](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L51)
 
 ---
 
@@ -495,7 +495,7 @@ Channel.removeEventListener
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:174](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L174)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:174](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L174)
 
 ---
 
@@ -546,7 +546,7 @@ Channel.send
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/stdio-channel.ts:150](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L150)
+[plugins/plugin-bash-like/src/pty/stdio-channel.ts:150](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-bash-like/src/pty/stdio-channel.ts#L150)
 
 ---
 

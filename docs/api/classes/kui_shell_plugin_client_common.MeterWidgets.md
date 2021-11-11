@@ -325,7 +325,7 @@ Graft on the REPL focus management
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:48](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L48)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:48](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L48)
 
 ---
 
@@ -339,7 +339,7 @@ Graft on the REPL focus management
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:31](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L31)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:31](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L31)
 
 ---
 
@@ -624,7 +624,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:35](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L35)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:35](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L35)
 
 ---
 
@@ -642,7 +642,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:56](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L56)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx:56](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/StatusStripe/MeterWidgets.tsx#L56)
 
 ---
 

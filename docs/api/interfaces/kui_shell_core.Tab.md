@@ -546,7 +546,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10814
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L24)
+[packages/core/src/webapp/tab.ts:24](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L24)
 
 ---
 
@@ -572,7 +572,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10818
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L27)
+[packages/core/src/webapp/tab.ts:27](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L27)
 
 ---
 
@@ -3982,7 +3982,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10724
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L26)
+[packages/core/src/webapp/tab.ts:26](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L26)
 
 ---
 
@@ -4094,7 +4094,7 @@ node_modules/typescript/lib/lib.dom.d.ts:6605
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L25)
+[packages/core/src/webapp/tab.ts:25](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L25)
 
 ---
 
@@ -4190,7 +4190,7 @@ node_modules/typescript/lib/lib.dom.d.ts:6607
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L23)
+[packages/core/src/webapp/tab.ts:23](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L23)
 
 ## Methods
 
@@ -4210,7 +4210,7 @@ node_modules/typescript/lib/lib.dom.d.ts:6607
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L32)
+[packages/core/src/webapp/tab.ts:32](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L32)
 
 ---
 
@@ -5067,7 +5067,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10742
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L37)
+[packages/core/src/webapp/tab.ts:37](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L37)
 
 ---
 
@@ -5198,7 +5198,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5192
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L40)
+[packages/core/src/webapp/tab.ts:40](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L40)
 
 ---
 
@@ -5510,7 +5510,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10759
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L30)
+[packages/core/src/webapp/tab.ts:30](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L30)
 
 ---
 
@@ -5530,7 +5530,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10759
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L29)
+[packages/core/src/webapp/tab.ts:29](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L29)
 
 ---
 
@@ -5897,7 +5897,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10760
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L33)
+[packages/core/src/webapp/tab.ts:33](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L33)
 
 ---
 
@@ -6229,7 +6229,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5224
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:36](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L36)
+[packages/core/src/webapp/tab.ts:36](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L36)
 
 ---
 
@@ -6243,7 +6243,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5224
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:35](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L35)
+[packages/core/src/webapp/tab.ts:35](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L35)
 
 ---
 
@@ -6384,7 +6384,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5235
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L39)
+[packages/core/src/webapp/tab.ts:39](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L39)
 
 ---
 

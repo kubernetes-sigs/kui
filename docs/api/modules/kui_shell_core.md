@@ -7,6 +7,7 @@
 ### Namespaces
 
 - [Events](kui_shell_core.Events.md)
+- [Settings](kui_shell_core.Settings.md)
 - [Themes](kui_shell_core.Themes.md)
 - [Util](kui_shell_core.Util.md)
 - [pc](kui_shell_core.pc.md)
@@ -146,6 +147,7 @@
 
 - [KeyCodes](kui_shell_core.md#keycodes)
 - [badgeRegistrar](kui_shell_core.md#badgeregistrar)
+- [commandsTrie](kui_shell_core.md#commandstrie)
 
 ### Functions
 
@@ -167,8 +169,6 @@
 - [findCompletions](kui_shell_core.md#findcompletions)
 - [getAuthValue](kui_shell_core.md#getauthvalue)
 - [getCurrentTab](kui_shell_core.md#getcurrenttab)
-- [getOrSetPreference](kui_shell_core.md#getorsetpreference)
-- [getPreference](kui_shell_core.md#getpreference)
 - [getPrimaryTabId](kui_shell_core.md#getprimarytabid)
 - [getTab](kui_shell_core.md#gettab)
 - [getTabId](kui_shell_core.md#gettabid)
@@ -260,16 +260,13 @@
 - [sameTab](kui_shell_core.md#sametab)
 - [setEvaluatorImpl](kui_shell_core.md#setevaluatorimpl)
 - [setHasAuth](kui_shell_core.md#sethasauth)
-- [setPreference](kui_shell_core.md#setpreference)
 - [split](kui_shell_core.md#split)
 - [splitFor](kui_shell_core.md#splitfor)
 - [splitIntoPipeStages](kui_shell_core.md#splitintopipestages)
 - [teeToFile](kui_shell_core.md#teetofile)
 - [tellMain](kui_shell_core.md#tellmain)
 - [typeahead](kui_shell_core.md#typeahead)
-- [uiThemes](kui_shell_core.md#uithemes)
 - [unparse](kui_shell_core.md#unparse)
-- [userDataDir](kui_shell_core.md#userdatadir)
 - [withLanguage](kui_shell_core.md#withlanguage)
 
 ## Type aliases
@@ -280,7 +277,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:35](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L35)
+[packages/core/src/webapp/views/registrar/badges.ts:35](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/badges.ts#L35)
 
 ---
 
@@ -296,7 +293,7 @@
 
 #### Defined in
 
-[packages/core/src/models/mmr/types.ts:142](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/types.ts#L142)
+[packages/core/src/models/mmr/types.ts:142](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/types.ts#L142)
 
 ---
 
@@ -320,7 +317,7 @@
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L43)
+[packages/core/src/models/plugin.ts:43](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L43)
 
 ---
 
@@ -353,7 +350,7 @@ base command handler
 
 #### Defined in
 
-[packages/core/src/models/command.ts:215](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L215)
+[packages/core/src/models/command.ts:215](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L215)
 
 ---
 
@@ -367,7 +364,7 @@ REPL.qexec; the command is assumed to return either
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:173](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L173)
+[packages/core/src/models/mmr/content-types.ts:173](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L173)
 
 ---
 
@@ -389,7 +386,7 @@ REPL.qexec; the command is assumed to return either
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:20](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CommentaryResponse.ts#L20)
+[packages/core/src/models/CommentaryResponse.ts:20](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/CommentaryResponse.ts#L20)
 
 ---
 
@@ -399,7 +396,7 @@ REPL.qexec; the command is assumed to return either
 
 #### Defined in
 
-[packages/core/src/repl/tab-completion.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/tab-completion.ts#L38)
+[packages/core/src/repl/tab-completion.ts:38](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/tab-completion.ts#L38)
 
 ---
 
@@ -422,7 +419,7 @@ The classes of supported `Content` are:
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:196](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L196)
+[packages/core/src/models/mmr/content-types.ts:196](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L196)
 
 ---
 
@@ -440,7 +437,7 @@ The Resource trait
 
 #### Defined in
 
-[packages/core/src/models/editable.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/editable.ts#L46)
+[packages/core/src/models/editable.ts:46](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/editable.ts#L46)
 
 ---
 
@@ -452,7 +449,7 @@ Transform the `execUUID` field of `ExecOptions` to be required.
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:109](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L109)
+[packages/core/src/models/execOptions.ts:112](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/execOptions.ts#L112)
 
 ---
 
@@ -491,7 +488,7 @@ contentType } wrapper.
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:141](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L141)
+[packages/core/src/models/mmr/content-types.ts:141](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L141)
 
 ---
 
@@ -501,7 +498,7 @@ contentType } wrapper.
 
 #### Defined in
 
-[packages/core/src/core/jobs/job.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/job.ts#L44)
+[packages/core/src/core/jobs/job.ts:44](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/jobs/job.ts#L44)
 
 ---
 
@@ -519,7 +516,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/models/command.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L32)
+[packages/core/src/models/command.ts:32](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L32)
 
 ---
 
@@ -529,7 +526,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L44)
+[packages/core/src/models/NavResponse.ts:44](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/NavResponse.ts#L44)
 
 ---
 
@@ -539,7 +536,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L37)
+[packages/core/src/models/NavResponse.ts:37](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/NavResponse.ts#L37)
 
 ---
 
@@ -549,7 +546,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:159](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L159)
+[packages/core/src/models/entity.ts:159](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L159)
 
 ---
 
@@ -565,7 +562,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/models/mmr/types.ts:75](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/types.ts#L75)
+[packages/core/src/models/mmr/types.ts:75](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/types.ts#L75)
 
 ---
 
@@ -581,7 +578,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/modes.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/modes.ts#L29)
+[packages/core/src/webapp/views/registrar/modes.ts:29](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/modes.ts#L29)
 
 ---
 
@@ -611,7 +608,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/modes.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/modes.ts#L27)
+[packages/core/src/webapp/views/registrar/modes.ts:27](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/modes.ts#L27)
 
 ---
 
@@ -629,7 +626,7 @@ A `Mode` is a `Label` plus some `Content` and `ModeTraits`
 
 #### Defined in
 
-[packages/core/src/models/mmr/types.ts:81](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/types.ts#L81)
+[packages/core/src/models/mmr/types.ts:81](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/types.ts#L81)
 
 ---
 
@@ -648,7 +645,7 @@ plus a way to `View` those resources.
 
 #### Defined in
 
-[packages/core/src/models/mmr/types.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/types.ts#L31)
+[packages/core/src/models/mmr/types.ts:31](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/types.ts#L31)
 
 ---
 
@@ -670,7 +667,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L29)
+[packages/core/src/models/NavResponse.ts:29](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/NavResponse.ts#L29)
 
 ---
 
@@ -696,7 +693,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/TabLayoutModificationResponse.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/TabLayoutModificationResponse.ts#L32)
+[packages/core/src/models/TabLayoutModificationResponse.ts:32](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/TabLayoutModificationResponse.ts#L32)
 
 ---
 
@@ -722,7 +719,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L26)
+[packages/core/src/models/plugin.ts:26](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L26)
 
 ---
 
@@ -746,7 +743,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/plugin.ts:41](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/plugin.ts#L41)
+[packages/core/src/models/plugin.ts:41](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/plugin.ts#L41)
 
 ---
 
@@ -767,7 +764,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/core/usage/types.ts:36](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/types.ts#L36)
+[packages/core/src/core/usage/types.ts:36](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/types.ts#L36)
 
 ---
 
@@ -777,7 +774,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L87)
+[packages/core/src/models/RadioTable.ts:87](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L87)
 
 ---
 
@@ -793,7 +790,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:42](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L42)
+[packages/core/src/models/mmr/content-types.ts:42](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L42)
 
 ---
 
@@ -809,7 +806,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:140](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L140)
+[packages/core/src/models/entity.ts:140](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L140)
 
 ---
 
@@ -825,7 +822,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:112](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L112)
+[packages/core/src/models/entity.ts:112](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L112)
 
 ---
 
@@ -841,7 +838,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L87)
+[packages/core/src/models/entity.ts:87](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L87)
 
 ---
 
@@ -855,7 +852,7 @@ function call.
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L34)
+[packages/core/src/models/mmr/content-types.ts:34](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L34)
 
 ---
 
@@ -874,7 +871,7 @@ that views may wish to interpret into fancier views.
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:208](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L208)
+[packages/core/src/models/entity.ts:208](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L208)
 
 ---
 
@@ -892,7 +889,7 @@ In order to snapshot an event, we'll need to remember just the tab uuid
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L68)
+[packages/core/src/repl/events.ts:68](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L68)
 
 ---
 
@@ -902,7 +899,7 @@ In order to snapshot an event, we'll need to remember just the tab uuid
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:19](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L19)
+[packages/core/src/models/StatusModel.ts:19](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/StatusModel.ts#L19)
 
 ---
 
@@ -926,7 +923,7 @@ In order to snapshot an event, we'll need to remember just the tab uuid
 
 #### Defined in
 
-[packages/core/src/models/streamable.ts:22](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/streamable.ts#L22)
+[packages/core/src/models/streamable.ts:22](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/streamable.ts#L22)
 
 ---
 
@@ -936,7 +933,7 @@ In order to snapshot an event, we'll need to remember just the tab uuid
 
 #### Defined in
 
-[packages/core/src/models/streamable.ts:19](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/streamable.ts#L19)
+[packages/core/src/models/streamable.ts:19](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/streamable.ts#L19)
 
 ---
 
@@ -955,7 +952,7 @@ optionally provide a `contentType`.
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:95](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L95)
+[packages/core/src/models/mmr/content-types.ts:95](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L95)
 
 ---
 
@@ -982,7 +979,7 @@ Compare 2 `StringContent`
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:114](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L114)
+[packages/core/src/models/mmr/content-types.ts:114](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L114)
 
 ---
 
@@ -994,7 +991,7 @@ Supported String content types
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:69](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L69)
+[packages/core/src/models/mmr/content-types.ts:69](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L69)
 
 ---
 
@@ -1004,7 +1001,7 @@ Supported String content types
 
 #### Defined in
 
-[packages/core/src/core/jobs/job.ts:35](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/job.ts#L35)
+[packages/core/src/core/jobs/job.ts:35](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/jobs/job.ts#L35)
 
 ---
 
@@ -1031,7 +1028,7 @@ response type!
 
 #### Defined in
 
-[packages/core/src/models/TabLayoutModificationResponse.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/TabLayoutModificationResponse.ts#L24)
+[packages/core/src/models/TabLayoutModificationResponse.ts:24](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/TabLayoutModificationResponse.ts#L24)
 
 ---
 
@@ -1047,7 +1044,7 @@ response type!
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L39)
+[packages/core/src/models/mmr/content-types.ts:39](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L39)
 
 ---
 
@@ -1079,7 +1076,7 @@ response type!
 
 #### Defined in
 
-[packages/core/src/models/command.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L48)
+[packages/core/src/models/command.ts:48](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L48)
 
 ## Properties
 
@@ -1225,7 +1222,7 @@ Add quotes if the argument needs it; compare to encodeURIComponent
 
 #### Defined in
 
-[packages/core/src/webapp/keys.ts:17](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/keys.ts#L17)
+[packages/core/src/webapp/keys.ts:17](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/keys.ts#L17)
 
 ---
 
@@ -1237,7 +1234,17 @@ registered badge handlers
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L48)
+[packages/core/src/webapp/views/registrar/badges.ts:48](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/badges.ts#L48)
+
+---
+
+### commandsTrie
+
+• **commandsTrie**: `TrieSearch`<`string`\>
+
+#### Defined in
+
+[packages/core/src/commands/typeahead.ts:21](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/commands/typeahead.ts#L21)
 
 ## Functions
 
@@ -1257,7 +1264,7 @@ registered badge handlers
 
 #### Defined in
 
-[packages/core/src/index.ts:107](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/index.ts#L107)
+[packages/core/src/index.ts:107](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/index.ts#L107)
 
 ---
 
@@ -1283,7 +1290,7 @@ registered badge handlers
 
 #### Defined in
 
-[packages/core/src/repl/split.ts:61](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/split.ts#L61)
+[packages/core/src/repl/split.ts:61](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/split.ts#L61)
 
 ---
 
@@ -1316,7 +1323,7 @@ to the given modes model
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/modes.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/modes.ts#L66)
+[packages/core/src/webapp/views/registrar/modes.ts:66](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/modes.ts#L66)
 
 ---
 
@@ -1338,7 +1345,7 @@ Roll up the status of the LineItems
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:130](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L130)
+[packages/core/src/models/StatusModel.ts:130](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/StatusModel.ts#L130)
 
 ---
 
@@ -1354,7 +1361,7 @@ Assert that Kui is supported by a remote proxy
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:105](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L105)
+[packages/core/src/core/capabilities.ts:105](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L105)
 
 ---
 
@@ -1370,7 +1377,7 @@ Yes, we are running in a sandbox
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:121](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L121)
+[packages/core/src/core/capabilities.ts:121](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L121)
 
 ---
 
@@ -1387,7 +1394,7 @@ would indicate otherwise
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:192](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L192)
+[packages/core/src/core/capabilities.ts:192](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L192)
 
 ---
 
@@ -1403,7 +1410,7 @@ For booting into an external browser sandbox, such as codesandbox.io
 
 #### Defined in
 
-[packages/core/src/webapp/bootstrap/boot.ts:103](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/bootstrap/boot.ts#L103)
+[packages/core/src/webapp/bootstrap/boot.ts:103](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/bootstrap/boot.ts#L103)
 
 ---
 
@@ -1425,7 +1432,7 @@ Should the cell be rendered with a traffic light badge?
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:63](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L63)
+[packages/core/src/models/RadioTable.ts:63](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L63)
 
 ---
 
@@ -1447,7 +1454,7 @@ Render the commands provided by a given plugin
 
 #### Defined in
 
-[packages/core/src/api/plugins.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/plugins.ts#L46)
+[packages/core/src/api/plugins.ts:46](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/plugins.ts#L46)
 
 ---
 
@@ -1467,7 +1474,7 @@ Render the commands provided by a given plugin
 
 #### Defined in
 
-[packages/core/src/webapp/queueing.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/queueing.ts#L60)
+[packages/core/src/webapp/queueing.ts:60](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/queueing.ts#L60)
 
 ---
 
@@ -1489,7 +1496,7 @@ Render the commands provided by a given plugin
 
 #### Defined in
 
-[packages/core/src/webapp/cancel.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/cancel.ts#L33)
+[packages/core/src/webapp/cancel.ts:33](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/cancel.ts#L33)
 
 ---
 
@@ -1514,7 +1521,7 @@ User hit enter in the REPL
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:603](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/exec.ts#L603)
+[packages/core/src/repl/exec.ts:603](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/exec.ts#L603)
 
 ---
 
@@ -1536,7 +1543,7 @@ Clean out the given DOM node
 
 #### Defined in
 
-[packages/core/src/webapp/util/dom.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/util/dom.ts#L21)
+[packages/core/src/webapp/util/dom.ts:21](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/util/dom.ts#L21)
 
 ---
 
@@ -1550,7 +1557,7 @@ Clean out the given DOM node
 
 #### Defined in
 
-[packages/core/src/api/client.ts:78](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/client.ts#L78)
+[packages/core/src/api/client.ts:78](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/client.ts#L78)
 
 ---
 
@@ -1577,7 +1584,7 @@ first to register in the case of a tie-breaker.
 
 #### Defined in
 
-[packages/core/src/repl/tab-completion.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/tab-completion.ts#L70)
+[packages/core/src/repl/tab-completion.ts:70](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/tab-completion.ts#L70)
 
 ---
 
@@ -1600,7 +1607,7 @@ Retrieve the value for the given key for the auth model of the given provider
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:153](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L153)
+[packages/core/src/core/capabilities.ts:153](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L153)
 
 ---
 
@@ -1614,52 +1621,7 @@ Retrieve the value for the given key for the auth model of the given provider
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:77](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L77)
-
----
-
-### getOrSetPreference
-
-▸ **getOrSetPreference**(`key`, `defaultValue`): `Promise`<`string`\>
-
-#### Parameters
-
-| Name           | Type                                               |
-| :------------- | :------------------------------------------------- |
-| `key`          | `string`                                           |
-| `defaultValue` | `string` \| () => `string` \| `Promise`<`string`\> |
-
-#### Returns
-
-`Promise`<`string`\>
-
-#### Defined in
-
-[packages/core/src/core/userdata.ts:187](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/userdata.ts#L187)
-
----
-
-### getPreference
-
-▸ `Const` **getPreference**(`key`): `Promise`<`string`\>
-
-Get a persisted preference
-
-#### Parameters
-
-| Name  | Type     |
-| :---- | :------- |
-| `key` | `string` |
-
-#### Returns
-
-`Promise`<`string`\>
-
-the preference value
-
-#### Defined in
-
-[packages/core/src/core/userdata.ts:166](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/userdata.ts#L166)
+[packages/core/src/webapp/tab.ts:77](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L77)
 
 ---
 
@@ -1679,7 +1641,7 @@ the preference value
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L65)
+[packages/core/src/webapp/tab.ts:65](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L65)
 
 ---
 
@@ -1699,7 +1661,7 @@ the preference value
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L87)
+[packages/core/src/webapp/tab.ts:87](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L87)
 
 ---
 
@@ -1721,7 +1683,7 @@ Return the unique identifier for the given tab
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L51)
+[packages/core/src/webapp/tab.ts:51](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L51)
 
 ---
 
@@ -1737,7 +1699,7 @@ Return a map of all valid credentials
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:162](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L162)
+[packages/core/src/core/capabilities.ts:162](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L162)
 
 ---
 
@@ -1763,7 +1725,7 @@ resource is Content<T\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:204](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L204)
+[packages/core/src/models/mmr/content-types.ts:204](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L204)
 
 ---
 
@@ -1783,7 +1745,7 @@ resource is WithDisplayName
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:100](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L100)
+[packages/core/src/models/entity.ts:100](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L100)
 
 ---
 
@@ -1799,7 +1761,7 @@ Is Kui supported by a remote proxy?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:99](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L99)
+[packages/core/src/core/capabilities.ts:99](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L99)
 
 ---
 
@@ -1819,7 +1781,7 @@ response is Required<WithSourceReferences\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:239](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L239)
+[packages/core/src/models/entity.ts:239](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L239)
 
 ---
 
@@ -1833,7 +1795,7 @@ response is Required<WithSourceReferences\>
 
 #### Defined in
 
-[packages/core/src/api/client.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/client.ts#L68)
+[packages/core/src/api/client.ts:68](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/client.ts#L68)
 
 ---
 
@@ -1853,7 +1815,7 @@ response is Required<WithSourceReferences\>
 
 #### Defined in
 
-[packages/core/src/util/i18n.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/i18n.ts#L30)
+[packages/core/src/util/i18n.ts:30](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/util/i18n.ts#L30)
 
 ---
 
@@ -1867,7 +1829,7 @@ response is Required<WithSourceReferences\>
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:82](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L82)
+[packages/core/src/core/capabilities.ts:82](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L82)
 
 ---
 
@@ -1881,7 +1843,7 @@ response is Required<WithSourceReferences\>
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:81](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L81)
+[packages/core/src/core/capabilities.ts:81](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L81)
 
 ---
 
@@ -1897,7 +1859,7 @@ Are we the Kui proxy?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:113](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L113)
+[packages/core/src/core/capabilities.ts:113](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L113)
 
 ---
 
@@ -1913,7 +1875,7 @@ Are we running in a sandbox?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:129](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L129)
+[packages/core/src/core/capabilities.ts:129](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L129)
 
 ---
 
@@ -1936,7 +1898,7 @@ you need to block until all session initializers have completed.
 
 #### Defined in
 
-[packages/core/src/session/init.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/session/init.ts#L28)
+[packages/core/src/session/init.ts:28](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/session/init.ts#L28)
 
 ---
 
@@ -1957,7 +1919,7 @@ you need to block until all session initializers have completed.
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:593](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/exec.ts#L593)
+[packages/core/src/repl/exec.ts:593](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/exec.ts#L593)
 
 ---
 
@@ -1986,7 +1948,7 @@ Programmatic exec, as opposed to human typing and hitting enter
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:689](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/exec.ts#L689)
+[packages/core/src/repl/exec.ts:689](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/exec.ts#L689)
 
 ---
 
@@ -2012,7 +1974,7 @@ err is CodedError<404\>
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L33)
+[packages/core/src/models/errors.ts:33](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/errors.ts#L33)
 
 ---
 
@@ -2038,7 +2000,7 @@ err is CodedError<404 \| 409\>
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L43)
+[packages/core/src/models/errors.ts:43](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/errors.ts#L43)
 
 ---
 
@@ -2064,7 +2026,7 @@ err is CodedError<409\>
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L38)
+[packages/core/src/models/errors.ts:38](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/errors.ts#L38)
 
 ---
 
@@ -2084,7 +2046,7 @@ entity is AbortableResponse<ScalarResponse<Row\>\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:247](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L247)
+[packages/core/src/models/entity.ts:247](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L247)
 
 ---
 
@@ -2110,7 +2072,7 @@ mode is Button<T\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/types.ts:144](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/types.ts#L144)
+[packages/core/src/models/mmr/types.ts:144](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/types.ts#L144)
 
 ---
 
@@ -2136,7 +2098,7 @@ err is CodedError<Code\>
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L28)
+[packages/core/src/models/errors.ts:28](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/errors.ts#L28)
 
 ---
 
@@ -2163,7 +2125,7 @@ evaluator is CommandHandlerWithEvents<T, O\>
 
 #### Defined in
 
-[packages/core/src/models/command.ts:282](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L282)
+[packages/core/src/models/command.ts:282](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/command.ts#L282)
 
 ---
 
@@ -2189,7 +2151,7 @@ content is CommandStringContent
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:177](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L177)
+[packages/core/src/models/mmr/content-types.ts:177](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L177)
 
 ---
 
@@ -2209,7 +2171,7 @@ entity is CommentaryResponse
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CommentaryResponse.ts#L39)
+[packages/core/src/models/CommentaryResponse.ts:39](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/CommentaryResponse.ts#L39)
 
 ---
 
@@ -2231,7 +2193,7 @@ is this commentary reponse be able to treated as a section break
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:45](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CommentaryResponse.ts#L45)
+[packages/core/src/models/CommentaryResponse.ts:45](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/CommentaryResponse.ts#L45)
 
 ---
 
@@ -2253,7 +2215,7 @@ does the given keycode correspond to a cursor movement?
 
 #### Defined in
 
-[packages/core/src/webapp/keys.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/keys.ts#L48)
+[packages/core/src/webapp/keys.ts:48](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/keys.ts#L48)
 
 ---
 
@@ -2273,7 +2235,7 @@ content is DescriptionList
 
 #### Defined in
 
-[packages/core/src/models/DescriptionList.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/DescriptionList.ts#L43)
+[packages/core/src/models/DescriptionList.ts:43](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/DescriptionList.ts#L43)
 
 ---
 
@@ -2289,7 +2251,7 @@ Is the current client running in an executable mode?
 
 #### Defined in
 
-[packages/core/src/api/client.ts:53](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/client.ts#L53)
+[packages/core/src/api/client.ts:53](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/client.ts#L53)
 
 ---
 
@@ -2315,7 +2277,7 @@ content is FunctionContent<T\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:160](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L160)
+[packages/core/src/models/mmr/content-types.ts:160](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L160)
 
 ---
 
@@ -2329,7 +2291,7 @@ content is FunctionContent<T\>
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:80](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L80)
+[packages/core/src/core/capabilities.ts:80](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L80)
 
 ---
 
@@ -2349,7 +2311,7 @@ link is Link
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:54](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L54)
+[packages/core/src/models/NavResponse.ts:54](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/NavResponse.ts#L54)
 
 ---
 
@@ -2369,7 +2331,7 @@ link is Label & Command
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L46)
+[packages/core/src/models/NavResponse.ts:46](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/NavResponse.ts#L46)
 
 ---
 
@@ -2389,7 +2351,7 @@ link is Label & Href
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L50)
+[packages/core/src/models/NavResponse.ts:50](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/NavResponse.ts#L50)
 
 ---
 
@@ -2409,7 +2371,7 @@ entity is MarkdownResponse
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:135](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L135)
+[packages/core/src/models/entity.ts:135](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L135)
 
 ---
 
@@ -2429,7 +2391,7 @@ msg is MessageWithCode
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:877](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L877)
+[packages/core/src/core/usage-error.ts:877](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage-error.ts#L877)
 
 ---
 
@@ -2449,7 +2411,7 @@ msg is MessageWithUsageModel
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:133](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L133)
+[packages/core/src/core/usage-error.ts:133](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage-error.ts#L133)
 
 ---
 
@@ -2469,7 +2431,7 @@ response is MixedResponse
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:161](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L161)
+[packages/core/src/models/entity.ts:161](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L161)
 
 ---
 
@@ -2489,7 +2451,7 @@ entity is MultiModalResponse<ResourceWithMetadata<void\>\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/is.ts:20](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/is.ts#L20)
+[packages/core/src/models/mmr/is.ts:20](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/is.ts#L20)
 
 ---
 
@@ -2509,7 +2471,7 @@ entity is NavResponse
 
 #### Defined in
 
-[packages/core/src/models/NavResponse.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/NavResponse.ts#L58)
+[packages/core/src/models/NavResponse.ts:58](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/NavResponse.ts#L58)
 
 ---
 
@@ -2529,7 +2491,7 @@ req is TabLayoutModificationResponse<NewSplitRequest\>
 
 #### Defined in
 
-[packages/core/src/models/TabLayoutModificationResponse.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/TabLayoutModificationResponse.ts#L60)
+[packages/core/src/models/TabLayoutModificationResponse.ts:60](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/TabLayoutModificationResponse.ts#L60)
 
 ---
 
@@ -2551,7 +2513,7 @@ wether or not the given `raw` json is an instance of Notebook
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:83](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L83)
+[packages/core/src/repl/events.ts:83](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L83)
 
 ---
 
@@ -2567,7 +2529,7 @@ Is the current client running in offline/disconnected mode?
 
 #### Defined in
 
-[packages/core/src/api/client.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/client.ts#L21)
+[packages/core/src/api/client.ts:21](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/client.ts#L21)
 
 ---
 
@@ -2583,7 +2545,7 @@ are we operating in popup mode?
 
 #### Defined in
 
-[packages/core/src/webapp/popup-core.ts:18](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/popup-core.ts#L18)
+[packages/core/src/webapp/popup-core.ts:18](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/popup-core.ts#L18)
 
 ---
 
@@ -2603,7 +2565,7 @@ response is RadioTable
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:100](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L100)
+[packages/core/src/models/RadioTable.ts:100](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L100)
 
 ---
 
@@ -2623,7 +2585,7 @@ response is RandomErrorResponse1
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:193](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L193)
+[packages/core/src/models/entity.ts:193](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L193)
 
 ---
 
@@ -2643,7 +2605,7 @@ response is RandomErrorResponse2
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:198](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L198)
+[packages/core/src/models/entity.ts:198](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L198)
 
 ---
 
@@ -2663,7 +2625,7 @@ entity is ReactProvider
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L43)
+[packages/core/src/models/mmr/content-types.ts:43](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L43)
 
 ---
 
@@ -2683,7 +2645,7 @@ entity is ReactResponse
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:142](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L142)
+[packages/core/src/models/entity.ts:142](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L142)
 
 ---
 
@@ -2699,7 +2661,7 @@ Is the current client running in readonly mode?
 
 #### Defined in
 
-[packages/core/src/api/client.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/client.ts#L37)
+[packages/core/src/api/client.ts:37](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/client.ts#L37)
 
 ---
 
@@ -2719,7 +2681,7 @@ job is Resizable
 
 #### Defined in
 
-[packages/core/src/core/jobs/job.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/job.ts#L25)
+[packages/core/src/core/jobs/job.ts:25](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/jobs/job.ts#L25)
 
 ---
 
@@ -2745,7 +2707,7 @@ spec is T
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:113](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L113)
+[packages/core/src/models/entity.ts:113](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L113)
 
 ---
 
@@ -2765,7 +2727,7 @@ spec is ResourceWithMetadata<void\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:89](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L89)
+[packages/core/src/models/entity.ts:89](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L89)
 
 ---
 
@@ -2791,7 +2753,7 @@ entity is ScalarContent<ScalarResource\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L56)
+[packages/core/src/models/mmr/content-types.ts:56](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L56)
 
 ---
 
@@ -2811,7 +2773,7 @@ response is ScalarResponse<Row\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:219](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L219)
+[packages/core/src/models/entity.ts:219](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L219)
 
 ---
 
@@ -2831,7 +2793,7 @@ entity is StatusModel
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L67)
+[packages/core/src/models/StatusModel.ts:67](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/StatusModel.ts#L67)
 
 ---
 
@@ -2857,7 +2819,7 @@ entity is StringDiffContent<SupportedStringContent\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:122](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L122)
+[packages/core/src/models/mmr/content-types.ts:122](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L122)
 
 ---
 
@@ -2877,7 +2839,7 @@ response is string
 
 #### Defined in
 
-[packages/core/src/repl/tab-completion.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/tab-completion.ts#L39)
+[packages/core/src/repl/tab-completion.ts:39](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/tab-completion.ts#L39)
 
 ---
 
@@ -2903,7 +2865,7 @@ entity is StringContent<SupportedStringContent\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:99](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L99)
+[packages/core/src/models/mmr/content-types.ts:99](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L99)
 
 ---
 
@@ -2923,7 +2885,7 @@ entity is StringContent<SupportedStringContent\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/content-types.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/content-types.ts#L71)
+[packages/core/src/models/mmr/content-types.ts:71](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/content-types.ts#L71)
 
 ---
 
@@ -2943,7 +2905,7 @@ type is ToolbarTextType
 
 #### Defined in
 
-[packages/core/src/webapp/views/toolbar-text.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/toolbar-text.ts#L24)
+[packages/core/src/webapp/views/toolbar-text.ts:24](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/toolbar-text.ts#L24)
 
 ---
 
@@ -2969,7 +2931,7 @@ type is ToolbarTextType
 
 #### Defined in
 
-[packages/core/src/core/jobs/job.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/job.ts#L40)
+[packages/core/src/core/jobs/job.ts:40](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/jobs/job.ts#L40)
 
 ---
 
@@ -2989,7 +2951,7 @@ entity is TabLayoutModificationResponse<NewSplitRequest\>
 
 #### Defined in
 
-[packages/core/src/models/TabLayoutModificationResponse.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/TabLayoutModificationResponse.ts#L66)
+[packages/core/src/models/TabLayoutModificationResponse.ts:66](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/TabLayoutModificationResponse.ts#L66)
 
 ---
 
@@ -3015,7 +2977,7 @@ model is Table<Row\>
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:234](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L234)
+[packages/core/src/webapp/models/table.ts:234](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L234)
 
 ---
 
@@ -3035,7 +2997,7 @@ model is Table<Row\>
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:225](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L225)
+[packages/core/src/webapp/models/table.ts:225](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L225)
 
 ---
 
@@ -3055,7 +3017,7 @@ model is Table<Row\>
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:221](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L221)
+[packages/core/src/webapp/models/table.ts:221](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L221)
 
 ---
 
@@ -3075,7 +3037,7 @@ model is Table<Row\>
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:69](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L69)
+[packages/core/src/webapp/tab.ts:69](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L69)
 
 ---
 
@@ -3095,7 +3057,7 @@ error is UsageErrorLike
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:935](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L935)
+[packages/core/src/core/usage-error.ts:935](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage-error.ts#L935)
 
 ---
 
@@ -3121,7 +3083,7 @@ button is ViewButton<T\>
 
 #### Defined in
 
-[packages/core/src/models/mmr/types.ts:138](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/mmr/types.ts#L138)
+[packages/core/src/models/mmr/types.ts:138](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/mmr/types.ts#L138)
 
 ---
 
@@ -3141,7 +3103,7 @@ model is string & Watchable & number & Watchable & false & Watchable & true & Wa
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L70)
+[packages/core/src/core/jobs/watchable.ts:70](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/jobs/watchable.ts#L70)
 
 ---
 
@@ -3161,7 +3123,7 @@ model is string & Watchable & number & Watchable & false & Watchable & true & Wa
 
 #### Defined in
 
-[packages/core/src/models/XtermResponse.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/XtermResponse.ts#L38)
+[packages/core/src/models/XtermResponse.ts:38](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/XtermResponse.ts#L38)
 
 ---
 
@@ -3181,7 +3143,7 @@ entity is XtermResponse
 
 #### Defined in
 
-[packages/core/src/models/XtermResponse.ts:33](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/XtermResponse.ts#L33)
+[packages/core/src/models/XtermResponse.ts:33](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/XtermResponse.ts#L33)
 
 ---
 
@@ -3201,7 +3163,7 @@ entity is XtermResponse
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/CommentaryResponse.ts#L49)
+[packages/core/src/models/CommentaryResponse.ts:49](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/CommentaryResponse.ts#L49)
 
 ---
 
@@ -3221,7 +3183,7 @@ entity is XtermResponse
 
 #### Defined in
 
-[packages/core/src/api/window-events.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/window-events.ts#L47)
+[packages/core/src/api/window-events.ts:47](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/window-events.ts#L47)
 
 ---
 
@@ -3241,7 +3203,7 @@ entity is XtermResponse
 
 #### Defined in
 
-[packages/core/src/api/window-events.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/window-events.ts#L39)
+[packages/core/src/api/window-events.ts:39](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/window-events.ts#L39)
 
 ---
 
@@ -3266,7 +3228,7 @@ Execute the given command in the current (or given) tab.
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:124](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L124)
+[packages/core/src/webapp/tab.ts:124](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L124)
 
 ---
 
@@ -3282,7 +3244,7 @@ Home for user-installed plugins
 
 #### Defined in
 
-[packages/core/src/api/plugins.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/api/plugins.ts#L55)
+[packages/core/src/api/plugins.ts:55](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/api/plugins.ts#L55)
 
 ---
 
@@ -3306,7 +3268,7 @@ Add the hint to the given RadioTableCell
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L68)
+[packages/core/src/models/RadioTable.ts:68](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L68)
 
 ---
 
@@ -3329,7 +3291,7 @@ Project the string value of the given `cell`
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L58)
+[packages/core/src/models/RadioTable.ts:58](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L58)
 
 ---
 
@@ -3349,7 +3311,7 @@ Project the string value of the given `cell`
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L47)
+[packages/core/src/models/RadioTable.ts:47](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/RadioTable.ts#L47)
 
 ---
 
@@ -3377,7 +3339,7 @@ Register a new badge
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:54](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L54)
+[packages/core/src/webapp/views/registrar/badges.ts:54](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/badges.ts#L54)
 
 ---
 
@@ -3405,7 +3367,7 @@ Register a new mode
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/modes.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/modes.ts#L50)
+[packages/core/src/webapp/views/registrar/modes.ts:50](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/modes.ts#L50)
 
 ---
 
@@ -3443,7 +3405,7 @@ Register a new mode
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/modes.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/modes.ts#L55)
+[packages/core/src/webapp/views/registrar/modes.ts:55](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/views/registrar/modes.ts#L55)
 
 ---
 
@@ -3466,7 +3428,7 @@ A plugin has offered a tab completion Enumerator
 
 #### Defined in
 
-[packages/core/src/repl/tab-completion.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/tab-completion.ts#L60)
+[packages/core/src/repl/tab-completion.ts:60](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/tab-completion.ts#L60)
 
 ---
 
@@ -3486,7 +3448,7 @@ A plugin has offered a tab completion Enumerator
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L38)
+[packages/core/src/models/tab-state.ts:38](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/tab-state.ts#L38)
 
 ---
 
@@ -3506,7 +3468,7 @@ A plugin has offered a tab completion Enumerator
 
 #### Defined in
 
-[packages/core/src/core/usage/render-usage.ts:20](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage/render-usage.ts#L20)
+[packages/core/src/core/usage/render-usage.ts:20](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/usage/render-usage.ts#L20)
 
 ---
 
@@ -3529,7 +3491,7 @@ Are the two Rows the same?
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:242](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L242)
+[packages/core/src/webapp/models/table.ts:242](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L242)
 
 ---
 
@@ -3550,7 +3512,7 @@ Are the two Rows the same?
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:73](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L73)
+[packages/core/src/webapp/tab.ts:73](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L73)
 
 ---
 
@@ -3570,7 +3532,7 @@ Are the two Rows the same?
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:74](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/exec.ts#L74)
+[packages/core/src/repl/exec.ts:74](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/exec.ts#L74)
 
 ---
 
@@ -3594,32 +3556,7 @@ provider
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:138](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/capabilities.ts#L138)
-
----
-
-### setPreference
-
-▸ `Const` **setPreference**(`key`, `value`): `Promise`<`string`\>
-
-Set a persisted preference
-
-#### Parameters
-
-| Name    | Type     |
-| :------ | :------- |
-| `key`   | `string` |
-| `value` | `string` |
-
-#### Returns
-
-`Promise`<`string`\>
-
-the preference value
-
-#### Defined in
-
-[packages/core/src/core/userdata.ts:179](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/userdata.ts#L179)
+[packages/core/src/core/capabilities.ts:138](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/capabilities.ts#L138)
 
 ---
 
@@ -3644,7 +3581,7 @@ the preference value
 
 #### Defined in
 
-[packages/core/src/repl/split.ts:193](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/split.ts#L193)
+[packages/core/src/repl/split.ts:193](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/split.ts#L193)
 
 ---
 
@@ -3670,7 +3607,7 @@ We need to find the instance of the Split that has a REPL controller
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:104](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/tab.ts#L104)
+[packages/core/src/webapp/tab.ts:104](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/tab.ts#L104)
 
 ---
 
@@ -3695,7 +3632,7 @@ pipeStages=`{ prefix: 'a', stages: [['b','c'],'d'], redirect: 'e' }`
 
 #### Defined in
 
-[packages/core/src/repl/pipe-stages.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/pipe-stages.ts#L27)
+[packages/core/src/repl/pipe-stages.ts:27](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/pipe-stages.ts#L27)
 
 ---
 
@@ -3715,7 +3652,7 @@ pipeStages=`{ prefix: 'a', stages: [['b','c'],'d'], redirect: 'e' }`
 
 #### Defined in
 
-[packages/core/src/util/tee.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/tee.ts#L21)
+[packages/core/src/util/tee.ts:21](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/util/tee.ts#L21)
 
 ---
 
@@ -3738,7 +3675,7 @@ Send a synchronous message to the main process
 
 #### Defined in
 
-[packages/core/src/webapp/electron-events.ts:64](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/electron-events.ts#L64)
+[packages/core/src/webapp/electron-events.ts:64](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/electron-events.ts#L64)
 
 ---
 
@@ -3762,21 +3699,7 @@ list of matches
 
 #### Defined in
 
-[packages/core/src/commands/typeahead.ts:86](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/commands/typeahead.ts#L86)
-
----
-
-### uiThemes
-
-▸ **uiThemes**(): `Promise`<`ThemeSet`[]\>
-
-#### Returns
-
-`Promise`<`ThemeSet`[]\>
-
-#### Defined in
-
-[packages/core/src/core/settings.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/settings.ts#L21)
+[packages/core/src/commands/typeahead.ts:100](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/commands/typeahead.ts#L100)
 
 ---
 
@@ -3798,23 +3721,7 @@ Turn an options struct into a cli string
 
 #### Defined in
 
-[packages/core/src/core/utility.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/utility.ts#L26)
-
----
-
-### userDataDir
-
-▸ `Const` **userDataDir**(): `string`
-
-Get the userdata directory
-
-#### Returns
-
-`string`
-
-#### Defined in
-
-[packages/core/src/core/userdata.ts:34](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/userdata.ts#L34)
+[packages/core/src/core/utility.ts:26](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/utility.ts#L26)
 
 ---
 
@@ -3834,4 +3741,4 @@ Get the userdata directory
 
 #### Defined in
 
-[packages/core/src/models/execOptions.ts:120](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/execOptions.ts#L120)
+[packages/core/src/models/execOptions.ts:123](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/execOptions.ts#L123)

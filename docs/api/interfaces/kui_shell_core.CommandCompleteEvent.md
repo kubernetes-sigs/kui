@@ -39,7 +39,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L44)
+[packages/core/src/repl/events.ts:44](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L44)
 
 ---
 
@@ -49,7 +49,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L51)
+[packages/core/src/repl/events.ts:51](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L51)
 
 ---
 
@@ -59,7 +59,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L43)
+[packages/core/src/repl/events.ts:43](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L43)
 
 ---
 
@@ -69,7 +69,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:42](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L42)
+[packages/core/src/repl/events.ts:42](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L42)
 
 ---
 
@@ -79,7 +79,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:52](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L52)
+[packages/core/src/repl/events.ts:52](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L52)
 
 ---
 
@@ -89,7 +89,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:53](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L53)
+[packages/core/src/repl/events.ts:53](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L53)
 
 ---
 
@@ -99,7 +99,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L46)
+[packages/core/src/repl/events.ts:46](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L46)
 
 ---
 
@@ -109,7 +109,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L50)
+[packages/core/src/repl/events.ts:50](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L50)
 
 ---
 
@@ -119,7 +119,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L49)
+[packages/core/src/repl/events.ts:49](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L49)
 
 ---
 
@@ -129,7 +129,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:58](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L58)
+[packages/core/src/repl/events.ts:58](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L58)
 
 ---
 
@@ -139,7 +139,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:45](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L45)
+[packages/core/src/repl/events.ts:45](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L45)
 
 ---
 
@@ -158,7 +158,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L47)
+[packages/core/src/repl/events.ts:47](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L47)
 
 ---
 
@@ -168,7 +168,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L55)
+[packages/core/src/repl/events.ts:55](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L55)
 
 ---
 
@@ -178,7 +178,7 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L56)
+[packages/core/src/repl/events.ts:56](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L56)
 
 ---
 
@@ -188,4 +188,4 @@
 
 #### Defined in
 
-[packages/core/src/repl/events.ts:40](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/events.ts#L40)
+[packages/core/src/repl/events.ts:40](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/events.ts#L40)

@@ -43,7 +43,7 @@ new TestMMR() instantiates a class of multi-model-response tests
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L46)
+[packages/test/src/api/mmr.ts:46](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L46)
 
 ## Properties
 
@@ -72,7 +72,7 @@ badges() executes `command` in REPL and expects `badges` are showin in Sidecar
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:195](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L195)
+[packages/test/src/api/mmr.ts:195](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L195)
 
 ---
 
@@ -93,7 +93,7 @@ badges() executes `command` in REPL and expects `badges` are showin in Sidecar
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:381](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L381)
+[packages/test/src/api/mmr.ts:381](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L381)
 
 ---
 
@@ -116,7 +116,7 @@ kind() executes `command` in REPL and expects `kind` is showin in Sidecar
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:173](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L173)
+[packages/test/src/api/mmr.ts:173](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L173)
 
 ---
 
@@ -140,7 +140,7 @@ modes() executes `command` in REPL and expects `modes` are showin in Sidecar
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:218](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L218)
+[packages/test/src/api/mmr.ts:218](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L218)
 
 ---
 
@@ -169,7 +169,7 @@ name() executes `command` in REPL and expects `prettyName` or `name` is shown in
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:59](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L59)
+[packages/test/src/api/mmr.ts:59](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L59)
 
 ---
 
@@ -193,7 +193,7 @@ namespace() executes `command` in REPL and expects `namespace` is shown in Sidec
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:131](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L131)
+[packages/test/src/api/mmr.ts:131](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L131)
 
 ---
 
@@ -227,7 +227,7 @@ namespace() executes `command` in REPL and expects `namespace` is shown in Sidec
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L48)
+[packages/test/src/api/mmr.ts:48](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L48)
 
 ---
 
@@ -250,7 +250,7 @@ toolbarButtons() executes `command` and expects the `buttons` shown in Sidecar h
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:405](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L405)
+[packages/test/src/api/mmr.ts:405](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L405)
 
 ---
 
@@ -264,7 +264,7 @@ toolbarButtons() executes `command` and expects the `buttons` shown in Sidecar h
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:517](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L517)
+[packages/test/src/api/mmr.ts:517](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L517)
 
 ---
 
@@ -290,4 +290,4 @@ toolbarText() executes `command` and expects Sidecar Toolbar has correct `text` 
 
 #### Defined in
 
-[packages/test/src/api/mmr.ts:500](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/mmr.ts#L500)
+[packages/test/src/api/mmr.ts:500](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/mmr.ts#L500)

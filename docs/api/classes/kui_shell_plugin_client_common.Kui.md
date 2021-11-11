@@ -85,7 +85,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:85](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L85)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:85](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L85)
 
 ## Properties
 
@@ -95,7 +95,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:271](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L271)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:271](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L271)
 
 ---
 
@@ -133,7 +133,7 @@ node_modules/@types/react/index.d.ts:473
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:258](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L258)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:258](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L258)
 
 ---
 
@@ -355,7 +355,7 @@ React.PureComponent.componentDidCatch
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:254](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L254)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:254](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L254)
 
 ---
 
@@ -554,7 +554,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:162](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L162)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:162](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L162)
 
 ---
 
@@ -568,7 +568,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:169](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L169)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:169](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L169)
 
 ---
 
@@ -594,7 +594,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:189](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L189)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:189](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L189)
 
 ---
 
@@ -620,7 +620,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:193](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L193)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:193](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L193)
 
 ---
 
@@ -634,7 +634,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:175](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L175)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:175](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L175)
 
 ---
 
@@ -651,7 +651,7 @@ session initialization.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:207](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L207)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:207](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L207)
 
 ---
 
@@ -721,7 +721,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:259](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L259)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:259](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L259)
 
 ---
 
@@ -742,7 +742,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:221](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L221)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:221](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L221)
 
 ---
 
@@ -760,7 +760,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:273](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L273)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:273](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L273)
 
 ---
 
@@ -848,4 +848,4 @@ e.g. defaultColor-then-blue effect.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:245](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L245)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:245](https://github.com/mra-ruiz/kui/blob/27e887ab4/plugins/plugin-client-common/src/components/Client/Kui.tsx#L245)

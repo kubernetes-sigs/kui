@@ -39,7 +39,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:125](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L125)
+[packages/core/src/webapp/models/table.ts:125](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L125)
 
 ## Properties
 
@@ -49,7 +49,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:123](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L123)
+[packages/core/src/webapp/models/table.ts:123](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L123)
 
 ---
 
@@ -59,7 +59,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:105](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L105)
+[packages/core/src/webapp/models/table.ts:105](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L105)
 
 ---
 
@@ -69,7 +69,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:111](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L111)
+[packages/core/src/webapp/models/table.ts:111](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L111)
 
 ---
 
@@ -79,7 +79,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:115](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L115)
+[packages/core/src/webapp/models/table.ts:115](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L115)
 
 ---
 
@@ -89,7 +89,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:121](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L121)
+[packages/core/src/webapp/models/table.ts:121](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L121)
 
 ---
 
@@ -99,7 +99,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:113](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L113)
+[packages/core/src/webapp/models/table.ts:113](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L113)
 
 ---
 
@@ -109,7 +109,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:109](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L109)
+[packages/core/src/webapp/models/table.ts:109](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L109)
 
 ---
 
@@ -119,7 +119,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:107](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L107)
+[packages/core/src/webapp/models/table.ts:107](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L107)
 
 ---
 
@@ -129,7 +129,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:117](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L117)
+[packages/core/src/webapp/models/table.ts:117](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L117)
 
 ---
 
@@ -139,7 +139,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:119](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L119)
+[packages/core/src/webapp/models/table.ts:119](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L119)
 
 ---
 
@@ -149,7 +149,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:101](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L101)
+[packages/core/src/webapp/models/table.ts:101](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L101)
 
 ---
 
@@ -159,4 +159,4 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:103](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L103)
+[packages/core/src/webapp/models/table.ts:103](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L103)

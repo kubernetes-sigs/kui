@@ -27,7 +27,7 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:232](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L232)
+[packages/core/src/models/entity.ts:232](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L232)
 
 ---
 
@@ -37,4 +37,4 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:231](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L231)
+[packages/core/src/models/entity.ts:231](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/models/entity.ts#L231)

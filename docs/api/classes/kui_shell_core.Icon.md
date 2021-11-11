@@ -32,7 +32,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:271](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L271)
+[packages/core/src/webapp/models/table.ts:271](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L271)
 
 ## Properties
 
@@ -42,7 +42,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:265](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L265)
+[packages/core/src/webapp/models/table.ts:265](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L265)
 
 ---
 
@@ -52,7 +52,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:267](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L267)
+[packages/core/src/webapp/models/table.ts:267](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L267)
 
 ---
 
@@ -62,7 +62,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:269](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L269)
+[packages/core/src/webapp/models/table.ts:269](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L269)
 
 ---
 
@@ -72,7 +72,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:261](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L261)
+[packages/core/src/webapp/models/table.ts:261](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L261)
 
 ---
 
@@ -96,4 +96,4 @@
 
 #### Defined in
 
-[packages/core/src/webapp/models/table.ts:263](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/table.ts#L263)
+[packages/core/src/webapp/models/table.ts:263](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/models/table.ts#L263)

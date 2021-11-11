@@ -32,4 +32,4 @@ one or the other of the provided functions
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L27)
+[packages/core/src/core/jobs/watchable.ts:27](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/jobs/watchable.ts#L27)

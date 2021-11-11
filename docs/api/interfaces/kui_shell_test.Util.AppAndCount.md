@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[packages/test/src/api/util.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L30)
+[packages/test/src/api/util.ts:30](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/util.ts#L30)
 
 ---
 
@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[packages/test/src/api/util.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L31)
+[packages/test/src/api/util.ts:31](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/util.ts#L31)
 
 ---
 
@@ -40,4 +40,4 @@
 
 #### Defined in
 
-[packages/test/src/api/util.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/util.ts#L32)
+[packages/test/src/api/util.ts:32](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/test/src/api/util.ts#L32)

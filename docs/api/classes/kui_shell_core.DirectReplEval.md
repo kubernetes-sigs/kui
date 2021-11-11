@@ -43,7 +43,7 @@ the default evaluator implementation.
 
 #### Defined in
 
-[packages/core/src/repl/types.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/types.ts#L55)
+[packages/core/src/repl/types.ts:55](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/types.ts#L55)
 
 ## Methods
 
@@ -77,4 +77,4 @@ the default evaluator implementation.
 
 #### Defined in
 
-[packages/core/src/repl/types.ts:57](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/repl/types.ts#L57)
+[packages/core/src/repl/types.ts:57](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/repl/types.ts#L57)

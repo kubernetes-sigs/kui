@@ -18,4 +18,4 @@
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/watchable.ts#L31)
+[packages/core/src/core/jobs/watchable.ts:31](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/core/jobs/watchable.ts#L31)

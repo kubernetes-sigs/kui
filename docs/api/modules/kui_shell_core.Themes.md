@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/themes/Theme.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/Theme.ts#L29)
+[packages/core/src/webapp/themes/Theme.ts:29](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/themes/Theme.ts#L29)
 
 ## Functions
 
@@ -52,7 +52,7 @@ the Theme model associated with the given theme name
 
 #### Defined in
 
-[packages/core/src/webapp/themes/find.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/find.ts#L25)
+[packages/core/src/webapp/themes/find.ts:25](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/themes/find.ts#L25)
 
 ---
 
@@ -68,7 +68,7 @@ the name of the default theme
 
 #### Defined in
 
-[packages/core/src/webapp/themes/default.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/default.ts#L27)
+[packages/core/src/webapp/themes/default.ts:27](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/themes/default.ts#L27)
 
 ---
 
@@ -84,7 +84,7 @@ Return the previously selected (and persisted) choice of theme
 
 #### Defined in
 
-[packages/core/src/webapp/themes/persistence.ts:41](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/persistence.ts#L41)
+[packages/core/src/webapp/themes/persistence.ts:41](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/themes/persistence.ts#L41)
 
 ---
 
@@ -100,7 +100,7 @@ Reset to the default theme
 
 #### Defined in
 
-[packages/core/src/webapp/themes/persistence.ts:188](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/persistence.ts#L188)
+[packages/core/src/webapp/themes/persistence.ts:188](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/themes/persistence.ts#L188)
 
 ---
 
@@ -123,4 +123,4 @@ Internal logic to switch themes
 
 #### Defined in
 
-[packages/core/src/webapp/themes/persistence.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/persistence.ts#L71)
+[packages/core/src/webapp/themes/persistence.ts:71](https://github.com/mra-ruiz/kui/blob/27e887ab4/packages/core/src/webapp/themes/persistence.ts#L71)
