@@ -26,23 +26,28 @@ export default function doExecPipe(
 
     let nRemaining = children.length
     children.forEach((child, idx) => {
+      // wire stderr
       if (!execOptions || !execOptions.stderr) {
         child.stderr.pipe(process.stderr)
       } else {
         child.stderr.on('data', err => execOptions.stderr(err.toString()))
       }
 
+      // wire stdins
       if (idx === 0) {
+        // first stage: wire process.stdin to child.stdin
         process.stdin.pipe(child.stdin)
       } else {
+        // all other stages: wire previous stage's stdout to child.stdin
         children[idx - 1].stdout.pipe(child.stdin)
       }
 
+      // wire stdout of the last stage
       if (idx === children.length - 1) {
         if (!execOptions || !execOptions.stdout) {
           child.stdout.pipe(process.stdout)
         } else {
-          child.stdout.on('data', out => execOptions.stdout(out.toString()))
+          child.stdout.on('data', out => execOptions.stdout(out))
         }
       }
 

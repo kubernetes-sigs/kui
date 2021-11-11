@@ -133,8 +133,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
     } else if (isStatusModel(response)) {
       this.onRender()
       return <StatusVisualizer {...response} />
-    } else if (typeof response === 'string' || isError(response)) {
-      const message = isError(response) ? response.message : response
+    } else if (Buffer.isBuffer(response) || typeof response === 'string' || isError(response)) {
+      const message = isError(response) ? response.message : response.toString()
 
       // Markdown interprets escapes, so we need to double-escape
       if (message[0] === '\u001b') {

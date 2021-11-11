@@ -43,6 +43,8 @@ import { getChannelForTab, invalidateSession } from './session'
 import { Channel, WebViewChannelRendererSide } from './channel'
 import ElectronRendererSideChannel from './electron-main-channel'
 
+import cwd from '../lib/util/cwd'
+
 const debug = Debug('plugins/bash-like/pty/client')
 
 /* eslint-disable no-control-regex */
@@ -770,7 +772,7 @@ const getOrCreateChannel = async (
       uuid,
       rows: terminal ? terminal.rows : 80,
       cols: terminal ? terminal.cols : 40,
-      cwd: execOptions.cwd || process.env.PWD || (!inBrowser() && process.cwd()), // inBrowser: see https://github.com/IBM/kui/issues/1966
+      cwd: await cwd(execOptions, tab.REPL),
       env: Object.keys(env).length > 0 && env // VERY IMPORTANT: don't send an empty process.env
     }
     debug('exec after open', msg)

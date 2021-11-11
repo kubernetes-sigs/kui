@@ -355,9 +355,18 @@ class S3VFSResponder extends S3VFS implements VFS {
         // list objects, guessing that bucketName/prefix/ is a folder
         dashD || prefixEndsWithSlash || (!prefix && pattern === '*')
           ? ([] as DirEntry[])
-          : toArray(this.client.listObjects(bucketName, prefix + '/', recursive))
+          : toArray(this.client.listObjects(bucketName, prefix + '/', recursive)).then(_ =>
+              _.filter(_ => /\//.test(_.name))
+            ) // imperfect; there are some bigger bugs here with minio (**)
       ])
       const allObjects = A1.concat(A2)
+
+      // (** more detail on that): minio's listObjects, when the
+      // prefix + '/' is '/' returns objects in the root of the
+      // bucket; IBM Cloud Object Storage does not. The filter works
+      // around part of this, but still fails if the root of the
+      // bucket contains both matching objects and at least one
+      // folder.
 
       if (!prefixEndsWithSlash && A2.length > 0) {
         // The user uttered `ls /s3/minio/bucket/folder`, but our

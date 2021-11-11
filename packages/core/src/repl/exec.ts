@@ -759,7 +759,7 @@ async function redirectResponse<T extends KResponse>(
 ) {
   const response = await _response
 
-  if (typeof response === 'string' || isXtermResponse(response)) {
+  if (Buffer.isBuffer(response) || typeof response === 'string' || isXtermResponse(response)) {
     try {
       const data = isXtermResponse(response) ? response.rows.map(i => i.map(j => j.innerText)).join(' ') : response
       const writeOptions = redirector === '>>' ? '--append' : ''
@@ -768,9 +768,9 @@ async function redirectResponse<T extends KResponse>(
       debug(`redirected response to ${filepath}`)
     } catch (err) {
       console.error(err)
-      throw new Error(`Error Redirect: ${err.message}`)
+      throw new Error(`Error in redirect: ${err.message}`)
     }
   } else {
-    throw new Error('Error: invalid response \n redirect only supports string or xterm responses')
+    throw new Error('Error: unsupported redirect response')
   }
 }
