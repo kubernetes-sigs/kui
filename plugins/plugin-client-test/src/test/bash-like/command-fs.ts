@@ -24,6 +24,11 @@ function doCdTests(this: Common.ISuite) {
       .then(ReplExpect.okWithString('/test'))
       .catch(Common.oops(this, true)))
 
+  it('execute a pty/shell command while in a virtual directory', () =>
+    CLI.command(`echo hi`, this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .catch(Common.oops(this, true)))
+
   it('execute "test string" command via ./string', () =>
     CLI.command('./string', this.app)
       .then(ReplExpect.okWithString('hello world'))
