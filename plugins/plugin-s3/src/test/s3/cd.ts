@@ -17,11 +17,13 @@
 import { v4 } from 'uuid'
 import { homedir } from 'os'
 import { basename, dirname, join } from 'path'
-import { Common } from '@kui-shell/test'
+import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 import S3Utils, { PROVIDER, README } from './util'
 
 export default function cd(this: Common.ISuite) {
+  const initialPWD = process.cwd()
+
   // bind the helper routines
   const { cd, copyToS3, lsCurrentDir, lsExpecting404, mkdir, rimraf } = S3Utils.bind(this)()
 
@@ -56,4 +58,9 @@ export default function cd(this: Common.ISuite) {
 
   rimraf(bucketName)
   lsExpecting404(bucketName)
+
+  it('should cd back to the initial working directory', () =>
+    CLI.command(`cd "${initialPWD}"`, this.app)
+      .then(ReplExpect.okWithString(initialPWD))
+      .catch(Common.oops(this, true)))
 }
