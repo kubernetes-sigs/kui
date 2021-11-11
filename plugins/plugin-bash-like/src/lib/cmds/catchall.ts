@@ -15,7 +15,9 @@
  */
 
 import Debug from 'debug'
-import { encodeComponent, CodedError, Streamable, Arguments, ParsedOptions, Registrar, Util } from '@kui-shell/core'
+import { CodedError, Streamable, Arguments, ParsedOptions, Registrar } from '@kui-shell/core'
+
+import cwd from '../util/cwd'
 
 const debug = Debug('plugins/bash-like/cmds/catchall')
 
@@ -48,17 +50,10 @@ export const dispatchToShell = async ({
     execOptions.echo === undefined &&
     execOptions.replSilence === undefined
 
-  const cwd =
-    execOptions.cwd ||
-    !(await tab.REPL.rexec<{ dirent: { mount: { isLocal: boolean } } }>(`vfs ls -d ${encodeComponent(Util.cwd())}`))
-      .content[0].dirent.mount.isLocal
-      ? Util.expandHomeDir('~')
-      : Util.cwd()
-
   const eOptions =
     useRaw || execOptions.isProxied
       ? execOptions
-      : Object.assign({ cwd }, { stdout: await createOutputStream() }, execOptions)
+      : Object.assign({ cwd: await cwd(execOptions, tab.REPL) }, { stdout: await createOutputStream() }, execOptions)
 
   const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
 
