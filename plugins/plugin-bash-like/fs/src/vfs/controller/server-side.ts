@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import { Writable } from 'stream'
 import { Arguments, RawResponse, Registrar } from '@kui-shell/core'
 
-import { ls, fslice, fstat, fwrite } from '../delegates'
+import { ls, fslice, fstat, fwrite, pipe } from '../delegates'
 import { KuiGlobOptions, GlobStats } from '../../lib/glob'
 import { FwriteOptions } from '../../lib/fwrite'
 
@@ -66,6 +67,20 @@ export default function(registrar: Registrar) {
   registrar.listen('/vfs/_fwrite', fwriteImpl, {
     requiresLocal: true
   })
+
+  registrar.listen(
+    '/vfs/cat',
+    async args => {
+      await pipe(
+        args.argvNoOptions[2],
+        args.argvNoOptions[3] ? parseInt(args.argvNoOptions[3], 10) : 0,
+        args.argvNoOptions[4] ? parseInt(args.argvNoOptions[4], 10) : undefined,
+        args.execOptions.data as Writable
+      )
+      return true
+    },
+    { requiresLocal: true }
+  )
 
   registrar.listen(
     '/vfs/fslice',

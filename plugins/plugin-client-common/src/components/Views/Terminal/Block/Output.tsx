@@ -147,7 +147,7 @@ export default class Output extends React.PureComponent<Props, State> {
           // immediately indicate that we are done with this part
           done()
         } else {
-          this.streamingOutput.push(part)
+          this.streamingOutput.push(Buffer.isBuffer(part) ? part.toString() : part)
 
           // use setTimeout to introduce hysteresis, so we aren't
           // forcing a react re-render for a bunch of tiny streaming

@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { spawn } from 'child_process'
-import { ExecOptions } from '@kui-shell/core'
+import { ExecOptions, REPL, encodeComponent } from '@kui-shell/core'
+
+const debug = Debug('plugin-bash-like/exec/pipe')
 
 export default function doExecPipe(
   argvs: string[][],
+  repl: REPL,
   execOptions?: Pick<ExecOptions, 'cwd' | 'env' | 'stderr' | 'stdout'>
 ) {
-  return new Promise((resolve, reject) => {
-    const children = argvs.map(argv => spawn(argv[0], argv.slice(1), Object.assign({ shell: true }, execOptions)))
+  const firstPipeIdx = argvs.findIndex(_ => _[0] !== 'cat')
 
+  const children = argvs
+    .slice(firstPipeIdx)
+    .map(argv => spawn(argv[0], argv.slice(1), Object.assign({ shell: true }, execOptions)))
+
+  return new Promise((resolve, reject) => {
     let nRemaining = children.length
     children.forEach((child, idx) => {
       // wire stderr
@@ -36,7 +44,16 @@ export default function doExecPipe(
       // wire stdins
       if (idx === 0) {
         // first stage: wire process.stdin to child.stdin
-        process.stdin.pipe(child.stdin)
+        if (firstPipeIdx > 0) {
+          const filepath = argvs[firstPipeIdx - 1][1]
+          debug('piping input file to first child', filepath)
+          const ingress = repl.qexec(`vfs cat ${encodeComponent(filepath)}`, undefined, undefined, {
+            data: child.stdin
+          })
+          ingress.catch(reject).then(() => debug('pipe ingress done'))
+        } else {
+          process.stdin.pipe(child.stdin)
+        }
       } else {
         // all other stages: wire previous stage's stdout to child.stdin
         children[idx - 1].stdout.pipe(child.stdin)
@@ -47,7 +64,7 @@ export default function doExecPipe(
         if (!execOptions || !execOptions.stdout) {
           child.stdout.pipe(process.stdout)
         } else {
-          child.stdout.on('data', out => execOptions.stdout(out))
+          child.stdout.on('data', execOptions.stdout)
         }
       }
 

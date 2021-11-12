@@ -16,11 +16,11 @@
 
 import Debug from 'debug'
 import minimatch from 'minimatch'
-import { Readable } from 'stream'
 import { createGunzip } from 'zlib'
 import { createWriteStream } from 'fs'
 import { basename, dirname, join } from 'path'
 import { Client, ItemBucketMetadata } from 'minio'
+import { PassThrough, Readable, Writable } from 'stream'
 
 import { DirEntry, FStat, GlobStats, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, CodedError, REPL, encodeComponent, Util, i18n } from '@kui-shell/core'
@@ -904,11 +904,14 @@ class S3VFSResponder extends S3VFS implements VFS {
 
   private async getPartialObject(bucketName: string, fileName: string, offset: number, length: number) {
     try {
-      const stream = await this.client.getPartialObject(bucketName, fileName, offset, length)
+      // sigh, the minio client library does not seem to like being passed `undefined` for length
+      const stream = length
+        ? await this.client.getPartialObject(bucketName, fileName, offset, length)
+        : await this.client.getPartialObject(bucketName, fileName, offset)
       return stream
     } catch (err) {
       if (err.code === 'InvalidRange') {
-        debug('fslice failed; read the rest of the file', err)
+        debug('file slice failed; reading the rest of the file', err)
         return this.client.getPartialObject(bucketName, fileName, offset)
       } else {
         throw err
@@ -916,42 +919,54 @@ class S3VFSResponder extends S3VFS implements VFS {
     }
   }
 
-  /** Fetch content slice */
-  public async fslice(filepath: string, offset: number, length: number): Promise<string> {
+  /** Stream content slice */
+  public async pipe(filepath: string, offset: number, length: number, destStream: Writable): Promise<void> {
     await this.initDone
     const { bucketName, fileName } = this.split(filepath)
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       if (!fileName) {
-        reject(new Error('s3 fslice: no filename provided'))
+        reject(new Error('s3 pipe: no filename provided'))
       } else {
         try {
-          let data = ''
           const stream = await this.getPartialObject(bucketName, fileName, offset, length)
 
           if (filepath.endsWith('.gz')) {
             stream
               .pipe(createGunzip())
+              .pipe(destStream)
               .on('error', (err: CodedError<string>) => {
                 if (err.code === 'Z_BUF_ERROR') {
                   // this may happen when reading a part of a gzip file
-                  resolve(data)
+                  resolve()
                 } else {
                   reject(err)
                 }
               })
-              .on('end', () => resolve(data))
-              .on('data', chunk => (data += chunk))
+              .on('end', resolve)
           } else {
             stream
+              .pipe(destStream)
               .on('error', reject)
-              .on('end', () => resolve(data))
-              .on('data', chunk => (data += chunk))
+              .on('end', resolve)
           }
         } catch (err) {
           reject(err)
         }
       }
+    })
+  }
+
+  /** Fetch content slice */
+  public async fslice(filepath: string, offset: number, length: number): Promise<string> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      let data = ''
+      const passthrough = new PassThrough()
+      passthrough.on('error', reject)
+      passthrough.on('data', d => (data += d.toString()))
+      await this.pipe(filepath, offset, length, passthrough)
+      resolve(data)
     })
   }
 

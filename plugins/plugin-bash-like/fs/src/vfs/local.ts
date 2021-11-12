@@ -16,6 +16,7 @@
 
 import { createGunzip } from 'zlib'
 import { createReadStream } from 'fs'
+import { PassThrough, Writable } from 'stream'
 import { Arguments, CodedError, Util } from '@kui-shell/core'
 
 import { VFS, mount } from '.'
@@ -80,35 +81,44 @@ class LocalVFS implements VFS {
     return _fwrite(filepath, data, options)
   }
 
-  /** Fetch content slice */
-  public async fslice(filepath: string, offset: number, _length: number): Promise<string> {
+  /** Pipe a content slice to the given `stream` */
+  public pipe(filepath: string, offset: number, _length: number, stream: Writable): Promise<void> {
     const fullpath = Util.expandHomeDir(filepath)
 
     return new Promise((resolve, reject) => {
-      let data = ''
-
       // re: end = _length - 1, this is because the end option is inclusive and _length is not
       if (filepath.endsWith('.gz')) {
         createReadStream(fullpath, { start: offset, end: _length ? offset + _length - 1 : Infinity })
           .pipe(createGunzip())
+          .pipe(stream)
           .on('error', (err: CodedError<string>) => {
             if (err.code === 'Z_BUF_ERROR') {
               // this may happen when reading a part of a gzip file
-              resolve(data)
+              resolve()
             } else {
               reject(err)
             }
           })
-          .on('end', () => resolve(data))
-          .on('data', d => (data += d))
+          .on('end', () => resolve())
       } else {
         createReadStream(fullpath, { start: offset, end: _length ? offset + _length - 1 : Infinity })
+          .pipe(stream)
           .on('error', reject)
-          .on('end', () => {
-            resolve(data)
-          })
-          .on('data', d => (data += d))
+          .on('end', resolve)
       }
+    })
+  }
+
+  /** Fetch content slice */
+  public async fslice(filepath: string, offset: number, length: number): Promise<string> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      let data = ''
+      const passthrough = new PassThrough()
+      passthrough.on('error', reject)
+      passthrough.on('data', d => (data += d.toString()))
+      await this.pipe(filepath, offset, length, passthrough)
+      resolve(data)
     })
   }
 
