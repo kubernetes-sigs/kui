@@ -16,6 +16,7 @@
 
 import Debug from 'debug'
 import { basename } from 'path'
+import { Writable } from 'stream'
 import { Arguments, CodedError, Util } from '@kui-shell/core'
 import { DirEntry, VFS, absolute, findMount, multiFindMount, findMatchingMounts } from '.'
 
@@ -255,6 +256,25 @@ export async function fwrite(...parameters: Parameters<VFS['fwrite']>): ReturnTy
 }
 
 /**
+ * pipe delegate
+ *
+ */
+export async function pipe(
+  filepath: string,
+  offset: number,
+  length: number,
+  stream: Writable
+): ReturnType<VFS['pipe']> {
+  const mount = await findMount(filepath, undefined, true)
+
+  if (!mount || !mount.pipe) {
+    throw new Error(`pipe: can not find ${filepath}`)
+  }
+
+  return mount.pipe(filepath, offset, length, stream)
+}
+
+/**
  * fslice delegate
  *
  */
@@ -268,7 +288,7 @@ export async function fslice(
   const mount = await findMount(filepath, undefined, true)
 
   if (!mount) {
-    throw new Error(`head: can not find ${filepath}`)
+    throw new Error(`fslice: can not find ${filepath}`)
   }
 
   if (unit === 'bytes') {

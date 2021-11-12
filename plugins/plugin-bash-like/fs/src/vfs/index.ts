@@ -15,6 +15,7 @@
  */
 
 import slash from 'slash'
+import { Writable } from 'stream'
 import { isAbsolute, join, normalize } from 'path'
 import { Arguments, Events, ParsedOptions, REPL, Table, getCurrentTab, inBrowser, Util } from '@kui-shell/core'
 
@@ -89,6 +90,9 @@ export interface VFS {
 
   /** Fetch content slice */
   fslice(filename: string, offset: number, length: number): Promise<string>
+
+  /** Pipe a content slice to the given `stream` */
+  pipe?: (filename: string, offset: number, length: number, stream: Writable) => Promise<void>
 
   /** write data to file */
   fwrite(
