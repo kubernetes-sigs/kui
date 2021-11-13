@@ -117,8 +117,12 @@ class LocalVFS implements VFS {
       const passthrough = new PassThrough()
       passthrough.on('error', reject)
       passthrough.on('data', d => (data += d.toString()))
-      await this.pipe(filepath, offset, length, passthrough)
-      resolve(data)
+      try {
+        await this.pipe(filepath, offset, length, passthrough)
+        resolve(data)
+      } catch (err) {
+        reject(err)
+      }
     })
   }
 
