@@ -21,13 +21,15 @@ import {
   CommandCompleteEvent,
   KResponse,
   ScalarResponse,
-  UsageError,
   hideReplayOutput,
   isCommentaryResponse,
   isCommentarySectionBreak,
-  isXtermErrorResponse,
+  isError,
   Util
 } from '@kui-shell/core'
+
+// this used to be defined here
+export { isError }
 
 export const enum BlockState {
   Active = 'repl-active',
@@ -119,25 +121,6 @@ export default BlockModel
 function cwd() {
   const dir = Util.cwd()
   return dir ? dir.replace(process.env.HOME, '~') : undefined
-}
-
-type CustomError = { name: string; message: string }
-type ErrorLike = Error | CustomError
-
-function isCustomError(response: KResponse): response is CustomError {
-  const err = response as CustomError
-  return err && typeof err === 'object' && typeof err.name === 'string' && typeof err.message === 'string'
-}
-
-export function isError(response: KResponse): response is ErrorLike {
-  return (
-    response &&
-    (response.constructor === Error ||
-      response.constructor === UsageError ||
-      isXtermErrorResponse(response) ||
-      Object.getPrototypeOf(response).constructor === Error ||
-      isCustomError(response))
-  )
 }
 
 export function isProcessing(block: BlockModel): block is ProcessingBlock {
