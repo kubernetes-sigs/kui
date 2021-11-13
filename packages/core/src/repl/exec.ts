@@ -26,6 +26,8 @@ const debug = Debug('core/repl')
 const debugCommandErrors = Debug('core/repl/errors')
 
 import { v4 as uuid } from 'uuid'
+
+import isError from './error'
 import encodeComponent from './encode'
 import { splitIntoPipeStages } from './pipe-stages'
 import { split, patterns, semiSplit } from './split'
@@ -511,7 +513,7 @@ class InProcessExecutor implements Executor {
       }
 
       // Here is where we handle redirecting the response to a file
-      if (redirectDesired) {
+      if (redirectDesired && !isError(await response)) {
         try {
           await redirectResponse(response, pipeStages.redirect, pipeStages.redirector)
 
@@ -771,6 +773,7 @@ async function redirectResponse<T extends KResponse>(
       throw new Error(`Error in redirect: ${err.message}`)
     }
   } else {
+    debug('Unsupported redirect response', response)
     throw new Error('Error: unsupported redirect response')
   }
 }
