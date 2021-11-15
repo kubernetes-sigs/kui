@@ -63,9 +63,9 @@
 }
 .kui--bar[data-overlay='0'] {
   background: var(--color-latency-0);
-  top: 12.5%;
-  height: 75%;
-  filter: grayscale(0.25) opacity(0.25);
+  top: calc(100% * 2 / 11);
+  height: calc(100% * 7 / 11);
+  filter: grayscale(0.1) opacity(0.2);
 }
 
 .kui--bar {

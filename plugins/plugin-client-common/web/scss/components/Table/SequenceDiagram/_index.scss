@@ -71,7 +71,7 @@ body[kui-theme-style] {
       }
     }
 
-    &[data-color-by='duration'] {
+    & {
       td {
         height: unset;
         line-height: var(--bar-height);
