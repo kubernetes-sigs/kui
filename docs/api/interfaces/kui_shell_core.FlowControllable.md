@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[packages/core/src/core/jobs/job.ts:32](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/job.ts#L32)
+[packages/core/src/core/jobs/job.ts:32](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/job.ts#L32)
 
 ---
 
@@ -44,7 +44,7 @@
 
 #### Defined in
 
-[packages/core/src/core/jobs/job.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/job.ts#L31)
+[packages/core/src/core/jobs/job.ts:31](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/job.ts#L31)
 
 ---
 
@@ -58,4 +58,4 @@
 
 #### Defined in
 
-[packages/core/src/core/jobs/job.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/jobs/job.ts#L30)
+[packages/core/src/core/jobs/job.ts:30](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/job.ts#L30)

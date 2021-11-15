@@ -231,8 +231,7 @@ export { keys as KeyCodes, isCursorMovement } from './webapp/keys'
 export { commandsOffered as commandsOfferedByPlugin, userHome as pluginUserHome } from './api/plugins'
 
 // Settings
-export { userDataDir, uiThemes } from './core/settings'
-export { getOrSetPreference, getPreference, setPreference } from './core/userdata'
+export * from './api'
 
 // Storage for user data
 export { default as Store } from './models/store'

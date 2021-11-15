@@ -71,7 +71,7 @@
 
 #### Defined in
 
-[packages/test/src/api/common.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L44)
+[packages/test/src/api/common.ts:44](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/common.ts#L44)
 
 ---
 
@@ -81,7 +81,7 @@
 
 #### Defined in
 
-[packages/test/src/api/common.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/common.ts#L43)
+[packages/test/src/api/common.ts:43](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/common.ts#L43)
 
 ---
 

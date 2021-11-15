@@ -58,7 +58,7 @@ Error.constructor
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:901](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L901)
+[packages/core/src/core/usage-error.ts:901](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/usage-error.ts#L901)
 
 ## Properties
 
@@ -72,7 +72,7 @@ Error.constructor
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:899](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L899)
+[packages/core/src/core/usage-error.ts:899](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/usage-error.ts#L899)
 
 ---
 
@@ -86,7 +86,7 @@ UsageErrorLike.formattedMessage
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:895](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L895)
+[packages/core/src/core/usage-error.ts:895](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/usage-error.ts#L895)
 
 ---
 
@@ -136,7 +136,7 @@ UsageErrorLike.raw
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:897](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L897)
+[packages/core/src/core/usage-error.ts:897](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/usage-error.ts#L897)
 
 ---
 
@@ -182,7 +182,7 @@ node_modules/@types/node/globals.d.ts:142
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:917](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L917)
+[packages/core/src/core/usage-error.ts:917](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/usage-error.ts#L917)
 
 ---
 
@@ -229,7 +229,7 @@ node_modules/@types/node/globals.d.ts:133
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:921](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L921)
+[packages/core/src/core/usage-error.ts:921](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/usage-error.ts#L921)
 
 ---
 
@@ -249,7 +249,7 @@ error is UsageErrorLike
 
 #### Defined in
 
-[packages/core/src/core/usage-error.ts:929](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/usage-error.ts#L929)
+[packages/core/src/core/usage-error.ts:929](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/usage-error.ts#L929)
 
 ---
 

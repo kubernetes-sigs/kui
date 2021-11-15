@@ -14,14 +14,5 @@
  * limitations under the License.
  */
 
-import * as Events from './Events'
-export { Events }
-
-import * as Util from './Util'
-export { Util }
-
-import * as Themes from './Themes'
-export { Themes }
-
-import * as Settings from './Settings'
-export { Settings }
+export { userDataDir, uiThemes } from '../core/settings'
+export { getOrSetPreference, getPreference, setPreference } from '../core/userdata'

@@ -956,7 +956,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5261
 
 #### Defined in
 
-[packages/core/src/webapp/models/block.ts:18](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/models/block.ts#L18)
+[packages/core/src/webapp/models/block.ts:18](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/models/block.ts#L18)
 
 ---
 

@@ -62,7 +62,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:36](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L36)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:36](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L36)
 
 ## Properties
 
@@ -100,7 +100,7 @@ node_modules/@types/react/index.d.ts:473
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:34](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L34)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:34](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L34)
 
 ---
 
@@ -346,7 +346,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:62](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L62)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:62](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L62)
 
 ---
 
@@ -466,7 +466,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:68](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L68)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:68](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L68)
 
 ---
 
@@ -579,7 +579,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:72](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L72)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:72](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L72)
 
 ---
 
@@ -595,7 +595,7 @@ Check the current working directory
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:49](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L49)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx:49](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/CurrentWorkingDirectory.tsx#L49)
 
 ---
 

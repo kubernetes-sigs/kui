@@ -21,7 +21,7 @@ Properties that can be associated with <Kui/> component
 
 #### Defined in
 
-[packages/core/src/webapp/themes/Theme.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/Theme.ts#L25)
+[packages/core/src/webapp/themes/Theme.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/themes/Theme.ts#L25)
 
 ---
 
@@ -31,4 +31,4 @@ Properties that can be associated with <Kui/> component
 
 #### Defined in
 
-[packages/core/src/webapp/themes/Theme.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/themes/Theme.ts#L26)
+[packages/core/src/webapp/themes/Theme.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/themes/Theme.ts#L26)

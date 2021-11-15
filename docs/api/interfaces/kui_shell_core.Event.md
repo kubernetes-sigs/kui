@@ -26,7 +26,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:117](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L117)
+[packages/core/src/models/command.ts:117](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L117)
 
 ---
 
@@ -36,7 +36,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:121](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L121)
+[packages/core/src/models/command.ts:121](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L121)
 
 ---
 
@@ -46,7 +46,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:123](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L123)
+[packages/core/src/models/command.ts:123](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L123)
 
 ---
 
@@ -56,7 +56,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:124](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L124)
+[packages/core/src/models/command.ts:124](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L124)
 
 ---
 
@@ -66,7 +66,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:120](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L120)
+[packages/core/src/models/command.ts:120](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L120)
 
 ---
 
@@ -76,7 +76,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:122](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L122)
+[packages/core/src/models/command.ts:122](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L122)
 
 ---
 
@@ -86,7 +86,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:119](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L119)
+[packages/core/src/models/command.ts:119](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L119)
 
 ---
 
@@ -96,7 +96,7 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:118](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L118)
+[packages/core/src/models/command.ts:118](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L118)
 
 ---
 
@@ -106,4 +106,4 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:116](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L116)
+[packages/core/src/models/command.ts:116](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L116)

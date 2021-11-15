@@ -25,7 +25,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L23)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:23](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L23)
 
 ---
 
@@ -35,7 +35,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L25)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L25)
 
 ---
 
@@ -45,7 +45,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L24)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:24](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L24)
 
 ---
 
@@ -55,7 +55,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L28)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:28](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L28)
 
 ---
 
@@ -65,7 +65,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:30](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L30)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:30](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L30)
 
 ---
 
@@ -75,7 +75,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L27)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:27](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L27)
 
 ---
 
@@ -85,7 +85,7 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L26)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L26)
 
 ---
 
@@ -95,4 +95,4 @@
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/resource.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/resource.ts#L29)
+[plugins/plugin-kubectl/src/lib/model/resource.ts:29](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/resource.ts#L29)

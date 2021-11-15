@@ -78,7 +78,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:57](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L57)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:57](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L57)
 
 ## Properties
 
@@ -88,7 +88,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:162](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L162)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:162](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L162)
 
 ---
 
@@ -98,7 +98,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:142](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L142)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:142](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L142)
 
 ---
 
@@ -108,7 +108,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:295](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L295)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:295](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L295)
 
 ---
 
@@ -148,7 +148,7 @@ Has the first tab activated itself?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:55](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L55)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:55](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L55)
 
 ---
 
@@ -359,7 +359,7 @@ node_modules/@types/react/index.d.ts:771
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:222](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L222)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:222](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L222)
 
 ---
 
@@ -375,7 +375,7 @@ save tab state such as CWD prior to a tab switch
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:110](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L110)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:110](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L110)
 
 ---
 
@@ -397,7 +397,7 @@ Graft the tab `uuid`
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:237](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L237)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:237](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L237)
 
 ---
 
@@ -683,7 +683,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:224](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L224)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:224](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L224)
 
 ---
 
@@ -703,7 +703,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:164](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L164)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:164](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L164)
 
 ---
 
@@ -731,7 +731,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:175](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L175)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:175](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L175)
 
 ---
 
@@ -753,7 +753,7 @@ Close Tab event
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:148](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L148)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:148](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L148)
 
 ---
 
@@ -783,7 +783,7 @@ New Tab event
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:199](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L199)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:199](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L199)
 
 ---
 
@@ -805,7 +805,7 @@ Switch Tab event: update state so that activeIdx=idx
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:127](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L127)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:127](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L127)
 
 ---
 
@@ -825,7 +825,7 @@ Switch Tab event: update state so that activeIdx=idx
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:259](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L259)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:259](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L259)
 
 ---
 
@@ -843,7 +843,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:333](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L333)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:333](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L333)
 
 ---
 
@@ -865,7 +865,7 @@ restore tab state after a tab switch
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:119](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L119)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:119](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L119)
 
 ---
 
@@ -947,7 +947,7 @@ Render the content of the tabs
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:312](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L312)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:312](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L312)
 
 ---
 
@@ -963,7 +963,7 @@ Render the row of Tabs along the top
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:298](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L298)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:298](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L298)
 
 ---
 
@@ -984,4 +984,4 @@ Render the row of Tabs along the top
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:245](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L245)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:245](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L245)

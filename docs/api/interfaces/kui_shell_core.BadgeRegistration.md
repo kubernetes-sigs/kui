@@ -28,7 +28,7 @@ then add the given sidecar badge
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L44)
+[packages/core/src/webapp/views/registrar/badges.ts:44](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/views/registrar/badges.ts#L44)
 
 ---
 
@@ -38,4 +38,4 @@ then add the given sidecar badge
 
 #### Defined in
 
-[packages/core/src/webapp/views/registrar/badges.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/registrar/badges.ts#L43)
+[packages/core/src/webapp/views/registrar/badges.ts:43](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/views/registrar/badges.ts#L43)

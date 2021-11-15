@@ -590,7 +590,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:58](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L58)
+[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:58](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L58)
 
 ---
 
@@ -604,7 +604,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:31](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L31)
+[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:31](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L31)
 
 ---
 
@@ -684,4 +684,4 @@ node_modules/@types/react/index.d.ts:630
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:53](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L53)
+[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:53](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L53)

@@ -15,7 +15,7 @@
  */
 
 import { v4 } from 'uuid'
-import { getOrSetPreference } from '@kui-shell/core'
+import { Settings } from '@kui-shell/core'
 
 import Config from './model/Config'
 import baseMountName from './baseMountName'
@@ -47,7 +47,7 @@ class BindMount extends IBMCloudS3Provider {
 
 /** The /s3/ibm/tmp and /bin mount points */
 async function bindProvider(geo: string, config: Config, pseudo: string) {
-  const subdir = await getOrSetPreference(
+  const subdir = await Settings.getOrSetPreference(
     `org.kubernetes-sigs.kui/s3/pseudomount/${geo}/${pseudo}/${config.AccessKeyID}`,
     `${pseudo}-${v4()}`
   )

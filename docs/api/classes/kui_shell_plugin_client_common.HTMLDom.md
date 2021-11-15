@@ -63,7 +63,7 @@ React.PureComponent&lt;Props\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx:31](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx#L31)
+[plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx:31](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx#L31)
 
 ## Properties
 
@@ -570,7 +570,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx:51](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx#L51)
+[plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx:51](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx#L51)
 
 ---
 
@@ -657,4 +657,4 @@ node_modules/@types/react/index.d.ts:630
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx:40](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx#L40)
+[plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx:40](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/Scalar/HTMLDom.tsx#L40)

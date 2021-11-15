@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/views/toolbar-text.ts:39](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/toolbar-text.ts#L39)
+[packages/core/src/webapp/views/toolbar-text.ts:39](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/views/toolbar-text.ts#L39)
 
 ---
 
@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[packages/core/src/webapp/views/toolbar-text.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/toolbar-text.ts#L38)
+[packages/core/src/webapp/views/toolbar-text.ts:38](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/views/toolbar-text.ts#L38)
 
 ---
 
@@ -40,4 +40,4 @@
 
 #### Defined in
 
-[packages/core/src/webapp/views/toolbar-text.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/views/toolbar-text.ts#L37)
+[packages/core/src/webapp/views/toolbar-text.ts:37](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/views/toolbar-text.ts#L37)

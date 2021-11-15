@@ -55,7 +55,7 @@ State that we want to keep per tab
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L68)
+[packages/core/src/models/tab-state.ts:68](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L68)
 
 ## Properties
 
@@ -69,7 +69,7 @@ e.g. { 'plugins/plugin-core': {'v1': {'cwd': '/'}}}
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:57](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L57)
+[packages/core/src/models/tab-state.ts:57](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L57)
 
 ---
 
@@ -81,7 +81,7 @@ functions to capture the states of tab
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:60](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L60)
+[packages/core/src/models/tab-state.ts:60](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L60)
 
 ---
 
@@ -93,7 +93,7 @@ is the tab closed?
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L51)
+[packages/core/src/models/tab-state.ts:51](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L51)
 
 ---
 
@@ -105,7 +105,7 @@ is the tab ready for command execution?
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L48)
+[packages/core/src/models/tab-state.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L48)
 
 ---
 
@@ -117,7 +117,7 @@ functions to restore the states of the tab
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:63](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L63)
+[packages/core/src/models/tab-state.ts:63](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L63)
 
 ---
 
@@ -129,7 +129,7 @@ functions to capture this tab state and restore another tab state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L66)
+[packages/core/src/models/tab-state.ts:66](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L66)
 
 ---
 
@@ -149,7 +149,7 @@ functions to capture this tab state and restore another tab state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:154](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L154)
+[packages/core/src/models/tab-state.ts:154](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L154)
 
 • `set` **desiredStatusStripeDecoration**(`decor`): `void`
 
@@ -165,7 +165,7 @@ functions to capture this tab state and restore another tab state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:158](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L158)
+[packages/core/src/models/tab-state.ts:158](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L158)
 
 ---
 
@@ -179,7 +179,7 @@ functions to capture this tab state and restore another tab state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:78](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L78)
+[packages/core/src/models/tab-state.ts:78](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L78)
 
 ## Methods
 
@@ -195,7 +195,7 @@ Capture contextual global state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:124](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L124)
+[packages/core/src/models/tab-state.ts:124](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L124)
 
 ---
 
@@ -216,7 +216,7 @@ Capture contextual global state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:82](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L82)
+[packages/core/src/models/tab-state.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L82)
 
 ---
 
@@ -238,7 +238,7 @@ Clone the captured state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:137](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L137)
+[packages/core/src/models/tab-state.ts:137](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L137)
 
 ---
 
@@ -260,7 +260,7 @@ Clone the captured state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:107](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L107)
+[packages/core/src/models/tab-state.ts:107](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L107)
 
 ---
 
@@ -284,7 +284,7 @@ Clone the captured state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:92](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L92)
+[packages/core/src/models/tab-state.ts:92](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L92)
 
 ---
 
@@ -300,7 +300,7 @@ Restore tab state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:171](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L171)
+[packages/core/src/models/tab-state.ts:171](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L171)
 
 ---
 
@@ -323,7 +323,7 @@ Restore tab state
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:117](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L117)
+[packages/core/src/models/tab-state.ts:117](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L117)
 
 ---
 
@@ -345,7 +345,7 @@ Capture contextual global state and then restore `nextTabState`
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:129](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L129)
+[packages/core/src/models/tab-state.ts:129](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L129)
 
 ---
 
@@ -361,4 +361,4 @@ Enforce our desired status stripe decorations
 
 #### Defined in
 
-[packages/core/src/models/tab-state.ts:146](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/tab-state.ts#L146)
+[packages/core/src/models/tab-state.ts:146](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/tab-state.ts#L146)

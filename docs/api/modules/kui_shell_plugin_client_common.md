@@ -75,7 +75,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:161](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L161)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:161](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L161)
 
 ---
 
@@ -85,7 +85,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:43](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/Kui.tsx#L43)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:43](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L43)
 
 ---
 
@@ -95,7 +95,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/SplitPosition.ts:19](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/SplitPosition.ts#L19)
+[plugins/plugin-client-common/src/components/Views/Terminal/SplitPosition.ts:19](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/SplitPosition.ts#L19)
 
 ---
 
@@ -107,7 +107,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:24](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L24)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:24](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L24)
 
 ## Properties
 
@@ -123,7 +123,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L65)
+[plugins/plugin-client-common/src/index.ts:65](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L65)
 
 ---
 
@@ -133,7 +133,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:55](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L55)
+[plugins/plugin-client-common/src/index.ts:55](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L55)
 
 ---
 
@@ -143,7 +143,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:66](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L66)
+[plugins/plugin-client-common/src/index.ts:66](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L66)
 
 ---
 
@@ -153,7 +153,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L67)
+[plugins/plugin-client-common/src/index.ts:67](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L67)
 
 ---
 
@@ -163,7 +163,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:72](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L72)
+[plugins/plugin-client-common/src/index.ts:72](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L72)
 
 ---
 
@@ -173,7 +173,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:71](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L71)
+[plugins/plugin-client-common/src/index.ts:71](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L71)
 
 ---
 
@@ -183,7 +183,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:62](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L62)
+[plugins/plugin-client-common/src/index.ts:62](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L62)
 
 ---
 
@@ -193,7 +193,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:57](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L57)
+[plugins/plugin-client-common/src/index.ts:57](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L57)
 
 ---
 
@@ -203,7 +203,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:68](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L68)
+[plugins/plugin-client-common/src/index.ts:68](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L68)
 
 ---
 
@@ -213,7 +213,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:69](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L69)
+[plugins/plugin-client-common/src/index.ts:69](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L69)
 
 ---
 
@@ -223,7 +223,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:70](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L70)
+[plugins/plugin-client-common/src/index.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L70)
 
 ---
 
@@ -233,7 +233,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L49)
+[plugins/plugin-client-common/src/index.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L49)
 
 ---
 
@@ -243,7 +243,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:61](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L61)
+[plugins/plugin-client-common/src/index.ts:61](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L61)
 
 ## Functions
 
@@ -263,7 +263,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/DropdownWidget.tsx:33](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/DropdownWidget.tsx#L33)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/DropdownWidget.tsx:33](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/DropdownWidget.tsx#L33)
 
 ---
 
@@ -283,7 +283,7 @@ variants of how the information should be presented
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/spi/Loading/index.tsx:22](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/spi/Loading/index.tsx#L22)
+[plugins/plugin-client-common/src/components/spi/Loading/index.tsx:22](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/spi/Loading/index.tsx#L22)
 
 ---
 
@@ -299,7 +299,7 @@ This components can be used as a space filler in your StatusStripe.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/SpaceFiller.tsx:23](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/SpaceFiller.tsx#L23)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/SpaceFiller.tsx:23](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/SpaceFiller.tsx#L23)
 
 ---
 
@@ -319,7 +319,7 @@ This components can be used as a space filler in your StatusStripe.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/spi/Tooltip/index.tsx:24](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/spi/Tooltip/index.tsx#L24)
+[plugins/plugin-client-common/src/components/spi/Tooltip/index.tsx:24](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/spi/Tooltip/index.tsx#L24)
 
 ---
 
@@ -333,7 +333,7 @@ This components can be used as a space filler in your StatusStripe.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabModel.ts#L21)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L21)
 
 ---
 
@@ -353,7 +353,7 @@ This components can be used as a space filler in your StatusStripe.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyDown.ts:98](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyDown.ts#L98)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyDown.ts:98](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyDown.ts#L98)
 
 ---
 
@@ -373,7 +373,7 @@ This components can be used as a space filler in your StatusStripe.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyPress.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyPress.ts#L21)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyPress.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/OnKeyPress.ts#L21)
 
 ---
 
@@ -395,7 +395,7 @@ Listen for ctrl+R
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx:181](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx#L181)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx:181](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx#L181)
 
 ---
 
@@ -409,4 +409,4 @@ Listen for ctrl+R
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:88](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/index.ts#L88)
+[plugins/plugin-client-common/src/index.ts:88](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L88)

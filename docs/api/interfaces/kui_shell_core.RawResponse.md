@@ -25,7 +25,7 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:184](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L184)
+[packages/core/src/models/entity.ts:184](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L184)
 
 ---
 
@@ -35,4 +35,4 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:183](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/entity.ts#L183)
+[packages/core/src/models/entity.ts:183](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L183)
