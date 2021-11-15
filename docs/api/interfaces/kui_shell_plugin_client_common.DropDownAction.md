@@ -24,7 +24,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L21)
+[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L21)
 
 ---
 
@@ -34,7 +34,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:20](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L20)
+[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:20](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L20)
 
 ---
 
@@ -44,7 +44,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:18](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L18)
+[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:18](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L18)
 
 ## Methods
 
@@ -58,4 +58,4 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:19](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L19)
+[plugins/plugin-client-common/src/components/spi/DropDown/model.ts:19](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/spi/DropDown/model.ts#L19)

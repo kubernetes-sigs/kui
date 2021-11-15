@@ -32,7 +32,7 @@
 
 #### Defined in
 
-[packages/test/src/api/string-response.ts:29](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/string-response.ts#L29)
+[packages/test/src/api/string-response.ts:29](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/string-response.ts#L29)
 
 ## Properties
 
@@ -52,4 +52,4 @@
 
 #### Defined in
 
-[packages/test/src/api/string-response.ts:31](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/string-response.ts#L31)
+[packages/test/src/api/string-response.ts:31](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/string-response.ts#L31)

@@ -40,7 +40,7 @@
 
 #### Defined in
 
-[packages/test/src/api/table.ts:56](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L56)
+[packages/test/src/api/table.ts:56](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L56)
 
 ## Properties
 
@@ -50,7 +50,7 @@
 
 #### Defined in
 
-[packages/test/src/api/table.ts:54](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L54)
+[packages/test/src/api/table.ts:54](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L54)
 
 ---
 
@@ -60,7 +60,7 @@
 
 #### Defined in
 
-[packages/test/src/api/table.ts:52](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L52)
+[packages/test/src/api/table.ts:52](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L52)
 
 ---
 
@@ -70,7 +70,7 @@
 
 #### Defined in
 
-[packages/test/src/api/table.ts:51](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L51)
+[packages/test/src/api/table.ts:51](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L51)
 
 ---
 
@@ -80,7 +80,7 @@
 
 #### Defined in
 
-[packages/test/src/api/table.ts:50](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L50)
+[packages/test/src/api/table.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L50)
 
 ---
 
@@ -90,7 +90,7 @@
 
 #### Defined in
 
-[packages/test/src/api/table.ts:53](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L53)
+[packages/test/src/api/table.ts:53](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L53)
 
 ## Methods
 
@@ -113,7 +113,7 @@ drilldownFromTable() drilldowns from the table
 
 #### Defined in
 
-[packages/test/src/api/table.ts:219](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L219)
+[packages/test/src/api/table.ts:219](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L219)
 
 ---
 
@@ -137,7 +137,7 @@ drilldownFromTable() drilldowns from the table
 
 #### Defined in
 
-[packages/test/src/api/table.ts:87](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L87)
+[packages/test/src/api/table.ts:87](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L87)
 
 ---
 
@@ -162,7 +162,7 @@ Execute the table-generating command, and validate the content.
 
 #### Defined in
 
-[packages/test/src/api/table.ts:124](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L124)
+[packages/test/src/api/table.ts:124](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L124)
 
 ---
 
@@ -178,4 +178,4 @@ new TestTable().run() will start a mocha test suite
 
 #### Defined in
 
-[packages/test/src/api/table.ts:62](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/table.ts#L62)
+[packages/test/src/api/table.ts:62](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/table.ts#L62)

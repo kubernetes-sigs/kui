@@ -588,7 +588,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/ContextWidgets.tsx:27](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/ContextWidgets.tsx#L27)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/ContextWidgets.tsx:27](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/ContextWidgets.tsx#L27)
 
 ---
 

@@ -23,7 +23,7 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L21)
+[packages/core/src/models/RadioTable.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/RadioTable.ts#L21)
 
 ---
 
@@ -33,7 +33,7 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L26)
+[packages/core/src/models/RadioTable.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/RadioTable.ts#L26)
 
 ---
 
@@ -43,7 +43,7 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L28)
+[packages/core/src/models/RadioTable.ts:28](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/RadioTable.ts#L28)
 
 ---
 
@@ -53,7 +53,7 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L25)
+[packages/core/src/models/RadioTable.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/RadioTable.ts#L25)
 
 ---
 
@@ -63,7 +63,7 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:22](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L22)
+[packages/core/src/models/RadioTable.ts:22](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/RadioTable.ts#L22)
 
 ---
 
@@ -73,4 +73,4 @@
 
 #### Defined in
 
-[packages/core/src/models/RadioTable.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/RadioTable.ts#L24)
+[packages/core/src/models/RadioTable.ts:24](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/RadioTable.ts#L24)

@@ -27,7 +27,7 @@ End-user options
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:28](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L28)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:28](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L28)
 
 ---
 
@@ -39,4 +39,4 @@ popover position override specified by container (not client)?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:31](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L31)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx:31](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/TextWithIconWidget.tsx#L31)

@@ -22,4 +22,4 @@
 
 #### Defined in
 
-[packages/core/src/models/command.ts:128](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/command.ts#L128)
+[packages/core/src/models/command.ts:128](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/command.ts#L128)

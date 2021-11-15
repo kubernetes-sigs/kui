@@ -55,7 +55,7 @@
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:201](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L201)
+[packages/test/src/api/repl-expect.ts:201](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L201)
 
 ---
 
@@ -87,7 +87,7 @@
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:198](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L198)
+[packages/test/src/api/repl-expect.ts:198](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L198)
 
 ---
 
@@ -110,7 +110,7 @@ Transform the given block finder to one that can find the next block
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:469](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L469)
+[packages/test/src/api/repl-expect.ts:469](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L469)
 
 ---
 
@@ -130,7 +130,7 @@ Verify that the number of blocks equals the expected count
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:437](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L437)
+[packages/test/src/api/repl-expect.ts:437](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L437)
 
 ---
 
@@ -165,7 +165,7 @@ Expect a CommentaryResponse
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:413](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L413)
+[packages/test/src/api/repl-expect.ts:413](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L413)
 
 ---
 
@@ -189,7 +189,7 @@ The return type `any` comes from webdriverio waitUntil
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:204](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L204)
+[packages/test/src/api/repl-expect.ts:204](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L204)
 
 ---
 
@@ -224,7 +224,7 @@ Expect an ElsewhereCommentaryResponse
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:392](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L392)
+[packages/test/src/api/repl-expect.ts:392](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L392)
 
 ---
 
@@ -257,7 +257,7 @@ Expect an ElsewhereCommentaryResponse
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:174](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L174)
+[packages/test/src/api/repl-expect.ts:174](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L174)
 
 ---
 
@@ -279,7 +279,7 @@ expect just ok, and no result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:353](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L353)
+[packages/test/src/api/repl-expect.ts:353](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L353)
 
 ---
 
@@ -299,7 +299,7 @@ expect just ok, and no result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:168](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L168)
+[packages/test/src/api/repl-expect.ts:168](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L168)
 
 ---
 
@@ -333,7 +333,7 @@ expect ok and at least the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:350](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L350)
+[packages/test/src/api/repl-expect.ts:350](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L350)
 
 ---
 
@@ -355,7 +355,7 @@ as long as its ok, accept anything
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:342](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L342)
+[packages/test/src/api/repl-expect.ts:342](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L342)
 
 ---
 
@@ -395,7 +395,7 @@ as long as its ok, accept anything
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:221](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L221)
+[packages/test/src/api/repl-expect.ts:221](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L221)
 
 ---
 
@@ -429,7 +429,7 @@ as long as its ok, accept anything
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:294](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L294)
+[packages/test/src/api/repl-expect.ts:294](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L294)
 
 ---
 
@@ -450,7 +450,7 @@ as long as its ok, accept anything
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:325](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L325)
+[packages/test/src/api/repl-expect.ts:325](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L325)
 
 ---
 
@@ -484,7 +484,7 @@ expect ok and _only_ the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:345](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L345)
+[packages/test/src/api/repl-expect.ts:345](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L345)
 
 ---
 
@@ -517,7 +517,7 @@ expect ok and _only_ the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:266](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L266)
+[packages/test/src/api/repl-expect.ts:266](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L266)
 
 ---
 
@@ -550,7 +550,7 @@ expect ok and _only_ the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:281](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L281)
+[packages/test/src/api/repl-expect.ts:281](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L281)
 
 ---
 
@@ -583,7 +583,7 @@ expect ok and _only_ the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:265](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L265)
+[packages/test/src/api/repl-expect.ts:265](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L265)
 
 ---
 
@@ -617,7 +617,7 @@ expect ok and _only_ the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:252](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L252)
+[packages/test/src/api/repl-expect.ts:252](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L252)
 
 ---
 
@@ -650,7 +650,7 @@ expect ok and _only_ the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:268](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L268)
+[packages/test/src/api/repl-expect.ts:268](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L268)
 
 ---
 
@@ -685,7 +685,7 @@ expect ok and _only_ the given result value
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:224](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L224)
+[packages/test/src/api/repl-expect.ts:224](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L224)
 
 ---
 
@@ -721,7 +721,7 @@ Expect the given number of terminal splits in the current tab, and check whether
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:356](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L356)
+[packages/test/src/api/repl-expect.ts:356](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L356)
 
 ---
 
@@ -755,4 +755,4 @@ Expect table with N rows
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:379](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L379)
+[packages/test/src/api/repl-expect.ts:379](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L379)

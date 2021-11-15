@@ -12,7 +12,6 @@
 - [expandHomeDir](kui_shell_core.Util.md#expandhomedir)
 - [fallbackCWD](kui_shell_core.Util.md#fallbackcwd)
 - [findFile](kui_shell_core.Util.md#findfile)
-- [findFileWithViewer](kui_shell_core.Util.md#findfilewithviewer)
 - [flatten](kui_shell_core.Util.md#flatten)
 - [isHTML](kui_shell_core.Util.md#ishtml)
 - [isPromise](kui_shell_core.Util.md#ispromise)
@@ -32,7 +31,7 @@
 
 #### Defined in
 
-[packages/core/src/util/home.ts:49](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/home.ts#L49)
+[packages/core/src/util/home.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/util/home.ts#L49)
 
 ---
 
@@ -52,7 +51,7 @@
 
 #### Defined in
 
-[packages/core/src/util/home.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/home.ts#L24)
+[packages/core/src/util/home.ts:24](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/util/home.ts#L24)
 
 ---
 
@@ -74,7 +73,7 @@ In case of error, e.g. removed CWD, this is our fallback plan
 
 #### Defined in
 
-[packages/core/src/util/home.ts:41](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/home.ts#L41)
+[packages/core/src/util/home.ts:41](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/util/home.ts#L41)
 
 ---
 
@@ -99,37 +98,7 @@ Resolve @ and ~ files
 
 #### Defined in
 
-[packages/core/src/core/find-file.ts:119](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/find-file.ts#L119)
-
----
-
-### findFileWithViewer
-
-▸ `Const` **findFileWithViewer**(`filepath`, `__namedParameters?`): `Object`
-
-Behaves like `findFile` with an extra call to `commandPrefix`
-
-#### Parameters
-
-| Name                             | Type      |
-| :------------------------------- | :-------- |
-| `filepath`                       | `string`  |
-| `__namedParameters`              | `Object`  |
-| `__namedParameters.keepRelative` | `boolean` |
-| `__namedParameters.safe`         | `boolean` |
-
-#### Returns
-
-`Object`
-
-| Name       | Type     |
-| :--------- | :------- |
-| `resolved` | `string` |
-| `viewer?`  | `string` |
-
-#### Defined in
-
-[packages/core/src/core/find-file.ts:72](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/find-file.ts#L72)
+[packages/core/src/core/find-file.ts:119](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/find-file.ts#L119)
 
 ---
 
@@ -157,7 +126,7 @@ flatten an array of arrays
 
 #### Defined in
 
-[packages/core/src/core/utility.ts:72](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/utility.ts#L72)
+[packages/core/src/core/utility.ts:72](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/utility.ts#L72)
 
 ---
 
@@ -177,7 +146,7 @@ message is HTMLElement
 
 #### Defined in
 
-[packages/core/src/util/types.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/types.ts#L21)
+[packages/core/src/util/types.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/util/types.ts#L21)
 
 ---
 
@@ -204,7 +173,7 @@ content is Promise<T\>
 
 #### Defined in
 
-[packages/core/src/util/types.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/types.ts#L25)
+[packages/core/src/util/types.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/util/types.ts#L25)
 
 ---
 
@@ -226,7 +195,7 @@ pretty-printed bytes
 
 #### Defined in
 
-[packages/core/src/webapp/util/bytes.ts:18](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/util/bytes.ts#L18)
+[packages/core/src/webapp/util/bytes.ts:18](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/util/bytes.ts#L18)
 
 ---
 
@@ -251,7 +220,7 @@ Pretty print a timestamp
 
 #### Defined in
 
-[packages/core/src/webapp/util/time.ts:36](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/webapp/util/time.ts#L36)
+[packages/core/src/webapp/util/time.ts:36](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/util/time.ts#L36)
 
 ---
 
@@ -282,4 +251,4 @@ back.
 
 #### Defined in
 
-[packages/core/src/util/async.ts:22](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/util/async.ts#L22)
+[packages/core/src/util/async.ts:22](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/util/async.ts#L22)

@@ -20,7 +20,7 @@
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L26)
+[packages/test/src/api/repl-expect.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L26)
 
 ---
 
@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:27](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L27)
+[packages/test/src/api/repl-expect.ts:27](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L27)
 
 ---
 
@@ -40,4 +40,4 @@
 
 #### Defined in
 
-[packages/test/src/api/repl-expect.ts:28](https://github.com/mra-ruiz/kui/blob/76908b178/packages/test/src/api/repl-expect.ts#L28)
+[packages/test/src/api/repl-expect.ts:28](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/repl-expect.ts#L28)

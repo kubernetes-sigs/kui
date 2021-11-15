@@ -41,7 +41,7 @@
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L25)
+[packages/core/src/models/errors.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/errors.ts#L25)
 
 ---
 
@@ -51,7 +51,7 @@
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L21)
+[packages/core/src/models/errors.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/errors.ts#L21)
 
 ---
 
@@ -61,7 +61,7 @@
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:20](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L20)
+[packages/core/src/models/errors.ts:20](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/errors.ts#L20)
 
 ---
 
@@ -99,7 +99,7 @@ node_modules/typescript/lib/lib.es5.d.ts:973
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L23)
+[packages/core/src/models/errors.ts:23](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/errors.ts#L23)
 
 ---
 
@@ -123,4 +123,4 @@ node_modules/typescript/lib/lib.es5.d.ts:975
 
 #### Defined in
 
-[packages/core/src/models/errors.ts:22](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/errors.ts#L22)
+[packages/core/src/models/errors.ts:22](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/errors.ts#L22)

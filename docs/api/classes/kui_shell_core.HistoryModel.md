@@ -55,7 +55,7 @@ A tuple of History entries, one per Tab (as specified by its given uuid)
 
 #### Defined in
 
-[packages/core/src/models/history.ts:52](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L52)
+[packages/core/src/models/history.ts:52](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L52)
 
 ## Properties
 
@@ -65,7 +65,7 @@ A tuple of History entries, one per Tab (as specified by its given uuid)
 
 #### Defined in
 
-[packages/core/src/models/history.ts:43](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L43)
+[packages/core/src/models/history.ts:43](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L43)
 
 ---
 
@@ -75,7 +75,7 @@ A tuple of History entries, one per Tab (as specified by its given uuid)
 
 #### Defined in
 
-[packages/core/src/models/history.ts:42](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L42)
+[packages/core/src/models/history.ts:42](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L42)
 
 ---
 
@@ -87,7 +87,7 @@ Facilitate copying master history to new Tabs
 
 #### Defined in
 
-[packages/core/src/models/history.ts:46](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L46)
+[packages/core/src/models/history.ts:46](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L46)
 
 ## Accessors
 
@@ -101,7 +101,7 @@ Facilitate copying master history to new Tabs
 
 #### Defined in
 
-[packages/core/src/models/history.ts:98](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L98)
+[packages/core/src/models/history.ts:98](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L98)
 
 ## Methods
 
@@ -123,7 +123,7 @@ add a line of repl history
 
 #### Defined in
 
-[packages/core/src/models/history.ts:147](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L147)
+[packages/core/src/models/history.ts:147](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L147)
 
 ---
 
@@ -145,7 +145,7 @@ Search the history model
 
 #### Defined in
 
-[packages/core/src/models/history.ts:226](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L226)
+[packages/core/src/models/history.ts:226](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L226)
 
 ---
 
@@ -168,7 +168,7 @@ Search the history model
 
 #### Defined in
 
-[packages/core/src/models/history.ts:199](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L199)
+[packages/core/src/models/history.ts:199](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L199)
 
 ---
 
@@ -184,7 +184,7 @@ return to the oldest entry
 
 #### Defined in
 
-[packages/core/src/models/history.ts:180](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L180)
+[packages/core/src/models/history.ts:180](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L180)
 
 ---
 
@@ -206,7 +206,7 @@ change the cursor, protecting against under- and overflow
 
 #### Defined in
 
-[packages/core/src/models/history.ts:103](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L103)
+[packages/core/src/models/history.ts:103](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L103)
 
 ---
 
@@ -228,7 +228,7 @@ The persistence key for this tab
 
 #### Defined in
 
-[packages/core/src/models/history.ts:85](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L85)
+[packages/core/src/models/history.ts:85](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L85)
 
 ---
 
@@ -244,7 +244,7 @@ return to the newest entry
 
 #### Defined in
 
-[packages/core/src/models/history.ts:186](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L186)
+[packages/core/src/models/history.ts:186](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L186)
 
 ---
 
@@ -266,7 +266,7 @@ return the given line of history
 
 #### Defined in
 
-[packages/core/src/models/history.ts:90](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L90)
+[packages/core/src/models/history.ts:90](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L90)
 
 ---
 
@@ -286,7 +286,7 @@ return the given line of history
 
 #### Defined in
 
-[packages/core/src/models/history.ts:165](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L165)
+[packages/core/src/models/history.ts:165](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L165)
 
 ---
 
@@ -302,7 +302,7 @@ go forward one entry
 
 #### Defined in
 
-[packages/core/src/models/history.ts:175](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L175)
+[packages/core/src/models/history.ts:175](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L175)
 
 ---
 
@@ -318,7 +318,7 @@ go back one entry
 
 #### Defined in
 
-[packages/core/src/models/history.ts:170](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L170)
+[packages/core/src/models/history.ts:170](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L170)
 
 ---
 
@@ -340,7 +340,7 @@ Low-level restore from persistent storage
 
 #### Defined in
 
-[packages/core/src/models/history.ts:124](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L124)
+[packages/core/src/models/history.ts:124](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L124)
 
 ---
 
@@ -363,7 +363,7 @@ Low-level save to persistent storage
 
 #### Defined in
 
-[packages/core/src/models/history.ts:119](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L119)
+[packages/core/src/models/history.ts:119](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L119)
 
 ---
 
@@ -384,7 +384,7 @@ Low-level save to persistent storage
 
 #### Defined in
 
-[packages/core/src/models/history.ts:94](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L94)
+[packages/core/src/models/history.ts:94](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L94)
 
 ---
 
@@ -407,7 +407,7 @@ update a line of repl history -- for async operations
 
 #### Defined in
 
-[packages/core/src/models/history.ts:159](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L159)
+[packages/core/src/models/history.ts:159](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L159)
 
 ---
 
@@ -423,4 +423,4 @@ Clear out all history
 
 #### Defined in
 
-[packages/core/src/models/history.ts:140](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L140)
+[packages/core/src/models/history.ts:140](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L140)

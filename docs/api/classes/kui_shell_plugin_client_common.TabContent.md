@@ -95,7 +95,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:99](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L99)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:99](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L99)
 
 ## Properties
 
@@ -105,7 +105,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:86](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L86)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:86](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L86)
 
 ---
 
@@ -117,7 +117,7 @@ switching back or away from this tab
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:91](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L91)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:91](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L91)
 
 ---
 
@@ -127,7 +127,7 @@ switching back or away from this tab
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:88](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L88)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:88](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L88)
 
 ---
 
@@ -368,7 +368,7 @@ Request to clear the contents of the ScrollableTerminal
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:283](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L283)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:283](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L283)
 
 ---
 
@@ -390,7 +390,7 @@ Toggle attribute on Tab DOM
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:276](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L276)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:276](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L276)
 
 ---
 
@@ -406,7 +406,7 @@ Enter/exit mode where one split is displayed along the bottom
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:272](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L272)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:272](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L272)
 
 ---
 
@@ -422,7 +422,7 @@ Enter/exit mode where one split is displayed along the left
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:269](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L269)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:269](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L269)
 
 ---
 
@@ -436,7 +436,7 @@ Enter/exit mode where one split is displayed along the left
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:382](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L382)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:382](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L382)
 
 ---
 
@@ -452,7 +452,7 @@ Graft on the tab uuid
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:361](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L361)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:361](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L361)
 
 ---
 
@@ -468,7 +468,7 @@ Graft on the REPL focus management
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:352](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L352)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:352](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L352)
 
 ---
 
@@ -514,7 +514,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:137](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L137)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:137](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L137)
 
 ---
 
@@ -632,7 +632,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:258](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L258)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:258](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L258)
 
 ---
 
@@ -685,7 +685,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:263](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L263)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:263](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L263)
 
 ---
 
@@ -762,7 +762,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:338](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L338)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:338](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L338)
 
 ---
 
@@ -782,7 +782,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:215](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L215)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:215](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L215)
 
 ---
 
@@ -796,7 +796,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:170](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L170)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:170](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L170)
 
 ---
 
@@ -814,7 +814,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:188](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L188)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:188](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L188)
 
 ---
 
@@ -830,7 +830,7 @@ Use client-provided (or default) proxy disconnected notice, if warranted
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:320](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L320)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:320](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L320)
 
 ---
 
@@ -848,7 +848,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:407](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L407)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:407](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L407)
 
 ---
 
@@ -930,7 +930,7 @@ Construct the `className` property of the tab element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:374](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L374)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:374](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L374)
 
 ---
 
@@ -944,7 +944,7 @@ Construct the `className` property of the tab element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:292](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L292)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:292](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L292)
 
 ---
 
@@ -958,7 +958,7 @@ Construct the `className` property of the tab element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:93](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L93)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:93](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L93)
 
 ---
 
@@ -979,7 +979,7 @@ Construct the `className` property of the tab element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:127](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L127)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:127](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L127)
 
 ---
 
@@ -1000,7 +1000,7 @@ Construct the `className` property of the tab element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:114](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L114)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:114](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L114)
 
 ---
 
@@ -1021,4 +1021,4 @@ Construct the `className` property of the tab element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContent.tsx:184](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L184)
+[plugins/plugin-client-common/src/components/Client/TabContent.tsx:184](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContent.tsx#L184)

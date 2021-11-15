@@ -21,7 +21,7 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:48](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L48)
+[packages/core/src/models/StatusModel.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L48)
 
 ---
 
@@ -31,7 +31,7 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:45](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L45)
+[packages/core/src/models/StatusModel.ts:45](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L45)
 
 ---
 
@@ -41,7 +41,7 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:47](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L47)
+[packages/core/src/models/StatusModel.ts:47](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L47)
 
 ---
 
@@ -51,4 +51,4 @@
 
 #### Defined in
 
-[packages/core/src/models/StatusModel.ts:44](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/StatusModel.ts#L44)
+[packages/core/src/models/StatusModel.ts:44](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L44)

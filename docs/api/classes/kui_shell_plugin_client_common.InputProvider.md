@@ -119,7 +119,7 @@ node_modules/@types/react/index.d.ts:480
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:212](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L212)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:212](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L212)
 
 ---
 
@@ -358,7 +358,7 @@ node_modules/@types/react/index.d.ts:771
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:204](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L204)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:204](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L204)
 
 ---
 
@@ -586,7 +586,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:214](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L214)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:214](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L214)
 
 ---
 
@@ -658,7 +658,7 @@ this is what the InputProvider needs to provide, minimially
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:198](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L198)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:198](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L198)
 
 ---
 
@@ -672,7 +672,7 @@ this is what the InputProvider needs to provide, minimially
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:277](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L277)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:277](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L277)
 
 ---
 
@@ -686,7 +686,7 @@ this is what the InputProvider needs to provide, minimially
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:281](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L281)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:281](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L281)
 
 ---
 
@@ -702,7 +702,7 @@ the "xxx >" prompt part of the input section
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:299](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L299)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:299](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L299)
 
 ---
 
@@ -718,7 +718,7 @@ the "xxx" part of "xxx >" of the prompt
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:236](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L236)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:236](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L236)
 
 ---
 
@@ -734,7 +734,7 @@ the ">" part of "xxx >" of the prompt
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:254](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L254)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:254](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L254)
 
 ---
 
@@ -752,7 +752,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:312](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L312)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:312](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L312)
 
 ---
 
@@ -834,4 +834,4 @@ rendered to the left of the input element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:202](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L202)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:202](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L202)

@@ -21,7 +21,7 @@ Optionally specify to create the new tab without switching to it
 
 #### Defined in
 
-[packages/core/src/core/events.ts:65](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L65)
+[packages/core/src/core/events.ts:65](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L65)
 
 ---
 
@@ -31,4 +31,4 @@ Optionally specify to create the new tab without switching to it
 
 #### Defined in
 
-[packages/core/src/core/events.ts:67](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/core/events.ts#L67)
+[packages/core/src/core/events.ts:67](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L67)

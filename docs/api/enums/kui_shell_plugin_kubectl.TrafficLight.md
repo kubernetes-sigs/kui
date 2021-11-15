@@ -24,7 +24,7 @@ A rollup of State to "traffic light" model
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:25](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L25)
+[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L25)
 
 ---
 
@@ -34,7 +34,7 @@ A rollup of State to "traffic light" model
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:22](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L22)
+[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:22](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L22)
 
 ---
 
@@ -44,7 +44,7 @@ A rollup of State to "traffic light" model
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L26)
+[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L26)
 
 ---
 
@@ -54,7 +54,7 @@ A rollup of State to "traffic light" model
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:23](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L23)
+[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:23](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L23)
 
 ---
 
@@ -64,4 +64,4 @@ A rollup of State to "traffic light" model
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:24](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L24)
+[plugins/plugin-kubectl/src/lib/model/traffic-light.ts:24](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/model/traffic-light.ts#L24)

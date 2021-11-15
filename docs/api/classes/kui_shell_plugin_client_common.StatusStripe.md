@@ -68,7 +68,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:48](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L48)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:48](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L48)
 
 ## Properties
 
@@ -106,7 +106,7 @@ node_modules/@types/react/index.d.ts:473
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:46](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L46)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:46](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L46)
 
 ---
 
@@ -317,7 +317,7 @@ node_modules/@types/react/index.d.ts:771
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:116](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L116)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:116](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L116)
 
 ---
 
@@ -541,7 +541,7 @@ User has clicked on the Settings icon.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:75](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L75)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:75](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L75)
 
 ---
 
@@ -558,7 +558,7 @@ filler, so that the Settings icon is presented flush-right.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:84](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L84)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:84](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L84)
 
 ---
 
@@ -630,7 +630,7 @@ Render the current State.message, if any
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:92](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L92)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:92](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L92)
 
 ---
 
@@ -652,7 +652,7 @@ Status Stripe change request
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:67](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L67)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:67](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L67)
 
 ---
 
@@ -670,7 +670,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:120](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L120)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:120](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L120)
 
 ---
 
@@ -754,7 +754,7 @@ https://github.com/IBM/kui/issues/5490
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:108](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L108)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:108](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L108)
 
 ---
 
@@ -776,4 +776,4 @@ Overlay default values for required state variables
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:56](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L56)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx:56](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/index.tsx#L56)

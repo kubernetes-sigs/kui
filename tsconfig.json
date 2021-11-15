@@ -60,6 +60,8 @@
     "githubPages": false,
     "readme": "none",
     "name": "Kui API Documentation",
+    "gitRevision": "kui",
+    "gitRemote": "upstream",
     "includeVersion": true
   }
 }

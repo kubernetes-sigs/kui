@@ -61,7 +61,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx:32](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx#L32)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx:32](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx#L32)
 
 ## Properties
 
@@ -564,7 +564,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx:47](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx#L47)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx:47](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx#L47)
 
 ---
 
@@ -582,7 +582,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx:65](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx#L65)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx:65](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/Settings.tsx#L65)
 
 ---
 

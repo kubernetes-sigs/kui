@@ -10,6 +10,7 @@
 
 ### Functions
 
+- [doExecPipe](kui_shell_plugin_bash_like.md#doexecpipe)
 - [doExecWithPty](kui_shell_plugin_bash_like.md#doexecwithpty)
 - [doExecWithStdoutViaPty](kui_shell_plugin_bash_like.md#doexecwithstdoutviapty)
 - [getSessionForTab](kui_shell_plugin_bash_like.md#getsessionfortab)
@@ -17,6 +18,27 @@
 - [main](kui_shell_plugin_bash_like.md#main)
 
 ## Functions
+
+### doExecPipe
+
+▸ **doExecPipe**(`argvs`, `execOptions?`): `Promise`<`unknown`\>
+
+#### Parameters
+
+| Name           | Type                                                                   |
+| :------------- | :--------------------------------------------------------------------- |
+| `argvs`        | `string`[][]                                                           |
+| `execOptions?` | `Pick`<`ExecOptions`, `"cwd"` \| `"env"` \| `"stderr"` \| `"stdout"`\> |
+
+#### Returns
+
+`Promise`<`unknown`\>
+
+#### Defined in
+
+[plugins/plugin-bash-like/src/lib/cmds/pipe.ts:20](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/pipe.ts#L20)
+
+---
 
 ### doExecWithPty
 
@@ -36,7 +58,7 @@ Command handler that dispatches to an outer shell
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:26](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L26)
+[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L26)
 
 ---
 
@@ -64,7 +86,7 @@ Execute the given command using a pty, but return a string
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:103](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L103)
+[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:103](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L103)
 
 ---
 
@@ -86,7 +108,7 @@ Return the session for the given tab
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/sessionCache.ts:38](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/sessionCache.ts#L38)
+[plugins/plugin-bash-like/src/pty/sessionCache.ts:38](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/pty/sessionCache.ts#L38)
 
 ---
 
@@ -107,7 +129,7 @@ Return the session for the given tab
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/tab-state/get.ts:21](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/tab-state/get.ts#L21)
+[plugins/plugin-bash-like/src/tab-state/get.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/tab-state/get.ts#L21)
 
 ---
 
@@ -130,4 +152,4 @@ Return the session for the given tab
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/pty/server.ts:509](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-bash-like/src/pty/server.ts#L509)
+[plugins/plugin-bash-like/src/pty/server.ts:509](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/pty/server.ts#L509)

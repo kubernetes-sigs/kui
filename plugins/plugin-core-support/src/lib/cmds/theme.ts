@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { i18n, RadioTable, CellShould, Arguments, Registrar, Themes, uiThemes, Util } from '@kui-shell/core'
+import { i18n, RadioTable, CellShould, Arguments, Registrar, Settings, Themes, Util } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support')
 const debug = Debug('plugins/core-support/theme')
@@ -75,10 +75,10 @@ const list = async ({ REPL }: Arguments): Promise<RadioTable> => {
     return Themes.findThemeByName(chosenTheme) ? chosenTheme : Themes.getDefaultTheme()
   }
   debug('currentTheme', await currentTheme())
-  // debug('theme list', uiThemes())
+  // debug('theme list', Settings.uiThemes())
 
   const body = Util.flatten(
-    (await uiThemes()).map(({ plugin, themes }) =>
+    (await Settings.uiThemes()).map(({ plugin, themes }) =>
       themes.map((theme: Themes.Theme) => ({
         nameIdx: 0,
         cells: [

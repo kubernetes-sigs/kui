@@ -19,7 +19,7 @@
 
 #### Defined in
 
-[plugins/plugin-s3/src/providers/MinioConfig.ts:19](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-s3/src/providers/MinioConfig.ts#L19)
+[plugins/plugin-s3/src/providers/MinioConfig.ts:19](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-s3/src/providers/MinioConfig.ts#L19)
 
 ---
 
@@ -29,4 +29,4 @@
 
 #### Defined in
 
-[plugins/plugin-s3/src/providers/MinioConfig.ts:18](https://github.com/mra-ruiz/kui/blob/76908b178/plugins/plugin-s3/src/providers/MinioConfig.ts#L18)
+[plugins/plugin-s3/src/providers/MinioConfig.ts:18](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-s3/src/providers/MinioConfig.ts#L18)

@@ -22,4 +22,4 @@ The raw command line
 
 #### Defined in
 
-[packages/core/src/models/history.ts:37](https://github.com/mra-ruiz/kui/blob/76908b178/packages/core/src/models/history.ts#L37)
+[packages/core/src/models/history.ts:37](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/history.ts#L37)
