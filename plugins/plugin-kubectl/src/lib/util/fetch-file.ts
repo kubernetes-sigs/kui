@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 import { join } from 'path'
-import needle, { BodyData } from 'needle'
+import { BodyData } from 'needle'
 import { DirEntry } from '@kui-shell/plugin-bash-like/fs'
 import {
   Arguments,
@@ -89,7 +89,7 @@ export async function openStream<T extends object>(
   } else {
     // we need to set JSON to false to disable needle's parsing, which
     // seems not to be compatible with streaming
-    const uri = await rescheme(url, args)
+    const [uri, needle] = await Promise.all([rescheme(url, args), import('needle').then(_ => _.default)])
     debug('routing openStream request to endpoint', uri)
     const stream = needle.get(uri, { headers, parse: false })
     const onData = mgmt.onInit({
@@ -161,6 +161,7 @@ export async function _needle(
     }
 
     try {
+      const needle = (await import('needle')).default
       const { statusCode, body } = await needle(method, await rescheme(url, args), opts.data, {
         json: true,
         follow_max: 10,

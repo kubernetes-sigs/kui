@@ -22,7 +22,6 @@
  */
 
 import React from 'react'
-import needle from 'needle'
 
 import { Events, getCurrentTab, pexecInCurrentTab, i18n } from '@kui-shell/core'
 import { TextWithIconWidget as Widget, TextWithIconWidgetProps, Markdown } from '@kui-shell/plugin-client-common'
@@ -128,7 +127,8 @@ export default class UpdateChecker extends React.PureComponent<Props, State> {
 
   /** Ping the release feed to check for the latest release */
   private checkForUpdates() {
-    needle('get', FEED(), { json: true })
+    import('needle')
+      .then(_ => _.default('get', FEED(), { json: true }))
       .then(res => {
         const version = res.body.tag_name
 
