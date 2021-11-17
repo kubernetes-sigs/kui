@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import { addProviderInitializer } from '@kui-shell/plugin-s3'
 
 export async function registerCapability() {
-  const ibmcloud = await import('./s3provider').then(_ => _.default)
-  addProviderInitializer(ibmcloud)
+  const debug = Debug('plugin-s3/ibm/register')
+  debug('registering ibm s3 provider 1')
+
+  try {
+    const ibmcloud = await import('./s3provider').then(_ => _.default)
+    debug('registering ibm s3 provider 2', ibmcloud)
+    addProviderInitializer(ibmcloud)
+  } catch (err) {
+    debug('registering ibm s3 provider error', err)
+    return []
+  }
 }

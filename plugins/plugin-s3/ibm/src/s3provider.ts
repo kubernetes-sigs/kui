@@ -55,6 +55,7 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
     const config = await fetchConfig(repl)
     listeningAlready = false
     if (!isGoodConfig(config)) {
+      debug('ibm s3 config is incomplete')
       return new IBMCloudS3Provider(
         geo,
         mountName,
@@ -64,7 +65,9 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
     } else {
       if (config && !config['Default Region']) {
         // TODO: isn't there a race here?
+        debug('ibm s3 config inferring Default Region')
         config['Default Region'] = await repl.qexec('ibmcloud cos config region default')
+        debug('ibm s3 config inferring Default Region: success', config['Default Region'])
       }
 
       const provider = new IBMCloudS3Provider(geo, mountName, config)
@@ -73,14 +76,15 @@ async function init(geo: string, mountName: string, repl: REPL, reinit: () => vo
       if (provider.isDefault) {
         // e.g. add an /s3/ibm/default mount point
         provider.isDefault = false
-        debug(`adding extra providers for default region in geo ${geo}`)
+        debug(`ibm s3 config adding extra providers for default region in geo ${geo}`)
         return [...(await extraProvidersForDefaultRegion(geo, config)), provider]
       } else {
-        debug(`adding extra providers for all regions in geo ${geo}`)
+        debug(`ibm s3 config adding extra providers for all regions in geo ${geo}`)
         return [...(await extraProvidersForAllRegions(geo, config)), provider]
       }
     }
   } catch (err) {
+    debug(`ibm s3 config fatal error`, err)
     return new IBMCloudS3Provider(geo, mountName, undefined, new UnsupportedS3ProviderError(err.message))
   }
 }

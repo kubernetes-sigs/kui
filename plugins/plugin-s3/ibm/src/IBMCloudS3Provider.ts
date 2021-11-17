@@ -51,7 +51,7 @@ export default class IBMCloudS3Provider implements S3Provider {
     // e.g. s3.ap.cloud-object-storage.appdomain.cloud -> s3.direct.ap.cloud-object-storage.appdomain.cloud
     this.directEndPoint = this.endPoint.replace(/^s3\./, 's3.direct.')
 
-    const defaultRegion = GeoDefaults[config['Default Region']] || config['Default Region']
+    const defaultRegion = config ? GeoDefaults[config['Default Region']] || config['Default Region'] : undefined
     this.isDefault = config && geo === defaultRegion
 
     // use the closest available endpoint for listBuckets, since it is geo-agnostic
