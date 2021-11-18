@@ -59,15 +59,16 @@ export default class Bar extends React.PureComponent<Props> {
         />
 
         {/* "overlays", make sure this comes last:  */}
-        {this.props.overheads.map(({ title, width, offset }, idx) => (
-          <div
-            key={idx}
-            title={title}
-            data-overlay={idx}
-            style={{ marginLeft: str(offset + this.props.left), width: str(width) }}
-            className={'kui--bar' + (this.props.onClick ? ' clickable' : '')}
-          />
-        ))}
+        {this.props.overheads &&
+          this.props.overheads.map(({ title, width, offset }, idx) => (
+            <div
+              key={idx}
+              title={title}
+              data-overlay={idx}
+              style={{ marginLeft: str(offset + this.props.left), width: str(width) }}
+              className={'kui--bar' + (this.props.onClick ? ' clickable' : '')}
+            />
+          ))}
       </div>
     )
   }

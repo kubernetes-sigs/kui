@@ -46,6 +46,24 @@ export interface WatchPusher {
    */
   update: (response: Row, batch?: boolean, changed?: boolean, idxToUpdate?: number) => void
 
+  /**
+   * Update progress bar for a given row
+   *
+   * @param rowIdx row index (assumes no sorting, for now)
+   * @param percentComplete how far along is the processing of this row?
+   * @param [message] any transient message that might help understand the progress
+   * @param [totalSize] if the row represents a sized of object, how big is it?
+   * @param [fileName] if the row represents a named object, what is it called?
+   *
+   */
+  progress: (progress: {
+    rowIdx: number
+    percentComplete: number
+    message?: string
+    totalSize?: number
+    fileName?: string
+  }) => void
+
   /** set table body */
   setBody: (response: Row[]) => void
 

@@ -22,9 +22,12 @@ import { REPL, Row, Tab, Table, i18n, Util } from '@kui-shell/core'
 import Bar from './Bar'
 import ErrorCell from './ErrorCell'
 import DefaultColoring from './Coloring'
+import ProgressState from './ProgressState'
 import trafficLight from './css-for-status'
 import { onClickForCell, CellOnClickHandler } from './TableCell'
 import KuiConfiguration from '../../Client/KuiConfiguration'
+
+const Ansi = React.lazy(() => import('../Scalar/Ansi'))
 
 import '../../../../web/scss/components/Table/SequenceDiagram/_index.scss'
 
@@ -32,7 +35,11 @@ const strings = i18n('plugin-client-common')
 
 const safePrettyPrintBytes = Util.prettyPrintBytes
 
-interface Props {
+function Progress(props: { percent: number; className: string }) {
+  return <Bar left={0} width={props.percent} className={props.className} />
+}
+
+type Props = ProgressState & {
   response: Table
   tab: Tab
   repl: REPL
@@ -543,6 +550,13 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   (rowIdx === interval.rows.length - 1 ? ' kui--sequence-diagram-last-row-in-interval' : '')
                 }
               >
+                {this.props.progress && this.props.progress[row.rowKey] && this.props.progress[row.rowKey].fileName && (
+                  <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
+                    <span className="cell-inner">
+                      <Ansi noWrap>{this.props.progress[row.rowKey].fileName}</Ansi>
+                    </span>
+                  </td>
+                )}
                 {idx5 >= 0 && (
                   <td className="kui--tertiary-text pf-m-fit-content text-right badge-width">
                     <span
@@ -559,14 +573,20 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                   </td>
                 )}
                 <td className="kui--sequence-diagram-bar-cell pf-m-nowrap" onClick={onClick}>
-                  <Bar
-                    left={left}
-                    width={width}
-                    title={title}
-                    onClick={onClick}
-                    className={className}
-                    overheads={overheads}
-                  />
+                  {this.props.progress &&
+                  this.props.progress[row.rowKey] &&
+                  this.props.progress[row.rowKey].percentComplete < 1 ? (
+                    <Progress percent={this.props.progress[row.rowKey].percentComplete} className={className} />
+                  ) : (
+                    <Bar
+                      left={left}
+                      width={width}
+                      title={title}
+                      onClick={onClick}
+                      className={className}
+                      overheads={overheads}
+                    />
+                  )}
                 </td>
                 <td className="kui--tertiary-text pf-m-fit-content">{gapText}</td>
                 {colorByStatus && (
@@ -591,6 +611,13 @@ export default class SequenceDiagram extends React.PureComponent<Props, State> {
                       title={row.attributes[idx6] && safePrettyPrintBytes(row.attributes[idx6].value)}
                     >
                       {row.attributes[idx6] ? prettyPrintDateDelta(row, idx1, idx2, row.attributes[idx6].value) : ''}
+                    </span>
+                  </td>
+                )}
+                {this.props.progress && this.props.progress[row.rowKey] && this.props.progress[row.rowKey].message && (
+                  <td className="kui--tertiary-text pf-m-fit-content text-right monospace">
+                    <span className="cell-inner">
+                      <Ansi noWrap>{this.props.progress[row.rowKey].message}</Ansi>
                     </span>
                   </td>
                 )}

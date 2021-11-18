@@ -23,6 +23,7 @@ interface Props {
   className?: string
   children: string
   onRender?: () => void
+  noWrap?: boolean
 }
 
 /** Special overrides for CSS classes; otherwise, we will use the raw values from `anser`, e.g. "italic" and "underline" and "strikethrough" */
@@ -65,8 +66,15 @@ export default function Ansi(props: Props) {
     props.onRender()
   }
 
+  const style: Record<string, any> = { margin: 0 }
+  if (!props.noWrap) {
+    style.wordBreak = 'break-all'
+  } else {
+    style.whiteSpace = 'nowrap'
+  }
+
   return (
-    <pre className={props.className} style={{ margin: 0, wordBreak: 'break-all' }}>
+    <pre className={props.className} style={style}>
       {model.map(
         (_, idx) => _.content && React.createElement(tagOf(_), { key: idx, className: classOf(_) }, content(_.content))
       )}
