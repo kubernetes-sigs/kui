@@ -41,8 +41,11 @@ class CommandsFS extends TrieVFS<string> {
   private parentsOf(mountPath: string, enclosing: string): BaseEntry[] {
     const parents = []
     mountPath = dirname(mountPath)
-    while (mountPath.length > enclosing.length) {
-      parents.push({ mountPath, isDirectory: true })
+    while (mountPath.length >= enclosing.length) {
+      parents.push({ mountPath: mountPath + '/', isDirectory: true })
+      if (mountPath === '/') {
+        break
+      }
       mountPath = dirname(mountPath)
     }
 
@@ -50,7 +53,7 @@ class CommandsFS extends TrieVFS<string> {
   }
 
   private fillInParents(filepath: string, entries: BaseEntry[]) {
-    const parents = Util.flatten(entries.map(_ => this.parentsOf(_.mountPath, filepath)))
+    const parents = Util.flatten(entries.map(_ => this.parentsOf(_.mountPath, filepath.replace(/\/$/, ''))))
     return entries.concat(parents)
   }
 
