@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { i18n, Table as KuiTable, Row as KuiRow, sameRow, Watchable, isSuspendable } from '@kui-shell/core'
+import { i18n, Table as KuiTable, Row as KuiRow, sameRow, Watchable, WatchPusher, isSuspendable } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import kuiHeaderFromBody from './kuiHeaderFromBody'
@@ -38,7 +38,12 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
 
   public constructor(props: LiveProps) {
     super(props)
-    this.state = Object.assign(this.state, { isWatching: true, lastUpdatedMillis: Date.now() })
+    this.state = Object.assign(this.state, {
+      isWatching: true,
+      lastUpdatedMillis: Date.now(),
+      progress: {},
+      progressVersion: 1
+    })
   }
 
   /**
@@ -80,6 +85,7 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   private initWatch() {
     // initiate the pusher watch
     const update = this.update.bind(this)
+    const progress = this.progress.bind(this)
     const batchUpdateDone = this.batchUpdateDone.bind(this)
     const offline = this.offline.bind(this)
     const done = this.done.bind(this)
@@ -87,7 +93,17 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
     const header = this.header.bind(this)
     const footer = this.footer.bind(this)
     const setBody = this.setBody.bind(this)
-    this.props.response.watch.init({ update, setBody, batchUpdateDone, offline, done, allOffline, header, footer })
+    this.props.response.watch.init({
+      update,
+      progress,
+      setBody,
+      batchUpdateDone,
+      offline,
+      done,
+      allOffline,
+      header,
+      footer
+    })
   }
 
   private pauseWatch() {
@@ -216,6 +232,20 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   private allOffline() {
     this.props.response.body = []
     this.setState({ isWatching: false, body: [], lastUpdatedMillis: Date.now() })
+  }
+
+  /** Incremental progress for a given row */
+  private progress(...parameters: Parameters<WatchPusher['progress']>) {
+    this.setState(curState => {
+      const progress = parameters[0]
+      if (this.props.response.body[progress.rowIdx]) {
+        const rowKey = this.props.response.body[progress.rowIdx].rowKey
+        curState.progress[rowKey] = progress
+      }
+      return {
+        progressVersion: curState.progressVersion + 1
+      }
+    })
   }
 
   /**

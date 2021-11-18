@@ -34,6 +34,7 @@ import Card from '../../spi/Card'
 import Timeline from './Timeline'
 import renderBody from './TableBody'
 import renderHeader from './TableHeader'
+import ProgressState from './ProgressState'
 import SequenceDiagram from './SequenceDiagram'
 import Histogram from './Histogram'
 import kuiHeaderFromBody from './kuiHeaderFromBody'
@@ -86,19 +87,20 @@ export type Props<T extends KuiTable = KuiTable> = PaginationConfiguration & {
 }
 
 /** state of PaginatedTable component */
-export type State<T extends KuiTable = KuiTable> = ToolbarProps & {
-  response: T
-  header: KuiRow
-  body: KuiRow[]
-  footer: string[]
+export type State<T extends KuiTable = KuiTable> = ToolbarProps &
+  ProgressState & {
+    response: T
+    header: KuiRow
+    body: KuiRow[]
+    footer: string[]
 
-  page: number
-  pageSize: number
+    page: number
+    pageSize: number
 
-  /* sorting */
-  activeSortIdx: number
-  activeSortDir: SortByDirection
-}
+    /* sorting */
+    activeSortIdx: number
+    activeSortDir: SortByDirection
+  }
 
 export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: BreadcrumbView[]) {
   const titleBreadcrumb: BreadcrumbView[] = response.title
@@ -401,7 +403,14 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
   }
 
   private sequence() {
-    return <SequenceDiagram {...this.props} isWatching={this.isWatching()} />
+    return (
+      <SequenceDiagram
+        {...this.props}
+        isWatching={this.isWatching()}
+        progressVersion={this.state.progressVersion}
+        progress={this.state.progress}
+      />
+    )
   }
 
   private histogram() {
