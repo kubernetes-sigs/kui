@@ -33,18 +33,11 @@ export enum Media {
   Browser
 }
 
-/** map from provider to credentials */
-interface CredentialsMap {
-  [key: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
-}
-
 /**
  * Current state of capabilities
  *
  */
 class State {
-  inSandbox = false
-
   assertedLocalAccess = false
 
   hasLocalAccess = true
@@ -53,8 +46,6 @@ class State {
   hasProxy = false
 
   media = Media.Unknown
-
-  validCredentials: CredentialsMap = {} // map to the credentials
 }
 const state: State = new State()
 
@@ -113,68 +104,6 @@ export const assertHasProxy = () => {
 export const inProxy = () => {
   return process.env.KUI_REPL_MODE !== undefined
 }
-
-/**
- * Yes, we are running in a sandbox
- *
- */
-export function assertInSandbox() {
-  state.inSandbox = true
-}
-
-/**
- * Are we running in a sandbox?
- *
- */
-export function inSandbox() {
-  return state.inSandbox
-}
-
-/**
- * Yes, we have valid credentials to interface with the given
- * provider
- *
- */
-export const setHasAuth = (provider: string, creds: object): void => {
-  debug('setHasAuth', provider, creds)
-  state.validCredentials[provider] = creds
-}
-
-/**
- * Retrieve the auth model for the given provider
- *
- */
-export const getAuth = (provider: string) => state.validCredentials[provider]
-
-/**
- * Retrieve the value for the given key for the auth model of the given provider
- *
- */
-export const getAuthValue = (provider: string, key: string) => {
-  const model = state.validCredentials[provider]
-  return model && model[key]
-}
-
-/**
- * Return a map of all valid credentials
- *
- */
-export const getValidCredentials = (): CredentialsMap => state.validCredentials
-
-/**
- * Inject the credentials map
- *
- */
-export const setValidCredentials = (creds: CredentialsMap): void => {
-  debug('setValidCredentials', creds)
-  state.validCredentials = creds
-}
-
-/**
- * Do we have valid credentials to interface with the given provider?
- *
- */
-export const hasAuth = (provider: string): boolean => !!state.validCredentials[provider]
 
 /**
  * Do we have access to a local system?
