@@ -73,7 +73,7 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
   private dirPattern(filepath: string): RegExp {
     // /kui/kubernetes -> /\/kui\/kubernetes/[^/]+$/
     if (filepath.charAt(filepath.length - 1) === '/') {
-      return new RegExp(`^${this.glob2RegExp(filepath)}[^/]+$`)
+      return new RegExp(`^${this.glob2RegExp(filepath)}[^/]+\\/?$`)
     } else {
       return this.dirPattern(filepath + '/')
     }
