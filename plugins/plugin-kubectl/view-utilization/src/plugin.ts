@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Arguments, Registrar, Table, isHeadless } from '@kui-shell/core'
+import { Arguments, Capabilities, Registrar, Table } from '@kui-shell/core'
 import { KubeOptions, defaultFlags } from '@kui-shell/plugin-kubectl'
 
 import { NodeOptions } from './controller/get-node-data'
 
 export default async (registrar: Registrar) => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     const [{ topContainer, topPod }, { topNode }] = await Promise.all([
       import('./controller/get-pod-data'),
       import('./controller/get-node-data')

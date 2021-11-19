@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '@kui-shell/core'
+import { Capabilities } from '@kui-shell/core'
 
 export default () => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     return import('./tab-completion').then(_ => _.default())
   }
 }

@@ -17,7 +17,7 @@
 import { createGunzip } from 'zlib'
 import { createReadStream } from 'fs'
 import { PassThrough, Writable } from 'stream'
-import { Arguments, CodedError, Util, inBrowser, hasProxy } from '@kui-shell/core'
+import { Arguments, Capabilities, CodedError, Util } from '@kui-shell/core'
 
 import { VFS, mount } from '.'
 import { kuiglob, KuiGlobOptions } from '../lib/glob'
@@ -150,7 +150,7 @@ class LocalVFS implements VFS {
 export default async () => {
   // don't bother mounting a local filesystem in browser mode without
   // a proxy
-  if (!inBrowser() || hasProxy()) {
+  if (!Capabilities.inBrowser() || Capabilities.hasProxy()) {
     mount(new LocalVFS())
   }
 }

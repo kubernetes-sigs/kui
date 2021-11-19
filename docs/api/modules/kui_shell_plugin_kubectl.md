@@ -425,7 +425,7 @@ Execute the given command using a pty
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:107](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L107)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:106](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L106)
 
 ---
 
@@ -456,7 +456,7 @@ Execute the given command using a pty
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:282](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L282)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:281](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L281)
 
 ---
 
@@ -501,7 +501,7 @@ poll until the given FinalState is reached.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:259](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L259)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:258](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L258)
 
 ---
 
@@ -532,7 +532,7 @@ Behaves as does `exec`, except that it projects out just the
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:86](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L86)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:85](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L85)
 
 ---
 
@@ -561,7 +561,7 @@ Execute the given command using a pty, but return a string
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:158](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L158)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:157](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L157)
 
 ---
 
@@ -597,7 +597,7 @@ Behaves as does `exec`, except that it projects out just the
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:223](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L223)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:222](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L222)
 
 ---
 
@@ -759,7 +759,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/fetch-file.ts:300](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/util/fetch-file.ts#L300)
+[plugins/plugin-kubectl/src/lib/util/fetch-file.ts:299](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/util/fetch-file.ts#L299)
 
 ---
 

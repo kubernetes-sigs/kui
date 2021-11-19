@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser, hasProxy, Arguments, Registrar, i18n } from '@kui-shell/core'
+import { Arguments, Capabilities, Registrar, i18n } from '@kui-shell/core'
 import { doExecWithPty, doExecWithMarkdown, isUsage, doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 const strings = i18n('plugin-kubectl')
@@ -23,7 +23,7 @@ const strings = i18n('plugin-kubectl')
 const isOc = (str: string) => /^(oc|odo)$/.test(str)
 
 export default (registrar: Registrar) => {
-  if (inBrowser() && !hasProxy()) {
+  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
     // skipping catchall registration: in browser and no remote proxy to support it
     return
   }

@@ -19,7 +19,7 @@
 
 import Debug from 'debug'
 import React from 'react'
-import { Events, i18n, REPL, pexecInCurrentTab, encodeComponent, inBrowser, Themes } from '@kui-shell/core'
+import { Capabilities, Events, i18n, REPL, pexecInCurrentTab, encodeComponent, Themes } from '@kui-shell/core'
 
 import KuiContext from './context'
 import CommonClientProps from './props/Common'
@@ -123,7 +123,7 @@ export class Kui extends React.PureComponent<Props, State> {
     let commandLine = this.props.commandLine
     let quietExecCommand = this.props.quietExecCommand !== undefined ? this.props.quietExecCommand : !this.props.isPopup
 
-    if (inBrowser()) {
+    if (Capabilities.inBrowser()) {
       const windowQuery = window.location.search
       if (windowQuery) {
         // parse and extract the question mark in window.location.search
@@ -146,7 +146,7 @@ export class Kui extends React.PureComponent<Props, State> {
         commandLine,
         quietExecCommand
       })
-      debug('initial state:inBrowser?', inBrowser())
+      debug('initial state:inBrowser?', Capabilities.inBrowser())
       debug('initial state:given properties', props)
       debug('initial state:final value', this.state)
     } catch (err) {
@@ -187,7 +187,7 @@ export class Kui extends React.PureComponent<Props, State> {
   }
 
   private defaultLoadingDone() {
-    return (repl: REPL) => (!inBrowser() ? undefined : <LoadingCard repl={repl} />)
+    return (repl: REPL) => (!Capabilities.inBrowser() ? undefined : <LoadingCard repl={repl} />)
   }
 
   private defaultLoadingError() {
@@ -205,7 +205,7 @@ export class Kui extends React.PureComponent<Props, State> {
    *
    */
   private defaultSessionBehavior(): KuiConfiguration {
-    const behavior = !inBrowser()
+    const behavior = !Capabilities.inBrowser()
       ? {}
       : {
           loading: this.defaultLoading(),

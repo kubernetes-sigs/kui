@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
+import { Capabilities, PreloadRegistrar } from '@kui-shell/core'
 
 /**
  * This is the module
  *
  */
 export default async (registrar: PreloadRegistrar) => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     const preloader = (await import('./non-headless-preload')).default
     await preloader(registrar)
   }

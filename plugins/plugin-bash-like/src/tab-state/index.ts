@@ -15,7 +15,7 @@
  */
 
 import Debug from 'debug'
-import { TabState, registerTabState, inBrowser, Util } from '@kui-shell/core'
+import { Capabilities, TabState, registerTabState, Util } from '@kui-shell/core'
 
 import getTabState from './get'
 import { apiVersion, name } from './key'
@@ -39,7 +39,7 @@ const restore = (tab: TabState) => {
   debug('restoring state', tab.uuid, cwd)
   process.env = env
   if (cwd !== undefined) {
-    if (inBrowser() || process.env.VIRTUAL_CWD) {
+    if (Capabilities.inBrowser() || process.env.VIRTUAL_CWD) {
       debug('changing cwd', process.env.PWD, cwd)
       process.env.PWD = cwd
     } else {

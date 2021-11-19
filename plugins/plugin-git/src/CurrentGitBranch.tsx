@@ -18,7 +18,15 @@ import React from 'react'
 import { basename, dirname, join } from 'path'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '@kui-shell/plugin-client-common'
-import { Events, getCurrentTab, inBrowser, i18n, encodeComponent, pexecInCurrentTab, CodedError } from '@kui-shell/core'
+import {
+  Capabilities,
+  Events,
+  getCurrentTab,
+  i18n,
+  encodeComponent,
+  pexecInCurrentTab,
+  CodedError
+} from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
 const strings2 = i18n('plugin-git')
@@ -126,7 +134,7 @@ export default class CurrentGitBranch extends React.PureComponent<Props, State> 
   public componentDidMount() {
     this.unmounted = false
 
-    if (inBrowser()) {
+    if (Capabilities.inBrowser()) {
       Events.eventBus.once('/tab/new', this.handler)
     } else {
       this.handler()

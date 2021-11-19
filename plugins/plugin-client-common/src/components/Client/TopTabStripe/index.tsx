@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { Nav, NavList, PageHeader } from '@patternfly/react-core'
-import { KeyCodes, inElectron, isReadOnlyClient } from '@kui-shell/core'
+import { Capabilities, KeyCodes, isReadOnlyClient } from '@kui-shell/core'
 
 import TabModel from '../TabModel'
 import KuiContext from '../context'
@@ -72,7 +72,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
    *
    */
   private addKeyboardListeners() {
-    if (inElectron()) {
+    if (Capabilities.inElectron()) {
       // switch tabs based on keyboard events
       document.addEventListener('keydown', event => {
         if (event.metaKey && event.shiftKey) {

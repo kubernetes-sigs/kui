@@ -1,3 +1,4 @@
+/* eslint-disable header/header */
 /*
  * Copyright 2018, 2020 The Kubernetes Authors
  *
@@ -17,7 +18,7 @@
 import Debug from 'debug'
 import React from 'react'
 
-import { inBrowser, isCursorMovement, HistoryModel, History } from '@kui-shell/core'
+import { Capabilities, isCursorMovement, HistoryModel, History } from '@kui-shell/core'
 
 import Input from './Input'
 
@@ -194,7 +195,7 @@ export async function onKeyUp(this: Input, evt: React.KeyboardEvent) {
     evt.ctrlKey &&
     (process.platform === 'darwin' ||
       /Macintosh/.test(navigator.userAgent) ||
-      (!inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
+      (!Capabilities.inBrowser() && !process.env.RUNNING_SHELL_TEST) ||
       evt.metaKey)
   ) {
     if (evt.key === 'r') {

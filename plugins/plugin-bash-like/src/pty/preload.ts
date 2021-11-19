@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { inBrowser, CapabilityRegistration, PreloadRegistrar } from '@kui-shell/core'
+import { Capabilities, PreloadRegistrar } from '@kui-shell/core'
 
-export const registerCapability: CapabilityRegistration = async (registrar: PreloadRegistrar) => {
-  if (inBrowser()) {
+export const registerCapability: Capabilities.CapabilityRegistration = async (registrar: PreloadRegistrar) => {
+  if (Capabilities.inBrowser()) {
     await import('./session').then(({ init }) => init(registrar))
   } else {
     try {

@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Events, inBrowser, i18n } from '@kui-shell/core'
+import { Capabilities, Events, i18n } from '@kui-shell/core'
 import { TagWidget } from '@kui-shell/plugin-client-common'
 
 import ProxyConfig from '@kui-shell/client/config.d/proxy.json'
@@ -68,7 +68,7 @@ export default class ProxyOfflineIndicator extends React.PureComponent<Props, St
 
   /** If the proxy is enabled, and we are offline, then render a widget indicating such. */
   public render() {
-    if (!this.state.proxyEnabled || !this.state.offline || !inBrowser()) {
+    if (!this.state.proxyEnabled || !this.state.offline || !Capabilities.inBrowser()) {
       return <React.Fragment />
     } else {
       return (

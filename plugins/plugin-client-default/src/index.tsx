@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { inBrowser } from '@kui-shell/core'
+import { Capabilities } from '@kui-shell/core'
 import {
   Kui,
   KuiProps,
@@ -82,7 +82,7 @@ export default function renderMain(props: KuiProps) {
       {...props}
       isPopup={isPopup}
       quietExecCommand={quietExecCommand}
-      toplevel={!inBrowser() && <Search />}
+      toplevel={!Capabilities.inBrowser() && <Search />}
       commandLine={
         props.commandLine ||
         (!isPopup && [
@@ -117,8 +117,8 @@ export default function renderMain(props: KuiProps) {
       <MeterWidgets className="kui--hide-in-narrower-windows">
         {/* <ClusterUtilization /> */}
         {/* !isPopup && <OpenWhiskGridWidget /> */}
-        {inBrowser() && <ProxyOfflineIndicator />}
-        {!isPopup && !inBrowser() && <UpdateChecker />}
+        {Capabilities.inBrowser() && <ProxyOfflineIndicator />}
+        {!isPopup && !Capabilities.inBrowser() && <UpdateChecker />}
       </MeterWidgets>
     </Kui>
   )

@@ -16,7 +16,7 @@
 
 import Debug from 'debug'
 
-import { Events, inBrowser, inElectron, KeyCodes, doCancel, HistoryLine, splitFor } from '@kui-shell/core'
+import { Capabilities, Events, KeyCodes, doCancel, HistoryLine, splitFor } from '@kui-shell/core'
 
 import { isHTMLInputElement, InputElement, InputProvider as Input } from './Input'
 import startTabCompletion from './TabCompletion'
@@ -146,19 +146,19 @@ export default function onKeyDown(this: Input, event: KeyboardEvent) {
         tab.REPL.pexec('exit', { tab })
       }
     } else if (char === KeyCodes.PAGEUP) {
-      if (inBrowser()) {
+      if (Capabilities.inBrowser()) {
         debug('pageup')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, -height)
       }
     } else if (char === KeyCodes.PAGEDOWN) {
-      if (inBrowser()) {
+      if (Capabilities.inBrowser()) {
         debug('pagedown')
         const { height } = document.body.getBoundingClientRect()
         document.querySelector('.kui--tab-content.visible .repl-inner').scrollBy(0, +height)
       }
     } else if (
-      (char === KeyCodes.L && (event.ctrlKey || (inElectron() && event.metaKey))) ||
+      (char === KeyCodes.L && (event.ctrlKey || (Capabilities.inElectron() && event.metaKey))) ||
       (process.platform === 'darwin' && char === KeyCodes.K && event.metaKey)
     ) {
       // clear screen; capture and restore the current

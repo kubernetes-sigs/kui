@@ -25,3 +25,6 @@ export { Themes }
 
 import * as Settings from './Settings'
 export { Settings }
+
+import * as Capabilities from './Capabilities'
+export { Capabilities }

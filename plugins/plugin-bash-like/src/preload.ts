@@ -18,15 +18,15 @@ import Debug from 'debug'
 const debug = Debug('plugins/bash-like/preload')
 debug('loading')
 
-import { inBrowser, isHeadless, inProxy, CapabilityRegistration, PreloadRegistrar } from '@kui-shell/core'
+import { Capabilities, PreloadRegistrar } from '@kui-shell/core'
 
 import registerPluginTabState from './tab-state'
 import { preload as registerCatchAll } from './lib/cmds/catchall'
 
-export const registerCapability: CapabilityRegistration = async (registrar: PreloadRegistrar) => {
-  if (inBrowser()) {
+export const registerCapability: Capabilities.CapabilityRegistration = async (registrar: PreloadRegistrar) => {
+  if (Capabilities.inBrowser()) {
     await import('./pty/session').then(({ init }) => init(registrar))
-  } else if (!isHeadless() || inProxy()) {
+  } else if (!Capabilities.isHeadless() || Capabilities.inProxy()) {
     try {
       const prefetchShellState = (await import('./pty/prefetch')).default
       await prefetchShellState()

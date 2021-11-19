@@ -15,21 +15,7 @@
  */
 
 // Capabilities
-export {
-  hasProxy,
-  getValidCredentials,
-  inBrowser,
-  inElectron,
-  isHeadless,
-  inSandbox,
-  inProxy,
-  assertInSandbox,
-  assertLocalAccess,
-  assertHasProxy,
-  setHasAuth,
-  getAuthValue
-} from './core/capabilities'
-export { CapabilityRegistration } from './models/plugin'
+export * from './api'
 
 // Commands
 export { default as typeahead, commandsTrie } from './commands/typeahead'

@@ -18,7 +18,7 @@
 const debug = Debug('plugins/core-support/help')
 debug('loading')
 
-import { isHeadless, inBrowser, Arguments, Registrar, CodedError, UsageError, i18n } from '@kui-shell/core'
+import { Capabilities, Arguments, Registrar, CodedError, UsageError, i18n } from '@kui-shell/core'
 
 const strings = i18n('plugin-core-support') */
 
@@ -58,8 +58,8 @@ const strings = i18n('plugin-core-support') */
       if (
         model &&
         !model.synonymFor &&
-        (isHeadless() || !model.headlessOnly) &&
-        (!inBrowser() || !model.requiresLocal)
+        (Capabilities.isHeadless() || !model.headlessOnly) &&
+        (!Capabilities.inBrowser() || !model.requiresLocal)
       ) {
         topLevelUsage.available.push({
           label: route.substring(1),
@@ -89,5 +89,5 @@ const strings = i18n('plugin-core-support') */
  */
 /* export default async (commandTree: Registrar, { usage }) => {
   commandTree.listen('/help', help(usage))
-  commandTree.listen('/?', help(usage)) 
+  commandTree.listen('/?', help(usage))
 } */

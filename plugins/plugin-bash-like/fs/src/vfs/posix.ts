@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser } from '@kui-shell/core'
+import { Capabilities } from '@kui-shell/core'
 import { basename as defaultBasename, dirname as defaultDirname, join as defaultJoin, posix } from 'path'
 
 /**
@@ -29,15 +29,15 @@ import { basename as defaultBasename, dirname as defaultDirname, join as default
 
 /** @return path.basename behavior */
 export function basename(filepath: string): string {
-  return inBrowser() ? defaultBasename(filepath) : posix.basename(filepath)
+  return Capabilities.inBrowser() ? defaultBasename(filepath) : posix.basename(filepath)
 }
 
 /** @return path.dirname behavior */
 export function dirname(filepath: string): string {
-  return inBrowser() ? defaultDirname(filepath) : posix.dirname(filepath)
+  return Capabilities.inBrowser() ? defaultDirname(filepath) : posix.dirname(filepath)
 }
 
 /** @return path.join behavior */
 export function join(a: string, b: string): string {
-  return inBrowser() ? defaultJoin(a, b) : posix.join(a, b)
+  return Capabilities.inBrowser() ? defaultJoin(a, b) : posix.join(a, b)
 }

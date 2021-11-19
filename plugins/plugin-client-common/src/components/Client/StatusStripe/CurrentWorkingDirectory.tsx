@@ -17,7 +17,7 @@
 import React from 'react'
 
 import { Icons, ViewLevel, TextWithIconWidget } from '../../../'
-import { Events, inBrowser, i18n, Util } from '@kui-shell/core'
+import { Capabilities, Events, i18n, Util } from '@kui-shell/core'
 
 const strings = i18n('plugin-client-common')
 
@@ -38,7 +38,7 @@ export default class CurrentWorkingDirectory extends React.PureComponent<Props, 
 
     this.state = {
       text: '',
-      viewLevel: inBrowser() ? 'hidden' : 'normal'
+      viewLevel: Capabilities.inBrowser() ? 'hidden' : 'normal'
     }
   }
 

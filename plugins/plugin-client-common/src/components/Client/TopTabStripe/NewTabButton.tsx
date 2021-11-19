@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { i18n, inBrowser } from '@kui-shell/core'
+import { Capabilities, i18n } from '@kui-shell/core'
 
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
@@ -34,7 +34,7 @@ export default class NewTabButton extends React.PureComponent<Props> {
   private tooltip() {
     return (
       <Tooltip reference={this.ref} position="bottom">
-        {strings('New Tab', inBrowser() ? '' : ctrlOrMeta('T'))}
+        {strings('New Tab', Capabilities.inBrowser() ? '' : ctrlOrMeta('T'))}
       </Tooltip>
     )
   }

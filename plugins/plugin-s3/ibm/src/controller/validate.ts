@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, ExecType, ParsedOptions, i18n, isHeadless } from '@kui-shell/core'
+import { Arguments, Capabilities, ExecType, ParsedOptions, i18n } from '@kui-shell/core'
 
 import readConfig from './config'
 import { isGoodConfig } from './local'
@@ -90,7 +90,7 @@ async function innerValidate(args: Arguments<Options>): Promise<string | Config>
 }
 
 export default function doValidateCosConfig(args: Arguments<Options>): Promise<string | Config> {
-  if (isHeadless()) {
+  if (Capabilities.isHeadless()) {
     if (!headlessTasks[args.command]) {
       headlessTasks[args.command] = innerValidate(args)
     }
