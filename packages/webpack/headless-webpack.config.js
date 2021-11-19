@@ -175,7 +175,7 @@ kuiPluginExternals.forEach(_ => {
   externals[_] = _
 })
 
-const config = (entry, target, extraPlugins = [], nameSuffix = '') => ({
+const config = (entry, target, extraPlugins = [], filename = productName.toLowerCase(), nameSuffix = '') => ({
   context: process.env.CLIENT_HOME,
   stats: {
     // while developing, you should set this to true
@@ -292,7 +292,7 @@ const config = (entry, target, extraPlugins = [], nameSuffix = '') => ({
 
   // stats: 'verbose',
   output: {
-    filename: productName.toLowerCase() + nameSuffix + '.min.js',
+    filename: filename + '.min.js',
     publicPath: '',
     path: outputPath,
     library: {
@@ -307,7 +307,7 @@ if (process.env.TARGET !== 'electron-renderer') {
   // with a kui-proxy backed client, we need notebooks in the "main"
   console.log('Processing webpack electron-main and kui-proxy', process.env.TARGET)
   const electronMain = config(kuiHeadlessMain, 'node')
-  const proxy = config(kuiProxyMain, 'node', ignoreNotebooks, '-proxy')
+  const proxy = config(kuiProxyMain, 'node', ignoreNotebooks, 'kui-proxy', '-proxy')
   module.exports = [electronMain, proxy]
 } else {
   console.log('Processing webpack for electron-main')
