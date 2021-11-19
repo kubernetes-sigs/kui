@@ -21,7 +21,6 @@ import { v4 as uuidgen } from 'uuid'
 
 import {
   Arguments,
-  Capabilities,
   Evaluator,
   ExecOptions,
   KResponse,
@@ -111,7 +110,6 @@ class ProxyEvaluator implements ReplEval {
               : execOptions.env
               ? execOptions.env
               : process.env,
-          credentials: Capabilities.getValidCredentials(),
           tab: undefined, // override execOptions.tab here since the DOM doesn't serialize, see issue: https://github.com/IBM/kui/issues/1649
           rawResponse: true // we will post-process the response
         })

@@ -16,18 +16,13 @@
 
 // Capabilities
 export {
-  hasProxy, // done for all tsx and ts in /plugins
-  getValidCredentials, // done for all tsx and ts in /plugins
-  inBrowser, // done for all tsx and ts in /plugins
-  inElectron, // done for all tsx and ts in /plugins
-  isHeadless, // done for all tsx and ts in /plugins
-  inSandbox, // not used in /plugins
-  inProxy, // done for all tsx and ts in /plugins
-  assertInSandbox, // not used in /plugins
-  assertLocalAccess, // done for all tsx and ts in /plugins
-  assertHasProxy, // done for all tsx and ts in /plugins
-  setHasAuth, // done for all tsx and ts in /plugins
-  getAuthValue // not used in /plugins
+  hasProxy,
+  inBrowser,
+  inElectron,
+  isHeadless,
+  inProxy,
+  assertLocalAccess,
+  assertHasProxy
 } from '../core/capabilities'
 
 export { CapabilityRegistration } from '../models/plugin'
