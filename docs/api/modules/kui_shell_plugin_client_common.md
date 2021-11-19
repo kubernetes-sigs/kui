@@ -395,7 +395,7 @@ Listen for ctrl+R
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx:181](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx#L181)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx:182](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/ActiveISearch.tsx#L182)
 
 ---
 

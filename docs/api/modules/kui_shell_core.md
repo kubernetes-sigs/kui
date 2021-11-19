@@ -6,6 +6,7 @@
 
 ### Namespaces
 
+- [Capabilities](kui_shell_core.Capabilities.md)
 - [Events](kui_shell_core.Events.md)
 - [Settings](kui_shell_core.Settings.md)
 - [Themes](kui_shell_core.Themes.md)
@@ -92,7 +93,6 @@
 
 - [Badge](kui_shell_core.md#badge)
 - [Button](kui_shell_core.md#button)
-- [CapabilityRegistration](kui_shell_core.md#capabilityregistration)
 - [CommandHandler](kui_shell_core.md#commandhandler)
 - [CommandStringContent](kui_shell_core.md#commandstringcontent)
 - [CommentaryResponse](kui_shell_core.md#commentaryresponse)
@@ -155,9 +155,6 @@
 - [\_split](kui_shell_core.md#_split)
 - [addRelevantModes](kui_shell_core.md#addrelevantmodes)
 - [aggregateStatusModelStatus](kui_shell_core.md#aggregatestatusmodelstatus)
-- [assertHasProxy](kui_shell_core.md#asserthasproxy)
-- [assertInSandbox](kui_shell_core.md#assertinsandbox)
-- [assertLocalAccess](kui_shell_core.md#assertlocalaccess)
 - [bootIntoSandbox](kui_shell_core.md#bootintosandbox)
 - [cellShouldHaveBadge](kui_shell_core.md#cellshouldhavebadge)
 - [commandsOfferedByPlugin](kui_shell_core.md#commandsofferedbyplugin)
@@ -167,22 +164,15 @@
 - [empty](kui_shell_core.md#empty)
 - [executeSequentially](kui_shell_core.md#executesequentially)
 - [findCompletions](kui_shell_core.md#findcompletions)
-- [getAuthValue](kui_shell_core.md#getauthvalue)
 - [getCurrentTab](kui_shell_core.md#getcurrenttab)
 - [getPrimaryTabId](kui_shell_core.md#getprimarytabid)
 - [getTab](kui_shell_core.md#gettab)
 - [getTabId](kui_shell_core.md#gettabid)
-- [getValidCredentials](kui_shell_core.md#getvalidcredentials)
 - [hasContent](kui_shell_core.md#hascontent)
 - [hasDisplayName](kui_shell_core.md#hasdisplayname)
-- [hasProxy](kui_shell_core.md#hasproxy)
 - [hasSourceReferences](kui_shell_core.md#hassourcereferences)
 - [hideReplayOutput](kui_shell_core.md#hidereplayoutput)
 - [i18nFromMap](kui_shell_core.md#i18nfrommap)
-- [inBrowser](kui_shell_core.md#inbrowser)
-- [inElectron](kui_shell_core.md#inelectron)
-- [inProxy](kui_shell_core.md#inproxy)
-- [inSandbox](kui_shell_core.md#insandbox)
 - [initializeSession](kui_shell_core.md#initializesession)
 - [internalBeCarefulExec](kui_shell_core.md#internalbecarefulexec)
 - [internalBeCarefulPExec](kui_shell_core.md#internalbecarefulpexec)
@@ -198,9 +188,9 @@
 - [isCommentarySectionBreak](kui_shell_core.md#iscommentarysectionbreak)
 - [isCursorMovement](kui_shell_core.md#iscursormovement)
 - [isDescriptionList](kui_shell_core.md#isdescriptionlist)
+- [isError](kui_shell_core.md#iserror)
 - [isExecutableClient](kui_shell_core.md#isexecutableclient)
 - [isFunctionContent](kui_shell_core.md#isfunctioncontent)
-- [isHeadless](kui_shell_core.md#isheadless)
 - [isLink](kui_shell_core.md#islink)
 - [isLinkWithCommand](kui_shell_core.md#islinkwithcommand)
 - [isLinkWithHref](kui_shell_core.md#islinkwithhref)
@@ -259,7 +249,6 @@
 - [sameRow](kui_shell_core.md#samerow)
 - [sameTab](kui_shell_core.md#sametab)
 - [setEvaluatorImpl](kui_shell_core.md#setevaluatorimpl)
-- [setHasAuth](kui_shell_core.md#sethasauth)
 - [split](kui_shell_core.md#split)
 - [splitFor](kui_shell_core.md#splitfor)
 - [splitIntoPipeStages](kui_shell_core.md#splitintopipestages)
@@ -294,30 +283,6 @@
 #### Defined in
 
 [packages/core/src/models/mmr/types.ts:142](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/mmr/types.ts#L142)
-
----
-
-### CapabilityRegistration
-
-Ƭ **CapabilityRegistration**: (`registrar`: [`PreloadRegistrar`](../interfaces/kui_shell_core.PreloadRegistrar.md)) => `void` \| `Promise`<`void`\>
-
-#### Type declaration
-
-▸ (`registrar`): `void` \| `Promise`<`void`\>
-
-##### Parameters
-
-| Name        | Type                                                                   |
-| :---------- | :--------------------------------------------------------------------- |
-| `registrar` | [`PreloadRegistrar`](../interfaces/kui_shell_core.PreloadRegistrar.md) |
-
-##### Returns
-
-`void` \| `Promise`<`void`\>
-
-#### Defined in
-
-[packages/core/src/models/plugin.ts:43](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/plugin.ts#L43)
 
 ---
 
@@ -1264,7 +1229,7 @@ registered badge handlers
 
 #### Defined in
 
-[packages/core/src/index.ts:107](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/index.ts#L107)
+[packages/core/src/index.ts:93](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/index.ts#L93)
 
 ---
 
@@ -1346,55 +1311,6 @@ Roll up the status of the LineItems
 #### Defined in
 
 [packages/core/src/models/StatusModel.ts:130](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L130)
-
----
-
-### assertHasProxy
-
-▸ `Const` **assertHasProxy**(): `void`
-
-Assert that Kui is supported by a remote proxy
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:105](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L105)
-
----
-
-### assertInSandbox
-
-▸ **assertInSandbox**(): `void`
-
-Yes, we are running in a sandbox
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:121](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L121)
-
----
-
-### assertLocalAccess
-
-▸ `Const` **assertLocalAccess**(): `void`
-
-Assert that we have local access, even if the default behavior
-would indicate otherwise
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:192](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L192)
 
 ---
 
@@ -1521,7 +1437,7 @@ User hit enter in the REPL
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:603](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L603)
+[packages/core/src/repl/exec.ts:605](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L605)
 
 ---
 
@@ -1585,29 +1501,6 @@ first to register in the case of a tie-breaker.
 #### Defined in
 
 [packages/core/src/repl/tab-completion.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/tab-completion.ts#L70)
-
----
-
-### getAuthValue
-
-▸ `Const` **getAuthValue**(`provider`, `key`): `any`
-
-Retrieve the value for the given key for the auth model of the given provider
-
-#### Parameters
-
-| Name       | Type     |
-| :--------- | :------- |
-| `provider` | `string` |
-| `key`      | `string` |
-
-#### Returns
-
-`any`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:153](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L153)
 
 ---
 
@@ -1687,22 +1580,6 @@ Return the unique identifier for the given tab
 
 ---
 
-### getValidCredentials
-
-▸ `Const` **getValidCredentials**(): `CredentialsMap`
-
-Return a map of all valid credentials
-
-#### Returns
-
-`CredentialsMap`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:162](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L162)
-
----
-
 ### hasContent
 
 ▸ **hasContent**<`T`\>(`resource`): resource is Content<T\>
@@ -1746,22 +1623,6 @@ resource is WithDisplayName
 #### Defined in
 
 [packages/core/src/models/entity.ts:100](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L100)
-
----
-
-### hasProxy
-
-▸ `Const` **hasProxy**(): `boolean`
-
-Is Kui supported by a remote proxy?
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:99](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L99)
 
 ---
 
@@ -1819,66 +1680,6 @@ response is Required<WithSourceReferences\>
 
 ---
 
-### inBrowser
-
-▸ `Const` **inBrowser**(): `boolean`
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L82)
-
----
-
-### inElectron
-
-▸ `Const` **inElectron**(): `boolean`
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:81](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L81)
-
----
-
-### inProxy
-
-▸ `Const` **inProxy**(): `boolean`
-
-Are we the Kui proxy?
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:113](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L113)
-
----
-
-### inSandbox
-
-▸ **inSandbox**(): `boolean`
-
-Are we running in a sandbox?
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:129](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L129)
-
----
-
 ### initializeSession
 
 ▸ **initializeSession**(`tab`): `Promise`<`void`\>
@@ -1919,7 +1720,7 @@ you need to block until all session initializers have completed.
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:593](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L593)
+[packages/core/src/repl/exec.ts:595](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L595)
 
 ---
 
@@ -1948,7 +1749,7 @@ Programmatic exec, as opposed to human typing and hitting enter
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:689](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L689)
+[packages/core/src/repl/exec.ts:691](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L691)
 
 ---
 
@@ -2239,6 +2040,26 @@ content is DescriptionList
 
 ---
 
+### isError
+
+▸ **isError**(`response`): response is ErrorLike
+
+#### Parameters
+
+| Name       | Type                                               |
+| :--------- | :------------------------------------------------- |
+| `response` | [`KResponse`](kui_shell_core.md#kresponse)<`any`\> |
+
+#### Returns
+
+response is ErrorLike
+
+#### Defined in
+
+[packages/core/src/repl/error.ts:27](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/error.ts#L27)
+
+---
+
 ### isExecutableClient
 
 ▸ **isExecutableClient**(): `boolean`
@@ -2278,20 +2099,6 @@ content is FunctionContent<T\>
 #### Defined in
 
 [packages/core/src/models/mmr/content-types.ts:160](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/mmr/content-types.ts#L160)
-
----
-
-### isHeadless
-
-▸ `Const` **isHeadless**(): `boolean`
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:80](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L80)
 
 ---
 
@@ -3532,31 +3339,7 @@ Are the two Rows the same?
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:74](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L74)
-
----
-
-### setHasAuth
-
-▸ `Const` **setHasAuth**(`provider`, `creds`): `void`
-
-Yes, we have valid credentials to interface with the given
-provider
-
-#### Parameters
-
-| Name       | Type     |
-| :--------- | :------- |
-| `provider` | `string` |
-| `creds`    | `object` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:138](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L138)
+[packages/core/src/repl/exec.ts:76](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L76)
 
 ---
 

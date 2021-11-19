@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PreloadRegistrar, isHeadless, inProxy } from '@kui-shell/core'
+import { Capabilities, PreloadRegistrar } from '@kui-shell/core'
 
 import {
   mode1,
@@ -29,12 +29,12 @@ import {
 } from './lib/modes'
 
 export default async (registrar: PreloadRegistrar) => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     registrar.registerModes(drilldownButtonWithString, drilldownButtonWithFunction, mode1, mode2, mode5, mode3)
     registrar.registerBadges(badge1, badge2, badge3)
   }
 
-  if (!isHeadless() || inProxy()) {
+  if (!Capabilities.isHeadless() || Capabilities.inProxy()) {
     // mount a fake VFS to test tab completion
     const [{ mount }, { NotebookVFS, notebookVFS }] = await Promise.all([
       import('@kui-shell/plugin-bash-like/fs'),

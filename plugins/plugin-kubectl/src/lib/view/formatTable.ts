@@ -16,6 +16,7 @@
 
 import {
   Breadcrumb,
+  Capabilities,
   Table,
   Row,
   Cell,
@@ -25,8 +26,7 @@ import {
   ExecType,
   KResponse,
   MixedResponse,
-  i18n,
-  inBrowser
+  i18n
 } from '@kui-shell/core'
 
 import TrafficLight from '../model/traffic-light'
@@ -197,7 +197,9 @@ export async function getNamespaceBreadcrumbs(
     ? undefined
     : getNamespaceAsExpressed(args) ||
       (isForAllNamespaces(args.parsedOptions) && strings('all')) ||
-      (args.execOptions.type === ExecType.TopLevel && !inBrowser() && (await getCurrentDefaultNamespace(args))))
+      (args.execOptions.type === ExecType.TopLevel &&
+        !Capabilities.inBrowser() &&
+        (await getCurrentDefaultNamespace(args))))
 
   return ns ? [{ label: ns }] : undefined
 }

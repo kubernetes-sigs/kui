@@ -18,20 +18,20 @@ import Debug from 'debug'
 const debug = Debug('plugins/kubeui/preload')
 debug('loading')
 
-import { PreloadRegistrar, isHeadless } from '@kui-shell/core'
+import { Capabilities, PreloadRegistrar } from '@kui-shell/core'
 
 /**
  * This is the capabilities registraion
  *
  */
-// export const registerCapability: CapabilityRegistration = async () => {}
+// export const registerCapability: Capabilities.CapabilityRegistration = async () => {}
 
 /**
  * This is the module
  *
  */
 export default async (registrar: PreloadRegistrar) => {
-  if (!isHeadless()) {
+  if (!Capabilities.isHeadless()) {
     const preloader = (await import('./non-headless-preload')).default
     await preloader(registrar)
   }

@@ -16,10 +16,10 @@
 
 import {
   Arguments,
+  Capabilities,
   ParsedOptions,
   Registrar,
   i18n,
-  inElectron,
   MultiModalMode as Mode,
   NavResponse,
   isNavResponse,
@@ -191,7 +191,7 @@ const reportVersion = async ({ parsedOptions }: Arguments<VersionOptions>) => {
     return defaultConfig()
   })
 
-  if (inElectron() && parsedOptions.full) {
+  if (Capabilities.inElectron() && parsedOptions.full) {
     return renderFullVersion(await getName(), version)
   } else {
     return version

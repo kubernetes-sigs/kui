@@ -21,13 +21,14 @@
 
 ### doExecPipe
 
-▸ **doExecPipe**(`argvs`, `execOptions?`): `Promise`<`unknown`\>
+▸ **doExecPipe**(`argvs`, `repl`, `execOptions?`): `Promise`<`unknown`\>
 
 #### Parameters
 
 | Name           | Type                                                                   |
 | :------------- | :--------------------------------------------------------------------- |
 | `argvs`        | `string`[][]                                                           |
+| `repl`         | `default`                                                              |
 | `execOptions?` | `Pick`<`ExecOptions`, `"cwd"` \| `"env"` \| `"stderr"` \| `"stdout"`\> |
 
 #### Returns
@@ -36,7 +37,7 @@
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/pipe.ts:20](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/pipe.ts#L20)
+[plugins/plugin-bash-like/src/lib/cmds/pipe.ts:23](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/pipe.ts#L23)
 
 ---
 
@@ -58,7 +59,7 @@ Command handler that dispatches to an outer shell
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L26)
+[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:28](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L28)
 
 ---
 
@@ -86,7 +87,7 @@ Execute the given command using a pty, but return a string
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:103](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L103)
+[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:105](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L105)
 
 ---
 

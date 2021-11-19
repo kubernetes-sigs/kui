@@ -68,7 +68,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:108](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L108)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:107](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L107)
 
 ## Properties
 
@@ -323,7 +323,7 @@ Ping the release feed to check for the latest release
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:130](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L130)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:129](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L129)
 
 ---
 
@@ -632,7 +632,7 @@ Initialize a timer that periodically checks for updates
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:123](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L123)
+[plugins/plugin-electron-components/src/components/UpdateChecker.tsx:122](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/UpdateChecker.tsx#L122)
 
 ---
 

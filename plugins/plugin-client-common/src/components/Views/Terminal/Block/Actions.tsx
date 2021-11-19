@@ -134,7 +134,7 @@ export default class Actions extends React.PureComponent<Props> {
   /* private screenshotAction() {
     return (
       this.props.willScreenshot &&
-      !inBrowser() && (
+      !Capabilities.inBrowser() && (
         <Action icon="Screenshot" onClick={() => this.props.willScreenshot()} title={strings2('Screenshot')} />
       )
     )

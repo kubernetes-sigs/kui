@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { isHeadless, inProxy } from '@kui-shell/core'
+import { Capabilities } from '@kui-shell/core'
 
 /**
  * Register the welcome notebook
  *
  */
 export default async () => {
-  if (!isHeadless() || inProxy()) {
+  if (!Capabilities.isHeadless() || Capabilities.inProxy()) {
     const { notebookVFS } = await import('@kui-shell/plugin-core-support')
     notebookVFS.cp(
       undefined,

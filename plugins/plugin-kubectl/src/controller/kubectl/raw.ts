@@ -17,7 +17,7 @@
 import Debug from 'debug'
 import { spawn } from 'child_process'
 
-import { Arguments, split, CodedError, inBrowser, ExecOptions, Registrar, Util } from '@kui-shell/core'
+import { Arguments, Capabilities, CodedError, ExecOptions, Registrar, split, Util } from '@kui-shell/core'
 
 import flags from './flags'
 import RawResponse from './response'
@@ -61,7 +61,7 @@ function expandTildes(args: Args, env: Arguments['execOptions']['env']) {
  */
 const doNativeExecOnce = (args: Args): Promise<RawResponse> =>
   new Promise((resolve, reject) => {
-    const env = Object.assign({}, !inBrowser() ? process.env : {}, args.execOptions.env)
+    const env = Object.assign({}, !Capabilities.inBrowser() ? process.env : {}, args.execOptions.env)
     delete env.DEBUG
 
     expandTildes(args, env)

@@ -23,7 +23,7 @@
 import Debug from 'debug'
 import { spawn, SpawnOptions, exec, ExecOptions as ChildProcessExecOptions } from 'child_process'
 
-import { isHeadless, inProxy, Arguments, ExecOptions, ExecType, Registrar } from '@kui-shell/core'
+import { Capabilities, Arguments, ExecOptions, ExecType, Registrar } from '@kui-shell/core'
 
 import { handleNonZeroExitCode } from '../util/exec'
 import { extractJSON } from '../util/json'
@@ -50,7 +50,7 @@ function doSpawn(
         options.shell = process.env.SHELL
       }
 
-      if (!execOptions.onInit && !execOptions.onExit && isHeadless() && !inProxy()) {
+      if (!execOptions.onInit && !execOptions.onExit && Capabilities.isHeadless() && !Capabilities.inProxy()) {
         options.stdio = 'inherit'
       }
 
@@ -75,7 +75,7 @@ export const doExec = (
   execOptions: ExecOptions
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<string | number | boolean | Record<string, any>> => {
-  if (!execOptions.onInit && !execOptions.onExit && isHeadless() && !inProxy()) {
+  if (!execOptions.onInit && !execOptions.onExit && Capabilities.isHeadless() && !Capabilities.inProxy()) {
     return doSpawn(argv, execOptions)
   }
 

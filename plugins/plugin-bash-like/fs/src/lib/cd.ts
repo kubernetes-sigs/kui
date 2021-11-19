@@ -20,7 +20,7 @@
  *
  */
 
-import { inBrowser, Arguments, Registrar, i18n, Util } from '@kui-shell/core'
+import { Arguments, Capabilities, Registrar, i18n, Util } from '@kui-shell/core'
 
 import CommandsFS from '../vfs/CommandsFS'
 import { VFS, absolute, findMount } from '../vfs'
@@ -52,7 +52,7 @@ async function failFastCd(dir: string, dirAsProvided: string, args: Arguments, m
     const OLDPWD = Util.cwd() // remember it for when we're done
     const newDir = Util.expandHomeDir(fullpath)
 
-    if (isLocal && !inBrowser()) {
+    if (isLocal && !Capabilities.inBrowser()) {
       process.chdir(newDir)
     }
 
@@ -117,7 +117,7 @@ export default (commandTree: Registrar) => {
     requiresLocal: true
   })
 
-  if (!inBrowser()) {
+  if (!Capabilities.inBrowser()) {
     commandTree.listen('/cd', cd, {
       usage: usage.cd
     })

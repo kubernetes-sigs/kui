@@ -18,16 +18,7 @@ import Debug from 'debug'
 import { join } from 'path'
 import { BodyData } from 'needle'
 import { DirEntry } from '@kui-shell/plugin-bash-like/fs'
-import {
-  Arguments,
-  CodedError,
-  ExecOptions,
-  isHeadless,
-  inBrowser,
-  hasProxy,
-  encodeComponent,
-  i18n
-} from '@kui-shell/core'
+import { Arguments, Capabilities, CodedError, ExecOptions, encodeComponent, i18n } from '@kui-shell/core'
 
 import JSONStream from './json'
 import getProxyState from '../../controller/client/proxy'
@@ -40,7 +31,7 @@ const strings = i18n('plugin-kubectl')
 const debug = Debug('plugin-kubectl/util/fetch-file')
 
 /** Maximum number of times to retry on ECONNREFUSED */
-const MAX_ECONNREFUSED_RETRIES = isHeadless() ? 0 : 10
+const MAX_ECONNREFUSED_RETRIES = Capabilities.isHeadless() ? 0 : 10
 
 const httpScheme = /http(s)?:\/\//
 const openshiftScheme = /^openshift:\/\//
@@ -71,7 +62,7 @@ export async function openStream<T extends object>(
   mgmt: Pick<ExecOptions, 'onInit' | 'onReady' | 'onExit'>,
   headers?: Record<string, string>
 ) {
-  if (inBrowser() && hasProxy()) {
+  if (Capabilities.inBrowser() && Capabilities.hasProxy()) {
     debug('routing openStream request to proxy', url)
     await args.REPL.rexec(
       `_openstream ${encodeComponent(url)}`,
@@ -146,7 +137,7 @@ export async function _needle(
   opts?: FetchOptions<BodyData>,
   retryCount = 0
 ): Promise<{ statusCode: number; body: string | object }> {
-  if (!inBrowser()) {
+  if (!Capabilities.inBrowser()) {
     const method = (opts && opts.method) || 'get'
     const headers = Object.assign({ connection: 'keep-alive' }, opts.headers)
     debug('fetch via needle', method, headers, url)
@@ -187,14 +178,14 @@ export async function _needle(
         throw err
       }
     }
-  } else if (inBrowser()) {
+  } else if (Capabilities.inBrowser()) {
     // Unfortunately, we cannot rely on being able to fetch files
     // directly from a browser. For one, if the remote site does not
     // offer an Access-Control-Allow-Origin, then well behaving
     // browsers will refuse to load their content;
     // e.g. https://k8s.io/examples/controllers/nginx-deployment.yaml
     // Solution: have the kui proxy do this
-    if (!hasProxy()) {
+    if (!Capabilities.hasProxy()) {
       throw new Error(strings('Unable to fetch remote file'))
     } else {
       debug('fetch via proxy')

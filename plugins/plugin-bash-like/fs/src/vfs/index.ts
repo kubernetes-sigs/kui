@@ -17,7 +17,7 @@
 import slash from 'slash'
 import { Writable } from 'stream'
 import { isAbsolute, join, normalize } from 'path'
-import { Arguments, Events, ParsedOptions, REPL, Table, getCurrentTab, inBrowser, Util } from '@kui-shell/core'
+import { Arguments, Capabilities, Events, ParsedOptions, REPL, Table, getCurrentTab, Util } from '@kui-shell/core'
 
 import { FStat } from '../lib/fstat'
 import { KuiGlobOptions, GlobStats } from '../lib/glob'
@@ -219,7 +219,7 @@ export function absolute(filepath: string): string {
 
 /** Lookup compiatible matching mount */
 export function findMatchingMounts(filepath: string, checkClient = false): VFS[] {
-  const isClient = inBrowser()
+  const isClient = Capabilities.inBrowser()
   filepath = absolute(filepath)
 
   const mounts = _currentMounts.filter(
@@ -241,7 +241,7 @@ export function findMatchingMounts(filepath: string, checkClient = false): VFS[]
 export async function findMount(filepath: string, checkClient = false, allowInner = false): Promise<VFS> {
   await waitForMountsToFinish(filepath)
 
-  const isClient = inBrowser()
+  const isClient = Capabilities.inBrowser()
   filepath = absolute(filepath)
 
   // filepath: /kuifake   Possibilities limited to [/kuifake]

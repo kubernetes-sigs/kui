@@ -51,8 +51,8 @@ export const maybeAsDate = str => {
 export const isDirectory = (filepath: string): Promise<boolean> =>
   // eslint-disable-next-line no-async-promise-executor
   new Promise<boolean>(async (resolve, reject) => {
-    const { inBrowser } = await import('@kui-shell/core')
-    if (inBrowser()) {
+    const { Capabilities } = await import('@kui-shell/core')
+    if (Capabilities.inBrowser()) {
       resolve(false)
     } else {
       // why the dynamic import? being browser friendly here

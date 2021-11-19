@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { inBrowser, hasProxy, Arguments, Registrar } from '@kui-shell/core'
+import { Arguments, Capabilities, Registrar } from '@kui-shell/core'
 import { isUsage, doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import doExecWithPty from './exec'
@@ -23,7 +23,7 @@ import doExecWithPty from './exec'
 const isHelm = (str: string) => /^helm$/.test(str)
 
 export default (registrar: Registrar) => {
-  if (inBrowser() && !hasProxy()) {
+  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
     // skipping catchall registration: in browser and no remote proxy to support it
     return
   }

@@ -57,9 +57,9 @@ export const dispatchToShell = async ({
 
   const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
 
-  const { isHeadless, inBrowser } = await import('@kui-shell/core')
+  const { Capabilities } = await import('@kui-shell/core')
 
-  if (isHeadless() || (!inBrowser() && useRaw)) {
+  if (Capabilities.isHeadless() || (!Capabilities.inBrowser() && useRaw)) {
     const { doExec } = await import('./bash-like')
     const actualArgv = argv[0] === 'sendtopty' ? argv.slice(1) : argv
     const response = await doExec(actualCommand, actualArgv, eOptions).catch(cleanUpError)
@@ -105,7 +105,7 @@ export const dispatchToShell = async ({
 export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOptions>(
   args: Arguments<O>
 ): Promise<string> {
-  const { isHeadless } = await import('@kui-shell/core')
+  const { Capabilities } = await import('@kui-shell/core')
   // eslint-disable-next-line no-async-promise-executor
   return new Promise<string>(async (resolve, reject) => {
     let stdout = ''
@@ -134,7 +134,7 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
       // if the PTY emitted anything on stdout, use this as the message
       const message = stdout || err.message
 
-      if (stdout && isHeadless()) {
+      if (stdout && Capabilities.isHeadless()) {
         // avoid stack traces to our own code? see
         // https://github.com/kubernetes-sigs/kui/issues/7334
         debug(message)
@@ -156,9 +156,9 @@ export async function doExecWithStdoutViaPty<O extends ParsedOptions = ParsedOpt
  *
  */
 export const preload = async (commandTree: Registrar) => {
-  const { inBrowser, hasProxy } = await import('@kui-shell/core')
+  const { Capabilities } = await import('@kui-shell/core')
 
-  if (inBrowser() && !hasProxy()) {
+  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
     debug('skipping catchall registration: in browser and no remote proxy to support it')
     return
   }

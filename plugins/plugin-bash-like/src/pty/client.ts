@@ -23,12 +23,12 @@ import { IDisposable, Terminal as XTerminal } from 'xterm'
 
 // uses of the public kui-shell API
 import {
+  Capabilities,
   Tab,
   Abortable,
   FlowControllable,
   XtermResponse,
   CodedError,
-  inBrowser,
   Events,
   ExecType,
   ExecOptions,
@@ -753,7 +753,7 @@ const getOrCreateChannel = async (
   initOnMessage: (ws: Channel) => void,
   focus: (terminal: KuiTerminal) => void
 ): Promise<Channel> => {
-  const channelFactory = inBrowser()
+  const channelFactory = Capabilities.inBrowser()
     ? window['webview-proxy'] !== undefined
       ? webviewChannelFactory
       : remoteChannelFactory
@@ -797,7 +797,7 @@ const getOrCreateChannel = async (
 
     // when the websocket has closed, notify the user
 
-    if (inBrowser()) {
+    if (Capabilities.inBrowser()) {
       const onClose = function(evt) {
         debug('channel has closed', evt.target, uuid)
         ws.removeEventListener('close', onClose)

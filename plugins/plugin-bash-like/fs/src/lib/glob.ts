@@ -18,7 +18,7 @@ import { userInfo } from 'os'
 import { stat, Stats, constants } from 'fs'
 import { VFS } from '../vfs'
 
-import { i18n, isHeadless, CodedError, Arguments, ParsedOptions, Util } from '@kui-shell/core'
+import { i18n, Capabilities, CodedError, Arguments, ParsedOptions, Util } from '@kui-shell/core'
 
 const strings = i18n('plugin-bash-like')
 
@@ -178,7 +178,7 @@ export async function kuiglob(
           dot: parsedOptions.a || parsedOptions.all,
           stats: needStats,
           objectMode: !needStats,
-          cwd: isHeadless() ? process.cwd() : tab.state.getState('plugins/plugin-bash-like', 'v1', 'cwd')
+          cwd: Capabilities.isHeadless() ? process.cwd() : tab.state.getState('plugins/plugin-bash-like', 'v1', 'cwd')
         })) as any) as RawGlobStats[])
   //  ^^^^^^ re: type conversion; globby type declaration issue #139
 

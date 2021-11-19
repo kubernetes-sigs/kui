@@ -15,8 +15,8 @@
  */
 
 import {
+  Capabilities,
   Events,
-  inElectron,
   Arguments,
   CommandStartEvent,
   KResponse,
@@ -116,7 +116,7 @@ export default function(registrar: Registrar) {
         const titleOptions =
           titles.length === 0 || titles.every(_ => _.length === 0) ? '' : `--title "${titles.join(',')}"`
 
-        if (parsedOptions['new-window'] && inElectron()) {
+        if (parsedOptions['new-window'] && Capabilities.inElectron()) {
           // the electron bits are sequestered in plugin-electron, to
           // avoid pulling in electron for purely browser-based clients
           return REPL.qexec(`replay-electron ${filepaths}`)

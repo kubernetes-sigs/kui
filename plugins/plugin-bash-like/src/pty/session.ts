@@ -18,7 +18,7 @@
 
 import Debug from 'debug'
 
-import { Events, inBrowser, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
+import { Capabilities, Events, CodedError, i18n, Tab, PreloadRegistrar } from '@kui-shell/core'
 
 import { Channel } from './channel'
 import { setOnline, setOffline } from './ui'
@@ -37,7 +37,7 @@ export function getChannelForTab(tab: Tab): Promise<Channel> {
   if (isExiting()) {
     // prevent any stagglers re-establishing a channel
     throw new Error('Exiting')
-  } else if (inBrowser()) {
+  } else if (Capabilities.inBrowser()) {
     return getSessionForTab(tab)
   }
 }
@@ -123,7 +123,7 @@ export async function init(registrar: PreloadRegistrar) {
     return { proxyServer: { enabled: false } }
   })
 
-  if (inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
+  if (Capabilities.inBrowser() && (proxyServer as { enabled?: boolean }).enabled !== false) {
     debug('initializing pty sessions')
     registrar.registerSessionInitializer(newSessionForTab)
   }

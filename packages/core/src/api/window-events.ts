@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isHeadless } from '..'
+import { Capabilities } from '..'
 
 /** Signals that indicate we are being terminated */
 const signals = ['SIGINT', 'SIGTERM', 'SIGUSR1', 'SIGUSR2'] as const
@@ -37,7 +37,7 @@ async function toggle(op: 'on' | 'off', handler: () => void) {
 }
 
 export function onQuit(handler: () => void) {
-  if (isHeadless()) {
+  if (Capabilities.isHeadless()) {
     toggle('on', handler)
   } else if (typeof window.addEventListener === 'function') {
     window.addEventListener('beforeunload', handler)
@@ -45,7 +45,7 @@ export function onQuit(handler: () => void) {
 }
 
 export function offQuit(handler: () => void) {
-  if (isHeadless()) {
+  if (Capabilities.isHeadless()) {
     toggle('off', handler)
   } else if (typeof window.removeEventListener === 'function') {
     window.removeEventListener('beforeunload', handler)

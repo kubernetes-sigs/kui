@@ -15,14 +15,13 @@
  */
 
 import {
+  Capabilities,
   Streamable,
   ExecType,
   CodedError,
   i18n,
   Table,
   RadioTable,
-  isHeadless,
-  inBrowser,
   Arguments,
   MixedResponse,
   KResponse
@@ -109,7 +108,7 @@ export async function doExecWithPty<
   Response extends KResponse<Content> = KResponse<Content>,
   O extends KubeOptions = KubeOptions
 >(args: Arguments<O>, prepare: Prepare<O> = NoPrepare, exec?: string): Promise<string | Response> {
-  if (!reallyNeedsPty(args) && (isHeadless() || (!inBrowser() && args.execOptions.raw))) {
+  if (!reallyNeedsPty(args) && (Capabilities.isHeadless() || (!Capabilities.inBrowser() && args.execOptions.raw))) {
     return doExecWithStdout(args, prepare, exec)
   } else {
     //
@@ -269,7 +268,7 @@ export const doExecWithStatus = <O extends KubeOptions>(
     const err: CodedError = new Error(response.content.stderr)
     err.code = response.content.code
     throw err
-  } else if (isHeadless()) {
+  } else if (Capabilities.isHeadless()) {
     return response.content.stdout
   } else {
     const statusArgs = await prepareForStatus(verb, args)

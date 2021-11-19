@@ -16,13 +16,13 @@
 
 import {
   Arguments,
+  Capabilities,
   CodedError,
   KResponse,
   MultiModalResponse,
   Registrar,
   Table,
   TableStyle,
-  isHeadless,
   i18n
 } from '@kui-shell/core'
 
@@ -344,7 +344,7 @@ export const doGet = (command: string) =>
         : undefined
 
     if (
-      !isHeadless() &&
+      !Capabilities.isHeadless() &&
       isWatchRequest(args) &&
       (/jsonpath|go-template/.test(formatOf(args)) || args.parsedOptions.context || args.parsedOptions.kubeconfig)
     ) {

@@ -18,8 +18,7 @@ import Debug from 'debug'
 import { basename, dirname } from 'path'
 
 import {
-  isHeadless,
-  inProxy,
+  Capabilities,
   i18n,
   MultiModalResponse,
   Arguments,
@@ -89,7 +88,7 @@ async function head(args: Arguments<HeadOptions>): Promise<KResponse> {
       parsedOptions.c || parsedOptions.n || 10,
       parsedOptions.c ? 'bytes' : 'lines'
     )
-    if (isHeadless() && !inProxy()) {
+    if (Capabilities.isHeadless() && !Capabilities.inProxy()) {
       return data
     } else {
       return showResponseAsMMR(filepath, data)
