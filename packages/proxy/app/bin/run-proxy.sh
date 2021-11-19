@@ -17,6 +17,11 @@
 #
 
 SCRIPTDIR=$(cd $(dirname "$0") && pwd)
-cd "$SCRIPTDIR"/../@kui-shell/proxy/app
+cd "$SCRIPTDIR"/../@kui-shell/proxy
 
-PORT=8081 KUI_USE_HTTP=true ./bin/www
+export PORT=8081
+export KUI_USE_HTTP=true
+
+ROOT="$SCRIPTDIR"/../..
+export CLIENT_HOME="$ROOT"
+/usr/bin/env node "$ROOT"/dist/headless/kui-proxy.min.js

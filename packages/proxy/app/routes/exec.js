@@ -23,7 +23,9 @@ const { parse: parseCookie } = require('cookie')
 
 const sessionKey = 'kui_websocket_auth'
 
-const mainPath = join(process.env.CLIENT_HOME, 'dist/headless/kui.min.js')
+const { productName } = require('@kui-shell/client/config.d/name.json')
+
+const mainPath = join(process.env.CLIENT_HOME, `dist/headless/${productName.toLowerCase()}.min.js`)
 const { main: wssMain } = require('@kui-shell/plugin-bash-like')
 const { StdioChannelWebsocketSide } = require('@kui-shell/plugin-bash-like')
 
