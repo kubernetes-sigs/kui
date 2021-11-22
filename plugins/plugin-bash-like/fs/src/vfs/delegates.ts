@@ -108,7 +108,12 @@ async function lsMounts(path: string): Promise<DirEntry[]> {
 function removeDuplicates2(vfses: DirEntry[]): DirEntry[] {
   // nice nodejs; set.add doesn't indicate whether something was added??
   const set = new Set()
-  return vfses.filter(_ => !set.has(_.path) && set.add(_.path))
+  return vfses.filter(_ => {
+    // some vfses may report directories with a trailing slash
+    const canon = _.path.replace(/\/$/, '')
+
+    return !set.has(canon) && set.add(canon)
+  })
 }
 
 /**
