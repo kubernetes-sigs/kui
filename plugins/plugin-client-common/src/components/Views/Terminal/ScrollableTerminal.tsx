@@ -1288,9 +1288,15 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   private removeWatchableBlock(block: BlockModel) {
     if (isOk(block)) {
       if (isWatchable(block.response)) {
-        block.response.watch.abort()
+        if (typeof block.response.watch.abort === 'function') {
+          // safe-guarding here
+          block.response.watch.abort()
+        }
       } else if (isAbortableResponse(block.response)) {
-        block.response.abort()
+        if (typeof block.response.abort === 'function') {
+          // safe-guarding here
+          block.response.abort()
+        }
       }
     }
   }
