@@ -118,7 +118,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
     // will register CtrlCmd+S and Shift+Enter as keyboard shortcuts
     // for this controller
     if (onSave) {
-      editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => {
+      editor.addCommand(KeyMod.CtrlCmd | KeyCode.KeyS, () => {
         onSave(editor.getValue())
       })
       editor.addCommand(KeyMod.Shift | KeyCode.Enter, () => {
