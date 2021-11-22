@@ -934,7 +934,6 @@ class S3VFSResponder extends S3VFS implements VFS {
           if (filepath.endsWith('.gz')) {
             stream
               .pipe(createGunzip())
-              .pipe(destStream)
               .on('error', (err: CodedError<string>) => {
                 if (err.code === 'Z_BUF_ERROR') {
                   // this may happen when reading a part of a gzip file
@@ -943,6 +942,8 @@ class S3VFSResponder extends S3VFS implements VFS {
                   reject(err)
                 }
               })
+              .pipe(destStream)
+              .on('error', reject)
               .on('end', resolve)
           } else {
             stream
