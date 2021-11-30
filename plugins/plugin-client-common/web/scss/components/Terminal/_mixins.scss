@@ -296,6 +296,12 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin NotEditable {
+  &:not([data-is-editable]) {
+    @content;
+  }
+}
+
 /** Hide the In[1] bits */
 @mixin HideIn {
   @include Block {
