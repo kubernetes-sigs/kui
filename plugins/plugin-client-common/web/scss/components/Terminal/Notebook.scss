@@ -28,6 +28,12 @@ $margin-for-right-elements: calc(#{math.div(0.875 * $input-padding, $right-eleme
   }
 }
 
+@include Block {
+  @include NotEditable {
+    max-width: 960px;
+  }
+}
+
 /** These are special stylings for read only mode, for example, we don't wantt to show all block actions */
 @include Scrollback {
   @include FinishedBlock {
