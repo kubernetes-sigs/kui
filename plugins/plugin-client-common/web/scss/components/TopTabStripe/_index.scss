@@ -128,7 +128,6 @@ $tab-label-font-size: 0.875rem;
     &.kui--tab--active {
       @include TabLabel {
         color: var(--color-text-01);
-        font-weight: 500;
         &:hover {
           color: var(--color-text-01);
         }
