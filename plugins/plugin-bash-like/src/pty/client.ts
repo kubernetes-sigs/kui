@@ -25,6 +25,7 @@ import { IDisposable, Terminal as XTerminal } from 'xterm'
 import {
   Capabilities,
   Tab,
+  REPL,
   Abortable,
   FlowControllable,
   XtermResponse,
@@ -748,6 +749,7 @@ const getOrCreateChannel = async (
   cmdline: string,
   uuid: string,
   tab: Tab,
+  repl: REPL,
   execOptions: ExecOptions,
   terminal: KuiTerminal,
   initOnMessage: (ws: Channel) => void,
@@ -772,7 +774,7 @@ const getOrCreateChannel = async (
       uuid,
       rows: terminal ? terminal.rows : 80,
       cols: terminal ? terminal.cols : 40,
-      cwd: await cwd(execOptions, tab.REPL),
+      cwd: await cwd(execOptions, repl),
       env: Object.keys(env).length > 0 && env // VERY IMPORTANT: don't send an empty process.env
     }
     debug('exec after open', msg)
@@ -826,6 +828,7 @@ const getOrCreateChannel = async (
  */
 export const doExec = (
   tab: Tab,
+  repl: REPL,
   cmdline: string,
   argvNoOptions: string[],
   parsedOptions: Options,
@@ -967,18 +970,25 @@ export const doExec = (
         //
         // create a channel to the underlying node-pty
         //
-        const ws: Channel = await getOrCreateChannel(cmdline, ourUUID, tab, execOptions, terminal, init, focus).catch(
-          (err: CodedError) => {
-            if (err.code !== 503) {
-              // don't bother complaining too much about connection refused
-              console.error('error creating channel', err)
-            }
-            if (cleanUpTerminal) {
-              cleanUpTerminal()
-            }
-            throw err
+        const ws: Channel = await getOrCreateChannel(
+          cmdline,
+          ourUUID,
+          tab,
+          repl,
+          execOptions,
+          terminal,
+          init,
+          focus
+        ).catch((err: CodedError) => {
+          if (err.code !== 503) {
+            // don't bother complaining too much about connection refused
+            console.error('error creating channel', err)
           }
-        )
+          if (cleanUpTerminal) {
+            cleanUpTerminal()
+          }
+          throw err
+        })
         if (resizer) {
           resizer.ws = ws
         }
