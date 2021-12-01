@@ -86,7 +86,7 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
   /** Looks in the trie for any matches for the given filepath, handling the "contents of directory" case */
   private find(filepath: string, dashD = false, exact = false): (Directory | L)[] {
     const dirPattern = this.dirPattern(filepath)
-    const matches = this.trieGet(filepath.replace(/\*.*$/, ''))
+    const matches = this.trieGet(filepath.replace(/[*{].*$/, '')) // trim off trailing globby bits when looking up in the trie
     const flexMatches = matches.filter(_ =>
       exact ? _.mountPath === filepath : micromatch.isMatch(_.mountPath, filepath) || dirPattern.test(_.mountPath)
     )
