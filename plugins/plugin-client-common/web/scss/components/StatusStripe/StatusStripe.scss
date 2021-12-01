@@ -61,6 +61,7 @@ $z-index: var(--pf-global--ZIndex--xs);
 
   /* markdown */
   p {
+    margin: 0;
     letter-spacing: 0.16px;
     code {
       font-family: var(--font-sans-serif);

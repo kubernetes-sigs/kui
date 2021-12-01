@@ -19,7 +19,7 @@ import { v4 as uuid } from 'uuid'
 import TurndownService from 'turndown'
 const ReactMarkdown = React.lazy(() => import('react-markdown'))
 import { dirname, isAbsolute, join, relative } from 'path'
-import { List, ListComponent, ListItem } from '@patternfly/react-core'
+import { Text, TextContent, TextVariants, List, ListComponent, ListItem } from '@patternfly/react-core'
 import { maybeKuiLink, REPL, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
 import { ProgressStepper, ProgressStep, isProgressStepCompatible, liveStatusChannel } from './ProgressStepper'
 
@@ -116,265 +116,268 @@ export default class Markdown extends React.PureComponent<Props> {
 
     return (
       <React.Suspense fallback={<div />}>
-        <ReactMarkdown
-          plugins={[gfm]}
-          source={this.source()}
-          data-is-nested={this.props.nested || undefined}
-          className={
-            this.props.className ||
-            'padding-content marked-content page-content' +
-              (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
-          }
-          renderers={{
-            html: props => {
-              if (/<img/.test(props.value)) {
-                const images = props.value.split(/<img/).filter(_ => _)
-                const imageTags = images
-                  .map((value, idx) => {
-                    const srcMatch = value.match(/src="?([^"\s]+)"?/)
-                    const heightMatch = value.match(/height="?(\d+)"?/)
-                    const widthMatch = value.match(/width="?(\d+%?)"?/)
-                    const alignMatch = value.match(/align="?([^"\s]+)"?/)
-                    if (srcMatch) {
-                      return this.handleImage(
-                        srcMatch[1],
-                        {
-                          height: heightMatch && heightMatch[1],
-                          width: widthMatch && widthMatch[1],
-                          align: alignMatch && alignMatch[1]
-                        },
-                        idx
+        <TextContent>
+          <ReactMarkdown
+            plugins={[gfm]}
+            source={this.source()}
+            data-is-nested={this.props.nested || undefined}
+            className={
+              this.props.className ||
+              'padding-content marked-content page-content' +
+                (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
+            }
+            renderers={{
+              html: props => {
+                if (/<img/.test(props.value)) {
+                  const images = props.value.split(/<img/).filter(_ => _)
+                  const imageTags = images
+                    .map((value, idx) => {
+                      const srcMatch = value.match(/src="?([^"\s]+)"?/)
+                      const heightMatch = value.match(/height="?(\d+)"?/)
+                      const widthMatch = value.match(/width="?(\d+%?)"?/)
+                      const alignMatch = value.match(/align="?([^"\s]+)"?/)
+                      if (srcMatch) {
+                        return this.handleImage(
+                          srcMatch[1],
+                          {
+                            height: heightMatch && heightMatch[1],
+                            width: widthMatch && widthMatch[1],
+                            align: alignMatch && alignMatch[1]
+                          },
+                          idx
+                        )
+                      }
+                    })
+                    .filter(_ => _)
+                  return <React.Fragment>{imageTags}</React.Fragment>
+                } else if (/^<br\s*\/?>$/.test(props.value)) {
+                  return <br />
+                } else if (/<a name=/.test(props.value)) {
+                  const nameMatch = props.value.match(/name="?([^"\s]+)"?/)
+                  if (nameMatch) {
+                    return <a id={nameMatch[1]} />
+                  }
+                } else if (/a href="#/.test(props.value)) {
+                  const hrefMatch = props.value.match(/href="?([^"\s]+)"?/)
+                  if (hrefMatch) {
+                    const kuiLink = maybeKuiLink(hrefMatch[1])
+                    if (kuiLink) {
+                      return (
+                        <a href={hrefMatch[1]}>
+                          <LinkStatus link={kuiLink} />
+                        </a>
                       )
+                    } else {
+                      return <a href={hrefMatch[1]} />
                     }
-                  })
-                  .filter(_ => _)
-                return <React.Fragment>{imageTags}</React.Fragment>
-              } else if (/^<br\s*\/?>$/.test(props.value)) {
-                return <br />
-              } else if (/<a name=/.test(props.value)) {
-                const nameMatch = props.value.match(/name="?([^"\s]+)"?/)
-                if (nameMatch) {
-                  return <a id={nameMatch[1]} />
+                  }
+                } else if (/<\/a>/.test(props.value)) {
+                  // FIXME: react-markdown v5 doens't parse html properly,
+                  // see issue: https://github.com/remarkjs/react-markdown/issues/320.
+                  // here we'll work around by igoring the anchor child and closing tag.
+                  // we should get rid of this hack once we upgrade to react-markdown v6.
+                  return <React.Fragment />
                 }
-              } else if (/a href="#/.test(props.value)) {
-                const hrefMatch = props.value.match(/href="?([^"\s]+)"?/)
-                if (hrefMatch) {
-                  const kuiLink = maybeKuiLink(hrefMatch[1])
+
+                // Render the raw string for all other raw html tags
+                return <span>{props.value}</span>
+              },
+
+              link: props => {
+                const isKuiCommand = props.href.startsWith('#kuiexec?command=')
+                const isLocal = !/^http/i.test(props.href)
+                const target = !isLocal ? '_blank' : undefined
+
+                const onClick =
+                  !isLocal && !isKuiCommand
+                    ? (evt: React.MouseEvent) => evt.stopPropagation()
+                    : async (evt: React.MouseEvent) => {
+                        evt.stopPropagation()
+                        let file = props.href
+                        if (isKuiCommand) {
+                          const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
+                          if (raw) {
+                            const cmdline = decodeURI(raw[1])
+                            const echo = !raw[2]
+                            if (this.props.repl) {
+                              return this.props.repl.pexec(cmdline, { echo })
+                            } else {
+                              pexecInCurrentTab(cmdline, undefined, !echo)
+                            }
+                          }
+                        } else if (props.href.charAt(0) === '#') {
+                          if (this.props.tab) {
+                            const elt = this.props.tab.querySelector(
+                              `[data-markdown-anchor="${this.anchorFrom(props.href.slice(1))}"]`
+                            )
+                            if (elt) {
+                              return elt.scrollIntoView()
+                            }
+                          }
+                        } else if (file) {
+                          if (this.props.fullpath) {
+                            const absoluteHref = join(dirname(this.props.fullpath), props.href)
+                            const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
+                            file = relativeToCWD
+                          }
+
+                          return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
+                        }
+                      }
+
+                if (!props.href) {
+                  return <a className={this.props.className}>{props.children}</a>
+                } else if (!isLocal && this.props.noExternalLinks) {
+                  return <span className={this.props.className}>{props.href}</span>
+                } else {
+                  const isKuiBlockLink = props.href.startsWith('#kui-link-')
+                  const tip = isKuiCommand
+                    ? `### Command Execution\n#### ${decodeURI(props.href.slice(props.href.indexOf('=') + 1)).replace(
+                        '&quiet',
+                        ''
+                      )}\n\n\`Link will execute a command\``
+                    : isKuiBlockLink
+                    ? `### Block Link\n\n\`Link will scroll the block into view\``
+                    : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
+
+                  const kuiLink = maybeKuiLink(props.href)
+
                   if (kuiLink) {
+                    props.children.push(<LinkStatus key="link-status" link={kuiLink} />)
+                  }
+
+                  return (
+                    <Tooltip markdown={tip}>
+                      <a
+                        {...props}
+                        href={isKuiCommand ? '#' : props.href}
+                        target={target}
+                        onClick={onClick}
+                        className={kuiLink ? 'kui--link-status' : ''}
+                      />
+                    </Tooltip>
+                  )
+                }
+              },
+              blockquote: props => {
+                // avoid <p>: invalid dom nesting of p inside of p
+                return (
+                  <span className="paragraph">
+                    <Hint>{props.children}</Hint>
+                  </span>
+                )
+              },
+              code: props => {
+                if (this.props.nested) {
+                  return (
+                    <div className="paragraph">
+                      <CodeSnippet value={props.value} language={props.language} />
+                    </div>
+                  )
+                } else {
+                  return (
+                    <div className="paragraph">
+                      <code className="kui--code--editor">
+                        <SimpleEditor
+                          tabUUID={getPrimaryTabId(this.props.tab)}
+                          content={props.value as string}
+                          contentType={props.language}
+                          fontSize={12}
+                          simple
+                          minHeight={0}
+                          readonly
+                        />
+                      </code>
+                    </div>
+                  )
+                }
+              },
+              p: props => <Text component={TextVariants.p} {...props} />,
+              heading: props => {
+                const valueChild =
+                  props.children && props.children.length === 1
+                    ? props.children[0]
+                    : props.children.find(_ => _.props.value)
+                const anchor =
+                  !valueChild || !valueChild.props || !valueChild.props.value
+                    ? undefined
+                    : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
+                return (
+                  <Text
+                    component={TextVariants['h' + props.level]}
+                    {...props}
+                    data-markdown-anchor={anchor}
+                    data-is-href={valueChild && valueChild.props && valueChild.props.href}
+                  />
+                )
+              },
+              image: props => {
+                return this.handleImage(props.src, props) || <img {...props} />
+              },
+              list: props => {
+                if (Array.isArray(props.children) && props.children.length > 0) {
+                  const lastIncompatibleIdx = props.children.findIndex(_ => !isProgressStepCompatible(_.props))
+                  if (lastIncompatibleIdx === -1) {
                     return (
-                      <a href={hrefMatch[1]}>
-                        <LinkStatus link={kuiLink} />
-                      </a>
+                      <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+                        {props.children}
+                      </ProgressStepper>
                     )
-                  } else {
-                    return <a href={hrefMatch[1]} />
+                  } else if (lastIncompatibleIdx >= 0) {
+                    return (
+                      <React.Fragment>
+                        <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+                          {props.children.slice(0, lastIncompatibleIdx)}
+                        </ProgressStepper>
+                        <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+                          {props.children.slice(lastIncompatibleIdx)}
+                        </List>
+                      </React.Fragment>
+                    )
                   }
                 }
-              } else if (/<\/a>/.test(props.value)) {
-                // FIXME: react-markdown v5 doens't parse html properly,
-                // see issue: https://github.com/remarkjs/react-markdown/issues/320.
-                // here we'll work around by igoring the anchor child and closing tag.
-                // we should get rid of this hack once we upgrade to react-markdown v6.
-                return <React.Fragment />
-              }
-
-              // Render the raw string for all other raw html tags
-              return <span>{props.value}</span>
-            },
-
-            link: props => {
-              const isKuiCommand = props.href.startsWith('#kuiexec?command=')
-              const isLocal = !/^http/i.test(props.href)
-              const target = !isLocal ? '_blank' : undefined
-
-              const onClick =
-                !isLocal && !isKuiCommand
-                  ? (evt: React.MouseEvent) => evt.stopPropagation()
-                  : async (evt: React.MouseEvent) => {
-                      evt.stopPropagation()
-                      let file = props.href
-                      if (isKuiCommand) {
-                        const raw = props.href.match(/#kuiexec\?command=([^&]+)(&quiet)?/)
-                        if (raw) {
-                          const cmdline = decodeURI(raw[1])
-                          const echo = !raw[2]
-                          if (this.props.repl) {
-                            return this.props.repl.pexec(cmdline, { echo })
-                          } else {
-                            pexecInCurrentTab(cmdline, undefined, !echo)
-                          }
-                        }
-                      } else if (props.href.charAt(0) === '#') {
-                        if (this.props.tab) {
-                          const elt = this.props.tab.querySelector(
-                            `[data-markdown-anchor="${this.anchorFrom(props.href.slice(1))}"]`
-                          )
-                          if (elt) {
-                            return elt.scrollIntoView()
-                          }
-                        }
-                      } else if (file) {
-                        if (this.props.fullpath) {
-                          const absoluteHref = join(dirname(this.props.fullpath), props.href)
-                          const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
-                          file = relativeToCWD
-                        }
-
-                        return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
-                      }
-                    }
-
-              if (!props.href) {
-                return <a className={this.props.className}>{props.children}</a>
-              } else if (!isLocal && this.props.noExternalLinks) {
-                return <span className={this.props.className}>{props.href}</span>
-              } else {
-                const isKuiBlockLink = props.href.startsWith('#kui-link-')
-                const tip = isKuiCommand
-                  ? `### Command Execution\n#### ${decodeURI(props.href.slice(props.href.indexOf('=') + 1)).replace(
-                      '&quiet',
-                      ''
-                    )}\n\n\`Link will execute a command\``
-                  : isKuiBlockLink
-                  ? `### Block Link\n\n\`Link will scroll the block into view\``
-                  : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
-
-                const kuiLink = maybeKuiLink(props.href)
-
-                if (kuiLink) {
-                  props.children.push(<LinkStatus key="link-status" link={kuiLink} />)
+                return (
+                  <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+                    {props.children}
+                  </List>
+                )
+              },
+              listItem: props => {
+                if (isProgressStepCompatible(props)) {
+                  return (
+                    <ProgressStep
+                      className={props.className}
+                      title={props.children[0]}
+                      liveStatusChannel={liveStatusChannel(props)}
+                      defaultStatus={props.children[2].props.children[0].props.children}
+                    >
+                      {props.children.slice(3)}
+                    </ProgressStep>
+                  )
+                } else {
+                  return <ListItem className={props.className}>{props.children}</ListItem>
                 }
-
-                return (
-                  <Tooltip markdown={tip}>
-                    <a
-                      {...props}
-                      href={isKuiCommand ? '#' : props.href}
-                      target={target}
-                      onClick={onClick}
-                      className={kuiLink ? 'kui--link-status' : ''}
-                    />
-                  </Tooltip>
-                )
-              }
-            },
-            blockquote: props => {
-              // avoid <p>: invalid dom nesting of p inside of p
-              return (
-                <span className="paragraph">
-                  <Hint>{props.children}</Hint>
-                </span>
-              )
-            },
-            code: props => {
-              if (this.props.nested) {
-                return (
-                  <div className="paragraph">
-                    <CodeSnippet value={props.value} language={props.language} />
-                  </div>
-                )
-              } else {
-                return (
-                  <div className="paragraph">
-                    <code className="kui--code--editor">
-                      <SimpleEditor
-                        tabUUID={getPrimaryTabId(this.props.tab)}
-                        content={props.value as string}
-                        contentType={props.language}
-                        fontSize={12}
-                        simple
-                        minHeight={0}
-                        readonly
-                      />
-                    </code>
-                  </div>
-                )
-              }
-            },
-            heading: props => {
-              const valueChild =
-                props.children && props.children.length === 1
-                  ? props.children[0]
-                  : props.children.find(_ => _.props.value)
-              const anchor =
-                !valueChild || !valueChild.props || !valueChild.props.value
-                  ? undefined
-                  : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
-              return React.createElement(
-                `h${props.level}`,
-                Object.assign({}, props, {
-                  'data-markdown-anchor': anchor,
-                  'data-is-href': valueChild && valueChild.props && valueChild.props.href
-                }),
-                props.children
-              )
-            },
-            image: props => {
-              return this.handleImage(props.src, props) || <img {...props} />
-            },
-            list: props => {
-              if (Array.isArray(props.children) && props.children.length > 0) {
-                const lastIncompatibleIdx = props.children.findIndex(_ => !isProgressStepCompatible(_.props))
-                if (lastIncompatibleIdx === -1) {
-                  return (
-                    <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
-                      {props.children}
-                    </ProgressStepper>
-                  )
-                } else if (lastIncompatibleIdx >= 0) {
-                  return (
-                    <React.Fragment>
-                      <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
-                        {props.children.slice(0, lastIncompatibleIdx)}
-                      </ProgressStepper>
-                      <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
-                        {props.children.slice(lastIncompatibleIdx)}
-                      </List>
-                    </React.Fragment>
-                  )
+              },
+              table: props => (
+                <table className={props.className + ' kui--table-like kui--structured-list'}>{props.children}</table>
+              ),
+              tableHead: props => (
+                <thead className={props.className + ' kui--structured-list-thead'}>{props.children}</thead>
+              ),
+              tableBody: props => (
+                <tbody className={props.className + ' kui--structured-list-tbody'}>{props.children}</tbody>
+              ),
+              tableRow: props => <tr>{props.children}</tr>, // TODO ignoring columnAlignment
+              tableCell: props => {
+                if (props.isHeader) {
+                  return <th style={{ textAlign: props.align }}>{props.children}</th>
+                } else {
+                  return <td>{props.children}</td>
                 }
               }
-              return (
-                <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
-                  {props.children}
-                </List>
-              )
-            },
-            listItem: props => {
-              if (isProgressStepCompatible(props)) {
-                return (
-                  <ProgressStep
-                    className={props.className}
-                    title={props.children[0]}
-                    liveStatusChannel={liveStatusChannel(props)}
-                    defaultStatus={props.children[2].props.children[0].props.children}
-                  >
-                    {props.children.slice(3)}
-                  </ProgressStep>
-                )
-              } else {
-                return <ListItem className={props.className}>{props.children}</ListItem>
-              }
-            },
-            table: props => (
-              <table className={props.className + ' kui--table-like kui--structured-list'}>{props.children}</table>
-            ),
-            tableHead: props => (
-              <thead className={props.className + ' kui--structured-list-thead'}>{props.children}</thead>
-            ),
-            tableBody: props => (
-              <tbody className={props.className + ' kui--structured-list-tbody'}>{props.children}</tbody>
-            ),
-            tableRow: props => <tr>{props.children}</tr>, // TODO ignoring columnAlignment
-            tableCell: props => {
-              if (props.isHeader) {
-                return <th style={{ textAlign: props.align }}>{props.children}</th>
-              } else {
-                return <td>{props.children}</td>
-              }
-            }
-          }}
-        />
+            }}
+          />
+        </TextContent>
       </React.Suspense>
     )
   }

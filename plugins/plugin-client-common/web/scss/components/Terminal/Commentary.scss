@@ -21,6 +21,11 @@
 @import '../../Themes/mixins';
 @import 'BlockLinks';
 
+body[kui-theme-style] .pf-c-content {
+  color: inherit;
+  font-size: inherit;
+}
+
 @mixin h1 {
   @include CommentaryCard {
     h1 {
@@ -38,6 +43,22 @@
 }
 
 @mixin h3 {
+  @include CommentaryCard {
+    h3 {
+      @content;
+    }
+  }
+}
+
+@mixin h4 {
+  @include CommentaryCard {
+    h3 {
+      @content;
+    }
+  }
+}
+
+@mixin h5 {
   @include CommentaryCard {
     h3 {
       @content;
@@ -82,42 +103,9 @@
 }
 
 @include Scrollback {
-  @include h1 {
-    font-weight: 300;
-    font-size: 2em;
-    letter-spacing: 0.32px;
-    margin: 0.5em 1em 0.875em 0;
-
-    &:first-child {
-      padding-top: 0;
-    }
-  }
-
   @include blockquote {
     border-left-color: var(--color-brand-03);
     color: var(--color-text-02);
-  }
-
-  @include h2 {
-    font-weight: 300;
-    font-size: 1.875em;
-    letter-spacing: 0.32px;
-    margin: 0.5em 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    &:before {
-      display: none;
-    }
-  }
-
-  .page-content {
-    ol,
-    li {
-      margin: 0.5em 0;
-    }
   }
 
   @include Paragraphs {
@@ -194,4 +182,20 @@ body[kui-theme-style='light'] {
       }
     }
   }
+}
+
+@include h1 {
+  --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
+}
+@include h2 {
+  --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
+}
+@include h3 {
+  --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
+}
+@include h4 {
+  --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
+}
+@include h5 {
+  --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
 }

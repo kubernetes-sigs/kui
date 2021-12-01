@@ -457,7 +457,7 @@ pre.monospace {
   font-size: inherit;
   font-weight: inherit;
 }
-body[kui-theme-style] {
+body {
   /** This group of rules override default user-agent stylings */
   ol,
   ul {
@@ -813,11 +813,6 @@ body.oops-total-catastrophe #restart-needed-warning {
 }
 .page-content p {
   font-size: inherit;
-  margin: 0;
-}
-.page-content li > p,
-.page-content p:only-child {
-  padding: 0;
 }
 .page-content code {
   font-family: var(--font-monospace);
@@ -886,71 +881,8 @@ body[kui-theme-style="dark"] .repl {
 }
 $kui--page-content-h4-padding: 0.5em;
 $kui--page-content-paragraph-padding: 0.375em;
-.page-content p,
 .page-content .paragraph {
   padding: $kui--page-content-paragraph-padding 0;
-}
-.page-content h1 {
-  &,
-  & a {
-    font-family: var(--font-sans-serif-title);
-    margin-bottom: 1em;
-    font-size: 2.75em;
-    letter-spacing: 0;
-    line-height: 1.25;
-    padding: 0;
-  }
-}
-.page-content h1:only-child {
-  margin-bottom: 0;
-}
-.page-content h2,
-.page-h2 {
-  font-family: var(--font-sans-serif-title);
-  font-size: 1.875em;
-  font-weight: 500;
-  margin: 0.875em 0 0.5em;
-  line-height: 1.25;
-}
-.page-content > h3:first-child,
-.page-content > h2:first-child,
-.page-content hr + h3 {
-  margin-top: 0;
-  padding-top: 0;
-}
-.repl {
-  .page-content h3,
-  .page-h3 {
-    color: var(--color-text-01);
-  }
-}
-.page-content h3,
-.page-h3 {
-  font-family: var(--font-sans-serif-title);
-  font-size: 1.375em;
-  font-weight: 300;
-  letter-spacing: 0;
-  padding: 1em 0 0.5em;
-  margin: 0;
-}
-.page-content h4 {
-  font-family: var(--font-sans-serif-title);
-  color: var(--color-brand-01);
-  letter-spacing: 0.32px;
-  padding-top: $kui--page-content-h4-padding;
-  font-size: unset;
-  line-height: unset;
-  margin: 0;
-}
-.page.content:not([data-is-nested]) {
-  h4:not([data-is-href]) + p {
-    padding-top: calc(0.5em + #{$kui--page-content-paragraph-padding});
-  }
-}
-.page-content h5 {
-  font-family: var(--font-sans-serif-title);
-  font-size: 1.25em;
-  line-height: 2em;
 }
 .page-content .kui--structured-list {
   tr {
