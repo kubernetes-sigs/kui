@@ -27,4 +27,4 @@ export const doExec = (
   argvNoOptions: string[],
   parsedOptions: Options,
   execOptions: ExecOptions
-) => import('./client').then(_ => _.doExec(tab, cmdline, argvNoOptions, parsedOptions, execOptions))
+) => import('./client').then(_ => _.doExec(tab, tab.REPL, cmdline, argvNoOptions, parsedOptions, execOptions))

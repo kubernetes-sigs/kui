@@ -27,6 +27,7 @@ const debug = Debug('plugins/bash-like/cmds/catchall')
  */
 export const dispatchToShell = async ({
   tab,
+  REPL,
   command,
   argv,
   argvNoOptions,
@@ -53,7 +54,7 @@ export const dispatchToShell = async ({
   const eOptions =
     useRaw || execOptions.isProxied
       ? execOptions
-      : Object.assign({ cwd: await cwd(execOptions, tab.REPL) }, { stdout: await createOutputStream() }, execOptions)
+      : Object.assign({ cwd: await cwd(execOptions, REPL) }, { stdout: await createOutputStream() }, execOptions)
 
   const actualCommand = command.replace(/^(!|sendtopty)\s+/, '')
 
@@ -75,7 +76,7 @@ export const dispatchToShell = async ({
     return response
   } else {
     const { doExec } = await import(/* webpackMode: "lazy" */ '../../pty/client')
-    const exec = () => doExec(tab, actualCommand, argvNoOptions, parsedOptions, eOptions)
+    const exec = () => doExec(tab, REPL, actualCommand, argvNoOptions, parsedOptions, eOptions)
 
     if (useRaw) {
       eOptions.quiet = true
