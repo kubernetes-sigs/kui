@@ -317,6 +317,7 @@ export default class Output extends React.PureComponent<Props, State> {
         isReactResponse(response) ||
         Util.isHTML(response) ||
         isMarkdownResponse(response) ||
+        (Array.isArray(response) && response.length > 0) ||
         (typeof response === 'string' && response.length > 0) ||
         typeof response === 'number' ||
         isStatusModel(response) ||

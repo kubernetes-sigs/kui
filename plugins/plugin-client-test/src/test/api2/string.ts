@@ -57,6 +57,11 @@ new TestStringResponse({
  *
  */
 new TestStringResponse({
+  command: 'test echo-array',
+  expect: '[3,4,5]',
+  exact: true
+}).string()
+new TestStringResponse({
   command: 'test string',
   expect: 'hello world',
   exact: true

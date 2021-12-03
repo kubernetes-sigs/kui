@@ -194,6 +194,10 @@ export default class Scalar extends React.PureComponent<Props, State> {
       // "is not assignable to type IntrinsicAttributes..."
       // <PaginatedTable {...props} />
     } else if (isMixedResponse(response)) {
+      if (response.every(_ => typeof _ === 'string' || typeof _ === 'number' || typeof _ === 'boolean')) {
+        console.error('!!!!!!', response)
+        return <pre className="break-all">[{response.toString()}]</pre>
+      }
       return (
         <React.Fragment>
           {response.map((part, idx) => (
@@ -259,7 +263,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
       return this.renderResponse(response.response)
     }
 
-    console.error('unexpected null return from Scalar:', this.props.response)
+    console.error('unexpected response from Scalar:', this.props.response)
     this.onRender()
     return <pre className="oops">Internal Error in command execution</pre>
   }
