@@ -155,14 +155,19 @@ export function isReactResponse(entity: Entity): entity is ReactResponse {
  * preface and trailing `string` messages
  *
  */
-export type MixedResponsePart = string | Table | HTMLElement
+export type MixedResponsePart = number | boolean | string | Table | HTMLElement
 export type MixedResponse = MixedResponsePart[]
 
 export function isMixedResponse(response: Entity): response is MixedResponse {
   return (
     Array.isArray(response) &&
     response.length > 0 &&
-    (typeof response[0] === 'string' || isTable(response[0]) || isHTML(response[0]) || isXtermResponse(response[0]))
+    (typeof response[0] === 'string' ||
+      typeof response[0] === 'number' ||
+      typeof response[0] === 'boolean' ||
+      isTable(response[0]) ||
+      isHTML(response[0]) ||
+      isXtermResponse(response[0]))
   )
 }
 
