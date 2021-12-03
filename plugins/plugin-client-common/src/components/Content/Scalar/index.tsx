@@ -195,7 +195,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
       // <PaginatedTable {...props} />
     } else if (isMixedResponse(response)) {
       if (response.every(_ => typeof _ === 'string' || typeof _ === 'number' || typeof _ === 'boolean')) {
-        console.error('!!!!!!', response)
         return <pre className="break-all">[{response.toString()}]</pre>
       }
       return (
