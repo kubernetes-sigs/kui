@@ -96,6 +96,10 @@ export const _split = (
 
       if (!escapeActive) {
         escapeActive = true
+        if (/\n/.test(str.charAt(idx + 1))) {
+          // see https://github.com/kubernetes-sigs/kui/issues/8274
+          idx++
+        }
         continue
         // char = str.charAt(++idx)
         // if (!removeOuterQuotes) {

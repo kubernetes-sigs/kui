@@ -15,13 +15,40 @@
  */
 
 import { Tab as KuiTab } from '@kui-shell/core'
+
 import { isClipboardTransferString } from '../ClipboardTransfer'
 import { InputElement, InputProvider as Input } from './Input'
 import { isMultiLineHereDoc } from '../../util/multiline-input'
 
-export const doPaste = (text: string, tab: KuiTab, prompt: InputElement) => {
+/** We would like to use negative lookbehind, but Safari still does not support this. Thanks Apple */
+function split(text) {
+  if (text.length === 0) {
+    return []
+  } else {
+    const lines = ['']
+    let escaped = false
+    for (let idx = 0; idx < text.length; idx++) {
+      const c = text[idx]
+
+      const isEscaped = escaped
+      escaped = false
+      if (!isEscaped) {
+        if (c === '\\') {
+          escaped = true
+        } else if (c === '\n') {
+          lines.push('')
+          continue
+        }
+      }
+      lines[lines.length - 1] += c
+    }
+    return lines
+  }
+}
+
+export const doPaste = (input: Input, text: string, tab: KuiTab, prompt: InputElement) => {
   // const prompt = event.currentTarget
-  const lines = text.split(/[\n\r]/)
+  const lines = split(text)
 
   const pasteLooper = async (idx: number) => {
     if (idx === lines.length) {
@@ -52,14 +79,21 @@ export const doPaste = (text: string, tab: KuiTab, prompt: InputElement) => {
       // after the pasted text:
       const newCaretPosition = prompt.selectionStart + lines[idx].length
 
+      const newValue =
+        prompt.value.substring(0, prompt.selectionStart) + lines[idx] + prompt.value.substring(prompt.selectionEnd)
+
       // note how this will either place the new text at the caret
       // position, or replace the selected text (if selectionEnd !==
       // selectionStart)
-      prompt.value =
-        prompt.value.substring(0, prompt.selectionStart) + lines[idx] + prompt.value.substring(prompt.selectionEnd)
+      if (/\n/.test(lines[idx]) && !input.state.multiline) {
+        // multi-line
+        input.setState({ multiline: true, pasteMultiLineTexts: newValue })
+      } else {
+        prompt.value = newValue
 
-      // restore the caret position
-      prompt.setSelectionRange(newCaretPosition, newCaretPosition)
+        // restore the caret position
+        prompt.setSelectionRange(newCaretPosition, newCaretPosition)
+      }
 
       return Promise.resolve()
     }
@@ -89,7 +123,7 @@ export function onPasteAsync(this: Input, event: ClipboardEvent, tab: KuiTab, pr
     if (isMultiLineHereDoc(text)) {
       this.setState({ multiline: true, pasteMultiLineTexts: text })
     } else {
-      return doPaste(text, tab, prompt)
+      return doPaste(this, text, tab, prompt)
     }
   }
 }

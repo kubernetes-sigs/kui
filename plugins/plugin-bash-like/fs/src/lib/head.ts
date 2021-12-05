@@ -79,6 +79,8 @@ async function head(args: Arguments<HeadOptions>): Promise<KResponse> {
     // change `head -10 file` to `head -n 10 file`
     const newarg = `-n ${filepath * -1}`
     return args.REPL.qexec(args.command.replace(filepath, newarg))
+  } else if (typeof filepath === 'undefined') {
+    throw new Error('Missing input file')
   }
 
   try {
