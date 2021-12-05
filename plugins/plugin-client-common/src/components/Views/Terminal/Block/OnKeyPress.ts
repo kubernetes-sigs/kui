@@ -42,8 +42,12 @@ export default async function onKeyPress(this: Input, event: KeyboardEvent) {
       this.setState({ isReEdit: false })
 
       // FIXME: shiftreturned line should be joined with '\'?
-      doEval(this.props.tab, this.props._block, this.state.prompt.value.trim(), execUUID)
-      //                                                                        ^^^^ reusing execUUID
+      doEval(
+        this.props.tab,
+        this.props._block,
+        this.state.prompt.value.trim(),
+        execUUID // reusing execUUID
+      )
     }
   }
 }
