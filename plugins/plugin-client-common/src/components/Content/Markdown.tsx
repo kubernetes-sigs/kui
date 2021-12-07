@@ -207,7 +207,6 @@ export default class Markdown extends React.PureComponent<Props> {
                 const isKuiCommand = props.href.startsWith('#kuiexec?command=')
                 const isLocal = !/^http/i.test(props.href)
                 const target = !isLocal ? '_blank' : undefined
-                console.error('!!!!!!!!!AAA', props, isKuiCommand)
                 const onClick =
                   !isLocal && !isKuiCommand
                     ? (evt: React.MouseEvent) => evt.stopPropagation()
@@ -265,7 +264,6 @@ export default class Markdown extends React.PureComponent<Props> {
                   if (kuiLink) {
                     props.children.push(<LinkStatus key="link-status" link={kuiLink} />)
                   }
-                  console.error('!!!!!!!!!', props.href, isKuiCommand, isKuiBlockLink, kuiLink)
 
                   return (
                     <Tooltip markdown={tip}>
