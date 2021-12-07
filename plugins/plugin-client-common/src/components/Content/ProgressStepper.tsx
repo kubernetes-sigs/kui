@@ -131,7 +131,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
   }
 }
 
-interface ProgressStepperProps {
+export interface ProgressStepperProps {
   className?: string
   layout?: 'vertical' | 'horizontal' | 'compact'
   children: React.ReactElement<ProgressStep> | React.ReactElement<ProgressStep>[]
@@ -161,7 +161,7 @@ interface LinkStatusProps {
   children: any[]
 }
 
-type ProgressStepCompatible<TitleProps extends any = any> = {
+export type ProgressStepCompatible<TitleProps extends any = any> = {
   className?: string
 
   /* Eslint fubar___ children: [
@@ -172,7 +172,7 @@ type ProgressStepCompatible<TitleProps extends any = any> = {
   children: any[]
 }
 
-export function isProgressStepCompatible(props: any): props is ProgressStepCompatible {
+export function isProgressStepCompatible(props: any) /*: props is ProgressStepCompatible */ {
   return (
     Array.isArray(props.children) &&
     props.children.length >= 3 &&
@@ -180,11 +180,12 @@ export function isProgressStepCompatible(props: any): props is ProgressStepCompa
     props.children[2].type === 'em' &&
     Array.isArray(props.children[2].props.children) &&
     props.children[2].props.children.length === 1 &&
-    isStatus(props.children[2].props.children[0].props.children)
+    typeof props.children[2].props.children[0] === 'string' &&
+    isStatus(props.children[2].props.children[0])
   )
 }
 
-export function hasLinkStatus(props: ProgressStepCompatible): props is ProgressStepCompatible<LinkStatusProps> {
+/* export function hasLinkStatus(props: ProgressStepCompatible): props is ProgressStepCompatible<LinkStatusProps> {
   return (
     typeof props.children[0].props === 'object' &&
     Array.isArray(props.children[0].props.children) &&
@@ -193,8 +194,11 @@ export function hasLinkStatus(props: ProgressStepCompatible): props is ProgressS
     typeof props.children[0].props.children[0].props.href === 'string' &&
     !!maybeKuiLink(props.children[0].props.children[0].props.href)
   )
-}
+} */
 
 export function liveStatusChannel(props: ProgressStepCompatible<LinkStatusProps>): string {
-  return maybeKuiLink(props.children[0].props.children[0].props.href)
+  return (
+    typeof props.children[0].props.children[0] === 'object' &&
+    maybeKuiLink(props.children[0].props.children[0].props.href)
+  )
 }

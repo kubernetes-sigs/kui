@@ -17,14 +17,31 @@
 import React from 'react'
 import { v4 as uuid } from 'uuid'
 import TurndownService from 'turndown'
-const ReactMarkdown = React.lazy(() => import('react-markdown'))
+import { HeadingProps, OrderedListProps, UnorderedListProps } from 'react-markdown/lib/ast-to-react'
 import { dirname, isAbsolute, join, relative } from 'path'
 import { Text, TextContent, TextVariants, List, ListComponent, ListItem } from '@patternfly/react-core'
 import { maybeKuiLink, REPL, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
-import { ProgressStepper, ProgressStep, isProgressStepCompatible, liveStatusChannel } from './ProgressStepper'
+import {
+  ProgressStepper,
+  ProgressStepperProps,
+  ProgressStep,
+  ProgressStepCompatible,
+  isProgressStepCompatible,
+  liveStatusChannel
+} from './ProgressStepper'
+
+import { Options } from 'react-markdown'
+const ReactMarkdown = React.lazy(() => import('react-markdown'))
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
+
+// react-markdown v6+ now require use of these to support html
+import rehypeRaw from 'rehype-raw'
+// import _rehypeSanitize, { Options as RHSOptions } from 'rehype-sanitize'
+// const rhsOptions: RHSOptions = { attributes: { '*': ['className'] } }
+// const rehypeSanitize: Options['rehypePlugins'][0] = [_rehypeSanitize, rhsOptions]
+const rehypePlugins: Options['rehypePlugins'] = [rehypeRaw /*, rehypeSanitize */]
 
 const Tooltip = React.lazy(() => import('../spi/Tooltip'))
 const CodeSnippet = React.lazy(() => import('../spi/CodeSnippet'))
@@ -88,6 +105,65 @@ export default class Markdown extends React.PureComponent<Props> {
     }
   }
 
+  private list(props: OrderedListProps | UnorderedListProps) {
+    if (Array.isArray(props.children) && props.children.length > 0) {
+      const lastIncompatibleIdx = props.children.findIndex(_ => {
+        if (_ === '\n') {
+          // react-markdown v7 seems to add newlines between list items. weird
+          return false // compatible
+        } else if (typeof _ === 'object' && isProgressStepCompatible(_['props'])) {
+          // this is a true ProgressStep, created in the <a> handler below
+          return false // compatible
+        } else {
+          return true // incompatible with ProgressStepper component
+        }
+      })
+      if (lastIncompatibleIdx === -1) {
+        return (
+          <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+            {props.children as ProgressStepperProps['children']}
+          </ProgressStepper>
+        )
+      } else if (lastIncompatibleIdx >= 0) {
+        return (
+          <React.Fragment>
+            <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+              {props.children.slice(0, lastIncompatibleIdx) as ProgressStepperProps['children']}
+            </ProgressStepper>
+            <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+              {props.children.slice(lastIncompatibleIdx)}
+            </List>
+          </React.Fragment>
+        )
+      }
+    }
+    return (
+      <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+        {props.children}
+      </List>
+    )
+  }
+
+  private heading(props: HeadingProps) {
+    /* const valueChild =
+      props.children && props.children.length === 1
+      ? props.children[0]
+      : props.children.find(_ => _.props.value)
+    const anchor =
+      !valueChild || !valueChild.props || !valueChild.props.value
+      ? undefined
+      : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
+    return (
+        <Text
+      component={TextVariants['h' + props.level]}
+      {...props}
+      data-markdown-anchor={anchor}
+      data-is-href={valueChild && valueChild.props && valueChild.props.href}
+        />
+        ) */
+    return <Text component={TextVariants['h' + props.level]}>{props.children}</Text>
+  }
+
   private handleImage(
     src: string,
     props: { width?: number | string; height?: number | string; align?: React.CSSProperties['float'] },
@@ -119,75 +195,19 @@ export default class Markdown extends React.PureComponent<Props> {
         <TextContent>
           <ReactMarkdown
             plugins={[gfm]}
-            source={this.source()}
+            rehypePlugins={rehypePlugins}
             data-is-nested={this.props.nested || undefined}
             className={
               this.props.className ||
               'padding-content marked-content page-content' +
                 (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
             }
-            renderers={{
-              html: props => {
-                if (/<img/.test(props.value)) {
-                  const images = props.value.split(/<img/).filter(_ => _)
-                  const imageTags = images
-                    .map((value, idx) => {
-                      const srcMatch = value.match(/src="?([^"\s]+)"?/)
-                      const heightMatch = value.match(/height="?(\d+)"?/)
-                      const widthMatch = value.match(/width="?(\d+%?)"?/)
-                      const alignMatch = value.match(/align="?([^"\s]+)"?/)
-                      if (srcMatch) {
-                        return this.handleImage(
-                          srcMatch[1],
-                          {
-                            height: heightMatch && heightMatch[1],
-                            width: widthMatch && widthMatch[1],
-                            align: alignMatch && alignMatch[1]
-                          },
-                          idx
-                        )
-                      }
-                    })
-                    .filter(_ => _)
-                  return <React.Fragment>{imageTags}</React.Fragment>
-                } else if (/^<br\s*\/?>$/.test(props.value)) {
-                  return <br />
-                } else if (/<a name=/.test(props.value)) {
-                  const nameMatch = props.value.match(/name="?([^"\s]+)"?/)
-                  if (nameMatch) {
-                    return <a id={nameMatch[1]} />
-                  }
-                } else if (/a href="#/.test(props.value)) {
-                  const hrefMatch = props.value.match(/href="?([^"\s]+)"?/)
-                  if (hrefMatch) {
-                    const kuiLink = maybeKuiLink(hrefMatch[1])
-                    if (kuiLink) {
-                      return (
-                        <a href={hrefMatch[1]}>
-                          <LinkStatus link={kuiLink} />
-                        </a>
-                      )
-                    } else {
-                      return <a href={hrefMatch[1]} />
-                    }
-                  }
-                } else if (/<\/a>/.test(props.value)) {
-                  // FIXME: react-markdown v5 doens't parse html properly,
-                  // see issue: https://github.com/remarkjs/react-markdown/issues/320.
-                  // here we'll work around by igoring the anchor child and closing tag.
-                  // we should get rid of this hack once we upgrade to react-markdown v6.
-                  return <React.Fragment />
-                }
-
-                // Render the raw string for all other raw html tags
-                return <span>{props.value}</span>
-              },
-
-              link: props => {
+            components={{
+              a: props => {
                 const isKuiCommand = props.href.startsWith('#kuiexec?command=')
                 const isLocal = !/^http/i.test(props.href)
                 const target = !isLocal ? '_blank' : undefined
-
+                console.error('!!!!!!!!!AAA', props, isKuiCommand)
                 const onClick =
                   !isLocal && !isKuiCommand
                     ? (evt: React.MouseEvent) => evt.stopPropagation()
@@ -245,16 +265,19 @@ export default class Markdown extends React.PureComponent<Props> {
                   if (kuiLink) {
                     props.children.push(<LinkStatus key="link-status" link={kuiLink} />)
                   }
+                  console.error('!!!!!!!!!', props.href, isKuiCommand, isKuiBlockLink, kuiLink)
 
                   return (
                     <Tooltip markdown={tip}>
                       <a
-                        {...props}
+                        title={props.title}
                         href={isKuiCommand ? '#' : props.href}
                         target={target}
                         onClick={onClick}
                         className={kuiLink ? 'kui--link-status' : ''}
-                      />
+                      >
+                        {props.children}
+                      </a>
                     </Tooltip>
                   )
                 }
@@ -268,10 +291,17 @@ export default class Markdown extends React.PureComponent<Props> {
                 )
               },
               code: props => {
+                if (props.inline) {
+                  return <code className={props.className}>{props.children}</code>
+                }
+
+                const match = /language-(\w+)/.exec(props.className || '')
+                const language = match ? match[1] : undefined
+
                 if (this.props.nested) {
                   return (
                     <div className="paragraph">
-                      <CodeSnippet value={props.value} language={props.language} />
+                      <CodeSnippet value={String(props.children)} language={language} />
                     </div>
                   )
                 } else {
@@ -280,8 +310,8 @@ export default class Markdown extends React.PureComponent<Props> {
                       <code className="kui--code--editor">
                         <SimpleEditor
                           tabUUID={getPrimaryTabId(this.props.tab)}
-                          content={props.value as string}
-                          contentType={props.language}
+                          content={String(props.children)}
+                          contentType={language}
                           fontSize={12}
                           simple
                           minHeight={0}
@@ -293,63 +323,23 @@ export default class Markdown extends React.PureComponent<Props> {
                 }
               },
               p: props => <Text component={TextVariants.p} {...props} />,
-              heading: props => {
-                const valueChild =
-                  props.children && props.children.length === 1
-                    ? props.children[0]
-                    : props.children.find(_ => _.props.value)
-                const anchor =
-                  !valueChild || !valueChild.props || !valueChild.props.value
-                    ? undefined
-                    : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
-                return (
-                  <Text
-                    component={TextVariants['h' + props.level]}
-                    {...props}
-                    data-markdown-anchor={anchor}
-                    data-is-href={valueChild && valueChild.props && valueChild.props.href}
-                  />
-                )
-              },
-              image: props => {
-                return this.handleImage(props.src, props) || <img {...props} />
-              },
-              list: props => {
-                if (Array.isArray(props.children) && props.children.length > 0) {
-                  const lastIncompatibleIdx = props.children.findIndex(_ => !isProgressStepCompatible(_.props))
-                  if (lastIncompatibleIdx === -1) {
-                    return (
-                      <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
-                        {props.children}
-                      </ProgressStepper>
-                    )
-                  } else if (lastIncompatibleIdx >= 0) {
-                    return (
-                      <React.Fragment>
-                        <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
-                          {props.children.slice(0, lastIncompatibleIdx)}
-                        </ProgressStepper>
-                        <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
-                          {props.children.slice(lastIncompatibleIdx)}
-                        </List>
-                      </React.Fragment>
-                    )
-                  }
-                }
-                return (
-                  <List isBordered component={props.ordered ? ListComponent.ol : ListComponent.ul}>
-                    {props.children}
-                  </List>
-                )
-              },
-              listItem: props => {
+              h1: this.heading,
+              h2: this.heading,
+              h3: this.heading,
+              h4: this.heading,
+              h5: this.heading,
+              h6: this.heading,
+              img: props => this.handleImage(props.src, props) || <img {...props} />,
+              ol: this.list,
+              ul: this.list,
+              li: props => {
                 if (isProgressStepCompatible(props)) {
                   return (
                     <ProgressStep
                       className={props.className}
                       title={props.children[0]}
                       liveStatusChannel={liveStatusChannel(props)}
-                      defaultStatus={props.children[2].props.children[0].props.children}
+                      defaultStatus={(props as ProgressStepCompatible).children[2].props.children[0]}
                     >
                       {props.children.slice(3)}
                     </ProgressStep>
@@ -361,22 +351,19 @@ export default class Markdown extends React.PureComponent<Props> {
               table: props => (
                 <table className={props.className + ' kui--table-like kui--structured-list'}>{props.children}</table>
               ),
-              tableHead: props => (
+              thead: props => (
                 <thead className={props.className + ' kui--structured-list-thead'}>{props.children}</thead>
               ),
-              tableBody: props => (
+              tbody: props => (
                 <tbody className={props.className + ' kui--structured-list-tbody'}>{props.children}</tbody>
-              ),
-              tableRow: props => <tr>{props.children}</tr>, // TODO ignoring columnAlignment
-              tableCell: props => {
-                if (props.isHeader) {
-                  return <th style={{ textAlign: props.align }}>{props.children}</th>
-                } else {
-                  return <td>{props.children}</td>
-                }
-              }
+              )
+              /* tr: props => <tr>{props.children}</tr>, // TODO ignoring columnAlignment
+              td: props => <td>{props.children}</td>,
+              th: props => <th style={props.style}>{props.children}</th> */
             }}
-          />
+          >
+            {this.source()}
+          </ReactMarkdown>
         </TextContent>
       </React.Suspense>
     )
