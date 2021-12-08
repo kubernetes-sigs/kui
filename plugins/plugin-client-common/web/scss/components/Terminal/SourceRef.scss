@@ -44,7 +44,6 @@
 @include Scrollback {
   @include ExpandableSectionButton {
     background-color: transparent;
-    padding-bottom: $expandablesection--spacing;
 
     &:focus {
       outline: none;

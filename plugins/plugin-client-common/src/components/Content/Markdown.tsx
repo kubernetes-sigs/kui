@@ -32,9 +32,12 @@ import {
 
 import { Options } from 'react-markdown'
 const ReactMarkdown = React.lazy(() => import('react-markdown'))
+const ExpandableSection = React.lazy(() => import('../spi/ExpandableSection'))
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
+
+import emojis from 'remark-emoji'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
@@ -194,7 +197,7 @@ export default class Markdown extends React.PureComponent<Props> {
       <React.Suspense fallback={<div />}>
         <TextContent>
           <ReactMarkdown
-            plugins={[gfm]}
+            plugins={[gfm, [emojis, { emoticon: true }]]}
             rehypePlugins={rehypePlugins}
             data-is-nested={this.props.nested || undefined}
             className={
@@ -203,6 +206,26 @@ export default class Markdown extends React.PureComponent<Props> {
                 (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
             }
             components={{
+              /** remark-collapse support; this is Expandable Sections */
+              details: props => {
+                const esProps = { isWidthLimited: true, expanded: props.open }
+                const summaryIdx = props.children
+                  ? props.children.findIndex(_ => typeof _ === 'object' && _['type'] === 'summary')
+                  : -1
+                if (summaryIdx < 0) {
+                  return <ExpandableSection {...esProps}>{props.children}</ExpandableSection>
+                }
+                const _summary = props.children[summaryIdx]
+                const summary =
+                  _summary !== undefined && React.isValidElement(_summary) && Array.isArray(_summary.props.children)
+                    ? _summary.props.children.toString()
+                    : undefined
+                return (
+                  <ExpandableSection showMore={summary} {...esProps}>
+                    {props.children && props.children.slice(summaryIdx + 1)}
+                  </ExpandableSection>
+                )
+              },
               a: props => {
                 const isKuiCommand = props.href.startsWith('#kuiexec?command=')
                 const isLocal = !/^http/i.test(props.href)
