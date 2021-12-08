@@ -24,6 +24,11 @@
 body[kui-theme-style] .pf-c-content {
   color: inherit;
   font-size: inherit;
+
+  /* odd bug in patternfly... */
+  .pf-c-tabs__list li + li {
+    margin-top: 0;
+  }
 }
 
 @mixin h1 {

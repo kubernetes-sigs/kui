@@ -15,8 +15,9 @@
  */
 
 import { dirname } from 'path'
-
 import { Common, CLI, ReplExpect, Selectors, Util, Keys } from '@kui-shell/test'
+
+import { lastOutput, typeAndVerify, verifyTextInMonaco } from './commentary-util'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
 
@@ -81,7 +82,6 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   const file = Util.uniqueFileForSnapshot()
 
-  const lastOutput = (inNotebook: boolean) => (inNotebook ? Selectors.OUTPUT_LAST_IN_NOTEBOOK() : Selectors.OUTPUT_LAST)
   const verifyComment = (expectedText: string, inNotebook: boolean) => {
     const output = lastOutput(inNotebook)
 
@@ -101,47 +101,11 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
     )
   }
 
-  const verifyTextInMonaco = (expectedText: string, inNotebook: boolean) => {
-    let idx = 0
-    return this.app.client.waitUntil(
-      async () => {
-        const actualText = await Util.getValueFromMonaco({ app: this.app, count: -1 }, lastOutput(inNotebook))
-
-        if (++idx > 5) {
-          console.error(`still waiting for actual=${actualText} expected=${expectedText}`)
-        }
-
-        return actualText === expectedText
-      },
-      { timeout: CLI.waitTimeout }
-    )
-  }
-
-  /** set the monaco editor text */
-  const type = async (text: string, inNotebook: boolean): Promise<void> => {
-    const selector = `${lastOutput(inNotebook)} .monaco-editor-wrapper .view-lines`
-    await this.app.client.$(selector).then(async _ => {
-      await _.click()
-      await _.waitForEnabled()
-    })
-
-    await this.app.client.keys(text)
-  }
-  const typeAndVerify = (text: string, expect: string, inNotebook: boolean) => {
-    it(`should type ${text} and expect ${expect} in the comment`, async () => {
-      try {
-        await type(text, inNotebook)
-        await verifyTextInMonaco(expect, inNotebook)
-      } catch (err) {
-        await Common.oops(this, true)(err)
-      }
-    })
-  }
   const openEditor = (expect: string, inNotebook: boolean) => {
     it('should open editor by clicking', async () => {
       try {
         await this.app.client.$(`${lastOutput(inNotebook)} ${Selectors.TERMINAL_CARD}`).then(_ => _.doubleClick())
-        await verifyTextInMonaco(expect, inNotebook)
+        await verifyTextInMonaco(this, expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -184,7 +148,7 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
         await this.app.client
           .$(`${lastOutput(inNotebook)} ${Selectors.COMMENTARY_EDITOR}`)
           .then(_ => _.waitForDisplayed()) // still open!
-        await verifyTextInMonaco(expect, inNotebook)
+        await verifyTextInMonaco(this, expect, inNotebook)
       } catch (err) {
         await Common.oops(this, true)(err)
       }
@@ -227,17 +191,17 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   // test shift-enter to save
   openEditor('foo-shift-enter', false)
-  typeAndVerify('1', 'foo-shift-enter1', false)
+  typeAndVerify(this, '1', 'foo-shift-enter1', false)
   saveViaKeys(['Shift', 'Enter'], 'foo-shift-enter1', false)
 
   // test cmdctrl+s to save
   openEditor('foo-shift-enter1', false)
-  typeAndVerify('2', 'foo-shift-enter12', false)
+  typeAndVerify(this, '2', 'foo-shift-enter12', false)
   saveViaKeys([Keys.ctrlOrMeta, 's'], 'foo-shift-enter12', false)
 
   // test Escape to cancel
   openEditor('foo-shift-enter12', false)
-  typeAndVerify('3', 'foo-shift-enter123', false)
+  typeAndVerify(this, '3', 'foo-shift-enter123', false)
   escapeCancel('foo-shift-enter12', false)
 
   /** Here comes the test */
@@ -247,15 +211,15 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
       .catch(Common.oops(this, true)))
 
   openEditor('foo', false)
-  typeAndVerify('1', 'foo1', false)
+  typeAndVerify(this, '1', 'foo1', false)
   clickDone('foo1', false)
 
   openEditor('foo1', false)
-  typeAndVerify('2', 'foo12', false)
+  typeAndVerify(this, '2', 'foo12', false)
   clickCancel('foo1', false)
 
   openEditor('foo1', false)
-  typeAndVerify('3', 'foo13', false)
+  typeAndVerify(this, '3', 'foo13', false)
   clickRevert('foo1', false)
   clickCancel('foo1', false)
 
@@ -288,9 +252,9 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
 
   // Here comes the tests for snapshot --exec
   openEditor('foo1', false)
-  typeAndVerify(Keys.ENTER, 'foo1\n', false)
-  typeAndVerify(Keys.ENTER, 'foo1\n\n', false)
-  typeAndVerify('foo2', 'foo1\n\nfoo2', false)
+  typeAndVerify(this, Keys.ENTER, 'foo1\n', false)
+  typeAndVerify(this, Keys.ENTER, 'foo1\n\n', false)
+  typeAndVerify(this, 'foo2', 'foo1\n\nfoo2', false)
   clickDone('foo1\nfoo2', false)
 
   it('should snapshot with --exec', () =>
