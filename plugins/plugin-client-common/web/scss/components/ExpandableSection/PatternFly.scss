@@ -27,7 +27,6 @@
 
 @include Block {
   @include ExpandableSectionButton {
-    font-size: 0.825rem;
     font-family: var(--font-sans-serif);
   }
 

@@ -60,6 +60,8 @@ export default class PatternFlyExpandableSection extends React.PureComponent<Pro
         toggleText={this.toggleText()}
         onToggle={this.onToggle}
         isExpanded={isExpanded}
+        isWidthLimited={this.props.isWidthLimited}
+        displaySize={this.props.isWidthLimited ? 'large' : 'default'}
       >
         {isExpanded && this.props.children}
       </ExpandableSection>

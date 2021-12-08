@@ -23,6 +23,7 @@ interface Props {
   showLess?: string
   onToggle?: (isExpanded: boolean) => void
   children: ReactNode
+  isWidthLimited?: boolean
 }
 
 export default Props
