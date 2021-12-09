@@ -1233,10 +1233,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           .concat(newScrollback)
           .concat(splits.slice(insertIdx))
 
-        Events.eventBus.emitTabLayoutChange(sbuuid, {
+        const opts = {
           isSidecarNowHidden: false,
           isWidthConstrained: this.isWidthConstrained(newScrollback)
-        })
+        }
+        Events.eventBus.emitTabLayoutChange(sbuuid, opts)
+        Events.eventBus.emitTabLayoutChange(this.props.tab.uuid, opts)
 
         return {
           focusedIdx: newFocusedIdx,
@@ -1338,6 +1340,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         }
 
         Events.eventBus.emitTabLayoutChange(sbuuid)
+        Events.eventBus.emitTabLayoutChange(this.props.tab.uuid)
 
         if (idx === curState.splits.length - 1) {
           // If we are removing the last split, we can safely
@@ -1374,10 +1377,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const focusedIdx = idx === 0 ? 0 : idx - 1
 
         if (splits.length === 1) {
-          Events.eventBus.emitTabLayoutChange(splits[focusedIdx].uuid, {
+          const opts = {
             isSidecarNowHidden: false,
             isWidthConstrained: false
-          })
+          }
+          Events.eventBus.emitTabLayoutChange(splits[focusedIdx].uuid, opts)
+          Events.eventBus.emitTabLayoutChange(this.props.tab.uuid, opts)
         }
 
         return { splits, focusedIdx }

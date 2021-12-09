@@ -43,7 +43,8 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
 
   private readonly style = {
     padding: '0.5em',
-    backgroundColor: 'var(--color-base00)'
+    backgroundColor: 'var(--color-base01)',
+    borderRadius: '6px' // copy github styling here
   }
 
   public render() {
@@ -65,6 +66,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
         <SimpleEditor
           simple
           readonly
+          tabUUID={this.props.tabUUID}
           minHeight={0}
           fontSizeAdjust={12 / 14}
           content={this.props.value}

@@ -17,7 +17,15 @@
 @import 'mixins';
 
 body[kui-theme-style] {
+  @include Card {
+    /* This helps with monaco-editor reactive width, e.g. when adding or removing splits */
+    min-width: 0;
+  }
+
   @include CardBody {
     font-size: inherit;
+
+    /* This helps with monaco-editor reactive width, e.g. when adding or removing splits */
+    min-width: 0;
   }
 }

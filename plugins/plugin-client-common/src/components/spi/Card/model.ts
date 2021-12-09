@@ -20,6 +20,9 @@ import { REPL } from '@kui-shell/core'
 import { DropDownAction } from '../DropDown'
 
 interface Props {
+  /** tab identifier, which helps e.g. contained Editors maintain sizing as tab layout changes */
+  tabUUID?: string
+
   /** Place the given header node at the top of the Card */
   header?: ReactNode
 

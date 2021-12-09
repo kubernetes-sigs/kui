@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const tabStart = /^===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
+const RE_TAB = /^===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
 
 export default function plugin(/* options */) {
   return function transformer(tree) {
@@ -39,7 +39,7 @@ export default function plugin(/* options */) {
           if (child.children.length > 0) {
             if (
               currentTabs.length > 0 &&
-              (child.children[0].type !== 'text' || !tabStart.test(child.children[0].value))
+              (child.children[0].type !== 'text' || !RE_TAB.test(child.children[0].value))
             ) {
               // a new paragraph that doesn't start a new tab; add to current tab
               return addToTab(child)
@@ -47,7 +47,7 @@ export default function plugin(/* options */) {
 
             child.children = child.children.reduce((newChildren, pchild) => {
               if (pchild.type === 'text') {
-                const startMatch = pchild.value.match(tabStart)
+                const startMatch = pchild.value.match(RE_TAB)
                 if (startMatch) {
                   currentTabs.push({
                     type: 'element',
@@ -97,7 +97,7 @@ export default function plugin(/* options */) {
  * to turn these into <pre> blocks before we get control; hack it for
  * now
  */
-export function hackIndentation(source: string): string {
+export function hackTabIndentation(source: string): string {
   let inTab = false
   return source
     .split(/\n/)
