@@ -148,6 +148,8 @@ body[kui-theme-style] .pf-c-content {
   flex: 1;
   display: flex;
   justify-content: flex-start;
+  max-width: 960px;
+  font-size: 1rem;
 
   /* This helps with monaco-editor reactive width, e.g. when adding or removing splits */
   min-width: 0;
