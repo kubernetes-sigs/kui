@@ -190,8 +190,14 @@ export default class Output extends React.PureComponent<Props, State> {
     }
   }
 
+  private unmounted = false
+  public componentWillUnmount() {
+    this.unmounted = true
+  }
+
   private onRender(assertHasContent: boolean): void {
-    if (this.props.onRender && !isBeingRerun(this.props.model) && !hasBeenRerun(this.props.model)) {
+    if (this.unmounted) return
+    else if (this.props.onRender && !isBeingRerun(this.props.model) && !hasBeenRerun(this.props.model)) {
       // we don't want reruns to trigger any scrolling behavior
       this.props.onRender()
     }
