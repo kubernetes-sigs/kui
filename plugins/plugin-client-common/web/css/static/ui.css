@@ -769,7 +769,6 @@ body.oops-total-catastrophe #restart-needed-warning {
 @mixin CommentaryMargin {
   .page-content.padding-content:not(:empty) {
     /* these rules attempt to mimic github.com as of 20210115 */
-    max-width: 960px; /* 75% of 1280px */
     width: 100%;
   }
 }
