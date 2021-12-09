@@ -50,16 +50,15 @@ const ExpandableSection = React.lazy(() => import('../spi/ExpandableSection'))
 import gfm from 'remark-gfm'
 
 import emojis from 'remark-emoji'
+import frontmatter from 'remark-frontmatter'
 
 import tip, { hackTipIndentation } from './remark-tip'
 import tabbed, { hackTabIndentation } from './remark-tabbed'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
-// import _rehypeSanitize, { Options as RHSOptions } from 'rehype-sanitize'
-// const rhsOptions: RHSOptions = { attributes: { '*': ['className'] } }
-// const rehypeSanitize: Options['rehypePlugins'][0] = [_rehypeSanitize, rhsOptions]
-const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw /*, rehypeSanitize */]
+import rehypeSlug from 'rehype-slug'
+const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw, rehypeSlug]
 
 const Tooltip = React.lazy(() => import('../spi/Tooltip'))
 const CodeSnippet = React.lazy(() => import('../spi/CodeSnippet'))
@@ -126,17 +125,18 @@ export default class Markdown extends React.PureComponent<Props> {
 
   private list(props: OrderedListProps | UnorderedListProps) {
     if (Array.isArray(props.children) && props.children.length > 0) {
-      const lastIncompatibleIdx = props.children.findIndex(_ => {
-        if (_ === '\n') {
-          // react-markdown v7 seems to add newlines between list items. weird
-          return false // compatible
-        } else if (typeof _ === 'object' && isProgressStepCompatible(_['props'])) {
+      // react-markdown v7 seems to add newlines between list items. weird
+      const children = props.children.filter(_ => _ !== '\n')
+
+      const lastIncompatibleIdx = children.findIndex(_ => {
+        if (typeof _ === 'object' && isProgressStepCompatible(_['props'])) {
           // this is a true ProgressStep, created in the <a> handler below
           return false // compatible
         } else {
           return true // incompatible with ProgressStepper component
         }
       })
+
       if (lastIncompatibleIdx === -1) {
         return (
           <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
@@ -146,38 +146,42 @@ export default class Markdown extends React.PureComponent<Props> {
       } else if (lastIncompatibleIdx >= 0) {
         return (
           <React.Fragment>
-            <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
-              {props.children.slice(0, lastIncompatibleIdx) as ProgressStepperProps['children']}
-            </ProgressStepper>
-            <List component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+            {lastIncompatibleIdx > 0 && (
+              <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+                {props.children.slice(0, lastIncompatibleIdx) as ProgressStepperProps['children']}
+              </ProgressStepper>
+            )}
+            <List start={props['start']} component={props.ordered ? ListComponent.ol : ListComponent.ul}>
               {props.children.slice(lastIncompatibleIdx)}
             </List>
           </React.Fragment>
         )
       }
     }
-    return <List component={props.ordered ? ListComponent.ol : ListComponent.ul}>{props.children}</List>
+    return (
+      <List start={props['start']} component={props.ordered ? ListComponent.ol : ListComponent.ul}>
+        {props.children}
+      </List>
+    )
   }
 
-  private heading(props: HeadingProps) {
-    /* const valueChild =
+  private _heading(props: HeadingProps) {
+    const valueChild =
       props.children && props.children.length === 1
-      ? props.children[0]
-      : props.children.find(_ => _.props.value)
+        ? props.children[0]
+        : props.children.find(_ => typeof _ === 'string')
     const anchor =
-      !valueChild || !valueChild.props || !valueChild.props.value
-      ? undefined
-      : this.anchorFrom(valueChild.props.value.toLowerCase().replace(/ /g, '-'))
+      !valueChild || typeof valueChild !== 'string'
+        ? undefined
+        : this.anchorFrom(valueChild.toLowerCase().replace(/ /g, '-'))
     return (
-        <Text
-      component={TextVariants['h' + props.level]}
-      {...props}
-      data-markdown-anchor={anchor}
-      data-is-href={valueChild && valueChild.props && valueChild.props.href}
-        />
-        ) */
-    return <Text component={TextVariants['h' + props.level]}>{props.children}</Text>
+      <Text id={props.id} component={TextVariants['h' + props.level]} data-markdown-anchor={anchor}>
+        {props.children}
+      </Text>
+    )
   }
+
+  private readonly heading = this._heading.bind(this)
 
   private handleImage(
     src: string,
@@ -246,10 +250,9 @@ export default class Markdown extends React.PureComponent<Props> {
                   }
                 }
               } else if (props.href.charAt(0) === '#') {
-                if (this.props.tab) {
-                  const elt = this.props.tab.querySelector(
-                    `[data-markdown-anchor="${this.anchorFrom(props.href.slice(1))}"]`
-                  )
+                const tab = this.props.tab
+                if (tab) {
+                  const elt = tab.querySelector(`[data-markdown-anchor="${this.anchorFrom(props.href.slice(1))}"]`)
                   if (elt) {
                     return elt.scrollIntoView()
                   }
@@ -278,6 +281,8 @@ export default class Markdown extends React.PureComponent<Props> {
             )}\n\n\`Link will execute a command\``
           : isKuiBlockLink
           ? `### Block Link\n\n\`Link will scroll the block into view\``
+          : props.href.charAt(0) === '#'
+          ? `### In-Page Link\n#### ${props.href}\n\n\`Element will scroll into view\``
           : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
 
         const kuiLink = maybeKuiLink(props.href)
@@ -424,7 +429,7 @@ export default class Markdown extends React.PureComponent<Props> {
           <ReactMarkdown
             components={components}
             rehypePlugins={rehypePlugins}
-            plugins={[gfm, [emojis, { emoticon: true }]]}
+            plugins={[gfm, [frontmatter, ['yaml', 'toml']], [emojis, { emoticon: true }]]}
             data-is-nested={this.props.nested || undefined}
             className={
               this.props.className ||

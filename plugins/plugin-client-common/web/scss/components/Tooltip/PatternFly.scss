@@ -38,6 +38,7 @@ $bgcolor: var(--color-base06);
       line-height: 1.625em;
     }
     h3 + h4 {
+      margin: 0;
       padding-top: 0;
 
       a:only-child {
