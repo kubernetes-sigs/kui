@@ -153,6 +153,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
         providedOptions,
         overrides
       )
+
       const editor = Monaco.create(state.wrapper.current, options)
 
       this.registerKeyboardShortcuts(editor)
@@ -172,7 +173,9 @@ export default class SimpleEditor extends React.Component<Props, State> {
         return editor.getValue()
       }
 
-      editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))
+      if (props.onContentChange) {
+        editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))
+      }
 
       if (!options.readOnly) {
         setTimeout(() => editor.focus())
