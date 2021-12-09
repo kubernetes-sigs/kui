@@ -49,6 +49,7 @@ import gfm from 'remark-gfm'
 
 import emojis from 'remark-emoji'
 
+import tip, { hackTipIndentation } from './remark-tip'
 import tabbed, { hackTabIndentation } from './remark-tabbed'
 
 // react-markdown v6+ now require use of these to support html
@@ -56,7 +57,7 @@ import rehypeRaw from 'rehype-raw'
 // import _rehypeSanitize, { Options as RHSOptions } from 'rehype-sanitize'
 // const rhsOptions: RHSOptions = { attributes: { '*': ['className'] } }
 // const rehypeSanitize: Options['rehypePlugins'][0] = [_rehypeSanitize, rhsOptions]
-const rehypePlugins: Options['rehypePlugins'] = [tabbed, rehypeRaw /*, rehypeSanitize */]
+const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw /*, rehypeSanitize */]
 
 const Tooltip = React.lazy(() => import('../spi/Tooltip'))
 const CodeSnippet = React.lazy(() => import('../spi/CodeSnippet'))
@@ -117,7 +118,7 @@ export default class Markdown extends React.PureComponent<Props> {
       td.use(gfm)
       return td.turndown(this.props.source)
     } else {
-      return hackTabIndentation(this.props.source)
+      return hackTipIndentation(hackTabIndentation(this.props.source))
     }
   }
 
@@ -385,6 +386,13 @@ export default class Markdown extends React.PureComponent<Props> {
     // avoid typing issues
     const components = Object.assign(
       {
+        tip: props => {
+          return (
+            <ExpandableSection className="kui--markdown-tip" showMore={props.title} {...this.tipProps(props.open)}>
+              {props.children}
+            </ExpandableSection>
+          )
+        },
         tabbed: props => {
           return (
             <Tabs className="kui--markdown-tabs" defaultActiveKey={0}>
