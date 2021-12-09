@@ -470,7 +470,12 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
             {lightweightTables ? (
               this.content(true, true)
             ) : (
-              <Card header={this.topToolbar()} footer={this.bottomToolbar()} className="kui--table-card">
+              <Card
+                header={this.topToolbar()}
+                footer={this.bottomToolbar()}
+                className="kui--table-card"
+                tabUUID={this.props.tab.uuid}
+              >
                 {this.content()}
               </Card>
             )}

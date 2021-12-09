@@ -25,6 +25,11 @@ body[kui-theme-style] .pf-c-content {
   color: inherit;
   font-size: inherit;
 
+  ol,
+  ul {
+    margin: 0;
+  }
+
   /* odd bug in patternfly... */
   .pf-c-tabs__list li + li {
     margin-top: 0;
@@ -123,6 +128,9 @@ body[kui-theme-style] .pf-c-content {
 
   /* while editing, use a different background color for the Markdown preview */
   @include CommentaryCard {
+    /* This helps with monaco-editor reactive width, e.g. when adding or removing splits */
+    min-width: 0;
+
     &[data-is-editing] {
       .marked-content {
         background-color: var(--color-base03);
@@ -142,6 +150,9 @@ body[kui-theme-style] .pf-c-content {
   flex: 1;
   display: flex;
   justify-content: flex-start;
+
+  /* This helps with monaco-editor reactive width, e.g. when adding or removing splits */
+  min-width: 0;
 
   &[data-is-editing] {
     flex: 1;

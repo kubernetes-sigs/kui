@@ -15,6 +15,8 @@
  */
 
 interface Props {
+  tabUUID: string
+
   language: string
   value: string
   height?: string

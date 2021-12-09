@@ -48,7 +48,8 @@ const ExpandableSection = React.lazy(() => import('../spi/ExpandableSection'))
 import gfm from 'remark-gfm'
 
 import emojis from 'remark-emoji'
-import tabbed, { hackIndentation } from './remark-tabbed'
+
+import tabbed, { hackTabIndentation } from './remark-tabbed'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
@@ -68,6 +69,7 @@ interface Props {
   contentType?: 'text/html' | 'application/markdown'
 
   tab?: KuiTab
+  tabUUID?: string
   repl?: REPL
 
   /** if we have the full path to the source file */
@@ -115,7 +117,7 @@ export default class Markdown extends React.PureComponent<Props> {
       td.use(gfm)
       return td.turndown(this.props.source)
     } else {
-      return hackIndentation(this.props.source)
+      return hackTabIndentation(this.props.source)
     }
   }
 
@@ -195,15 +197,18 @@ export default class Markdown extends React.PureComponent<Props> {
     return <img key={key} src={src} height={props.height} width={props.width} style={style} data-float={props.align} />
   }
 
+  private tipProps(expanded: boolean) {
+    return { isWidthLimited: true, expanded }
+  }
+
   private readonly components: Components = {
     /** remark-collapse support; this is Expandable Sections */
     details: props => {
-      const esProps = { isWidthLimited: true, expanded: props.open }
       const summaryIdx = props.children
         ? props.children.findIndex(_ => typeof _ === 'object' && _['type'] === 'summary')
         : -1
       if (summaryIdx < 0) {
-        return <ExpandableSection {...esProps}>{props.children}</ExpandableSection>
+        return <ExpandableSection {...this.tipProps(props.open)}>{props.children}</ExpandableSection>
       }
       const _summary = props.children[summaryIdx]
       const summary =
@@ -211,7 +216,7 @@ export default class Markdown extends React.PureComponent<Props> {
           ? _summary.props.children.toString()
           : undefined
       return (
-        <ExpandableSection showMore={summary} {...esProps}>
+        <ExpandableSection showMore={summary} {...this.tipProps(false)}>
           {props.children && props.children.slice(summaryIdx + 1)}
         </ExpandableSection>
       )
@@ -306,13 +311,16 @@ export default class Markdown extends React.PureComponent<Props> {
         return <code className={props.className}>{props.children}</code>
       }
 
+      const tabUUID = this.props.tabUUID || (this.props.tab ? getPrimaryTabId(this.props.tab) : undefined)
+
+      // react-markdown v6+ places the language in the className
       const match = /language-(\w+)/.exec(props.className || '')
       const language = match ? match[1] : undefined
 
       if (this.props.nested) {
         return (
           <div className="paragraph">
-            <CodeSnippet value={String(props.children)} language={language} />
+            <CodeSnippet value={String(props.children).trim()} language={language} tabUUID={tabUUID} />
           </div>
         )
       } else {
@@ -320,8 +328,8 @@ export default class Markdown extends React.PureComponent<Props> {
           <div className="paragraph">
             <code className="kui--code--editor">
               <SimpleEditor
-                tabUUID={getPrimaryTabId(this.props.tab)}
-                content={String(props.children)}
+                tabUUID={tabUUID}
+                content={String(props.children).trim()}
                 contentType={language}
                 fontSize={12}
                 simple
@@ -374,9 +382,9 @@ export default class Markdown extends React.PureComponent<Props> {
       this.props.onRender()
     }
 
+    // avoid typing issues
     const components = Object.assign(
       {
-        // avoid typing issues
         tabbed: props => {
           return (
             <Tabs className="kui--markdown-tabs" defaultActiveKey={0}>
