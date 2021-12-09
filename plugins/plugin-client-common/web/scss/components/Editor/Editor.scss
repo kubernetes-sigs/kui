@@ -32,6 +32,13 @@
     font-style: italic;
   }
 
+  /** Odd interactions with Kui themes. This leaves an odd box-shadow at
+   * the top.  https://github.com/kubernetes-sigs/kui/issues/8295
+   */
+  .monaco-editor .scroll-decoration {
+    box-shadow: none;
+  }
+
   .monaco-editor {
     display: block;
     min-height: 23rem;
