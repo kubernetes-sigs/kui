@@ -65,6 +65,9 @@ interface Props {
 
   /** [Optional] Card onClick handler */
   onCardClick?: (evt: React.MouseEvent) => void
+
+  /** [Optional] Use standard box-shadow (default: no box-shadow) */
+  boxShadow?: boolean
 }
 
 export default Props

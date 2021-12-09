@@ -28,6 +28,12 @@ $header-spacing: 0.1875em; /* keep in sync with Toolbar.scss .kui--data-table-wr
   }
 }
 
+@mixin NoBoxShadow {
+  &:not([data-box-shadow]) {
+    @content;
+  }
+}
+
 @mixin CardHeader {
   .kui--card-header {
     @content;

@@ -166,6 +166,7 @@ export default class PatternflyCard extends React.PureComponent<Props, State> {
         onClick={this.props.onCardClick}
         {...this.dataProps()}
         className={!this.props.className ? basicClassName : `${basicClassName} ${this.props.className}`}
+        data-box-shadow={this.props.boxShadow || undefined}
       >
         {React.Children.count(this.props.children) > 0 && (
           <React.Fragment>

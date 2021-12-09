@@ -42,6 +42,8 @@ import {
 
 import { Components, Options } from 'react-markdown'
 const ReactMarkdown = React.lazy(() => import('react-markdown'))
+
+const Card = React.lazy(() => import('../spi/Card'))
 const ExpandableSection = React.lazy(() => import('../spi/ExpandableSection'))
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
@@ -394,8 +396,10 @@ export default class Markdown extends React.PureComponent<Props> {
           )
         },
         tabbed: props => {
+          // the combination of <Tabs isBox> and <Card boxShadow>
+          // gives the tab content adefined border
           return (
-            <Tabs className="kui--markdown-tabs" defaultActiveKey={0}>
+            <Tabs isBox className="kui--markdown-tabs" defaultActiveKey={0}>
               {props.children.map((_, idx) => (
                 <Tab
                   className="kui--markdown-tab"
@@ -404,7 +408,7 @@ export default class Markdown extends React.PureComponent<Props> {
                   eventKey={idx}
                   title={<TabTitleText>{_.props.title}</TabTitleText>}
                 >
-                  {_.props && _.props.children}
+                  <Card boxShadow>{_.props && _.props.children}</Card>
                 </Tab>
               ))}
             </Tabs>

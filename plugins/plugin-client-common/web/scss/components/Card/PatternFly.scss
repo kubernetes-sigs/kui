@@ -80,7 +80,10 @@ body[kui-theme-style] {
   @include Card {
     padding: 0;
     background: none;
-    box-shadow: none;
+
+    @include NoBoxShadow {
+      box-shadow: none;
+    }
     @include CardBody {
       padding: 0;
     }
