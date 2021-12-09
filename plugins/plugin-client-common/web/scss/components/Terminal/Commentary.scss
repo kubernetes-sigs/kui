@@ -172,7 +172,10 @@ body[kui-theme-style] .pf-c-content {
   font-family: var(--font-sans-serif);
   @include Card {
     flex: 1;
-    box-shadow: none;
+
+    @include NoBoxShadow {
+      box-shadow: none;
+    }
 
     &:not([data-is-editing]) {
       @include CardBody {
