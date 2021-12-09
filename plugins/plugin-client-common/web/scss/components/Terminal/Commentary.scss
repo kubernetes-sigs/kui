@@ -119,8 +119,6 @@ body[kui-theme-style] .pf-c-content {
   }
 
   @include Paragraphs {
-    font-size: 1rem;
-
     /* see https://github.com/IBM/kui/issues/5981 */
     word-break: break-word;
     word-wrap: break-word;
