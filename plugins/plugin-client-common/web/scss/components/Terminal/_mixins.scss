@@ -495,3 +495,15 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+@mixin MarkdownTabContent {
+  .kui--markdown-tab {
+    @content;
+  }
+}
+
+@mixin MarkdownTabContentCard {
+  .kui--markdown-tab-card {
+    @content;
+  }
+}

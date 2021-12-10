@@ -413,7 +413,9 @@ export default class Markdown extends React.PureComponent<Props> {
                   eventKey={idx}
                   title={<TabTitleText>{_.props.title}</TabTitleText>}
                 >
-                  <Card boxShadow>{_.props && _.props.children}</Card>
+                  <Card boxShadow className="kui--markdown-tab-card">
+                    {_.props && _.props.children}
+                  </Card>
                 </Tab>
               ))}
             </Tabs>
