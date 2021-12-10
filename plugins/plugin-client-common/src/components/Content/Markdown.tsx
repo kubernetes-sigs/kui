@@ -60,11 +60,11 @@ import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw, rehypeSlug]
 
-const Tooltip = React.lazy(() => import('../spi/Tooltip'))
-const CodeSnippet = React.lazy(() => import('../spi/CodeSnippet'))
-const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
-const LinkStatus = React.lazy(() => import('./LinkStatus'))
 const Hint = React.lazy(() => import('../spi/Hint'))
+const Tooltip = React.lazy(() => import('../spi/Tooltip'))
+const LinkStatus = React.lazy(() => import('./LinkStatus'))
+const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
+const Input = React.lazy(() => import('../Views/Terminal/Block/Inputv2'))
 
 interface Props {
   source: string
@@ -326,11 +326,7 @@ export default class Markdown extends React.PureComponent<Props> {
       const language = match ? match[1] : undefined
 
       if (this.props.nested) {
-        return (
-          <div className="paragraph">
-            <CodeSnippet value={String(props.children).trim()} language={language} tabUUID={tabUUID} />
-          </div>
-        )
+        return <Input value={String(props.children).trim()} language={language} tabUUID={tabUUID} />
       } else {
         return (
           <div className="paragraph">
@@ -408,7 +404,7 @@ export default class Markdown extends React.PureComponent<Props> {
           // the combination of <Tabs isBox> and <Card boxShadow>
           // gives the tab content adefined border
           return (
-            <Tabs isBox className="kui--markdown-tabs kui--markdown-major-paragraph" defaultActiveKey={0}>
+            <Tabs isBox variant="light300" className="kui--markdown-tabs" defaultActiveKey={0}>
               {props.children.map((_, idx) => (
                 <Tab
                   className="kui--markdown-tab"

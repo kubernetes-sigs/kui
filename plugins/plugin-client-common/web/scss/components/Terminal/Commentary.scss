@@ -219,12 +219,23 @@ body[kui-theme-style='light'] {
   --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
 }
 
-@include MarkdownTabContent {
-  @include MarkdownTabContentCard {
-    padding-left: 16px; /* should be: --pf-c-tabs__link--PaddingLeft */
+@include MarkdownMajorParagraph {
+  margin: 1.5em 0;
+}
+
+@include Commentary {
+  .marked-content {
+    pre {
+      margin: 0;
+    }
   }
 }
 
-@include MarkdownMajorParagraph {
-  margin: 1.5em 0;
+@include MarkdownTabContent {
+  .paragraph:first-child {
+    padding-top: 0;
+  }
+  .paragraph:last-child {
+    padding-bottom: 0;
+  }
 }

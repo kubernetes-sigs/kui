@@ -25,6 +25,11 @@ body[kui-theme-style] .monaco-editor .line-numbers {
   font-weight: 300;
 }
 
+/* oddly, the // part of http:// */
+body[kui-theme-style] .monaco-editor .mtk9 {
+  color: var(--color-text-02);
+}
+
 body[kui-theme-style] .monaco-editor .mtk8,
 body[kui-theme-style] .monaco-editor .keyword {
   transition: color 300ms ease-in-out;
