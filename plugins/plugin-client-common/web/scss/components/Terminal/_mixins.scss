@@ -507,3 +507,9 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+@mixin MarkdownMajorParagraph {
+  .kui--markdown-major-paragraph {
+    @content;
+  }
+}
