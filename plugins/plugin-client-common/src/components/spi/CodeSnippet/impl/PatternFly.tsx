@@ -62,7 +62,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
         options={this._monacoOptions}
       /> */
 
-      <div style={this.style}>
+      <div style={this.style} className="flex-layout">
         <SimpleEditor
           simple
           readonly
@@ -72,6 +72,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
           content={this.props.value}
           contentType={this.language()}
         />
+        {this.props.children}
       </div>
     )
   }

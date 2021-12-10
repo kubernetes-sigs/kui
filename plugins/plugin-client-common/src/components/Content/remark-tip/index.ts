@@ -17,6 +17,9 @@
 const RE_TEXT = /^text|strong$/
 const RE_TIP = /^([?!][?!][?!])(\+)?\s+(tip|info|note|warning)\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
 
+const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
+const END_OF_TIP = `<!-- ____KUI_END_OF_TIP____ -->`
+
 export default function plugin(/* options */) {
   return function transformer(tree) {
     let currentTip
@@ -37,7 +40,10 @@ export default function plugin(/* options */) {
           return newChildren
         }
 
-        if (child.type === 'element' && child.tagName === 'p') {
+        if (child.type === 'raw' && child.value === END_OF_TIP) {
+          flushTip(newChildren)
+          return newChildren
+        } else if (child.type === 'element' && child.tagName === 'p') {
           if (child.children.length > 0) {
             if (currentTip && (child.children[0].type !== 'text' || !RE_TIP.test(child.children[0].value))) {
               // a new paragraph that doesn't start a new tab; add to current tab
@@ -61,10 +67,7 @@ export default function plugin(/* options */) {
                 } else if (currentTip) {
                   return addToTip(pchild)
                 }
-              } else if (
-                currentTip &&
-                (pchild.type === 'raw' || (pchild.type === 'element' && RE_TEXT.test(pchild.tagName)))
-              ) {
+              } else if (currentTip) {
                 return addToTip(pchild)
               }
 
@@ -108,17 +111,27 @@ export default function plugin(/* options */) {
  * now
  */
 export function hackTipIndentation(source: string): string {
-  let inTip = false
+  let inTip: RegExp
+  let inTipReplacement: string
+
   return source
     .split(/\n/)
     .map(line => {
-      if (/^[?!][?!][?!](\+?)\s+(tip|info|note|warning)\s+".*"/.test(line)) {
-        inTip = true
+      const startMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|info|note|warning)\s+".*"/)
+      if (startMatch) {
+        inTipReplacement = startMatch[1] || ''
+        inTip = new RegExp('^' + inTipReplacement + '(\\t| {4})')
+        return `\n\n${inTipReplacement}${START_OF_TIP}\n\n` + line
       } else if (inTip) {
-        if (line.length === 0 || /^ {4}/.test(line)) {
-          return line.replace(/^ {4}/, '')
+        if (line.length === 0) {
+          // empty line: still in tip
+          return line
+        } else if (inTip.test(line)) {
+          // indented line while in tip
+          return line.replace(inTip, inTipReplacement)
         } else {
-          inTip = false
+          inTip = undefined
+          return `\n${inTipReplacement}${END_OF_TIP}\n` + line
         }
       }
       return line

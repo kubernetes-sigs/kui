@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-const RE_TAB = /^===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
+// const RE_TAB = /^(.|[\n\r])*===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
+const RE_TAB = /^===\s+"(.+)"/
+
+const START_OF_TAB = `<!-- ____KUI_START_OF_TAB____ -->`
+const END_OF_TAB = `<!-- ____KUI_END_OF_TAB____ -->`
 
 export default function plugin(/* options */) {
   return function transformer(tree) {
     let currentTabs = []
     const flushTabs = children => {
-      children.push({ type: 'element', tagName: 'tabbed', children: currentTabs })
-      currentTabs = []
+      if (currentTabs.length > 0) {
+        children.push({ type: 'element', tagName: 'tabbed', children: currentTabs })
+        currentTabs = []
+      }
     }
 
     if (tree.children && tree.children.length > 0) {
@@ -29,17 +35,20 @@ export default function plugin(/* options */) {
         const addToTab = child => {
           const cur = currentTabs[currentTabs.length - 1]
           cur.children.push(child)
-          if (child.position) {
+          if (cur.position && child.position) {
             cur.position.end = child.position.end
           }
           return newChildren
         }
 
-        if (child.type === 'element' && child.tagName === 'p') {
+        if (child.type === 'raw' && child.value === END_OF_TAB) {
+          flushTabs(newChildren)
+          return newChildren
+        } else if (child.type === 'element' && child.tagName === 'p') {
           if (child.children.length > 0) {
             if (
               currentTabs.length > 0 &&
-              (child.children[0].type !== 'text' || !RE_TAB.test(child.children[0].value))
+              (child.type === 'raw' || child.children[0].type !== 'text' || !RE_TAB.test(child.children[0].value))
             ) {
               // a new paragraph that doesn't start a new tab; add to current tab
               return addToTab(child)
@@ -49,12 +58,22 @@ export default function plugin(/* options */) {
               if (pchild.type === 'text') {
                 const startMatch = pchild.value.match(RE_TAB)
                 if (startMatch) {
+                  if (startMatch.index !== 0) {
+                    // then we need to splice out some prefix text
+                    newChildren.push({ type: 'text', value: pchild.value.slice(0, startMatch.index) })
+                  }
+
+                  const rest = pchild.value.slice(startMatch.index + startMatch[0].length)
+
                   currentTabs.push({
                     type: 'element',
                     tagName: 'li',
                     properties: { title: startMatch[1] },
-                    children: startMatch[2] ? [{ type: 'text', value: startMatch[2] }] : [],
-                    position: child.position
+                    children: rest ? [{ type: 'text', value: rest }] : []
+                    /* position: {
+                      start: child.position.start + startMatch.index,
+                      end: child.position.end
+                    } */
                   })
                   return newChildren
                 } else if (currentTabs.length > 0) {
@@ -70,12 +89,7 @@ export default function plugin(/* options */) {
             return newChildren
           }
         } else if (currentTabs.length > 0) {
-          if (child.type === 'text' || (child.type === 'element' && !/^h\d+/.test(child.tagName))) {
-            return addToTab(child)
-          } else {
-            // transition to a new section
-            flushTabs(newChildren)
-          }
+          return addToTab(child)
         }
 
         // no rewrite
@@ -98,17 +112,27 @@ export default function plugin(/* options */) {
  * now
  */
 export function hackTabIndentation(source: string): string {
-  let inTab = false
+  let inTab: RegExp
+  let inTabReplacement: string
+
   return source
     .split(/\n/)
     .map(line => {
-      if (/^===\s+".*"/.test(line)) {
-        inTab = true
+      const startMatch = line.match(/^(\s*)===\s+".*"/)
+      if (startMatch) {
+        inTabReplacement = startMatch[1] || ''
+        inTab = new RegExp('^' + inTabReplacement + '(\\t| {4})')
+        return `\n\n${inTabReplacement}${START_OF_TAB}\n\n` + line
       } else if (inTab) {
-        if (line.length === 0 || /^ {4}/.test(line)) {
-          return line.replace(/^ {4}/, '')
+        if (line.length === 0) {
+          // empty line: still in tab
+          return line
+        } else if (inTab.test(line)) {
+          // indented line while in tab
+          return line.replace(inTab, inTabReplacement)
         } else {
-          inTab = false
+          inTab = undefined
+          return `\n${inTabReplacement}${END_OF_TAB}\n` + line
         }
       }
       return line

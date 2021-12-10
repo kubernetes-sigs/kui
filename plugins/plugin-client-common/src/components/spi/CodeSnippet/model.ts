@@ -29,6 +29,9 @@ interface Props {
 
   /** default: true */
   isLanguageLabelVisible?: boolean
+
+  /** Optional children to be positioned to the right of the code */
+  children?: React.ReactNode
 }
 
 export default Props
