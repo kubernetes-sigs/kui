@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-const RE_TIP = /^\?\?\?(\+)?\s+tip\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
+const RE_TEXT = /^text|strong$/
+const RE_TIP = /^([?!][?!][?!])(\+)?\s+(tip|info|note|warning)\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
 
 export default function plugin(/* options */) {
   return function transformer(tree) {
@@ -50,14 +51,16 @@ export default function plugin(/* options */) {
                   currentTip = {
                     type: 'element',
                     tagName: 'tip',
-                    properties: { title: startMatch[2], open: !!startMatch[1] },
-                    children: startMatch[3] ? [{ type: 'text', value: startMatch[3] }] : [],
+                    properties: { title: startMatch[4], open: !!startMatch[2] || startMatch[1] === '!!!' },
+                    children: startMatch[5] ? [{ type: 'text', value: startMatch[5] }] : [],
                     position: child.position
                   }
                   return newChildren
                 } else if (currentTip) {
                   return addToTip(pchild)
                 }
+              } else if (currentTip && pchild.type === 'element' && RE_TEXT.test(pchild.tagName)) {
+                return addToTip(pchild)
               }
 
               newChildren.push(pchild)
@@ -68,7 +71,7 @@ export default function plugin(/* options */) {
             return newChildren
           }
         } else if (currentTip) {
-          if (child.type === 'text' || (child.type === 'element' && !/^h\d+/.test(child.tagName))) {
+          if (RE_TEXT.test(child.type) || (child.type === 'element' && !/^h\d+/.test(child.tagName))) {
             return addToTip(child)
           } else {
             // transition to a new section
@@ -100,7 +103,7 @@ export function hackTipIndentation(source: string): string {
   return source
     .split(/\n/)
     .map(line => {
-      if (/^\?\?\?(\+?)\s+tip\s+".*"/.test(line)) {
+      if (/^[?!][?!][?!](\+?)\s+(tip|info|note|warning)\s+".*"/.test(line)) {
         inTip = true
       } else if (inTip) {
         if (line.length === 0 || /^ {4}/.test(line)) {
