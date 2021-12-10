@@ -30,6 +30,7 @@ export default function plugin(/* options */) {
     if (tree.children && tree.children.length > 0) {
       tree.children = tree.children.reduce((newChildren, child) => {
         const addToTip = child => {
+          console.error('!!!!!!!', currentTip, child)
           currentTip.children.push(child)
           if (child.position) {
             currentTip.position.end = child.position.end
@@ -44,10 +45,12 @@ export default function plugin(/* options */) {
               return addToTip(child)
             }
 
-            child.children = child.children.reduce((newChildren, pchild) => {
+            child.children = child.children.reduce((pnewChildren, pchild) => {
               if (pchild.type === 'text') {
                 const startMatch = pchild.value.match(RE_TIP)
                 if (startMatch) {
+                  flushTip(newChildren)
+
                   currentTip = {
                     type: 'element',
                     tagName: 'tip',
@@ -55,23 +58,30 @@ export default function plugin(/* options */) {
                     children: startMatch[5] ? [{ type: 'text', value: startMatch[5] }] : [],
                     position: child.position
                   }
-                  return newChildren
+                  return pnewChildren
                 } else if (currentTip) {
                   return addToTip(pchild)
                 }
-              } else if (currentTip && pchild.type === 'element' && RE_TEXT.test(pchild.tagName)) {
+              } else if (
+                currentTip &&
+                (pchild.type === 'raw' || (pchild.type === 'element' && RE_TEXT.test(pchild.tagName)))
+              ) {
                 return addToTip(pchild)
               }
 
-              newChildren.push(pchild)
-              return newChildren
+              pnewChildren.push(pchild)
+              return pnewChildren
             }, [])
           }
           if (currentTip) {
             return newChildren
           }
         } else if (currentTip) {
-          if (RE_TEXT.test(child.type) || (child.type === 'element' && !/^h\d+/.test(child.tagName))) {
+          if (
+            RE_TEXT.test(child.type) ||
+            child.type === 'raw' ||
+            (child.type === 'element' && !/^h\d+/.test(child.tagName))
+          ) {
             return addToTip(child)
           } else {
             // transition to a new section
