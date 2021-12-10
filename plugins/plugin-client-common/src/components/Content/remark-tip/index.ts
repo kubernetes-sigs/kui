@@ -30,7 +30,6 @@ export default function plugin(/* options */) {
     if (tree.children && tree.children.length > 0) {
       tree.children = tree.children.reduce((newChildren, child) => {
         const addToTip = child => {
-          console.error('!!!!!!!', currentTip, child)
           currentTip.children.push(child)
           if (child.position) {
             currentTip.position.end = child.position.end
