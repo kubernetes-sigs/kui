@@ -395,7 +395,11 @@ export default class Markdown extends React.PureComponent<Props> {
       {
         tip: props => {
           return (
-            <ExpandableSection className="kui--markdown-tip" showMore={props.title} {...this.tipProps(props.open)}>
+            <ExpandableSection
+              className="kui--markdown-tip kui--markdown-major-paragraph"
+              showMore={props.title}
+              {...this.tipProps(props.open)}
+            >
               {props.children}
             </ExpandableSection>
           )
@@ -404,7 +408,7 @@ export default class Markdown extends React.PureComponent<Props> {
           // the combination of <Tabs isBox> and <Card boxShadow>
           // gives the tab content adefined border
           return (
-            <Tabs isBox className="kui--markdown-tabs" defaultActiveKey={0}>
+            <Tabs isBox className="kui--markdown-tabs kui--markdown-major-paragraph" defaultActiveKey={0}>
               {props.children.map((_, idx) => (
                 <Tab
                   className="kui--markdown-tab"
