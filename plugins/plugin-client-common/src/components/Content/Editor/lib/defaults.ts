@@ -39,6 +39,10 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   fontFamily: 'var(--font-monospace)',
   fontSize: options.fontSize || getKuiFontSize(),
 
+  // don't show those little bits and borders in the scrollbar in "simple" mode
+  overviewRulerBorder: options.simple,
+  overviewRulerLanes: options.simple ? 0 : undefined,
+
   // specifics for readOnly mode
   glyphMargin: !options.readOnly && !options.simple, // needed for error indicators
 

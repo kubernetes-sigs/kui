@@ -246,7 +246,7 @@ export default class Toolbar extends React.PureComponent<Props> {
       return this.props.stream.map((_, idx) => (
         <div key={`${_}-${idx}`} className="kui--data-table-footer-messages kui--inverted-color-context">
           <div className="kui--data-table-footer-message">
-            <Markdown source={_} noExternalLinks repl={this.props.repl} />
+            <Markdown source={_} noExternalLinks />
           </div>
         </div>
       ))

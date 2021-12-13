@@ -30,7 +30,7 @@ import {
   ListComponent,
   ListItem
 } from '@patternfly/react-core'
-import { maybeKuiLink, REPL, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
+import { maybeKuiLink, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
 import {
   ProgressStepper,
   ProgressStepperProps,
@@ -45,6 +45,8 @@ const ReactMarkdown = React.lazy(() => import('react-markdown'))
 
 const Card = React.lazy(() => import('../spi/Card'))
 const ExpandableSection = React.lazy(() => import('../spi/ExpandableSection'))
+
+import { tryParse, tryFrontmatter, codeWithResponseFrontmatter } from './Markdown/frontmatter'
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
@@ -71,8 +73,6 @@ interface Props {
   contentType?: 'text/html' | 'application/markdown'
 
   tab?: KuiTab
-  tabUUID?: string
-  repl?: REPL
 
   /** if we have the full path to the source file */
   fullpath?: string
@@ -92,6 +92,13 @@ interface Props {
   onRender?: () => void
 }
 
+interface State {
+  source: Props['source']
+
+  /** Has this.splice() been called to splice in a new value? */
+  hasSplicedUpdate?: boolean
+}
+
 function decodeURI(uri: string) {
   try {
     return decodeURIComponent(uri)
@@ -100,8 +107,30 @@ function decodeURI(uri: string) {
   }
 }
 
-export default class Markdown extends React.PureComponent<Props> {
+export default class Markdown extends React.PureComponent<Props, State> {
   private readonly _uuid = uuid()
+
+  public constructor(props: Props) {
+    super(props)
+
+    this.state = Markdown.getDerivedStateFromProps(props)
+  }
+
+  public static getDerivedStateFromProps(props: Props, state?: State) {
+    if (state && state.hasSplicedUpdate) {
+      return state
+    } else if (!state || state.source !== props.source) {
+      return {
+        source: props.source
+      }
+    } else {
+      return state
+    }
+  }
+
+  private get repl() {
+    return this.props.tab ? this.props.tab.REPL : undefined
+  }
 
   private allContentIsRemote(): boolean {
     return typeof this.props.baseUrl === 'string'
@@ -117,9 +146,9 @@ export default class Markdown extends React.PureComponent<Props> {
       const { gfm } = require('turndown-plugin-gfm')
       const td = new TurndownService()
       td.use(gfm)
-      return td.turndown(this.props.source)
+      return td.turndown(this.state.source)
     } else {
-      return hackTipIndentation(hackTabIndentation(this.props.source))
+      return hackTipIndentation(hackTabIndentation(this.state.source))
     }
   }
 
@@ -208,6 +237,13 @@ export default class Markdown extends React.PureComponent<Props> {
     return { isWidthLimited: true, expanded }
   }
 
+  private readonly splice = (replacement: string, startOffset: number, endOffset: number) => {
+    this.setState(curState => ({
+      hasSplicedUpdate: true,
+      source: curState.source.slice(0, startOffset) + replacement + curState.source.slice(endOffset)
+    }))
+  }
+
   private readonly components: Components = {
     /** remark-collapse support; this is Expandable Sections */
     details: props => {
@@ -243,8 +279,8 @@ export default class Markdown extends React.PureComponent<Props> {
                 if (raw) {
                   const cmdline = decodeURI(raw[1])
                   const echo = !raw[2]
-                  if (this.props.repl) {
-                    return this.props.repl.pexec(cmdline, { echo })
+                  if (this.repl) {
+                    return this.repl.pexec(cmdline, { echo })
                   } else {
                     pexecInCurrentTab(cmdline, undefined, !echo)
                   }
@@ -264,7 +300,7 @@ export default class Markdown extends React.PureComponent<Props> {
                   file = relativeToCWD
                 }
 
-                return this.props.repl.pexec(`open ${this.props.repl.encodeComponent(file)}`)
+                return this.repl.pexec(`open ${this.repl.encodeComponent(file)}`)
               }
             }
 
@@ -319,21 +355,40 @@ export default class Markdown extends React.PureComponent<Props> {
         return <code className={props.className}>{props.children}</code>
       }
 
-      const tabUUID = this.props.tabUUID || (this.props.tab ? getPrimaryTabId(this.props.tab) : undefined)
+      const code = String(props.children).trim()
+      const fm = tryFrontmatter(code)
+      const { body, attributes } = fm
+
+      const tabUUID = this.props.tab ? getPrimaryTabId(this.props.tab) : undefined
 
       // react-markdown v6+ places the language in the className
       const match = /language-(\w+)/.exec(props.className || '')
       const language = match ? match[1] : undefined
 
       if (this.props.nested) {
-        return <Input value={String(props.children).trim()} language={language} tabUUID={tabUUID} />
+        const response = tryParse(attributes.response)
+        // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
+        // console.error('!!!!!!!IN', this.state.source.slice(props.node.position.start.offset, props.node.position.end.offset))
+        const sliceStart = props.node.position.start.offset
+        const sliceEnd = props.node.position.end.offset
+        return (
+          <Input
+            key="fixed"
+            readonly={false}
+            tab={this.props.tab}
+            value={body}
+            language={language}
+            response={response}
+            onResponse={response => this.splice(codeWithResponseFrontmatter(body, response), sliceStart, sliceEnd)}
+          />
+        )
       } else {
         return (
           <div className="paragraph">
             <code className="kui--code--editor">
               <SimpleEditor
                 tabUUID={tabUUID}
-                content={String(props.children).trim()}
+                content={body}
                 contentType={language}
                 fontSize={12}
                 simple

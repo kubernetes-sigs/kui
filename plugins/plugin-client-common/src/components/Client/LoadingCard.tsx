@@ -30,13 +30,7 @@ interface Props {
 export default class LoadingCard extends React.PureComponent<Props> {
   public render() {
     return (
-      <Card
-        titleInHeader
-        bodyInHeader
-        title={strings('Successfully connected to your cluster')}
-        repl={this.props.repl}
-        icon={KuiIcon}
-      >
+      <Card titleInHeader bodyInHeader title={strings('Successfully connected to your cluster')} icon={KuiIcon}>
         {strings('loadingDone:content')}
       </Card>
     )

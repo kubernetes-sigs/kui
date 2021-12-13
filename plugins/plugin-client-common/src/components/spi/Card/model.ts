@@ -16,12 +16,12 @@
 
 import { ReactNode } from 'react'
 
-import { REPL } from '@kui-shell/core'
+import { Tab } from '@kui-shell/core'
 import { DropDownAction } from '../DropDown'
 
 interface Props {
   /** tab identifier, which helps e.g. contained Editors maintain sizing as tab layout changes */
-  tabUUID?: string
+  tab?: Tab
 
   /** Place the given header node at the top of the Card */
   header?: ReactNode
@@ -58,10 +58,6 @@ interface Props {
 
   /** [Optional] CSS class to associate with the Card footer */
   footerClassName?: string
-
-  /** [Optional] REPL controller, but required if you want your Card
-   * to have functional kuiexec?command=... links via Markdown */
-  repl?: REPL
 
   /** [Optional] Card onClick handler */
   onCardClick?: (evt: React.MouseEvent) => void

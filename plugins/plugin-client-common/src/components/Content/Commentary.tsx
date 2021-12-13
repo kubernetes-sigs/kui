@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { CommentaryResponse, REPL, i18n } from '@kui-shell/core'
+import { CommentaryResponse, Tab, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
 import Button from '../spi/Button'
@@ -28,11 +28,10 @@ interface State {
   isEdit: boolean
   textValue: string
   lastAppliedTextValue: string
-  repl?: REPL
 }
 
 type Props = CommentaryResponse['props'] & {
-  tabUUID: string
+  tab: Tab
   willUpdateResponse?: (text: string) => void
   willRemove?: () => void
   willUpdateCommand?: (command: string) => void
@@ -221,7 +220,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
     return (
       <React.Suspense fallback={<div />}>
         <SimpleEditor
-          tabUUID={this.props.tabUUID}
+          tabUUID={this.props.tab.uuid}
           content={this.state.textValue}
           className="kui--source-ref-editor kui--commentary-editor"
           readonly={false}
