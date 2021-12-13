@@ -99,6 +99,7 @@
 .repl-block .result-vertical {
   display: flex;
   flex-direction: column;
+  flex-wrap: unset;
   flex: 1;
   min-width: 0;
 }

@@ -21,7 +21,6 @@ import {
   isMessageWithCode,
   CommandCompleteEvent,
   KResponse,
-  getPrimaryTabId,
   i18n,
   isCommentaryResponse,
   isMarkdownResponse,
@@ -106,6 +105,10 @@ export default class Scalar extends React.PureComponent<Props, State> {
 
   private readonly _onRender = this.onRender.bind(this)
 
+  private get repl() {
+    return this.props.tab ? this.props.tab.REPL : undefined
+  }
+
   private renderResponse(response: Props['response']) {
     const { tab } = this.props
 
@@ -144,7 +147,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
           <pre>
             <Markdown
               tab={tab}
-              repl={tab.REPL}
               source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')}
               onRender={this._onRender}
             />
@@ -156,8 +158,8 @@ export default class Scalar extends React.PureComponent<Props, State> {
         <span className="flex-fill flex-layout flex-align-stretch">
           <Commentary
             {...response.props}
-            repl={tab.REPL}
-            tabUUID={getPrimaryTabId(tab)}
+            repl={this.repl}
+            tab={tab}
             onRender={this._onRender}
             willRemove={this.props.willRemove}
             willUpdateCommand={this.props.willUpdateCommand}
@@ -171,7 +173,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
       this.onRender()
       return (
         <KuiContext.Consumer>
-          {config => <RadioTableSpi table={response} title={!config.disableTableTitle} repl={tab.REPL} />}
+          {config => <RadioTableSpi table={response} title={!config.disableTableTitle} repl={this.repl} />}
         </KuiContext.Consumer>
       )
     } else if (isTable(response)) {
@@ -182,7 +184,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
         (response.allowedPresentations === undefined || response.allowedPresentations.indexOf('grid') >= 0)
       return renderTable(
         tab,
-        tab.REPL,
+        this.repl,
         response,
         undefined,
         renderBottomToolbar,
@@ -213,22 +215,13 @@ export default class Scalar extends React.PureComponent<Props, State> {
       this.onRender()
       return <HTMLDom content={response} />
     } else if (isMarkdownResponse(response)) {
-      return <Markdown tab={tab} repl={tab.REPL} source={response.content} onRender={this._onRender} />
+      return <Markdown tab={tab} source={response.content} onRender={this._onRender} />
     } else if (isRandomErrorResponse1(response)) {
       // maybe this is an error response from some random API?
-      return (
-        <Markdown tab={tab} repl={tab.REPL} source={strings('randomError1', response.code)} onRender={this._onRender} />
-      )
+      return <Markdown tab={tab} source={strings('randomError1', response.code)} onRender={this._onRender} />
     } else if (isRandomErrorResponse2(response)) {
       // maybe this is an error response from some random API?
-      return (
-        <Markdown
-          tab={tab}
-          repl={tab.REPL}
-          source={strings('randomError2', response.errno)}
-          onRender={this._onRender}
-        />
-      )
+      return <Markdown tab={tab} source={strings('randomError2', response.errno)} onRender={this._onRender} />
     } else if (isMultiModalResponse(response)) {
       return (
         <TopNavSidecar

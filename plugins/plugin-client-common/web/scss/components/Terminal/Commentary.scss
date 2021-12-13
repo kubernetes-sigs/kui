@@ -175,11 +175,11 @@ body[kui-theme-style] .pf-c-content {
 
     @include NoBoxShadow {
       box-shadow: none;
-    }
 
-    &:not([data-is-editing]) {
-      @include CardBody {
-        padding: 0;
+      &:not([data-is-editing]) {
+        @include CardBody {
+          padding: 0;
+        }
       }
     }
   }
@@ -223,11 +223,25 @@ body[kui-theme-style='light'] {
   margin: 1.5em 0;
 }
 
+@include Scrollback {
+  @include Commentary {
+    @include Block {
+      --input-padding-left: 0;
+      --input-padding-right: 0;
+    }
+  }
+}
+
 @include Commentary {
   .marked-content {
     pre {
       margin: 0;
     }
+  }
+
+  @include CommandOutput {
+    font-size: 0.875rem;
+    line-height: initial; /* PatternFly intercepts this for pf-c-content */
   }
 }
 

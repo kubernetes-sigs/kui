@@ -21,6 +21,12 @@ interface Props {
   value: string
   height?: string
 
+  /** Callback when content changes */
+  onContentChange?: (content: string) => void
+
+  /** default: true */
+  readonly?: boolean
+
   /** default: false */
   isCopyEnabled?: boolean
 

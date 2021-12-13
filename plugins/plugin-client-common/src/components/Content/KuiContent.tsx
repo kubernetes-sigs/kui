@@ -104,7 +104,6 @@ export default class KuiContent extends React.PureComponent<KuiMMRProps, State> 
           return (
             <Markdown
               tab={tab}
-              repl={tab.REPL}
               fullpath={isFile(response) ? response.spec.fullpath : undefined}
               source={mode.content}
             />

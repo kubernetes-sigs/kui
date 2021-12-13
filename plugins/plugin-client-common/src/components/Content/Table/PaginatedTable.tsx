@@ -471,10 +471,11 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
               this.content(true, true)
             ) : (
               <Card
+                boxShadow
                 header={this.topToolbar()}
                 footer={this.bottomToolbar()}
                 className="kui--table-card"
-                tabUUID={this.props.tab.uuid}
+                tab={this.props.tab}
               >
                 {this.content()}
               </Card>

@@ -121,15 +121,21 @@ export function splitFor(topLevelTab: Tab) {
  * @param incognito Execute the command quietly but do not display the result in the Terminal
  *
  */
-export function pexecInCurrentTab(command: string, topLevelTab?: Tab, isInternalCallpath = false, incognito = false) {
+export function pexecInCurrentTab(
+  command: string,
+  topLevelTab?: Tab,
+  isInternalCallpath = false,
+  incognito = false,
+  execUUID?: string
+) {
   const split = splitFor(topLevelTab)
 
   if (split) {
     const tab = split // "tab" is the old name for the split in the repl/exec code
 
     return isInternalCallpath
-      ? split.REPL.qexec(command, undefined, undefined, { tab }) // "quiet" exec i.e. don't display the fact that we are executing a command
-      : split.REPL.pexec(command, { tab, echo: !incognito, noHistory: true }) // normal exec, display the Input/Output in the UI
+      ? split.REPL.qexec(command, undefined, undefined, { tab, execUUID }) // "quiet" exec i.e. don't display the fact that we are executing a command
+      : split.REPL.pexec(command, { tab, echo: !incognito, noHistory: true, execUUID }) // normal exec, display the Input/Output in the UI
   } else {
     return Promise.reject(
       new Error(

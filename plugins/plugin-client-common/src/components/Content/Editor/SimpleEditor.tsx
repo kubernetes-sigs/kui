@@ -34,6 +34,9 @@ type Props = Pick<MonacoOptions, 'fontSize'> & {
   onContentChange?: (content: string) => void
   scrollIntoView?: boolean
 
+  /** Focus on initial render (this is the default for !readonly) */
+  focus?: boolean
+
   /** Font size adjustment factor, based off getKuiFontSize(), i.e. the default font size for the theme and client */
   fontSizeAdjust?: number
 
@@ -85,8 +88,12 @@ export default class SimpleEditor extends React.Component<Props, State> {
   /** Called whenever we have proposed (props,state); we derive a new State */
   public static getDerivedStateFromProps(props: Props, state: State) {
     if (state.editor) {
-      if (state.editor.getValue() !== props.content) {
+      const model = state.editor.getModel()
+      const currentLanguage = model.getLanguageId()
+      const newLanguage = SimpleEditor.language(props.contentType)
+      if (model.getValue() !== props.content || currentLanguage !== newLanguage) {
         state.editor.setValue(props.content)
+        Monaco.setModelLanguage(model, newLanguage)
       }
     }
 
@@ -134,6 +141,10 @@ export default class SimpleEditor extends React.Component<Props, State> {
     }
   }
 
+  private static language(contentType: string): string {
+    return /^(ba)?sh$/.test(contentType) ? 'shell' : contentType
+  }
+
   /** Called when we have a ready wrapper (monaco's init requires an wrapper */
   private initMonaco(props: Props, state: State) {
     const cleaners = []
@@ -144,7 +155,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
         value: props.content,
         readOnly: props.readonly !== undefined ? props.readonly : true,
         fontSize: props.fontSize || getKuiFontSize() * (props.fontSizeAdjust || 1),
-        language: /^(ba)?sh$/.test(props.contentType) ? 'shell' : props.contentType,
+        language: SimpleEditor.language(props.contentType),
         simple: props.simple
       }
       const overrides: Monaco.IStandaloneEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
@@ -158,7 +169,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
 
       this.registerKeyboardShortcuts(editor)
 
-      if (options.readOnly && props.simple) {
+      if (/* options.readOnly && */ props.simple) {
         // if we know 1) the height of the content won't change, and
         // 2) we are running in "simple" mode (this is mostly the case
         // for inline editor components, as opposed to editor
@@ -177,7 +188,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
         editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))
       }
 
-      if (!options.readOnly) {
+      if (!options.readOnly && this.props.focus !== false) {
         setTimeout(() => editor.focus())
       }
 
