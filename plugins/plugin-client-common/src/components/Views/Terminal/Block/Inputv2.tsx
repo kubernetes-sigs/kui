@@ -20,11 +20,13 @@ import { KResponse, Tab, i18n } from '@kui-shell/core'
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
+import Spinner from './Spinner'
 import Scalar from '../../../Content/Scalar'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
 import { MutabilityContext } from '../../../Client/MutabilityContext'
 
 const CodeSnippet = React.lazy(() => import('../../../spi/CodeSnippet'))
+const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
 
 const strings = i18n('plugin-client-common')
 
@@ -33,8 +35,9 @@ interface Value {
   language: string
 }
 
-type Props = Value &
+type Props<T1 = any, T2 = any, T3 = any, T4 = any> = Value &
   StreamingProps & {
+    className?: string
     tab: Tab
 
     /** default: true */
@@ -47,16 +50,20 @@ type Props = Value &
     response?: KResponse
 
     /** Update upstream model with a response */
-    onResponse: (response: KResponse) => void
+    arg1: T1
+    arg2: T2
+    arg3: T3
+    arg4: T4
+    onResponse: (response: KResponse, arg1: T1, arg2: T2, arg3: T3, arg4: T4) => void
   }
 
 type State = Value &
   StreamingState & {
-    processing: boolean
+    execution: 'not-yet' | 'processing' | 'done' | 'replayed'
   }
 
-export default class Input extends StreamingConsumer<Props, State> {
-  public constructor(props: Props) {
+export default class Input<T1, T2, T3, T4> extends StreamingConsumer<Props<T1, T2, T3, T4>, State> {
+  public constructor(props: Props<T1, T2, T3, T4>) {
     super(props)
     this.state = Input.getDerivedStateFromProps(props)
   }
@@ -66,7 +73,7 @@ export default class Input extends StreamingConsumer<Props, State> {
       const execUUID = uuid()
       return Object.assign(
         {
-          processing: false,
+          execution: !props.response ? 'not-yet' : (state && state.execution) || 'replayed',
           value: props.value,
           language: props.language
         },
@@ -79,13 +86,17 @@ export default class Input extends StreamingConsumer<Props, State> {
 
   private actions() {
     if (this.props.readonly !== true) {
-      return <Run onRun={this._onRun} />
+      if (this.state.execution === 'processing') {
+        return <Spinner />
+      } else {
+        return <Run onRun={this._onRun} />
+      }
     }
   }
 
   private input() {
     return (
-      <div className="repl-input-element-wrapper flex-layout flex-fill">
+      <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context">
         <div className="flex-fill">
           <CodeSnippet
             tabUUID={this.props.tab ? this.props.tab.uuid : undefined}
@@ -101,7 +112,7 @@ export default class Input extends StreamingConsumer<Props, State> {
 
   private nonstreamingOutput() {
     return (
-      !this.state.processing &&
+      this.state.execution !== 'processing' &&
       this.props.response && (
         <Scalar
           tab={this.props.tab}
@@ -114,40 +125,46 @@ export default class Input extends StreamingConsumer<Props, State> {
   }
 
   private output() {
-    return (
-      (this.props.response || this.hasStreamingOutput()) && (
-        <div className="repl-output repl-result-has-content">
-          <div className="result-vertical">
-            <div className="repl-result">
-              {this.state.processing && this.streamingOutput()}
-              {this.nonstreamingOutput()}
-            </div>
+    const content = (this.props.response || this.hasStreamingOutput()) && (
+      <div className="repl-output repl-result-has-content">
+        <div className="result-vertical">
+          <div className="repl-result">
+            {this.state.execution === 'processing' && this.streamingOutput()}
+            {this.nonstreamingOutput()}
           </div>
         </div>
-      )
+      </div>
+    )
+
+    return this.state.execution !== 'replayed' ? (
+      content
+    ) : (
+      <ExpandableSection showMore={strings('Show Sample Output')} showLess={strings('Hide Sample Output')}>
+        {content}
+      </ExpandableSection>
     )
   }
 
   private readonly _onRun = async () => {
     try {
       // semicolons between commands and escape newlines
-      this.setState({ processing: true })
+      this.setState({ execution: 'processing' })
 
       const cmdline = this.state.value // .replace(/([^\\])(\n)/g, '$1;\\ $2')
       const response = await this.execWithStream(cmdline)
 
-      this.setState({ processing: false })
-      this.props.onResponse(response)
+      this.setState({ execution: 'done' })
+      this.props.onResponse(response, this.props.arg1, this.props.arg2, this.props.arg3, this.props.arg4)
     } catch (err) {
-      this.props.onResponse(err)
+      this.props.onResponse(err, this.props.arg1, this.props.arg2, this.props.arg3, this.props.arg4)
     }
   }
 
   public render() {
     return (
       <MutabilityContext.Consumer>
-        {value => (
-          <li className="repl-block" data-is-executable={value.executable}>
+        {mutability => (
+          <li className={'repl-block ' + (this.props.className || '')} data-is-executable={mutability.executable}>
             {this.input()}
             {this.output()}
           </li>
@@ -166,11 +183,11 @@ class Run extends React.PureComponent<RunProps> {
     return (
       <TwoFaceIcon
         a="Play"
-        b="At"
+        b="Play"
         delay={4000}
         onClick={this.props.onRun}
         classNameB="green-text"
-        className="kui--block-action"
+        className="kui--block-action kui--block-action-run"
         title={strings('Execute this command')}
       />
     )

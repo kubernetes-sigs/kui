@@ -30,7 +30,7 @@ import {
   ListComponent,
   ListItem
 } from '@patternfly/react-core'
-import { maybeKuiLink, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
+import { maybeKuiLink, KResponse, Tab as KuiTab, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
 import {
   ProgressStepper,
   ProgressStepperProps,
@@ -46,7 +46,7 @@ const ReactMarkdown = React.lazy(() => import('react-markdown'))
 const Card = React.lazy(() => import('../spi/Card'))
 const ExpandableSection = React.lazy(() => import('../spi/ExpandableSection'))
 
-import { tryParse, tryFrontmatter, codeWithResponseFrontmatter } from './Markdown/frontmatter'
+import { tryFrontmatter, codeWithResponseFrontmatter } from './Markdown/frontmatter'
 
 // GitHub Flavored Markdown plugin; see https://github.com/IBM/kui/issues/6563
 import gfm from 'remark-gfm'
@@ -61,12 +61,15 @@ import tabbed, { hackTabIndentation } from './remark-tabbed'
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw, rehypeSlug]
+const remarkPlugins: Options['plugins'] = [gfm, [frontmatter, ['yaml', 'toml']], [emojis, { emoticon: true }]]
 
 const Hint = React.lazy(() => import('../spi/Hint'))
 const Tooltip = React.lazy(() => import('../spi/Tooltip'))
 const LinkStatus = React.lazy(() => import('./LinkStatus'))
 const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
-const Input = React.lazy(() => import('../Views/Terminal/Block/Inputv2'))
+
+import Input from '../Views/Terminal/Block/Inputv2'
+// const Input = React.lazy(() => import('../Views/Terminal/Block/Inputv2'))
 
 interface Props {
   source: string
@@ -112,7 +115,6 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
   public constructor(props: Props) {
     super(props)
-
     this.state = Markdown.getDerivedStateFromProps(props)
   }
 
@@ -237,14 +239,22 @@ export default class Markdown extends React.PureComponent<Props, State> {
     return { isWidthLimited: true, expanded }
   }
 
-  private readonly splice = (replacement: string, startOffset: number, endOffset: number) => {
+  private splice(replacement: string, startOffset: number, endOffset: number) {
     this.setState(curState => ({
       hasSplicedUpdate: true,
       source: curState.source.slice(0, startOffset) + replacement + curState.source.slice(endOffset)
     }))
   }
 
-  private readonly components: Components = {
+  private readonly spliceCodeWithResponseFrontmatter = (
+    response: KResponse,
+    body: string,
+    language: string,
+    sliceStart: number,
+    sliceEnd: number
+  ) => this.splice(codeWithResponseFrontmatter(body, language, response), sliceStart, sliceEnd)
+
+  private readonly typedComponents: Components = {
     /** remark-collapse support; this is Expandable Sections */
     details: props => {
       const summaryIdx = props.children
@@ -366,20 +376,25 @@ export default class Markdown extends React.PureComponent<Props, State> {
       const language = match ? match[1] : undefined
 
       if (this.props.nested) {
-        const response = tryParse(attributes.response)
         // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
         // console.error('!!!!!!!IN', this.state.source.slice(props.node.position.start.offset, props.node.position.end.offset))
         const sliceStart = props.node.position.start.offset
         const sliceEnd = props.node.position.end.offset
+        // console.error('!!!!!!MD', code, '|||', attributes.response, props, sliceStart, sliceEnd, props)
         return (
           <Input
             key="fixed"
             readonly={false}
+            className="kui--code-block-in-markdown"
             tab={this.props.tab}
             value={body}
             language={language}
-            response={response}
-            onResponse={response => this.splice(codeWithResponseFrontmatter(body, response), sliceStart, sliceEnd)}
+            response={attributes.response}
+            arg1={body}
+            arg2={language}
+            arg3={sliceStart}
+            arg4={sliceEnd}
+            onResponse={this.spliceCodeWithResponseFrontmatter}
           />
         )
       } else {
@@ -436,57 +451,59 @@ export default class Markdown extends React.PureComponent<Props, State> {
        th: props => <th style={props.style}>{props.children}</th> */
   }
 
+  private hack = () => this.setState(curState => ({ source: curState.source.slice() }))
+
+  /** avoid typing issues... */
+  private readonly components = Object.assign(
+    {
+      tip: props => {
+        return (
+          <ExpandableSection
+            className="kui--markdown-tip kui--markdown-major-paragraph"
+            showMore={props.title}
+            {...this.tipProps(props.open)}
+          >
+            {props.children}
+          </ExpandableSection>
+        )
+      },
+      tabbed: props => {
+        // the combination of <Tabs isBox> and <Card boxShadow>
+        // gives the tab content adefined border
+        return (
+          <Tabs isBox variant="light300" className="kui--markdown-tabs" defaultActiveKey={0}>
+            {props.children.map((_, idx) => (
+              <Tab
+                className="kui--markdown-tab"
+                data-title={_.props.title}
+                key={idx}
+                eventKey={idx}
+                title={<TabTitleText>{_.props.title}</TabTitleText>}
+              >
+                <Card boxShadow className="kui--markdown-tab-card">
+                  {_.props && _.props.children}
+                </Card>
+              </Tab>
+            ))}
+          </Tabs>
+        )
+      }
+    },
+    this.typedComponents
+  )
+
   public render() {
     if (this.props.onRender) {
       this.props.onRender()
     }
 
-    // avoid typing issues
-    const components = Object.assign(
-      {
-        tip: props => {
-          return (
-            <ExpandableSection
-              className="kui--markdown-tip kui--markdown-major-paragraph"
-              showMore={props.title}
-              {...this.tipProps(props.open)}
-            >
-              {props.children}
-            </ExpandableSection>
-          )
-        },
-        tabbed: props => {
-          // the combination of <Tabs isBox> and <Card boxShadow>
-          // gives the tab content adefined border
-          return (
-            <Tabs isBox variant="light300" className="kui--markdown-tabs" defaultActiveKey={0}>
-              {props.children.map((_, idx) => (
-                <Tab
-                  className="kui--markdown-tab"
-                  data-title={_.props.title}
-                  key={idx}
-                  eventKey={idx}
-                  title={<TabTitleText>{_.props.title}</TabTitleText>}
-                >
-                  <Card boxShadow className="kui--markdown-tab-card">
-                    {_.props && _.props.children}
-                  </Card>
-                </Tab>
-              ))}
-            </Tabs>
-          )
-        }
-      },
-      this.components
-    )
-
     return (
       <React.Suspense fallback={<div />}>
         <TextContent>
           <ReactMarkdown
-            components={components}
+            plugins={remarkPlugins}
             rehypePlugins={rehypePlugins}
-            plugins={[gfm, [frontmatter, ['yaml', 'toml']], [emojis, { emoticon: true }]]}
+            components={this.components}
             data-is-nested={this.props.nested || undefined}
             className={
               this.props.className ||

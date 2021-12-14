@@ -24,6 +24,9 @@ export interface Options {
   language?: string
 }
 
+/** Once we scroll to the bottom or top, then start scrolling the enclosing scroll region */
+const scrollbar = { alwaysConsumeMouseWheel: false }
+
 export default (options: Options): editor.IEditorConstructionOptions => ({
   automaticLayout: true, // respond to window layout changes?
   minimap: {
@@ -34,7 +37,6 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   contextmenu: false,
   scrollBeyondLastLine: false,
   scrollBeyondLastColumn: 2,
-  scrollbar: { alwaysConsumeMouseWheel: false },
   cursorStyle: 'block',
   fontFamily: 'var(--font-monospace)',
   fontSize: options.fontSize || getKuiFontSize(),
@@ -42,6 +44,14 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   // don't show those little bits and borders in the scrollbar in "simple" mode
   overviewRulerBorder: options.simple,
   overviewRulerLanes: options.simple ? 0 : undefined,
+  scrollbar: options.simple
+    ? Object.assign(
+        {
+          vertical: 'hidden'
+        },
+        scrollbar
+      )
+    : scrollbar,
 
   // specifics for readOnly mode
   glyphMargin: !options.readOnly && !options.simple, // needed for error indicators
