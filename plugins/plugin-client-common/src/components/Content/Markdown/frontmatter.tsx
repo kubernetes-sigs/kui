@@ -16,24 +16,6 @@
 
 import { KResponse } from '@kui-shell/core'
 
-export function tryParse(str: string | Record<string, any>) {
-  if (typeof str !== 'string') {
-    return str
-  }
-
-  try {
-    if (str) {
-      return JSON.parse(str)
-    }
-  } catch (err) {
-    if (/{/.test(str)) {
-      console.error('Error parsing response', err)
-    }
-  }
-
-  return str
-}
-
 export function tryFrontmatter(
   value: string
 ): Pick<import('front-matter').FrontMatterResult<any>, 'body' | 'attributes'> {
@@ -49,7 +31,7 @@ export function tryFrontmatter(
   }
 }
 
-export function codeWithResponseFrontmatter(body: string, response?: KResponse) {
+export function codeWithResponseFrontmatter(body: string, language: string, response?: KResponse) {
   const frontmatter = !response
     ? ''
     : `---
@@ -57,9 +39,7 @@ response: ${JSON.stringify(response)}
 ---
 `
 
-  return `
-\`\`\`
+  return `\`\`\`${language || ''}
 ${frontmatter}${body}
-\`\`\`
-`
+\`\`\``
 }

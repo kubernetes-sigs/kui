@@ -61,7 +61,6 @@
 }
 
 @include Editor {
-  min-width: calc(55rem * 12 / 14); /* source ref font size is 12px; Sidecar is 55rem */
   height: 20rem;
 }
 @include narrow-window {

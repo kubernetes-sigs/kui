@@ -30,7 +30,11 @@ export const TAB_SELECTED_N = (N: number) => `${TAB_N(N)}.visible`
 
 // blocks
 const current = (sel: string) => `${sel}.repl-active`
+
+export const _RESULT = '.repl-result'
+const _PROMPT = '.repl-input-element'
 const _PROMPT_BLOCK = '.repl-block'
+
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl ${_PROMPT_BLOCK}`
 export const PROCESSING_PROMPT_BLOCK = current(PROMPT_BLOCK)
 export const CURRENT_PROMPT_BLOCK = current(PROMPT_BLOCK)
@@ -38,7 +42,6 @@ export const _PROMPT_BLOCK_N = (N: number) => `${_PROMPT_BLOCK}[data-input-count
 export const PROMPT_BLOCK_N = (N: number) => `${PROMPT_BLOCK}[data-input-count="${N}"]`
 export const PROMPT_CONTEXT_N = (N: number) => `${PROMPT_BLOCK_N(N)} .repl-context`
 export const PROCESSING_N = (N: number) => `${PROMPT_BLOCK_N(N)}.processing`
-const _PROMPT = '.repl-input-element'
 export const CURRENT_PROMPT = `${CURRENT_PROMPT_BLOCK} ${_PROMPT}`
 export const CURRENT_MULTI_LINE_PROMPT = `${CURRENT_PROMPT_BLOCK} textarea${_PROMPT}`
 export const N_ATTR = 'data-input-count'
@@ -189,11 +192,11 @@ export const PROMPT_BLOCK_LAST_FOR_SPLIT = (splitIndex = 1, N = 1, inNotebook = 
 }
 export const PROMPT_LAST = `${PROMPT_BLOCK_LAST} .repl-input-element`
 export const PROMPT_LAST_IN_NOTEBOOK = (N = 1) => `${PROMPT_BLOCK_LAST_IN_NOTEBOOK(N)} .repl-input-element`
-export const OUTPUT_LAST_FOR_SPLIT = (splitIndex: number) => `${PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)} .repl-result`
+export const OUTPUT_LAST_FOR_SPLIT = (splitIndex: number) => `${PROMPT_BLOCK_LAST_FOR_SPLIT(splitIndex)} ${_RESULT}`
 export const OUTPUT_LAST_FOR_SPLIT_IN_NOTEBOOK = (splitIndex: number, N = 1) =>
-  `${PROMPT_BLOCK_LAST_FOR_SPLIT_IN_NOTEBOOK(splitIndex, N)} .repl-result`
-export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} .repl-result`
-export const OUTPUT_LAST_IN_NOTEBOOK = (N = 1) => `${PROMPT_BLOCK_LAST_IN_NOTEBOOK(N)} .repl-result`
+  `${PROMPT_BLOCK_LAST_FOR_SPLIT_IN_NOTEBOOK(splitIndex, N)} ${_RESULT}`
+export const OUTPUT_LAST = `${PROMPT_BLOCK_LAST} ${_RESULT}`
+export const OUTPUT_LAST_IN_NOTEBOOK = (N = 1) => `${PROMPT_BLOCK_LAST_IN_NOTEBOOK(N)} ${_RESULT}`
 export const OUTPUT_LAST_STREAMING = `${PROMPT_BLOCK_LAST} [data-stream]`
 export const OUTPUT_LAST_STREAMING_IN_NOTEBOOK = `${PROMPT_BLOCK_LAST_IN_NOTEBOOK} [data-stream]`
 
@@ -209,7 +212,7 @@ export const TERMINAL_CARD_TITLE = `${TERMINAL_CARD} .kui--card-title`
 export const TERMINAL_CARD_BODY = `${TERMINAL_CARD} .kui--card-body`
 
 export const PROMPT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_PROMPT}`
-export const OUTPUT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result`
+export const OUTPUT_N = (N: number, splitIndex = 1) => `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_RESULT}`
 export const OUTPUT_N_STREAMING = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} [data-stream]`
 export const OUTPUT_N_PTY = (N: number) => OUTPUT_N(N)
@@ -228,14 +231,14 @@ export const COMMAND_RERUN_BUTTON = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .kui--block-action [icon="Play"]`
 export const PROMPT_FINAL = `${PROMPT_BLOCK_FINAL} .repl-input-element`
 export const LIST_RESULTS_N = (N: number, splitIndex = 1) =>
-  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} .repl-result tbody tr`
+  `${PROMPT_BLOCK_N_FOR_SPLIT(N, splitIndex)} ${_RESULT} tbody tr`
 
 // this needs the > bits to avoid selecting tables inside of inline sidecar responses
 export const LIST_RESULTS_BY_NAME_N = (N: number, splitIndex = 1) =>
   `${PROMPT_BLOCK_N_FOR_SPLIT(
     N,
     splitIndex
-  )} .repl-result > .kui--data-table-wrapper > .kui--screenshotable > ${TERMINAL_CARD} [data-name]`
+  )} ${_RESULT} > .kui--data-table-wrapper > .kui--screenshotable > ${TERMINAL_CARD} [data-name]`
 
 export const LIST_RESULT_BY_N_FOR_NAME = (N: number, name: string, splitIndex = 1) =>
   `${LIST_RESULTS_N(N, splitIndex)}[data-name="${name}"] .clickable`

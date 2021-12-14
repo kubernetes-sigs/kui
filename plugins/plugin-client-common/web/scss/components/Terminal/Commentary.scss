@@ -228,6 +228,9 @@ body[kui-theme-style='light'] {
     @include Block {
       --input-padding-left: 0;
       --input-padding-right: 0;
+
+      /** Code blocks nested inside of the outer Block; no need to repeat the padding... */
+      padding: 0;
     }
   }
 }
@@ -239,12 +242,25 @@ body[kui-theme-style='light'] {
     }
   }
 
+  @include Spinner {
+    --sk-size: 0.875em;
+    width: $action-width;
+  }
+
   @include CommandOutput {
     font-size: 0.875rem;
     line-height: initial; /* PatternFly intercepts this for pf-c-content */
   }
 }
 
+@include Block {
+  /* needed to override "card in card" padding rule */
+  @include MarkdownTabContent {
+    @include Card {
+      padding: 1em;
+    }
+  }
+}
 @include MarkdownTabContent {
   .paragraph:first-child {
     padding-top: 0;
