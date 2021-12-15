@@ -17,6 +17,8 @@
 import { v4, v5 } from 'uuid'
 import React from 'react'
 
+import SplitInjector from './SplitInjector'
+
 import {
   Events,
   i18n,
@@ -46,7 +48,7 @@ import ScrollbackState, { ScrollbackOptions, Cleaner } from './ScrollbackState'
 import Block from './Block'
 import getSize from './getSize'
 import SplitHeader from './SplitHeader'
-import { SplitPositionProps } from './SplitPosition'
+import SplitPosition, { SplitPositionProps } from './SplitPosition'
 import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder, tabAlignment } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 import SessionInitStatus from '../../Client/SessionInitStatus'
@@ -425,6 +427,39 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
 
     return scrollback
+  }
+
+  private makePositionedSplit(position: SplitPosition) {
+    const split = this.scrollback(undefined, { position })
+
+    this.setState(curState => ({
+      splits: curState.splits.concat([split])
+    }))
+
+    if (position === 'left-strip') {
+      this.props.willToggleLeftStripMode()
+    } else if (position === 'bottom-strip') {
+      this.props.willToggleBottomStripMode()
+    }
+
+    return split
+  }
+
+  private readonly injectInSplit = (node: React.ReactNode, position: SplitPosition) => {
+    const split = this.state.splits.find(_ => _.position === position) || this.makePositionedSplit(position)
+
+    if (split) {
+      const insertIdx = isActive(split.blocks[split.blocks.length - 1]) ? split.blocks.length - 1 : split.blocks.length
+      this.splice(split.uuid, curState => ({
+        blocks: [
+          ...curState.blocks.slice(0, insertIdx),
+          Announcement({ react: node }),
+          ...curState.blocks.slice(insertIdx)
+        ]
+      }))
+    }
+
+    return <React.Fragment />
   }
 
   private allocateUUIDForScrollback() {
@@ -1609,11 +1644,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
   public render() {
     return (
-      <div className="repl" id="main-repl" data-session-init-status={this.props.sessionInit}>
-        <div className="repl-inner zoomable kui--terminal-split-container" data-split-count={this.state.splits.length}>
-          {this.state.splits.map((scrollback, sbidx) => this.split(scrollback, sbidx))}
+      <SplitInjector.Provider value={this.injectInSplit}>
+        <div className="repl" id="main-repl" data-session-init-status={this.props.sessionInit}>
+          <div
+            className="repl-inner zoomable kui--terminal-split-container"
+            data-split-count={this.state.splits.length}
+          >
+            {this.state.splits.map((scrollback, sbidx) => this.split(scrollback, sbidx))}
+          </div>
         </div>
-      </div>
+      </SplitInjector.Provider>
     )
   }
 }

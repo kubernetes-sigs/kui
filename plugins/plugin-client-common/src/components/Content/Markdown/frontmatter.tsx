@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { u } from 'unist-builder'
 import { KResponse } from '@kui-shell/core'
 
 export function tryFrontmatter(
@@ -42,4 +43,76 @@ response: ${JSON.stringify(response)}
   return `\`\`\`${language || ''}
 ${frontmatter}${body}
 \`\`\``
+}
+
+interface KuiFrontmatter {
+  layout?: {
+    left?: number
+    right?: number
+    bottom?: number
+  }
+}
+
+export function splitTarget(node) {
+  if (node.type === 'raw') {
+    const match = node.value.match(/<!-- ____KUI__SECTION_START____ (.*)/)
+    if (match) {
+      return match[1]
+    }
+  }
+}
+
+/** Parse out the frontmatter at the top of a markdown file */
+export function kuiFrontmatter() {
+  return tree => {
+    let sectionIdx = 1
+    let currentSection // : { type: 'kui-split', value: string, children: [] }
+
+    let frontmatter: KuiFrontmatter
+
+    const newSection = (sectionIdx: number) =>
+      u(
+        'subtree',
+        {
+          data: {
+            hProperties: {
+              'data-kui-split': frontmatter.layout[sectionIdx] || 'default' // `<!-- ____KUI_SPLIT____ ${frontmatter.layout[sectionIdx] || 'default'} -->`,
+            }
+          }
+        },
+        []
+      )
+
+    tree.children = tree.children.reduce((newChildren, node) => {
+      if (node.type === 'yaml') {
+        if (node.value) {
+          try {
+            const { load } = require('js-yaml')
+            frontmatter = load(node.value)
+
+            if (frontmatter.layout) {
+              currentSection = newSection(sectionIdx)
+            }
+          } catch (err) {
+            console.error('Error parsing Markdown yaml frontmatter', err)
+          }
+        }
+      } else if (currentSection) {
+        if (node.type === 'thematicBreak') {
+          newChildren.push(currentSection)
+          currentSection = newSection(++sectionIdx)
+        } else {
+          currentSection.children.push(node)
+        }
+      } else {
+        newChildren.push(node)
+      }
+
+      return newChildren
+    }, [])
+
+    if (currentSection) {
+      tree.children.push(currentSection)
+    }
+  }
 }

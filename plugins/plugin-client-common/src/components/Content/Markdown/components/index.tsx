@@ -19,6 +19,7 @@
 import React from 'react'
 import { Components } from 'react-markdown'
 import { dirname, join, relative } from 'path'
+import { TextContent, Tab, Tabs, TabTitleText, Text, TextVariants } from '@patternfly/react-core'
 import { maybeKuiLink, KResponse, REPL, getPrimaryTabId, pexecInCurrentTab } from '@kui-shell/core'
 
 // don't make this lazy if you want code blocks to be sequentially
@@ -35,14 +36,15 @@ const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSectio
 import Input from '../../../Views/Terminal/Block/Inputv2'
 // const Input = React.lazy(() => import('../Views/Terminal/Block/Inputv2'))
 
-import { Tab, Tabs, TabTitleText, Text, TextVariants } from '@patternfly/react-core'
-
 import _img from './img'
 import { list, listItem } from './list'
 import _heading, { anchorFrom } from './heading'
 
 import { Props } from '../../Markdown'
 import { tryFrontmatter, codeWithResponseFrontmatter } from '../frontmatter'
+
+import SplitInjector from '../../../Views/Terminal/SplitInjector'
+import SplitPosition from '../../../Views/Terminal/SplitPosition'
 
 function tipProps(expanded: boolean) {
   return { isWidthLimited: true, expanded }
@@ -234,6 +236,32 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
               />
             </code>
           </div>
+        )
+      }
+    },
+    div: props => {
+      const splitTarget = props['data-kui-split']
+      if (!splitTarget || splitTarget === 'default') {
+        return <div {...props} />
+      } else {
+        // then we have a section that targets a given split position
+        return (
+          <SplitInjector.Consumer>
+            {inject => {
+              const node = (
+                <React.Suspense fallback={<div />}>
+                  <TextContent>
+                    <div className="padding-content marked-content page-content" data-is-nested>
+                      {props.children}
+                    </div>
+                  </TextContent>
+                </React.Suspense>
+              )
+
+              setTimeout(() => inject(node, (splitTarget + '-strip') as SplitPosition))
+              return <React.Fragment />
+            }}
+          </SplitInjector.Consumer>
         )
       }
     },

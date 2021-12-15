@@ -37,8 +37,14 @@ import tabbed, { hackTabIndentation } from './rehype-tabbed'
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
+import { kuiFrontmatter } from './frontmatter'
 const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw, rehypeSlug]
-const remarkPlugins: Options['plugins'] = [gfm, [frontmatter, ['yaml', 'toml']], [emojis, { emoticon: true }]]
+const remarkPlugins: Options['plugins'] = [
+  gfm,
+  [frontmatter, ['yaml', 'toml']],
+  kuiFrontmatter,
+  [emojis, { emoticon: true }]
+]
 
 export interface Props {
   source: string
