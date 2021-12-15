@@ -32,6 +32,7 @@ const Tooltip = React.lazy(() => import('../../../spi/Tooltip'))
 const LinkStatus = React.lazy(() => import('../../LinkStatus'))
 const SimpleEditor = React.lazy(() => import('../../Editor/SimpleEditor'))
 const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
+const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({ default: _.ReactCommentary })))
 
 import Input from '../../../Views/Terminal/Block/Inputv2'
 // const Input = React.lazy(() => import('../Views/Terminal/Block/Inputv2'))
@@ -250,11 +251,13 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
             {inject => {
               const node = (
                 <React.Suspense fallback={<div />}>
-                  <TextContent>
-                    <div className="padding-content marked-content page-content" data-is-nested>
-                      {props.children}
-                    </div>
-                  </TextContent>
+                  <ReactCommentary>
+                    <TextContent>
+                      <div className="padding-content marked-content page-content" data-is-nested>
+                        {props.children}
+                      </div>
+                    </TextContent>
+                  </ReactCommentary>
                 </React.Suspense>
               )
 

@@ -244,3 +244,17 @@ export default class Commentary extends React.PureComponent<Props, State> {
     )
   }
 }
+
+type ReactProps = React.PropsWithChildren<{}>
+
+export class ReactCommentary extends React.PureComponent<ReactProps> {
+  public render() {
+    return (
+      <div className="kui--commentary">
+        <span className="kui--commentary-card">
+          <Card>{this.props.children}</Card>
+        </span>
+      </div>
+    )
+  }
+}
