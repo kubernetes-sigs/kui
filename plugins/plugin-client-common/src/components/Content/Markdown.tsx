@@ -43,7 +43,11 @@ import {
 import { Components, Options } from 'react-markdown'
 const ReactMarkdown = React.lazy(() => import('react-markdown'))
 
-const Card = React.lazy(() => import('../spi/Card'))
+// don't make this lazy if you want code blocks to be sequentially
+// numbered (see codeIdx)
+// const Card = React.lazy(() => import('../spi/Card'))
+import Card from '../spi/Card'
+
 const ExpandableSection = React.lazy(() => import('../spi/ExpandableSection'))
 
 import { tryFrontmatter, codeWithResponseFrontmatter } from './Markdown/frontmatter'
@@ -98,8 +102,8 @@ interface Props {
 interface State {
   source: Props['source']
 
-  /** Has this.splice() been called to splice in a new value? */
-  hasSplicedUpdate?: boolean
+  /** Has the user clicked to execute a code block? */
+  codeHasBeenExecuted: boolean[]
 }
 
 function decodeURI(uri: string) {
@@ -119,11 +123,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    if (state && state.hasSplicedUpdate) {
+    if (state && state.codeHasBeenExecuted.findIndex(_ => _ === true) >= 0) {
       return state
     } else if (!state || state.source !== props.source) {
       return {
-        source: props.source
+        source: Markdown.source(props),
+        codeHasBeenExecuted: []
       }
     } else {
       return state
@@ -143,14 +148,14 @@ export default class Markdown extends React.PureComponent<Props, State> {
   }
 
   /** @return markdown source, as string in application/markdown format */
-  private source() {
-    if (this.props.contentType === 'text/html') {
+  private static source(props: Props) {
+    if (props.contentType === 'text/html') {
       const { gfm } = require('turndown-plugin-gfm')
       const td = new TurndownService()
       td.use(gfm)
-      return td.turndown(this.state.source)
+      return td.turndown(props.source)
     } else {
-      return hackTipIndentation(hackTabIndentation(this.state.source))
+      return hackTipIndentation(hackTabIndentation(props.source)).trim()
     }
   }
 
@@ -239,11 +244,16 @@ export default class Markdown extends React.PureComponent<Props, State> {
     return { isWidthLimited: true, expanded }
   }
 
-  private splice(replacement: string, startOffset: number, endOffset: number) {
-    this.setState(curState => ({
-      hasSplicedUpdate: true,
-      source: curState.source.slice(0, startOffset) + replacement + curState.source.slice(endOffset)
-    }))
+  private splice(replacement: string, startOffset: number, endOffset: number, codeIdx: number) {
+    this.setState(curState => {
+      const codeHasBeenExecuted = curState.codeHasBeenExecuted /* probably not needed since `source` changes .slice() */
+      codeHasBeenExecuted[codeIdx] = true
+
+      return {
+        codeHasBeenExecuted,
+        source: curState.source.slice(0, startOffset) + replacement + curState.source.slice(endOffset)
+      }
+    })
   }
 
   private readonly spliceCodeWithResponseFrontmatter = (
@@ -251,8 +261,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
     body: string,
     language: string,
     sliceStart: number,
-    sliceEnd: number
-  ) => this.splice(codeWithResponseFrontmatter(body, language, response), sliceStart, sliceEnd)
+    sliceEnd: number,
+    codeIdx: number
+  ) => this.splice(codeWithResponseFrontmatter(body, language, response), sliceStart, sliceEnd, codeIdx)
+
+  /** Helps with tests... */
+  private codeIdx: number
 
   private readonly typedComponents: Components = {
     /** remark-collapse support; this is Expandable Sections */
@@ -377,10 +391,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
       if (this.props.nested) {
         // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
-        // console.error('!!!!!!!IN', this.state.source.slice(props.node.position.start.offset, props.node.position.end.offset))
         const sliceStart = props.node.position.start.offset
         const sliceEnd = props.node.position.end.offset
-        // console.error('!!!!!!MD', code, '|||', attributes.response, props, sliceStart, sliceEnd, props)
+
+        const myCodeIdx = this.codeIdx++
+        const executed = this.state.codeHasBeenExecuted[myCodeIdx]
+
         return (
           <Input
             key="fixed"
@@ -390,11 +406,14 @@ export default class Markdown extends React.PureComponent<Props, State> {
             value={body}
             language={language}
             response={attributes.response}
+            hasBeenExecuted={executed}
             arg1={body}
             arg2={language}
             arg3={sliceStart}
             arg4={sliceEnd}
+            arg5={myCodeIdx}
             onResponse={this.spliceCodeWithResponseFrontmatter}
+            data-code-index={myCodeIdx}
           />
         )
       } else {
@@ -476,7 +495,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
               <Tab
                 className="kui--markdown-tab"
                 data-title={_.props.title}
-                key={idx}
+                key={_.props.id}
                 eventKey={idx}
                 title={<TabTitleText>{_.props.title}</TabTitleText>}
               >
@@ -497,7 +516,14 @@ export default class Markdown extends React.PureComponent<Props, State> {
       this.props.onRender()
     }
 
-    return (
+    const { source } = this.state
+    if (source.length === 0) {
+      return <React.Fragment />
+    }
+
+    this.codeIdx = 0
+
+    const tree = (
       <React.Suspense fallback={<div />}>
         <TextContent>
           <ReactMarkdown
@@ -511,10 +537,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
                 (!this.props.nested ? ' scrollable scrollable-x scrollable-auto' : '')
             }
           >
-            {this.source()}
+            {source}
           </ReactMarkdown>
         </TextContent>
       </React.Suspense>
     )
+
+    return tree
   }
 }

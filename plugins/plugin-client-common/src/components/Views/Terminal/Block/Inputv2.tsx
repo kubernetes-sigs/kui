@@ -35,7 +35,7 @@ interface Value {
   language: string
 }
 
-type Props<T1 = any, T2 = any, T3 = any, T4 = any> = Value &
+type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
   StreamingProps & {
     className?: string
     tab: Tab
@@ -49,12 +49,15 @@ type Props<T1 = any, T2 = any, T3 = any, T4 = any> = Value &
     /** Output of this Input? */
     response?: KResponse
 
+    hasBeenExecuted?: boolean
+
     /** Update upstream model with a response */
     arg1: T1
     arg2: T2
     arg3: T3
     arg4: T4
-    onResponse: (response: KResponse, arg1: T1, arg2: T2, arg3: T3, arg4: T4) => void
+    arg5: T5
+    onResponse: (response: KResponse, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5) => void
   }
 
 type State = Value &
@@ -62,8 +65,8 @@ type State = Value &
     execution: 'not-yet' | 'processing' | 'done' | 'replayed'
   }
 
-export default class Input<T1, T2, T3, T4> extends StreamingConsumer<Props<T1, T2, T3, T4>, State> {
-  public constructor(props: Props<T1, T2, T3, T4>) {
+export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T1, T2, T3, T4, T5>, State> {
+  public constructor(props: Props<T1, T2, T3, T4, T5>) {
     super(props)
     this.state = Input.getDerivedStateFromProps(props)
   }
@@ -73,7 +76,9 @@ export default class Input<T1, T2, T3, T4> extends StreamingConsumer<Props<T1, T
       const execUUID = uuid()
       return Object.assign(
         {
-          execution: !props.response ? 'not-yet' : (state && state.execution) || 'replayed',
+          execution: !props.response
+            ? 'not-yet'
+            : (state && state.execution) || (props.hasBeenExecuted ? 'done' : 'replayed'),
           value: props.value,
           language: props.language
         },
@@ -154,17 +159,35 @@ export default class Input<T1, T2, T3, T4> extends StreamingConsumer<Props<T1, T
       const response = await this.execWithStream(cmdline)
 
       this.setState({ execution: 'done' })
-      this.props.onResponse(response, this.props.arg1, this.props.arg2, this.props.arg3, this.props.arg4)
+      this.props.onResponse(
+        response,
+        this.props.arg1,
+        this.props.arg2,
+        this.props.arg3,
+        this.props.arg4,
+        this.props.arg5
+      )
     } catch (err) {
-      this.props.onResponse(err, this.props.arg1, this.props.arg2, this.props.arg3, this.props.arg4)
+      this.props.onResponse(err, this.props.arg1, this.props.arg2, this.props.arg3, this.props.arg4, this.props.arg5)
     }
   }
 
   public render() {
+    const dataProps = Object.entries(this.props)
+      .filter(([key]) => /^data-/.test(key))
+      .reduce((M, [key, value]) => {
+        M[key] = value
+        return M
+      }, {})
+
     return (
       <MutabilityContext.Consumer>
         {mutability => (
-          <li className={'repl-block ' + (this.props.className || '')} data-is-executable={mutability.executable}>
+          <li
+            className={'repl-block ' + (this.props.className || '')}
+            data-is-executable={mutability.executable}
+            {...dataProps}
+          >
             {this.input()}
             {this.output()}
           </li>

@@ -114,6 +114,10 @@ export function hackTipIndentation(source: string): string {
   let inTip: RegExp
   let inTipReplacement: string
 
+  if (source.includes(START_OF_TIP)) {
+    return source
+  }
+
   return source
     .split(/\n/)
     .map(line => {

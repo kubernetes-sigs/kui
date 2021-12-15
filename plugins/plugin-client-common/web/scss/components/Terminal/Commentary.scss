@@ -261,6 +261,13 @@ body[kui-theme-style='light'] {
     }
   }
 }
+
+@include MarkdownTabContent {
+  &:not(:last-child) {
+    margin-bottom: var(--pf-c-content--MarginBottom);
+  }
+}
+
 @include MarkdownTabContent {
   .paragraph:first-child {
     padding-top: 0;
