@@ -497,7 +497,7 @@ $action-hover-delay: 210ms;
 }
 
 @mixin MarkdownTabContent {
-  .kui--markdown-tab {
+  section.kui--markdown-tab {
     @content;
   }
 }

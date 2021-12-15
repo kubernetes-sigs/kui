@@ -36,7 +36,7 @@ export default function plugin(/* options */) {
           const cur = currentTabs[currentTabs.length - 1]
           cur.children.push(child)
           if (cur.position && child.position) {
-            cur.position.end = child.position.end
+            cur.position.end.offset = child.position.end.offset
           }
           return newChildren
         }
@@ -65,15 +65,21 @@ export default function plugin(/* options */) {
 
                   const rest = pchild.value.slice(startMatch.index + startMatch[0].length)
 
+                  const position = {
+                    start: {
+                      offset: child.position.start.offset + startMatch.index
+                    },
+                    end: {
+                      offset: child.position.end.offset + startMatch.index
+                    }
+                  }
+
                   currentTabs.push({
                     type: 'element',
                     tagName: 'li',
                     properties: { title: startMatch[1] },
-                    children: rest ? [{ type: 'text', value: rest }] : []
-                    /* position: {
-                      start: child.position.start + startMatch.index,
-                      end: child.position.end
-                    } */
+                    children: rest ? [{ type: 'text', value: rest }] : [],
+                    position
                   })
                   return newChildren
                 } else if (currentTabs.length > 0) {
@@ -114,6 +120,10 @@ export default function plugin(/* options */) {
 export function hackTabIndentation(source: string): string {
   let inTab: RegExp
   let inTabReplacement: string
+
+  if (source.includes(START_OF_TAB)) {
+    return source
+  }
 
   return source
     .split(/\n/)
