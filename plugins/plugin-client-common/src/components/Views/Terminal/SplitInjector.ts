@@ -23,6 +23,6 @@ import SplitPosition from './SplitPosition'
  * content or not.
  *
  */
-type Injector = (uuid: string, node: React.ReactNode, position: SplitPosition) => React.ReactNode
+type Injector = (uuid: string, node: React.ReactNode, position: SplitPosition) => void
 
 export default React.createContext<Injector>(undefined)

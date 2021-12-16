@@ -33,7 +33,7 @@ const current = (sel: string) => `${sel}.repl-active`
 
 export const _RESULT = '.repl-result'
 const _PROMPT = '.repl-input-element'
-const _PROMPT_BLOCK = '.repl-block'
+export const _PROMPT_BLOCK = '.repl-block'
 
 export const PROMPT_BLOCK = `${CURRENT_TAB} .repl ${_PROMPT_BLOCK}`
 export const PROCESSING_PROMPT_BLOCK = current(PROMPT_BLOCK)

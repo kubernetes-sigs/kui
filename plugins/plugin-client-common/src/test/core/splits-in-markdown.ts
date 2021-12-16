@@ -14,37 +14,46 @@
  * limitations under the License.
  */
 
+import { strictEqual } from 'assert'
 import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, ReplExpect, Selectors, Util as TestUtil } from '@kui-shell/test'
 
-// import { clickToExecuteBlock } from './markdown-helpers'
+import { clickToExecuteBlock } from './markdown-helpers'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/splits1.md')), '..')
 
-const IN1 = {
+interface Input {
+  input: string
+  splits: {
+    position: typeof Selectors.SPLIT_DEFAULT | typeof Selectors.SPLIT_LEFT | typeof Selectors.SPLIT_BOTTOM
+    content: string
+    blocks?: {
+      index: number
+      output: string
+    }[]
+  }[]
+}
+
+const IN1: Input = {
   input: join(ROOT, 'data', 'splits1.md'),
   splits: [
-    { position: 'left', content: 'This should appear in a left split.' },
-    { position: 'bottom', content: 'This should appear in a bottom split.' }
+    { position: Selectors.SPLIT_LEFT, content: 'This should appear in a left split.' },
+    { position: Selectors.SPLIT_DEFAULT, content: 'This should appear in a default split.' },
+    { position: Selectors.SPLIT_BOTTOM, content: 'This should appear in a bottom split.' }
+  ]
+}
+
+const IN2: Input = {
+  input: join(ROOT, 'data', 'splits2.md'),
+  splits: [
+    Object.assign({ blocks: [{ index: 2, output: 'LEFT' }] }, IN1.splits[0]),
+    Object.assign({ blocks: [{ index: 1, output: 'DEFAULT' }] }, IN1.splits[1])
   ]
 }
 
 async function verifySplit(this: Common.ISuite, { position, content }: typeof IN1['splits'][0]) {
-  const splitSelector =
-    position === 'left'
-      ? Selectors.SPLIT_LEFT()
-      : position === 'bottom'
-      ? Selectors.SPLIT_BOTTOM()
-      : position === 'default'
-      ? Selectors.SPLIT_DEFAULT()
-      : undefined
-
-  if (!splitSelector) {
-    throw new Error(`Cannot find split in position ${position}`)
-  }
-
-  const split = await this.app.client.$(splitSelector)
+  const split = await this.app.client.$(position())
   await split.waitForDisplayed({ timeout: CLI.waitTimeout })
 
   const result = await split.$(Selectors._RESULT)
@@ -52,24 +61,47 @@ async function verifySplit(this: Common.ISuite, { position, content }: typeof IN
 
   await this.app.client.waitUntil(async () => {
     const actualContent = await result.getText()
-    return actualContent === content
+    return actualContent.includes(content)
   })
 }
 
-;[IN1].forEach(markdown => {
-  describe(`open splits from markdown ${basename(markdown.input)} ${process.env.MOCHA_RUN_TARGET ||
-    ''}`, function(this: Common.ISuite) {
-    before(Common.before(this))
-    after(Common.after(this))
+;[IN1, IN2].forEach(markdown => {
+  ;['forward', 'reverse'].forEach(blockExecutionOrder => {
+    describe(`open splits from markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
+      .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+      before(Common.before(this))
+      after(Common.after(this))
 
-    it(`should load the markdown and show ${IN1.splits.length} splits`, async () => {
-      try {
-        await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app).then(ReplExpect.ok)
+      const clear = TestUtil.doClear.bind(this)
 
-        await Util.promiseEach(markdown.splits, verifySplit.bind(this))
-      } catch (err) {
-        await Common.oops(this, true)(err)
-      }
+      it('should clear the console from scratch', () => clear())
+      it(`should load the markdown and show ${IN1.splits.length} splits`, async () => {
+        try {
+          await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app).then(ReplExpect.ok)
+
+          await Util.promiseEach(markdown.splits, async split => {
+            await verifySplit.bind(this)(split)
+
+            if (split.blocks) {
+              const nBlocksBeforeExecution = (await this.app.client.$$(Selectors._PROMPT_BLOCK)).length
+
+              const blocks = blockExecutionOrder === 'forward' ? split.blocks : split.blocks.slice().reverse()
+
+              const executeBlock = clickToExecuteBlock.bind(this, split.position)
+              await Util.promiseEach(blocks, executeBlock)
+
+              const nBlocksAfterExecution = (await this.app.client.$$(Selectors._PROMPT_BLOCK)).length
+              strictEqual(
+                nBlocksBeforeExecution,
+                nBlocksAfterExecution,
+                'after executing blocks, make sure we have as many blocks as we did initially in each split'
+              )
+            }
+          })
+        } catch (err) {
+          await Common.oops(this, true)(err)
+        }
+      })
     })
   })
 })
