@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Props as EditorProps } from '../../Content/Editor/SimpleEditor'
+
 interface Props {
   tabUUID: string
 
@@ -26,6 +28,9 @@ interface Props {
 
   /** default: true */
   readonly?: boolean
+
+  /** wordWrap */
+  wordWrap?: EditorProps['wordWrap']
 
   /** default: false */
   isCopyEnabled?: boolean

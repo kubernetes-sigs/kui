@@ -24,34 +24,35 @@ import defaultMonacoOptions, { Options as MonacoOptions } from './lib/defaults'
 
 import '../../../../web/scss/components/Editor/Editor.scss'
 
-type Props = Pick<MonacoOptions, 'fontSize'> & {
-  tabUUID?: string
-  content: string
-  contentType: string
-  simple?: boolean
-  className?: string
-  readonly?: boolean
-  onContentChange?: (content: string) => void
-  scrollIntoView?: boolean
+export type Props = Pick<MonacoOptions, 'fontSize'> &
+  Monaco.IEditorConstructionOptions & {
+    tabUUID?: string
+    content: string
+    contentType: string
+    simple?: boolean
+    className?: string
+    readonly?: boolean
+    onContentChange?: (content: string) => void
+    scrollIntoView?: boolean
 
-  /** Focus on initial render (this is the default for !readonly) */
-  focus?: boolean
+    /** Focus on initial render (this is the default for !readonly) */
+    focus?: boolean
 
-  /** Font size adjustment factor, based off getKuiFontSize(), i.e. the default font size for the theme and client */
-  fontSizeAdjust?: number
+    /** Font size adjustment factor, based off getKuiFontSize(), i.e. the default font size for the theme and client */
+    fontSizeAdjust?: number
 
-  /** Minimum height of the editor */
-  minHeight?: number
+    /** Minimum height of the editor */
+    minHeight?: number
 
-  /** Use a light theme? Default: false */
-  light?: boolean
+    /** Use a light theme? Default: false */
+    light?: boolean
 
-  /** Callback when user hits cmd/ctrl+S or shift-return */
-  onSave?: (content: string) => void
+    /** Callback when user hits cmd/ctrl+S or shift-return */
+    onSave?: (content: string) => void
 
-  /** Callback when user hits Escape */
-  onCancel?: (content: string) => void
-}
+    /** Callback when user hits Escape */
+    onCancel?: (content: string) => void
+  }
 
 interface State {
   editor: ReturnType<typeof Monaco.create>
@@ -156,6 +157,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
         readOnly: props.readonly !== undefined ? props.readonly : true,
         fontSize: props.fontSize || getKuiFontSize() * (props.fontSizeAdjust || 1),
         language: SimpleEditor.language(props.contentType),
+        wordWrap: props.wordWrap,
         simple: props.simple
       }
       const overrides: Monaco.IStandaloneEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }

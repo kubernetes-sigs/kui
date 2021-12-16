@@ -67,6 +67,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
           simple
           focus={false}
           readonly={this.props.readonly !== false}
+          wordWrap={this.props.wordWrap}
           tabUUID={this.props.tabUUID}
           minHeight={0}
           content={this.props.value}

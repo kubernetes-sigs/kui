@@ -104,6 +104,7 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context">
         <div className="flex-fill">
           <CodeSnippet
+            wordWrap="on"
             tabUUID={this.props.tab ? this.props.tab.uuid : undefined}
             value={this.state.value}
             language={this.state.language}
