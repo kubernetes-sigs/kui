@@ -245,6 +245,9 @@ body[kui-theme-style='light'] {
   @include Spinner {
     --sk-size: 0.875em;
     width: $action-width;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   @include CommandOutput {
