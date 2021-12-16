@@ -18,6 +18,8 @@ import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
+import { clickToExecuteBlock } from './markdown-helpers'
+
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/code-block1.md')), '..')
 
 const IN1 = {
@@ -35,28 +37,6 @@ const IN2 = {
     { index: 4, output: 'EEE' }
   ]
 }
-
-async function clickToExecuteBlock(this: Common.ISuite, res: ReplExpect.AppAndCount, block: typeof IN1['blocks'][0]) {
-  const codeBlockSelector = `${Selectors.OUTPUT_N(
-    res.count,
-    res.splitIndex
-  )} .kui--code-block-in-markdown[data-code-index="${block.index}"]`
-  await this.app.client.$(codeBlockSelector).then(_ => _.waitForDisplayed({ timeout: CLI.waitTimeout }))
-
-  const runAction = await this.app.client.$(`${codeBlockSelector} .kui--block-action-run`)
-  await runAction.waitForDisplayed({ timeout: CLI.waitTimeout })
-
-  await runAction.click()
-
-  const result = await this.app.client.$(`${codeBlockSelector} ${Selectors._RESULT}`)
-  await result.waitForDisplayed({ timeout: CLI.waitTimeout })
-
-  await this.app.client.waitUntil(async () => {
-    const actualText = await result.getText()
-    return actualText === block.output
-  })
-}
-
 ;[IN1, IN2].forEach(markdown => {
   ;['forward', 'reverse'].forEach(blockExecutionOrder => {
     describe(`execute code blocks in markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
@@ -66,10 +46,8 @@ async function clickToExecuteBlock(this: Common.ISuite, res: ReplExpect.AppAndCo
 
       it(`should load the markdown and execute them, showing the results`, async () => {
         try {
-          const res = await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app).then(
-            ReplExpect.ok
-          )
-          const executeBlock = clickToExecuteBlock.bind(this, res)
+          await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app).then(ReplExpect.ok)
+          const executeBlock = clickToExecuteBlock.bind(this, Selectors.SPLIT_DEFAULT)
 
           const blocks = blockExecutionOrder === 'forward' ? markdown.blocks : markdown.blocks.slice().reverse()
 

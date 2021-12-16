@@ -17,6 +17,12 @@
 import React from 'react'
 import SplitPosition from './SplitPosition'
 
-type Injector = (node: React.ReactNode, position: SplitPosition) => React.ReactNode
+/**
+ * Inject the given React `node` in the given `SplitPosition`. Use the
+ * given `uuid` to determine whether we have already injected this
+ * content or not.
+ *
+ */
+type Injector = (uuid: string, node: React.ReactNode, position: SplitPosition) => React.ReactNode
 
 export default React.createContext<Injector>(undefined)

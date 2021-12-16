@@ -445,18 +445,38 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return split
   }
 
-  private readonly injectInSplit = (node: React.ReactNode, position: SplitPosition) => {
+  private readonly injectInSplit = (uuid: string, node: React.ReactNode, position: SplitPosition) => {
     const split = this.state.splits.find(_ => _.position === position) || this.makePositionedSplit(position)
 
     if (split) {
-      const insertIdx = isActive(split.blocks[split.blocks.length - 1]) ? split.blocks.length - 1 : split.blocks.length
-      this.splice(split.uuid, curState => ({
-        blocks: [
-          ...curState.blocks.slice(0, insertIdx),
-          Announcement({ react: node }),
-          ...curState.blocks.slice(insertIdx)
-        ]
-      }))
+      this.splice(split.uuid, curState => {
+        // have we already inserted the given node?
+        const execUUID = `${uuid}-${position}`
+        const alreadyIdx = curState.blocks.findIndex(_ => isAnnouncement(_) && _.execUUID === execUUID)
+
+        // in either case, we will use this new BlockModel
+        const newBlock = Announcement({ react: node }, execUUID)
+
+        if (alreadyIdx >= 0) {
+          // yup! so splice out with the old, and in with the new!
+          return {
+            blocks: [
+              ...curState.blocks.slice(0, alreadyIdx),
+              newBlock,
+              ...curState.blocks.slice(alreadyIdx + 1) // skip over the existing version...
+            ]
+          }
+        } else {
+          // then we splice in the new
+          const insertIdx = isActive(split.blocks[split.blocks.length - 1])
+            ? split.blocks.length - 1
+            : split.blocks.length
+
+          return {
+            blocks: [...curState.blocks.slice(0, insertIdx), newBlock, ...curState.blocks.slice(insertIdx)]
+          }
+        }
+      })
     }
 
     return <React.Fragment />
