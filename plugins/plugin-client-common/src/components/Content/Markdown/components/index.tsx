@@ -261,7 +261,7 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
                 </React.Suspense>
               )
 
-              setTimeout(() => inject(node, (splitTarget + '-strip') as SplitPosition))
+              setTimeout(() => inject(uuid, node, (splitTarget + '-strip') as SplitPosition))
               return <React.Fragment />
             }}
           </SplitInjector.Consumer>

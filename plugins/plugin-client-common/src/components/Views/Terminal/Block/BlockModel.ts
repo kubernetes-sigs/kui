@@ -63,6 +63,7 @@ type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
 export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithResponse<ScalarResponse> &
   WithCWD &
+  WithUUID &
   WithAnnouncement
 type EmptyBlock = WithState<BlockState.Empty> &
   WithCWD &
@@ -188,9 +189,10 @@ export function Active(initialValue?: string): ActiveBlock {
 }
 
 /** Transform to AnnouncementBlock */
-export function Announcement(response: ScalarResponse): AnnouncementBlock {
+export function Announcement(response: ScalarResponse, execUUID = uuid()): AnnouncementBlock {
   return {
     response,
+    execUUID,
     isAnnouncement: true,
     startTime: Date.now(),
     cwd: cwd(),

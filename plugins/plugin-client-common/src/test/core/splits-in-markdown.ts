@@ -18,6 +18,8 @@ import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
 import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
 
+// import { clickToExecuteBlock } from './markdown-helpers'
+
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/splits1.md')), '..')
 
 const IN1 = {
