@@ -47,10 +47,10 @@ const IN2 = {
       it(`should load the markdown and execute them, showing the results`, async () => {
         try {
           await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app).then(ReplExpect.ok)
-          const executeBlock = clickToExecuteBlock.bind(this, Selectors.SPLIT_DEFAULT)
 
           const blocks = blockExecutionOrder === 'forward' ? markdown.blocks : markdown.blocks.slice().reverse()
 
+          const executeBlock = clickToExecuteBlock.bind(this, Selectors.SPLIT_DEFAULT)
           await Util.promiseEach(blocks, executeBlock)
         } catch (err) {
           await Common.oops(this, true)(err)

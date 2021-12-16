@@ -429,8 +429,9 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return scrollback
   }
 
-  private makePositionedSplit(position: SplitPosition) {
-    const split = this.scrollback(undefined, { position })
+  /** Create a split with the given position and coloration */
+  private makePositionedSplit(position: SplitPosition, inverseColors?: boolean) {
+    const split = this.scrollback(undefined, { position, inverseColors })
 
     this.setState(curState => ({
       splits: curState.splits.concat([split])
@@ -445,8 +446,16 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     return split
   }
 
+  /**
+   * This is the handler for the `SplitInjector` component. Injects
+   * the given React `node` into the given `position`. Uses `uuid` to
+   * determine whether the a prior version of the node already exists
+   * in that position.
+   */
   private readonly injectInSplit = (uuid: string, node: React.ReactNode, position: SplitPosition) => {
-    const split = this.state.splits.find(_ => _.position === position) || this.makePositionedSplit(position)
+    const split =
+      this.state.splits.find(_ => _.position === position) ||
+      this.makePositionedSplit(position, position === 'left-strip')
 
     if (split) {
       this.splice(split.uuid, curState => {
@@ -478,8 +487,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         }
       })
     }
-
-    return <React.Fragment />
   }
 
   private allocateUUIDForScrollback() {
