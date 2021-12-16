@@ -15,7 +15,7 @@
  */
 
 import { u } from 'unist-builder'
-import { KResponse } from '@kui-shell/core'
+import { KResponse, isWatchable } from '@kui-shell/core'
 
 export function tryFrontmatter(
   value: string
@@ -33,6 +33,10 @@ export function tryFrontmatter(
 }
 
 export function codeWithResponseFrontmatter(body: string, language: string, response?: KResponse) {
+  if (response && isWatchable(response)) {
+    delete response.watch
+  }
+
   const frontmatter = !response
     ? ''
     : `---

@@ -17,7 +17,7 @@
 import { editor } from 'monaco-editor'
 import getKuiFontSize from './fonts'
 
-export interface Options {
+export interface Options extends editor.IEditorConstructionOptions {
   readOnly?: boolean
   simple?: boolean
   fontSize?: number
@@ -60,7 +60,7 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   links: !options.simple,
   folding: !options.simple || !/markdown|text|shell/i.test(options.language),
   lineNumbers: options.simple ? 'off' : 'on',
-  wordWrap: options.simple ? 'off' : 'on',
+  wordWrap: options.wordWrap || (options.simple ? 'off' : 'on'),
   renderLineHighlight: options.simple ? 'none' : undefined,
   renderFinalNewline: !options.simple,
   lineDecorationsWidth: options.simple ? 0 : undefined
