@@ -33,13 +33,22 @@ interface State {
 }
 
 export function subscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
-  Events.eventChannelUnsafe.on(`/link/status/update/${link}`, statusUpdateHandler)
+  const id = link.replace(/^kui-link-/, '')
+  Events.eventChannelUnsafe.on(`/link/status/update/${id}`, statusUpdateHandler)
 
   // request the first update
-  Events.eventChannelUnsafe.emit(`/link/status/get`, link)
+  Events.eventChannelUnsafe.emit(`/link/status/get/${id}`)
+
+  // we may ditch this; ScrollableTerminal still needs this for now
+  Events.eventChannelUnsafe.on(`/link/status/update/${link}`, statusUpdateHandler)
+  Events.eventChannelUnsafe.emit('/link/status/get', link)
 }
 
 export function unsubscribeToLinkUpdates(link: string, statusUpdateHandler: (status: number[]) => void) {
+  const id = link.replace(/^kui-link-/, '')
+  Events.eventChannelUnsafe.off(`/link/status/update/${id}`, statusUpdateHandler)
+
+  // we may ditch this; ScrollableTerminal still needs this for now
   Events.eventChannelUnsafe.off(`/link/status/update/${link}`, statusUpdateHandler)
 }
 
