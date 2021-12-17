@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import { Arguments, CommentaryResponse, ParsedOptions, Registrar, UsageModel, Util } from '@kui-shell/core'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
+import {
+  Arguments,
+  CommentaryResponse,
+  Events,
+  ParsedOptions,
+  Registrar,
+  UsageModel,
+  Util,
+  getPrimaryTabId
+} from '@kui-shell/core'
 
 /**
  * commentary command parsedOptions type
@@ -25,6 +34,9 @@ interface CommentaryOptions extends ParsedOptions {
   file: string
   title: string
   'base-url': string
+
+  /** Toggle the tab to be in readonly mode */
+  readonly: boolean
 }
 
 /**
@@ -45,6 +57,10 @@ const usage: UsageModel = {
       name: '--base-url',
       alias: '-b',
       docs: 'Base URL for images'
+    },
+    {
+      name: '--readonly',
+      docs: 'Set the enclosing tab to be readonly'
     },
     {
       name: '--file',
@@ -75,7 +91,7 @@ export async function fetchMarkdownFile(filepath: string, args: Arguments): Prom
 }
 
 async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
-  const { title } = args.parsedOptions
+  const { title, readonly } = args.parsedOptions
   const filepath = args.parsedOptions.file || args.parsedOptions.f
 
   // the markdown data either comes from a file, or directly from the
@@ -90,6 +106,10 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           .replace(/\\n/g, '\n')
           .replace(/\\t/g, '\t')
           .replace(/(-t|--title)\s+\S+/, '')) || '#'
+
+  if (filepath && readonly) {
+    Events.eventBus.emitWithTabId('/kui/tab/edit/toggle', getPrimaryTabId(args.tab))
+  }
 
   if (data !== undefined) {
     if (data === '#' || args.command === 'commentary') {
@@ -125,6 +145,10 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
  *
  */
 export default async (commandTree: Registrar) => {
-  commandTree.listen('/commentary', addComment, { usage, outputOnly: true })
-  commandTree.listen('/#', addComment, { usage, outputOnly: true, noCoreRedirect: true })
+  const flags = {
+    boolean: ['readonly']
+  }
+
+  commandTree.listen('/commentary', addComment, { usage, outputOnly: true, flags })
+  commandTree.listen('/#', addComment, { usage, outputOnly: true, noCoreRedirect: true, flags })
 }

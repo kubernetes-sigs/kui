@@ -660,7 +660,7 @@ let cachedFontProperties: { fontFamily: string; fontSize: number }
 function getFontProperties(flush: boolean) {
   if (flush || !cachedFontProperties) {
     debug('computing font properties')
-    const fontTheme = getComputedStyle(document.querySelector('body .repl .repl-input .repl-input-element'))
+    const fontTheme = getComputedStyle(document.querySelector('body .repl .kui--scrollback'))
 
     /** helper to extract a kui theme color */
     const val = (key: string, kind = 'color'): string => fontTheme.getPropertyValue(`--${kind}-${key}`).trim()

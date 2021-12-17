@@ -25,6 +25,7 @@ import Scalar from '../../../Content/Scalar'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
 import { MutabilityContext } from '../../../Client/MutabilityContext'
 
+const SourceRef = React.lazy(() => import('../SourceRef'))
 const CodeSnippet = React.lazy(() => import('../../../spi/CodeSnippet'))
 const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
 
@@ -116,6 +117,10 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
     )
   }
 
+  private sourceRef() {
+    return this.props.response && <SourceRef tab={this.props.tab} response={this.props.response} />
+  }
+
   private nonstreamingOutput() {
     return (
       this.state.execution !== 'processing' &&
@@ -187,9 +192,11 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
           <li
             className={'repl-block ' + (this.props.className || '')}
             data-is-executable={mutability.executable}
+            data-has-border={this.props.response || undefined}
             {...dataProps}
           >
             {this.input()}
+            {this.sourceRef()}
             {this.output()}
           </li>
         )}

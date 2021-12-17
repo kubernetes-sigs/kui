@@ -309,6 +309,19 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
     }
   }
 
+  private sourceRef() {
+    return (
+      this.props.model &&
+      isWithCompleteEvent(this.props.model) && (
+        <SourceRef
+          tab={this.props.tab}
+          isWidthConstrained={this.props.isWidthConstrained}
+          response={this.props.model.response}
+        />
+      )
+    )
+  }
+
   public render() {
     return (
       <React.Suspense fallback={<div />}>
@@ -321,7 +334,7 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
           </div>
           {this.state && this.state.tabCompletion && this.state.tabCompletion.render()}
         </div>
-        <SourceRef tab={this.props.tab} isWidthConstrained={this.props.isWidthConstrained} model={this.props.model} />
+        {this.sourceRef()}
       </React.Suspense>
     )
   }

@@ -50,6 +50,12 @@ ${frontmatter}${body}
 }
 
 interface KuiFrontmatter {
+  /** Title of the Notebook */
+  title?: string
+
+  /**
+   * A mapping that indicates which section (the `number` values) should be rendered in a given split position.
+   */
   layout?: {
     left?: number
     right?: number
@@ -96,6 +102,11 @@ export function kuiFrontmatter() {
 
             if (frontmatter.layout) {
               currentSection = newSection(sectionIdx)
+            }
+
+            if (frontmatter.title && typeof frontmatter.title === 'string') {
+              // TODO handle notebook title
+              // Events.eventBus.emitWithTabId('/kui/tab/title/set', getPrimaryTabId(args.tab), undefined, frontmatter.title)
             }
           } catch (err) {
             console.error('Error parsing Markdown yaml frontmatter', err)

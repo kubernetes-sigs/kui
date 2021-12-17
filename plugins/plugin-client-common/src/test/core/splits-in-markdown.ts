@@ -17,7 +17,7 @@
 import { strictEqual } from 'assert'
 import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, Selectors, Util as TestUtil } from '@kui-shell/test'
+import { Common, CLI, Selectors, Util as TestUtil } from '@kui-shell/test'
 
 import { clickToExecuteBlock } from './markdown-helpers'
 
@@ -77,7 +77,7 @@ async function verifySplit(this: Common.ISuite, { position, content }: typeof IN
       it('should clear the console from scratch', () => clear())
       it(`should load the markdown and show ${IN1.splits.length} splits`, async () => {
         try {
-          await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app).then(ReplExpect.ok)
+          await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
 
           await Util.promiseEach(markdown.splits, async split => {
             await verifySplit.bind(this)(split)
