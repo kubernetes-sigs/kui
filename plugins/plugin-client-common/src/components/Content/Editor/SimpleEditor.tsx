@@ -171,20 +171,36 @@ export default class SimpleEditor extends React.Component<Props, State> {
 
       this.registerKeyboardShortcuts(editor)
 
-      if (/* options.readOnly && */ props.simple) {
-        // if we know 1) the height of the content won't change, and
-        // 2) we are running in "simple" mode (this is mostly the case
-        // for inline editor components, as opposed to editor
-        // components that are intended to fill the full view), then:
-        // size the height to fit the content
-        const minHeight = this.props.minHeight !== undefined ? this.props.minHeight : 250
-        state.wrapper.current.style.height =
-          Math.min(0.3 * window.innerHeight, Math.max(minHeight, editor.getContentHeight())) + 'px'
-      }
+      const adjustHeight = !props.simple
+        ? undefined
+        : () => {
+            // if we know 1) the height of the content won't change, and
+            // 2) we are running in "simple" mode (this is mostly the case
+            // for inline editor components, as opposed to editor
+            // components that are intended to fill the full view), then:
+            // size the height to fit the content
+            const minHeight = this.props.minHeight !== undefined ? this.props.minHeight : 250
+            const contentHeight = Math.max(minHeight, editor.getContentHeight())
+            state.wrapper.current.style.height =
+              (minHeight === 0 ? contentHeight : Math.min(0.3 * window.innerHeight, contentHeight)) + 'px'
+          }
+      adjustHeight && adjustHeight()
 
       state.wrapper.current['getValueForTests'] = () => {
         return editor.getValue()
       }
+
+      let ignoreEvent = false
+      editor.onDidContentSizeChange(() => {
+        if (ignoreEvent) return
+        try {
+          ignoreEvent = true
+          adjustHeight && adjustHeight()
+          editor.layout()
+        } finally {
+          ignoreEvent = false
+        }
+      })
 
       if (props.onContentChange) {
         editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))

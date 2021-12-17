@@ -19,7 +19,6 @@
 @import "master-font-size";
 @import "../../scss/components/Card/mixins";
 @import "../../scss/components/Chart/colors";
-@import "../../scss/components/Editor/mixins";
 @import "../../scss/components/Sidecar/mixins";
 
 * {
@@ -859,11 +858,6 @@ body[kui-theme-style="dark"] .repl {
 .kui .page-content code.kui--code--editor {
   display: block;
   padding: 0.5em 1em;
-}
-.kui .page-content {
-  @include EditorBackground {
-    background-color: transparent;
-  }
 }
 
 .page-content pre > code {

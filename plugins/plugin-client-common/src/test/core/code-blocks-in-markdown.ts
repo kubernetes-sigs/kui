@@ -16,7 +16,7 @@
 
 import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
-import { Common, CLI, ReplExpect, Selectors } from '@kui-shell/test'
+import { Common, CLI, Selectors } from '@kui-shell/test'
 
 import { clickToExecuteBlock } from './markdown-helpers'
 
@@ -46,7 +46,7 @@ const IN2 = {
 
       it(`should load the markdown and execute them, showing the results`, async () => {
         try {
-          await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app).then(ReplExpect.ok)
+          await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
 
           const blocks = blockExecutionOrder === 'forward' ? markdown.blocks : markdown.blocks.slice().reverse()
 

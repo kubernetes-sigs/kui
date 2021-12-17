@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+@use 'sass:math';
 @import 'mixins';
 
 @include Block {
@@ -43,10 +44,22 @@
     }
   }
 }
-@include FocusedBlock {
+
+@mixin ShowBorder {
+  opacity: 1;
+  background-color: var(--color-table-border3);
+}
+
+@include AlwaysBorderedBlock {
   @include BlockBorder {
-    opacity: 1;
-    background-color: var(--color-table-border3);
+    @include ShowBorder;
+  }
+}
+@include FocusedBlock {
+  @include Editable {
+    @include BlockBorder {
+      @include ShowBorder;
+    }
   }
 }
 @include ErrorBlock {
@@ -54,6 +67,15 @@
     @include BlockBorder {
       opacity: 0.625;
       background-color: var(--color-red);
+    }
+  }
+}
+
+/** Nested blocks, e.g. for commentary */
+@include Block {
+  @include Block {
+    @include BlockBorder {
+      left: calc(#{-$input-padding-left} + #{(math.div($block-border-width-px, 2) + em)} + 1px);
     }
   }
 }

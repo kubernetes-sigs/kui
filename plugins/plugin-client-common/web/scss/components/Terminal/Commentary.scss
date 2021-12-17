@@ -229,8 +229,10 @@ body[kui-theme-style='light'] {
       --input-padding-left: 0;
       --input-padding-right: 0;
 
-      /** Code blocks nested inside of the outer Block; no need to repeat the padding... */
-      padding: 0;
+      /** Code blocks nested inside of the outer Block; no need to repeat the padding, unless we are showing a BlockBorder */
+      @include NotAlwaysHasBorder {
+        padding: 0;
+      }
     }
   }
 }

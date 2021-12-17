@@ -16,9 +16,7 @@
 
 import React from 'react'
 import { basename } from 'path'
-import { Tab, isTable, getPrimaryTabId, hasSourceReferences } from '@kui-shell/core'
-
-import { BlockModel, isWithCompleteEvent } from './Block/BlockModel'
+import { Tab, KResponse, isTable, getPrimaryTabId, hasSourceReferences } from '@kui-shell/core'
 
 const Accordion = React.lazy(() => import('../../spi/Accordion'))
 const SimpleEditor = React.lazy(() => import('../../Content/Editor/SimpleEditor'))
@@ -26,10 +24,10 @@ const SimpleEditor = React.lazy(() => import('../../Content/Editor/SimpleEditor'
 type Props = {
   tab: Tab
 
-  isWidthConstrained: boolean
+  isWidthConstrained?: boolean
 
-  /** state of the Block, e.g. Processing? Active/accepting input? */
-  model: BlockModel
+  /** Response from a command execution which may have a potential SourceRef */
+  response: KResponse
 }
 
 export default class SourceRef extends React.PureComponent<Props> {
@@ -50,10 +48,10 @@ export default class SourceRef extends React.PureComponent<Props> {
   }
 
   public render() {
-    const { model } = this.props
+    const { response } = this.props
 
-    if (model && isWithCompleteEvent(model) && isTable(model.response) && hasSourceReferences(model.response)) {
-      const sourceRef = model.response.kuiSourceRef
+    if (response && isTable(response) && hasSourceReferences(response)) {
+      const sourceRef = response.kuiSourceRef
       const names = sourceRef.templates.concat(sourceRef.customization || []).map(_ => basename(_.filepath))
       const content = sourceRef.templates
         .map(_ => this.sourceRefContent(_.data, _.contentType))
@@ -64,7 +62,7 @@ export default class SourceRef extends React.PureComponent<Props> {
           <div className="repl-context"></div>
           <Accordion
             names={names}
-            isWidthConstrained={this.props.isWidthConstrained}
+            isWidthConstrained={this.props.isWidthConstrained || false}
             tab={this.props.tab}
             content={content}
             className="no-padding"

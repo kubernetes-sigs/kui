@@ -41,6 +41,11 @@
   }
 }
 
+@include Editor {
+  min-width: 40rem;
+  max-width: 100%;
+}
+
 @include Scrollback {
   @include ExpandableSectionButton {
     background-color: transparent;
