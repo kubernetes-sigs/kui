@@ -15,7 +15,7 @@
  */
 
 import { u } from 'unist-builder'
-import { KResponse, isWatchable } from '@kui-shell/core'
+import { KResponse, Tab, isWatchable } from '@kui-shell/core'
 
 export function tryFrontmatter(
   value: string
@@ -32,15 +32,23 @@ export function tryFrontmatter(
   }
 }
 
-export function codeWithResponseFrontmatter(body: string, language: string, response?: KResponse) {
+export function codeWithResponseFrontmatter(body: string, language: string, blockId?: string, response?: KResponse) {
   if (response && isWatchable(response)) {
     delete response.watch
   }
 
-  const frontmatter = !response
-    ? ''
-    : `---
-response: ${JSON.stringify(response)}
+  const attrs: string[] = []
+  if (blockId) {
+    attrs.push(`id: ${blockId}`)
+  }
+  if (response) {
+    attrs.push(`response: ${JSON.stringify(response)}`)
+  }
+  const frontmatter =
+    attrs.length === 0
+      ? ''
+      : `---
+${attrs.join('\n')}
 ---
 `
 
@@ -73,7 +81,7 @@ export function splitTarget(node) {
 }
 
 /** Parse out the frontmatter at the top of a markdown file */
-export function kuiFrontmatter() {
+export function kuiFrontmatter(opts: { tab: Tab }) {
   return tree => {
     let sectionIdx = 1
     let currentSection // : { type: 'kui-split', value: string, children: [] }
@@ -105,8 +113,7 @@ export function kuiFrontmatter() {
             }
 
             if (frontmatter.title && typeof frontmatter.title === 'string') {
-              // TODO handle notebook title
-              // Events.eventBus.emitWithTabId('/kui/tab/title/set', getPrimaryTabId(args.tab), undefined, frontmatter.title)
+              opts.tab.setTitle(frontmatter.title)
             }
           } catch (err) {
             console.error('Error parsing Markdown yaml frontmatter', err)

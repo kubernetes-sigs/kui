@@ -41,6 +41,8 @@ export type TabContentOptions = TerminalOptions & {
   bottom?: React.ReactElement<WithTabUUID & WithTab<KuiTab>>
 
   onTabReady?: (tab: KuiTab) => void
+
+  willSetTitle?: (uuid: string, title: string) => void
 }
 
 type Props = TabContentOptions &
@@ -251,6 +253,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
             }
           }
         })
+      }
+
+      tab.setTitle = (title: string) => {
+        if (this.props.willSetTitle) {
+          this.props.willSetTitle(this.props.uuid, title)
+        }
       }
     }
   }

@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { KResponse, Tab, i18n } from '@kui-shell/core'
+import { Events, KResponse, Tab, i18n } from '@kui-shell/core'
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
@@ -47,6 +47,9 @@ type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
     /** Callback when content changes */
     onContentChange?: (content: string) => void
 
+    /** A Block identifier, to enable cross-referencing with check lists, etc. */
+    blockId?: string
+
     /** Output of this Input? */
     response?: KResponse
 
@@ -58,18 +61,50 @@ type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
     arg3: T3
     arg4: T4
     arg5: T5
-    onResponse: (response: KResponse, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5) => void
+    onResponse: (response: KResponse, blockId: string, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5) => void
   }
 
 type State = Value &
   StreamingState & {
-    execution: 'not-yet' | 'processing' | 'done' | 'replayed'
+    execution: 'not-yet' | 'processing' | 'done' | 'error' | 'replayed'
   }
 
 export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T1, T2, T3, T4, T5>, State> {
+  private readonly cleaners: (() => void)[] = []
+
   public constructor(props: Props<T1, T2, T3, T4, T5>) {
     super(props)
     this.state = Input.getDerivedStateFromProps(props)
+  }
+
+  public componentDidMount() {
+    this.initLinkEvents()
+  }
+
+  public componentWillUnmount() {
+    this.cleaners.forEach(_ => _())
+  }
+
+  private emitLinkStatus(execution = this.state.execution) {
+    Events.eventChannelUnsafe.emit(
+      `/link/status/update/${this.props.blockId}`,
+      execution === 'not-yet'
+        ? [0, 0, 0]
+        : execution === 'processing'
+        ? [0, 0, 1]
+        : execution === 'error'
+        ? [0, 1, 0]
+        : [1, 0, 0]
+    )
+  }
+
+  private initLinkEvents() {
+    if (this.props.blockId) {
+      const get = `/link/status/get/${this.props.blockId}`
+      const emit = this.emitLinkStatus.bind(this)
+      Events.eventChannelUnsafe.on(get, emit)
+      this.cleaners.push(() => Events.eventChannelUnsafe.off(get, emit))
+    }
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
@@ -160,6 +195,7 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
     try {
       // semicolons between commands and escape newlines
       this.setState({ execution: 'processing' })
+      this.emitLinkStatus('processing')
 
       const cmdline = this.state.value // .replace(/([^\\])(\n)/g, '$1;\\ $2')
       const response = await this.execWithStream(cmdline)
@@ -167,14 +203,27 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       this.setState({ execution: 'done' })
       this.props.onResponse(
         response,
+        this.props.blockId,
         this.props.arg1,
         this.props.arg2,
         this.props.arg3,
         this.props.arg4,
         this.props.arg5
       )
+      this.emitLinkStatus('done')
     } catch (err) {
-      this.props.onResponse(err, this.props.arg1, this.props.arg2, this.props.arg3, this.props.arg4, this.props.arg5)
+      this.setState({ execution: 'error' })
+      this.props.onResponse(
+        err,
+        this.props.blockId,
+        this.props.arg1,
+        this.props.arg2,
+        this.props.arg3,
+        this.props.arg4,
+        this.props.arg5
+      )
+      this.emitLinkStatus('error')
+    } finally {
     }
   }
 

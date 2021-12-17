@@ -308,6 +308,19 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     )
   }
 
+  private readonly _onSetTabTitle = (uuid: string, title: string) => {
+    this.setState(({ tabs }) => {
+      const tabIdx = tabs.findIndex(_ => _.uuid === uuid)
+      if (tabIdx < 0) {
+        return null
+      } else {
+        return {
+          tabs: [...tabs.slice(0, tabIdx), tabs[tabIdx].setTitle(title), ...tabs.slice(tabIdx + 1)]
+        }
+      }
+    })
+  }
+
   /** Render the content of the tabs */
   private tabContent() {
     return (
@@ -321,6 +334,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
             uuid={_.uuid}
             active={idx === this.state.activeIdx}
             onTabReady={this._onTabReady}
+            willSetTitle={this._onSetTabTitle}
             state={_.state}
           >
             {this.children(_.uuid)}

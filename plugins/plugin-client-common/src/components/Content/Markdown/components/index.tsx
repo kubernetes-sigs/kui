@@ -67,12 +67,15 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
 
   const spliceCodeWithResponseFrontmatter = (
     response: KResponse,
+    blockId: string,
     body: string,
     language: string,
     sliceStart: number,
     sliceEnd: number,
     codeIdx: number
-  ) => spliceInCodeExecution(codeWithResponseFrontmatter(body, language, response), sliceStart, sliceEnd, codeIdx)
+  ) => {
+    spliceInCodeExecution(codeWithResponseFrontmatter(body, language, blockId, response), sliceStart, sliceEnd, codeIdx)
+  }
 
   return {
     /** remark-collapse support; this is Expandable Sections */
@@ -118,10 +121,7 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
               } else if (props.href.charAt(0) === '#') {
                 const tab = mdprops.tab
                 if (tab) {
-                  const elt = tab.querySelector(`[data-markdown-anchor="${anchorFrom(uuid, props.href.slice(1))}"]`)
-                  if (elt) {
-                    return elt.scrollIntoView()
-                  }
+                  tab.show(`[data-markdown-anchor="${anchorFrom(uuid, props.href.slice(1))}"]`)
                 }
               } else if (file) {
                 if (mdprops.fullpath) {
@@ -211,6 +211,7 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
             tab={mdprops.tab}
             value={body}
             language={language}
+            blockId={attributes.id}
             response={attributes.response}
             hasBeenExecuted={executed}
             arg1={body}

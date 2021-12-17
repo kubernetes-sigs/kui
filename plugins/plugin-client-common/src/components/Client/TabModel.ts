@@ -63,6 +63,10 @@ export default class TabModel {
     return this._title
   }
 
+  public setTitle(newTitle: string) {
+    return this.update(this.buttons, newTitle)
+  }
+
   public get initialCommandLine() {
     return this._initialCommandLine
   }
@@ -83,12 +87,12 @@ export default class TabModel {
     return this.snapshot !== undefined
   }
 
-  public update(buttons: TopTabButton[]) {
+  public update(buttons: TopTabButton[], newTitle?: string) {
     return new TabModel(
       this.uuid,
       undefined,
       undefined,
-      this.title,
+      newTitle || this.title,
       this.state,
       buttons,
       undefined,

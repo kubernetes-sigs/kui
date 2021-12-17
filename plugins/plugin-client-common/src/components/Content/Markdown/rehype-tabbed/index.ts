@@ -30,8 +30,8 @@ export default function plugin(/* options */) {
       }
     }
 
-    if (tree.children && tree.children.length > 0) {
-      tree.children = tree.children.reduce((newChildren, child) => {
+    const process = children =>
+      children.reduce((newChildren, child) => {
         const addToTab = child => {
           const cur = currentTabs[currentTabs.length - 1]
           cur.children.push(child)
@@ -44,6 +44,8 @@ export default function plugin(/* options */) {
         if (child.type === 'raw' && child.value === END_OF_TAB) {
           flushTabs(newChildren)
           return newChildren
+        } else if (child.type === 'element' && child.tagName === 'div') {
+          child.children = process(child.children)
         } else if (child.type === 'element' && child.tagName === 'p') {
           if (child.children.length > 0) {
             if (
@@ -103,6 +105,9 @@ export default function plugin(/* options */) {
 
         return newChildren
       }, [])
+
+    if (tree.children && tree.children.length > 0) {
+      tree.children = process(tree.children)
     }
 
     if (currentTabs.length > 0) {

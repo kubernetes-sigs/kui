@@ -715,6 +715,12 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       if (ref) {
         state.facade.scrollToTop = () => (ref.scrollTop = 0)
         state.facade.scrollToBottom = () => (ref.scrollTop = ref.scrollHeight)
+        state.facade.show = (sel: string) => {
+          const elt = this.props.tab.querySelector(sel)
+          if (elt) {
+            return elt.scrollIntoView()
+          }
+        }
       }
     }
 

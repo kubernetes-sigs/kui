@@ -26,6 +26,9 @@ export interface Tab extends HTMLDivElement {
   queueListener: EventListener // for input queueing, see queueing.ts
   _kui_session: Promise<any>
 
+  /** Update the displayed title for this Tab */
+  setTitle(title: string): void
+
   onActivate(handler: (isActive: boolean) => void): void
   offActivate(handler: (isActive: boolean) => void): void
 
@@ -34,6 +37,8 @@ export interface Tab extends HTMLDivElement {
 
   scrollToTop(): void
   scrollToBottom(): void
+  show(selector: string): void
+
   getSize(): { width: number; height: number }
 
   splitCount(): number
