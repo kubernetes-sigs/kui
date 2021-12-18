@@ -127,10 +127,7 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       const execUUID = uuid()
       return Object.assign(
         {
-          execution:
-            props.status || !props.response
-              ? 'not-yet'
-              : (state && state.execution) || (props.hasBeenExecuted ? 'done' : 'replayed'),
+          execution: props.status || 'not-yet',
           value: props.value,
           language: props.language
         },
