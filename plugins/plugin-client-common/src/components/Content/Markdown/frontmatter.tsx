@@ -32,7 +32,13 @@ export function tryFrontmatter(
   }
 }
 
-export function codeWithResponseFrontmatter(body: string, language: string, blockId?: string, response?: KResponse) {
+export function codeWithResponseFrontmatter(
+  body: string,
+  language: string,
+  blockId?: string,
+  status?: 'done' | 'error',
+  response?: KResponse
+) {
   if (response && isWatchable(response)) {
     delete response.watch
   }
@@ -40,6 +46,9 @@ export function codeWithResponseFrontmatter(body: string, language: string, bloc
   const attrs: string[] = []
   if (blockId) {
     attrs.push(`id: ${blockId}`)
+  }
+  if (status) {
+    attrs.push(`status: ${status}`)
   }
   if (response) {
     attrs.push(`response: ${JSON.stringify(response)}`)

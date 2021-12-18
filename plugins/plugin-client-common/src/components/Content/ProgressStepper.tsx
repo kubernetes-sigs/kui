@@ -120,7 +120,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
         aria-label="completed step,"
       >
         <div className="pf-c-progress-stepper__step-connector">
-          <span className="pf-c-progress-stepper__step-icon">{this.icon()}</span>
+          <span className="pf-c-progress-stepper__step-icon kui--progress-step-status-icon">{this.icon()}</span>
         </div>
         <div className="pf-c-progress-stepper__step-main">
           <div className="pf-c-progress-stepper__step-title">{this.props.title}</div>

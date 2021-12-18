@@ -160,14 +160,6 @@ $action-hover-delay: 210ms;
   }
 }
 
-@mixin AlwaysBorderedBlock {
-  @include Block {
-    @include AlwaysHasBorder {
-      @content;
-    }
-  }
-}
-
 @mixin SectionBreak {
   @include Block {
     &[data-is-section-break] {
@@ -234,9 +226,15 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin Error {
+  &.error {
+    @content;
+  }
+}
+
 @mixin ErrorBlock {
   @include Block {
-    &.error {
+    @include Error {
       @content;
     }
   }

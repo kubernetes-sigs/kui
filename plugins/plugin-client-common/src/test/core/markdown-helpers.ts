@@ -16,11 +16,41 @@
 
 import { Common, CLI, Selectors } from '@kui-shell/test'
 
-export async function clickToExecuteBlock(
-  this: Common.ISuite,
-  split: typeof Selectors.SPLIT_DEFAULT | typeof Selectors.SPLIT_LEFT | typeof Selectors.SPLIT_BOTTOM,
-  block: { index: number; output: string }
-) {
+type Position = typeof Selectors.SPLIT_DEFAULT | typeof Selectors.SPLIT_LEFT | typeof Selectors.SPLIT_BOTTOM
+
+interface Block {
+  index: number
+  output: string
+
+  /** If we have an ossociated ProgressStepper UI? */
+  status?: {
+    /** Split position in which the ProgressStepper UI is rendered */
+    position: Position
+
+    /** index in ProgressStepper UI */
+    index: number
+
+    /** Expected execution status of the block, after execution... */
+    status: 'done' | 'error'
+  }
+}
+
+export interface Input {
+  /** Path to input file */
+  input: string
+
+  /** Expected title of tab after loading that input file */
+  title?: string
+
+  /** Specification of expected splits after loading that input file */
+  splits: {
+    position: Position
+    content: string
+    blocks?: Block[]
+  }[]
+}
+
+export async function clickToExecuteBlock(this: Common.ISuite, split: Position, block: Block) {
   const codeBlockSelector = `${split()} .kui--code-block-in-markdown[data-code-index="${block.index}"]`
   await this.app.client.$(codeBlockSelector).then(_ => _.waitForDisplayed({ timeout: CLI.waitTimeout }))
 
@@ -34,6 +64,19 @@ export async function clickToExecuteBlock(
 
   await this.app.client.waitUntil(async () => {
     const actualText = await result.getText()
-    return actualText === block.output
+    return actualText.includes(block.output)
   })
+
+  // check ProgressStepper UI?
+  if (block.status) {
+    const stepper = await this.app.client.$(`${block.status.position()} .kui--progress-stepper`)
+    await stepper.waitForDisplayed({ timeout: CLI.waitTimeout })
+
+    const step = await stepper.$(`li:nth-child(${block.status.index + 1})`)
+    await step.waitForDisplayed({ timeout: CLI.waitTimeout })
+
+    const icon = block.status.status === 'done' ? 'Checkmark' : 'Error'
+    const status = await step.$(`.kui--progress-step-status-icon [icon="${icon}"]`)
+    await status.waitForDisplayed({ timeout: CLI.waitTimeout })
+  }
 }

@@ -4,6 +4,8 @@ layout:
   1: left
 ---
 
+This should appear in a left split.
+
 - **[Step1](#kui-link-AAA)** _blank_ Desc1
 - **[Step 2](#kui-link-BBB)** _blank_ Desc2.
 - **Minor step** _minor_ Should render as a minor step.
@@ -14,13 +16,13 @@ layout:
 
 ---
 
-Hello world
+This should appear in a default split.
 
 ```bash
 ---
 id: AAA
 ---
-echo AAA
+intentionalerror
 ```
 
 === "tab1"
@@ -54,5 +56,3 @@ id: EEE
 ---
 echo EEE
 ```
-
-Goodbye

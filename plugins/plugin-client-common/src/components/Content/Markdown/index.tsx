@@ -43,7 +43,7 @@ const remarkPlugins: (tab: KuiTab) => Options['plugins'] = tab => [
   gfm,
   [frontmatter, ['yaml', 'toml']],
   [kuiFrontmatter, { tab }],
-  [emojis, { emoticon: true }]
+  emojis // [emojis, { emoticon: true }]
 ]
 
 export interface Props {
