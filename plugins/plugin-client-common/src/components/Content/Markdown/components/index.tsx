@@ -209,6 +209,12 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
         const myCodeIdx = codeIdx()
         const executed = codeHasBeenExecuted(myCodeIdx)
 
+        // note how in the evaluation of `status`, we assume that if a
+        // response is given but no status, that the status is 'done',
+        // i.e. executed successfully to completion
+        const status = attributes.status || (attributes.response ? 'done' : 'not-yet')
+        const statusConsideringReplay = !executed && (status === 'done' || status === 'error') ? 'replayed' : status
+
         return (
           <Input
             key="fixed"
@@ -219,7 +225,7 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
             language={language}
             blockId={attributes.id}
             response={attributes.response}
-            status={executed ? 'replayed' : attributes.status || 'not-yet'}
+            status={statusConsideringReplay}
             arg1={body}
             arg2={language}
             arg3={sliceStart}
