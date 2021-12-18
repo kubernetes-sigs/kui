@@ -66,6 +66,7 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
   const heading = _heading(uuid)
 
   const spliceCodeWithResponseFrontmatter = (
+    status: 'done' | 'error',
     response: KResponse,
     blockId: string,
     body: string,
@@ -74,7 +75,12 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
     sliceEnd: number,
     codeIdx: number
   ) => {
-    spliceInCodeExecution(codeWithResponseFrontmatter(body, language, blockId, response), sliceStart, sliceEnd, codeIdx)
+    spliceInCodeExecution(
+      codeWithResponseFrontmatter(body, language, blockId, status, response),
+      sliceStart,
+      sliceEnd,
+      codeIdx
+    )
   }
 
   return {
@@ -213,7 +219,7 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
             language={language}
             blockId={attributes.id}
             response={attributes.response}
-            hasBeenExecuted={executed}
+            status={executed ? 'replayed' : attributes.status || 'not-yet'}
             arg1={body}
             arg2={language}
             arg3={sliceStart}

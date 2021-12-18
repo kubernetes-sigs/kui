@@ -17,6 +17,16 @@
 @use 'sass:math';
 @import 'mixins';
 
+@mixin ErrorDecorations {
+  opacity: 0.625;
+  background-color: var(--color-red);
+}
+
+@mixin NormalDecorations {
+  opacity: 1;
+  background-color: var(--color-table-border3);
+}
+
 @include Block {
   @include BlockBorder {
     background-color: transparent;
@@ -45,28 +55,31 @@
   }
 }
 
-@mixin ShowBorder {
-  opacity: 1;
-  background-color: var(--color-table-border3);
-}
+@include Block {
+  @include AlwaysHasBorder {
+    @include Error {
+      @include BlockBorder {
+        @include ErrorDecorations;
+      }
+    }
 
-@include AlwaysBorderedBlock {
-  @include BlockBorder {
-    @include ShowBorder;
+    @include BlockBorder {
+      @include NormalDecorations;
+    }
   }
 }
+
 @include FocusedBlock {
   @include Editable {
     @include BlockBorder {
-      @include ShowBorder;
+      @include NormalDecorations;
     }
   }
 }
 @include ErrorBlock {
   @include BlockNotFocusedAttributes {
     @include BlockBorder {
-      opacity: 0.625;
-      background-color: var(--color-red);
+      @include ErrorDecorations;
     }
   }
 }

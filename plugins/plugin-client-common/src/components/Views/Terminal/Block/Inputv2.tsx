@@ -16,11 +16,12 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { Events, KResponse, Tab, i18n } from '@kui-shell/core'
+import { Events, KResponse, Tab, i18n, isXtermResponse } from '@kui-shell/core'
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
 import Spinner from './Spinner'
+import { BlockState } from './BlockModel'
 import Scalar from '../../../Content/Scalar'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
 import { MutabilityContext } from '../../../Client/MutabilityContext'
@@ -35,6 +36,8 @@ interface Value {
   value: string
   language: string
 }
+
+type Status = 'not-yet' | 'processing' | 'done' | 'error' | 'replayed'
 
 type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
   StreamingProps & {
@@ -53,6 +56,9 @@ type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
     /** Output of this Input? */
     response?: KResponse
 
+    /** Execution status of the `response` property */
+    status?: Status
+
     hasBeenExecuted?: boolean
 
     /** Update upstream model with a response */
@@ -61,12 +67,21 @@ type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
     arg3: T3
     arg4: T4
     arg5: T5
-    onResponse: (response: KResponse, blockId: string, arg1: T1, arg2: T2, arg3: T3, arg4: T4, arg5: T5) => void
+    onResponse: (
+      status: 'done' | 'error',
+      KResponse,
+      blockId: string,
+      arg1: T1,
+      arg2: T2,
+      arg3: T3,
+      arg4: T4,
+      arg5: T5
+    ) => void
   }
 
 type State = Value &
   StreamingState & {
-    execution: 'not-yet' | 'processing' | 'done' | 'error' | 'replayed'
+    execution: Status
   }
 
 export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T1, T2, T3, T4, T5>, State> {
@@ -112,9 +127,10 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       const execUUID = uuid()
       return Object.assign(
         {
-          execution: !props.response
-            ? 'not-yet'
-            : (state && state.execution) || (props.hasBeenExecuted ? 'done' : 'replayed'),
+          execution:
+            props.status || !props.response
+              ? 'not-yet'
+              : (state && state.execution) || (props.hasBeenExecuted ? 'done' : 'replayed'),
           value: props.value,
           language: props.language
         },
@@ -200,8 +216,10 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       const cmdline = this.state.value // .replace(/([^\\])(\n)/g, '$1;\\ $2')
       const response = await this.execWithStream(cmdline)
 
-      this.setState({ execution: 'done' })
+      const execution = isXtermResponse(response) ? (response.code === 0 ? 'done' : 'error') : 'done'
+      this.setState({ execution })
       this.props.onResponse(
+        execution,
         response,
         this.props.blockId,
         this.props.arg1,
@@ -210,10 +228,11 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
         this.props.arg4,
         this.props.arg5
       )
-      this.emitLinkStatus('done')
+      this.emitLinkStatus(execution)
     } catch (err) {
       this.setState({ execution: 'error' })
       this.props.onResponse(
+        'error',
         err,
         this.props.blockId,
         this.props.arg1,
@@ -224,6 +243,18 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       )
       this.emitLinkStatus('error')
     } finally {
+    }
+  }
+
+  private responseStatus() {
+    if (this.state.execution === 'not-yet') {
+      return BlockState.Empty
+    } else if (this.state.execution === 'processing') {
+      return BlockState.Processing
+    } else if (this.state.execution === 'error') {
+      return BlockState.Error
+    } else {
+      return BlockState.ValidResponse
     }
   }
 
@@ -239,9 +270,9 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       <MutabilityContext.Consumer>
         {mutability => (
           <li
-            className={'repl-block ' + (this.props.className || '')}
+            className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
             data-is-executable={mutability.executable}
-            data-has-border={this.props.response || undefined}
+            data-has-border={!!this.props.response || undefined}
             {...dataProps}
           >
             {this.input()}

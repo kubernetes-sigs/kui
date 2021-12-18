@@ -19,21 +19,9 @@ import { basename, dirname, join } from 'path'
 import { encodeComponent, Util } from '@kui-shell/core'
 import { Common, CLI, Selectors, Util as TestUtil } from '@kui-shell/test'
 
-import { clickToExecuteBlock } from './markdown-helpers'
+import { clickToExecuteBlock, Input } from './markdown-helpers'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/splits1.md')), '..')
-
-interface Input {
-  input: string
-  splits: {
-    position: typeof Selectors.SPLIT_DEFAULT | typeof Selectors.SPLIT_LEFT | typeof Selectors.SPLIT_BOTTOM
-    content: string
-    blocks?: {
-      index: number
-      output: string
-    }[]
-  }[]
-}
 
 const IN1: Input = {
   input: join(ROOT, 'data', 'splits1.md'),
@@ -52,6 +40,29 @@ const IN2: Input = {
   ]
 }
 
+const IN3: Input = {
+  title: 'Yoyoyo',
+  input: join(ROOT, 'data', 'code-block3.md'),
+  splits: [
+    Object.assign(
+      {
+        blocks: [
+          {
+            index: 0,
+            output: 'intentionalerror',
+            status: { position: Selectors.SPLIT_LEFT, index: 0, status: 'error' }
+          }
+        ]
+      },
+      IN1.splits[1]
+    ),
+    Object.assign(
+      { blocks: [{ index: 1, output: 'BBB', status: { position: Selectors.SPLIT_LEFT, index: 1, status: 'done' } }] },
+      IN1.splits[1]
+    )
+  ]
+}
+
 async function verifySplit(this: Common.ISuite, { position, content }: typeof IN1['splits'][0]) {
   const split = await this.app.client.$(position())
   await split.waitForDisplayed({ timeout: CLI.waitTimeout })
@@ -65,7 +76,7 @@ async function verifySplit(this: Common.ISuite, { position, content }: typeof IN
   })
 }
 
-;[IN1, IN2].forEach(markdown => {
+;[IN3, IN1, IN2].forEach(markdown => {
   ;['forward', 'reverse'].forEach(blockExecutionOrder => {
     describe(`open splits from markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
       .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
@@ -78,6 +89,16 @@ async function verifySplit(this: Common.ISuite, { position, content }: typeof IN
       it(`should load the markdown and show ${IN1.splits.length} splits`, async () => {
         try {
           await CLI.command(`commentary -f ${encodeComponent(markdown.input)}`, this.app)
+
+          // check Tab Title
+          if (markdown.title) {
+            await this.app.client.waitUntil(async () => {
+              const tabTitle = await this.app.client.$(Selectors.CURRENT_TAB_TITLE)
+              await tabTitle.waitForDisplayed({ timeout: CLI.waitTimeout })
+              const actualTabTitle = await tabTitle.getText()
+              return actualTabTitle === markdown.title
+            })
+          }
 
           await Util.promiseEach(markdown.splits, async split => {
             await verifySplit.bind(this)(split)
