@@ -19,7 +19,8 @@ import { v4 as uuid } from 'uuid'
 import TurndownService from 'turndown'
 import { TextContent } from '@patternfly/react-core'
 
-import { Tab as KuiTab } from '@kui-shell/core'
+import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
+import { Events, Tab as KuiTab, encodeComponent } from '@kui-shell/core'
 
 import { Options } from 'react-markdown'
 const ReactMarkdown = React.lazy(() => import('react-markdown'))
@@ -47,8 +48,17 @@ const remarkPlugins: (tab: KuiTab) => Options['plugins'] = tab => [
 ]
 
 export interface Props {
+  /** Source filepath */
+  filepath?: string
+
+  /** Source content */
   source: string
+
+  /** Source content type */
   contentType?: 'text/html' | 'application/markdown'
+
+  /** uuid of containing Block */
+  execUUID?: string
 
   tab?: KuiTab
 
@@ -78,6 +88,33 @@ interface State {
 }
 
 export default class Markdown extends React.PureComponent<Props, State> {
+  private readonly cleaners: (() => void)[] = []
+
+  public componentWillUnmount() {
+    this.cleaners.forEach(_ => _())
+  }
+
+  public componentDidMount() {
+    this.initSnapshotEvents()
+  }
+
+  private initSnapshotEvents() {
+    const { filepath, execUUID } = this.props
+
+    if (filepath && execUUID) {
+      const onSnapshot = async () => {
+        const fp = encodeComponent(filepath)
+        const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${fp}`)).content
+
+        if (Array.isArray(stats) && stats.length === 1 && stats[0].dirent.mount.isLocal) {
+          await this.repl.qexec(`vfs fwrite ${fp}`, undefined, undefined, { data: this.state.source })
+        }
+      }
+      Events.eventChannelUnsafe.on(`/kui/snapshot/request/${execUUID}`, onSnapshot)
+      this.cleaners.push(() => Events.eventChannelUnsafe.off(`/kui/snapshot/request/${execUUID}`, onSnapshot))
+    }
+  }
+
   private readonly _components = components({
     mdprops: this.props,
     repl: this.repl,

@@ -226,7 +226,7 @@ export default (commandTree: Registrar) => {
   commandTree.listen(
     '/about',
     ({ REPL }) =>
-      isPopup() ? REPL.qexec('replay --new-window /kui/welcome.json') : REPL.qexec('replay /kui/welcome.json'),
+      isPopup() ? REPL.qexec('replay --new-window /kui/welcome.md') : REPL.qexec('replay /kui/welcome.md'),
     {
       hidden: true // don't list about in the help menu
     }

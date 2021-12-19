@@ -15,7 +15,7 @@
  */
 
 import { u } from 'unist-builder'
-import { KResponse, Tab, isWatchable } from '@kui-shell/core'
+import { KResponse, Tab, Util, isCodedError, isWatchable } from '@kui-shell/core'
 
 export function tryFrontmatter(
   value: string
@@ -29,6 +29,39 @@ export function tryFrontmatter(
       body: value,
       attributes: {}
     }
+  }
+}
+
+/** Blunt attempt to avoid serializing React bits */
+function reactRedactor(key: string, value: any) {
+  if (key === 'tab') {
+    return undefined
+  } else if (key === 'block') {
+    return undefined
+  } else {
+    return value
+  }
+}
+
+function encodePriorResponse(response: KResponse): { encoding: string; encodedResponse: string } {
+  return {
+    encoding: 'base64+gzip',
+    encodedResponse: Util.base64PlusGzip(
+      JSON.stringify(
+        response.constructor === Error
+          ? { code: isCodedError(response) ? response.code : 1, message: response.message }
+          : response,
+        reactRedactor
+      )
+    )
+  }
+}
+
+export function decodePriorResponse(encodedResponse: string | KResponse, encoding: string): KResponse {
+  if (encoding !== 'base64+gzip' || typeof encodedResponse !== 'string') {
+    return encodedResponse
+  } else {
+    return JSON.parse(Util.decodeBase64PlusGzip(encodedResponse).toString()) as KResponse
   }
 }
 
@@ -51,8 +84,11 @@ export function codeWithResponseFrontmatter(
     attrs.push(`status: ${status}`)
   }
   if (response) {
-    attrs.push(`response: ${JSON.stringify(response)}`)
+    const { encoding, encodedResponse } = encodePriorResponse(response)
+    attrs.push(`responseEncoding: ${encoding}`)
+    attrs.push(`response: ${encodedResponse}`)
   }
+
   const frontmatter =
     attrs.length === 0
       ? ''

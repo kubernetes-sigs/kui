@@ -19,8 +19,10 @@ import { CommentaryResponse, Tab, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
 import Button from '../spi/Button'
-const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 import { MutabilityContext } from '../Client/MutabilityContext'
+
+const Markdown = React.lazy(() => import('./Markdown'))
+const SimpleEditor = React.lazy(() => import('./Editor/SimpleEditor'))
 
 const strings = i18n('plugin-client-common')
 
@@ -32,6 +34,7 @@ interface State {
 
 type Props = CommentaryResponse['props'] & {
   tab: Tab
+  execUUID: string
   willUpdateResponse?: (text: string) => void
   willRemove?: () => void
   willUpdateCommand?: (command: string) => void
@@ -177,7 +180,14 @@ export default class Commentary extends React.PureComponent<Props, State> {
               header={this.state.isEdit && strings('Editing Comment as Markdown')}
               footer={this.state.isEdit && this.toolbar()}
             >
-              {this.state.textValue}
+              <Markdown
+                nested
+                execUUID={this.props.execUUID}
+                filepath={this.props.filepath}
+                source={this.state.textValue}
+                baseUrl={this.props.baseUrl}
+                tab={this.props.tab}
+              />
               {this.state.isEdit && this.editor()}
             </Card>
           </span>

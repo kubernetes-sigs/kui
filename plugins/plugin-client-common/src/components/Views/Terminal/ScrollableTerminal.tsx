@@ -35,21 +35,19 @@ import {
   isTabLayoutModificationResponse,
   getTabId,
   NewSplitRequest,
-  isOfflineClient,
   isNewSplitRequest,
   isExecutableClient,
   executeSequentially,
   isWatchable,
-  Notebook,
-  Util
+  isCommentaryResponse
 } from '@kui-shell/core'
 
 import ScrollbackState, { ScrollbackOptions, Cleaner } from './ScrollbackState'
 import Block from './Block'
 import getSize from './getSize'
+import { snapshot } from './Snapshot'
 import SplitHeader from './SplitHeader'
 import SplitPosition, { SplitPositionProps } from './SplitPosition'
-import { NotebookImpl, isNotebookImpl, snapshot, FlightRecorder, tabAlignment } from './Snapshot'
 import KuiConfiguration from '../../Client/KuiConfiguration'
 import SessionInitStatus from '../../Client/SessionInitStatus'
 import { onCopy, onCut, onPaste } from './ClipboardTransfer'
@@ -66,7 +64,6 @@ import {
   Processing,
   isActive,
   isAnnouncement,
-  isEmpty,
   isFinished,
   isLinkified,
   isSectionBreak,
@@ -144,9 +141,6 @@ interface State {
 
   /** Splits model */
   splits: ScrollbackState[]
-
-  /** Things like the notebook title; we need to stash this away for future re-saving of this notebook */
-  notebookMetadata?: Notebook['metadata']
 }
 
 /** get the selected texts in window */
@@ -185,19 +179,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     this.initClipboardEvents()
 
-    const { notebookMetadata, splits } = this.props.snapshot
-      ? this.replaySnapshot()
-      : {
-          notebookMetadata: {
-            name: this.props.tabTitle
-          },
-          splits: [this.scrollbackWithWelcome()]
-        }
+    const splits = [this.scrollbackWithWelcome()]
 
     this.state = {
       focusedIdx: 0,
       splits,
-      notebookMetadata,
       executable: this.initBlockExecutableState(splits)
     }
 
@@ -241,67 +227,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     })
   }
 
-  /** replay the splits and blocks from snapshot */
-  private replaySnapshot() {
-    const model = JSON.parse(Buffer.from(this.props.snapshot).toString())
-
-    if (!isNotebookImpl(model)) {
-      console.error('invalid notebook', model)
-      throw new Error('Invalid notebook')
-    } else {
-      this.props.toggleAttribute('data-is-notebook')
-
-      const splits = model.spec.splits.map(split => {
-        const newScrollback = this.scrollback(undefined, {
-          inverseColors: split.inverseColors,
-          position: split.position
-        })
-
-        if (split.position === 'left-strip') {
-          this.props.willToggleLeftStripMode()
-        } else if (split.position === 'bottom-strip') {
-          this.props.willToggleBottomStripMode()
-        }
-
-        if (model.metadata.preferReExecute) {
-          Util.promiseEach(split.blocks, async _ => {
-            if (hasStartEvent(_)) {
-              await newScrollback.facade.REPL.reexec(_.startEvent.command, { execUUID: _.startEvent.execUUID })
-            }
-          })
-        } else {
-          const restoreBlocks = split.blocks.map(_ => tabAlignment(_, newScrollback.facade))
-          const insertIdx = this.findActiveBlock(newScrollback)
-
-          newScrollback.blocks = newScrollback.blocks
-            .slice(0, insertIdx)
-            .concat(restoreBlocks)
-            .concat(newScrollback.blocks.slice(insertIdx))
-
-          // re-execute any blocks that executed a command whose
-          // controller specified it wants re-execute semantics
-          if (!isOfflineClient()) {
-            for (let idx = 0; idx < restoreBlocks.length; idx++) {
-              const block = restoreBlocks[idx]
-              if (isWithCompleteEvent(block) && block.completeEvent.evaluatorOptions.preferReExecute) {
-                newScrollback.facade.REPL.reexec(block.completeEvent.command, {
-                  execUUID: block.completeEvent.execUUID
-                })
-              }
-            }
-          }
-        }
-
-        return newScrollback
-      })
-
-      return {
-        splits,
-        notebookMetadata: model.metadata
-      }
-    }
-  }
-
   /** Listen for copy and paste (TODO: cut) events to facilitate moving blocks */
   private initClipboardEvents() {
     const paste = onPaste.bind(this)
@@ -320,59 +245,39 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
   /** Listen for snapshot request events */
   private initSnapshotEvents() {
     const onSnapshot = async (evt: Events.SnapshotRequestEvent) => {
-      const splits = this.state.splits.map(({ inverseColors, position, blocks, uuid }) => {
-        const { filter = () => true } = evt
-
-        const isComplete = (block: BlockModel) => {
-          return hasStartEvent(block) && filter(block.startEvent) && block.startEvent.route !== '/split'
-        }
-
-        const snapshotBlocks = blocks
-          .filter(_ => isComplete(_) || isEmpty(_) || isCancelled(_))
-          .map(snapshot)
-          .filter(_ => _)
-
-        return {
-          uuid,
-          position,
-          inverseColors,
-          blocks: snapshotBlocks
-        }
-      })
-
-      const opts = evt.opts || {}
-
-      if (!opts.shallow) {
-        await new FlightRecorder(this.props.tab, splits).record()
+      if (evt.execUUID && evt.cb) {
+        // capture just one block
+        this.state.splits.forEach(split => {
+          const block = split.blocks.find(_ => hasUUID(_) && _.execUUID === evt.execUUID)
+          if (block && isFinished(block)) {
+            const replacer = (key: string, value: any) => {
+              if (key === 'tab') {
+                return undefined
+              } else if (key === 'block') {
+                return undefined
+              } else {
+                return value
+              }
+            }
+            evt.cb(Buffer.from(JSON.stringify(snapshot(block), replacer)))
+          } else {
+            evt.cb(null)
+          }
+        })
+      } else {
+        // request that all commentary in this tab save themselves
+        await Promise.all(
+          this.state.splits.map(async ({ blocks }) => {
+            await Promise.all(
+              blocks.map(async block => {
+                if (isWithCompleteEvent(block) && isCommentaryResponse(block.completeEvent.response)) {
+                  await Events.eventChannelUnsafe.emit(`/kui/snapshot/request/${block.execUUID}`)
+                }
+              })
+            )
+          })
+        )
       }
-
-      const metadata = this.state.notebookMetadata
-      // assign options to the snapshot metadata
-      Object.keys(opts)
-        .filter(_ => _ !== 'shallow' && opts[_] !== undefined)
-        .forEach(_ => (metadata[_] = opts[_]))
-
-      const serializedSnapshot: NotebookImpl = {
-        apiVersion: 'kui-shell/v1',
-        kind: 'Notebook',
-        metadata,
-        spec: {
-          splits
-        }
-      }
-
-      const replacer = (key: string, value: any) => {
-        if (key === 'tab') {
-          return undefined
-        } else if (key === 'block') {
-          return undefined
-        } else {
-          return value
-        }
-      }
-
-      const data = JSON.stringify(serializedSnapshot, replacer, 2)
-      evt.cb(Buffer.from(data))
     }
 
     Events.eventBus.onSnapshotRequest(onSnapshot, getTabId(this.props.tab))

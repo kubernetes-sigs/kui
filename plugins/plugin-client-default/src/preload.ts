@@ -26,8 +26,8 @@ export default async () => {
     notebookVFS.cp(
       undefined,
       [
-        'plugin://plugin-client-common/notebooks/welcome.json',
-        'plugin://plugin-client-common/notebooks/make-notebook.json'
+        'plugin://plugin-client-common/notebooks/welcome.md',
+        'plugin://plugin-client-common/notebooks/make-notebook.md'
       ],
       '/kui'
     )

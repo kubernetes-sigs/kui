@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { Events, KResponse, Tab, i18n, isXtermResponse } from '@kui-shell/core'
+import { Events, KResponse, Tab, i18n, isError, isXtermResponse } from '@kui-shell/core'
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
@@ -39,7 +39,7 @@ interface Value {
 
 type Status = 'not-yet' | 'processing' | 'done' | 'error' | 'replayed'
 
-type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
+type Props<T1 = any, T2 = any, T3 = any> = Value &
   StreamingProps & {
     className?: string
     tab: Tab
@@ -65,18 +65,7 @@ type Props<T1 = any, T2 = any, T3 = any, T4 = any, T5 = any> = Value &
     arg1: T1
     arg2: T2
     arg3: T3
-    arg4: T4
-    arg5: T5
-    onResponse: (
-      status: 'done' | 'error',
-      KResponse,
-      blockId: string,
-      arg1: T1,
-      arg2: T2,
-      arg3: T3,
-      arg4: T4,
-      arg5: T5
-    ) => void
+    onResponse: (status: 'done' | 'error', KResponse, blockId: string, arg1: T1, arg2: T2, arg3: T3) => void
   }
 
 type State = Value &
@@ -84,10 +73,10 @@ type State = Value &
     execution: Status
   }
 
-export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T1, T2, T3, T4, T5>, State> {
+export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T3>, State> {
   private readonly cleaners: (() => void)[] = []
 
-  public constructor(props: Props<T1, T2, T3, T4, T5>) {
+  public constructor(props: Props<T1, T2, T3>) {
     super(props)
     this.state = Input.getDerivedStateFromProps(props)
   }
@@ -103,8 +92,8 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
   private emitLinkStatus(execution = this.state.execution) {
     Events.eventChannelUnsafe.emit(
       `/link/status/update/${this.props.blockId}`,
-      execution === 'not-yet'
-        ? [0, 0, 0]
+      execution === 'not-yet' || execution === 'replayed'
+        ? [0, 0, 0] // indicates nothing has happened yet, in this session
         : execution === 'processing'
         ? [0, 0, 1]
         : execution === 'error'
@@ -213,31 +202,20 @@ export default class Input<T1, T2, T3, T4, T5> extends StreamingConsumer<Props<T
       const cmdline = this.state.value // .replace(/([^\\])(\n)/g, '$1;\\ $2')
       const response = await this.execWithStream(cmdline)
 
-      const execution = isXtermResponse(response) ? (response.code === 0 ? 'done' : 'error') : 'done'
+      const execution = isXtermResponse(response)
+        ? response.code === 0
+          ? 'done'
+          : 'error'
+        : isError(response)
+        ? 'error'
+        : 'done'
       this.setState({ execution })
-      this.props.onResponse(
-        execution,
-        response,
-        this.props.blockId,
-        this.props.arg1,
-        this.props.arg2,
-        this.props.arg3,
-        this.props.arg4,
-        this.props.arg5
-      )
+
+      this.props.onResponse(execution, response, this.props.blockId, this.props.arg1, this.props.arg2, this.props.arg3)
       this.emitLinkStatus(execution)
     } catch (err) {
       this.setState({ execution: 'error' })
-      this.props.onResponse(
-        'error',
-        err,
-        this.props.blockId,
-        this.props.arg1,
-        this.props.arg2,
-        this.props.arg3,
-        this.props.arg4,
-        this.props.arg5
-      )
+      this.props.onResponse('error', err, this.props.blockId, this.props.arg1, this.props.arg2, this.props.arg3)
       this.emitLinkStatus('error')
     } finally {
     }

@@ -22,8 +22,6 @@ import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
 import ctrlOrMeta from './ctrlOrMeta'
 
-const Markdown = React.lazy(() => import('../../Content/Markdown'))
-
 const strings = i18n('plugin-core-support')
 const strings2 = i18n('plugin-client-common')
 
@@ -160,6 +158,11 @@ export default class Tab extends React.PureComponent<Props, State> {
     this.props.onCloseTab(this.props.idx)
   }
 
+  private title() {
+    const content = this.props.title ? this.props.title : strings('Tab')
+    return content.replace(/&ndash;/g, '\u2013').replace(/&mdash;/g, '\u2014')
+  }
+
   public render() {
     return (
       <NavItem
@@ -182,17 +185,7 @@ export default class Tab extends React.PureComponent<Props, State> {
       >
         <div className="kui--tab--label">
           {this.isUsingCommandName() && this.state.title}
-          {!this.isUsingCommandName() && (
-            <span className="kui--tab--label-text">
-              {this.props.title ? (
-                <React.Suspense fallback={<div />}>
-                  <Markdown nested source={this.props.title} />
-                </React.Suspense>
-              ) : (
-                strings('Tab')
-              )}{' '}
-            </span>
-          )}
+          {!this.isUsingCommandName() && <span className="kui--tab--label-text">{this.title()} </span>}
           {!this.isUsingCommandName() && <span className="kui--tab--label-index"></span>}
         </div>
         {/* TODO: button to toggle edit mode could */}

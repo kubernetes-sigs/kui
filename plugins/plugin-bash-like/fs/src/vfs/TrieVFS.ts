@@ -186,12 +186,12 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
   public cp(_, srcFilepaths: string[], dstFilepath: string): Promise<string> {
     return Promise.all(
       srcFilepaths.map(srcFilepath => {
-        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.json$/)
-        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.json$/)
+        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.md$/)
+        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.md$/)
         const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
         const match = match1 || match2 || match3
         if (match) {
-          const extension = match1 || match2 ? '.json' : '.md'
+          const extension = '.md'
 
           const dir = dirname(dstFilepath)
           if (!this.trieGet(dir)) {
@@ -202,7 +202,7 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
             this.trie.map(mountPath, { mountPath, data: { srcFilepath } })
           }
         } else {
-          throw new Error(`Unable to copy given source into the notebooks VFS: ${srcFilepath}`)
+          throw new Error(`Unable to copy given source into the VFS: ${srcFilepath}`)
         }
       })
     ).then(() => 'ok')

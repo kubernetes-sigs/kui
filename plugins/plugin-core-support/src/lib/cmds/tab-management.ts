@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Arguments, Events, getPrimaryTabId, i18n, KResponse, Registrar, Tab, Util } from '@kui-shell/core'
+import { Events, getPrimaryTabId, i18n, KResponse, Registrar, Tab } from '@kui-shell/core'
 
 // TODO fixme; this is needed by a few tests
 export const tabButtonSelector = '#new-tab-button'
@@ -34,13 +34,6 @@ function closeTab(tab: Tab, closeAllSplits: boolean) {
   const uuid = closeAllSplits ? getPrimaryTabId(tab) : tab.uuid
   Events.eventBus.emitWithTabId('/tab/close/request', uuid, tab)
   return true
-}
-
-/** Load snapshot model from disk */
-async function loadSnapshotBuffer(REPL: Arguments['REPL'], filepath: string): Promise<Buffer> {
-  return Buffer.from(
-    (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
-  )
 }
 
 /**
@@ -84,13 +77,6 @@ export default function plugin(commandTree: Registrar) {
 
       /** Open tab in the background? I.e. without switching to it */
       bg?: boolean
-
-      /** Optionally open a snapshot file in the new tab */
-      snapshot?: string
-      s?: string
-
-      /** Replace the contents of the current tab with that of the first snapshot? */
-      r?: boolean
     }
   >(
     '/tab/new',
@@ -134,26 +120,7 @@ export default function plugin(commandTree: Registrar) {
         contentType: 'text/markdown'
       }
 
-      const file = args.parsedOptions.snapshot || args.parsedOptions.s
-      if (file) {
-        // caller wants to open a given snapshot by file in the new tab
-        const filepaths = file.split(/,/).map(file => Util.expandHomeDir(file))
-        const snapshot = await Promise.all(filepaths.map(filepath => loadSnapshotBuffer(args.REPL, filepath)))
-
-        return new Promise(resolve => {
-          Events.eventBus.emit('/tab/new/request', {
-            background: args.parsedOptions.bg,
-            tabs: snapshot.map((snapshot, idx) => ({
-              snapshot,
-              replaceCurrentTab: args.parsedOptions.r && idx === 0,
-              title: titles ? titles[idx] : undefined,
-              onClose: args.parsedOptions.onClose,
-              statusStripeDecoration: statusStripeDecorations[idx]
-            }))
-          })
-          resolve(ok)
-        })
-      } else if (args.parsedOptions.cmdline) {
+      if (args.parsedOptions.cmdline) {
         // caller wants to invoke a given command line in the new tab
         return new Promise(resolve => {
           Events.eventBus.emit('/tab/new/request', {
@@ -188,15 +155,13 @@ export default function plugin(commandTree: Registrar) {
           { name: '--cmdline', alias: '-c', docs: 'Invoke a command in the new tab' },
           { name: '--quiet', alias: '-q', boolean: true, docs: 'Execute the given command line quietly' },
           { name: '--bg', alias: '-b', boolean: true, docs: 'Create, but do not switch to this tab' },
-          { name: '--snapshot', alias: '-s', docs: 'Snapshot file to display in the new tab' },
           { name: '--status-stripe-type', docs: 'Desired status stripe coloration', allowed: ['default', 'blue'] },
           { name: '--status-stripe-message', docs: 'Desired status stripe message' },
-          { name: '--title', alias: '-t', docs: 'Title to display in the UI' },
-          { name: '-r', docs: 'Replace the contents of the current tab with that of the given (first) snapshot' }
+          { name: '--title', alias: '-t', docs: 'Title to display in the UI' }
         ]
       },
       flags: {
-        boolean: ['bg', 'b', 'quiet', 'q', 'r']
+        boolean: ['bg', 'b', 'quiet', 'q']
       }
     }
   )

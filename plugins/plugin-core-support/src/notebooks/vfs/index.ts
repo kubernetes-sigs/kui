@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Notebook, isNotebook } from '@kui-shell/core'
 import { TrieVFS, VFS, mount } from '@kui-shell/plugin-bash-like/fs'
 
 interface Tutorial {
@@ -25,7 +24,7 @@ interface Tutorial {
   nameForDisplay: string
 }
 
-type NotebookLeaf = TrieVFS.Leaf<Notebook | { srcFilepath: string }>
+type NotebookLeaf = TrieVFS.Leaf<{ srcFilepath: string }>
 type NotebookEntry = TrieVFS.Directory | NotebookLeaf
 
 export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implements VFS {
@@ -33,9 +32,8 @@ export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implement
     return 'replay'
   }
 
-  protected async nameForDisplay(name: string, entry: NotebookEntry): Promise<string> {
-    const data = this.isLeaf(entry) ? await this.load(entry.data) : undefined
-    return data && data.metadata ? data.metadata.name || name : name
+  protected async nameForDisplay(name: string): Promise<string> {
+    return name
   }
 
   protected async loadAsString(leaf: NotebookLeaf): Promise<string> {
@@ -44,45 +42,41 @@ export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implement
   }
 
   /** Load Notebook data from bundles */
-  private async load(data: NotebookLeaf['data']): Promise<Notebook> {
-    if (isNotebook(data)) {
-      return data
-    } else {
-      const { srcFilepath } = data
+  private async load(data: NotebookLeaf['data']): Promise<string> {
+    const { srcFilepath } = data
 
-      const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.json$/)
-      const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.json$/)
-      const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
-      const match = match1 || match2 || match3
-      if (match) {
-        try {
-          const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
-          const data = await (match1
-            ? import(
-                /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
-                  match1[1] +
-                  '/notebooks/' +
-                  file +
-                  '.json'
-              )
-            : match2
-            ? import(
-                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
-                  file +
-                  '.json'
-              )
-            : import(
-                /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
-              ))
+    const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.md$/)
+    const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.md$/)
+    const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
+    const match = match1 || match2 || match3
+    if (match) {
+      try {
+        const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
+        const data = await (match1
+          ? import(
+              /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
+                match1[1] +
+                '/notebooks/' +
+                file +
+                '.md'
+            )
+          : match2
+          ? import(
+              /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                file +
+                '.md'
+            )
+          : import(
+              /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
+            ))
 
-          return data.default
-        } catch (err) {
-          console.error(err)
-          throw new Error(`Unable to load Notebook: ${err.message}`)
-        }
-      } else {
-        throw new Error('Unsupported filepath for Notebook')
+        return data.default
+      } catch (err) {
+        console.error(err)
+        throw new Error(`Unable to load Notebook: ${err.message}`)
       }
+    } else {
+      throw new Error('Unsupported filepath for Notebook')
     }
   }
 }

@@ -1,4 +1,5 @@
 {
-  "randomError1": "Command produced code `{0}`",
+  "randomError1": "Command exited with code `{0}`",
+  "randomError1WithMessage": "{1}",
   "randomError2": "Command produced errno `{0}`"
 }

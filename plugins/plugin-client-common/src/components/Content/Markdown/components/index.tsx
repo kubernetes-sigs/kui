@@ -42,7 +42,7 @@ import { list, listItem } from './list'
 import _heading, { anchorFrom } from './heading'
 
 import { Props } from '../../Markdown'
-import { tryFrontmatter, codeWithResponseFrontmatter } from '../frontmatter'
+import { tryFrontmatter, codeWithResponseFrontmatter, decodePriorResponse } from '../frontmatter'
 
 import SplitInjector from '../../../Views/Terminal/SplitInjector'
 import SplitPosition from '../../../Views/Terminal/SplitPosition'
@@ -59,7 +59,13 @@ type Args = {
   codeHasBeenExecuted: (codeIdx: number) => boolean
 }
 
-function typedComponents(codeIdx: () => number, args: Args): Components {
+type SourceOffset = { sliceStart: number; sliceEnd: number }
+
+function typedComponents(
+  codeSourceOffsets: SourceOffset[],
+  codeIdx: (offset: SourceOffset) => number,
+  args: Args
+): Components {
   const { mdprops, repl, uuid, spliceInCodeExecution, codeHasBeenExecuted } = args
 
   const img = _img(mdprops)
@@ -71,14 +77,12 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
     blockId: string,
     body: string,
     language: string,
-    sliceStart: number,
-    sliceEnd: number,
     codeIdx: number
   ) => {
     spliceInCodeExecution(
       codeWithResponseFrontmatter(body, language, blockId, status, response),
-      sliceStart,
-      sliceEnd,
+      codeSourceOffsets[codeIdx].sliceStart,
+      codeSourceOffsets[codeIdx].sliceEnd,
       codeIdx
     )
   }
@@ -201,12 +205,12 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
       const match = /language-(\w+)/.exec(props.className || '')
       const language = match ? match[1] : undefined
 
-      if (mdprops.nested) {
+      if (mdprops.nested && /^(bash|sh|shell)$/.test(language)) {
         // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
         const sliceStart = props.node.position.start.offset
         const sliceEnd = props.node.position.end.offset
+        const myCodeIdx = codeIdx({ sliceStart, sliceEnd })
 
-        const myCodeIdx = codeIdx()
         const executed = codeHasBeenExecuted(myCodeIdx)
 
         // note how in the evaluation of `status`, we assume that if a
@@ -217,20 +221,17 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
 
         return (
           <Input
-            key="fixed"
             readonly={false}
             className="kui--code-block-in-markdown"
             tab={mdprops.tab}
             value={body}
             language={language}
             blockId={attributes.id}
-            response={attributes.response}
+            response={decodePriorResponse(attributes.response, attributes.responseEncoding)}
             status={statusConsideringReplay}
             arg1={body}
             arg2={language}
-            arg3={sliceStart}
-            arg4={sliceEnd}
-            arg5={myCodeIdx}
+            arg3={myCodeIdx}
             onResponse={spliceCodeWithResponseFrontmatter}
             data-code-index={myCodeIdx}
           />
@@ -241,7 +242,7 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
             <code className="kui--code--editor">
               <SimpleEditor
                 tabUUID={tabUUID}
-                content={body}
+                content={code}
                 contentType={language}
                 fontSize={12}
                 simple
@@ -304,7 +305,11 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
 function components(args: Args) {
   // hack until we do this correctly with an AST visitor
   let codeIdx = 0
-  const allocCodeIdx = () => codeIdx++
+  const codeSourceOffsets: SourceOffset[] = []
+  const allocCodeIdx = (offset: SourceOffset) => {
+    codeSourceOffsets[codeIdx] = offset
+    return codeIdx++
+  }
 
   const components = Object.assign(
     {
@@ -341,7 +346,7 @@ function components(args: Args) {
         )
       }
     },
-    typedComponents(allocCodeIdx, args)
+    typedComponents(codeSourceOffsets, allocCodeIdx, args)
   )
 
   return function mkComponents() {

@@ -66,36 +66,38 @@ const rootRelative = (dir: string) => join(ROOT, dir)
         )
         .catch(Common.oops(this)))
 
-    it(`should ${head} /kui/welcome.json and see 10 lines`, () =>
-      CLI.command(`${head} /kui/welcome.json`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
-        .then(res =>
-          this.app.client.waitUntil(async () => {
-            const linesNumbers = await this.app.client.$$(
-              Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
-            )
-            return linesNumbers.length === 10
-          })
-        )
-        .catch(Common.oops(this)))
+    if (head === 'head') {
+      it(`should ${head} /kui/welcome.md and see 10 lines`, () =>
+        CLI.command(`${head} /kui/welcome.md`, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(res =>
+            this.app.client.waitUntil(async () => {
+              const linesNumbers = await this.app.client.$$(
+                Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
+              )
+              return linesNumbers.length === 10
+            })
+          )
+          .catch(Common.oops(this)))
 
-    it(`should ${head} -n 5 /kui/welcome.json and see 5 lines`, () =>
-      CLI.command(`${head} -n 5 /kui/welcome.json`, this.app)
-        .then(ReplExpect.ok)
-        .then(SidecarExpect.open)
-        .then(res =>
-          this.app.client.waitUntil(async () => {
-            const linesNumbers = await this.app.client.$$(
-              Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
-            )
-            return linesNumbers.length === 5
-          })
-        )
-        .catch(Common.oops(this)))
+      it(`should ${head} -n 5 /kui/welcome.md and see 5 lines`, () =>
+        CLI.command(`${head} -n 5 /kui/welcome.md`, this.app)
+          .then(ReplExpect.ok)
+          .then(SidecarExpect.open)
+          .then(res =>
+            this.app.client.waitUntil(async () => {
+              const linesNumbers = await this.app.client.$$(
+                Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
+              )
+              return linesNumbers.length === 5
+            })
+          )
+          .catch(Common.oops(this)))
+    }
 
-    it(`should ${head} -c 1 /kui/welcome.json and see 1 bytes`, () =>
-      CLI.command(`${head} -c 1 /kui/welcome.json`, this.app)
+    it(`should ${head} -c 1 /kui/welcome.md and see 1 bytes`, () =>
+      CLI.command(`${head} -c 1 /kui/welcome.md`, this.app)
         .then(ReplExpect.ok)
         .then(SidecarExpect.open)
         .then(res =>

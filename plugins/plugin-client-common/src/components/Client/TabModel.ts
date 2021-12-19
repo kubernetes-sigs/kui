@@ -36,9 +36,7 @@ export default class TabModel {
     private readonly _buttons: TopTabButton[] = [],
     private readonly _initialCommandLine?: string,
     private readonly _onClose?: string,
-    private readonly _exec?: Events.NewTabRequestEvent['tabs'][0]['exec'],
-    /** If field is defined then this is the serialized form of the notebook to be displayed on this tab */
-    private readonly _snapshot?: Buffer
+    private readonly _exec?: Events.NewTabRequestEvent['tabs'][0]['exec']
   ) {
     this._state.capture()
 
@@ -79,14 +77,6 @@ export default class TabModel {
     return this._exec
   }
 
-  public get snapshot() {
-    return this._snapshot
-  }
-
-  public get isNotebook() {
-    return this.snapshot !== undefined
-  }
-
   public update(buttons: TopTabButton[], newTitle?: string) {
     return new TabModel(
       this.uuid,
@@ -96,9 +86,7 @@ export default class TabModel {
       this.state,
       buttons,
       undefined,
-      this.onClose,
-      undefined,
-      this._snapshot
+      this.onClose
     )
   }
 }

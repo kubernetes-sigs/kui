@@ -15,10 +15,9 @@
  */
 
 import { v4 } from 'uuid'
-import { CommandStartEvent, CommandCompleteEvent, Events, ScalarResponse, getTabId, Util } from '@kui-shell/core'
+import { CommandCompleteEvent, Events, ScalarResponse, getTabId } from '@kui-shell/core'
 import ScrollableTerminal, { getSelectionText } from './ScrollableTerminal'
-import { isNotebookImpl } from './Snapshot'
-import { FinishedBlock, hasStartEvent, isWithCompleteEvent } from './Block/BlockModel'
+import { FinishedBlock, isFinished, hasStartEvent, isWithCompleteEvent } from './Block/BlockModel'
 
 interface ClipboardTransfer {
   apiVersion: 'kui-shell/v1'
@@ -135,32 +134,29 @@ export function onCopy(this: ScrollableTerminal, evt: ClipboardEvent, onSuccess?
   if (target) {
     Events.eventBus.emitSnapshotRequest(
       {
-        filter: (evt: CommandStartEvent) => {
-          return evt.execUUID === target.execUUID
-        },
+        execUUID: target.execUUID,
         cb: async (snapshotBuffer: Buffer) => {
-          const snapshot = JSON.parse(Buffer.from(snapshotBuffer).toString())
-          if (!isNotebookImpl(snapshot)) {
-            console.error('invalid snapshot', snapshot)
+          if (!snapshotBuffer) {
+            console.error('Could not find the target block to copy')
+            return
+          }
+
+          const block = JSON.parse(snapshotBuffer.toString())
+          if (!isFinished(block)) {
+            console.error('invalid snapshot', block)
             throw new Error('Invalid snapshot')
           } else {
-            const blocks = Util.flatten(
-              snapshot.spec.splits.map(split => {
-                return split.blocks
-              })
-            )
-            if (blocks.length > 0) {
-              const transfer: ClipboardTransfer = {
-                apiVersion: 'kui-shell/v1',
-                kind: 'ClipboardTransfer',
-                blocks
-              }
+            const blocks = [block]
+            const transfer: ClipboardTransfer = {
+              apiVersion: 'kui-shell/v1',
+              kind: 'ClipboardTransfer',
+              blocks
+            }
 
-              navigator.clipboard.writeText(JSON.stringify(transfer))
+            navigator.clipboard.writeText(JSON.stringify(transfer))
 
-              if (typeof onSuccess === 'function') {
-                onSuccess(target)
-              }
+            if (typeof onSuccess === 'function') {
+              onSuccess(target)
             }
           }
         }

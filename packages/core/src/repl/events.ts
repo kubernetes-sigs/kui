@@ -68,19 +68,3 @@ export type CommandCompleteHandler<R extends KResponse = KResponse, T extends Re
 export type SnapshottedEvent<E extends CommandStartEvent | CommandCompleteEvent> = Omit<E, 'tab'> & {
   tab: E['tab']['uuid']
 }
-
-export interface Notebook {
-  apiVersion: 'kui-shell/v1'
-  kind: 'Notebook'
-  metadata?: {
-    name?: string
-    description?: string
-    preferReExecute?: boolean
-  }
-}
-
-/** @return wether or not the given `raw` json is an instance of Notebook */
-export function isNotebook(raw: Record<string, any>): raw is Notebook {
-  const model = raw as Notebook
-  return model.apiVersion === 'kui-shell/v1' && model.kind === 'Notebook'
-}

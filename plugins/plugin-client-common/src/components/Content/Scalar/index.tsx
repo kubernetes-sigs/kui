@@ -160,6 +160,7 @@ export default class Scalar extends React.PureComponent<Props, State> {
             {...response.props}
             repl={this.repl}
             tab={tab}
+            execUUID={this.props.execUUID}
             onRender={this._onRender}
             willRemove={this.props.willRemove}
             willUpdateCommand={this.props.willUpdateCommand}
@@ -218,7 +219,17 @@ export default class Scalar extends React.PureComponent<Props, State> {
       return <Markdown tab={tab} source={response.content} onRender={this._onRender} />
     } else if (isRandomErrorResponse1(response)) {
       // maybe this is an error response from some random API?
-      return <Markdown tab={tab} source={strings('randomError1', response.code)} onRender={this._onRender} />
+      return (
+        <Markdown
+          tab={tab}
+          source={strings(
+            response.message ? 'randomError1WithMessage' : 'randomError1',
+            response.code,
+            response.message
+          )}
+          onRender={this._onRender}
+        />
+      )
     } else if (isRandomErrorResponse2(response)) {
       // maybe this is an error response from some random API?
       return <Markdown tab={tab} source={strings('randomError2', response.errno)} onRender={this._onRender} />

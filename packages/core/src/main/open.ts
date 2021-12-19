@@ -16,7 +16,7 @@
 
 import { replay } from './notebooks'
 
-export const filters = [{ name: 'Kui snapshot', extensions: ['kui', 'json'] }]
+export const filters = [{ name: 'Kui snapshot', extensions: ['md'] }]
 
 /**
  * Open a file and replay its session.

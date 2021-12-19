@@ -16,7 +16,6 @@
 
 import React from 'react'
 import { isOfflineClient, isReadOnlyClient } from '@kui-shell/core'
-import TabModel from './TabModel'
 
 export interface MutabilityState {
   /** This current tab allows the user to change the tab in various
@@ -35,10 +34,10 @@ const offline: MutabilityState = { editable: false, executable: false }
 const notebookMode: MutabilityState = { editable: false, executable: true }
 
 // define initialization
-export function initializeState(model: TabModel['_snapshot']): MutabilityState {
+export function initializeState(): MutabilityState {
   if (isOfflineClient()) {
     return offline
-  } else if (isReadOnlyClient() || model !== undefined) {
+  } else if (isReadOnlyClient()) {
     return notebookMode
   } else {
     return defaultState

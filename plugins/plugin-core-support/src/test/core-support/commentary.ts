@@ -27,8 +27,6 @@ describe('commentary and replay', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
-  const file = Util.uniqueFileForSnapshot()
-
   const verifyComment = (inNotebook = true) => {
     return this.app.client.waitUntil(
       async () => {
@@ -61,26 +59,12 @@ describe('commentary and replay', function(this: Common.ISuite) {
       .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
       .catch(Common.oops(this, true)))
   addComment()
-
-  it('should snapshot', () =>
-    CLI.command(`snapshot ${file}`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
-
-  it('should refresh', () => Common.refresh(this))
-
-  it('should replay', () =>
-    CLI.command(`replay ${file}`, this.app)
-      .then(() => verifyComment())
-      .catch(Common.oops(this, true)))
 })
 
-describe('edit commentary and replay', function(this: Common.ISuite) {
+describe('edit commentary', function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
   Util.closeAllExceptFirstTab.bind(this)()
-
-  const file = Util.uniqueFileForSnapshot()
 
   const verifyComment = (expectedText: string, inNotebook: boolean) => {
     const output = lastOutput(inNotebook)
@@ -222,50 +206,4 @@ describe('edit commentary and replay', function(this: Common.ISuite) {
   typeAndVerify(this, '3', 'foo13', false)
   clickRevert('foo1', false)
   clickCancel('foo1', false)
-
-  it('should snapshot', () =>
-    CLI.command(`snapshot ${file}`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
-
-  it('should refresh', () => Common.refresh(this))
-
-  it('should replay', () =>
-    CLI.command(`replay ${file}`, this.app)
-      .then(() => verifyComment('foo1', true))
-      .catch(Common.oops(this, true)))
-
-  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
-
-  // in order to make more changes to the notebook, we need to execute
-  // a command to toggle its editability; so we switch back to the
-  // first to do so
-  it('should switch to the first tab', () => Util.switchToTopLevelTabViaClick(this, 1))
-  it('should make the second tab editable', () =>
-    CLI.command('tab edit toggle 2', this.app)
-      .then(ReplExpect.ok)
-      .catch(Common.oops(this, true)))
-  it('should switch back to the second tab', () => Util.switchToTopLevelTabViaClick(this, 2))
-
-  // it('should sleep', () => new Promise(resolve => setTimeout(resolve, 4000)))
-  it('should wait for the edit toggle to take effect', () => CLI.waitForRepl(this.app).catch(Common.oops(this, true)))
-
-  // Here comes the tests for snapshot --exec
-  openEditor('foo1', false)
-  typeAndVerify(this, Keys.ENTER, 'foo1\n', false)
-  typeAndVerify(this, Keys.ENTER, 'foo1\n\n', false)
-  typeAndVerify(this, 'foo2', 'foo1\n\nfoo2', false)
-  clickDone('foo1\nfoo2', false)
-
-  it('should snapshot with --exec', () =>
-    CLI.command(`snapshot ${file} --exec`, this.app)
-      .then(ReplExpect.justOK)
-      .catch(Common.oops(this, true)))
-
-  it('should refresh', () => Common.refresh(this))
-
-  it('should replay', () =>
-    CLI.command(`replay ${file}`, this.app)
-      .then(() => verifyComment('foo1\nfoo2', true))
-      .catch(Common.oops(this, true)))
 })

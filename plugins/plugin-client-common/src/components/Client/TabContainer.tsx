@@ -16,8 +16,7 @@
 
 import React from 'react'
 import { Page } from '@patternfly/react-core'
-
-import { Events, Tab, pexecInCurrentTab } from '@kui-shell/core'
+import { Events, Tab } from '@kui-shell/core'
 
 import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
@@ -71,18 +70,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       evt.tabs.forEach((spec, idx) => {
         // re: the `&& idx > 0` part: we do want the *first* tab to assert activeness
         const doNotChangeActiveTab = evt.background || (weWillAssertActiveTab && idx > 0)
-
-        if (spec.replaceCurrentTab) {
-          this.setState(({ tabs, activeIdx }) => ({
-            tabs: [
-              ...tabs.slice(0, activeIdx),
-              this.newTabModel(spec, doNotChangeActiveTab),
-              ...tabs.slice(activeIdx + 1)
-            ]
-          }))
-        } else {
-          this.onNewTab(spec, doNotChangeActiveTab)
-        }
+        this.onNewTab(spec, doNotChangeActiveTab)
       })
 
       if (weWillAssertActiveTab) {
@@ -185,8 +173,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       undefined,
       spec.cmdline,
       spec.onClose,
-      spec.exec,
-      spec.snapshot
+      spec.exec
     )
     this.listenForTabClose(model)
     return model
@@ -269,16 +256,6 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     // the new tab?
     const tabModel = this.state.tabs.find(_ => _.uuid === tab.uuid)
     if (tabModel) {
-      // execute a command onReady?
-      if (tabModel.initialCommandLine) {
-        try {
-          const quiet = tabModel.exec && tabModel.exec === 'qexec'
-          pexecInCurrentTab(tabModel.initialCommandLine, tab, quiet)
-        } catch (err) {
-          console.error('Error executing initial command line in new tab', err)
-        }
-      }
-
       // execute a command onClose?
       if (tabModel.onClose) {
         Events.eventBus.on('/tab/close', async tab => {
@@ -328,11 +305,11 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         {this.state.tabs.map((_, idx) => (
           <TabContent
             {...this.props}
-            snapshot={_.snapshot}
             tabTitle={_.title}
             key={_.uuid}
             uuid={_.uuid}
             active={idx === this.state.activeIdx}
+            initialCommandLine={_.initialCommandLine}
             onTabReady={this._onTabReady}
             willSetTitle={this._onSetTabTitle}
             state={_.state}

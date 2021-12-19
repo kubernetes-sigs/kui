@@ -194,9 +194,10 @@ export function isRawResponse<Content extends RawContent>(entity: Entity<Content
   return raw.mode === 'raw' && raw.content !== undefined
 }
 
-type RandomErrorResponse1 = { code: string }
+type RandomErrorResponse1 = { code: string | number; message?: string }
 export function isRandomErrorResponse1(response: Entity): response is RandomErrorResponse1 {
-  return typeof (response as RandomErrorResponse1).code === 'string'
+  const code = (response as RandomErrorResponse1).code
+  return typeof code === 'string' || typeof code === 'number'
 }
 
 type RandomErrorResponse2 = { errno: string | number }

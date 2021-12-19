@@ -128,6 +128,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
         kind: 'CommentaryResponse',
         props: {
           title,
+          filepath,
           children: data,
           baseUrl: args.parsedOptions['base-url']
         }
