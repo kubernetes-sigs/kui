@@ -272,7 +272,7 @@ export const doExecWithStatus = <O extends KubeOptions>(
     return response.content.stdout
   } else {
     const statusArgs = await prepareForStatus(verb, args)
-    const initialResponse = response ? `--response "${response.content.stdout}"` : ''
+    const initialResponse = response ? response.content.stdout : ''
 
     return doStatus(args, verb, command, initialResponse, finalState, statusArgs)
   }
