@@ -1,31 +1,24 @@
 {
   "label": "Notebooks",
   "submenu": [
-    { "notebook": "Welcome to Kui", "filepath": "/kui/welcome.json" },
+    { "notebook": "Welcome to Kui", "filepath": "/kui/welcome.md" },
     { "type": "separator" },
     {
       "label": "Kubernetes",
       "submenu": [
-        { "notebook": "CRUD Operations", "filepath": "/kui/kubernetes/crud-operations.json" },
-        { "notebook": "Working with Jobs", "filepath": "/kui/kubernetes/create-jobs.json" },
-        { "notebook": "Deploying Applications", "filepath": "/kui/kubernetes/deploy-applications.json" }
+        { "notebook": "CRUD Operations", "filepath": "/kui/kubernetes/crud-operations.md" },
+        { "notebook": "Working with Jobs", "filepath": "/kui/kubernetes/create-jobs.md" },
+        { "notebook": "Deploying Applications", "filepath": "/kui/kubernetes/deploy-applications.md" }
       ]
     },
     {
       "label": "Iter8",
       "submenu": [
-        { "notebook": "Welcome to Iter8", "filepath": "/kui/iter8/welcome.json" },
-        { "notebook": "Tutorial 1", "filepath": "/kui/iter8/tutorial1.json" }
-      ]
-    },
-    {
-      "label": "Experimental Ideas",
-      "submenu": [
-        { "notebook": "Kubernetes Dashboard", "filepath": "/kui/kubernetes/dashboard.json" },
-        { "notebook": "Popeye Dashboard", "filepath": "/kui/kubernetes/popeye.json" }
+        { "notebook": "Welcome to Iter8", "filepath": "/kui/iter8/welcome.md" },
+        { "notebook": "Tutorial 1", "filepath": "/kui/iter8/tutorial1.md" }
       ]
     },
     { "type": "separator" },
-    { "notebook": "Make Your Own Notebook", "filepath": "/kui/make-notebook.json" }
+    { "notebook": "Make Your Own Notebook", "filepath": "/kui/make-notebook.md" }
   ]
 }

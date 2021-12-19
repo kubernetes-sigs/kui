@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { Events, Tab as KuiTab, TabState, initializeSession } from '@kui-shell/core'
+import { Events, Tab as KuiTab, TabState, initializeSession, pexecInCurrentTab } from '@kui-shell/core'
 
 import KuiContext from './context'
 const Confirm = React.lazy(() => import('../Views/Confirm'))
@@ -49,8 +49,8 @@ type Props = TabContentOptions &
   WithTabUUID & {
     active: boolean
     state: TabState
-    snapshot?: Buffer
     tabTitle?: string
+    initialCommandLine?: string
   }
 
 type State = Partial<WithTab> & {
@@ -109,7 +109,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
       hasLeftStrip: false,
       hasBottomStrip: false,
       _terminal: React.createRef(),
-      mutability: initializeState(this.props.snapshot)
+      mutability: initializeState()
     }
   }
 
@@ -137,8 +137,6 @@ export default class TabContent extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
-    this.oneTimeInit()
-
     const onTabNew = () => {
       this.setState({ sessionInit: 'Done' })
       TabContent.delayedFocus(this.state)
@@ -151,6 +149,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
         console.error('Error in onTabReady', err)
       }
     }
+
     Events.eventChannelUnsafe.once(`/tab/new/${this.props.uuid}`, onTabNew)
     this.cleaners.push(() => Events.eventChannelUnsafe.off(`/tab/new/${this.props.uuid}`, onTabNew))
 
@@ -167,6 +166,8 @@ export default class TabContent extends React.PureComponent<Props, State> {
     const onEditToggle = this.toggleEditMode
     Events.eventBus.onWithTabId('/kui/tab/edit/toggle', this.props.uuid, onEditToggle)
     this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/toggle', this.props.uuid, onEditToggle))
+
+    this.oneTimeInit()
   }
 
   private async onOffline() {
@@ -390,6 +391,18 @@ export default class TabContent extends React.PureComponent<Props, State> {
   private body() {
     if (!this.state.active && !this._firstRenderDone) {
       return <React.Fragment />
+    }
+
+    if (!this._firstRenderDone && this.props.initialCommandLine) {
+      setTimeout(() => {
+        // execute a command onReady?
+        try {
+          // const quiet = tabModel.exec && tabModel.exec === 'qexec'
+          pexecInCurrentTab(this.props.initialCommandLine, this.state.tab.current)
+        } catch (err) {
+          console.error('Error executing initial command line in new tab', err)
+        }
+      })
     }
 
     this._firstRenderDone = true

@@ -18,13 +18,10 @@ import {
   Capabilities,
   Events,
   Arguments,
-  CommandStartEvent,
   KResponse,
   ParsedOptions,
   Registrar,
-  Notebook,
-  isNotebook,
-  getPrimaryTabId,
+  encodeComponent,
   Util
 } from '@kui-shell/core'
 
@@ -37,33 +34,14 @@ const replayUsage = {
     strict: 'replay',
     required,
     optional: [
-      { name: '--freshen', alias: '-f', boolean: true, docs: 'Regenerate snapshot' },
       { name: '--new-window', alias: '-w', boolean: true, docs: 'Replay in a new window (Electron only)' },
-      { name: '--close-current-tab', alias: '-c', boolean: true, docs: 'Also close the current tab' },
       { name: '--replace-current-tab', alias: '-r', boolean: true, docs: 'Replace the content of the current tab' },
       { name: '--status-stripe', docs: 'Modify status stripe', allowed: ['default', 'blue', 'yellow', 'red'] }
     ]
   },
   flags: {
-    alias: { 'new-window': ['w'], freshen: ['f'], 'close-current-tab': ['c'], 'replace-current-tab': ['r'] },
-    boolean: ['new-window', 'w', 'freshen', 'f', 'close-current-tab', 'c', 'replace-current-tab', 'r']
-  }
-}
-
-/** Usage for the snapshot command */
-const snapshotUsage = {
-  usage: {
-    strict: 'snapshot',
-    required,
-    optional: [
-      { name: '--shallow', alias: '-s', boolean: true, docs: 'Do not record click events' },
-      { name: '--description', alias: '-d', docs: 'Description for this snapshot' },
-      { name: '--exec', alias: '-x', docs: 'Prefer to re-execute commands when replay' },
-      { name: '--title', alias: '-t', docs: 'Title for this snapshot' }
-    ]
-  },
-  flags: {
-    boolean: ['--shallow', '-s']
+    alias: { 'new-window': ['w'], 'replace-current-tab': ['r'] },
+    boolean: ['new-window', 'w', 'replace-current-tab', 'r']
   }
 }
 
@@ -72,27 +50,14 @@ interface ReplayOptions extends ParsedOptions {
   'status-stripe': Events.StatusStripeChangeEvent['type']
 }
 
-interface SnapshotOptions extends ParsedOptions {
-  s?: boolean
-  shallow?: boolean
-  d?: string
-  description?: string
-  t?: string
-  title?: string
-  exec?: boolean
-  x?: boolean
-}
-
 /** Format a Markdown string that describes the given snapshot */
-function formatMessage(snapshot: Notebook) {
-  return `**Now Playing**: ${snapshot.metadata.name || 'a snapshot'}`
+function formatMessage(title?: string) {
+  return `**Now Playing**: ${title || 'a snapshot'}`
 }
 
 /** Load snapshot model from disk */
-async function loadNotebook(REPL: Arguments['REPL'], filepath: string): Promise<Notebook> {
-  return JSON.parse(
-    (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
-  )
+async function loadNotebook(REPL: Arguments['REPL'], filepath: string): Promise<string> {
+  return (await REPL.rexec<{ data: string }>(`vfs fstat ${REPL.encodeComponent(filepath)} --with-data`)).content.data
 }
 
 /** Command registration */
@@ -102,82 +67,38 @@ export default function(registrar: Registrar) {
     '/replay',
     async ({ argvNoOptions, parsedOptions, REPL }) => {
       const filepaths = argvNoOptions.slice(1).map(_ => Util.expandHomeDir(_))
-      const models = await Promise.all(filepaths.map(filepath => loadNotebook(REPL, filepath)))
 
-      const valid = models.map(_ => isNotebook(_))
-      const nInvalid = models.reduce((N, valid) => (N += valid ? 0 : 1), 0)
-      if (nInvalid > 0) {
-        const invalids = filepaths.filter((_, idx) => !valid[idx])
-        console.error('invalid notebooks', invalids)
-        throw new Error(invalids.length === 1 ? 'Invalid notebook' : `Invalid notebooks: ${invalids.join(' ')}`)
+      if (parsedOptions['new-window'] && Capabilities.inElectron()) {
+        // the electron bits are sequestered in plugin-electron, to
+        // avoid pulling in electron for purely browser-based clients
+        return REPL.qexec(`replay-electron ${filepaths}`)
       } else {
-        const messages = models.map(formatMessage)
-        const titles = models.map(model => (model.metadata.name ? model.metadata.name : ''))
-        const titleOptions =
-          titles.length === 0 || titles.every(_ => _.length === 0) ? '' : `--title "${titles.join(',')}"`
+        await Promise.all(
+          filepaths.map(async filepath => {
+            const cmdline = `commentary --readonly -f ${encodeComponent(filepath)}`
+            const src = await loadNotebook(REPL, filepath)
 
-        if (parsedOptions['new-window'] && Capabilities.inElectron()) {
-          // the electron bits are sequestered in plugin-electron, to
-          // avoid pulling in electron for purely browser-based clients
-          return REPL.qexec(`replay-electron ${filepaths}`)
-        } else {
-          if (parsedOptions.c) {
-            // see https://github.com/IBM/kui/issues/5929
-            await REPL.qexec('tab close')
-          }
+            const fm = await import('front-matter').then(_ => _.default<{ title?: string }>(src))
+            const message = formatMessage(fm.attributes.title)
+            const titleProps = fm.attributes.title ? `--title ${encodeComponent(fm.attributes.title)}` : ''
 
-          return REPL.qexec(
-            `tab new --snapshot "${filepaths.join(',')}" --quiet --status-stripe-type ${parsedOptions[
-              'status-stripe'
-            ] || 'blue'} ${titleOptions} ${parsedOptions.r ? ' -r' : ''}`,
-            undefined,
-            undefined,
-            { data: { 'status-stripe-message': messages.length === 1 ? messages[0] : messages } }
-          )
-        }
+            return REPL.qexec(
+              `tab new --cmdline "${cmdline}" ${titleProps} --status-stripe-type ${parsedOptions['status-stripe'] ||
+                'blue'}`,
+              undefined,
+              undefined,
+              { data: { 'status-stripe-message': message } }
+            )
+          })
+        )
       }
     },
     replayUsage
   )
 
   // register the `snapshot` command
-  registrar.listen<KResponse, SnapshotOptions>(
-    '/snapshot',
-    ({ argvNoOptions, parsedOptions, REPL, tab }) =>
-      new Promise((resolve, reject) => {
-        // debounce block callbacks
-        const seenExecUUIDs: Record<string, boolean> = {}
-
-        const ourMainTab = getPrimaryTabId(tab)
-        Events.eventBus.emitSnapshotRequest(
-          {
-            filter: (evt: CommandStartEvent) => {
-              if (!seenExecUUIDs[evt.execUUID]) {
-                seenExecUUIDs[evt.execUUID] = true
-                return true
-              }
-            },
-            cb: async (snapshot: Buffer) => {
-              try {
-                const filepath = Util.expandHomeDir(argvNoOptions[argvNoOptions.indexOf('snapshot') + 1])
-                await REPL.rexec<{ data: string }>(`vfs fwrite ${REPL.encodeComponent(filepath)}`, {
-                  data: Buffer.from(snapshot).toString()
-                })
-                resolve(true)
-              } catch (err) {
-                reject(err)
-              }
-            },
-            opts: {
-              name: parsedOptions.t || parsedOptions.title,
-              description: parsedOptions.d || parsedOptions.description,
-              preferReExecute: parsedOptions.exec || parsedOptions.x,
-              shallow: parsedOptions.shallow
-            }
-          },
-          ourMainTab
-        )
-      }),
-    snapshotUsage
-  )
+  registrar.listen('/snapshot', async args => {
+    await Events.eventBus.emitSnapshotRequest({}, args.tab.uuid)
+    return true
+  })
 }

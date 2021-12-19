@@ -124,7 +124,7 @@ export { splitIntoPipeStages } from './repl/pipe-stages'
 export { ReplEval, DirectReplEval } from './repl/types'
 export { default as encodeComponent } from './repl/encode'
 export { exec as internalBeCarefulExec, pexec as internalBeCarefulPExec, setEvaluatorImpl, doEval } from './repl/exec'
-export { CommandStartEvent, CommandCompleteEvent, Notebook, isNotebook, SnapshottedEvent } from './repl/events'
+export { CommandStartEvent, CommandCompleteEvent, SnapshottedEvent } from './repl/events'
 
 // Tabs
 export {

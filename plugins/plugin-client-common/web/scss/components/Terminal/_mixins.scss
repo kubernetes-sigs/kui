@@ -31,7 +31,7 @@ $action-width: 2em;
 $focus-color: var(--color-brand-01);
 
 $input-bg: var(--color-base01);
-$input-bg-inverted: var(--color-base00);
+$input-bg-inverted: var(--color-sidecar-background-01);
 $input-border: 1px solid rgba(150, 150, 150, 0.2);
 $input-border-editing: var(--color-brand-03);
 
@@ -155,7 +155,7 @@ $action-hover-delay: 210ms;
 }
 
 @mixin NotAlwaysHasBorder {
-  :not(&[data-has-border]) {
+  &:not(&[data-has-border]) {
     @content;
   }
 }

@@ -24,3 +24,6 @@ export { isHTML, isPromise } from '../util/types'
 // pretty printing
 export { prettyPrintTime } from '../webapp/util/time'
 export { default as prettyPrintBytes } from '../webapp/util/bytes'
+
+// gzip+base64
+export { base64PlusGzip, decodeBase64PlusGzip } from '../util/gzip'

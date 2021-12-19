@@ -25,7 +25,7 @@ Common.localDescribe('notebooks read only mode', function(this: Common.ISuite) {
 
   const openNotebook = () => {
     it('should open a notebook using a CLI command', () =>
-      CLI.command('replay /kui/welcome.json', this.app).catch(Common.oops(this, true)))
+      CLI.command('replay /kui/welcome.md', this.app).catch(Common.oops(this, true)))
   }
 
   const splitHeadersCheck = () => {

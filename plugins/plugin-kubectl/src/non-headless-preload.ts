@@ -76,11 +76,9 @@ export default async (registrar: PreloadRegistrar) => {
   notebookVFS.cp(
     undefined,
     [
-      'plugin://plugin-kubectl/notebooks/create-jobs.json',
-      'plugin://plugin-kubectl/notebooks/crud-operations.json',
-      'plugin://plugin-kubectl/notebooks/deploy-applications.json',
-      'plugin://plugin-kubectl/notebooks/dashboard.json',
-      'plugin://plugin-kubectl/notebooks/popeye.json'
+      'plugin://plugin-kubectl/notebooks/create-jobs.md',
+      'plugin://plugin-kubectl/notebooks/crud-operations.md',
+      'plugin://plugin-kubectl/notebooks/deploy-applications.md'
     ],
     '/kui/kubernetes/'
   )

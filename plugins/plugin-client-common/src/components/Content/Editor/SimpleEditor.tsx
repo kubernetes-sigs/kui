@@ -190,16 +190,9 @@ export default class SimpleEditor extends React.Component<Props, State> {
         return editor.getValue()
       }
 
-      let ignoreEvent = false
       editor.onDidContentSizeChange(() => {
-        if (ignoreEvent) return
-        try {
-          ignoreEvent = true
-          adjustHeight && adjustHeight()
-          editor.layout()
-        } finally {
-          ignoreEvent = false
-        }
+        adjustHeight && adjustHeight()
+        editor.layout()
       })
 
       if (props.onContentChange) {

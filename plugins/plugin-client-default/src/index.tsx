@@ -88,10 +88,9 @@ export default function renderMain(props: KuiProps) {
         (!isPopup && [
           'tab',
           'new',
-          '-s',
-          '/kui/welcome.json',
-          '-q', // qexec
-          '--bg', // open in background
+          '--cmdline',
+          'commentary --readonly -f /kui/welcome.md',
+          '--bg',
           '--title',
           title,
           '--status-stripe-type',

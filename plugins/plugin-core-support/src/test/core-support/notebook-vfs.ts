@@ -27,11 +27,11 @@ describe(`notebook vfs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Co
 
   it('should open /kui', () =>
     CLI.command('open /kui', this.app)
-      .then(ReplExpect.okWithString('Welcome to Kui'))
+      .then(ReplExpect.okWithString('welcome.md'))
       .catch(Common.oops(this, true)))
 
   it('should open /kui/kubernetes', () =>
     CLI.command('open /kui/kubernetes', this.app)
-      .then(ReplExpect.okWithString('Kubernetes Dashboard'))
+      .then(ReplExpect.okWithString('crud-operations.md'))
       .catch(Common.oops(this, true)))
 })

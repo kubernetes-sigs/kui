@@ -24,6 +24,9 @@ export type CommentaryResponse = {
     /** Content rendered inside the CardTitle */
     title?: string
 
+    /** Source filepath */
+    filepath?: string
+
     /** Body of the Card. It will be passed through as the source <Markdown source="..." /> */
     children: string
 

@@ -15,14 +15,12 @@
  */
 
 import React from 'react'
-import { isFile } from '@kui-shell/plugin-bash-like/fs'
 
 import {
   Arguments,
   ParsedOptions,
   Tab as KuiTab,
   Content,
-  encodeComponent,
   isRadioTable,
   isReactProvider,
   isStringWithOptionalContentType,
@@ -41,7 +39,6 @@ import Eval from './Eval'
 const Editor = React.lazy(() => import('./Editor'))
 const DiffEditor = React.lazy(() => import('./Editor/DiffEditor'))
 import renderTable from './Table'
-import Markdown from './Markdown'
 import HTMLString from './HTMLString'
 import HTMLDom from './Scalar/HTMLDom'
 import { KuiContext } from '../../'
@@ -90,25 +87,6 @@ export default class KuiContent extends React.PureComponent<KuiMMRProps, State> 
     if (isStringWithOptionalContentType(mode)) {
       if (mode.contentType === 'text/html') {
         return <HTMLString content={mode.content} />
-      } else if (mode.contentType === 'text/markdown') {
-        if (!mode.content && isFile(response)) {
-          // then we need to fetch the file content
-          return (
-            <Eval
-              {...this.props}
-              command={`vfs fslice ${encodeComponent(response.spec.fullpath)} 0 8192`}
-              contentType={mode.contentType}
-            />
-          )
-        } else {
-          return (
-            <Markdown
-              tab={tab}
-              fullpath={isFile(response) ? response.spec.fullpath : undefined}
-              source={mode.content}
-            />
-          )
-        }
       } else {
         return (
           <Editor

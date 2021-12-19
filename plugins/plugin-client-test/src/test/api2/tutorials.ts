@@ -16,7 +16,8 @@
 
 import { CLI, Common, Selectors, ReplExpect } from '@kui-shell/test'
 
-describe(`tutorial vfs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+/** TODO no notebooks for now */
+xdescribe(`tutorial vfs ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 
@@ -48,7 +49,8 @@ async function clickRerunButton(ctx: Common.ISuite, count: number) {
   await rerunButton.click()
 }
 
-describe(`tutorial sequential execution ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+/** TODO. markdown notebooks do not yet support sequential execution? */
+xdescribe(`tutorial sequential execution ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
 

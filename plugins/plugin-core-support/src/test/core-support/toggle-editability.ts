@@ -25,7 +25,7 @@ Common.localDescribe('toggle edit mode', function(this: Common.ISuite) {
 
   const openNotebook = () => {
     it('should open a notebook using a CLI command', () =>
-      CLI.command('replay /kui/welcome.json', this.app).catch(Common.oops(this, true)))
+      CLI.command('replay /kui/welcome.md', this.app).catch(Common.oops(this, true)))
   }
 
   const argvCountCLICommandCheck = () => {
@@ -155,7 +155,7 @@ Common.localDescribe('toggle edit mode', function(this: Common.ISuite) {
   const doubleClick = () => {
     it('should verify that commentary blocks can enter edit mode when double clicked', async () => {
       try {
-        await this.app.client.$('.kui--commentary-card').then(_ => _.doubleClick())
+        await this.app.client.$('.kui--commentary-card p').then(_ => _.doubleClick())
         await this.app.client.$(Selectors.COMMENTARY_EDITOR).then(_ => _.waitForDisplayed({ timeout: TIMEOUT }))
         await this.app.client.$(Selectors.TOP_TAB_N(1)).then(_ => _.click())
       } catch (err) {

@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-import { filters } from './open'
 import tellRendererToExecute from './tell'
-import encodeComponent from '../repl/encode'
-
-let previousChoice: string
 
 /**
  * Save the current tab as a Notebook
  *
  */
 export default async function saveAsNotebook() {
-  const { dialog } = await import('electron')
-
-  const resp = await dialog.showSaveDialog({
-    title: 'Save as Notebook',
-    filters,
-    defaultPath: previousChoice
-  })
-
-  if (!resp.canceled) {
-    const thisChoice = resp.filePath
-    previousChoice = thisChoice
-    tellRendererToExecute(`snapshot ${encodeComponent(thisChoice)}`, 'pexec')
-  }
+  tellRendererToExecute(`snapshot`, 'pexec')
 }

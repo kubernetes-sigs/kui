@@ -36,7 +36,7 @@ export default async (registrar: PreloadRegistrar) => {
 
   if (!Capabilities.isHeadless() || Capabilities.inProxy()) {
     // mount a fake VFS to test tab completion
-    const [{ mount }, { NotebookVFS, notebookVFS }] = await Promise.all([
+    const [{ mount }, { NotebookVFS }] = await Promise.all([
       import('@kui-shell/plugin-bash-like/fs'),
       import('@kui-shell/plugin-core-support')
     ])
@@ -58,11 +58,11 @@ export default async (registrar: PreloadRegistrar) => {
     mount(vfsnest2)
 
     // mount notebooks
-    try {
+    /* try {
       notebookVFS.mkdir({ argvNoOptions: ['mkdir', '/kui/test'] })
       notebookVFS.cp(undefined, ['plugin://client/notebooks/ls.json'], '/kui/test')
     } catch (err) {
       console.error('Error mounting test notebooks', err)
-    }
+    } */
   }
 }
