@@ -191,8 +191,3 @@ body.kui--patternfly4[kui-theme-style] {
   --pf-global--icon--Color--light: #737679;
   --pf-global--icon--Color--dark: #151515;
 }
-
-/** PatternFly seems to want 16px here */
-html.kui button {
-  font-size: inherit;
-}

@@ -18,15 +18,27 @@
 const RE_TAB = /^===\s+"(.+)"/
 
 const START_OF_TAB = `<!-- ____KUI_START_OF_TAB____ -->`
+const PUSH_TABS = `<!-- ____KUI_NESTED_TABS____ -->`
 const END_OF_TAB = `<!-- ____KUI_END_OF_TAB____ -->`
 
 export default function plugin(/* options */) {
   return function transformer(tree) {
+    const tabStack = []
     let currentTabs = []
     const flushTabs = children => {
       if (currentTabs.length > 0) {
-        children.push({ type: 'element', tagName: 'tabbed', children: currentTabs })
+        children.push({
+          type: 'element',
+          tagName: 'tabbed',
+          children: currentTabs,
+          properties: { depth: tabStack.length }
+        })
+      }
+
+      if (tabStack.length === 0) {
         currentTabs = []
+      } else {
+        currentTabs = tabStack.pop()
       }
     }
 
@@ -42,8 +54,17 @@ export default function plugin(/* options */) {
         }
 
         if (child.type === 'raw' && child.value === END_OF_TAB) {
-          flushTabs(newChildren)
+          if (tabStack.length > 0) {
+            const parentTabs = tabStack[tabStack.length - 1]
+            const lastParentTab = parentTabs[parentTabs.length - 1]
+            flushTabs(lastParentTab.children)
+          } else {
+            flushTabs(newChildren)
+          }
           return newChildren
+        } else if (child.type === 'raw' && child.value === PUSH_TABS) {
+          tabStack.push(currentTabs)
+          currentTabs = []
         } else if (child.type === 'element' && child.tagName === 'div') {
           child.children = process(child.children)
         } else if (child.type === 'element' && child.tagName === 'p') {
@@ -78,7 +99,9 @@ export default function plugin(/* options */) {
 
                   currentTabs.push({
                     type: 'element',
-                    tagName: 'li',
+                    tagName: 'span', // do not use 'li'
+                    // here. something after us seems
+                    // to join nested tabs together
                     properties: { title: startMatch[1] },
                     children: rest ? [{ type: 'text', value: rest }] : [],
                     position
@@ -107,7 +130,7 @@ export default function plugin(/* options */) {
       }, [])
 
     if (tree.children && tree.children.length > 0) {
-      tree.children = process(tree.children)
+      tree.children = process(tree.children.slice())
     }
 
     if (currentTabs.length > 0) {
@@ -124,7 +147,10 @@ export default function plugin(/* options */) {
  */
 export function hackTabIndentation(source: string): string {
   let inTab: RegExp
+  let inBlockquote = false
+  let inCodeBlock = false
   let inTabReplacement: string
+  let indentation: string
 
   if (source.includes(START_OF_TAB)) {
     return source
@@ -134,20 +160,56 @@ export function hackTabIndentation(source: string): string {
     .split(/\n/)
     .map(line => {
       const startMatch = line.match(/^(\s*)===\s+".*"/)
-      if (startMatch) {
-        inTabReplacement = startMatch[1] || ''
-        inTab = new RegExp('^' + inTabReplacement + '(\\t| {4})')
-        return `\n\n${inTabReplacement}${START_OF_TAB}\n\n` + line
+      if (!inBlockquote && startMatch) {
+        const thisTabsIndentation = startMatch[1] || ''
+
+        const possibleEndTab = !(inTab && indentation.length > thisTabsIndentation.length)
+          ? ''
+          : `\n${inTabReplacement}${END_OF_TAB}\n\n`
+
+        const possibleNesting = !(inTab && indentation.length < thisTabsIndentation.length)
+          ? ''
+          : `\n\n${PUSH_TABS}\n\n`
+
+        inTabReplacement = ''
+        indentation = thisTabsIndentation
+        inTab = new RegExp('^' + indentation + '(\\t| {4})')
+
+        return (
+          `\n\n${possibleEndTab}${possibleNesting}${inTabReplacement}${START_OF_TAB}\n\n` +
+          line.replace(new RegExp('^' + indentation), inTabReplacement)
+        )
+      } else if (/^\s*```/.test(line)) {
+        const possibleEndOfTab = !inTab || inTab.test(line) ? '' : `\n${inTabReplacement}${END_OF_TAB}\n\n`
+        if (possibleEndOfTab) {
+          inTab = undefined
+        }
+
+        if (/(bash|sh|shell)/.test(line)) {
+          inCodeBlock = true
+          return possibleEndOfTab + line.replace(inTab, inTabReplacement)
+        } else if (inCodeBlock) {
+          inCodeBlock = false
+          return possibleEndOfTab + line.replace(inTab, inTabReplacement)
+        } else {
+          inBlockquote = !inBlockquote
+          if (inTab) {
+            return possibleEndOfTab
+          }
+        }
       } else if (inTab) {
-        if (line.length === 0) {
+        if (line.length === 0 || /^\s+$/.test(line)) {
           // empty line: still in tab
+          return line
+        } else if (inBlockquote) {
+          // in blockquote, don't modify anything with spacing
           return line
         } else if (inTab.test(line)) {
           // indented line while in tab
           return line.replace(inTab, inTabReplacement)
         } else {
           inTab = undefined
-          return `\n${inTabReplacement}${END_OF_TAB}\n` + line
+          return `\n${inTabReplacement}${END_OF_TAB}\n\n` + line
         }
       }
       return line

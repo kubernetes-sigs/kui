@@ -325,11 +325,9 @@ function components(args: Args) {
         )
       },
       tabbed: props => {
-        // the combination of <Tabs isBox> and <Card boxShadow>
-        // gives the tab content adefined border
         return (
-          <Tabs isBox variant="light300" className="kui--markdown-tabs" defaultActiveKey={0}>
-            {props.children.map((_, idx) => (
+          <Tabs className="kui--markdown-tabs" defaultActiveKey={0} isSecondary={parseInt(props.depth, 10) > 0}>
+            {(props.children || []).map((_, idx) => (
               <Tab
                 className="kui--markdown-tab"
                 data-title={_.props.title}

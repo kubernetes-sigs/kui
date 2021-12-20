@@ -281,3 +281,10 @@ body[kui-theme-style='light'] {
     padding-bottom: 0;
   }
 }
+
+/** Nested tabs */
+@include MarkdownTabContentCard {
+  @include MarkdownTabContentCard {
+    padding: 0;
+  }
+}
