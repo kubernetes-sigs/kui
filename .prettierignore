@@ -7,6 +7,9 @@ node_modules/
 package-lock.json
 plugins/plugin-apache-composer/tests/data/composer/composer-source-expect-errors/if-bad.js
 
+# don't pretty-print notebooks, since spacing is important, e.g. for tabs and tips
+plugins/*/notebooks/**/*.md
+
 # Ignore themes because we can't ignore just the highlightjs themes
 # https://github.com/prettier/prettier/issues/5287
 packages/core/web/css/themes/*.css

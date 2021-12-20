@@ -8,14 +8,20 @@ layout:
 
 Kui interprets and displays markdown source. Kui has special
 interpretation for a some of the common bits of markdown syntax,
-allowing you to:
+allowing you to author:
 
-- Define [hints](#hints), using markdown blockquotes
-- Define [executable code blocks](#executable-code-blocks) that
+- [Hints](#hints), using markdown blockquotes
+- [Tabs](#tabs), using syntax adopted from [pymdown's Tabbed
+  extension](https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/)
+- [Executable code blocks](#executable-code-blocks) that
   provide sample output, and let the user re-execute the code in their
   context
-- Define a [Progress Step Lists](#progress-step-lists), that helps
+- [Progress Step Lists](#progress-step-lists), that helps
   guide the user through a list of code executions
+  
+In addition, you can define the metadata and structure of your
+notebook:
+
 - [Set a title](#setting-a-title) for your notebook
 - Define the [_split layout_](#creating-a-split-layout) for your
   notebook
@@ -28,6 +34,48 @@ When Kui encounters a `>` that block quotes a region of text, Kui will
 render this using a callout. For example:
 
 > This is a hint!
+> - It can have fancy rendering inside.
+
+## Tabs
+
+Sections starting with a `=== "Tab name"` will be rendered as tabs,
+with the tab content indented by at least 4 spaces. 
+
+> Warning: due to the vagaries of the Markdown syntax, make sure to
+> have a newline separating the tab start and tab content, and also
+> between tabs.
+
+=== "Output"
+    
+    === "Tab 1"
+
+        Markdown **content**.
+
+        Multiple paragraphs.
+
+    === "Tab 2"
+
+        More Markdown **content**.
+
+        - list item a
+        - list item b
+
+=== "Markdown"
+
+    ```
+    === "Tab 1"
+
+        Markdown **content**.
+
+        Multiple paragraphs.
+
+    === "Tab 2"
+
+        More Markdown **content**.
+
+        - list item a
+        - list item b
+    ```
 
 ## Executable Code Blocks
 

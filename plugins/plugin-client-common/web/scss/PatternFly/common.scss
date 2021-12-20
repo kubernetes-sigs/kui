@@ -89,8 +89,3 @@ body {
   --pf-global--target-size--MinWidth: 44px;
   --pf-global--target-size--MinHeight: 44px;
 }
-
-/** PatternFly seems to want 16px here */
-html.kui button {
-  font-size: inherit;
-}
