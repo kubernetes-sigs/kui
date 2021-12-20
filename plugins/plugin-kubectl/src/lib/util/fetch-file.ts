@@ -154,7 +154,7 @@ export async function _needle(
     try {
       const needle = (await import('needle')).default
       const { statusCode, body } = await needle(method, await rescheme(url, args), opts.data, {
-        json: true,
+        json: !/\.(md|yaml)$/.test(url),
         follow_max: 10,
         headers
       })
