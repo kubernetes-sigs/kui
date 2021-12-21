@@ -15,7 +15,7 @@
  */
 
 import { Arguments, Registrar } from '@kui-shell/core'
-import { doHelp, getNamespaceForArgv, KubeOptions } from '@kui-shell/plugin-kubectl'
+import { doHelp, doExecWithPty, getNamespaceForArgv, KubeOptions } from '@kui-shell/plugin-kubectl'
 
 import isUsage from './usage'
 import doExecWithStdout from './exec'
@@ -25,6 +25,8 @@ const name = /^NAME:\s+([\w-]+)/
 async function doInstall(args: Arguments<KubeOptions>) {
   if (isUsage(args, 'install')) {
     return doHelp('helm', args)
+  } else if (/[\n;&]/.test(args.command)) {
+    return doExecWithPty(args, undefined, 'helm')
   }
 
   const response = await doExecWithStdout(args)
