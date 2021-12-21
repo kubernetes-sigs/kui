@@ -161,14 +161,31 @@ export default class Markdown extends React.PureComponent<Props, State> {
     return this.state.codeHasBeenExecuted[codeIdx]
   }
 
+  /** Scan backwards to the nearest start of line to find the line prefix */
+  private scanForLinePrefix(source: string, startOffset: number): string {
+    let idx = startOffset
+    while (idx >= 0 && source[idx] !== '\n') {
+      idx--
+    }
+    return source.slice(idx + 1, startOffset)
+  }
+
   private spliceInCodeExecution(replacement: string, startOffset: number, endOffset: number, codeIdx: number) {
     this.setState(curState => {
       const codeHasBeenExecuted = curState.codeHasBeenExecuted /* probably not needed since `source` changes .slice() */
       codeHasBeenExecuted[codeIdx] = true
 
+      const prefix = this.scanForLinePrefix(curState.source, startOffset)
+      const prefixedReplacement = !prefix
+        ? replacement
+        : replacement
+            .split(/\n/)
+            .map((line, idx) => (idx === 0 ? line : `${prefix}${line}`))
+            .join('\n')
+
       return {
         codeHasBeenExecuted,
-        source: curState.source.slice(0, startOffset) + replacement + curState.source.slice(endOffset)
+        source: curState.source.slice(0, startOffset) + prefixedReplacement + curState.source.slice(endOffset)
       }
     })
   }
