@@ -530,7 +530,7 @@ async function initOnMessage(
         resizer.exitAltBufferMode()
       }
 
-      if (execOptions.type !== ExecType.Nested || execOptions.quiet === false) {
+      if (execOptions.type !== ExecType.Nested || execOptions.quiet === false || execOptions.stdout) {
         pendingWrites++
         bytesWereWritten = true
         sawCode = /File exists/i.test(msg.data)
@@ -887,6 +887,7 @@ export const doExec = (
 
           // add xtermContainer to the current Output
           await execOptions.stdout(xtermContainer)
+          resizer.hideTrailingEmptyBlanks()
 
           // respond to font zooming
           const doZoom = () => {

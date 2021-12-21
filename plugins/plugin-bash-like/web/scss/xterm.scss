@@ -9,11 +9,6 @@ body[kui-theme-style] .kui--tab-content {
   .xterm-rows > div {
     width: 100% !important;
   }
-  .xterm-terminated .xterm-rows > div {
-    white-space: pre-wrap;
-    word-break: break-all;
-    height: auto; /* min-height and height: see https://github.com/IBM/kui/issues/1630 */
-  }
 
   .repl-result-like > div.xterm-container {
     padding-right: 0;
@@ -86,10 +81,6 @@ body[kui-theme-style] .kui--tab-content {
     }
   }
 
-  /* .kui--scrollback:not(.xterm-alt-buffer-mode) .xterm.xterm-empty-row-heuristic .xterm-rows > div:empty {
-    display: none;
-  } */
-
   .xterm .xterm-rows .xterm-hidden-row {
     display: none;
   }
@@ -115,35 +106,6 @@ body[kui-theme-style] .kui--tab-content {
   .xterm-container .xterm-rows:not(.xterm-focus) .xterm-cursor.xterm-cursor-block {
     background-color: var(--color-base03);
     outline-color: var(--color-base04);
-  }
-
-  /* rules for terminated xterm */
-  /* hide cursor block for terminated processes */
-  .xterm-terminated .xterm-rows .xterm-cursor {
-    display: none;
-  }
-  .xterm-terminated .xterm-rows,
-  .xterm-terminated .xterm-viewport .xterm-terminated .xterm-scroll-area {
-    /* we don't want scrollbars to appear for terminated xterms */
-    overflow: hidden;
-  }
-  .xterm-terminated .xterm-screen {
-    width: auto;
-  }
-  /* try to disable xterm components for terminated processes */
-  .xterm-terminated .xterm-helper-textarea {
-    display: none;
-    pointer-events: none;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-  .xterm-terminated .xterm {
-    user-select: unset;
-    -webkit-user-select: unset;
   }
 
   /* themes */
@@ -225,33 +187,6 @@ body[kui-theme-style] .kui--tab-content {
     /* inverted default color */
     background-color: var(--color-text-01);
     color: var(--color-ui-01);
-  }
-
-  /**
- * When the xterm terminates, we signify lines that xtermjs inserted
- * only for line wrapping, so that we can reflow them
- * naturally. Please see `reflowLineWraps()` in `src/pty/client.ts`
- * for the logic that establishes the `.xterm-is-wrapped` property.
- *
- */
-  .xterm-terminated .xterm-rows > div {
-    white-space: pre-wrap;
-  }
-  .xterm-is-wrapped {
-    display: inline;
-  }
-  .xterm-is-wrapped-with-prefix-break:before {
-    /* see https://github.com/IBM/kui/issues/1605 */
-    display: block;
-    content: '';
-
-    /* see https://github.com/IBM/kui/issues/2681 */
-    height: 0;
-  }
-
-  /* in case we change our minds and want to hide it */
-  .xterm-invisible {
-    display: none;
   }
 
   /* we never want to see inner scrollbars */
