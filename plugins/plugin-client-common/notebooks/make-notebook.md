@@ -11,6 +11,9 @@ interpretation for a some of the common bits of markdown syntax,
 allowing you to author:
 
 - [Hints](#hints), using markdown blockquotes
+- [Expandable Sections](#expandable-sections), using syntax adopted
+  from [pymdown's Details
+  extension](https://facelessuser.github.io/pymdown-extensions/extensions/details/)
 - [Tabs](#tabs), using syntax adopted from [pymdown's Tabbed
   extension](https://facelessuser.github.io/pymdown-extensions/extensions/tabbed/)
 - [Executable code blocks](#executable-code-blocks) that
@@ -36,46 +39,61 @@ render this using a callout. For example:
 > This is a hint!
 > - It can have fancy rendering inside.
 
+## Expandable Sections
+
+Sections starting with a `??? tip "Section name"` will be rendered as
+an expandable section, with the tab content indented by at least 4
+spaces. When using `???+`, the section will be expanded by default.
+
+??? tip "Example Expandable Section"
+
+    **Warning**: due to the vagaries of the Markdown syntax, make sure to
+    have a newline separating the section start and section content.
+
 ## Tabs
 
 Sections starting with a `=== "Tab name"` will be rendered as tabs,
 with the tab content indented by at least 4 spaces. 
 
-> Warning: due to the vagaries of the Markdown syntax, make sure to
-> have a newline separating the tab start and tab content, and also
-> between tabs.
+**Warning**: due to the vagaries of the Markdown syntax, make sure to
+have a newline separating the tab start and tab content, and also
+between tabs.
 
-=== "Output"
+???+ tip "Tab Example"
+
+    > Note how we are using tabs and hints nested inside of an expandable section!
+
+    === "Output"
+        
+        === "Tab 1"
     
-    === "Tab 1"
+            Markdown **content**.
 
-        Markdown **content**.
+            Multiple paragraphs.
 
-        Multiple paragraphs.
+        === "Tab 2"
 
-    === "Tab 2"
+            More Markdown **content**.
 
-        More Markdown **content**.
+            - list item a
+            - list item b
 
-        - list item a
-        - list item b
+    === "Markdown"
 
-=== "Markdown"
+        ```
+        === "Tab 1"
 
-    ```
-    === "Tab 1"
+            Markdown **content**.
 
-        Markdown **content**.
+            Multiple paragraphs.
 
-        Multiple paragraphs.
+        === "Tab 2"
 
-    === "Tab 2"
+            More Markdown **content**.
 
-        More Markdown **content**.
-
-        - list item a
-        - list item b
-    ```
+            - list item a
+            - list item b
+        ```
 
 ## Executable Code Blocks
 

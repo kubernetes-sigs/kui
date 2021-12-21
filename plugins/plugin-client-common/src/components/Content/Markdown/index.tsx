@@ -153,7 +153,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
       td.use(gfm)
       return td.turndown(props.source)
     } else {
-      return hackTipIndentation(hackTabIndentation(props.source)).trim()
+      return hackTabIndentation(hackTipIndentation(props.source)).trim()
     }
   }
 

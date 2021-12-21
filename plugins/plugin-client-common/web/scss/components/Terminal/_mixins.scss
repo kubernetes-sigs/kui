@@ -522,9 +522,22 @@ $action-hover-delay: 210ms;
   }
 }
 
-@mixin MarkdownTabContent {
-  section.kui--markdown-tab {
+@mixin MarkdownTabs {
+  .kui--markdown-tabs {
     @content;
+  }
+}
+@mixin MarkdownTabContent {
+  .kui--markdown-tab {
+    @content;
+  }
+}
+
+@mixin MarkdownTabButton {
+  @include MarkdownTabContent {
+    button {
+      @content;
+    }
   }
 }
 
@@ -536,6 +549,12 @@ $action-hover-delay: 210ms;
 
 @mixin MarkdownMajorParagraph {
   .kui--markdown-major-paragraph {
+    @content;
+  }
+}
+
+@mixin MarkdownTip {
+  .kui--markdown-tip {
     @content;
   }
 }

@@ -27,6 +27,7 @@
 
 @include Block {
   @include ExpandableSectionButton {
+    font-size: inherit;
     font-family: var(--font-sans-serif);
   }
 

@@ -325,8 +325,9 @@ function components(args: Args) {
         )
       },
       tabbed: props => {
+        // isSecondary={parseInt(props.depth, 10) > 0}
         return (
-          <Tabs className="kui--markdown-tabs" defaultActiveKey={0} isSecondary={parseInt(props.depth, 10) > 0}>
+          <Tabs className="kui--markdown-tabs paragraph" defaultActiveKey={0}>
             {(props.children || []).map((_, idx) => (
               <Tab
                 className="kui--markdown-tab"
@@ -335,9 +336,7 @@ function components(args: Args) {
                 eventKey={idx}
                 title={<TabTitleText>{_.props.title}</TabTitleText>}
               >
-                <Card boxShadow className="kui--markdown-tab-card">
-                  {_.props && _.props.children}
-                </Card>
+                <Card className="kui--markdown-tab-card">{_.props && _.props.children}</Card>
               </Tab>
             ))}
           </Tabs>
