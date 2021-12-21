@@ -132,7 +132,7 @@ export function hackTipIndentation(source: string): string {
         inTip = new RegExp('^' + inTipReplacement + '(\\t| {4})')
         return `\n\n${inTipReplacement}${START_OF_TIP}\n\n` + line
       } else if (inTip) {
-        if (line.length === 0) {
+        if (line.length === 0 || /^\s+$/.test(line)) {
           // empty line: still in tip
           return line
         } else if (inTip.test(line)) {
