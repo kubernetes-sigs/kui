@@ -245,13 +245,14 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         return M
       }, {})
 
+    // on li, if you want a BlockBorder for finished blocks:
+    // data-has-border={!!this.props.response || undefined}
     return (
       <MutabilityContext.Consumer>
         {mutability => (
           <li
             className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
             data-is-executable={mutability.executable}
-            data-has-border={!!this.props.response || undefined}
             {...dataProps}
           >
             {this.input()}

@@ -226,9 +226,12 @@ body[kui-theme-style='light'] {
 
 @include Scrollback {
   @include Commentary {
+    margin: 0 0.5em;
+
     @include Block {
       --input-padding-left: 0;
       --input-padding-right: 0;
+      margin-top: 0;
 
       /** Code blocks nested inside of the outer Block; no need to repeat the padding, unless we are showing a BlockBorder */
       @include NotAlwaysHasBorder {
