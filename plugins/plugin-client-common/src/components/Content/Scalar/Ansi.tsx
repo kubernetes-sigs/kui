@@ -17,7 +17,7 @@
 import React from 'react'
 import { ansiToJson, AnserJsonEntry } from 'anser'
 
-import Markdown from '../Markdown'
+const Markdown = React.lazy(() => import('../Markdown'))
 
 interface Props {
   className?: string

@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { Events, KResponse, Tab, i18n, isError, isXtermResponse } from '@kui-shell/core'
+import { Events, KResponse, Tab, i18n, isError, isTable, isXtermResponse, hasSourceReferences } from '@kui-shell/core'
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
@@ -155,7 +155,11 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
   }
 
   private sourceRef() {
-    return this.props.response && <SourceRef tab={this.props.tab} response={this.props.response} />
+    return (
+      this.props.response &&
+      isTable(this.props.response) &&
+      hasSourceReferences(this.props.response) && <SourceRef tab={this.props.tab} response={this.props.response} />
+    )
   }
 
   private nonstreamingOutput() {

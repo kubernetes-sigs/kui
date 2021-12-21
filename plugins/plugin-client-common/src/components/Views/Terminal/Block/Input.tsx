@@ -16,7 +16,7 @@
 
 import React from 'react'
 import prettyPrintDuration from 'pretty-ms'
-import { Tab as KuiTab, doCancel, i18n } from '@kui-shell/core'
+import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences } from '@kui-shell/core'
 
 import Actions from './Actions'
 import Spinner from './Spinner'
@@ -312,7 +312,9 @@ export abstract class InputProvider<S extends State = State> extends React.PureC
   private sourceRef() {
     return (
       this.props.model &&
-      isWithCompleteEvent(this.props.model) && (
+      isWithCompleteEvent(this.props.model) &&
+      isTable(this.props.model.response) &&
+      hasSourceReferences(this.props.model.response) && (
         <SourceRef
           tab={this.props.tab}
           isWidthConstrained={this.props.isWidthConstrained}
