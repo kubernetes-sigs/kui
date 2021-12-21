@@ -78,7 +78,6 @@ body[kui-theme-style] {
 /** Just in case: protect against nested Cards */
 @include Card {
   @include Card {
-    padding: 0;
     background: none;
 
     @include NoBoxShadow {

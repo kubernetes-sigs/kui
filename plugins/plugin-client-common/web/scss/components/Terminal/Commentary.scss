@@ -15,9 +15,10 @@
  */
 
 @import 'mixins';
-@import '../Card/_mixins';
-@import '../Sidecar/_mixins';
-@import '../common/_narrow-window';
+@import '../Card/mixins';
+@import '../Sidecar/mixins';
+@import '../common/narrow-window';
+@import '../ExpandableSection/mixins';
 @import '../../Themes/mixins';
 @import 'BlockLinks';
 
@@ -244,6 +245,14 @@ body[kui-theme-style='light'] {
     }
   }
 
+  @include ExpandableSection {
+    font-size: 0.875rem;
+  }
+
+  @include MarkdownTabButton {
+    font-size: 0.875rem;
+  }
+
   @include Spinner {
     --sk-size: 0.875em;
     width: $action-width;
@@ -256,20 +265,21 @@ body[kui-theme-style='light'] {
     font-size: 0.875rem;
     line-height: initial; /* PatternFly intercepts this for pf-c-content */
   }
-}
 
-@include Block {
-  /* needed to override "card in card" padding rule */
-  @include MarkdownTabContent {
-    @include Card {
-      padding: 1em;
+  @include MarkdownTip {
+    @include ExpandableSectionButton {
+      width: 100%;
+      padding-top: 0.6875em;
+      padding-bottom: 0.6875em;
+      background-color: var(--color-base00);
     }
   }
 }
 
-@include MarkdownTabContent {
-  &:not(:last-child) {
-    margin-bottom: var(--pf-c-content--MarginBottom);
+@include MarkdownTabs {
+  /* we don't want padding below the tabs part of a Tabbed section */
+  &.paragraph {
+    padding-bottom: 0;
   }
 }
 
@@ -282,8 +292,10 @@ body[kui-theme-style='light'] {
   }
 }
 
-/** Nested tabs */
 @include MarkdownTabContentCard {
+  padding: 0 1em;
+
+  /** Nested tabs */
   @include MarkdownTabContentCard {
     padding: 0;
   }
