@@ -20,7 +20,9 @@ import { isUsage, doHelp, KubeOptions } from '@kui-shell/plugin-kubectl'
 import doExecWithPty from './exec'
 
 /** is the given string `str` the `helm` command? */
-const isHelm = (str: string) => /^helm$/.test(str)
+const isHelm = (argv: string[]) => {
+  return /^helm$/.test(argv[0]) && argv.every(arg => !/(\\|\n|;|&)/.test(arg)) // <-- no newlines or semicolons or && or &; just send those to the base catchall handler
+}
 
 export default (registrar: Registrar) => {
   if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
@@ -33,7 +35,7 @@ export default (registrar: Registrar) => {
   // found exceptions to the outer shell
   //
   registrar.catchall(
-    (argv: string[]) => isHelm(argv[0]),
+    (argv: string[]) => isHelm(argv),
     (args: Arguments<KubeOptions>) =>
       isUsage(args) || (args.argv.length === 1 && args.argv[0] === 'helm') ? doHelp('helm', args) : doExecWithPty(args),
     1 // priority
