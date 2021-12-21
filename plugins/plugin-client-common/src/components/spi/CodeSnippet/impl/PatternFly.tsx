@@ -70,6 +70,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
           wordWrap={this.props.wordWrap}
           tabUUID={this.props.tabUUID}
           minHeight={0}
+          fontSizeAdjust={12 / 14}
           content={this.props.value}
           contentType={this.language()}
           onContentChange={this.props.onContentChange}
