@@ -36,7 +36,15 @@ export interface Tab extends HTMLDivElement {
   removeClass(cls: string): void
 
   scrollToTop(): void
-  scrollToBottom(): void
+
+  /**
+   * If given the optional parameter, only scroll into view if the
+   * specified block (identified by its execUUID) is the last block in
+   * this tab
+   *
+   */
+  scrollToBottom(execUUID?: string): void
+
   show(selector: string): void
 
   getSize(): { width: number; height: number }

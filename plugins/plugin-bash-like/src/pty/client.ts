@@ -438,10 +438,10 @@ async function initOnMessage(
   //
   const doScroll = () => {
     if (!resizer.inAltBufferMode()) {
-      tab.scrollToBottom()
+      tab.scrollToBottom(execOptions.execUUID)
     }
   }
-  const scrollPoll = terminal && setInterval(doScroll, 200)
+  const scrollPoll = terminal && setInterval(doScroll, 400)
 
   const onFirstMessage = () => {
     const queuedInput = disableInputQueueing(tab)

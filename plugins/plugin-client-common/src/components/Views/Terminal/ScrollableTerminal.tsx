@@ -619,7 +619,24 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     state.scrollableRef = (ref: HTMLElement) => {
       if (ref) {
         state.facade.scrollToTop = () => (ref.scrollTop = 0)
-        state.facade.scrollToBottom = () => (ref.scrollTop = ref.scrollHeight)
+
+        /**
+         * If given the optional parameter, only scroll into view if the
+         * specified block (identified by its execUUID) is the last block in
+         * this tab
+         *
+         */
+        state.facade.scrollToBottom = (execUUID?: string) => {
+          const sbidx = this.findSplit(this.state, sbuuid)
+          if (sbidx >= 0) {
+            const { blocks } = this.state.splits[sbidx]
+            const lastBlock = blocks[blocks.length - 1]
+            if (!execUUID || (hasUUID(lastBlock) && lastBlock.execUUID === execUUID)) {
+              ref.scrollTop = ref.scrollHeight
+            }
+          }
+        }
+
         state.facade.show = (sel: string) => {
           const elt = this.props.tab.querySelector(sel)
           if (elt) {
