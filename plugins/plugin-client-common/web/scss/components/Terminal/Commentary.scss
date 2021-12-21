@@ -219,13 +219,13 @@ body[kui-theme-style='light'] {
   --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
 }
 
-@include MarkdownMajorParagraph {
-  margin: 1.5em 0;
-}
-
 @include Scrollback {
   @include Commentary {
     margin: 0 0.5em;
+
+    @include MarkdownMajorParagraph {
+      margin: 1.5em 0;
+    }
 
     @include Block {
       --input-padding-left: 0;
@@ -269,11 +269,12 @@ body[kui-theme-style='light'] {
   }
 
   @include MarkdownTip {
+    background-color: #e7f1fa;
+
     @include ExpandableSectionButton {
       width: 100%;
       padding-top: 0.6875em;
       padding-bottom: 0.6875em;
-      background-color: var(--color-base00);
     }
   }
 }

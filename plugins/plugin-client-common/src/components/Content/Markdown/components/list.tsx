@@ -61,7 +61,7 @@ export function list(props: OrderedListProps | UnorderedListProps) {
 
     if (lastIncompatibleIdx === -1) {
       return (
-        <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'}>
+        <ProgressStepper layout={props.ordered ? 'horizontal' : 'vertical'} className="kui--markdown-major-paragraph">
           {props.children as ProgressStepperProps['children']}
         </ProgressStepper>
       )
