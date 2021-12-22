@@ -28,7 +28,7 @@
     "@types/cookie": "0.4.1",
     "@types/shelljs": "0.8.9",
     "cookie": "0.4.1",
-    "debug": "4.3.2",
+    "debug": "4.3.3",
     "globby": "11.0.4",
     "node-pty": "0.10.1",
     "shelljs": "0.8.4",
