@@ -18,10 +18,14 @@ $color: var(--color-base00);
 $bgcolor: var(--color-base06);
 
 .kui--tooltip {
+  color: $color;
+  background-color: $bgcolor;
+
   &[data-is-markdown] {
     .pf-c-tooltip__content {
       padding: 0;
       font-size: 0.75rem;
+      background-color: transparent;
     }
 
     h1,
@@ -29,6 +33,7 @@ $bgcolor: var(--color-base06);
     h3,
     h4,
     p {
+      font-size: inherit;
       padding: var(--pf-c-tooltip__content--PaddingTop) var(--pf-c-tooltip__content--PaddingRight)
         var(--pf-c-tooltip__content--PaddingBottom) var(--pf-c-tooltip__content--PaddingLeft);
     }
@@ -49,12 +54,18 @@ $bgcolor: var(--color-base06);
       }
     }
 
+    p {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
     p + p {
       padding-top: 0;
     }
 
     code {
-      color: var(--color-base02);
+      opacity: 0.9;
+      color: var(--color-base00);
       font-family: var(--font-sans-serif);
     }
 
@@ -85,7 +96,7 @@ $bgcolor: var(--color-base06);
     font-weight: normal;
 
     &:not(:last-child) {
-      border-bottom: 1px solid var(--color-table-border2);
+      border-bottom: 1px solid var(--color-base02);
     }
   }
 
