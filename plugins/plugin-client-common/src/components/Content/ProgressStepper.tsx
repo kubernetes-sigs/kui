@@ -67,7 +67,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
     super(props)
 
     this.state = {
-      status: 'in-progress'
+      status: typeof props.defaultStatus === 'string' ? props.defaultStatus : 'blank'
     }
 
     if (typeof props.defaultStatus !== 'string') {
