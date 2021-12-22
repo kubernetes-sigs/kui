@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import PromisePool from '@supercharge/promise-pool'
+import { PromisePool } from '@supercharge/promise-pool'
 
 import { GlobStats } from '@kui-shell/plugin-bash-like/fs'
 import { Arguments, ParsedOptions, i18n, Row, Registrar, Table, UsageModel, encodeComponent } from '@kui-shell/core'
