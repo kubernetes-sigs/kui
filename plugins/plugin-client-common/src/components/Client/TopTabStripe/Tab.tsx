@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import { decode } from 'html-entities'
 import { i18n, Event, Events, ExecType, Themes } from '@kui-shell/core'
 import { NavItem } from '@patternfly/react-core'
 
@@ -160,7 +161,7 @@ export default class Tab extends React.PureComponent<Props, State> {
 
   private title() {
     const content = this.props.title ? this.props.title : strings('Tab')
-    return content.replace(/&ndash;/g, '\u2013').replace(/&mdash;/g, '\u2014')
+    return decode(content) // decode html entities such as &mdash;
   }
 
   public render() {

@@ -18,13 +18,13 @@
 /* eslint-disable react/prop-types */
 
 import React from 'react'
+import { decode } from 'html-entities'
 import { Events, pexecInCurrentTab, i18n } from '@kui-shell/core'
 
 import Settings from './Settings'
 import Icons from '../../spi/Icons'
 import Tooltip from '../../spi/Tooltip'
 import MeterWidgets from './MeterWidgets'
-const Markdown = React.lazy(() => import('../../Content/Markdown'))
 import '../../../../web/scss/components/StatusStripe/StatusStripe.scss'
 
 const strings = i18n('plugin-client-common')
@@ -93,7 +93,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
     if (this.state.type !== 'default' && this.state.message) {
       return (
         <div className="kui--status-stripe-element left-pad kui--status-stripe-message-element">
-          <Markdown source={this.state.message} />
+          {decode(this.state.message)}
         </div>
       )
     }
