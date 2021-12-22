@@ -558,3 +558,9 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+@mixin PtyOutput {
+  .xterm-container.xterm-terminated {
+    @content;
+  }
+}
