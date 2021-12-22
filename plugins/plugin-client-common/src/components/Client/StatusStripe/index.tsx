@@ -85,6 +85,25 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
     return <div style={{ flex: 1 }} />
   }
 
+  /** Simplistic Markdown, to help with performance. Our full Markdown.tsx is pretty heavy-weight. */
+  private simpleMarkdown(str: string) {
+    const msg = decode(str)
+    const pat = /\*\*[^*]+\*\*/g
+    const bolds = msg.match(pat)
+
+    return msg.split(pat).reduce(
+      (M, _) => {
+        if (_ === '') {
+          M.A.push(<strong>{bolds[M.idx++].replace(/\*\*/g, '')}</strong>)
+        } else {
+          M.A.push(_)
+        }
+        return M
+      },
+      { A: [], idx: 0 }
+    ).A
+  }
+
   /**
    * Render the current State.message, if any
    *
@@ -93,7 +112,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
     if (this.state.type !== 'default' && this.state.message) {
       return (
         <div className="kui--status-stripe-element left-pad kui--status-stripe-message-element">
-          {decode(this.state.message)}
+          {this.simpleMarkdown(this.state.message)}
         </div>
       )
     }
