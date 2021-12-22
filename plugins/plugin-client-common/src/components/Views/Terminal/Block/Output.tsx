@@ -28,7 +28,6 @@ import {
   isMarkdownResponse,
   isMixedResponse,
   isMultiModalResponse,
-  isStatusModel,
   isNavResponse,
   isXtermResponse,
   isTable,
@@ -326,7 +325,6 @@ export default class Output extends React.PureComponent<Props, State> {
         (Array.isArray(response) && response.length > 0) ||
         (typeof response === 'string' && response.length > 0) ||
         typeof response === 'number' ||
-        isStatusModel(response) ||
         isTable(response) ||
         isMixedResponse(response) ||
         (isXtermResponse(response) && response.rows && response.rows.length !== 0) ||

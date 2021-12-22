@@ -15,14 +15,24 @@
  */
 
 import React from 'react'
-import { maybeKuiLink, StatusModelStatus } from '@kui-shell/core'
+import { maybeKuiLink } from '@kui-shell/core'
 
 import Icons, { SupportedIcon } from '../spi/Icons'
 import { subscribeToLinkUpdates, unsubscribeToLinkUpdates } from './LinkStatus'
 
 import '../../../web/scss/components/ProgressStepper/_index.scss'
 
-type Status = StatusModelStatus | 'blank' | 'info' | 'minor' | 'current' | 'pending'
+type Status =
+  | 'blank'
+  | 'info'
+  | 'minor'
+  | 'current'
+  | 'pending'
+  | 'in-progress'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'unknown'
 
 function isStatus(status: string): status is Status {
   return (
@@ -57,7 +67,7 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
     super(props)
 
     this.state = {
-      status: typeof props.defaultStatus === 'string' ? props.defaultStatus : 'in-progress'
+      status: 'in-progress'
     }
 
     if (typeof props.defaultStatus !== 'string') {

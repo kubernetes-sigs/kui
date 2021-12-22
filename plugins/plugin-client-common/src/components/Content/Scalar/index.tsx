@@ -33,7 +33,6 @@ import {
   isTable,
   isMixedResponse,
   isXtermResponse,
-  isStatusModel,
   isUsageError,
   Util
 } from '@kui-shell/core'
@@ -52,7 +51,6 @@ import { BlockViewTraits } from '../../Views/Terminal/Block'
 import { isError } from '../../Views/Terminal/Block/BlockModel'
 const TopNavSidecar = React.lazy(() => import('../../Views/Sidecar/TopNavSidecarV2'))
 const LeftNavSidecar = React.lazy(() => import('../../Views/Sidecar/LeftNavSidecarV2'))
-const StatusVisualizer = React.lazy(() => import('../StatusVisualizer'))
 
 const strings = i18n('plugin-client-common', 'errors')
 
@@ -133,9 +131,6 @@ export default class Scalar extends React.PureComponent<Props, State> {
     } else if (isXtermResponse(response)) {
       this.onRender()
       return <XtermDom response={response} />
-    } else if (isStatusModel(response)) {
-      this.onRender()
-      return <StatusVisualizer {...response} />
     } else if (Buffer.isBuffer(response) || typeof response === 'string' || isError(response)) {
       const message = isError(response) ? response.message : response.toString()
 

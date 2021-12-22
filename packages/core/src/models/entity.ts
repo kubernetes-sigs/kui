@@ -29,7 +29,6 @@ import Presentation from '../webapp/views/presentation'
 import { ReactNode } from 'react'
 import TabLayoutModificationResponse from './TabLayoutModificationResponse'
 import { isXtermResponse, XtermResponse } from './XtermResponse'
-import StatusModel from './StatusModel'
 
 export interface MessageBearingEntity {
   message: string
@@ -218,7 +217,6 @@ export type ScalarResponse<RowType extends Row = Row> =
   | CommentaryResponse
   | TabLayoutModificationResponse
   | XtermResponse
-  | StatusModel
   | RandomErrorResponse1
   | RandomErrorResponse2
 
