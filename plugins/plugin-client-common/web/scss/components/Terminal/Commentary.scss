@@ -219,6 +219,20 @@ body[kui-theme-style='light'] {
   --pf-c-content--heading--FontFamily: var(--font-sans-serif-title);
 }
 
+/**
+ * PTY output, without some sort of color blocking, is hard to
+ * distinguish from the surrounding Commentary text
+ */
+@include Commentary {
+  @include PtyOutput {
+    flex: 1;
+    padding: 1em;
+    border-radius: 6px;
+    border: 1px solid var(--color-table-border1);
+    background-color: var(--color-base00);
+  }
+}
+
 @include Scrollback {
   @include Commentary {
     margin: 0 0.5em;
