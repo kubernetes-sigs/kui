@@ -285,15 +285,3 @@ export {
 } from './api/client'
 
 export * from './api/window-events'
-
-// Sidebar
-export {
-  default as StatusModel,
-  isStatusModel,
-  Section as StatusModelSection,
-  Tile as StatusModelTile,
-  TileAction as StatusModelTileAction,
-  LineItem as StatusModelItem,
-  Status as StatusModelStatus,
-  aggregateStatusModelStatus
-} from './models/StatusModel'
