@@ -121,43 +121,6 @@ export default class Actions extends React.PureComponent<Props> {
     )
   }
 
-  private readonly _willLinkifyBlock = () => this.props.willLinkifyBlock(this.props.idx)
-
-  private linkAction() {
-    return (
-      this.props.willLinkifyBlock && (
-        <Action icon="Link" onClick={this._willLinkifyBlock} title="Copy the link of this block" />
-      )
-    )
-  }
-
-  /* private screenshotAction() {
-    return (
-      this.props.willScreenshot &&
-      !Capabilities.inBrowser() && (
-        <Action icon="Screenshot" onClick={() => this.props.willScreenshot()} title={strings2('Screenshot')} />
-      )
-    )
-  } */
-
-  /* private upwardAction() {
-    return (
-      this.props.hasBlockBefore &&
-      this.props.willMoveUpward && (
-        <Action icon="MoveUp" onClick={() => this.props.willMoveUpward()} title="Move this block up" />
-      )
-    )
-  } */
-
-  /* private downwardAction() {
-    return (
-      this.props.hasBlockAfter &&
-      this.props.willMoveDownward && (
-        <Action icon="MoveDown" onClick={() => this.props.willMoveDownward()} title="Move this block down" />
-      )
-    )
-  } */
-
   public render() {
     return (
       <MutabilityContext.Consumer>
@@ -180,7 +143,6 @@ export default class Actions extends React.PureComponent<Props> {
               <div className="kui--block-actions-buttons kui--inverted-color-context">
                 <div className="kui-block-actions-others">
                   {!this.props.isSectionBreak && this.copyAction()}
-                  {value.editable && this.linkAction()}
                   {/* !readonly && !this.props.isSectionBreak && this.sectionAction() */}
                   {value.executable && !this.props.isSectionBreak && this.rerunAction('Play')}
                 </div>

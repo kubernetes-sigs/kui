@@ -91,9 +91,6 @@ export interface InputOptions extends BlockOperationTraits {
   /** Optional: onFocus handler */
   onInputFocus?: (event: React.FocusEvent<InputElement>) => void
 
-  /** Capture a screenshot of the enclosing block */
-  willScreenshot?: () => void
-
   /** Navigation controller */
   navigateTo?(dir: 'first' | 'last' | 'previous' | 'next'): void
 }

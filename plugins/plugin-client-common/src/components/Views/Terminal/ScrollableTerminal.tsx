@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { v4, v5 } from 'uuid'
+import { v5 } from 'uuid'
 import React from 'react'
 
 import SplitInjector from './SplitInjector'
@@ -65,7 +65,6 @@ import {
   isActive,
   isAnnouncement,
   isFinished,
-  isLinkified,
   isSectionBreak,
   isWithCompleteEvent,
   isOk,
@@ -188,7 +187,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
 
     this.initSnapshotEvents()
-    this.initLinkEvents()
   }
 
   /** This helps enforce sequential block execution semantics */
@@ -211,20 +209,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       sbidx: -1,
       blockidx: -1
     }
-  }
-
-  private initLinkEvents() {
-    Events.eventChannelUnsafe.on('/link/status/get', (link: string) => {
-      this.state.splits.find(({ blocks }) =>
-        blocks.find(_ => {
-          if (isLinkified(_) && _.link === link) {
-            const status = !hasBeenRerun(_) ? [0, 0, 0] : isOk(_) ? [1, 0, 0] : [0, 1, 0]
-            Events.eventChannelUnsafe.emit(`/link/status/update/${_.link}`, status)
-            return true
-          }
-        })
-      )
-    })
   }
 
   /** Listen for copy and paste (TODO: cut) events to facilitate moving blocks */
@@ -436,7 +420,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       setActiveBlock: undefined,
       willFocusBlock: undefined,
       willRemoveBlock: undefined,
-      willLinkifyBlock: undefined,
       willUpdateCommand: undefined,
       willUpdateExecutable: undefined,
       willInsertSection: undefined,
@@ -520,25 +503,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     }
 
     state.willUpdateExecutable = () => this.updateExecutable()
-
-    state.willLinkifyBlock = (idx: number) => {
-      return this.splice(sbuuid, curState => {
-        const block = Object.assign({}, curState.blocks[idx])
-        if (isFinished(block)) {
-          const uuid = hasUUID(block) ? `${block.execUUID}` : `${v4()}`
-          const link = `kui-link-${uuid}`
-          block.link = link
-          const linkText = hasCommand(block) ? block.command.slice(0, 20) : 'Link'
-          navigator.clipboard.writeText(`- **[${linkText}](#${link})** *blank*`)
-          return {
-            blocks: curState.blocks
-              .slice(0, idx)
-              .concat([block])
-              .concat(curState.blocks.slice(idx + 1))
-          }
-        }
-      })
-    }
 
     state.willInsertSection = (idx: number) => {
       setTimeout(() => {
@@ -880,10 +844,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           // scans the blocks for an existing execUUID. So: we
           // Transform the rerun block to Processing
 
-          if (isLinkified(block)) {
-            Events.eventChannelUnsafe.emit(`/link/status/update/${block.link}`, [0, 0, 1])
-          }
-
           return {
             blocks: curState.blocks
               .slice(0, rerunIdx) // everything before
@@ -955,12 +915,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
             // indicate an empty comment
             const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly && event.response !== true
             const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
-
-            if (isLinkified(finishedBlock)) {
-              const status = !hasBeenRerun(finishedBlock) ? [0, 0, 0] : isOk(finishedBlock) ? [1, 0, 0] : [0, 1, 0]
-
-              Events.eventChannelUnsafe.emit(`/link/status/update/${finishedBlock.link}`, status)
-            }
 
             const blocks = curState.blocks
               .slice(0, inProcessIdx) // everything before
@@ -1534,7 +1488,6 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
           willRemove={scrollback.willRemoveBlock}
           willFocusBlock={scrollback.willFocusBlock}
           willInsertSection={scrollback.willInsertSection}
-          willLinkifyBlock={isFinished(_) && scrollback.willLinkifyBlock}
           willUpdateCommand={scrollback.willUpdateCommand}
           willUpdateExecutable={scrollback.willUpdateExecutable}
           isExperimental={hasCommand(_) && _.isExperimental}
