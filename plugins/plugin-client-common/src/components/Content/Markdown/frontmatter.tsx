@@ -158,7 +158,10 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
             }
 
             if (frontmatter.title && typeof frontmatter.title === 'string') {
-              opts.tab.setTitle(frontmatter.title)
+              // don't do this synchronously. react complains about
+              // any transitive calls to setState() called from a
+              // render() method
+              setTimeout(() => opts.tab.setTitle(frontmatter.title))
             }
           } catch (err) {
             console.error('Error parsing Markdown yaml frontmatter', err)
