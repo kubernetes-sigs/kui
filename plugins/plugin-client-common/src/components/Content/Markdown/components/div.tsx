@@ -33,15 +33,13 @@ export default function div(uuid: string) {
         <SplitInjector.Consumer>
           {inject => {
             const node = (
-              <React.Suspense fallback={<div />}>
-                <ReactCommentary>
-                  <TextContent>
-                    <div className="padding-content marked-content page-content" data-is-nested>
-                      {props.children}
-                    </div>
-                  </TextContent>
-                </ReactCommentary>
-              </React.Suspense>
+              <ReactCommentary>
+                <TextContent>
+                  <div className="padding-content marked-content page-content" data-is-nested>
+                    {props.children}
+                  </div>
+                </TextContent>
+              </ReactCommentary>
             )
 
             setTimeout(() => inject(uuid, node, (splitTarget + '-strip') as SplitPosition))

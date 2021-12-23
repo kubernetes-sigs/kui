@@ -87,6 +87,7 @@ export default function code(
           value={body}
           language={language}
           blockId={attributes.id}
+          validate={attributes.validate}
           response={decodePriorResponse(attributes.response, attributes.responseEncoding)}
           status={statusConsideringReplay}
           arg1={body}
