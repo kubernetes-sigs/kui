@@ -29,7 +29,6 @@ import {
   isOutputOnly,
   isProcessing,
   isReplay,
-  isLinkified,
   isAnnouncement,
   hideOutput,
   hasUUID
@@ -64,8 +63,6 @@ export interface BlockOperationTraits {
   willUpdateExecutable?: () => void
 
   willInsertSection?: (idx: number) => void
-
-  willLinkifyBlock?: (idx: number) => void
 }
 
 type Props = InputOptions & {
@@ -183,13 +180,6 @@ export default class Block extends React.PureComponent<Props, State> {
     }
   }
 
-  private willScreenshot() {
-    setTimeout(() => {
-      const element = this.state._block.querySelector('.kui--screenshotable') || this.state._block
-      Events.eventChannelUnsafe.emit('/screenshot/element', element)
-    })
-  }
-
   private customInput() {
     if (this.props.children && React.isValidElement(this.props.children)) {
       return React.cloneElement(this.props.children, {
@@ -212,7 +202,6 @@ export default class Block extends React.PureComponent<Props, State> {
           model={this.props.model}
           isExperimental={this.props.isExperimental}
           {...this.props}
-          willScreenshot={this.state._block && this.props.willRemove ? () => this.willScreenshot() : undefined}
           willFocusBlock={this.props.willFocusBlock}
           _block={this.state._block}
           ref={c => (this._input = c)}
@@ -256,7 +245,6 @@ export default class Block extends React.PureComponent<Props, State> {
               onFocus={this.props.onFocus}
             >
               <React.Fragment>
-                {isLinkified(this.props.model) && <a id={this.props.model.link} />}
                 {isAnnouncement(this.props.model) || isOutputOnly(this.props.model) ? (
                   this.output()
                 ) : isActive(this.props.model) || isEmpty(this.props.model) ? (

@@ -56,7 +56,6 @@ type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 type WithRerun = { isRerun: true; newExecUUID: string } & WithOriginalExecUUID
 type WithReplay = { isReplay: boolean }
 type WithSectionBreak = { isSectionBreak: boolean }
-type WithLink = { link: string }
 
 /** The canonical types of Blocks, which mix up the Traits as needed */
 type ActiveBlock = WithState<BlockState.Active> & WithCWD & Partial<WithValue>
@@ -65,11 +64,7 @@ export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithCWD &
   WithUUID &
   WithAnnouncement
-type EmptyBlock = WithState<BlockState.Empty> &
-  WithCWD &
-  Partial<WithCommand> &
-  Partial<WithCommandComplete> &
-  Partial<WithLink>
+type EmptyBlock = WithState<BlockState.Empty> & WithCWD & Partial<WithCommand> & Partial<WithCommandComplete>
 type ErrorBlock = WithState<BlockState.Error> &
   WithCommand &
   WithResponse<Error> &
@@ -77,7 +72,6 @@ type ErrorBlock = WithState<BlockState.Error> &
   WithHistoryIndex &
   WithCommandStart &
   Partial<WithRerun> &
-  Partial<WithLink> &
   WithReplay &
   WithCommandComplete
 type OkBlock = WithState<BlockState.ValidResponse> &
@@ -89,7 +83,6 @@ type OkBlock = WithState<BlockState.ValidResponse> &
   WithCommandComplete &
   Partial<WithRerun> &
   Partial<WithSectionBreak> &
-  Partial<WithLink> &
   WithReplay &
   WithPreferences
 export type ProcessingBlock = WithState<BlockState.Processing> &
@@ -97,15 +90,9 @@ export type ProcessingBlock = WithState<BlockState.Processing> &
   WithUUID &
   WithStartTime &
   Partial<WithOriginalExecUUID> &
-  Partial<WithLink> &
   WithReplay &
   WithCommandStart
-type CancelledBlock = WithState<BlockState.Cancelled> &
-  WithCWD &
-  WithCommand &
-  WithUUID &
-  WithStartTime &
-  Partial<WithLink>
+type CancelledBlock = WithState<BlockState.Cancelled> & WithCWD & WithCommand & WithUUID & WithStartTime
 export type CompleteBlock = OkBlock | ErrorBlock
 
 /** Blocks with an association to the History model */
@@ -172,11 +159,6 @@ export function hasUUID(block: BlockModel & Partial<WithUUID>): block is BlockMo
 
 export function hasValue(block: BlockModel): block is BlockModel & Required<WithValue> {
   return typeof (block as WithValue).value === 'string'
-}
-
-/** is the block with link */
-export function isLinkified(model: BlockModel): model is BlockModel & WithLink {
-  return !isActive(model) && !isAnnouncement(model) && model.link !== undefined
 }
 
 /** Transform to Active */
@@ -261,7 +243,6 @@ export function Processing(
 export function Empty(block: BlockModel, typedSoFar?: string, completeEvent?: CommandCompleteEvent): EmptyBlock {
   return {
     cwd: block.cwd,
-    link: isLinkified(block) ? block.link : undefined,
     command: typedSoFar,
     completeEvent,
     state: BlockState.Empty
@@ -278,7 +259,6 @@ export function Cancelled(
     return {
       cwd: block.cwd,
       command: block.command,
-      link: block.link,
       execUUID: block.execUUID,
       startTime: block.startTime,
       state: BlockState.Cancelled
@@ -321,7 +301,6 @@ export function Finished(
       response,
       historyIdx,
       cwd: block.cwd,
-      link: block.link,
       command: block.command,
       startEvent,
       completeEvent: event,
@@ -337,7 +316,6 @@ export function Finished(
       response,
       historyIdx,
       cwd: block.cwd,
-      link: block.link,
       command: block.command,
       startEvent,
       completeEvent: event,
