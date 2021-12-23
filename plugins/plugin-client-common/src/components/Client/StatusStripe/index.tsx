@@ -94,7 +94,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
     return msg.split(pat).reduce(
       (M, _) => {
         if (_ === '') {
-          M.A.push(<strong>{bolds[M.idx++].replace(/\*\*/g, '')}</strong>)
+          M.A.push(<strong key={M.A.length + 1}>{bolds[M.idx++].replace(/\*\*/g, '')}</strong>)
         } else {
           M.A.push(_)
         }
