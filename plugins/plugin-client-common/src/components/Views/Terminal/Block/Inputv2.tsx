@@ -21,6 +21,7 @@ import {
   KResponse,
   Tab,
   i18n,
+  isCodedError,
   isError,
   isTable,
   isXtermResponse,
@@ -131,7 +132,8 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
             await pexecInCurrentTab(this.props.validate, undefined, true, true)
             emit('done')
           } catch (err) {
-            emit('error')
+            const execution = isCodedError(err) && err.code === 404 ? 'not-yet' : 'error'
+            emit(execution)
           }
         }, 1000)
       }
