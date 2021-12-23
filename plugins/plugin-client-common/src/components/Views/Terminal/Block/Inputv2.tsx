@@ -16,7 +16,17 @@
 
 import React from 'react'
 import { v4 as uuid } from 'uuid'
-import { Events, KResponse, Tab, i18n, isError, isTable, isXtermResponse, hasSourceReferences } from '@kui-shell/core'
+import {
+  Events,
+  KResponse,
+  Tab,
+  i18n,
+  isError,
+  isTable,
+  isXtermResponse,
+  hasSourceReferences,
+  pexecInCurrentTab
+} from '@kui-shell/core'
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
@@ -25,6 +35,8 @@ import { BlockState } from './BlockModel'
 import Scalar from '../../../Content/Scalar'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
 import { MutabilityContext } from '../../../Client/MutabilityContext'
+
+import { linkUpdateChannel, linkGetChannel } from '../../../Content/LinkStatus'
 
 const SourceRef = React.lazy(() => import('../SourceRef'))
 const CodeSnippet = React.lazy(() => import('../../../spi/CodeSnippet'))
@@ -52,6 +64,9 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
 
     /** A Block identifier, to enable cross-referencing with check lists, etc. */
     blockId?: string
+
+    /** A command line that validates whether this command was successfully issued at some time in the past */
+    validate?: string
 
     /** Output of this Input? */
     response?: KResponse
@@ -91,7 +106,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   private emitLinkStatus(execution = this.state.execution) {
     Events.eventChannelUnsafe.emit(
-      `/link/status/update/${this.props.blockId}`,
+      linkUpdateChannel(this.props.blockId),
       execution === 'not-yet' || execution === 'replayed'
         ? [0, 0, 0] // indicates nothing has happened yet, in this session
         : execution === 'processing'
@@ -104,10 +119,22 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   private initLinkEvents() {
     if (this.props.blockId) {
-      const get = `/link/status/get/${this.props.blockId}`
+      const get = linkGetChannel(this.props.blockId)
       const emit = this.emitLinkStatus.bind(this)
       Events.eventChannelUnsafe.on(get, emit)
       this.cleaners.push(() => Events.eventChannelUnsafe.off(get, emit))
+
+      if (this.props.validate) {
+        setTimeout(async () => {
+          try {
+            emit('processing')
+            await pexecInCurrentTab(this.props.validate, undefined, true, true)
+            emit('done')
+          } catch (err) {
+            emit('error')
+          }
+        }, 1000)
+      }
     }
   }
 
