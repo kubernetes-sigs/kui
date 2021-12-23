@@ -28,7 +28,7 @@ import {
   liveStatusChannel
 } from '../../ProgressStepper'
 
-export function listItem(props: LiProps) {
+export function li(props: LiProps) {
   if (isProgressStepCompatible(props)) {
     return (
       <ProgressStep
