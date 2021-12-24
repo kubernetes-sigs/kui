@@ -761,7 +761,10 @@ async function redirectResponse<T extends KResponse>(
 ) {
   const response = await _response
 
-  if (Buffer.isBuffer(response) || typeof response === 'string' || isXtermResponse(response)) {
+  if (response === true) {
+    // probably a mis-parsing of the redirect
+    
+  } else if (Buffer.isBuffer(response) || typeof response === 'string' || isXtermResponse(response)) {
     try {
       const data = isXtermResponse(response) ? response.rows.map(i => i.map(j => j.innerText)).join(' ') : response
       const writeOptions = redirector === '>>' ? '--append' : ''
