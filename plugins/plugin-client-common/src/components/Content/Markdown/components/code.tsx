@@ -80,22 +80,25 @@ export default function code(
       const statusConsideringReplay = !executed && (status === 'done' || status === 'error') ? 'replayed' : status
 
       return (
-        <Input
-          readonly={false}
-          className="kui--code-block-in-markdown"
-          tab={mdprops.tab}
-          value={body}
-          language={language}
-          blockId={attributes.id}
-          validate={attributes.validate === '$body' ? body : attributes.validate}
-          response={decodePriorResponse(attributes.response, attributes.responseEncoding)}
-          status={statusConsideringReplay}
-          arg1={body}
-          arg2={language}
-          arg3={myCodeIdx}
-          onResponse={spliceCodeWithResponseFrontmatter}
-          data-code-index={myCodeIdx}
-        />
+        <React.Fragment>
+          {attributes.id && <a id={`kui-link-${attributes.id}`} />}
+          <Input
+            readonly={false}
+            className="kui--code-block-in-markdown"
+            tab={mdprops.tab}
+            value={body}
+            language={language}
+            blockId={attributes.id}
+            validate={attributes.validate === '$body' ? body : attributes.validate}
+            response={decodePriorResponse(attributes.response, attributes.responseEncoding)}
+            status={statusConsideringReplay}
+            arg1={body}
+            arg2={language}
+            arg3={myCodeIdx}
+            onResponse={spliceCodeWithResponseFrontmatter}
+            data-code-index={myCodeIdx}
+          />
+        </React.Fragment>
       )
     } else {
       return (
