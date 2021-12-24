@@ -42,9 +42,11 @@ export function splitIntoPipeStages(command: string): CommandLine['pipeStages'] 
 
   let redirectMatch = command.match(redirectPattern)
   // workaround for lack of negative lookbehind in Safari :(
-  if (redirectMatch && redirectMatch.index > 0 && /["'\\]/.test(command[redirectMatch.index - 1])) {
-    // sigh...
-    redirectMatch = undefined
+  if (redirectMatch && redirectMatch.index > 0) {
+    if (/["'\\]/.test(command[redirectMatch.index - 1])) {
+      // Safari sigh...
+      redirectMatch = undefined
+    }
   }
 
   const pipeEndIdx = redirectMatch ? redirectMatch.index : undefined
