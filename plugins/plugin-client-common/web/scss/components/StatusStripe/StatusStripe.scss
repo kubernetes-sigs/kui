@@ -213,7 +213,7 @@ $z-index: var(--pf-global--ZIndex--xs);
       background-color: transparent;
     }
     @include DropdownToggle {
-      color: inherit;
+      color: inherit !important;
       font-size: inherit;
     }
     @include DropdownItem {
