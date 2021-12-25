@@ -18,6 +18,7 @@
 @import '../Card/mixins';
 @import '../Sidecar/mixins';
 @import '../common/narrow-window';
+@import '../ProgressStepper/mixins';
 @import '../ExpandableSection/mixins';
 @import '../../Themes/mixins';
 @import 'BlockLinks';
@@ -234,6 +235,12 @@ body[kui-theme-style='light'] {
     border: 1px solid var(--color-table-border1);
     background-color: var(--color-base00);
   }
+
+  @include PtyOutputContainer {
+    &:not(:first-child) {
+      margin-top: 0.5em;
+    }
+  }
 }
 
 @include Scrollback {
@@ -248,11 +255,6 @@ body[kui-theme-style='light'] {
       --input-padding-left: 0;
       --input-padding-right: 0;
       margin-top: 0;
-
-      /** Code blocks nested inside of the outer Block; no need to repeat the padding, unless we are showing a BlockBorder */
-      @include NotAlwaysHasBorder {
-        padding: 0;
-      }
     }
   }
 }
@@ -281,18 +283,20 @@ body[kui-theme-style='light'] {
   }
 
   @include CommandOutput {
+    flex-direction: column; /* in case of multi-output, e.g. from semicolonInvoke */
     font-size: 0.875rem;
     line-height: initial; /* PatternFly intercepts this for pf-c-content */
   }
+}
 
-  @include MarkdownTip {
-    background-color: #e7f1fa;
+@include MarkdownTip {
+  background-color: #e7f1fa;
+  filter: hue-rotate(45deg);
 
-    @include ExpandableSectionButton {
-      width: 100%;
-      padding-top: 0.6875em;
-      padding-bottom: 0.6875em;
-    }
+  @include ExpandableSectionButton {
+    width: 100%;
+    padding-top: 0.6875em;
+    padding-bottom: 0.6875em;
   }
 }
 
@@ -318,5 +322,38 @@ body[kui-theme-style='light'] {
   /** Nested tabs */
   @include MarkdownTabContentCard {
     padding: 0;
+  }
+}
+
+@mixin CodeBlock {
+  .kui--code-block-in-markdown {
+    @content;
+  }
+}
+@mixin CodeBlockActions {
+  .kui--code-block-actions {
+    @content;
+  }
+}
+
+@include CodeBlock {
+  &:hover {
+    @include CodeBlockActions {
+      opacity: 1;
+    }
+  }
+}
+@include CodeBlockActions {
+  position: absolute;
+
+  &[data-align='top-left'] {
+    left: -1em;
+    top: -1em;
+    opacity: 0.8;
+  }
+  &[data-align='top-right'] {
+    right: -1em;
+    top: -1em;
+    opacity: 0.8;
   }
 }

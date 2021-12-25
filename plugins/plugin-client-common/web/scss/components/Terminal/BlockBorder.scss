@@ -55,20 +55,6 @@
   }
 }
 
-@include Block {
-  @include AlwaysHasBorder {
-    @include Error {
-      @include BlockBorder {
-        @include ErrorDecorations;
-      }
-    }
-
-    @include BlockBorder {
-      @include NormalDecorations;
-    }
-  }
-}
-
 @include FocusedBlock {
   @include Editable {
     @include BlockBorder {

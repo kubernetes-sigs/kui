@@ -54,6 +54,8 @@ type ProgressStepProps = React.PropsWithChildren<{
   className?: string
   title: React.ReactNode
 
+  customIcon?: React.ReactNode
+
   defaultStatus: Status | Promise<Status>
   liveStatusChannel?: string
 }>
@@ -98,6 +100,10 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
   }
 
   private icon() {
+    if (this.props.customIcon) {
+      return this.props.customIcon
+    }
+
     const { icon, className } = this.icons[this.state.status]
     return icon && <Icons icon={icon} className={className} />
   }
@@ -139,8 +145,8 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
           <span className="pf-c-progress-stepper__step-icon kui--progress-step-status-icon">{this.icon()}</span>
         </div>
         <div className="pf-c-progress-stepper__step-main">
-          <div className="pf-c-progress-stepper__step-title">{this.props.title}</div>
-          <div className="pf-c-progress-stepper__step-description">{this.props.children}</div>
+          {this.props.title && <div className="pf-c-progress-stepper__step-title">{this.props.title}</div>}
+          {this.props.children && <div className="pf-c-progress-stepper__step-description">{this.props.children}</div>}
         </div>
       </li>
     )
