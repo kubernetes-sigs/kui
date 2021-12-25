@@ -373,7 +373,7 @@ class InProcessExecutor implements Executor {
       const evaluatorOptions = evaluator.options
 
       // are we asked to redirect the output to a file?
-      const redirectDesired = !noCoreRedirect && !!pipeStages.redirect
+      let redirectDesired = !noCoreRedirect && !!pipeStages.redirect
 
       this.emitStartEvent({
         tab,
@@ -465,6 +465,7 @@ class InProcessExecutor implements Executor {
       if (commands.length > 1) {
         // e.g. "a ; b ; c"
         response = await semicolonInvoke(commands, execOptions)
+        redirectDesired = false // any redirects will be handled in the respective semi invoke
       } else {
         // e.g. just "a" or "a > /tmp/foo"
         try {
@@ -763,14 +764,13 @@ async function redirectResponse<T extends KResponse>(
 
   if (response === true) {
     // probably a mis-parsing of the redirect
-    
   } else if (Buffer.isBuffer(response) || typeof response === 'string' || isXtermResponse(response)) {
     try {
       const data = isXtermResponse(response) ? response.rows.map(i => i.map(j => j.innerText)).join(' ') : response
       const writeOptions = redirector === '>>' ? '--append' : ''
       await rexec<{ data: string }>(`vfs fwrite ${encodeComponent(expandHomeDir(filepath))} ${writeOptions}`, { data })
 
-      debug(`redirected response to ${filepath}`)
+      debug(`redirected response to ${filepath}`, response)
     } catch (err) {
       console.error(err)
       throw new Error(`Error in redirect: ${err.message}`)
