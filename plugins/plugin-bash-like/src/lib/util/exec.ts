@@ -30,7 +30,8 @@ export const handleNonZeroExitCode = (
   const stderr = rawErr.length === 0 ? rawOut : rawErr
 
   // note for below: 127 means command not found in POSIX land
-  if (execOptions && execOptions.nested && exitCode !== 127) {
+  // 128 through (128+33) signify the 33 standard POSIX exit codes
+  if (execOptions && execOptions.nested && exitCode < 127) {
     const error = new Error(stderr)
     error['code'] = exitCode
     throw error
@@ -39,9 +40,9 @@ export const handleNonZeroExitCode = (
     error['html'] = parentNode
 
     if (execOptions.stderr) error['code'] = parentNode
-    else if (stderr.match(/File exists/i)) error['code'] = 409
+    else if (/File exists/i.test(stderr)) error['code'] = 409
     // re: i18n, this is for tests
-    else if (exitCode !== 127 && stderr.match(/not found/i)) error['code'] = 404
+    else if (exitCode !== 127 && /not found/i.test(stderr)) error['code'] = 404
     // re: i18n, this is for tests
     else error['code'] = exitCode
 

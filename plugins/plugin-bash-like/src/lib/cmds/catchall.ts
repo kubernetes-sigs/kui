@@ -38,7 +38,9 @@ export const dispatchToShell = async ({
   /** trim the first part of "/bin/sh: someNonExistentCommand: command not found" */
   const cleanUpError = (err: CodedError) => {
     if (err.message && typeof err.message === 'string') {
-      throw new Error(err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim())
+      const error: CodedError = new Error(err.message.replace(/[a-zA-Z0-9/]+:\s*/, '').trim())
+      error.code = err.code
+      throw error
     } else {
       throw err
     }
