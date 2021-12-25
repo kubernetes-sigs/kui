@@ -38,6 +38,7 @@ import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
 import { MutabilityContext } from '../../../Client/MutabilityContext'
 
 import { linkUpdateChannel, linkGetChannel } from '../../../Content/LinkStatus'
+import { ProgressStepper, ProgressStep } from '../../../Content/ProgressStepper'
 
 const SourceRef = React.lazy(() => import('../SourceRef'))
 const CodeSnippet = React.lazy(() => import('../../../spi/CodeSnippet'))
@@ -86,7 +87,15 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
 
 type State = Value &
   StreamingState & {
+    /** Status of the execution of this code block */
     execution: Status
+
+    /**
+     * Whether we have correctly validated that this code block's
+     * effects have already been applied to the user's current context.
+     *
+     */
+    validated: boolean
   }
 
 export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T3>, State> {
@@ -131,9 +140,11 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
             emit('processing')
             await pexecInCurrentTab(this.props.validate, undefined, true, true)
             emit('done')
+            this.setState({ validated: true })
           } catch (err) {
             const execution = isCodedError(err) && err.code === 404 ? 'not-yet' : 'error'
             emit(execution)
+            this.setState({ validated: false })
           }
         }, 1000)
       }
@@ -147,7 +158,8 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         {
           execution: props.status || 'not-yet',
           value: props.value,
-          language: props.language
+          language: props.language,
+          validated: false
         },
         StreamingConsumer.initStreamingState(execUUID)
       )
@@ -156,19 +168,35 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     }
   }
 
+  /** UI to denote the execution status of this code block */
+  private status() {
+    const execution = this.state.validated ? 'done' : this.state.execution
+
+    if (execution === 'done' || execution === 'error') {
+      return (
+        <div className="kui--code-block-actions flex-layout" data-align="top-right">
+          <ProgressStepper className="kui--code-block-status">
+            <ProgressStep title="" defaultStatus={execution === 'done' ? 'success' : 'error'} />
+          </ProgressStepper>
+        </div>
+      )
+    }
+  }
+
   private actions() {
     if (this.props.readonly !== true) {
       if (this.state.execution === 'processing') {
         return <Spinner />
       } else {
-        return <Run onRun={this._onRun} />
+        return <Run execution={this.state.execution} onRun={this._onRun} />
       }
     }
   }
 
   private input() {
     return (
-      <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context">
+      <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
+        {this.status()}
         <div className="flex-fill">
           <CodeSnippet
             wordWrap="on"
@@ -232,7 +260,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       this.setState({ execution: 'processing' })
       this.emitLinkStatus('processing')
 
-      const cmdline = this.state.value // .replace(/([^\\])(\n)/g, '$1;\\ $2')
+      const cmdline = this.state.value.replace(/([^\\])(\n)/g, '$1; ')
       const response = await this.execWithStream(cmdline)
 
       const execution = isXtermResponse(response)
@@ -274,8 +302,6 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         return M
       }, {})
 
-    // on li, if you want a BlockBorder for finished blocks:
-    // data-has-border={!!this.props.response || undefined}
     return (
       <MutabilityContext.Consumer>
         {mutability => (
@@ -295,6 +321,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 }
 
 interface RunProps {
+  execution: State['execution']
   onRun: () => void | Promise<void>
 }
 
@@ -308,7 +335,7 @@ class Run extends React.PureComponent<RunProps> {
         onClick={this.props.onRun}
         classNameB="green-text"
         className="kui--block-action kui--block-action-run"
-        title={strings('Execute this command')}
+        title={strings(this.props.execution === 'done' ? 'Re-execute this command' : 'Execute this command')}
       />
     )
   }

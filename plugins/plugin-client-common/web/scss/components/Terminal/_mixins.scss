@@ -148,18 +148,6 @@ $action-hover-delay: 210ms;
   }
 }
 
-@mixin AlwaysHasBorder {
-  &[data-has-border] {
-    @content;
-  }
-}
-
-@mixin NotAlwaysHasBorder {
-  &:not(&[data-has-border]) {
-    @content;
-  }
-}
-
 @mixin SectionBreak {
   @include Block {
     &[data-is-section-break] {
@@ -559,6 +547,11 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin PtyOutputContainer {
+  .kui--xterm-output {
+    @content;
+  }
+}
 @mixin PtyOutput {
   .xterm-container.xterm-terminated {
     @content;

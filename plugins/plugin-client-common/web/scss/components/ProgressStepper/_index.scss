@@ -39,6 +39,10 @@ $minor-step-color: var(--color-base05);
 @include ProgressStep {
   @include Main {
     margin-left: 0.5rem;
+    &:empty {
+      margin-left: 0;
+      margin-right: 0;
+    }
   }
 
   @include Minor {
