@@ -103,16 +103,20 @@ export class ProgressStep extends React.PureComponent<ProgressStepProps, Progres
   }
 
   private readonly _statusUpdateHandler = (statusVector: number[]) => {
-    const status =
-      statusVector[0] !== 0
-        ? 'success'
-        : statusVector[1] !== 0
-        ? 'error'
-        : statusVector[2] !== 0
-        ? 'in-progress'
-        : 'blank'
+    this.setState(curState => {
+      const status =
+        statusVector[0] !== 0
+          ? 'success'
+          : statusVector[1] !== 0
+          ? 'error'
+          : statusVector[2] !== 0
+          ? 'in-progress'
+          : curState.status === 'minor'
+          ? 'minor'
+          : 'blank'
 
-    this.setState({ status })
+      return { status }
+    })
   }
 
   /** Once we have mounted, subscribe to link status update events */
