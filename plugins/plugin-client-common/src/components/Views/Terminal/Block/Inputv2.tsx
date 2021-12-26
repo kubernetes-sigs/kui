@@ -23,6 +23,7 @@ import {
   i18n,
   isCodedError,
   isError,
+  isMixedResponse,
   isTable,
   isXtermResponse,
   hasSourceReferences,
@@ -269,6 +270,10 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
           : 'error'
         : isError(response)
         ? 'error'
+        : isMixedResponse(response)
+        ? response.find(_ => isXtermResponse(_) && _.code !== 0)
+          ? 'error'
+          : 'done'
         : 'done'
       this.setState({ execution })
 
