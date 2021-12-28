@@ -59,14 +59,14 @@ export default abstract class StreamingConsumer<
       Events.eventChannelUnsafe.emit(`/command/stdout/done/${tab.uuid}/${execUUID}`)
     }
 
-    // part === null: the controller wants to clear any prior output
+    // part === null: the controller wants to clear prior output
     if (part === null) {
-      this._streamingOutput = []
+      // remove last output
+      this._streamingOutput.pop()
+      this.setState(curState => ({
+        nStreamingOutputs: curState.nStreamingOutputs - 1
+      }))
       done()
-      return {
-        // remove all output
-        nStreamingOutputs: 0
-      }
     } else {
       this._streamingOutput.push(Buffer.isBuffer(part) ? part.toString() : part)
 

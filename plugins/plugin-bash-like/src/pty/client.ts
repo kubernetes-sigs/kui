@@ -631,13 +631,16 @@ async function initOnMessage(
           // !! DO NOT CALL xtermContainer.remove() directly !!
           execOptions.stdout(null)
 
-          // respond to the REPL
-          respondToRepl({
+          const response: XtermResponse = {
             apiVersion: 'kui-shell/v1',
             kind: 'XtermResponse',
             rows: copy(terminal),
             code: 0 // to be over-written in the case of an error response
-          })
+          }
+          execOptions.stdout(response)
+
+          // respond to the REPL
+          respondToRepl(response)
         })
       }
 

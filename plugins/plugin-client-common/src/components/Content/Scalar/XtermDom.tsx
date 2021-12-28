@@ -50,10 +50,7 @@ export default class XtermDom extends React.PureComponent<Props> {
     return this.props.response.rows.length === 0 ? (
       <React.Fragment />
     ) : (
-      <div
-        className="kui--xterm-output padding-content scrollable scrollable-auto page-content"
-        style={{ display: 'flex', flex: 1 }}
-      >
+      <div className="kui--xterm-output padding-content scrollable scrollable-auto page-content">
         <div style={{ display: 'flex', flex: 1 }}>
           <div className="xterm-container xterm-terminated">
             <div className="xterm-rows">

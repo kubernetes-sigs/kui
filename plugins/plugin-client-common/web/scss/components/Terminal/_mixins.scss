@@ -557,3 +557,9 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+@mixin Markdown {
+  .page-content {
+    @content;
+  }
+}
