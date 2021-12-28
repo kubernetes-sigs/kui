@@ -214,27 +214,29 @@ export function semiSplit(command: string): string[] {
 
     let inStatement = false
     let statementTerminator = ''
-    return argv.reduce(
-      (sofar, a, idx) => {
-        if (a === 'while' || a === 'for' || a === 'if' || a === 'case') {
-          inStatement = true
-          statementTerminator = a === 'if' ? 'fi' : a === 'case' ? 'esac' : 'done'
-        } else if (inStatement && a === statementTerminator) {
-          inStatement = false
-        }
+    return argv
+      .map(_ => _.trim())
+      .reduce(
+        (sofar, a, idx) => {
+          if (a === 'while' || a === 'for' || a === 'if' || a === 'case') {
+            inStatement = true
+            statementTerminator = a === 'if' ? 'fi' : a === 'case' ? 'esac' : 'done'
+          } else if (inStatement && a === statementTerminator) {
+            inStatement = false
+          }
 
-        if (!inStatement && a === ';') {
-          sofar.A.push(sofar.cur)
-          sofar.cur = ''
-        } else if ((!inStatement && /;$/.test(a)) || idx === argv.length - 1) {
-          sofar.A.push(sofar.cur + ' ' + a)
-          sofar.cur = ''
-        } else {
-          sofar.cur += ' ' + a
-        }
-        return sofar
-      },
-      { A: [], cur: '' }
-    ).A
+          if (!inStatement && a === ';') {
+            sofar.A.push(sofar.cur)
+            sofar.cur = ''
+          } else if ((!inStatement && /;$/.test(a)) || idx === argv.length - 1) {
+            sofar.A.push(sofar.cur + ' ' + a.replace(/;$/, ''))
+            sofar.cur = ''
+          } else {
+            sofar.cur += (sofar.cur ? ' ' : '') + a
+          }
+          return sofar
+        },
+        { A: [], cur: '' }
+      ).A
   }
 }
