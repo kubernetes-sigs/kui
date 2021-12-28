@@ -132,14 +132,14 @@ export default class Output extends React.PureComponent<Props, State> {
         Events.eventChannelUnsafe.emit(`/command/stdout/done/${tabUUID}/${execUUID}`)
       }
 
-      // part === null: the controller wants to clear any prior output
+      // part === null: the controller wants to clear prior output
       if (part === null) {
-        this.streamingOutput = []
+        // remove last output
+        this.streamingOutput.pop()
+        this.setState(curState => ({
+          nStreamingOutputs: curState.nStreamingOutputs - 1
+        }))
         done()
-        return {
-          // remove all output
-          nStreamingOutputs: 0
-        }
       } else {
         if (isOutputRedirected(this.props.model)) {
           // if we were asked to redirect to a file, then we can
@@ -216,8 +216,24 @@ export default class Output extends React.PureComponent<Props, State> {
 
   private stream() {
     if (this.hasStreamingOutput()) {
-      if (this.streamingOutput.every(_ => typeof _ === 'string')) {
-        const combined = this.streamingOutput.join('')
+      // we may have duplicates in streamingOutput and response
+      // see https://github.com/kubernetes-sigs/kui/pull/8354
+      const response = isWithCompleteEvent(this.props.model) ? this.props.model.response : undefined
+      const streamingOutput = !response
+        ? this.streamingOutput
+        : this.streamingOutput.filter(_ => {
+            if (isMixedResponse(response)) {
+              return !response.find(_2 => _ === _2)
+            } else {
+              return _ !== response
+            }
+          })
+      if (streamingOutput.length < this.streamingOutput.length) {
+        this.streamingOutput = streamingOutput
+      }
+
+      if (streamingOutput.every(_ => typeof _ === 'string')) {
+        const combined = streamingOutput.join('')
         return (
           <div className="repl-result-like result-vertical" data-stream>
             <React.Suspense fallback={<div />}>
@@ -229,7 +245,7 @@ export default class Output extends React.PureComponent<Props, State> {
 
       return (
         <div className="repl-result-like result-vertical" data-stream>
-          {this.streamingOutput.map((part, idx) => (
+          {streamingOutput.map((part, idx) => (
             <React.Suspense fallback={<div />} key={idx}>
               <Scalar
                 tab={this.props.tab}

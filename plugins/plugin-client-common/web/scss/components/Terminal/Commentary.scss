@@ -286,6 +286,10 @@ body[kui-theme-style='light'] {
     flex-direction: column; /* in case of multi-output, e.g. from semicolonInvoke */
     font-size: 0.875rem;
     line-height: initial; /* PatternFly intercepts this for pf-c-content */
+
+    @include Markdown {
+      flex: initial; /* repl-result has flex-direction: column */
+    }
   }
 }
 
