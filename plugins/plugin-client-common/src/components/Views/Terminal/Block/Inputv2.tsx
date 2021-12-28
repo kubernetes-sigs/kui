@@ -21,7 +21,6 @@ import {
   KResponse,
   Tab,
   i18n,
-  isCodedError,
   isError,
   isMixedResponse,
   isTable,
@@ -143,8 +142,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
             emit('done')
             this.setState({ validated: true })
           } catch (err) {
-            const execution = isCodedError(err) && err.code === 404 ? 'not-yet' : 'error'
-            emit(execution)
+            emit('not-yet')
             this.setState({ validated: false })
           }
         }, 1000)
@@ -261,7 +259,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       this.setState({ execution: 'processing' })
       this.emitLinkStatus('processing')
 
-      const cmdline = this.state.value.replace(/([^\\])(\n)/g, '$1; ')
+      const cmdline = this.state.value.replace(/([^\\])(\n)/g, '$1; ').replace(/&;/g, '&')
       const response = await this.execWithStream(cmdline)
 
       const execution = isXtermResponse(response)
