@@ -373,7 +373,7 @@ class InProcessExecutor implements Executor {
       const evaluatorOptions = evaluator.options
 
       // are we asked to redirect the output to a file?
-      let redirectDesired = !noCoreRedirect && !!pipeStages.redirect
+      let redirectDesired = !noCoreRedirect && !!pipeStages.redirect && !/\/dev/.test(pipeStages.redirect)
 
       this.emitStartEvent({
         tab,
