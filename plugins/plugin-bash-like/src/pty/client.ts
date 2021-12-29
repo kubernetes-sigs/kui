@@ -576,10 +576,7 @@ async function initOnMessage(
 
       /** emit our final response and return control to the repl */
       const respondToRepl = async (response?: XtermResponse) => {
-        // vi, then :wq, then :q, you will get an exit code of
-        // 1, but with no output (!bytesWereWritten); note how
-        // we treat this as "ok", i.e. no error thrown
-        if (msg.exitCode !== 0 && (bytesWereWritten || execOptions.onInit)) {
+        if (msg.exitCode !== 0) {
           const error = new Error('')
           if (sawCode === 409) error['code'] = 409
           // re: i18n, this is for tests
