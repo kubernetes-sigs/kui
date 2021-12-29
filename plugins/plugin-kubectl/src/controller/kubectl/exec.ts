@@ -97,7 +97,7 @@ export function doExecWithStdout<O extends KubeOptions>(
  */
 export function reallyNeedsPty({ argvNoOptions, parsedOptions }: Pick<Arguments, 'argvNoOptions' | 'parsedOptions'>) {
   const test1 = (_: string) => /(\$\(|`)/.test(_) // subprocess execution?
-  const test2 = (_: string) => /^\s*(\||>|>>)\s*$/.test(_) || test1(_)
+  const test2 = (_: string) => /^\s*(\|\||\||>|>>)\s*$/.test(_) || test1(_)
   return !!argvNoOptions.find(test2) || !!Object.values(parsedOptions).find(test1)
 }
 
