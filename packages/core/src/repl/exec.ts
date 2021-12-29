@@ -336,8 +336,12 @@ class InProcessExecutor implements Executor {
       // If core handles redirect, argv and command shouldn't contain the redirect part;
       // otherwise, controllers may use argv and command incorrectly e.g. kuiecho hi > file will print "hi > file" instead of "hi"
       const noCoreRedirect = execOptions.noCoreRedirect || (evaluator.options && evaluator.options.noCoreRedirect)
+
+      // are we asked to redirect the output to a file?
+      let redirectDesired = !noCoreRedirect && !!pipeStages.redirect && !/\/dev/.test(pipeStages.redirect)
+
       const originalCommand = command
-      if (!noCoreRedirect && pipeStages.redirect) {
+      if (redirectDesired && pipeStages.redirect) {
         argv.splice(argv.indexOf(pipeStages.redirector), 2)
         command = command.replace(new RegExp(`\\s*${pipeStages.redirector}\\s*${pipeStages.redirect}\\s*$`), '')
       }
@@ -371,9 +375,6 @@ class InProcessExecutor implements Executor {
       const execUUID = execOptions.execUUID || uuid()
       execOptions.execUUID = execUUID
       const evaluatorOptions = evaluator.options
-
-      // are we asked to redirect the output to a file?
-      let redirectDesired = !noCoreRedirect && !!pipeStages.redirect && !/\/dev/.test(pipeStages.redirect)
 
       this.emitStartEvent({
         tab,
