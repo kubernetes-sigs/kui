@@ -18,7 +18,7 @@ import { Arguments, Registrar } from '@kui-shell/core'
 
 import defaultFlags from './flags'
 import { KubeOptions } from './options'
-import { doExecWithStatus } from './exec'
+import { doExecWithStatus, doExecWithPty, reallyNeedsPty } from './exec'
 
 import deleteDirect from '../client/direct/delete'
 import { FinalState } from '../../lib/model/states'
@@ -42,16 +42,20 @@ export const doDelete = (command = 'kubectl') => async (args: Arguments<KubeOpti
   if (isUsage(args)) {
     return doHelp(command, args, prepareArgsForDelete)
   } else {
-    try {
-      const directResponse = await deleteDirect(args)
-      if (directResponse) {
-        return directResponse
-      }
-    } catch (err) {
-      if (err.code === 404) {
-        throw err
-      } else {
-        console.error('Error in direct delete. Falling back to CLI delete.', err.code, err)
+    if (reallyNeedsPty(args)) {
+      return doExecWithPty(args, prepareArgsForDelete)
+    } else {
+      try {
+        const directResponse = await deleteDirect(args)
+        if (directResponse) {
+          return directResponse
+        }
+      } catch (err) {
+        if (err.code === 404) {
+          throw err
+        } else {
+          console.error('Error in direct delete. Falling back to CLI delete.', err.code, err)
+        }
       }
     }
 
