@@ -218,16 +218,50 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     )
   }
 
+  /**
+   * If we have a command line e.g. `echo hi; echo ho`, then it would
+   * be nice to smash these into a single group, so that they are
+   * rendered as if they were executed together. See "semicolons
+   * between commands and escape newlines" below for why this isn't
+   * the case without some fixups here.
+   *
+   */
+  private combineContiguousXtermResponses() {
+    if (!isMixedResponse(this.props.response)) {
+      return this.props.response
+    } else {
+      return this.props.response.reduce((A, res) => {
+        if (A.length === 0) {
+          A.push(res)
+        } else {
+          const prev = A[A.length - 1]
+          if (isXtermResponse(prev) && isXtermResponse(res)) {
+            // then we have two consecutive XtermResponses; smash them
+            // together
+            prev.rows = prev.rows.concat(res.rows)
+
+            if (prev.code === 0) {
+              // conservatively take non-zero exit codes over zero
+              // exit codes
+              prev.code = res.code
+            }
+          } else {
+            A.push(res)
+          }
+        }
+
+        return A
+      }, [])
+    }
+  }
+
   private nonstreamingOutput() {
+    const response = this.combineContiguousXtermResponses()
+
     return (
       this.state.execution !== 'processing' &&
       this.props.response && (
-        <Scalar
-          tab={this.props.tab}
-          execUUID={this.state.execUUID}
-          response={this.props.response}
-          willChangeSize={this.nope}
-        />
+        <Scalar tab={this.props.tab} execUUID={this.state.execUUID} response={response} willChangeSize={this.nope} />
       )
     )
   }
@@ -255,10 +289,10 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   private readonly _onRun = async () => {
     try {
-      // semicolons between commands and escape newlines
       this.setState({ execution: 'processing' })
       this.emitLinkStatus('processing')
 
+      // semicolons between commands and escape newlines
       const cmdline = this.state.value
         .replace(/^\s*#.*$/gm, '') // strip comments
         .replace(/([^\\])(\n)/g, '$1; ') // convert newlines to semicolons
