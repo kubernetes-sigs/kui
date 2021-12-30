@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { dirname } from 'path'
 import { FStat } from '@kui-shell/plugin-bash-like/fs'
 import {
   Arguments,
@@ -130,7 +131,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           title,
           filepath,
           children: data,
-          baseUrl: args.parsedOptions['base-url']
+          baseUrl: args.parsedOptions['base-url'] || (filepath ? dirname(filepath) : undefined)
         }
       }
     }
