@@ -307,7 +307,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         : isError(response)
         ? 'error'
         : isMixedResponse(response)
-        ? response.find(_ => isXtermResponse(_) && _.code !== 0)
+        ? response.find(_ => (isXtermResponse(_) && _.code !== 0) || isError(_))
           ? 'error'
           : 'done'
         : 'done'
