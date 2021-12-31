@@ -29,16 +29,24 @@ async function doInstall(args: Arguments<KubeOptions>) {
     return doExecWithPty(args, undefined, 'helm')
   }
 
-  const response = await doExecWithStdout(args)
+  try {
+    const response = await doExecWithStdout(args)
 
-  const releaseName = response.match(name)[1]
-  return args.REPL.qexec(`helm status ${args.REPL.encodeComponent(releaseName)} ${getNamespaceForArgv(args)}`).catch(
-    err => {
-      // oops, we tried to be clever and failed; return the original response
-      console.error('error in helm get for helm install', err)
-      return response
+    const releaseName = response.match(name)[1]
+    return args.REPL.qexec(`helm status ${args.REPL.encodeComponent(releaseName)} ${getNamespaceForArgv(args)}`).catch(
+      err => {
+        // oops, we tried to be clever and failed; return the original response
+        console.error('error in helm get for helm install', err)
+        return response
+      }
+    )
+  } catch (err) {
+    if (/still in use/.test(err.message)) {
+      err['code'] = 409
+      err['statusCode'] = 409
     }
-  )
+    throw err
+  }
 }
 
 export default (registrar: Registrar) => {
