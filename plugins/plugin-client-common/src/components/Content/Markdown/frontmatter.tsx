@@ -32,12 +32,18 @@ export function tryFrontmatter(
   }
 }
 
+function stringifyError(response: Error) {
+  return { code: isCodedError(response) ? response.code : 1, message: response.message }
+}
+
 /** Blunt attempt to avoid serializing React bits */
 function reactRedactor(key: string, value: any) {
   if (key === 'tab') {
     return undefined
   } else if (key === 'block') {
     return undefined
+  } else if (typeof value === 'object' && value.constructor === Error) {
+    return stringifyError(value)
   } else {
     return value
   }
@@ -47,12 +53,7 @@ function encodePriorResponse(response: KResponse): { encoding: string; encodedRe
   return {
     encoding: 'base64+gzip',
     encodedResponse: Util.base64PlusGzip(
-      JSON.stringify(
-        response.constructor === Error
-          ? { code: isCodedError(response) ? response.code : 1, message: response.message }
-          : response,
-        reactRedactor
-      )
+      JSON.stringify(response.constructor === Error ? stringifyError(response) : response, reactRedactor)
     )
   }
 }

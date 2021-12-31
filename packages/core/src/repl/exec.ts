@@ -735,7 +735,7 @@ async function semicolonInvoke(commands: string[], execOptions: ExecOptions): Pr
         return entity
       }
     } catch (err) {
-      return err.message
+      return err
     }
   })
 
