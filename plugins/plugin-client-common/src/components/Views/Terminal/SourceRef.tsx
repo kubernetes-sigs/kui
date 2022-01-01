@@ -39,7 +39,7 @@ export default class SourceRef extends React.PureComponent<Props> {
           tabUUID={getPrimaryTabId(this.props.tab)}
           content={content.replace(/\n$/, '')} /* monaco's renderFinalNewline option doesn't seem to do what we need */
           contentType={contentType}
-          className="kui--source-ref-editor kui--inverted-color-context"
+          className="kui--source-ref-editor"
           fontSizeAdjust={12 / 14}
           simple
         />
