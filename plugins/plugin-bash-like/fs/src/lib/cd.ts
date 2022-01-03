@@ -78,6 +78,10 @@ async function failFastCd(dir: string, dirAsProvided: string, args: Arguments, m
  *
  */
 const cd = async (args: Arguments) => {
+  if (/(&&|\|\|)/.test(args.command)) {
+    return args.REPL.qexec(`sendtopty ${args.command.replace(/kui(cd\s)/, '$1')}`)
+  }
+
   const dirAsProvided = args.REPL.split(args.command, true, true)[1] || ''
   if (dirAsProvided === '-' && !process.env.OLDPWD) {
     throw new Error(`cd: not a directory: ${dirAsProvided}`)

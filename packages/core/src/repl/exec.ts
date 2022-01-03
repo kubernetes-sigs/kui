@@ -412,7 +412,9 @@ class InProcessExecutor implements Executor {
       const historyIdx = isHeadless() ? -1 : this.pushHistory(originalCommand, execOptions, tab)
 
       try {
-        enforceUsage(argv, evaluator, execOptions)
+        if (!/(&&|\|\|)/.test(commandUntrimmed)) {
+          enforceUsage(argv, evaluator, execOptions)
+        }
       } catch (err) {
         debug('usage enforcement failure', err, execType === ExecType.Nested)
         this.emitCompletionEvent(
