@@ -27,6 +27,24 @@ const rootRelative = (dir: string) => join(ROOT, dir)
 const runTheTests = process.env.MOCHA_RUN_TARGET !== 'webpack' || process.env.KUI_USE_PROXY === 'true'
 const pit = runTheTests ? it : xit
 
+/** `cd /tmp && do something -e 3` shouldn't fail with usage exception, and should go to pty */
+describe(`bash-like cd to pty ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  pit('should cd /tmp && echo -n hi', () =>
+    CLI.command('cd /tmp && echo -n hi', this.app)
+      .then(ReplExpect.okWithPtyOutput('hi'))
+      .catch(Common.oops(this, true))
+  )
+
+  pit('should cd /tmp && echo -n hi && echo ho', () =>
+    CLI.command('cd /tmp && echo -n hi && echo ho', this.app)
+      .then(ReplExpect.okWithPtyOutput('hiho'))
+      .catch(Common.oops(this, true))
+  )
+})
+
 describe(`bash-like cd ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
