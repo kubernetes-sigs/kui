@@ -15,7 +15,9 @@
  */
 
 const RE_TEXT = /^text|strong$/
-const RE_TIP = /^([?!][?!][?!])(\+)?\s+(tip|info|note|warning)\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
+const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
+const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)$/
+const RE_TIP_END = /^(.*)"\s*(\n(.|[\n\r])*)?$/
 
 const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
 const END_OF_TIP = `<!-- ____KUI_END_OF_TIP____ -->`
@@ -53,7 +55,27 @@ export default function plugin(/* options */) {
             }
 
             child.children = child.children.reduce((pnewChildren, pchild) => {
-              if (pchild.type === 'text') {
+              if (currentTip && currentTip.properties.partial) {
+                if (pchild.type === 'text') {
+                  const endMatch = pchild.value.match(RE_TIP_END)
+                  if (endMatch) {
+                    delete currentTip.properties.partial
+                    if (endMatch[1]) {
+                      currentTip.properties.title += endMatch[1]
+                    }
+                    if (endMatch[2]) {
+                      currentTip.children.push({ type: 'text', value: endMatch[2] })
+                    }
+                  }
+                } else {
+                  // PatternFly's ExpandableSection currently only supports `string` for the title text :(
+                  // hacks for now
+                  currentTip.properties.title += pchild.children
+                    .filter(_ => _.type === 'text')
+                    .map(_ => _.value)
+                    .join(' ')
+                }
+              } else if (pchild.type === 'text') {
                 const startMatch = pchild.value.match(RE_TIP)
                 if (startMatch) {
                   flushTip(newChildren)
@@ -68,6 +90,23 @@ export default function plugin(/* options */) {
                   return pnewChildren
                 } else if (currentTip) {
                   return addToTip(pchild)
+                } else {
+                  const startMatch = pchild.value.match(RE_TIP_START)
+                  if (startMatch) {
+                    flushTip(newChildren)
+
+                    currentTip = {
+                      type: 'element',
+                      tagName: 'tip',
+                      properties: {
+                        title: startMatch[4],
+                        open: !!startMatch[2] || startMatch[1] === '!!!',
+                        partial: true
+                      },
+                      children: [],
+                      position: child.position
+                    }
+                  }
                 }
               } else if (currentTip) {
                 return addToTip(pchild)
