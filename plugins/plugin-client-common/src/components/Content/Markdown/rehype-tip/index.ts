@@ -49,7 +49,7 @@ export default function plugin(/* options */) {
           child.children = process(child.children)
         } else if (child.type === 'element' && child.tagName === 'p') {
           if (child.children.length > 0) {
-            if (currentTip && (child.children[0].type !== 'text' || !RE_TIP.test(child.children[0].value))) {
+            if (currentTip && (child.children[0].type !== 'text' || !RE_TIP_START.test(child.children[0].value))) {
               // a new paragraph that doesn't start a new tab; add to current tab
               return addToTip(child)
             }
@@ -88,8 +88,6 @@ export default function plugin(/* options */) {
                     position: child.position
                   }
                   return pnewChildren
-                } else if (currentTip) {
-                  return addToTip(pchild)
                 } else {
                   const startMatch = pchild.value.match(RE_TIP_START)
                   if (startMatch) {
@@ -106,6 +104,8 @@ export default function plugin(/* options */) {
                       children: [],
                       position: child.position
                     }
+                  } else if (currentTip) {
+                    return addToTip(pchild)
                   }
                 }
               } else if (currentTip) {
