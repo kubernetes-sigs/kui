@@ -294,7 +294,7 @@ body[kui-theme-style='light'] {
 
 @include MarkdownTip {
   background-color: #e7f1fa;
-  filter: hue-rotate(45deg);
+  filter: hue-rotate(-45deg);
 
   @include ExpandableSectionButton {
     width: 100%;
