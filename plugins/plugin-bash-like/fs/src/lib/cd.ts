@@ -28,6 +28,9 @@ import { localFilepath } from './usage-helpers'
 
 const strings = i18n('plugin-bash-like')
 
+/** e.g. cd /tmp && echo hi */
+const RE_CD_TO_PTY = /(&&|\|\|)/
+
 const usage = {
   cd: {
     strict: 'cd',
@@ -78,8 +81,13 @@ async function failFastCd(dir: string, dirAsProvided: string, args: Arguments, m
  *
  */
 const cd = async (args: Arguments) => {
-  if (/(&&|\|\|)/.test(args.command)) {
-    return args.REPL.qexec(`sendtopty ${args.command.replace(/kui(cd\s)/, '$1')}`)
+  if (RE_CD_TO_PTY.test(args.command)) {
+    return args.REPL.qexec(
+      `sendtopty ${args.command.replace(/kui(cd\s)/, '$1')}`,
+      undefined,
+      undefined,
+      args.execOptions
+    )
   }
 
   const dirAsProvided = args.REPL.split(args.command, true, true)[1] || ''
@@ -108,7 +116,12 @@ const cd = async (args: Arguments) => {
 
 const bcd = async ({ command, execOptions, REPL }: Arguments) => {
   const pwd: string = await REPL.qexec(command.replace(/^cd/, 'kuicd'), undefined, undefined, execOptions)
-  process.env.PWD = pwd
+
+  if (!RE_CD_TO_PTY.test(command)) {
+    // only update PWD if we didn't send this to a PTY
+    process.env.PWD = pwd
+  }
+
   return pwd
 }
 

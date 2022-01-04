@@ -44,8 +44,8 @@ function doSpawn(
         env: Object.assign({}, process.env, execOptions['env'] || {})
       }
 
-      if (process.env.SHELL && argv.find(_ => />|\||`|\$/.test(_))) {
-        // if the argv has a | or $ or a backtick, then we need to use
+      if (process.env.SHELL && argv.find(_ => /&&|>|\||`|\$/.test(_))) {
+        // if the argv has a & or | or $ or a backtick, then we need to use
         // a shell to evaluate the argv
         options.shell = process.env.SHELL
       }
