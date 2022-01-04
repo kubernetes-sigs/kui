@@ -64,13 +64,14 @@ function main(cmdline, execOptions, server, port, hostname, existingSession, loc
       uid,
       gid,
       cwd,
-      env: Object.assign(execOptions.env || {}, {
+      env: Object.assign({}, execOptions.env || {}, {
         TRAVIS_HOME: process.env.TRAVIS_HOME,
         HOME,
         PWD: cwd,
         LOCALE: locale,
         DEBUG: process.env.DEBUG,
         TRAVIS_JOB_ID: process.env.TRAVIS_JOB_ID,
+        SHELL: execOptions.env.SHELL || process.env.SHELL,
         KUBECONFIG: process.env.KUBECONFIG,
         KUI_HEADLESS: true,
         KUI_HEADLESS_WEBPACK: true,

@@ -32,11 +32,14 @@ describe(`bash-like cd to pty ${process.env.MOCHA_RUN_TARGET || ''}`, function(t
   before(Common.before(this))
   after(Common.after(this))
 
-  pit('should cd /tmp && echo -n hi', () =>
-    CLI.command('cd /tmp && echo -n hi', this.app)
-      .then(ReplExpect.okWithPtyOutput('hi'))
-      .catch(Common.oops(this, true))
-  )
+  // repeat this a few times, to make sure there is no buggy-sticky state
+  for (let idx = 0; idx < 2; idx++) {
+    pit('should cd /tmp && echo -n hi', () =>
+      CLI.command('cd /tmp && echo -n hi', this.app)
+        .then(ReplExpect.okWithPtyOutput('hi'))
+        .catch(Common.oops(this, true))
+    )
+  }
 
   pit('should cd /tmp && echo -n hi && echo ho', () =>
     CLI.command('cd /tmp && echo -n hi && echo ho', this.app)
