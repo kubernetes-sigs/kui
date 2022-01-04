@@ -130,7 +130,7 @@ export default function plugin(/* options */) {
       }, [])
 
     if (tree.children && tree.children.length > 0) {
-      tree.children = process(tree.children.slice())
+      tree.children = process(tree.children)
     }
 
     if (currentTabs.length > 0) {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const RE_TEXT = /^text|strong$/
 const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
 const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)$/
 const RE_TIP_END = /^(.*)"\s*(\n(.|[\n\r])*)?$/
@@ -25,14 +24,15 @@ const END_OF_TIP = `<!-- ____KUI_END_OF_TIP____ -->`
 export default function plugin(/* options */) {
   return function transformer(tree) {
     let currentTip
-    const flushTip = children => {
+    let currentTipLevel = -1
+    const flushTip = () => {
       if (currentTip) {
-        children.push(currentTip)
         currentTip = undefined
+        currentTipLevel = -1
       }
     }
 
-    const process = children =>
+    const process = (children: any[], level: number) =>
       children.reduce((newChildren, child) => {
         const addToTip = child => {
           currentTip.children.push(child)
@@ -43,22 +43,29 @@ export default function plugin(/* options */) {
         }
 
         if (child.type === 'raw' && child.value === END_OF_TIP) {
-          flushTip(newChildren)
+          flushTip()
           return newChildren
         } else if (
           child.type === 'element' &&
           (child.tagName === 'div' || child.tagName === 'span' || child.tagName === 'tabbed')
         ) {
-          child.children = process(child.children)
+          const newChild = Object.assign({}, child, { children: [] })
+          const children = currentTipLevel === level ? currentTip.children : newChildren
+          children.push(newChild)
+          newChild.children = process(child.children, level + 1)
+          return newChildren
         } else if (child.type === 'element' && child.tagName === 'p') {
           if (child.children.length > 0) {
-            if (currentTip && (child.children[0].type !== 'text' || !RE_TIP_START.test(child.children[0].value))) {
+            if (
+              currentTipLevel === level &&
+              (child.children[0].type !== 'text' || !RE_TIP_START.test(child.children[0].value))
+            ) {
               // a new paragraph that doesn't start a new tab; add to current tab
               return addToTip(child)
             }
 
             child.children = child.children.reduce((pnewChildren, pchild) => {
-              if (currentTip && currentTip.properties.partial) {
+              if (currentTipLevel === level && currentTip.properties.partial) {
                 if (pchild.type === 'text') {
                   const endMatch = pchild.value.match(RE_TIP_END)
                   if (endMatch) {
@@ -81,8 +88,9 @@ export default function plugin(/* options */) {
               } else if (pchild.type === 'text') {
                 const startMatch = pchild.value.match(RE_TIP)
                 if (startMatch) {
-                  flushTip(newChildren)
+                  flushTip()
 
+                  currentTipLevel = level
                   currentTip = {
                     type: 'element',
                     tagName: 'tip',
@@ -90,12 +98,14 @@ export default function plugin(/* options */) {
                     children: startMatch[5] ? [{ type: 'text', value: startMatch[5] }] : [],
                     position: child.position
                   }
+                  newChildren.push(currentTip)
                   return pnewChildren
                 } else {
                   const startMatch = pchild.value.match(RE_TIP_START)
                   if (startMatch) {
-                    flushTip(newChildren)
+                    flushTip()
 
+                    currentTipLevel = level
                     currentTip = {
                       type: 'element',
                       tagName: 'tip',
@@ -107,11 +117,13 @@ export default function plugin(/* options */) {
                       children: [],
                       position: child.position
                     }
-                  } else if (currentTip) {
+                    newChildren.push(currentTip)
+                    return pnewChildren
+                  } else if (currentTipLevel === level) {
                     return addToTip(pchild)
                   }
                 }
-              } else if (currentTip) {
+              } else if (currentTipLevel === level) {
                 return addToTip(pchild)
               }
 
@@ -122,17 +134,8 @@ export default function plugin(/* options */) {
           if (currentTip) {
             return newChildren
           }
-        } else if (currentTip) {
-          if (
-            RE_TEXT.test(child.type) ||
-            child.type === 'raw' ||
-            (child.type === 'element' && !/^h\d+/.test(child.tagName))
-          ) {
-            return addToTip(child)
-          } else {
-            // transition to a new section
-            flushTip(newChildren)
-          }
+        } else if (currentTipLevel === level) {
+          return addToTip(child)
         }
 
         // no rewrite
@@ -142,11 +145,11 @@ export default function plugin(/* options */) {
       }, [])
 
     if (tree.children && tree.children.length > 0) {
-      tree.children = process(tree.children.slice())
+      tree.children = process(tree.children, 0)
     }
 
     if (currentTip) {
-      flushTip(tree.children)
+      flushTip()
     }
     return tree
   }
