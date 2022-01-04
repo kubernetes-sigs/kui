@@ -10,6 +10,10 @@ body[kui-theme-style] .kui--tab-content {
     width: 100% !important;
   }
 
+  .xterm-terminated .xterm-rows > div {
+    white-space: pre;
+  }
+
   .repl-result-like > div.xterm-container {
     padding-right: 0;
   }

@@ -339,6 +339,14 @@ body[kui-theme-style='light'] {
   }
 }
 
+/** Markdown-rendered content not in a Commentary */
+pre > .pf-c-content {
+  font-size: inherit;
+  p {
+    white-space: pre;
+  }
+}
+
 @include CodeBlock {
   &:hover {
     @include CodeBlockActions {
