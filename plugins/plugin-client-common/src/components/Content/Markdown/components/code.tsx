@@ -103,17 +103,23 @@ export default function code(
     } else {
       return (
         <div className="paragraph">
-          <code className="kui--code--editor">
-            <SimpleEditor
-              tabUUID={tabUUID}
-              content={code}
-              contentType={language}
-              fontSize={12}
-              simple
-              minHeight={0}
-              readonly
-            />
-          </code>
+          {!language ? (
+            <pre>
+              <code>{code}</code>
+            </pre>
+          ) : (
+            <code className="kui--code--editor">
+              <SimpleEditor
+                tabUUID={tabUUID}
+                content={code}
+                contentType={language}
+                fontSize={12}
+                simple
+                minHeight={0}
+                readonly
+              />
+            </code>
+          )}
         </div>
       )
     }
