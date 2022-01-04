@@ -45,7 +45,10 @@ export default function plugin(/* options */) {
         if (child.type === 'raw' && child.value === END_OF_TIP) {
           flushTip(newChildren)
           return newChildren
-        } else if (child.type === 'element' && child.tagName === 'div') {
+        } else if (
+          child.type === 'element' &&
+          (child.tagName === 'div' || child.tagName === 'span' || child.tagName === 'tabbed')
+        ) {
           child.children = process(child.children)
         } else if (child.type === 'element' && child.tagName === 'p') {
           if (child.children.length > 0) {
