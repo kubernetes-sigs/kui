@@ -278,13 +278,13 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       </div>
     )
 
-    return this.state.execution !== 'replayed' ? (
-      content
-    ) : (
-      <ExpandableSection showMore={strings('Show Sample Output')} showLess={strings('Hide Sample Output')}>
-        {content}
-      </ExpandableSection>
-    )
+    return this.state.execution !== 'replayed'
+      ? content
+      : content && (
+          <ExpandableSection showMore={strings('Show Sample Output')} showLess={strings('Hide Sample Output')}>
+            {content}
+          </ExpandableSection>
+        )
   }
 
   private readonly _onRun = async () => {
