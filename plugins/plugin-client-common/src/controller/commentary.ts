@@ -15,7 +15,7 @@
  */
 
 import { format } from 'url'
-import { basename, join } from 'path'
+import { basename, dirname, join } from 'path'
 
 import {
   Arguments,
@@ -72,14 +72,39 @@ const usage: UsageModel = {
   ]
 }
 
-export async function fetchMarkdownFile(filepath: string, args: Arguments): Promise<string> {
+export function filepathForResponses(filepath: string) {
+  return join(dirname(filepath), basename(filepath).replace(/\..*$/, '') + '.json')
+}
+
+async function fetch(filepath: string, { REPL }: Pick<Arguments, 'REPL'>, errOk = false) {
+  try {
+    return (await REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
+  } catch (err) {
+    if (!errOk) {
+      throw err
+    } else {
+      return undefined
+    }
+  }
+}
+
+export async function fetchMarkdownFile(filepath: string, args: Pick<Arguments, 'REPL'>) {
   const { pathname } = /^https?:/.test(filepath) ? new URL(filepath) : { pathname: filepath }
 
   if (!/\.md$/.test(pathname)) {
     throw new Error('File extension not support')
   } else {
-    const raw = (await args.REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
-    return typeof raw === 'string' ? raw : JSON.stringify(raw)
+    const [data, codeBlockResponses] = await Promise.all([
+      fetch(filepath, args),
+      fetch(filepathForResponses(filepath), args, true)
+    ])
+
+    return {
+      data: typeof data === 'string' ? data : JSON.stringify(data),
+      codeBlockResponses: (typeof codeBlockResponses === 'string'
+        ? JSON.parse(codeBlockResponses)
+        : codeBlockResponses) as CommentaryResponse['props']['codeBlockResponses']
+    }
   }
 }
 
@@ -100,16 +125,18 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
 
   // the markdown data either comes from a file, or directly from the
   // command line
-  const data =
-    (filepath
-      ? await fetchMarkdownFile(filepath, args) // from file
-      : args.command // directly from command line
+  const { data = '#', codeBlockResponses } = filepath
+    ? await fetchMarkdownFile(filepath, args) // from file
+    : {
+        data: args.command // directly from command line
           .trim()
           .slice(args.command.indexOf(' ') + 1)
           .trim()
           .replace(/\\n/g, '\n')
           .replace(/\\t/g, '\t')
-          .replace(/(-t|--title)\s+\S+/, '')) || '#'
+          .replace(/(-t|--title)\s+\S+/, ''),
+        codeBlockResponses: undefined
+      }
 
   if (filepath && readonly) {
     Events.eventBus.emitWithTabId('/kui/tab/edit/toggle', getPrimaryTabId(args.tab))
@@ -140,6 +167,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           title,
           filepath,
           children: data,
+          codeBlockResponses: codeBlockResponses,
           baseUrl
         }
       }

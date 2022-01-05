@@ -100,12 +100,13 @@ between tabs.
 To make a code block executable, make sure to specify a language of
 either `bash`, `sh`, or `shell`.
 
-Inside a code blocks, you may define metadata:
+Inside a code blocks, you may define metadata, such as an identifier
+when linking code blocks into [Progress Step
+Lists](#progress-step-lists).
 
 ```bashy
 ---
 id: my-first-command
-response: hello
 ---
 echo hello
 ```
@@ -122,7 +123,6 @@ repeated as a normal code block:
 ```bash
 ---
 id: my-first-command
-response: hello
 ---
 echo hello
 ```

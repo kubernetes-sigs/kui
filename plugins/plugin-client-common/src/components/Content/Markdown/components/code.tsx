@@ -15,39 +15,28 @@
  */
 
 import React from 'react'
-import { KResponse, getPrimaryTabId } from '@kui-shell/core'
 import { CodeProps } from 'react-markdown/lib/ast-to-react'
+import { KResponse, CommentaryResponse, getPrimaryTabId } from '@kui-shell/core'
 
 import { Props } from '../../Markdown'
-import SourceOffset from './SourceOffset'
-import { tryFrontmatter, codeWithResponseFrontmatter, decodePriorResponse } from '../frontmatter'
+import { tryFrontmatter } from '../frontmatter'
 
 import Input from '../../../Views/Terminal/Block/Inputv2'
 // const Input = React.lazy(() => import('../Views/Terminal/Block/Inputv2'))
 
 const SimpleEditor = React.lazy(() => import('../../Editor/SimpleEditor'))
 
+type CodeBlockResponse = CommentaryResponse['props']['codeBlockResponses'][0]
+export { CodeBlockResponse }
+
 export default function code(
   mdprops: Props,
-  codeSourceOffsets: SourceOffset[],
-  codeIdx: (offset: SourceOffset) => number,
-  spliceInCodeExecution: (replacement: string, startOffset: number, endOffset: number, codeIdx: number) => void,
-  codeHasBeenExecuted: (codeIdx: number) => boolean
+  codeIdx: () => number,
+  codeBlockResponses: (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean },
+  spliceInCodeExecution: (status: 'done' | 'error', response: KResponse, codeIdx: number) => void
 ) {
-  const spliceCodeWithResponseFrontmatter = (
-    status: 'done' | 'error',
-    response: KResponse,
-    blockId: string,
-    body: string,
-    language: string,
-    codeIdx: number
-  ) => {
-    spliceInCodeExecution(
-      codeWithResponseFrontmatter(body, language, blockId, status, response),
-      codeSourceOffsets[codeIdx].sliceStart,
-      codeSourceOffsets[codeIdx].sliceEnd,
-      codeIdx
-    )
+  const spliceCodeWithResponseFrontmatter = (status: 'done' | 'error', response: KResponse, codeIdx: number) => {
+    spliceInCodeExecution(status, response, codeIdx)
   }
 
   return (props: CodeProps) => {
@@ -67,16 +56,18 @@ export default function code(
 
     if (mdprops.nested && /^(bash|sh|shell)$/.test(language)) {
       // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
-      const sliceStart = props.node.position.start.offset
-      const sliceEnd = props.node.position.end.offset
-      const myCodeIdx = codeIdx({ sliceStart, sliceEnd })
+      const myCodeIdx = codeIdx()
 
-      const executed = codeHasBeenExecuted(myCodeIdx)
+      const _response = codeBlockResponses(myCodeIdx)
+      const status = _response ? _response.status : undefined
+      const response = _response ? _response.response : undefined
+
+      // i.e. executed in *this* session
+      const executed = _response && !_response.replayed
 
       // note how in the evaluation of `status`, we assume that if a
       // response is given but no status, that the status is 'done',
       // i.e. executed successfully to completion
-      const status = attributes.status || (attributes.response ? 'done' : 'not-yet')
       const statusConsideringReplay = !executed && (status === 'done' || status === 'error') ? 'replayed' : status
 
       return (
@@ -90,11 +81,9 @@ export default function code(
             language={language}
             blockId={attributes.id}
             validate={attributes.validate === '$body' ? body : attributes.validate}
-            response={decodePriorResponse(attributes.response, attributes.responseEncoding)}
+            response={response}
             status={statusConsideringReplay}
-            arg1={body}
-            arg2={language}
-            arg3={myCodeIdx}
+            arg1={myCodeIdx}
             onResponse={spliceCodeWithResponseFrontmatter}
             data-code-index={myCodeIdx}
           />

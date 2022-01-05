@@ -21,36 +21,35 @@ import _a from './a'
 import p from './p'
 import _div from './div'
 import _img from './img'
-import _code from './code'
 import tabbed from './tabbed'
 import _heading from './heading'
 import blockquote from './blockquote'
 import { list, li } from './list'
 import { details, tip } from './details'
 import { table, thead, tbody } from './table'
+import _code, { CodeBlockResponse } from './code'
 
 import { Props } from '../../Markdown'
-import SourceOffset from './SourceOffset'
 
 type Args = {
   mdprops: Props
   repl: REPL
   uuid: string
-  spliceInCodeExecution: (replacement: string, startOffset: number, endOffset: number, codeIdx: number) => void
-  codeHasBeenExecuted: (codeIdx: number) => boolean
+  codeBlockResponses: (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean }
+  spliceInCodeExecution: (
+    status: CodeBlockResponse['status'],
+    response: CodeBlockResponse['response'],
+    codeIdx: number
+  ) => void
 }
 
-function typedComponents(
-  codeSourceOffsets: SourceOffset[],
-  codeIdx: (offset: SourceOffset) => number,
-  args: Args
-): Components {
-  const { mdprops, repl, uuid, spliceInCodeExecution, codeHasBeenExecuted } = args
+function typedComponents(codeIdx: () => number, args: Args): Components {
+  const { mdprops, repl, uuid, codeBlockResponses, spliceInCodeExecution } = args
 
   const a = _a(mdprops, uuid, repl)
   const div = _div(uuid)
   const img = _img(mdprops)
-  const code = _code(mdprops, codeSourceOffsets, codeIdx, spliceInCodeExecution, codeHasBeenExecuted)
+  const code = _code(mdprops, codeIdx, codeBlockResponses, spliceInCodeExecution)
   const heading = _heading(uuid)
 
   return {
@@ -80,9 +79,7 @@ function typedComponents(
 function components(args: Args) {
   // hack until we do this correctly with an AST visitor
   let codeIdx = 0
-  const codeSourceOffsets: SourceOffset[] = []
-  const allocCodeIdx = (offset: SourceOffset) => {
-    codeSourceOffsets[codeIdx] = offset
+  const allocCodeIdx = () => {
     return codeIdx++
   }
 
@@ -91,7 +88,7 @@ function components(args: Args) {
       tip,
       tabbed
     },
-    typedComponents(codeSourceOffsets, allocCodeIdx, args)
+    typedComponents(allocCodeIdx, args)
   )
 
   return function mkComponents() {

@@ -1,0 +1,440 @@
+[
+  {
+    "status": "done",
+    "response": {
+      "header": {
+        "name": "Name",
+        "attributes": [
+          { "key": "STATUS", "value": "Status" },
+          { "key": "AGE", "value": "Age", "outerCSS": "hide-with-sidecar" }
+        ]
+      },
+      "body": [
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "kui-notebook-1",
+              "selfLink": "/api/v1/namespaces/kui-notebook-1",
+              "uid": "bf8537ed-6486-4e79-8bc6-88dba92ae815",
+              "resourceVersion": "8481665",
+              "creationTimestamp": "2022-01-06T00:54:27Z",
+              "managedFields": [
+                {
+                  "manager": "kubectl-create",
+                  "operation": "Update",
+                  "apiVersion": "v1",
+                  "time": "2022-01-06T00:54:27Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": { "f:status": { "f:phase": {} } }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "kui-notebook-1_Namespace_undefined",
+          "name": "kui-notebook-1",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Namespace kui-notebook-1 -o yaml  ",
+          "attributes": [
+            { "key": "STATUS", "value": "Active", "tag": "badge", "onclick": false, "css": " green-background  " },
+            {
+              "key": "AGE",
+              "value": "0s",
+              "onclick": false,
+              "outerCSS": "hide-with-sidecar",
+              "css": "slightly-deemphasize   "
+            }
+          ]
+        }
+      ],
+      "title": "Namespace",
+      "resourceVersion": "8481665"
+    }
+  },
+  {
+    "status": "done",
+    "response": {
+      "header": {
+        "name": "Name",
+        "attributes": [
+          { "key": "READY", "value": "Ready", "outerCSS": "a-few-numbers-wide kui--hide-in-narrower-windows" },
+          { "key": "UP-TO-DATE", "value": "Up-to-date" },
+          { "key": "AVAILABLE", "value": "Available" },
+          { "key": "AGE", "value": "Age", "outerCSS": "hide-with-sidecar" }
+        ]
+      },
+      "body": [
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "myapp",
+              "namespace": "kui-notebook-1",
+              "selfLink": "/apis/apps/v1/namespaces/kui-notebook-1/deployments/myapp",
+              "uid": "a82edccf-f233-470d-a530-b79f00fc7a13",
+              "resourceVersion": "8481710",
+              "generation": 1,
+              "creationTimestamp": "2022-01-06T00:54:30Z",
+              "labels": { "app": "drone-app" },
+              "annotations": {
+                "deployment.kubernetes.io/revision": "1",
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"drone-app\"},\"name\":\"myapp\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"drone-app\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"drone-app\"}},\"spec\":{\"affinity\":{\"podAntiAffinity\":{\"requiredDuringSchedulingIgnoredDuringExecution\":[{\"labelSelector\":{\"matchExpressions\":[{\"key\":\"app\",\"operator\":\"In\",\"values\":[\"drone-app\"]}]},\"topologyKey\":\"kubernetes.io/hostname\"}]}},\"containers\":[{\"image\":\"rvennam/drone-app:latest\",\"name\":\"drone-app\",\"ports\":[{\"containerPort\":3000}]}],\"terminationGracePeriodSeconds\":0}}}}\n"
+              },
+              "managedFields": [
+                {
+                  "manager": "kubectl-client-side-apply",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T00:54:30Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": {
+                      "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                      "f:labels": { ".": {}, "f:app": {} }
+                    },
+                    "f:spec": {
+                      "f:progressDeadlineSeconds": {},
+                      "f:replicas": {},
+                      "f:revisionHistoryLimit": {},
+                      "f:selector": { "f:matchLabels": { ".": {}, "f:app": {} } },
+                      "f:strategy": {
+                        "f:rollingUpdate": { ".": {}, "f:maxSurge": {}, "f:maxUnavailable": {} },
+                        "f:type": {}
+                      },
+                      "f:template": {
+                        "f:metadata": { "f:labels": { ".": {}, "f:app": {} } },
+                        "f:spec": {
+                          "f:affinity": {
+                            ".": {},
+                            "f:podAntiAffinity": { ".": {}, "f:requiredDuringSchedulingIgnoredDuringExecution": {} }
+                          },
+                          "f:containers": {
+                            "k:{\"name\":\"drone-app\"}": {
+                              ".": {},
+                              "f:image": {},
+                              "f:imagePullPolicy": {},
+                              "f:name": {},
+                              "f:ports": {
+                                ".": {},
+                                "k:{\"containerPort\":3000,\"protocol\":\"TCP\"}": {
+                                  ".": {},
+                                  "f:containerPort": {},
+                                  "f:protocol": {}
+                                }
+                              },
+                              "f:resources": {},
+                              "f:terminationMessagePath": {},
+                              "f:terminationMessagePolicy": {}
+                            }
+                          },
+                          "f:dnsPolicy": {},
+                          "f:restartPolicy": {},
+                          "f:schedulerName": {},
+                          "f:securityContext": {},
+                          "f:terminationGracePeriodSeconds": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "manager": "kube-controller-manager",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T00:54:33Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": { "f:annotations": { "f:deployment.kubernetes.io/revision": {} } },
+                    "f:status": {
+                      "f:availableReplicas": {},
+                      "f:conditions": {
+                        ".": {},
+                        "k:{\"type\":\"Available\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        },
+                        "k:{\"type\":\"Progressing\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        }
+                      },
+                      "f:observedGeneration": {},
+                      "f:readyReplicas": {},
+                      "f:replicas": {},
+                      "f:updatedReplicas": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "myapp_Deployment_kui-notebook-1",
+          "name": "myapp",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Deployment myapp -o yaml -n kui-notebook-1 ",
+          "attributes": [
+            {
+              "key": "READY",
+              "value": "1/1",
+              "tag": "badge",
+              "onclick": false,
+              "outerCSS": "a-few-numbers-wide kui--hide-in-narrower-windows",
+              "css": "  green-background "
+            },
+            { "key": "UP-TO-DATE", "value": "1", "onclick": false, "css": " green-background  " },
+            { "key": "AVAILABLE", "value": "1", "onclick": false, "css": " green-background  " },
+            {
+              "key": "AGE",
+              "value": "3s",
+              "onclick": false,
+              "outerCSS": "hide-with-sidecar",
+              "css": "slightly-deemphasize   "
+            }
+          ]
+        }
+      ],
+      "title": "Deployment",
+      "resourceVersion": "8481683",
+      "breadcrumbs": [{ "label": "kui-notebook-1" }],
+      "kuiSourceRef": {
+        "templates": [
+          {
+            "filepath": "https://raw.githubusercontent.com/kubernetes-sigs/kui/master/plugins/plugin-kubectl/tests/data/k8s/deployment.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: myapp\n  labels:\n    app: drone-app\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: drone-app\n  template:\n    metadata:\n      labels:\n        app: drone-app\n    spec:\n      terminationGracePeriodSeconds: 0\n      affinity:\n          podAntiAffinity:\n            requiredDuringSchedulingIgnoredDuringExecution:\n              - labelSelector:\n                  matchExpressions:\n                    - key: \"app\"\n                      operator: In\n                      values:\n                      - drone-app\n                topologyKey: \"kubernetes.io/hostname\"\n      containers:\n      - name: drone-app\n        image: rvennam/drone-app:latest\n        # imagePullPolicy: Always\n        ports:\n        - containerPort: 3000\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          }
+        ]
+      },
+      "footer": [
+        "[[1s]](#kuiexec?command=kubectl%20get%20event%20myapp.16c78850f71ae9d4%20-o%20yaml%20%20%20) **deployment/myapp**: Scaled up replica set myapp-5f89585fd8 to 1"
+      ]
+    }
+  },
+  {
+    "status": "done",
+    "response": {
+      "kind": "Deployment",
+      "apiVersion": "apps/v1",
+      "metadata": {
+        "name": "myapp",
+        "namespace": "kui-notebook-1",
+        "selfLink": "/apis/apps/v1/namespaces/kui-notebook-1/deployments/myapp",
+        "uid": "a82edccf-f233-470d-a530-b79f00fc7a13",
+        "resourceVersion": "8481710",
+        "generation": 1,
+        "creationTimestamp": "2022-01-06T00:54:30Z",
+        "labels": { "app": "drone-app" },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "1",
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"drone-app\"},\"name\":\"myapp\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"drone-app\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"drone-app\"}},\"spec\":{\"affinity\":{\"podAntiAffinity\":{\"requiredDuringSchedulingIgnoredDuringExecution\":[{\"labelSelector\":{\"matchExpressions\":[{\"key\":\"app\",\"operator\":\"In\",\"values\":[\"drone-app\"]}]},\"topologyKey\":\"kubernetes.io/hostname\"}]}},\"containers\":[{\"image\":\"rvennam/drone-app:latest\",\"name\":\"drone-app\",\"ports\":[{\"containerPort\":3000}]}],\"terminationGracePeriodSeconds\":0}}}}\n"
+        },
+        "managedFields": [
+          {
+            "manager": "kubectl-client-side-apply",
+            "operation": "Update",
+            "apiVersion": "apps/v1",
+            "time": "2022-01-06T00:54:30Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                "f:labels": { ".": {}, "f:app": {} }
+              },
+              "f:spec": {
+                "f:progressDeadlineSeconds": {},
+                "f:replicas": {},
+                "f:revisionHistoryLimit": {},
+                "f:selector": { "f:matchLabels": { ".": {}, "f:app": {} } },
+                "f:strategy": {
+                  "f:rollingUpdate": { ".": {}, "f:maxSurge": {}, "f:maxUnavailable": {} },
+                  "f:type": {}
+                },
+                "f:template": {
+                  "f:metadata": { "f:labels": { ".": {}, "f:app": {} } },
+                  "f:spec": {
+                    "f:affinity": {
+                      ".": {},
+                      "f:podAntiAffinity": { ".": {}, "f:requiredDuringSchedulingIgnoredDuringExecution": {} }
+                    },
+                    "f:containers": {
+                      "k:{\"name\":\"drone-app\"}": {
+                        ".": {},
+                        "f:image": {},
+                        "f:imagePullPolicy": {},
+                        "f:name": {},
+                        "f:ports": {
+                          ".": {},
+                          "k:{\"containerPort\":3000,\"protocol\":\"TCP\"}": {
+                            ".": {},
+                            "f:containerPort": {},
+                            "f:protocol": {}
+                          }
+                        },
+                        "f:resources": {},
+                        "f:terminationMessagePath": {},
+                        "f:terminationMessagePolicy": {}
+                      }
+                    },
+                    "f:dnsPolicy": {},
+                    "f:restartPolicy": {},
+                    "f:schedulerName": {},
+                    "f:securityContext": {},
+                    "f:terminationGracePeriodSeconds": {}
+                  }
+                }
+              }
+            }
+          },
+          {
+            "manager": "kube-controller-manager",
+            "operation": "Update",
+            "apiVersion": "apps/v1",
+            "time": "2022-01-06T00:54:33Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": { "f:annotations": { "f:deployment.kubernetes.io/revision": {} } },
+              "f:status": {
+                "f:availableReplicas": {},
+                "f:conditions": {
+                  ".": {},
+                  "k:{\"type\":\"Available\"}": {
+                    ".": {},
+                    "f:lastTransitionTime": {},
+                    "f:lastUpdateTime": {},
+                    "f:message": {},
+                    "f:reason": {},
+                    "f:status": {},
+                    "f:type": {}
+                  },
+                  "k:{\"type\":\"Progressing\"}": {
+                    ".": {},
+                    "f:lastTransitionTime": {},
+                    "f:lastUpdateTime": {},
+                    "f:message": {},
+                    "f:reason": {},
+                    "f:status": {},
+                    "f:type": {}
+                  }
+                },
+                "f:observedGeneration": {},
+                "f:readyReplicas": {},
+                "f:replicas": {},
+                "f:updatedReplicas": {}
+              }
+            }
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 1,
+        "selector": { "matchLabels": { "app": "drone-app" } },
+        "template": {
+          "metadata": { "creationTimestamp": null, "labels": { "app": "drone-app" } },
+          "spec": {
+            "containers": [
+              {
+                "name": "drone-app",
+                "image": "rvennam/drone-app:latest",
+                "ports": [{ "containerPort": 3000, "protocol": "TCP" }],
+                "resources": {},
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "imagePullPolicy": "Always"
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 0,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {},
+            "affinity": {
+              "podAntiAffinity": {
+                "requiredDuringSchedulingIgnoredDuringExecution": [
+                  {
+                    "labelSelector": {
+                      "matchExpressions": [{ "key": "app", "operator": "In", "values": ["drone-app"] }]
+                    },
+                    "topologyKey": "kubernetes.io/hostname"
+                  }
+                ]
+              }
+            },
+            "schedulerName": "default-scheduler"
+          }
+        },
+        "strategy": { "type": "RollingUpdate", "rollingUpdate": { "maxUnavailable": "25%", "maxSurge": "25%" } },
+        "revisionHistoryLimit": 10,
+        "progressDeadlineSeconds": 600
+      },
+      "status": {
+        "observedGeneration": 1,
+        "replicas": 1,
+        "updatedReplicas": 1,
+        "readyReplicas": 1,
+        "availableReplicas": 1,
+        "conditions": [
+          {
+            "type": "Available",
+            "status": "True",
+            "lastUpdateTime": "2022-01-06T00:54:33Z",
+            "lastTransitionTime": "2022-01-06T00:54:33Z",
+            "reason": "MinimumReplicasAvailable",
+            "message": "Deployment has minimum availability."
+          },
+          {
+            "type": "Progressing",
+            "status": "True",
+            "lastUpdateTime": "2022-01-06T00:54:33Z",
+            "lastTransitionTime": "2022-01-06T00:54:30Z",
+            "reason": "NewReplicaSetAvailable",
+            "message": "ReplicaSet \"myapp-5f89585fd8\" has successfully progressed."
+          }
+        ]
+      },
+      "isKubeResource": true,
+      "originatingCommand": {
+        "REPL": {},
+        "argv": ["k", "get", "Deployment.v1.apps", "-n", "kui-notebook-1", "myapp", "-o", "yaml"],
+        "command": "k get Deployment.v1.apps -n kui-notebook-1 myapp -o yaml",
+        "execOptions": {
+          "echo": false,
+          "type": 1,
+          "noHistory": true,
+          "execUUID": "c37cdc93-802c-4432-b164-3d30625181fd",
+          "env": {}
+        },
+        "argvNoOptions": ["k", "get", "Deployment.v1.apps", "myapp"],
+        "pipeStages": {
+          "prefix": "",
+          "stages": [["k", "get", "Deployment.v1.apps", "-n", "kui-notebook-1", "myapp", "-o", "yaml"]],
+          "redirect": ""
+        },
+        "parsedOptions": { "_": ["k", "get", "Deployment.v1.apps", "myapp"], "n": "kui-notebook-1", "o": "yaml" }
+      },
+      "kuiRawData": "kind: Deployment\napiVersion: apps/v1\nmetadata:\n  name: myapp\n  namespace: kui-notebook-1\n  selfLink: /apis/apps/v1/namespaces/kui-notebook-1/deployments/myapp\n  uid: a82edccf-f233-470d-a530-b79f00fc7a13\n  resourceVersion: '8481710'\n  generation: 1\n  creationTimestamp: '2022-01-06T00:54:30Z'\n  labels:\n    app: drone-app\n  annotations:\n    deployment.kubernetes.io/revision: '1'\n    kubectl.kubernetes.io/last-applied-configuration: >\n      {\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"drone-app\"},\"name\":\"myapp\",\"namespace\":\"kui-notebook-1\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"drone-app\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"drone-app\"}},\"spec\":{\"affinity\":{\"podAntiAffinity\":{\"requiredDuringSchedulingIgnoredDuringExecution\":[{\"labelSelector\":{\"matchExpressions\":[{\"key\":\"app\",\"operator\":\"In\",\"values\":[\"drone-app\"]}]},\"topologyKey\":\"kubernetes.io/hostname\"}]}},\"containers\":[{\"image\":\"rvennam/drone-app:latest\",\"name\":\"drone-app\",\"ports\":[{\"containerPort\":3000}]}],\"terminationGracePeriodSeconds\":0}}}}\n  managedFields:\n    - manager: kubectl-client-side-apply\n      operation: Update\n      apiVersion: apps/v1\n      time: '2022-01-06T00:54:30Z'\n      fieldsType: FieldsV1\n      fieldsV1:\n        f:metadata:\n          f:annotations:\n            .: {}\n            f:kubectl.kubernetes.io/last-applied-configuration: {}\n          f:labels:\n            .: {}\n            f:app: {}\n        f:spec:\n          f:progressDeadlineSeconds: {}\n          f:replicas: {}\n          f:revisionHistoryLimit: {}\n          f:selector:\n            f:matchLabels:\n              .: {}\n              f:app: {}\n          f:strategy:\n            f:rollingUpdate:\n              .: {}\n              f:maxSurge: {}\n              f:maxUnavailable: {}\n            f:type: {}\n          f:template:\n            f:metadata:\n              f:labels:\n                .: {}\n                f:app: {}\n            f:spec:\n              f:affinity:\n                .: {}\n                f:podAntiAffinity:\n                  .: {}\n                  f:requiredDuringSchedulingIgnoredDuringExecution: {}\n              f:containers:\n                k:{\"name\":\"drone-app\"}:\n                  .: {}\n                  f:image: {}\n                  f:imagePullPolicy: {}\n                  f:name: {}\n                  f:ports:\n                    .: {}\n                    k:{\"containerPort\":3000,\"protocol\":\"TCP\"}:\n                      .: {}\n                      f:containerPort: {}\n                      f:protocol: {}\n                  f:resources: {}\n                  f:terminationMessagePath: {}\n                  f:terminationMessagePolicy: {}\n              f:dnsPolicy: {}\n              f:restartPolicy: {}\n              f:schedulerName: {}\n              f:securityContext: {}\n              f:terminationGracePeriodSeconds: {}\n    - manager: kube-controller-manager\n      operation: Update\n      apiVersion: apps/v1\n      time: '2022-01-06T00:54:33Z'\n      fieldsType: FieldsV1\n      fieldsV1:\n        f:metadata:\n          f:annotations:\n            f:deployment.kubernetes.io/revision: {}\n        f:status:\n          f:availableReplicas: {}\n          f:conditions:\n            .: {}\n            k:{\"type\":\"Available\"}:\n              .: {}\n              f:lastTransitionTime: {}\n              f:lastUpdateTime: {}\n              f:message: {}\n              f:reason: {}\n              f:status: {}\n              f:type: {}\n            k:{\"type\":\"Progressing\"}:\n              .: {}\n              f:lastTransitionTime: {}\n              f:lastUpdateTime: {}\n              f:message: {}\n              f:reason: {}\n              f:status: {}\n              f:type: {}\n          f:observedGeneration: {}\n          f:readyReplicas: {}\n          f:replicas: {}\n          f:updatedReplicas: {}\nspec:\n  replicas: 1\n  selector:\n    matchLabels:\n      app: drone-app\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        app: drone-app\n    spec:\n      containers:\n        - name: drone-app\n          image: rvennam/drone-app:latest\n          ports:\n            - containerPort: 3000\n              protocol: TCP\n          resources: {}\n          terminationMessagePath: /dev/termination-log\n          terminationMessagePolicy: File\n          imagePullPolicy: Always\n      restartPolicy: Always\n      terminationGracePeriodSeconds: 0\n      dnsPolicy: ClusterFirst\n      securityContext: {}\n      affinity:\n        podAntiAffinity:\n          requiredDuringSchedulingIgnoredDuringExecution:\n            - labelSelector:\n                matchExpressions:\n                  - key: app\n                    operator: In\n                    values:\n                      - drone-app\n              topologyKey: kubernetes.io/hostname\n      schedulerName: default-scheduler\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxUnavailable: 25%\n      maxSurge: 25%\n  revisionHistoryLimit: 10\n  progressDeadlineSeconds: 600\nstatus:\n  observedGeneration: 1\n  replicas: 1\n  updatedReplicas: 1\n  readyReplicas: 1\n  availableReplicas: 1\n  conditions:\n    - type: Available\n      status: 'True'\n      lastUpdateTime: '2022-01-06T00:54:33Z'\n      lastTransitionTime: '2022-01-06T00:54:33Z'\n      reason: MinimumReplicasAvailable\n      message: Deployment has minimum availability.\n    - type: Progressing\n      status: 'True'\n      lastUpdateTime: '2022-01-06T00:54:33Z'\n      lastTransitionTime: '2022-01-06T00:54:30Z'\n      reason: NewReplicaSetAvailable\n      message: ReplicaSet \"myapp-5f89585fd8\" has successfully progressed.\n",
+      "toolbarText": { "type": "info", "text": "Created on **1/5/2022, 7:54:30 PM**. Version **8481710**." },
+      "onclick": {
+        "kind": "kubectl get Deployment.v1.apps -n kui-notebook-1",
+        "name": "kubectl get Deployment.v1.apps -n kui-notebook-1 myapp",
+        "namespace": "kubectl get ns kui-notebook-1 -o yaml"
+      },
+      "defaultMode": "diff",
+      "modes": []
+    }
+  }
+]

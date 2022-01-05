@@ -31,14 +31,17 @@ import gfm from 'remark-gfm'
 import emojis from 'remark-emoji'
 import frontmatter from 'remark-frontmatter'
 
+import { filepathForResponses } from '../../../controller/commentary'
+
 import components from './components'
+import { CodeBlockResponse } from './components/code'
 import tip, { hackTipIndentation } from './rehype-tip'
 import tabbed, { hackTabIndentation } from './rehype-tabbed'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
-import { kuiFrontmatter } from './frontmatter'
+import { kuiFrontmatter, encodePriorResponses } from './frontmatter'
 const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw, rehypeSlug]
 const remarkPlugins: (tab: KuiTab) => Options['plugins'] = tab => [
   gfm,
@@ -53,6 +56,9 @@ export interface Props {
 
   /** Source content */
   source: string
+
+  /** Has the user clicked to execute a code block? */
+  codeBlockResponses?: CodeBlockResponse[]
 
   /** Source content type */
   contentType?: 'text/html' | 'application/markdown'
@@ -84,7 +90,7 @@ interface State {
   source: Props['source']
 
   /** Has the user clicked to execute a code block? */
-  codeHasBeenExecuted: boolean[]
+  codeBlockResponses: CodeBlockResponse[]
 }
 
 export default class Markdown extends React.PureComponent<Props, State> {
@@ -103,11 +109,15 @@ export default class Markdown extends React.PureComponent<Props, State> {
 
     if (filepath && execUUID) {
       const onSnapshot = async () => {
-        const fp = encodeComponent(filepath)
-        const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${fp}`)).content
+        if (this.state.codeBlockResponses.find(_ => _ !== undefined)) {
+          const stats = (await this.repl.rexec<GlobStats[]>(`vfs ls ${encodeComponent(filepath)}`)).content
 
-        if (Array.isArray(stats) && stats.length === 1 && stats[0].dirent.mount.isLocal) {
-          await this.repl.qexec(`vfs fwrite ${fp}`, undefined, undefined, { data: this.state.source })
+          if (Array.isArray(stats) && stats.length === 1 && stats[0].dirent.mount.isLocal) {
+            const fp = encodeComponent(filepathForResponses(filepath))
+            await this.repl.qexec(`vfs fwrite ${fp}`, undefined, undefined, {
+              data: encodePriorResponses(this.state.codeBlockResponses)
+            })
+          }
         }
       }
       Events.eventChannelUnsafe.on(`/kui/snapshot/request/${execUUID}`, onSnapshot)
@@ -115,12 +125,20 @@ export default class Markdown extends React.PureComponent<Props, State> {
     }
   }
 
+  private codeBlockHasBeenReplayed(codeBlockIdx: number) {
+    const replayed =
+      this.props.codeBlockResponses &&
+      this.state.codeBlockResponses[codeBlockIdx] === this.props.codeBlockResponses[codeBlockIdx]
+
+    return Object.assign({ replayed }, this.state.codeBlockResponses[codeBlockIdx])
+  }
+
   private readonly _components = components({
     mdprops: this.props,
     repl: this.repl,
     uuid: uuid(),
     spliceInCodeExecution: this.spliceInCodeExecution.bind(this),
-    codeHasBeenExecuted: this.codeHasBeenExecuted.bind(this)
+    codeBlockResponses: this.codeBlockHasBeenReplayed.bind(this)
   })
 
   public constructor(props: Props) {
@@ -129,12 +147,12 @@ export default class Markdown extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    if (state && state.codeHasBeenExecuted.findIndex(_ => _ === true) >= 0) {
+    if (state && state.codeBlockResponses.findIndex(_ => _ !== undefined) >= 0) {
       return state
     } else if (!state || state.source !== props.source) {
       return {
         source: Markdown.source(props),
-        codeHasBeenExecuted: []
+        codeBlockResponses: props.codeBlockResponses || []
       }
     } else {
       return state
@@ -157,35 +175,20 @@ export default class Markdown extends React.PureComponent<Props, State> {
     }
   }
 
-  private codeHasBeenExecuted(codeIdx: number): boolean {
-    return this.state.codeHasBeenExecuted[codeIdx]
-  }
-
-  /** Scan backwards to the nearest start of line to find the line prefix */
-  private scanForLinePrefix(source: string, startOffset: number): string {
-    let idx = startOffset
-    while (idx >= 0 && source[idx] !== '\n') {
-      idx--
-    }
-    return source.slice(idx + 1, startOffset)
-  }
-
-  private spliceInCodeExecution(replacement: string, startOffset: number, endOffset: number, codeIdx: number) {
+  private spliceInCodeExecution(
+    status: CodeBlockResponse['status'],
+    response: CodeBlockResponse['response'],
+    codeIdx: number
+  ) {
     this.setState(curState => {
-      const codeHasBeenExecuted = curState.codeHasBeenExecuted /* probably not needed since `source` changes .slice() */
-      codeHasBeenExecuted[codeIdx] = true
-
-      const prefix = this.scanForLinePrefix(curState.source, startOffset)
-      const prefixedReplacement = !prefix
-        ? replacement
-        : replacement
-            .split(/\n/)
-            .map((line, idx) => (idx === 0 ? line : `${prefix}${line}`))
-            .join('\n')
+      const codeBlockResponses = curState.codeBlockResponses.slice()
+      codeBlockResponses[codeIdx] = {
+        status,
+        response
+      }
 
       return {
-        codeHasBeenExecuted,
-        source: curState.source.slice(0, startOffset) + prefixedReplacement + curState.source.slice(endOffset)
+        codeBlockResponses
       }
     })
   }
