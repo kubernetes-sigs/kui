@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Kubernetes Authors
+ * Copyright 2021 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,9 @@ import {
 
 import StreamingConsumer, { StreamingProps, StreamingState } from './StreamingConsumer'
 
+import Timer from './Timer'
 import Spinner from './Spinner'
+import Status from './CodeBlockStatus'
 import { BlockState } from './BlockModel'
 import Scalar from '../../../Content/Scalar'
 import TwoFaceIcon from '../../../spi/Icons/TwoFaceIcon'
@@ -40,6 +42,7 @@ import { MutabilityContext } from '../../../Client/MutabilityContext'
 import { linkUpdateChannel, linkGetChannel } from '../../../Content/LinkStatus'
 import { ProgressStepper, ProgressStep } from '../../../Content/ProgressStepper'
 
+const Badge = React.lazy(() => import('../../../spi/Tag'))
 const SourceRef = React.lazy(() => import('../SourceRef'))
 const CodeSnippet = React.lazy(() => import('../../../spi/CodeSnippet'))
 const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
@@ -50,8 +53,6 @@ interface Value {
   value: string
   language: string
 }
-
-type Status = 'not-yet' | 'processing' | 'done' | 'error' | 'replayed'
 
 type Props<T1 = any, T2 = any, T3 = any> = Value &
   StreamingProps & {
@@ -96,9 +97,16 @@ type State = Value &
      *
      */
     validated: boolean
+
+    /** Millis timestamp of the last Run initiation */
+    startTime?: number
+
+    /** Millis timestamp of the last Run completion */
+    endTime?: number
   }
 
 export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T3>, State> {
+  private readonly durationDom
   private readonly cleaners: (() => void)[] = []
 
   public constructor(props: Props<T1, T2, T3>) {
@@ -167,6 +175,20 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     }
   }
 
+  /** UI to denote duration of the current Run */
+  private timer() {
+    return (
+      this.state.startTime &&
+      !this.state.endTime && (
+        <span className="kui--code-block-actions" data-align="top-right">
+          <Badge>
+            <Timer startTime={this.state.startTime} endTime={this.state.endTime} status={this.state.execution} />
+          </Badge>
+        </span>
+      )
+    )
+  }
+
   /** UI to denote the execution status of this code block */
   private status() {
     const execution = this.state.validated ? 'done' : this.state.execution
@@ -195,6 +217,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
   private input() {
     return (
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
+        {this.timer()}
         {this.status()}
         <div className="flex-fill">
           <CodeSnippet
@@ -289,7 +312,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   private readonly _onRun = async () => {
     try {
-      this.setState({ execution: 'processing' })
+      this.setState({ execution: 'processing', startTime: Date.now(), endTime: null })
       this.emitLinkStatus('processing')
 
       // semicolons between commands and escape newlines
@@ -299,6 +322,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         .replace(/&;/g, '&') // oof, correct for &; as just &
 
       const response = await this.execWithStream(cmdline)
+      const endTime = Date.now()
 
       const execution = isXtermResponse(response)
         ? response.code === 0
@@ -311,12 +335,12 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
           ? 'error'
           : 'done'
         : 'done'
-      this.setState({ execution })
+      this.setState({ execution, endTime })
 
       this.props.onResponse(execution, response, this.props.blockId, this.props.arg1, this.props.arg2, this.props.arg3)
       this.emitLinkStatus(execution)
     } catch (err) {
-      this.setState({ execution: 'error' })
+      this.setState({ execution: 'error', endTime: Date.now() })
       this.props.onResponse('error', err, this.props.blockId, this.props.arg1, this.props.arg2, this.props.arg3)
       this.emitLinkStatus('error')
     } finally {
