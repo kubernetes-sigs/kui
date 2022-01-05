@@ -367,4 +367,10 @@ pre > .pf-c-content {
     top: -1em;
     opacity: 0.8;
   }
+
+  .kui--tag {
+    --pf-c-badge--m-unread--BackgroundColor: var(--color-base01);
+    font-weight: 400;
+    font-family: var(--font-sans-serif);
+  }
 }

@@ -15,9 +15,9 @@
  */
 
 import React from 'react'
-import prettyPrintDuration from 'pretty-ms'
 import { Tab as KuiTab, doCancel, i18n, isTable, hasSourceReferences } from '@kui-shell/core'
 
+import Timer from './Timer'
 import Actions from './Actions'
 import Spinner from './Spinner'
 import onPaste from './OnPaste'
@@ -36,6 +36,8 @@ import {
   isBeingRerun,
   isProcessingOrBeingRerun as isProcessing,
   isFinished,
+  isOk,
+  isOops,
   hasCommand,
   isEmpty,
   hasStartEvent,
@@ -181,10 +183,6 @@ export interface State {
 
   /** state of tab completion */
   tabCompletion?: TabCompletionState
-
-  /** durationDom, used for counting up duration while Processing */
-  counter?: ReturnType<typeof setInterval>
-  durationDom?: React.RefObject<HTMLSpanElement>
 
   /** typeahead completion? */
   typeahead?: string
@@ -345,7 +343,6 @@ export default class Input extends InputProvider {
     this.state = {
       model: props.model,
       isReEdit: false,
-      durationDom: React.createRef(),
       execUUID: hasUUID(props.model) ? props.model.execUUID : undefined,
       prompt: undefined
     }
@@ -378,40 +375,10 @@ export default class Input extends InputProvider {
     )
   }
 
-  private static newCountup(startTime: number, durationDom: State['durationDom']) {
-    return setInterval(() => {
-      const millisSinceStart = (~~(Date.now() - startTime) / 1000) * 1000
-      if (millisSinceStart > 0 && durationDom.current) {
-        durationDom.current.innerText = prettyPrintDuration(millisSinceStart)
-      }
-    }, 1000)
-  }
-
-  private static updateCountup(props: Props, state: State) {
-    if (isBeingRerun(props.model)) {
-      if (state.counter) {
-        clearInterval(state.counter)
-      }
-      return Input.newCountup(props.model.startTime, state.durationDom)
-    }
-
-    const counter = isProcessing(props.model)
-      ? state.counter || Input.newCountup(props.model.startTime, state.durationDom)
-      : undefined
-    if (!counter && state.counter) {
-      clearInterval(state.counter)
-    }
-
-    return counter
-  }
-
   public static getDerivedStateFromProps(props: Props, state: State) {
-    const counter = Input.updateCountup(props, state)
-
     if (hasUUID(props.model)) {
       return {
         model: props.model,
-        counter,
         execUUID: props.model.execUUID
       }
     } else if (state.prompt && isActive(props.model) && state.execUUID !== undefined && !state.isearch) {
@@ -419,7 +386,6 @@ export default class Input extends InputProvider {
       // <input/> because react aggressively caches these
       return {
         model: props.model,
-        counter,
         prompt: undefined,
         execUUID: undefined
       }
@@ -427,7 +393,6 @@ export default class Input extends InputProvider {
       return {
         model: props.model,
         prompt: undefined,
-        counter: 0,
         execUUID: undefined
       }
     }
@@ -735,12 +700,6 @@ export default class Input extends InputProvider {
     console.error(error, errorInfo)
   }
 
-  public componentWillUnmount() {
-    if (this.state.counter) {
-      clearInterval(this.state.counter)
-    }
-  }
-
   /** render a tag for experimental command */
   private experimentalTag() {
     if (this.props.isExperimental) {
@@ -766,31 +725,30 @@ export default class Input extends InputProvider {
         this.props.model.startTime && isWithCompleteEvent(this.props.model) && !isBeingRerun(this.props.model)
       const showingDate = !replayedAndNotRerun && completed && !this.props.isWidthConstrained
 
-      const now =
-        isWithCompleteEvent(this.props.model) && !isBeingRerun(this.props.model)
-          ? this.props.model.completeEvent.completeTime
-          : Date.now()
-      const duration = !replayedAndNotRerun && now && prettyPrintDuration(Math.max(0, now - this.props.model.startTime))
-      const noParen = !showingDate || !duration
-      const openParen = noParen ? '' : '('
-      const closeParen = noParen ? '' : ')'
+      const status = isProcessing(this.props.model)
+        ? 'processing'
+        : isOk(this.props.model)
+        ? 'done'
+        : isOops(this.props.model)
+        ? 'error'
+        : 'not-yet'
 
-      const children = [openParen, duration, closeParen].filter(_ => _)
+      const { startTime } = this.props.model
+      const endTime =
+        isWithCompleteEvent(this.props.model) &&
+        !isBeingRerun(this.props.model) &&
+        this.props.model.completeEvent.completeTime
 
-      // re: key... when the block changes from Processing to Input, we get an insertBefore error from React.
       return (
-        this.props.model.startTime &&
-        children.length > 0 && (
-          <span
-            className="kui--repl-block-timestamp kui--repl-block-right-element"
-            key={isProcessing(this.props.model).toString()}
-          >
-            {showingDate && new Date(this.props.model.startTime).toLocaleTimeString()}
-            <span className="small-left-pad sub-text" ref={this.state.durationDom}>
-              {children}
-            </span>
-          </span>
-        )
+        <Timer
+          key="timer"
+          innerClassName="small-left-pad sub-text"
+          className="kui--repl-block-timestamp kui--repl-block-right-element"
+          status={status}
+          endTime={endTime}
+          startTime={startTime}
+          showDate={showingDate}
+        />
       )
     }
   }
