@@ -28,9 +28,12 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
   return (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
     const isKuiCommand = props.href.startsWith('#kuiexec?command=')
     const isLocal = !/^http/i.test(props.href)
-    const target = !isLocal ? '_blank' : undefined
+    const isNotebook = /\.md$/.test(props.href)
+
+    const target = !isLocal && !isNotebook ? '_blank' : undefined
+
     const onClick =
-      !isLocal && !isKuiCommand
+      !isLocal && !isKuiCommand && !isNotebook
         ? (evt: React.MouseEvent) => evt.stopPropagation()
         : async (evt: React.MouseEvent) => {
             evt.stopPropagation()
@@ -52,22 +55,27 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
                 tab.show(`[data-markdown-anchor="${anchorFrom(uuid, props.href.slice(1))}"]`)
               }
             } else if (file) {
-              if (isLocal && !isAbsolute(file)) {
+              if ((isLocal || isNotebook) && !isAbsolute(file)) {
                 // e.g. if a markdown has a relative reference to
                 // another in the same directory -- not the same as
                 // the user's CWD! the same as the directory of that
                 // first markdown
-                const baseUrl = mdprops.baseUrl || (mdprops.fullpath ? dirname(mdprops.fullpath) : undefined)
+                const baseUrl =
+                  mdprops.baseUrl || (mdprops.fullpath ? join(dirname(mdprops.fullpath), '{filename}') : undefined)
                 if (baseUrl) {
-                  const absoluteHref = join(baseUrl, props.href)
-                  const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
-                  file = relativeToCWD
+                  const absoluteHref = baseUrl.replace('{filename}', props.href)
+                  if (!isNotebook) {
+                    const relativeToCWD = relative(process.cwd() || process.env.PWD, absoluteHref)
+                    file = relativeToCWD
+                  } else {
+                    // reference to http://
+                    file = absoluteHref.replace(/\.\//g, '')
+                  }
                 }
               }
 
-              const md = /\.md$/.test(file)
-              const cmd = md ? 'replay' : 'open'
-              const exec = md ? 'qexec' : 'pexec'
+              const cmd = isNotebook ? 'replay' : 'open'
+              const exec = isNotebook ? 'qexec' : 'pexec'
               return repl[exec](`${cmd} ${repl.encodeComponent(file)}`)
             }
           }
@@ -87,7 +95,7 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
         ? `### Block Link\n\n\`Link will scroll the block into view\``
         : props.href.charAt(0) === '#'
         ? `### In-Page Link\n#### ${props.href}\n\n\`Element will scroll into view\``
-        : /\.md$/.test(props.href)
+        : isNotebook
         ? `### Notebook\n#### ${props.href.replace(/^\.\//, '')}\n\n\`The linked notebook will open in a separate tab\``
         : isLocal
         ? `### File Link\n#### ${props.href}\n\n\`The linked file will open in this tab\``
@@ -103,7 +111,13 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
         <Tooltip markdown={tip}>
           <a
             title={props.title}
-            href={isKuiCommand ? '#' : props.href}
+            href={
+              isKuiCommand || isNotebook
+                ? '#'
+                : mdprops.baseUrl
+                ? mdprops.baseUrl.replace('{filename}', props.href.replace(/^\s*\.\//g, ''))
+                : props.href
+            }
             target={target}
             onClick={onClick}
             className={kuiLink ? 'kui--link-status' : ''}

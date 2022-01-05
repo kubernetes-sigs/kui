@@ -265,7 +265,7 @@ export async function fetchFile(
         return fetchRemote(
           args,
           url,
-          Object.assign({}, opts, { data: Array.isArray(opts.data) ? opts.data[idx] : opts.data })
+          Object.assign({}, opts, { data: !opts ? undefined : Array.isArray(opts.data) ? opts.data[idx] : opts.data })
         ).catch(err => {
           if (opts && opts.returnErrors) {
             return {

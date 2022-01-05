@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { dirname } from 'path'
-import { FStat } from '@kui-shell/plugin-bash-like/fs'
+import { format } from 'url'
+import { basename, join } from 'path'
+
 import {
   Arguments,
   CommentaryResponse,
@@ -23,7 +24,7 @@ import {
   ParsedOptions,
   Registrar,
   UsageModel,
-  Util,
+  encodeComponent,
   getPrimaryTabId
 } from '@kui-shell/core'
 
@@ -72,22 +73,24 @@ const usage: UsageModel = {
 }
 
 export async function fetchMarkdownFile(filepath: string, args: Arguments): Promise<string> {
-  const fullpath = Util.findFile(Util.expandHomeDir(filepath))
-  const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
+  const { pathname } = /^https?:/.test(filepath) ? new URL(filepath) : { pathname: filepath }
 
-  if (suffix !== 'md') {
+  if (!/\.md$/.test(pathname)) {
     throw new Error('File extension not support')
   } else {
-    // fetch the data:
-    //   --with-data says give us the file contents
-    const stats = (await args.tab.REPL.rexec<FStat>(`vfs fstat ${args.tab.REPL.encodeComponent(fullpath)} --with-data`))
-      .content
+    const raw = (await args.REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
+    return typeof raw === 'string' ? raw : JSON.stringify(raw)
+  }
+}
 
-    if (stats.isDirectory) {
-      throw new Error('Invalid filepath')
-    } else {
-      return stats.data as string
-    }
+function formatBaseUrl(filepath: string) {
+  if (/^http:/.test(filepath)) {
+    const url = new URL(filepath)
+
+    url.pathname = url.pathname.replace(basename(url.pathname), '{filename}')
+    return format(url)
+  } else {
+    return filepath.replace(basename(filepath), '{filename}')
   }
 }
 
@@ -112,6 +115,12 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
     Events.eventBus.emitWithTabId('/kui/tab/edit/toggle', getPrimaryTabId(args.tab))
   }
 
+  const baseUrl = args.parsedOptions['base-url']
+    ? join(args.parsedOptions['base-url'], '{filename}')
+    : filepath
+    ? formatBaseUrl(filepath)
+    : undefined
+
   if (data !== undefined) {
     if (data === '#' || args.command === 'commentary') {
       return {
@@ -120,7 +129,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
         props: {
           title,
           children: '',
-          baseUrl: args.parsedOptions['base-url']
+          baseUrl
         }
       }
     } else {
@@ -131,7 +140,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           title,
           filepath,
           children: data,
-          baseUrl: args.parsedOptions['base-url'] || (filepath ? dirname(filepath) : undefined)
+          baseUrl
         }
       }
     }
