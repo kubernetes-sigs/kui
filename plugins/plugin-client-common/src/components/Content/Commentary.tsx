@@ -185,6 +185,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
                 execUUID={this.props.execUUID}
                 filepath={this.props.filepath}
                 source={this.state.textValue}
+                codeBlockResponses={this.props.codeBlockResponses}
                 baseUrl={this.props.baseUrl}
                 tab={this.props.tab}
               />

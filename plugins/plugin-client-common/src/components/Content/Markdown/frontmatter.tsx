@@ -15,7 +15,9 @@
  */
 
 import { u } from 'unist-builder'
-import { KResponse, Tab, Util, isCodedError, isWatchable } from '@kui-shell/core'
+import { Tab, isCodedError, isWatchable } from '@kui-shell/core'
+
+import { CodeBlockResponse } from './components/code'
 
 export function tryFrontmatter(
   value: string
@@ -42,65 +44,26 @@ function reactRedactor(key: string, value: any) {
     return undefined
   } else if (key === 'block') {
     return undefined
-  } else if (typeof value === 'object' && value.constructor === Error) {
+  } else if (value && typeof value === 'object' && value.constructor === Error) {
+    // the first check guards against typeof null === 'object'
     return stringifyError(value)
   } else {
     return value
   }
 }
 
-function encodePriorResponse(response: KResponse): { encoding: string; encodedResponse: string } {
-  return {
-    encoding: 'base64+gzip',
-    encodedResponse: Util.base64PlusGzip(
-      JSON.stringify(response.constructor === Error ? stringifyError(response) : response, reactRedactor)
-    )
-  }
-}
-
-export function decodePriorResponse(encodedResponse: string | KResponse, encoding: string): KResponse {
-  if (encoding !== 'base64+gzip' || typeof encodedResponse !== 'string') {
-    return encodedResponse
-  } else {
-    return JSON.parse(Util.decodeBase64PlusGzip(encodedResponse).toString()) as KResponse
-  }
-}
-
-export function codeWithResponseFrontmatter(
-  body: string,
-  language: string,
-  blockId?: string,
-  status?: 'done' | 'error',
-  response?: KResponse
-) {
-  if (response && isWatchable(response)) {
-    delete response.watch
-  }
-
-  const attrs: string[] = []
-  if (blockId) {
-    attrs.push(`id: ${blockId}`)
-  }
-  if (status) {
-    attrs.push(`status: ${status}`)
-  }
-  if (response) {
-    const { encoding, encodedResponse } = encodePriorResponse(response)
-    attrs.push(`responseEncoding: ${encoding}`)
-    attrs.push(`response: ${encodedResponse}`)
-  }
-
-  const frontmatter =
-    attrs.length === 0
-      ? ''
-      : `---
-${attrs.join('\n')}
----
-`
-
-  return `\`\`\`${language || ''}
-${frontmatter}${body}
-\`\`\``
+export function encodePriorResponses(responses: CodeBlockResponse[]): string {
+  return JSON.stringify(
+    responses.map(response => {
+      if (response.response.constructor === Error) {
+        return Object.assign({}, response, { response: stringifyError(response.response) })
+      } else if (isWatchable(response.response)) {
+        delete response.response.watch
+      }
+      return response
+    }),
+    reactRedactor
+  )
 }
 
 interface KuiFrontmatter {

@@ -1,0 +1,20 @@
+[
+  {
+    "status": "done",
+    "response": {
+      "apiVersion": "kui-shell/v1",
+      "kind": "XtermResponse",
+      "rows": [[{ "innerText": "hello", "classList": [], "style": {}, "textContent": "h" }]],
+      "code": 0
+    }
+  },
+  {
+    "status": "done",
+    "response": {
+      "apiVersion": "kui-shell/v1",
+      "kind": "XtermResponse",
+      "rows": [[{ "innerText": "world", "classList": [], "style": {}, "textContent": "w" }]],
+      "code": 0
+    }
+  }
+]

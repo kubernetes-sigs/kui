@@ -15,6 +15,7 @@
  */
 
 import { Entity } from './entity'
+import { KResponse } from './command'
 import REPL from './repl'
 
 export type CommentaryResponse = {
@@ -27,8 +28,11 @@ export type CommentaryResponse = {
     /** Source filepath */
     filepath?: string
 
-    /** Body of the Card. It will be passed through as the source <Markdown source="..." /> */
+    /** Markdown source */
     children: string
+
+    /** CodeBlock responses */
+    codeBlockResponses?: { status: 'done' | 'error'; response: KResponse }[]
 
     /** Prefix for image URLs */
     baseUrl?: string

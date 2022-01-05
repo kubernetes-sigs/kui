@@ -72,7 +72,7 @@ async function doCard(opts: Arguments<CardOptions>): Promise<ReactResponse> {
 
   const filepath = option.filename || option.f
   if (filepath) {
-    const data = await fetchMarkdownFile(filepath, opts)
+    const { data } = await fetchMarkdownFile(filepath, opts)
     return { react: card({ title, children: data /*, icon */ }) }
   } else {
     const body = argv.slice(1)

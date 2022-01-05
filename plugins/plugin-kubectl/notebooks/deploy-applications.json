@@ -1,0 +1,1005 @@
+[
+  {
+    "status": "done",
+    "response": {
+      "header": {
+        "name": "Name",
+        "attributes": [
+          { "key": "STATUS", "value": "Status" },
+          { "key": "AGE", "value": "Age", "outerCSS": "hide-with-sidecar" }
+        ]
+      },
+      "body": [
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "kui-notebook-3",
+              "selfLink": "/api/v1/namespaces/kui-notebook-3",
+              "uid": "1bf015b8-71f1-47c8-964d-6307119bad09",
+              "resourceVersion": "8483054",
+              "creationTimestamp": "2022-01-06T01:00:07Z",
+              "managedFields": [
+                {
+                  "manager": "kubectl-create",
+                  "operation": "Update",
+                  "apiVersion": "v1",
+                  "time": "2022-01-06T01:00:07Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": { "f:status": { "f:phase": {} } }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "kui-notebook-3_Namespace_undefined",
+          "name": "kui-notebook-3",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Namespace kui-notebook-3 -o yaml  ",
+          "attributes": [
+            { "key": "STATUS", "value": "Active", "tag": "badge", "onclick": false, "css": " green-background  " },
+            {
+              "key": "AGE",
+              "value": "0s",
+              "onclick": false,
+              "outerCSS": "hide-with-sidecar",
+              "css": "slightly-deemphasize   "
+            }
+          ]
+        }
+      ],
+      "title": "Namespace",
+      "resourceVersion": "8483054"
+    }
+  },
+  {
+    "status": "done",
+    "response": {
+      "title": "guestbook",
+      "breadcrumbs": [{ "label": "kui-notebook-3" }],
+      "header": {
+        "key": "Name",
+        "name": "Name",
+        "attributes": [
+          { "key": "Tier", "value": "Tier" },
+          { "key": "Application", "value": "Application" },
+          { "key": "Kind", "value": "Kind" },
+          { "key": "Status", "value": "Status" }
+        ]
+      },
+      "body": [
+        {
+          "name": "frontend",
+          "attributes": [
+            { "key": "Tier", "value": "" },
+            { "key": "Application", "value": "" },
+            { "key": "Kind", "value": "Deployment" },
+            { "key": "Status", "value": "Offline", "tag": "badge", "css": "red-background" }
+          ]
+        },
+        {
+          "name": "redis-master",
+          "attributes": [
+            { "key": "Tier", "value": "" },
+            { "key": "Application", "value": "" },
+            { "key": "Kind", "value": "Deployment" },
+            { "key": "Status", "value": "Offline", "tag": "badge", "css": "red-background" }
+          ]
+        },
+        {
+          "name": "redis-slave",
+          "attributes": [
+            { "key": "Tier", "value": "" },
+            { "key": "Application", "value": "" },
+            { "key": "Kind", "value": "Deployment" },
+            { "key": "Status", "value": "Offline", "tag": "badge", "css": "red-background" }
+          ]
+        },
+        {
+          "name": "frontend",
+          "attributes": [
+            { "key": "Tier", "value": "" },
+            { "key": "Application", "value": "" },
+            { "key": "Kind", "value": "Service" },
+            { "key": "Status", "value": "Offline", "tag": "badge", "css": "red-background" }
+          ]
+        },
+        {
+          "name": "redis-master",
+          "attributes": [
+            { "key": "Tier", "value": "" },
+            { "key": "Application", "value": "" },
+            { "key": "Kind", "value": "Service" },
+            { "key": "Status", "value": "Offline", "tag": "badge", "css": "red-background" }
+          ]
+        },
+        {
+          "name": "redis-slave",
+          "attributes": [
+            { "key": "Tier", "value": "" },
+            { "key": "Application", "value": "" },
+            { "key": "Kind", "value": "Service" },
+            { "key": "Status", "value": "Offline", "tag": "badge", "css": "red-background" }
+          ]
+        }
+      ],
+      "kuiSourceRef": {
+        "templates": [
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/frontend-deployment.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2\nkind: Deployment\nmetadata:\n  name: frontend\n  labels:\n    app: guestbook\n    tier: frontend\nspec:\n  selector:\n    matchLabels:\n      app: guestbook\n      tier: frontend\n  replicas: 3\n  template:\n    metadata:\n      labels:\n        app: guestbook\n        tier: frontend\n    spec:\n      containers:\n      - name: php-redis\n        image: gcr.io/google-samples/gb-frontend:v4\n        resources:\n          requests:\n            cpu: 100m\n            memory: 100Mi\n        env:\n        - name: GET_HOSTS_FROM\n          value: dns\n          # Using `GET_HOSTS_FROM=dns` requires your cluster to\n          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in\n          # service launched automatically. However, if the cluster you are using\n          # does not have a built-in DNS service, you can instead\n          # access an environment variable to find the master\n          # service's host. To do so, comment out the 'value: dns' line above, and\n          # uncomment the line below:\n          # value: env\n        ports:\n        - containerPort: 80\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/frontend-service.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: v1\nkind: Service\nmetadata:\n  name: frontend\n  labels:\n    app: guestbook\n    tier: frontend\nspec:\n  # comment or delete the following line if you want to use a LoadBalancer\n  type: NodePort \n  # if your cluster supports it, uncomment the following to automatically create\n  # an external load-balanced IP for the frontend service.\n  # type: LoadBalancer\n  ports:\n  - port: 80\n  selector:\n    app: guestbook\n    tier: frontend\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-master-deployment.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2\nkind: Deployment\nmetadata:\n  name: redis-master\n  labels:\n    app: redis\n    tier: backend\nspec:\n  selector:\n    matchLabels:\n      app: redis\n      role: master\n      tier: backend\n  replicas: 1\n  template:\n    metadata:\n      labels:\n        app: redis\n        role: master\n        tier: backend\n    spec:\n      containers:\n      - name: master\n        image: k8s.gcr.io/redis:e2e  # or just image: redis\n        resources:\n          requests:\n            cpu: 100m\n            memory: 100Mi\n        ports:\n        - containerPort: 6379\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-master-service.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: v1\nkind: Service\nmetadata:\n  name: redis-master\n  labels:\n    app: redis\n    role: master\n    tier: backend\nspec:\n  ports:\n  - name: redis\n    port: 6379\n    targetPort: 6379\n  selector:\n    app: redis\n    role: master\n    tier: backend\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-slave-deployment.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2\nkind: Deployment\nmetadata:\n  name: redis-slave\n  labels:\n    app: redis\n    tier: backend\nspec:\n  selector:\n    matchLabels:\n      app: redis\n      role: slave\n      tier: backend\n  replicas: 2\n  template:\n    metadata:\n      labels:\n        app: redis\n        role: slave\n        tier: backend\n    spec:\n      containers:\n      - name: slave\n        image: gcr.io/google_samples/gb-redisslave:v3\n        resources:\n          requests:\n            cpu: 100m\n            memory: 100Mi\n        env:\n        - name: GET_HOSTS_FROM\n          value: dns\n          # Using `GET_HOSTS_FROM=dns` requires your cluster to\n          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in\n          # service launched automatically. However, if the cluster you are using\n          # does not have a built-in DNS service, you can instead\n          # access an environment variable to find the master\n          # service's host. To do so, comment out the 'value: dns' line above, and\n          # uncomment the line below:\n          # value: env\n        ports:\n        - containerPort: 6379\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-slave-service.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: v1\nkind: Service\nmetadata:\n  name: redis-slave\n  labels:\n    app: redis\n    role: slave\n    tier: backend\nspec:\n  ports:\n  - port: 6379\n  selector:\n    app: redis\n    role: slave\n    tier: backend\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "status": "done",
+    "response": {
+      "title": "guestbook",
+      "header": {
+        "key": "NAME",
+        "name": "Name",
+        "attributes": [
+          { "key": "Tier", "value": "Tier" },
+          { "key": "Application", "value": "Application" },
+          { "key": "Kind", "value": "Kind" },
+          { "key": "Status", "value": "Status" }
+        ]
+      },
+      "body": [
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "frontend",
+              "namespace": "kui-notebook-3",
+              "selfLink": "/apis/apps/v1/namespaces/kui-notebook-3/deployments/frontend",
+              "uid": "3f9ea68f-9142-4596-b2f6-3b7994bbd7af",
+              "resourceVersion": "8483239",
+              "generation": 1,
+              "creationTimestamp": "2022-01-06T01:00:18Z",
+              "labels": { "app": "guestbook", "tier": "frontend" },
+              "annotations": {
+                "deployment.kubernetes.io/revision": "1",
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"},\"name\":\"frontend\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"GET_HOSTS_FROM\",\"value\":\"dns\"}],\"image\":\"gcr.io/google-samples/gb-frontend:v4\",\"name\":\"php-redis\",\"ports\":[{\"containerPort\":80}],\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"100Mi\"}}}]}}}}\n"
+              },
+              "managedFields": [
+                {
+                  "manager": "kubectl-client-side-apply",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T01:00:18Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": {
+                      "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                      "f:labels": { ".": {}, "f:app": {}, "f:tier": {} }
+                    },
+                    "f:spec": {
+                      "f:progressDeadlineSeconds": {},
+                      "f:replicas": {},
+                      "f:revisionHistoryLimit": {},
+                      "f:selector": { "f:matchLabels": { ".": {}, "f:app": {}, "f:tier": {} } },
+                      "f:strategy": {
+                        "f:rollingUpdate": { ".": {}, "f:maxSurge": {}, "f:maxUnavailable": {} },
+                        "f:type": {}
+                      },
+                      "f:template": {
+                        "f:metadata": { "f:labels": { ".": {}, "f:app": {}, "f:tier": {} } },
+                        "f:spec": {
+                          "f:containers": {
+                            "k:{\"name\":\"php-redis\"}": {
+                              ".": {},
+                              "f:env": {
+                                ".": {},
+                                "k:{\"name\":\"GET_HOSTS_FROM\"}": { ".": {}, "f:name": {}, "f:value": {} }
+                              },
+                              "f:image": {},
+                              "f:imagePullPolicy": {},
+                              "f:name": {},
+                              "f:ports": {
+                                ".": {},
+                                "k:{\"containerPort\":80,\"protocol\":\"TCP\"}": {
+                                  ".": {},
+                                  "f:containerPort": {},
+                                  "f:protocol": {}
+                                }
+                              },
+                              "f:resources": { ".": {}, "f:requests": { ".": {}, "f:cpu": {}, "f:memory": {} } },
+                              "f:terminationMessagePath": {},
+                              "f:terminationMessagePolicy": {}
+                            }
+                          },
+                          "f:dnsPolicy": {},
+                          "f:restartPolicy": {},
+                          "f:schedulerName": {},
+                          "f:securityContext": {},
+                          "f:terminationGracePeriodSeconds": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "manager": "kube-controller-manager",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T01:00:22Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": { "f:annotations": { "f:deployment.kubernetes.io/revision": {} } },
+                    "f:status": {
+                      "f:availableReplicas": {},
+                      "f:conditions": {
+                        ".": {},
+                        "k:{\"type\":\"Available\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        },
+                        "k:{\"type\":\"Progressing\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        }
+                      },
+                      "f:observedGeneration": {},
+                      "f:readyReplicas": {},
+                      "f:replicas": {},
+                      "f:updatedReplicas": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "frontend_Deployment_kui-notebook-3",
+          "name": "frontend",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Deployment frontend -o yaml -n kui-notebook-3 ",
+          "attributes": [
+            { "key": "Tier", "value": "frontend" },
+            { "key": "Application", "value": "guestbook" },
+            { "key": "Kind", "value": "Deployment" },
+            { "key": "Status", "value": "3/3", "tag": "badge", "css": "green-background" }
+          ]
+        },
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "redis-master",
+              "namespace": "kui-notebook-3",
+              "selfLink": "/apis/apps/v1/namespaces/kui-notebook-3/deployments/redis-master",
+              "uid": "9c488e1b-4329-4141-a257-40d7ac33d75f",
+              "resourceVersion": "8483232",
+              "generation": 1,
+              "creationTimestamp": "2022-01-06T01:00:18Z",
+              "labels": { "app": "redis", "tier": "backend" },
+              "annotations": {
+                "deployment.kubernetes.io/revision": "1",
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"redis\",\"tier\":\"backend\"},\"name\":\"redis-master\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"replicas\":1,\"selector\":{\"matchLabels\":{\"app\":\"redis\",\"role\":\"master\",\"tier\":\"backend\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"redis\",\"role\":\"master\",\"tier\":\"backend\"}},\"spec\":{\"containers\":[{\"image\":\"k8s.gcr.io/redis:e2e\",\"name\":\"master\",\"ports\":[{\"containerPort\":6379}],\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"100Mi\"}}}]}}}}\n"
+              },
+              "managedFields": [
+                {
+                  "manager": "kubectl-client-side-apply",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T01:00:18Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": {
+                      "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                      "f:labels": { ".": {}, "f:app": {}, "f:tier": {} }
+                    },
+                    "f:spec": {
+                      "f:progressDeadlineSeconds": {},
+                      "f:replicas": {},
+                      "f:revisionHistoryLimit": {},
+                      "f:selector": { "f:matchLabels": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} } },
+                      "f:strategy": {
+                        "f:rollingUpdate": { ".": {}, "f:maxSurge": {}, "f:maxUnavailable": {} },
+                        "f:type": {}
+                      },
+                      "f:template": {
+                        "f:metadata": { "f:labels": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} } },
+                        "f:spec": {
+                          "f:containers": {
+                            "k:{\"name\":\"master\"}": {
+                              ".": {},
+                              "f:image": {},
+                              "f:imagePullPolicy": {},
+                              "f:name": {},
+                              "f:ports": {
+                                ".": {},
+                                "k:{\"containerPort\":6379,\"protocol\":\"TCP\"}": {
+                                  ".": {},
+                                  "f:containerPort": {},
+                                  "f:protocol": {}
+                                }
+                              },
+                              "f:resources": { ".": {}, "f:requests": { ".": {}, "f:cpu": {}, "f:memory": {} } },
+                              "f:terminationMessagePath": {},
+                              "f:terminationMessagePolicy": {}
+                            }
+                          },
+                          "f:dnsPolicy": {},
+                          "f:restartPolicy": {},
+                          "f:schedulerName": {},
+                          "f:securityContext": {},
+                          "f:terminationGracePeriodSeconds": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "manager": "kube-controller-manager",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T01:00:22Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": { "f:annotations": { "f:deployment.kubernetes.io/revision": {} } },
+                    "f:status": {
+                      "f:availableReplicas": {},
+                      "f:conditions": {
+                        ".": {},
+                        "k:{\"type\":\"Available\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        },
+                        "k:{\"type\":\"Progressing\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        }
+                      },
+                      "f:observedGeneration": {},
+                      "f:readyReplicas": {},
+                      "f:replicas": {},
+                      "f:updatedReplicas": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "redis-master_Deployment_kui-notebook-3",
+          "name": "redis-master",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Deployment redis-master -o yaml -n kui-notebook-3 ",
+          "attributes": [
+            { "key": "Tier", "value": "backend" },
+            { "key": "Application", "value": "redis" },
+            { "key": "Kind", "value": "Deployment" },
+            { "key": "Status", "value": "1/1", "tag": "badge", "css": "green-background" }
+          ]
+        },
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "redis-slave",
+              "namespace": "kui-notebook-3",
+              "selfLink": "/apis/apps/v1/namespaces/kui-notebook-3/deployments/redis-slave",
+              "uid": "09296f6a-7618-4737-a1ee-6538672543fc",
+              "resourceVersion": "8483224",
+              "generation": 1,
+              "creationTimestamp": "2022-01-06T01:00:18Z",
+              "labels": { "app": "redis", "tier": "backend" },
+              "annotations": {
+                "deployment.kubernetes.io/revision": "1",
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"redis\",\"tier\":\"backend\"},\"name\":\"redis-slave\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"replicas\":2,\"selector\":{\"matchLabels\":{\"app\":\"redis\",\"role\":\"slave\",\"tier\":\"backend\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"redis\",\"role\":\"slave\",\"tier\":\"backend\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"GET_HOSTS_FROM\",\"value\":\"dns\"}],\"image\":\"gcr.io/google_samples/gb-redisslave:v3\",\"name\":\"slave\",\"ports\":[{\"containerPort\":6379}],\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"100Mi\"}}}]}}}}\n"
+              },
+              "managedFields": [
+                {
+                  "manager": "kubectl-client-side-apply",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T01:00:18Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": {
+                      "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                      "f:labels": { ".": {}, "f:app": {}, "f:tier": {} }
+                    },
+                    "f:spec": {
+                      "f:progressDeadlineSeconds": {},
+                      "f:replicas": {},
+                      "f:revisionHistoryLimit": {},
+                      "f:selector": { "f:matchLabels": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} } },
+                      "f:strategy": {
+                        "f:rollingUpdate": { ".": {}, "f:maxSurge": {}, "f:maxUnavailable": {} },
+                        "f:type": {}
+                      },
+                      "f:template": {
+                        "f:metadata": { "f:labels": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} } },
+                        "f:spec": {
+                          "f:containers": {
+                            "k:{\"name\":\"slave\"}": {
+                              ".": {},
+                              "f:env": {
+                                ".": {},
+                                "k:{\"name\":\"GET_HOSTS_FROM\"}": { ".": {}, "f:name": {}, "f:value": {} }
+                              },
+                              "f:image": {},
+                              "f:imagePullPolicy": {},
+                              "f:name": {},
+                              "f:ports": {
+                                ".": {},
+                                "k:{\"containerPort\":6379,\"protocol\":\"TCP\"}": {
+                                  ".": {},
+                                  "f:containerPort": {},
+                                  "f:protocol": {}
+                                }
+                              },
+                              "f:resources": { ".": {}, "f:requests": { ".": {}, "f:cpu": {}, "f:memory": {} } },
+                              "f:terminationMessagePath": {},
+                              "f:terminationMessagePolicy": {}
+                            }
+                          },
+                          "f:dnsPolicy": {},
+                          "f:restartPolicy": {},
+                          "f:schedulerName": {},
+                          "f:securityContext": {},
+                          "f:terminationGracePeriodSeconds": {}
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "manager": "kube-controller-manager",
+                  "operation": "Update",
+                  "apiVersion": "apps/v1",
+                  "time": "2022-01-06T01:00:21Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": { "f:annotations": { "f:deployment.kubernetes.io/revision": {} } },
+                    "f:status": {
+                      "f:availableReplicas": {},
+                      "f:conditions": {
+                        ".": {},
+                        "k:{\"type\":\"Available\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        },
+                        "k:{\"type\":\"Progressing\"}": {
+                          ".": {},
+                          "f:lastTransitionTime": {},
+                          "f:lastUpdateTime": {},
+                          "f:message": {},
+                          "f:reason": {},
+                          "f:status": {},
+                          "f:type": {}
+                        }
+                      },
+                      "f:observedGeneration": {},
+                      "f:readyReplicas": {},
+                      "f:replicas": {},
+                      "f:updatedReplicas": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "redis-slave_Deployment_kui-notebook-3",
+          "name": "redis-slave",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Deployment redis-slave -o yaml -n kui-notebook-3 ",
+          "attributes": [
+            { "key": "Tier", "value": "backend" },
+            { "key": "Application", "value": "redis" },
+            { "key": "Kind", "value": "Deployment" },
+            { "key": "Status", "value": "2/2", "tag": "badge", "css": "green-background" }
+          ]
+        },
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "frontend",
+              "namespace": "kui-notebook-3",
+              "selfLink": "/api/v1/namespaces/kui-notebook-3/services/frontend",
+              "uid": "18132eab-1cfa-47c4-840f-f791b64c6513",
+              "resourceVersion": "8483139",
+              "creationTimestamp": "2022-01-06T01:00:18Z",
+              "labels": { "app": "guestbook", "tier": "frontend" },
+              "annotations": {
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"},\"name\":\"frontend\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"ports\":[{\"port\":80}],\"selector\":{\"app\":\"guestbook\",\"tier\":\"frontend\"},\"type\":\"NodePort\"}}\n"
+              },
+              "managedFields": [
+                {
+                  "manager": "kube-vpnkit-forwarder",
+                  "operation": "Update",
+                  "apiVersion": "v1",
+                  "time": "2022-01-06T01:00:18Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": { "f:status": { "f:loadBalancer": { "f:ingress": {} } } }
+                },
+                {
+                  "manager": "kubectl-client-side-apply",
+                  "operation": "Update",
+                  "apiVersion": "v1",
+                  "time": "2022-01-06T01:00:18Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": {
+                      "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                      "f:labels": { ".": {}, "f:app": {}, "f:tier": {} }
+                    },
+                    "f:spec": {
+                      "f:externalTrafficPolicy": {},
+                      "f:ports": {
+                        ".": {},
+                        "k:{\"port\":80,\"protocol\":\"TCP\"}": {
+                          ".": {},
+                          "f:port": {},
+                          "f:protocol": {},
+                          "f:targetPort": {}
+                        }
+                      },
+                      "f:selector": { ".": {}, "f:app": {}, "f:tier": {} },
+                      "f:sessionAffinity": {},
+                      "f:type": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "frontend_Service_kui-notebook-3",
+          "name": "frontend",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Service frontend -o yaml -n kui-notebook-3 ",
+          "attributes": [
+            { "key": "Tier", "value": "frontend" },
+            { "key": "Application", "value": "guestbook" },
+            { "key": "Kind", "value": "Service" },
+            { "key": "Status", "value": "Ready", "tag": "badge", "css": "green-background" }
+          ]
+        },
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "redis-master",
+              "namespace": "kui-notebook-3",
+              "selfLink": "/api/v1/namespaces/kui-notebook-3/services/redis-master",
+              "uid": "5e1abe0d-8d36-4d50-b473-a5a4f7c312a5",
+              "resourceVersion": "8483146",
+              "creationTimestamp": "2022-01-06T01:00:18Z",
+              "labels": { "app": "redis", "role": "master", "tier": "backend" },
+              "annotations": {
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"redis\",\"role\":\"master\",\"tier\":\"backend\"},\"name\":\"redis-master\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"ports\":[{\"name\":\"redis\",\"port\":6379,\"targetPort\":6379}],\"selector\":{\"app\":\"redis\",\"role\":\"master\",\"tier\":\"backend\"}}}\n"
+              },
+              "managedFields": [
+                {
+                  "manager": "kubectl-client-side-apply",
+                  "operation": "Update",
+                  "apiVersion": "v1",
+                  "time": "2022-01-06T01:00:18Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": {
+                      "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                      "f:labels": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} }
+                    },
+                    "f:spec": {
+                      "f:ports": {
+                        ".": {},
+                        "k:{\"port\":6379,\"protocol\":\"TCP\"}": {
+                          ".": {},
+                          "f:name": {},
+                          "f:port": {},
+                          "f:protocol": {},
+                          "f:targetPort": {}
+                        }
+                      },
+                      "f:selector": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} },
+                      "f:sessionAffinity": {},
+                      "f:type": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "redis-master_Service_kui-notebook-3",
+          "name": "redis-master",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Service redis-master -o yaml -n kui-notebook-3 ",
+          "attributes": [
+            { "key": "Tier", "value": "backend" },
+            { "key": "Application", "value": "redis" },
+            { "key": "Kind", "value": "Service" },
+            { "key": "Status", "value": "Ready", "tag": "badge", "css": "green-background" }
+          ]
+        },
+        {
+          "object": {
+            "kind": "PartialObjectMetadata",
+            "apiVersion": "meta.k8s.io/v1",
+            "metadata": {
+              "name": "redis-slave",
+              "namespace": "kui-notebook-3",
+              "selfLink": "/api/v1/namespaces/kui-notebook-3/services/redis-slave",
+              "uid": "14a14138-cd26-400d-8a4c-6579613a743d",
+              "resourceVersion": "8483164",
+              "creationTimestamp": "2022-01-06T01:00:18Z",
+              "labels": { "app": "redis", "role": "slave", "tier": "backend" },
+              "annotations": {
+                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"redis\",\"role\":\"slave\",\"tier\":\"backend\"},\"name\":\"redis-slave\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"ports\":[{\"port\":6379}],\"selector\":{\"app\":\"redis\",\"role\":\"slave\",\"tier\":\"backend\"}}}\n"
+              },
+              "managedFields": [
+                {
+                  "manager": "kubectl-client-side-apply",
+                  "operation": "Update",
+                  "apiVersion": "v1",
+                  "time": "2022-01-06T01:00:18Z",
+                  "fieldsType": "FieldsV1",
+                  "fieldsV1": {
+                    "f:metadata": {
+                      "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                      "f:labels": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} }
+                    },
+                    "f:spec": {
+                      "f:ports": {
+                        ".": {},
+                        "k:{\"port\":6379,\"protocol\":\"TCP\"}": {
+                          ".": {},
+                          "f:port": {},
+                          "f:protocol": {},
+                          "f:targetPort": {}
+                        }
+                      },
+                      "f:selector": { ".": {}, "f:app": {}, "f:role": {}, "f:tier": {} },
+                      "f:sessionAffinity": {},
+                      "f:type": {}
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "key": "NAME",
+          "rowKey": "redis-slave_Service_kui-notebook-3",
+          "name": "redis-slave",
+          "onclickIdempotent": true,
+          "onclick": "kubectl get Service redis-slave -o yaml -n kui-notebook-3 ",
+          "attributes": [
+            { "key": "Tier", "value": "backend" },
+            { "key": "Application", "value": "redis" },
+            { "key": "Kind", "value": "Service" },
+            { "key": "Status", "value": "Ready", "tag": "badge", "css": "green-background" }
+          ]
+        }
+      ],
+      "kuiSourceRef": {
+        "templates": [
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/frontend-deployment.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2\nkind: Deployment\nmetadata:\n  name: frontend\n  labels:\n    app: guestbook\n    tier: frontend\nspec:\n  selector:\n    matchLabels:\n      app: guestbook\n      tier: frontend\n  replicas: 3\n  template:\n    metadata:\n      labels:\n        app: guestbook\n        tier: frontend\n    spec:\n      containers:\n      - name: php-redis\n        image: gcr.io/google-samples/gb-frontend:v4\n        resources:\n          requests:\n            cpu: 100m\n            memory: 100Mi\n        env:\n        - name: GET_HOSTS_FROM\n          value: dns\n          # Using `GET_HOSTS_FROM=dns` requires your cluster to\n          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in\n          # service launched automatically. However, if the cluster you are using\n          # does not have a built-in DNS service, you can instead\n          # access an environment variable to find the master\n          # service's host. To do so, comment out the 'value: dns' line above, and\n          # uncomment the line below:\n          # value: env\n        ports:\n        - containerPort: 80\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/frontend-service.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: v1\nkind: Service\nmetadata:\n  name: frontend\n  labels:\n    app: guestbook\n    tier: frontend\nspec:\n  # comment or delete the following line if you want to use a LoadBalancer\n  type: NodePort \n  # if your cluster supports it, uncomment the following to automatically create\n  # an external load-balanced IP for the frontend service.\n  # type: LoadBalancer\n  ports:\n  - port: 80\n  selector:\n    app: guestbook\n    tier: frontend\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-master-deployment.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2\nkind: Deployment\nmetadata:\n  name: redis-master\n  labels:\n    app: redis\n    tier: backend\nspec:\n  selector:\n    matchLabels:\n      app: redis\n      role: master\n      tier: backend\n  replicas: 1\n  template:\n    metadata:\n      labels:\n        app: redis\n        role: master\n        tier: backend\n    spec:\n      containers:\n      - name: master\n        image: k8s.gcr.io/redis:e2e  # or just image: redis\n        resources:\n          requests:\n            cpu: 100m\n            memory: 100Mi\n        ports:\n        - containerPort: 6379\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-master-service.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: v1\nkind: Service\nmetadata:\n  name: redis-master\n  labels:\n    app: redis\n    role: master\n    tier: backend\nspec:\n  ports:\n  - name: redis\n    port: 6379\n    targetPort: 6379\n  selector:\n    app: redis\n    role: master\n    tier: backend\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-slave-deployment.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2\nkind: Deployment\nmetadata:\n  name: redis-slave\n  labels:\n    app: redis\n    tier: backend\nspec:\n  selector:\n    matchLabels:\n      app: redis\n      role: slave\n      tier: backend\n  replicas: 2\n  template:\n    metadata:\n      labels:\n        app: redis\n        role: slave\n        tier: backend\n    spec:\n      containers:\n      - name: slave\n        image: gcr.io/google_samples/gb-redisslave:v3\n        resources:\n          requests:\n            cpu: 100m\n            memory: 100Mi\n        env:\n        - name: GET_HOSTS_FROM\n          value: dns\n          # Using `GET_HOSTS_FROM=dns` requires your cluster to\n          # provide a dns service. As of Kubernetes 1.3, DNS is a built-in\n          # service launched automatically. However, if the cluster you are using\n          # does not have a built-in DNS service, you can instead\n          # access an environment variable to find the master\n          # service's host. To do so, comment out the 'value: dns' line above, and\n          # uncomment the line below:\n          # value: env\n        ports:\n        - containerPort: 6379\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          },
+          {
+            "filepath": "/Users/nickm/git/whisk/nickm/kui/plugins/plugin-kubectl/tests/data/k8s/application/guestbook/redis-slave-service.yaml",
+            "data": "#\n# Copyright 2021 The Kubernetes Authors\n#\n# Licensed under the Apache License, Version 2.0 (the \"License\");\n# you may not use this file except in compliance with the License.\n# You may obtain a copy of the License at\n#\n# http://www.apache.org/licenses/LICENSE-2.0\n#\n# Unless required by applicable law or agreed to in writing, software\n# distributed under the License is distributed on an \"AS IS\" BASIS,\n# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n# See the License for the specific language governing permissions and\n# limitations under the License.\n# \n\napiVersion: v1\nkind: Service\nmetadata:\n  name: redis-slave\n  labels:\n    app: redis\n    role: slave\n    tier: backend\nspec:\n  ports:\n  - port: 6379\n  selector:\n    app: redis\n    role: slave\n    tier: backend\n\n",
+            "isFor": "f",
+            "kind": "source",
+            "contentType": "yaml"
+          }
+        ]
+      },
+      "footer": [
+        "[[1s]](#kuiexec?command=kubectl%20get%20event%20frontend.16c788a2069a9174%20-o%20yaml%20%20-n%20kui-notebook-3%20) **deployment/frontend**: Scaled up replica set frontend-6c6d6dfd4d to 3",
+        "[[1s]](#kuiexec?command=kubectl%20get%20event%20redis-master.16c788a20d124b14%20-o%20yaml%20%20-n%20kui-notebook-3%20) **deployment/redis-master**: Scaled up replica set redis-master-f46ff57fd to 1",
+        "[[1s]](#kuiexec?command=kubectl%20get%20event%20redis-slave.16c788a212ca6924%20-o%20yaml%20%20-n%20kui-notebook-3%20) **deployment/redis-slave**: Scaled up replica set redis-slave-bbc7f655d to 2"
+      ]
+    }
+  },
+  {
+    "status": "done",
+    "response": {
+      "kind": "Deployment",
+      "apiVersion": "apps/v1",
+      "metadata": {
+        "name": "frontend",
+        "namespace": "kui-notebook-3",
+        "selfLink": "/apis/apps/v1/namespaces/kui-notebook-3/deployments/frontend",
+        "uid": "3f9ea68f-9142-4596-b2f6-3b7994bbd7af",
+        "resourceVersion": "8483239",
+        "generation": 1,
+        "creationTimestamp": "2022-01-06T01:00:18Z",
+        "labels": { "app": "guestbook", "tier": "frontend" },
+        "annotations": {
+          "deployment.kubernetes.io/revision": "1",
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"},\"name\":\"frontend\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"GET_HOSTS_FROM\",\"value\":\"dns\"}],\"image\":\"gcr.io/google-samples/gb-frontend:v4\",\"name\":\"php-redis\",\"ports\":[{\"containerPort\":80}],\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"100Mi\"}}}]}}}}\n"
+        },
+        "managedFields": [
+          {
+            "manager": "kubectl-client-side-apply",
+            "operation": "Update",
+            "apiVersion": "apps/v1",
+            "time": "2022-01-06T01:00:18Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": {
+                "f:annotations": { ".": {}, "f:kubectl.kubernetes.io/last-applied-configuration": {} },
+                "f:labels": { ".": {}, "f:app": {}, "f:tier": {} }
+              },
+              "f:spec": {
+                "f:progressDeadlineSeconds": {},
+                "f:replicas": {},
+                "f:revisionHistoryLimit": {},
+                "f:selector": { "f:matchLabels": { ".": {}, "f:app": {}, "f:tier": {} } },
+                "f:strategy": {
+                  "f:rollingUpdate": { ".": {}, "f:maxSurge": {}, "f:maxUnavailable": {} },
+                  "f:type": {}
+                },
+                "f:template": {
+                  "f:metadata": { "f:labels": { ".": {}, "f:app": {}, "f:tier": {} } },
+                  "f:spec": {
+                    "f:containers": {
+                      "k:{\"name\":\"php-redis\"}": {
+                        ".": {},
+                        "f:env": {
+                          ".": {},
+                          "k:{\"name\":\"GET_HOSTS_FROM\"}": { ".": {}, "f:name": {}, "f:value": {} }
+                        },
+                        "f:image": {},
+                        "f:imagePullPolicy": {},
+                        "f:name": {},
+                        "f:ports": {
+                          ".": {},
+                          "k:{\"containerPort\":80,\"protocol\":\"TCP\"}": {
+                            ".": {},
+                            "f:containerPort": {},
+                            "f:protocol": {}
+                          }
+                        },
+                        "f:resources": { ".": {}, "f:requests": { ".": {}, "f:cpu": {}, "f:memory": {} } },
+                        "f:terminationMessagePath": {},
+                        "f:terminationMessagePolicy": {}
+                      }
+                    },
+                    "f:dnsPolicy": {},
+                    "f:restartPolicy": {},
+                    "f:schedulerName": {},
+                    "f:securityContext": {},
+                    "f:terminationGracePeriodSeconds": {}
+                  }
+                }
+              }
+            }
+          },
+          {
+            "manager": "kube-controller-manager",
+            "operation": "Update",
+            "apiVersion": "apps/v1",
+            "time": "2022-01-06T01:00:22Z",
+            "fieldsType": "FieldsV1",
+            "fieldsV1": {
+              "f:metadata": { "f:annotations": { "f:deployment.kubernetes.io/revision": {} } },
+              "f:status": {
+                "f:availableReplicas": {},
+                "f:conditions": {
+                  ".": {},
+                  "k:{\"type\":\"Available\"}": {
+                    ".": {},
+                    "f:lastTransitionTime": {},
+                    "f:lastUpdateTime": {},
+                    "f:message": {},
+                    "f:reason": {},
+                    "f:status": {},
+                    "f:type": {}
+                  },
+                  "k:{\"type\":\"Progressing\"}": {
+                    ".": {},
+                    "f:lastTransitionTime": {},
+                    "f:lastUpdateTime": {},
+                    "f:message": {},
+                    "f:reason": {},
+                    "f:status": {},
+                    "f:type": {}
+                  }
+                },
+                "f:observedGeneration": {},
+                "f:readyReplicas": {},
+                "f:replicas": {},
+                "f:updatedReplicas": {}
+              }
+            }
+          }
+        ]
+      },
+      "spec": {
+        "replicas": 3,
+        "selector": { "matchLabels": { "app": "guestbook", "tier": "frontend" } },
+        "template": {
+          "metadata": { "creationTimestamp": null, "labels": { "app": "guestbook", "tier": "frontend" } },
+          "spec": {
+            "containers": [
+              {
+                "name": "php-redis",
+                "image": "gcr.io/google-samples/gb-frontend:v4",
+                "ports": [{ "containerPort": 80, "protocol": "TCP" }],
+                "env": [{ "name": "GET_HOSTS_FROM", "value": "dns" }],
+                "resources": { "requests": { "cpu": "100m", "memory": "100Mi" } },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "imagePullPolicy": "IfNotPresent"
+              }
+            ],
+            "restartPolicy": "Always",
+            "terminationGracePeriodSeconds": 30,
+            "dnsPolicy": "ClusterFirst",
+            "securityContext": {},
+            "schedulerName": "default-scheduler"
+          }
+        },
+        "strategy": { "type": "RollingUpdate", "rollingUpdate": { "maxUnavailable": "25%", "maxSurge": "25%" } },
+        "revisionHistoryLimit": 10,
+        "progressDeadlineSeconds": 600
+      },
+      "status": {
+        "observedGeneration": 1,
+        "replicas": 3,
+        "updatedReplicas": 3,
+        "readyReplicas": 3,
+        "availableReplicas": 3,
+        "conditions": [
+          {
+            "type": "Available",
+            "status": "True",
+            "lastUpdateTime": "2022-01-06T01:00:22Z",
+            "lastTransitionTime": "2022-01-06T01:00:22Z",
+            "reason": "MinimumReplicasAvailable",
+            "message": "Deployment has minimum availability."
+          },
+          {
+            "type": "Progressing",
+            "status": "True",
+            "lastUpdateTime": "2022-01-06T01:00:22Z",
+            "lastTransitionTime": "2022-01-06T01:00:18Z",
+            "reason": "NewReplicaSetAvailable",
+            "message": "ReplicaSet \"frontend-6c6d6dfd4d\" has successfully progressed."
+          }
+        ]
+      },
+      "isKubeResource": true,
+      "originatingCommand": {
+        "REPL": {},
+        "argv": ["kubectl", "get", "Deployment", "frontend", "-o", "yaml", "-n", "kui-notebook-3"],
+        "command": "kubectl get Deployment frontend -o yaml -n kui-notebook-3",
+        "execOptions": {
+          "echo": false,
+          "type": 1,
+          "noHistory": true,
+          "execUUID": "cee7c861-8222-4ea9-b181-fa2e35fd2412",
+          "env": {}
+        },
+        "argvNoOptions": ["kubectl", "get", "Deployment", "frontend"],
+        "pipeStages": {
+          "prefix": "",
+          "stages": [["kubectl", "get", "Deployment", "frontend", "-o", "yaml", "-n", "kui-notebook-3"]],
+          "redirect": ""
+        },
+        "parsedOptions": { "_": ["kubectl", "get", "Deployment", "frontend"], "o": "yaml", "n": "kui-notebook-3" }
+      },
+      "kuiRawData": "kind: Deployment\napiVersion: apps/v1\nmetadata:\n  name: frontend\n  namespace: kui-notebook-3\n  selfLink: /apis/apps/v1/namespaces/kui-notebook-3/deployments/frontend\n  uid: 3f9ea68f-9142-4596-b2f6-3b7994bbd7af\n  resourceVersion: '8483239'\n  generation: 1\n  creationTimestamp: '2022-01-06T01:00:18Z'\n  labels:\n    app: guestbook\n    tier: frontend\n  annotations:\n    deployment.kubernetes.io/revision: '1'\n    kubectl.kubernetes.io/last-applied-configuration: >\n      {\"apiVersion\":\"apps/v1\",\"kind\":\"Deployment\",\"metadata\":{\"annotations\":{},\"labels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"},\"name\":\"frontend\",\"namespace\":\"kui-notebook-3\"},\"spec\":{\"replicas\":3,\"selector\":{\"matchLabels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"}},\"template\":{\"metadata\":{\"labels\":{\"app\":\"guestbook\",\"tier\":\"frontend\"}},\"spec\":{\"containers\":[{\"env\":[{\"name\":\"GET_HOSTS_FROM\",\"value\":\"dns\"}],\"image\":\"gcr.io/google-samples/gb-frontend:v4\",\"name\":\"php-redis\",\"ports\":[{\"containerPort\":80}],\"resources\":{\"requests\":{\"cpu\":\"100m\",\"memory\":\"100Mi\"}}}]}}}}\n  managedFields:\n    - manager: kubectl-client-side-apply\n      operation: Update\n      apiVersion: apps/v1\n      time: '2022-01-06T01:00:18Z'\n      fieldsType: FieldsV1\n      fieldsV1:\n        f:metadata:\n          f:annotations:\n            .: {}\n            f:kubectl.kubernetes.io/last-applied-configuration: {}\n          f:labels:\n            .: {}\n            f:app: {}\n            f:tier: {}\n        f:spec:\n          f:progressDeadlineSeconds: {}\n          f:replicas: {}\n          f:revisionHistoryLimit: {}\n          f:selector:\n            f:matchLabels:\n              .: {}\n              f:app: {}\n              f:tier: {}\n          f:strategy:\n            f:rollingUpdate:\n              .: {}\n              f:maxSurge: {}\n              f:maxUnavailable: {}\n            f:type: {}\n          f:template:\n            f:metadata:\n              f:labels:\n                .: {}\n                f:app: {}\n                f:tier: {}\n            f:spec:\n              f:containers:\n                k:{\"name\":\"php-redis\"}:\n                  .: {}\n                  f:env:\n                    .: {}\n                    k:{\"name\":\"GET_HOSTS_FROM\"}:\n                      .: {}\n                      f:name: {}\n                      f:value: {}\n                  f:image: {}\n                  f:imagePullPolicy: {}\n                  f:name: {}\n                  f:ports:\n                    .: {}\n                    k:{\"containerPort\":80,\"protocol\":\"TCP\"}:\n                      .: {}\n                      f:containerPort: {}\n                      f:protocol: {}\n                  f:resources:\n                    .: {}\n                    f:requests:\n                      .: {}\n                      f:cpu: {}\n                      f:memory: {}\n                  f:terminationMessagePath: {}\n                  f:terminationMessagePolicy: {}\n              f:dnsPolicy: {}\n              f:restartPolicy: {}\n              f:schedulerName: {}\n              f:securityContext: {}\n              f:terminationGracePeriodSeconds: {}\n    - manager: kube-controller-manager\n      operation: Update\n      apiVersion: apps/v1\n      time: '2022-01-06T01:00:22Z'\n      fieldsType: FieldsV1\n      fieldsV1:\n        f:metadata:\n          f:annotations:\n            f:deployment.kubernetes.io/revision: {}\n        f:status:\n          f:availableReplicas: {}\n          f:conditions:\n            .: {}\n            k:{\"type\":\"Available\"}:\n              .: {}\n              f:lastTransitionTime: {}\n              f:lastUpdateTime: {}\n              f:message: {}\n              f:reason: {}\n              f:status: {}\n              f:type: {}\n            k:{\"type\":\"Progressing\"}:\n              .: {}\n              f:lastTransitionTime: {}\n              f:lastUpdateTime: {}\n              f:message: {}\n              f:reason: {}\n              f:status: {}\n              f:type: {}\n          f:observedGeneration: {}\n          f:readyReplicas: {}\n          f:replicas: {}\n          f:updatedReplicas: {}\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: guestbook\n      tier: frontend\n  template:\n    metadata:\n      creationTimestamp: null\n      labels:\n        app: guestbook\n        tier: frontend\n    spec:\n      containers:\n        - name: php-redis\n          image: gcr.io/google-samples/gb-frontend:v4\n          ports:\n            - containerPort: 80\n              protocol: TCP\n          env:\n            - name: GET_HOSTS_FROM\n              value: dns\n          resources:\n            requests:\n              cpu: 100m\n              memory: 100Mi\n          terminationMessagePath: /dev/termination-log\n          terminationMessagePolicy: File\n          imagePullPolicy: IfNotPresent\n      restartPolicy: Always\n      terminationGracePeriodSeconds: 30\n      dnsPolicy: ClusterFirst\n      securityContext: {}\n      schedulerName: default-scheduler\n  strategy:\n    type: RollingUpdate\n    rollingUpdate:\n      maxUnavailable: 25%\n      maxSurge: 25%\n  revisionHistoryLimit: 10\n  progressDeadlineSeconds: 600\nstatus:\n  observedGeneration: 1\n  replicas: 3\n  updatedReplicas: 3\n  readyReplicas: 3\n  availableReplicas: 3\n  conditions:\n    - type: Available\n      status: 'True'\n      lastUpdateTime: '2022-01-06T01:00:22Z'\n      lastTransitionTime: '2022-01-06T01:00:22Z'\n      reason: MinimumReplicasAvailable\n      message: Deployment has minimum availability.\n    - type: Progressing\n      status: 'True'\n      lastUpdateTime: '2022-01-06T01:00:22Z'\n      lastTransitionTime: '2022-01-06T01:00:18Z'\n      reason: NewReplicaSetAvailable\n      message: ReplicaSet \"frontend-6c6d6dfd4d\" has successfully progressed.\n",
+      "toolbarText": { "type": "info", "text": "Created on **1/5/2022, 8:00:18 PM**. Version **8483239**." },
+      "onclick": {
+        "kind": "kubectl get Deployment.v1.apps -n kui-notebook-3",
+        "name": "kubectl get Deployment.v1.apps -n kui-notebook-3 frontend",
+        "namespace": "kubectl get ns kui-notebook-3 -o yaml"
+      },
+      "defaultMode": "diff",
+      "modes": []
+    }
+  }
+]

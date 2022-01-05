@@ -81,9 +81,9 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
 
     /** Update upstream model with a response */
     arg1: T1
-    arg2: T2
-    arg3: T3
-    onResponse: (status: 'done' | 'error', KResponse, blockId: string, arg1: T1, arg2: T2, arg3: T3) => void
+    arg2?: T2
+    arg3?: T3
+    onResponse: (status: 'done' | 'error', KResponse, arg1: T1, arg2: T2, arg3: T3) => void
   }
 
 type State = Value &
@@ -337,11 +337,11 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         : 'done'
       this.setState({ execution, endTime })
 
-      this.props.onResponse(execution, response, this.props.blockId, this.props.arg1, this.props.arg2, this.props.arg3)
+      this.props.onResponse(execution, response, this.props.arg1, this.props.arg2, this.props.arg3)
       this.emitLinkStatus(execution)
     } catch (err) {
       this.setState({ execution: 'error', endTime: Date.now() })
-      this.props.onResponse('error', err, this.props.blockId, this.props.arg1, this.props.arg2, this.props.arg3)
+      this.props.onResponse('error', err, this.props.arg1, this.props.arg2, this.props.arg3)
       this.emitLinkStatus('error')
     } finally {
     }
