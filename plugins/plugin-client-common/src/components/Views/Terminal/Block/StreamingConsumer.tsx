@@ -106,8 +106,14 @@ export default abstract class StreamingConsumer<
     }
   }
 
+  private clearPriorStreamingOutput() {
+    this._streamingOutput = []
+    this.setState({ nStreamingOutputs: 0 })
+  }
+
   /** Wrap the execution of the given `cmdline` with handling of streaming output */
   protected async execWithStream(cmdline: string) {
+    this.clearPriorStreamingOutput()
     const streamingChannel = `/command/stdout/${this.props.tab.uuid}/${this.state.execUUID}`
 
     try {
