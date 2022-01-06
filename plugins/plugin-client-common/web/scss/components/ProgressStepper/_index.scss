@@ -37,8 +37,24 @@ $minor-step-color: var(--color-base05);
 
 /** Some @starpit overrides */
 @include ProgressStep {
+  @include Title {
+    strong {
+      font-weight: normal;
+    }
+    a {
+      color: var(--color-text-01);
+    }
+  }
+
+  @include Description {
+    margin-top: var(--pf-c-progress-stepper__step-description--MarginTop);
+    font-size: var(--pf-c-progress-stepper__step-description--FontSize);
+    color: var(--pf-c-progress-stepper__step-description--Color);
+    text-align: var(--pf-c-progress-stepper__step-description--TextAlign);
+  }
+
   @include Main {
-    margin-left: 0.5rem;
+    margin-top: 0;
     &:empty {
       margin-left: 0;
       margin-right: 0;
@@ -182,7 +198,7 @@ $minor-step-color: var(--color-base05);
   --pf-c-progress-stepper--m-compact__step-title--FontWeight: var(--pf-global--FontWeight--normal);
   --pf-c-progress-stepper__step-description--MarginTop: var(--pf-global--spacer--xs);
   --pf-c-progress-stepper__step-description--FontSize: var(--pf-global--FontSize--sm);
-  --pf-c-progress-stepper__step-description--Color: var(--pf-global--Color--200);
+  --pf-c-progress-stepper__step-description--Color: var(--color-text-02);
   --pf-c-progress-stepper__step-description--TextAlign: left;
   --pf-c-progress-stepper--m-center__step-description--TextAlign: center;
   position: relative;
