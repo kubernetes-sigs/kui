@@ -14,24 +14,30 @@ are presented with sortable ones. Instead of copying and pasting long
 auto-generated resource names to drill down, in Kui **you just
 click**.
 
-### Installation
+## Installation
 
-You may choose to download a prebuilt image that bundles the core Kui
-features:
+=== "Mac"
 
-[Kui-MacOS.tar.bz2](https://macos-tarball.kui-shell.org) **|** [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
+    For MacOS, this is simplified by the use of [Homebrew](https://brew.sh/):
 
-### Kui as a `kubectl` plugin
+    ```bash
+    ---
+    id: kui-installation-mac
+    validate: brew info kui
+    ---
+    brew install kui
+    kubectl kui get pods
+    ```
 
-To run Kui as `kubectl kui`, first ensure that your Kubernetes client
-version is 1.12 or higher. Then, add the unpacked directory to your
-PATH. For MacOS, the PATH is slightly different:
+=== "Linux and Windows"
+    
+    [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-```bash
-curl -L https://macos-tarball.kui-shell.org/ | tar jxf -
-export PATH=$PWD/Kui-darwin-x64/Kui.app/Contents/Resources:$PATH
-kubectl kui get pods
-```
+???+ tip "Kui as a `kubectl` plugin"
+
+    To run Kui as `kubectl kui`, add the unpacked directory to your
+    PATH. For users of Homebrew on macOS, this should happen automatically.
+
 
 ### Contributing
 
