@@ -218,7 +218,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     return (
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
         {this.timer()}
-        {this.status()}
+        {this.state.execution !== 'processing' && this.status()}
         <div className="flex-fill">
           <CodeSnippet
             wordWrap="on"
