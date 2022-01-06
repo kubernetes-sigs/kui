@@ -296,7 +296,7 @@ body[kui-theme-style='light'] {
 
 @include InvertedColors {
   @include MarkdownTip {
-    background-color: darken(#e7f1fa, 65%);
+    background-color: darken(#e7f1fa, 80%);
     filter: unset;
   }
 }
