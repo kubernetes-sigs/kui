@@ -33,12 +33,6 @@ click**.
     
     [Kui-Linux-x64.zip](https://linux-zip.kui-shell.org) **|** [Kui-Linux-arm64.zip](https://linux-arm64-zip.kui-shell.org) **|** [Kui-Win32-x64.zip](https://win32-zip.kui-shell.org)
 
-???+ tip "Kui as a `kubectl` plugin"
-
-    To run Kui as `kubectl kui`, add the unpacked directory to your
-    PATH. For users of Homebrew on macOS, this should happen automatically.
-
-
 ### Contributing
 
 Kui uses [Electron](https://electronjs.org). Using Electron, Kui can
@@ -51,6 +45,11 @@ guide](https://github.com/IBM/kui/wiki) and our
 [guidelines](CONTRIBUTING.md).
 
 ---
+
+???+ tip "Kui as a `kubectl` plugin"
+
+    To run Kui as `kubectl kui`, add the unpacked directory to your
+    PATH. For users of Homebrew on macOS, this should happen automatically.
 
 ## Listing Kubernetes Resources and Drilling Down
 
