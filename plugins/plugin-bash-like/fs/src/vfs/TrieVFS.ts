@@ -186,18 +186,17 @@ export abstract class TrieVFS<D extends any, L extends Leaf<D> = Leaf<D>> implem
   public cp(_, srcFilepaths: string[], dstFilepath: string): Promise<string> {
     return Promise.all(
       srcFilepaths.map(srcFilepath => {
-        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.md$/)
-        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.md$/)
-        const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
+        const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.(md|json)$/)
+        const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json)$/)
+        const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.(md|json)$/)
         const match = match1 || match2 || match3
         if (match) {
-          const extension = '.md'
-
           const dir = dirname(dstFilepath)
           if (!this.trieGet(dir)) {
             throw new Error(`Directory does not exist: ${dir}`)
           } else {
             const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
+            const extension = '.' + (match1 ? match1[3] : match2 ? match2[2] : match3[2])
             const mountPath = join(dstFilepath, file + extension)
             this.trie.map(mountPath, { mountPath, data: { srcFilepath } })
           }

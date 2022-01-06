@@ -45,29 +45,48 @@ export class NotebookVFS extends TrieVFS.TrieVFS<NotebookLeaf['data']> implement
   private async load(data: NotebookLeaf['data']): Promise<string> {
     const { srcFilepath } = data
 
-    const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.md$/)
-    const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.md$/)
-    const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.md$/)
+    const match1 = srcFilepath.match(/^plugin:\/\/plugin-(.*)\/notebooks\/(.*)\.(md|json)$/)
+    const match2 = srcFilepath.match(/^plugin:\/\/client\/notebooks\/(.*)\.(md|json)$/)
+    const match3 = srcFilepath.match(/^plugin:\/\/client\/(.*)\.(md|json)$/)
     const match = match1 || match2 || match3
     if (match) {
       try {
         const file = match1 ? match1[2] : match2 ? match2[1] : match3[1]
+        const extension = match1 ? match1[3] : match2 ? match2[2] : match3[2]
         const data = await (match1
-          ? import(
-              /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
-                match1[1] +
-                '/notebooks/' +
-                file +
-                '.md'
-            )
+          ? extension === 'md'
+            ? import(
+                /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
+                  match1[1] +
+                  '/notebooks/' +
+                  file +
+                  '.md'
+              )
+            : import(
+                /* webpackExclude: /tsconfig\.json/ */ /* webpackChunkName: "plugin-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/plugin-' +
+                  match1[1] +
+                  '/notebooks/' +
+                  file +
+                  '.json'
+              )
           : match2
+          ? extension === 'md'
+            ? import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.md'
+              )
+            : import(
+                /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
+                  file +
+                  '.json'
+              )
+          : extension === 'md'
           ? import(
-              /* webpackChunkName: "client-notebooks" */ /* webpackMode: "lazy" */ '@kui-shell/client/notebooks/' +
-                file +
-                '.md'
+              /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
             )
           : import(
-              /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.md'
+              /* webpackChunkName: "client-markdown" */ /* webpackMode: "lazy" */ '@kui-shell/client/' + file + '.json'
             ))
 
         return data.default
