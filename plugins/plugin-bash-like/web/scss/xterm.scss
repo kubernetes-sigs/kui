@@ -11,7 +11,7 @@ body[kui-theme-style] .kui--tab-content {
   }
 
   .xterm-terminated .xterm-rows > div {
-    white-space: pre;
+    white-space: pre-wrap;
   }
 
   .repl-result-like > div.xterm-container {
