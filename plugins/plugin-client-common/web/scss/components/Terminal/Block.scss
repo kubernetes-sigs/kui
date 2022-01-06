@@ -339,10 +339,3 @@ body[kui-theme-style] .kui--repl-block-right-element {
     opacity: 0;
   }
 }
-
-/** Markdown or Scalar uses a paragraph wrapper around the text output of PTY commands */
-@include CommandOutput {
-  p:only-child {
-    margin: 0;
-  }
-}

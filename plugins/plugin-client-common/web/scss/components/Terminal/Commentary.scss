@@ -16,6 +16,7 @@
 
 @import 'mixins';
 @import '../Card/mixins';
+@import '../Editor/mixins';
 @import '../Sidecar/mixins';
 @import '../common/narrow-window';
 @import '../ProgressStepper/mixins';
@@ -271,6 +272,7 @@ body[kui-theme-style='light'] {
 
   @include MarkdownTabButton {
     font-size: 0.875rem;
+    color: inherit;
   }
 
   @include Spinner {
@@ -292,6 +294,12 @@ body[kui-theme-style='light'] {
   }
 }
 
+@include InvertedColors {
+  @include MarkdownTip {
+    background-color: darken(#e7f1fa, 65%);
+    filter: unset;
+  }
+}
 @include MarkdownTip {
   background-color: #e7f1fa;
   filter: hue-rotate(-45deg);
@@ -344,6 +352,15 @@ pre > .pf-c-content {
   font-size: inherit;
   p {
     white-space: pre;
+  }
+}
+
+@include Commentary {
+  /* needed to override Editor stylings */
+  @include CodeBlock {
+    @include EditorBackground {
+      background-color: $input-bg-inverted;
+    }
   }
 }
 

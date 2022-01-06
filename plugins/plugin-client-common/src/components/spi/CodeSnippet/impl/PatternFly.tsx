@@ -43,7 +43,7 @@ export default class PatternFlyCodeSnippet extends React.PureComponent<Props> {
 
   private readonly style = {
     padding: '0.875em 0',
-    backgroundColor: 'var(--color-sidecar-background-01)',
+    backgroundColor: 'transparent',
     borderRadius: '6px' // copy github styling here
   }
 
