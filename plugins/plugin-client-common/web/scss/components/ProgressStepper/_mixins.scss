@@ -26,6 +26,18 @@
   }
 }
 
+@mixin Title {
+  .pf-c-progress-stepper__step-title {
+    @content;
+  }
+}
+
+@mixin Description {
+  .pf-c-progress-stepper__step-description {
+    @content;
+  }
+}
+
 @mixin Minor {
   &.pf-m-minor {
     @content;
