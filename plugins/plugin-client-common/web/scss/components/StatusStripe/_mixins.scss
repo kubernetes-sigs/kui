@@ -16,6 +16,16 @@
 
 $element-border: 1px solid var(--color-table-border2);
 
+/** StatusStripeChangeEvent.type */
+$fg-type-default: var(--color-text-01);
+$bg-type-default: var(--color-sidecar-header);
+$fg-type-blue: var(--color-base00);
+$bg-type-blue: var(--color-base05);
+$bg-type-yellow: var(--color-yellow);
+$bg-type-red: var(--color-red);
+
+$status-stripe-hover-bg-color: var(--color-table-border3);
+
 @mixin StatusStripe {
   .kui--status-stripe {
     @content;
