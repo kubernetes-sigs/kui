@@ -252,9 +252,21 @@ $action-hover-delay: 210ms;
   }
 }
 
+@mixin OutputOnly {
+  &[data-is-output-only] {
+    @content;
+  }
+}
+
+@mixin NotOutputOnly {
+  &:not([data-is-output-only]) {
+    @content;
+  }
+}
+
 @mixin FinishedBlockWithOutputOnly {
   @include FinishedBlock {
-    &[data-is-output-only] {
+    @include OutputOnly {
       @content;
     }
   }
@@ -262,7 +274,7 @@ $action-hover-delay: 210ms;
 
 @mixin FinishedBlockWithInputAndOutput {
   @include FinishedBlock {
-    &:not([data-is-output-only]) {
+    @include NotOutputOnly {
       @include BlockOutput {
         &.repl-result-has-content {
           @content;
@@ -274,7 +286,7 @@ $action-hover-delay: 210ms;
 
 @mixin FinishedBlockWithNoOutput {
   @include FinishedBlock {
-    &:not([data-is-output-only]) {
+    @include NotOutputOnly {
       @include BlockOutput {
         &:not(.repl-result-has-content) {
           @content;

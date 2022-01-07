@@ -30,7 +30,7 @@ export default function div(uuid: string) {
     if (!position || (position === 'default' && count === 0)) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section
-      return <div {...props} />
+      return <React.Fragment>{props.children}</React.Fragment>
     } else {
       // then we have a section that targets a given split position
       return (
@@ -46,7 +46,9 @@ export default function div(uuid: string) {
               </ReactCommentary>
             )
 
-            setTimeout(() => inject(uuid, node, (position + '-strip') as SplitPosition))
+            setTimeout(() =>
+              inject(uuid, node, (position + (position === 'default' ? '' : '-strip')) as SplitPosition, count)
+            )
             return <React.Fragment />
           }}
         </SplitInjector.Consumer>

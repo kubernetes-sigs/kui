@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+import { EventEmitter } from 'events'
 import { CommentaryResponse, Tab, i18n } from '@kui-shell/core'
 
 import Card from '../spi/Card'
@@ -42,14 +43,73 @@ type Props = CommentaryResponse['props'] & {
 }
 
 export default class Commentary extends React.PureComponent<Props, State> {
+  /** Allows decoupled edit/preview */
+  private static readonly events = new EventEmitter()
+
+  private readonly cleaners: (() => void)[] = []
+
   public constructor(props: Props) {
     super(props)
 
     const textValue = this.initialTextValue()
     this.state = {
-      isEdit: textValue.length === 0,
+      isEdit: props.edit === false ? false : props.edit || textValue.length === 0,
       textValue,
       lastAppliedTextValue: textValue
+    }
+
+    this.initCouplingEvents()
+  }
+
+  public componentWillUnmount() {
+    this.cleaners.forEach(_ => _())
+  }
+
+  public componentDidUpdate() {
+    if (this.props.send) {
+      // broadcast new textValue
+      Commentary.events.emit(this.editChannel, this.state.textValue)
+    }
+  }
+
+  /** Requests for current textValue */
+  private get getChannel() {
+    return `/get/${this.props.receive || this.props.send}`
+  }
+
+  /** Broadcast current textValue */
+  private get editChannel() {
+    return `/edit/${this.props.receive || this.props.send}`
+  }
+
+  private readonly onGet = (cb: (textValue: string) => void) => cb(this.state.textValue)
+  private readonly onEdit = (textValue: string) => this.setState({ textValue })
+
+  /** Are we a coupled view, i.e. split edit/preview? */
+  private get isCoupled() {
+    return this.props.send || this.props.receive
+  }
+
+  /**
+   * Register either as a producer or consumer of edit events. Allows
+   * for decoupled edit/preview views.
+   *
+   */
+  private initCouplingEvents() {
+    if (this.props.receive) {
+      // this is the preview side of the coupling
+      Commentary.events.on(this.editChannel, this.onEdit)
+      this.cleaners.push(() => Commentary.events.off(this.editChannel, this.onEdit))
+
+      // emit an initial request for the content
+      setTimeout(() => Commentary.events.emit(this.getChannel, this.onEdit))
+    } else if (this.props.send) {
+      // this is the edit side of the coupling
+      Commentary.events.on(this.getChannel, this.onGet)
+      this.cleaners.push(() => Commentary.events.off(this.getChannel, this.onGet))
+
+      // emit an initial value for the content
+      Commentary.events.emit(this.editChannel, this.state.textValue)
     }
   }
 
@@ -169,6 +229,22 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   private readonly _setEdit = this.setEdit.bind(this)
 
+  private preview() {
+    return (
+      this.props.preview !== false && (
+        <Markdown
+          nested
+          execUUID={this.props.execUUID}
+          filepath={this.props.filepath}
+          source={this.state.textValue}
+          codeBlockResponses={this.props.codeBlockResponses}
+          baseUrl={this.props.baseUrl}
+          tab={this.props.tab}
+        />
+      )
+    )
+  }
+
   private card() {
     return (
       <MutabilityContext.Consumer>
@@ -177,18 +253,10 @@ export default class Commentary extends React.PureComponent<Props, State> {
             <Card
               {...this.props}
               data-is-editing={this.state.isEdit || undefined}
-              header={this.state.isEdit && strings('Editing Comment as Markdown')}
-              footer={this.state.isEdit && this.toolbar()}
+              header={this.state.isEdit && this.props.header !== false && strings('Editing Comment as Markdown')}
+              footer={this.state.isEdit && !this.isCoupled && this.toolbar()}
             >
-              <Markdown
-                nested
-                execUUID={this.props.execUUID}
-                filepath={this.props.filepath}
-                source={this.state.textValue}
-                codeBlockResponses={this.props.codeBlockResponses}
-                baseUrl={this.props.baseUrl}
-                tab={this.props.tab}
-              />
+              {this.preview()}
               {this.state.isEdit && this.editor()}
             </Card>
           </span>
@@ -249,7 +317,11 @@ export default class Commentary extends React.PureComponent<Props, State> {
   public render() {
     this.props.onRender()
     return (
-      <div className="kui--commentary" data-is-editing={this.state.isEdit || undefined}>
+      <div
+        className="kui--commentary"
+        data-is-editing={this.state.isEdit || undefined}
+        data-no-header={this.props.header === false || undefined}
+      >
         {this.card()}
       </div>
     )

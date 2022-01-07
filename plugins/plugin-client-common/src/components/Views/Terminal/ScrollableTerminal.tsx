@@ -341,9 +341,11 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    * determine whether the a prior version of the node already exists
    * in that position.
    */
-  private readonly injectInSplit = (uuid: string, node: React.ReactNode, position: SplitPosition) => {
+  private readonly injectInSplit = (uuid: string, node: React.ReactNode, position: SplitPosition, count: number) => {
     const split =
-      this.state.splits.find(_ => _.position === position) ||
+      (position !== 'default'
+        ? this.state.splits.find(_ => _.position === position)
+        : this.state.splits.filter(_ => _.position === 'default')[count]) ||
       this.makePositionedSplit(position, position === 'left-strip')
 
     if (split) {

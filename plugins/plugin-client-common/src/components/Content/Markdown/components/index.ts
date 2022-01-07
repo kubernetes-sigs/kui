@@ -43,13 +43,13 @@ type Args = {
   ) => void
 }
 
-function typedComponents(codeIdx: () => number, args: Args): Components {
+function typedComponents(args: Args): Components {
   const { mdprops, repl, uuid, codeBlockResponses, spliceInCodeExecution } = args
 
   const a = _a(mdprops, uuid, repl)
   const div = _div(uuid)
   const img = _img(mdprops)
-  const code = _code(mdprops, codeIdx, codeBlockResponses, spliceInCodeExecution)
+  const code = _code(mdprops, codeBlockResponses, spliceInCodeExecution)
   const heading = _heading(uuid)
 
   return {
@@ -77,22 +77,15 @@ function typedComponents(codeIdx: () => number, args: Args): Components {
 
 /** avoid typing issues... */
 function components(args: Args) {
-  // hack until we do this correctly with an AST visitor
-  let codeIdx = 0
-  const allocCodeIdx = () => {
-    return codeIdx++
-  }
-
   const components = Object.assign(
     {
       tip,
       tabbed
     },
-    typedComponents(allocCodeIdx, args)
+    typedComponents(args)
   )
 
   return function mkComponents() {
-    codeIdx = 0
     return components
   }
 }

@@ -22,6 +22,7 @@ import { Common, CLI, Selectors, Util as TestUtil } from '@kui-shell/test'
 import { clickToExecuteBlock, Input } from './markdown-helpers'
 
 const ROOT = join(dirname(require.resolve('@kui-shell/plugin-client-common/tests/data/splits1.md')), '..')
+const ROOT2 = dirname(require.resolve('@kui-shell/plugin-client-common/notebooks/playground.md'))
 
 const IN1: Input = {
   input: join(ROOT, 'data', 'splits1.md'),
@@ -35,8 +36,8 @@ const IN1: Input = {
 const IN2: Input = {
   input: join(ROOT, 'data', 'splits2.md'),
   splits: [
-    Object.assign({ blocks: [{ index: 1, output: 'LEFT' }] }, IN1.splits[0]),
-    Object.assign({ blocks: [{ index: 0, output: 'DEFAULT' }] }, IN1.splits[1])
+    Object.assign({ blocks: [{ index: 0, output: 'LEFT' }] }, IN1.splits[0]),
+    Object.assign({ blocks: [{ index: 1, output: 'DEFAULT' }] }, IN1.splits[1])
   ]
 }
 
@@ -63,6 +64,20 @@ const IN3: Input = {
   ]
 }
 
+const IN4: Input = {
+  input: join(ROOT2, 'playground.md'),
+  splits: [
+    {
+      position: Selectors.SPLIT_DEFAULT.bind(undefined, Selectors.SPLIT_N(1)),
+      content: '# Welcome to the Kui Playground'
+    },
+    {
+      position: Selectors.SPLIT_DEFAULT.bind(undefined, Selectors.SPLIT_N(2)),
+      content: 'Welcome to the Kui Playground'
+    }
+  ]
+}
+
 async function verifySplit(this: Common.ISuite, { position, content }: typeof IN1['splits'][0]) {
   const split = await this.app.client.$(position())
   await split.waitForDisplayed({ timeout: CLI.waitTimeout })
@@ -70,13 +85,20 @@ async function verifySplit(this: Common.ISuite, { position, content }: typeof IN
   const result = await split.$(Selectors._RESULT)
   await result.waitForDisplayed({ timeout: CLI.waitTimeout })
 
-  await this.app.client.waitUntil(async () => {
-    const actualContent = await result.getText()
-    return actualContent.includes(content)
-  })
+  let n = 0
+  await this.app.client.waitUntil(
+    async () => {
+      const actualContent = await result.getText()
+      if (++n > 5) {
+        console.error(`still waiting for actualContent=${actualContent} expectedContent=${content}`)
+      }
+      return actualContent.includes(content)
+    },
+    { timeout: CLI.waitTimeout }
+  )
 }
 
-;[IN3, IN1, IN2].forEach(markdown => {
+;[IN4, IN3, IN1, IN2].forEach(markdown => {
   ;['forward', 'reverse'].forEach(blockExecutionOrder => {
     describe(`open splits from markdown ${basename(markdown.input)} in ${blockExecutionOrder} order ${process.env
       .MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {

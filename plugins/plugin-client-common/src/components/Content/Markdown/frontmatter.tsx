@@ -91,6 +91,10 @@ export function splitTarget(node) {
   }
 }
 
+function isValid(position: string) {
+  return position === 'default' || position === 'left' || position === 'right' || position === 'bottom'
+}
+
 /** Parse out the frontmatter at the top of a markdown file */
 export function kuiFrontmatter(opts: { tab: Tab }) {
   return tree => {
@@ -100,7 +104,8 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
     let frontmatter: KuiFrontmatter
 
     const newSection = (sectionIdx: number) => {
-      const position = frontmatter.layout[sectionIdx] || 'default'
+      const positionAsGiven = frontmatter.layout[sectionIdx]
+      const position = !isValid(positionAsGiven) ? 'default' : positionAsGiven
       const count = frontmatter.layoutCount[position] || 0
       frontmatter.layoutCount[position] = count + 1
 

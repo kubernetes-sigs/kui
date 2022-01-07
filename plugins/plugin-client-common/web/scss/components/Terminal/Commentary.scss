@@ -160,8 +160,6 @@ body[kui-theme-style] .pf-c-content {
 
   &[data-is-editing] {
     flex: 1;
-    min-width: 0;
-    max-width: 60em;
 
     .kui--commentary-card {
       min-width: 0;
@@ -243,9 +241,21 @@ body[kui-theme-style='light'] {
   }
 }
 
+/* Nested Blocks, due to the way Commentary is structured; see Inputv2.tsx */
+@include Block {
+  @include Block {
+    padding: 0;
+  }
+}
+
 @include Scrollback {
   @include Commentary {
     margin: 0 0.5em;
+
+    @include Commentary {
+      /* Nested Commentary */
+      margin: 0;
+    }
 
     @include MarkdownMajorParagraph {
       margin: 1.5em 0;
@@ -369,6 +379,10 @@ pre > .pf-c-content {
     @include CodeBlockActions {
       opacity: 1;
     }
+  }
+
+  p:only-child {
+    margin: 0;
   }
 }
 @include CodeBlockActions {

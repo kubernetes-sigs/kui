@@ -118,7 +118,7 @@ export default abstract class StreamingConsumer<
 
     try {
       Events.eventChannelUnsafe.on(streamingChannel, this._streamingConsumer)
-      return await pexecInCurrentTab(cmdline, undefined, false, true, this.state.execUUID)
+      return await pexecInCurrentTab(cmdline, this.props.tab, false, true, this.state.execUUID)
     } finally {
       Events.eventChannelUnsafe.off(streamingChannel, this._streamingConsumer)
     }
