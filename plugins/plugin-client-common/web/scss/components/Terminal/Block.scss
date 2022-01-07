@@ -149,9 +149,14 @@
     flex-direction: column;
     padding: 0.5em 0;
 
+    @include NotOutputOnly {
+      @include BlockOutput {
+        margin-top: 0.5em;
+      }
+    }
+
     /* special positioning for Actions inside of output-only versus input blocks */
     @include BlockOutput {
-      margin-top: 0.5em;
       @include BlockActions {
         top: -0.25em;
         bottom: calc(100% - 1.5em);

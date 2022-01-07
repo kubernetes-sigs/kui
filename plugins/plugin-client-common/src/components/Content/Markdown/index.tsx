@@ -34,6 +34,7 @@ import frontmatter from 'remark-frontmatter'
 import { filepathForResponses } from '../../../controller/commentary'
 
 import components from './components'
+import codeIndexer from './code-indexer'
 import { CodeBlockResponse } from './components/code'
 import tip, { hackTipIndentation } from './rehype-tip'
 import tabbed, { hackTabIndentation } from './rehype-tabbed'
@@ -42,7 +43,7 @@ import tabbed, { hackTabIndentation } from './rehype-tabbed'
 import rehypeRaw from 'rehype-raw'
 import rehypeSlug from 'rehype-slug'
 import { kuiFrontmatter, encodePriorResponses } from './frontmatter'
-const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, rehypeRaw, rehypeSlug]
+const rehypePlugins: Options['rehypePlugins'] = [tabbed, tip, codeIndexer, rehypeRaw, rehypeSlug]
 const remarkPlugins: (tab: KuiTab) => Options['plugins'] = tab => [
   gfm,
   [frontmatter, ['yaml', 'toml']],
@@ -147,12 +148,16 @@ export default class Markdown extends React.PureComponent<Props, State> {
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    if (state && state.codeBlockResponses.findIndex(_ => _ !== undefined) >= 0) {
+    if (
+      state &&
+      state.source === Markdown.source(props) &&
+      state.codeBlockResponses.findIndex(_ => _ !== undefined) >= 0
+    ) {
       return state
     } else if (!state || state.source !== props.source) {
       return {
         source: Markdown.source(props),
-        codeBlockResponses: props.codeBlockResponses || []
+        codeBlockResponses: (state && state.codeBlockResponses) || props.codeBlockResponses || []
       }
     } else {
       return state

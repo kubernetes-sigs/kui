@@ -31,15 +31,10 @@ export { CodeBlockResponse }
 
 export default function code(
   mdprops: Props,
-  codeIdx: () => number,
   codeBlockResponses: (codeBlockIdx: number) => CodeBlockResponse & { replayed: boolean },
   spliceInCodeExecution: (status: 'done' | 'error', response: KResponse, codeIdx: number) => void
 ) {
-  const spliceCodeWithResponseFrontmatter = (status: 'done' | 'error', response: KResponse, codeIdx: number) => {
-    spliceInCodeExecution(status, response, codeIdx)
-  }
-
-  return (props: CodeProps) => {
+  return (props: CodeProps & { codeIdx: string }) => {
     if (props.inline) {
       return <code className={props.className}>{props.children}</code>
     }
@@ -54,9 +49,9 @@ export default function code(
     const match = /language-(\w+)/.exec(props.className || '')
     const language = match ? match[1] : undefined
 
-    if (mdprops.nested && /^(bash|sh|shell)$/.test(language)) {
+    if (mdprops.nested && props.codeIdx) {
       // onContentChange={body => this.splice(codeWithResponseFrontmatter(body, attributes.response), props.node.position.start.offset, props.node.position.end.offset)}
-      const myCodeIdx = codeIdx()
+      const myCodeIdx = parseInt(props.codeIdx)
 
       const _response = codeBlockResponses(myCodeIdx)
       const status = _response ? _response.status : undefined
@@ -69,6 +64,10 @@ export default function code(
       // response is given but no status, that the status is 'done',
       // i.e. executed successfully to completion
       const statusConsideringReplay = !executed && (status === 'done' || status === 'error') ? 'replayed' : status
+
+      // don't show the input part, only the output part, of this code block
+      // TODO: we should also look at the command registration, for the command that was executed
+      const outputOnly = attributes.outputOnly === true || attributes.outputOnly === 'true'
 
       return (
         <React.Fragment>
@@ -84,8 +83,11 @@ export default function code(
             response={response}
             status={statusConsideringReplay}
             arg1={myCodeIdx}
-            onResponse={spliceCodeWithResponseFrontmatter}
+            onResponse={spliceInCodeExecution}
+            outputOnly={outputOnly}
+            executeImmediately={attributes.execute === 'now'}
             data-code-index={myCodeIdx}
+            data-is-maximized={attributes.maximize}
           />
         </React.Fragment>
       )

@@ -18,35 +18,20 @@
 @import 'common';
 @import '../../PatternFly/common';
 
-body[kui-theme-style] .kui--watch-pane {
-  @include Card {
-    background-color: var(--color-background-03);
-
-    .pf-c-card__body {
-      padding: 0 $body-spacing;
-    }
-
-    .pf-c-card__head {
-      padding: 0.1875em $body-spacing;
-      padding-right: 0; /* the actions svg has spacing... */
-      border-bottom: 1px solid var(--color-table-border3);
-      margin-bottom: calc(0.375em + 2px);
-    }
-    .pf-c-card__actions {
-      font-size: $master-font-size;
-    }
-    .pf-c-dropdown__menu {
-      padding: 0.5em 0;
-    }
-    .pf-c-dropdown__menu-item {
-      padding: 0.5em 1em;
-    }
-    .pf-c-card__head-main {
-      font-size: $master-font-size;
-      .pf-c-breadcrumb {
-        padding: 0;
-      }
-    }
+@mixin NoHorizontalPadding {
+  padding-left: 0;
+  padding-right: 0;
+}
+@include Card {
+  /* to get priority over PatternFly styles */
+  @include CardHeader {
+    @include NoHorizontalPadding;
+  }
+  @include CardBody {
+    @include NoHorizontalPadding;
+  }
+  @include CardFooter {
+    @include NoHorizontalPadding;
   }
 }
 

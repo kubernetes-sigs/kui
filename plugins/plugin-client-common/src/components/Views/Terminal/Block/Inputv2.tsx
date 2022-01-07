@@ -77,7 +77,11 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
     /** Execution status of the `response` property */
     status?: Status
 
-    hasBeenExecuted?: boolean
+    /** Execute on mount? */
+    executeImmediately?: boolean
+
+    /** Only display output? */
+    outputOnly?: boolean
 
     /** Update upstream model with a response */
     arg1: T1
@@ -116,6 +120,10 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   public componentDidMount() {
     this.initLinkEvents()
+
+    if (this.props.executeImmediately && !this.props.response) {
+      setTimeout(this._onRun)
+    }
   }
 
   public componentWillUnmount() {
@@ -359,6 +367,10 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     }
   }
 
+  private get outputOnly() {
+    return this.props.outputOnly !== true
+  }
+
   public render() {
     const dataProps = Object.entries(this.props)
       .filter(([key]) => /^data-/.test(key))
@@ -373,10 +385,11 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
           <li
             className={`repl-block ${this.responseStatus()} ${this.props.className || ''}`}
             data-is-executable={mutability.executable}
+            data-is-output-only={this.outputOnly || undefined}
             {...dataProps}
           >
-            {this.input()}
-            {this.sourceRef()}
+            {this.outputOnly && this.input()}
+            {this.outputOnly && this.sourceRef()}
             {this.output()}
           </li>
         )}

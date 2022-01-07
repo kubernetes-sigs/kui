@@ -31,6 +31,21 @@ export type CommentaryResponse = {
     /** Markdown source */
     children: string
 
+    /** Show header text indicating what we are doing (e.g. Editing Markdown) [Default: true] */
+    header?: boolean
+
+    /** Open in edit mode [Default: only if children.length === 0 */
+    edit?: boolean
+
+    /** Show a preview while editing [Default: true] */
+    preview?: boolean
+
+    /** Send edits to this channel (implies --no-header and --no-preview and --edit) */
+    send?: string
+
+    /** Consume edits from this channel (implies --no-header and --no-edit and --preview) */
+    receive?: string
+
     /** CodeBlock responses */
     codeBlockResponses?: { status: 'done' | 'error'; response: KResponse }[]
 

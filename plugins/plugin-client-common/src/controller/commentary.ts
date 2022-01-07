@@ -31,15 +31,16 @@ import {
 /**
  * commentary command parsedOptions type
  */
-interface CommentaryOptions extends ParsedOptions {
-  f: string
-  file: string
-  title: string
-  'base-url': string
+type CommentaryOptions = ParsedOptions &
+  Pick<CommentaryResponse['props'], 'header' | 'edit' | 'preview' | 'receive' | 'send'> & {
+    f: string
+    file: string
+    title: string
+    'base-url': string
 
-  /** Toggle the tab to be in readonly mode */
-  readonly: boolean
-}
+    /** Toggle the tab to be in readonly mode */
+    readonly: boolean
+  }
 
 /**
  * commentary command usage
@@ -61,8 +62,28 @@ const usage: UsageModel = {
       docs: 'Base URL for images'
     },
     {
+      name: '--edit',
+      docs: 'Open the UI in edit mode'
+    },
+    {
+      name: '--header',
+      docs: 'Show header text [Default: true]'
+    },
+    {
+      name: '--preview',
+      docs: 'Show a preview while editing [Default: true]'
+    },
+    {
       name: '--readonly',
       docs: 'Set the enclosing tab to be readonly'
+    },
+    {
+      name: '--send',
+      docs: 'Send edits to this channel (implies --no-header and --no-preview)'
+    },
+    {
+      name: '--receive',
+      docs: 'Consume edits from this channel (implies --no-header and --no-edit)'
     },
     {
       name: '--file',
@@ -120,8 +141,13 @@ function formatBaseUrl(filepath: string) {
 }
 
 async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
-  const { title, readonly } = args.parsedOptions
+  const { edit: _edit, header: _header, preview: _preview, receive, send, title, readonly } = args.parsedOptions
+
   const filepath = args.parsedOptions.file || args.parsedOptions.f
+
+  const edit = receive !== undefined ? false : send !== undefined ? true : _edit
+  const header = receive !== undefined || send !== undefined ? false : _header
+  const preview = send !== undefined ? false : receive !== undefined ? true : _preview
 
   // the markdown data either comes from a file, or directly from the
   // command line
@@ -134,7 +160,9 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           .trim()
           .replace(/\\n/g, '\n')
           .replace(/\\t/g, '\t')
-          .replace(/(-t|--title)\s+\S+/, ''),
+          .replace(/--(no-)?(header|edit|preview|readonly)\s*/g, '')
+          .replace(/(-t|--title|--send|--receive)\s+\S+\s*/g, '')
+          .replace(/^\\#/, '#'), // escaped initial comment -> h1
         codeBlockResponses: undefined
       }
 
@@ -154,6 +182,11 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
         apiVersion: 'kui-shell/v1',
         kind: 'CommentaryResponse',
         props: {
+          edit,
+          header,
+          preview,
+          receive,
+          send,
           title,
           children: '',
           baseUrl
@@ -164,6 +197,11 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
         apiVersion: 'kui-shell/v1',
         kind: 'CommentaryResponse',
         props: {
+          edit,
+          header,
+          preview,
+          receive,
+          send,
           title,
           filepath,
           children: data,
@@ -183,9 +221,9 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
  * This plugin introduces the /card command
  *
  */
-export default async (commandTree: Registrar) => {
+export default function registerCommentaryController(commandTree: Registrar) {
   const flags = {
-    boolean: ['readonly']
+    boolean: ['edit', 'header', 'preview', 'readonly']
   }
 
   commandTree.listen('/commentary', addComment, { usage, outputOnly: true, flags })
