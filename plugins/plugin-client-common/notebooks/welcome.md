@@ -78,8 +78,6 @@ Kui has enhanced views over Kubernetes events.
 k get events
 ```
 
----
-
 ## Viewing an Kubernetes Application
 
 Kui also has enhanced views over heterogeneous collections of

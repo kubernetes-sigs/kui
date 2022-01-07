@@ -35,8 +35,8 @@ const IN1: Input = {
 const IN2: Input = {
   input: join(ROOT, 'data', 'splits2.md'),
   splits: [
-    Object.assign({ blocks: [{ index: 2, output: 'LEFT' }] }, IN1.splits[0]),
-    Object.assign({ blocks: [{ index: 1, output: 'DEFAULT' }] }, IN1.splits[1])
+    Object.assign({ blocks: [{ index: 1, output: 'LEFT' }] }, IN1.splits[0]),
+    Object.assign({ blocks: [{ index: 0, output: 'DEFAULT' }] }, IN1.splits[1])
   ]
 }
 
