@@ -24,8 +24,12 @@ const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({
 
 export default function div(uuid: string) {
   return (props: React.HTMLAttributes<HTMLDivElement>) => {
-    const splitTarget = props['data-kui-split']
-    if (!splitTarget || splitTarget === 'default') {
+    const position = props['data-kui-split']
+    const count = props['data-kui-split-count'] ? parseInt(props['data-kui-split-count'], 10) : undefined
+
+    if (!position || (position === 'default' && count === 0)) {
+      // don't create a split if a position wasn't indicated, or if
+      // this is the first default-positioned section
       return <div {...props} />
     } else {
       // then we have a section that targets a given split position
@@ -42,7 +46,7 @@ export default function div(uuid: string) {
               </ReactCommentary>
             )
 
-            setTimeout(() => inject(uuid, node, (splitTarget + '-strip') as SplitPosition))
+            setTimeout(() => inject(uuid, node, (position + '-strip') as SplitPosition))
             return <React.Fragment />
           }}
         </SplitInjector.Consumer>

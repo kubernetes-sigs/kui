@@ -1,21 +1,13 @@
 ---
 layout:
   1: left
-  4: bottom
+  3: bottom
 ---
 
 **This should appear in a left split.**
 
 ```bash
 echo LEFT
-```
-
----
-
-**This should appear in a right split.**
-
-```bash
-echo RIGHT
 ```
 
 ---

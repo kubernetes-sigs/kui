@@ -70,6 +70,8 @@ interface KuiFrontmatter {
   /** Title of the Notebook */
   title?: string
 
+  layoutCount?: Record<string, number>
+
   /**
    * A mapping that indicates which section (the `number` values) should be rendered in a given split position.
    */
@@ -97,18 +99,24 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
 
     let frontmatter: KuiFrontmatter
 
-    const newSection = (sectionIdx: number) =>
-      u(
+    const newSection = (sectionIdx: number) => {
+      const position = frontmatter.layout[sectionIdx] || 'default'
+      const count = frontmatter.layoutCount[position] || 0
+      frontmatter.layoutCount[position] = count + 1
+
+      return u(
         'subtree',
         {
           data: {
             hProperties: {
-              'data-kui-split': frontmatter.layout[sectionIdx] || 'default' // `<!-- ____KUI_SPLIT____ ${frontmatter.layout[sectionIdx] || 'default'} -->`,
+              'data-kui-split': position,
+              'data-kui-split-count': count
             }
           }
         },
         []
       )
+    }
 
     tree.children = tree.children.reduce((newChildren, node) => {
       if (node.type === 'yaml') {
@@ -118,6 +126,7 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
             frontmatter = load(node.value)
 
             if (frontmatter.layout) {
+              frontmatter.layoutCount = {}
               currentSection = newSection(sectionIdx)
             }
 

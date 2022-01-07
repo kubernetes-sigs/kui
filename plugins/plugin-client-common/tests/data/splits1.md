@@ -1,14 +1,10 @@
 ---
 layout:
   1: left
-  4: bottom
+  3: bottom
 ---
 
 **This should appear in a left split.**
-
----
-
-**This should appear in a right split.**
 
 ---
 
