@@ -282,7 +282,6 @@ body[kui-theme-style='light'] {
 
   @include MarkdownTabButton {
     font-size: 0.875rem;
-    color: inherit;
   }
 
   @include Spinner {
@@ -304,20 +303,30 @@ body[kui-theme-style='light'] {
   }
 }
 
-@include InvertedColors {
+@mixin InvertedTipAndTab {
   @include MarkdownTip {
-    background-color: darken(#e7f1fa, 80%);
-    filter: unset;
+    color: var(--color-base00);
+  }
+  @include MarkdownActiveTabButton {
+    color: var(--color-text-01);
   }
 }
+@include InvertedColors {
+  @include InvertedTipAndTab;
+}
+body[kui-theme-style='dark'] {
+  @include InvertedTipAndTab;
+}
+
 @include MarkdownTip {
   background-color: #e7f1fa;
   filter: hue-rotate(-45deg);
 
-  @include ExpandableSectionButton {
+  @include ExpandableSectionToggle {
     width: 100%;
     padding-top: 0.6875em;
     padding-bottom: 0.6875em;
+    mix-blend-mode: multiply;
   }
 }
 
@@ -329,17 +338,14 @@ body[kui-theme-style='light'] {
 }
 
 @include MarkdownTabContent {
-  .paragraph:first-child {
-    padding-top: 0;
-  }
-  .paragraph:last-child {
-    padding-bottom: 0;
+  @include CardBody {
+    & > pre {
+      padding-top: 1em;
+    }
   }
 }
 
 @include MarkdownTabContentCard {
-  padding: 0 1em;
-
   /** Nested tabs */
   @include MarkdownTabContentCard {
     padding: 0;

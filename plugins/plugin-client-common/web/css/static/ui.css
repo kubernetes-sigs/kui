@@ -858,7 +858,7 @@ body[kui-theme-style="dark"] .repl {
 .kui .page-content code.kui--code--editor {
   display: block;
   padding: 1em;
-  background-color: var(--color-sidecar-background-01);
+  background-color: var(--color-sidecar-background-02);
 }
 
 .page-content pre > code {

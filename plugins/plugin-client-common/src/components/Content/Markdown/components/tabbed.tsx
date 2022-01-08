@@ -24,7 +24,7 @@ import Card from '../../../spi/Card'
 export default function tabbed(props) {
   // isSecondary={parseInt(props.depth, 10) > 0}
   return (
-    <Tabs className="kui--markdown-tabs paragraph" defaultActiveKey={0}>
+    <Tabs className="kui--markdown-tabs paragraph" defaultActiveKey={0} mountOnEnter unmountOnExit>
       {(props.children || []).map((_, idx) => (
         <Tab
           className="kui--markdown-tab"

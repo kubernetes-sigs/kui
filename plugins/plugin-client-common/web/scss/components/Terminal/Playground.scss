@@ -22,13 +22,19 @@
   flex-direction: column;
 }
 
+@mixin FullHeight {
+  flex: 1;
+}
+
 @include ScrollbackBlockListInner {
   @include FlexFill;
 }
 
 @include FinishedBlock {
   &:only-child {
-    flex: 1;
+    margin: 0;
+    padding: 0;
+    @include FullHeight;
 
     .kui--code-block-in-markdown {
       &:not([data-is-maximized]) {
@@ -37,14 +43,26 @@
     }
     @include BlockOutput {
       &:not(.kui--code-block-in-markdown) {
-        flex: 1;
+        @include FullHeight;
       }
     }
+    @include MarkdownTabContent {
+      @include FlexFill;
+      @include FullHeight;
+    }
+    @include MarkdownTabContentCard {
+      @include FullHeight;
+    }
     @include CommandOutput {
-      flex: 1;
+      @include FullHeight;
     }
     @include CardBody {
       @include FlexFill;
+
+      & > pre {
+        @include FlexFill;
+        @include FullHeight;
+      }
     }
 
     @include InputWrapper {
@@ -53,12 +71,12 @@
 
     .pf-c-content,
     .marked-content {
-      flex: 1;
       @include FlexFill;
+      @include FullHeight;
 
       & > pre {
-        flex: 1;
         @include FlexFill;
+        @include FullHeight;
       }
     }
   }

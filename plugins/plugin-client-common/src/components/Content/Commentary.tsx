@@ -63,6 +63,11 @@ export default class Commentary extends React.PureComponent<Props, State> {
 
   public componentWillUnmount() {
     this.cleaners.forEach(_ => _())
+
+    if (this.props.send) {
+      // broadcast clear
+      Commentary.events.emit(this.editChannel, '')
+    }
   }
 
   public componentDidUpdate() {
@@ -109,7 +114,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
       this.cleaners.push(() => Commentary.events.off(this.getChannel, this.onGet))
 
       // emit an initial value for the content
-      Commentary.events.emit(this.editChannel, this.state.textValue)
+      setTimeout(() => Commentary.events.emit(this.editChannel, this.state.textValue))
     }
   }
 
@@ -230,8 +235,8 @@ export default class Commentary extends React.PureComponent<Props, State> {
   private readonly _setEdit = this.setEdit.bind(this)
 
   private preview() {
-    return (
-      this.props.preview !== false && (
+    if (this.props.preview !== false) {
+      return (
         <Markdown
           nested
           execUUID={this.props.execUUID}
@@ -242,7 +247,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
           tab={this.props.tab}
         />
       )
-    )
+    }
   }
 
   private card() {
@@ -304,6 +309,7 @@ export default class Commentary extends React.PureComponent<Props, State> {
           className="kui--source-ref-editor kui--commentary-editor"
           readonly={false}
           simple
+          wordWrap="on"
           onSave={this._onSaveFromEditor}
           onCancel={this._onCancelFromEditor}
           onContentChange={this._onContentChange}
