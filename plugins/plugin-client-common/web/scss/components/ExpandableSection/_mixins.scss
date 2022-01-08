@@ -38,9 +38,15 @@ $expandablesection--spacing: 0.125rem;
   }
 }
 
+@mixin ExpandableSectionToggle {
+  .pf-c-expandable-section__toggle {
+    @content;
+  }
+}
+
 @mixin ExpandableSectionButton {
   @include ExpandableSection {
-    .pf-c-expandable-section__toggle {
+    @include ExpandableSectionToggle {
       @content;
     }
   }

@@ -26,6 +26,10 @@ export default async () => {
     notebookVFS.cp(
       undefined,
       [
+        'plugin://plugin-client-common/notebooks/code-blocks.md',
+        'plugin://plugin-client-common/notebooks/expandable-section.md',
+        'plugin://plugin-client-common/notebooks/hints.md',
+        'plugin://plugin-client-common/notebooks/tabs.md',
         'plugin://plugin-client-common/notebooks/welcome.md',
         'plugin://plugin-client-common/notebooks/welcome.json',
         'plugin://plugin-client-common/notebooks/make-notebook.md',

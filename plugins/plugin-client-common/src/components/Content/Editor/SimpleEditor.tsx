@@ -216,6 +216,7 @@ export default class SimpleEditor extends React.Component<Props, State> {
         Events.eventBus.onTabLayoutChange(props.tabUUID, onTabLayoutChange)
         cleaners.push(() => Events.eventBus.offTabLayoutChange(props.tabUUID, onTabLayoutChange))
       }
+      setTimeout(() => editor.layout(), 50)
 
       cleaners.push(() => {
         editor.dispose()

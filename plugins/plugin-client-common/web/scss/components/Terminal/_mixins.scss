@@ -528,15 +528,34 @@ $action-hover-delay: 210ms;
   }
 }
 @mixin MarkdownTabContent {
-  .kui--markdown-tab {
+  section.kui--markdown-tab:not([hidden]) {
     @content;
   }
 }
 
+@mixin MarkdownTabButtonContainer {
+  .kui--markdown-tab {
+    @content;
+  }
+}
+@mixin ActiveTab {
+  &.pf-m-current {
+    @content;
+  }
+}
 @mixin MarkdownTabButton {
-  @include MarkdownTabContent {
+  @include MarkdownTabButtonContainer {
     button {
       @content;
+    }
+  }
+}
+@mixin MarkdownActiveTabButton {
+  @include MarkdownTabButtonContainer {
+    @include ActiveTab {
+      button {
+        @content;
+      }
     }
   }
 }
