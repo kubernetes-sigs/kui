@@ -349,7 +349,7 @@ class InProcessExecutor implements Executor {
       const { argvNoOptions, parsedOptions } = this.parseOptions(argv, evaluator)
 
       if (evaluator.options && evaluator.options.requiresLocal && !hasLocalAccess()) {
-        debug('command does not work in a browser')
+        debug('command does not work in a browser', originalCommand)
         const err = new Error('Command requires local access') as CommandEvaluationError
         err.code = 406 // http not acceptable
         err.kind = 'commandresolution'
