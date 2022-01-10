@@ -74,9 +74,11 @@ export default function(registrar: Registrar) {
         // avoid pulling in electron for purely browser-based clients
         return REPL.qexec(`replay-electron ${filepaths}`)
       } else {
-        await Promise.all(
-          filepaths.map(async filepath => {
-            const cmdline = `commentary --readonly -f ${encodeComponent(filepath)}`
+        const cmdline = (filepath: string) => `commentary --readonly -f ${encodeComponent(filepath)}`
+
+        await Promise.all([
+          parsedOptions.r ? REPL.pexec(cmdline(filepaths[0]), { noHistory: true }) : true,
+          ...filepaths.slice(parsedOptions.r ? 1 : 0).map(async filepath => {
             const src = await loadNotebook(REPL, filepath)
 
             const fm = await import('front-matter').then(_ => _.default<{ title?: string }>(src))
@@ -84,15 +86,18 @@ export default function(registrar: Registrar) {
             const titleProps = fm.attributes.title ? `--title ${encodeComponent(fm.attributes.title)}` : ''
 
             return REPL.qexec(
-              `tab new --cmdline "${cmdline}" ${titleProps} --status-stripe-type ${parsedOptions['status-stripe'] ||
-                'blue'}`,
+              `tab new --cmdline "${cmdline(filepath)}" ${titleProps} --status-stripe-type ${parsedOptions[
+                'status-stripe'
+              ] || 'blue'}`,
               undefined,
               undefined,
               { data: { 'status-stripe-message': message } }
             )
           })
-        )
+        ])
       }
+
+      return true
     },
     replayUsage
   )
