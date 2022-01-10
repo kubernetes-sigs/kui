@@ -57,9 +57,9 @@
       @include FullHeight;
     }
     @include CardBody {
-      @include FlexFill;
+      /*@include FlexFill;*/
 
-      & > pre {
+      & > pre:only-child {
         @include FlexFill;
         @include FullHeight;
       }
@@ -74,7 +74,7 @@
       @include FlexFill;
       @include FullHeight;
 
-      & > pre {
+      & > pre:only-child {
         @include FlexFill;
         @include FullHeight;
       }

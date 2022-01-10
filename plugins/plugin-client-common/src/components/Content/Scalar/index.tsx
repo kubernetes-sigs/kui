@@ -139,13 +139,11 @@ export default class Scalar extends React.PureComponent<Props, State> {
         return <Ansi onRender={this._onRender}>{message}</Ansi>
       } else {
         return (
-          <pre>
-            <Markdown
-              tab={tab}
-              source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')}
-              onRender={this._onRender}
-            />
-          </pre>
+          <Markdown
+            tab={tab}
+            source={message.replace(/\\/g, '\\\\').replace(/\n/g, '\n\n')}
+            onRender={this._onRender}
+          />
         )
       }
     } else if (isCommentaryResponse(response)) {

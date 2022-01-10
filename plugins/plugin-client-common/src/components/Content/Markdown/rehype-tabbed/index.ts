@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { START_OF_TIP, END_OF_TIP } from '../rehype-tip'
+
 // const RE_TAB = /^(.|[\n\r])*===\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
 const RE_TAB = /^===\s+"(.+)"/
 
@@ -25,7 +27,7 @@ export default function plugin(/* options */) {
   return function transformer(tree) {
     const tabStack = []
     let currentTabs = []
-    const flushTabs = children => {
+    const _flushTabs = children => {
       if (currentTabs.length > 0) {
         children.push({
           type: 'element',
@@ -42,6 +44,16 @@ export default function plugin(/* options */) {
       }
     }
 
+    const flushTabs = children => {
+      if (tabStack.length > 0) {
+        const parentTabs = tabStack[tabStack.length - 1]
+        const lastParentTab = parentTabs[parentTabs.length - 1]
+        _flushTabs(lastParentTab.children)
+      } else {
+        _flushTabs(children)
+      }
+    }
+
     const process = children =>
       children.reduce((newChildren, child) => {
         const addToTab = child => {
@@ -54,13 +66,7 @@ export default function plugin(/* options */) {
         }
 
         if (child.type === 'raw' && child.value === END_OF_TAB) {
-          if (tabStack.length > 0) {
-            const parentTabs = tabStack[tabStack.length - 1]
-            const lastParentTab = parentTabs[parentTabs.length - 1]
-            flushTabs(lastParentTab.children)
-          } else {
-            flushTabs(newChildren)
-          }
+          flushTabs(newChildren)
           return newChildren
         } else if (child.type === 'raw' && child.value === PUSH_TABS) {
           tabStack.push(currentTabs)
@@ -102,7 +108,7 @@ export default function plugin(/* options */) {
                     tagName: 'span', // do not use 'li'
                     // here. something after us seems
                     // to join nested tabs together
-                    properties: { title: startMatch[1] },
+                    properties: { title: startMatch[1], depth: tabStack.length },
                     children: rest ? [{ type: 'text', value: rest }] : [],
                     position
                   })
@@ -133,7 +139,7 @@ export default function plugin(/* options */) {
       tree.children = process(tree.children)
     }
 
-    if (currentTabs.length > 0) {
+    while (currentTabs.length > 0) {
       flushTabs(tree.children)
     }
     return tree
@@ -145,74 +151,123 @@ export default function plugin(/* options */) {
  * to turn these into <pre> blocks before we get control; hack it for
  * now
  */
-export function hackTabIndentation(source: string): string {
+export function hackIndentation(source: string): string {
   let inTab: RegExp
   let inBlockquote = false
   let inCodeBlock = false
-  let inTabReplacement: string
-  let indentation: string
+  const replacement = ''
+  const endMarkers: string[] = []
 
-  if (source.includes(START_OF_TAB)) {
-    return source
-  }
+  const indentDepthOfContent: number[] = []
 
-  return source
-    .split(/\n/)
-    .map(line => {
-      const startMatch = line.match(/^(\s*)===\s+".*"/)
-      if (!inBlockquote && startMatch) {
-        const thisTabsIndentation = startMatch[1] || ''
+  const rewrite = source.split(/\n/).map(line => {
+    const tabStartMatch = line.match(/^(\s*)===\s+".*"/)
+    const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|info|note|warning)\s+".*"/)
+    const startMatch = tabStartMatch || tipStartMatch
 
-        const possibleEndTab = !(inTab && indentation.length > thisTabsIndentation.length)
-          ? ''
-          : `\n${inTabReplacement}${END_OF_TAB}\n\n`
+    const pop = (line: string, delta = 0) => {
+      const indentMatch = line.match(/^\s+/)
+      const curIndentDepth = indentDepthOfContent[indentDepthOfContent.length - 1]
+      const thisIndentDepth = !indentMatch ? 0 : ~~(indentMatch[0].length / 4)
 
-        const possibleNesting = !(inTab && indentation.length < thisTabsIndentation.length)
-          ? ''
-          : `\n\n${PUSH_TABS}\n\n`
-
-        inTabReplacement = ''
-        indentation = thisTabsIndentation
-        inTab = new RegExp('^' + indentation + '(\\t| {4})')
-
-        return (
-          `\n\n${possibleEndTab}${possibleNesting}${inTabReplacement}${START_OF_TAB}\n\n` +
-          line.replace(new RegExp('^' + indentation), inTabReplacement)
-        )
-      } else if (/^\s*```/.test(line)) {
-        const possibleEndOfTab = !inTab || inTab.test(line) ? '' : `\n${inTabReplacement}${END_OF_TAB}\n\n`
-        if (possibleEndOfTab) {
-          inTab = undefined
-        }
-
-        if (/(bash|sh|shell)/.test(line)) {
-          inCodeBlock = true
-          return possibleEndOfTab + line.replace(inTab, inTabReplacement)
-        } else if (inCodeBlock) {
-          inCodeBlock = false
-          return possibleEndOfTab + line.replace(inTab, inTabReplacement)
-        } else {
-          inBlockquote = !inBlockquote
-          if (inTab) {
-            return possibleEndOfTab
-          }
-        }
-      } else if (inTab) {
-        if (line.length === 0 || /^\s+$/.test(line)) {
-          // empty line: still in tab
-          return line
-        } else if (inBlockquote) {
-          // in blockquote, don't modify anything with spacing
-          return line
-        } else if (inTab.test(line)) {
-          // indented line while in tab
-          return line.replace(inTab, inTabReplacement)
-        } else {
-          inTab = undefined
-          return `\n${inTabReplacement}${END_OF_TAB}\n\n` + line
+      let pop = ''
+      for (let idx = curIndentDepth; idx > thisIndentDepth + delta; idx--) {
+        indentDepthOfContent.pop()
+        const endMarker = endMarkers.pop()
+        if (endMarker) {
+          pop += `\n${endMarker}\n\n`
         }
       }
-      return line
-    })
-    .join('\n')
+
+      if (pop) {
+        if (endMarkers.length === 0) {
+          inTab = undefined
+        } else {
+          const indentDepth = indentDepthOfContent[indentDepthOfContent.length - 1]
+          inTab = new RegExp(
+            '^' +
+              Array(indentDepth * 4)
+                .fill(' ')
+                .join('')
+          )
+        }
+      }
+      return pop
+    }
+
+    if (!inBlockquote && startMatch) {
+      const thisIndentation = startMatch[1] || ''
+      const indentDepth = indentDepthOfContent[indentDepthOfContent.length - 1] || 0
+      const thisIndentDepth = !thisIndentation ? 1 : ~~(thisIndentation.length / 4) + 1
+
+      const possibleEndTab = !(inTab && indentDepth > thisIndentDepth) ? '' : pop(line, 1)
+
+      const possibleNesting = !(
+        inTab &&
+        tabStartMatch &&
+        indentDepth < thisIndentDepth &&
+        endMarkers.find(_ => _ === END_OF_TAB)
+      )
+        ? ''
+        : `\n\n${PUSH_TABS}\n\n`
+
+      const startMarker = tabStartMatch ? START_OF_TAB : START_OF_TIP
+
+      if (endMarkers.length === 0 || thisIndentDepth > indentDepth) {
+        const endMarker = tabStartMatch ? END_OF_TAB : END_OF_TIP
+        endMarkers.push(endMarker)
+        indentDepthOfContent.push(thisIndentDepth)
+      }
+
+      inTab = new RegExp(
+        '^' +
+          Array(thisIndentDepth * 4)
+            .fill(' ')
+            .join('')
+      )
+
+      return (
+        `\n\n${possibleEndTab}${possibleNesting}${replacement}${startMarker}\n\n` +
+        line.replace(new RegExp(/^\s*/), replacement)
+      )
+    } else if (/^\s*```/.test(line)) {
+      const possibleEndOfTab = !inTab || inTab.test(line) ? '' : pop(line)
+
+      if (/(bash|sh|shell)/.test(line)) {
+        inCodeBlock = true
+        return possibleEndOfTab + line.replace(inTab, replacement)
+      } else if (inCodeBlock) {
+        inCodeBlock = false
+        return possibleEndOfTab + line.replace(inTab, replacement)
+      } else {
+        inBlockquote = !inBlockquote
+        if (inTab) {
+          return possibleEndOfTab
+        }
+      }
+    } else if (inTab) {
+      if (line.length === 0 || /^\s+$/.test(line)) {
+        // empty line: still in tab
+        return line
+      } else if (inBlockquote) {
+        // in blockquote, don't modify anything with spacing
+        return line
+      } else if (inTab.test(line)) {
+        // indented line while in tab
+        return line.replace(inTab, replacement)
+      } else {
+        return pop(line) + line.replace(inTab, replacement)
+      }
+    }
+    return line
+  })
+
+  while (endMarkers.length > 0) {
+    const endMarker = endMarkers.pop()
+    if (endMarker) {
+      rewrite.push(endMarker)
+    }
+  }
+
+  return rewrite.join('\n')
 }
