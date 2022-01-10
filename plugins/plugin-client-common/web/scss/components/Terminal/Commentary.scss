@@ -177,12 +177,6 @@ body[kui-theme-style] .pf-c-content {
 
     @include NoBoxShadow {
       box-shadow: none;
-
-      &:not([data-is-editing]) {
-        @include CardBody {
-          padding: 0;
-        }
-      }
     }
   }
 }
@@ -270,11 +264,11 @@ body[kui-theme-style='light'] {
 }
 
 @include Commentary {
-  .marked-content {
+  /* .marked-content {
     pre {
       margin: 0;
     }
-  }
+  } */
 
   @include ExpandableSection {
     font-size: 0.875rem;
@@ -339,8 +333,11 @@ body[kui-theme-style='dark'] {
 
 @include MarkdownTabContent {
   @include CardBody {
-    & > pre {
-      padding-top: 1em;
+    & > p:first-child {
+      margin-top: 0;
+    }
+    & > p:last-child {
+      margin-bottom: 0;
     }
   }
 }
@@ -374,8 +371,15 @@ pre > .pf-c-content {
 @include Commentary {
   /* needed to override Editor stylings */
   @include CodeBlock {
+    @include BlockOutput {
+      margin-top: 0;
+    }
     @include EditorBackground {
       background-color: $input-bg-inverted;
+    }
+
+    @include CardBody {
+      padding: 0;
     }
   }
 }

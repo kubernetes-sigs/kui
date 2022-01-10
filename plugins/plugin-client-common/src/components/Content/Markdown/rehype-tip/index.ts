@@ -18,8 +18,8 @@ const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)"\s*(\n(.|
 const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)$/
 const RE_TIP_END = /^(.*)"\s*(\n(.|[\n\r])*)?$/
 
-const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
-const END_OF_TIP = `<!-- ____KUI_END_OF_TIP____ -->`
+export const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
+export const END_OF_TIP = `<!-- ____KUI_END_OF_TIP____ -->`
 
 export default function plugin(/* options */) {
   return function transformer(tree) {
@@ -60,7 +60,7 @@ export default function plugin(/* options */) {
               currentTipLevel === level &&
               (child.children[0].type !== 'text' || !RE_TIP_START.test(child.children[0].value))
             ) {
-              // a new paragraph that doesn't start a new tab; add to current tab
+              // a new paragraph that doesn't start a new tip; add to current tip
               return addToTip(child)
             }
 
@@ -131,7 +131,7 @@ export default function plugin(/* options */) {
               return pnewChildren
             }, [])
           }
-          if (currentTip) {
+          if (currentTipLevel === level) {
             return newChildren
           }
         } else if (currentTipLevel === level) {
@@ -153,42 +153,4 @@ export default function plugin(/* options */) {
     }
     return tree
   }
-}
-
-/**
- * pymdown uses indentation to define tip content; remark-parse seems
- * to turn these into <pre> blocks before we get control; hack it for
- * now
- */
-export function hackTipIndentation(source: string): string {
-  let inTip: RegExp
-  let inTipReplacement: string
-
-  if (source.includes(START_OF_TIP)) {
-    return source
-  }
-
-  return source
-    .split(/\n/)
-    .map(line => {
-      const startMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|info|note|warning)\s+".*"/)
-      if (startMatch) {
-        inTipReplacement = startMatch[1] || ''
-        inTip = new RegExp('^' + inTipReplacement + '(\\t| {4})')
-        return `\n\n${inTipReplacement}${START_OF_TIP}\n\n` + line
-      } else if (inTip) {
-        if (line.length === 0 || /^\s+$/.test(line)) {
-          // empty line: still in tip
-          return line
-        } else if (inTip.test(line)) {
-          // indented line while in tip
-          return line.replace(inTip, inTipReplacement)
-        } else {
-          inTip = undefined
-          return `\n${inTipReplacement}${END_OF_TIP}\n` + line
-        }
-      }
-      return line
-    })
-    .join('\n')
 }

@@ -33,11 +33,12 @@ import frontmatter from 'remark-frontmatter'
 
 import { filepathForResponses } from '../../../controller/commentary'
 
+import tip from './rehype-tip'
+import tabbed, { hackIndentation } from './rehype-tabbed'
+
 import components from './components'
 import codeIndexer from './code-indexer'
 import { CodeBlockResponse } from './components/code'
-import tip, { hackTipIndentation } from './rehype-tip'
-import tabbed, { hackTabIndentation } from './rehype-tabbed'
 
 // react-markdown v6+ now require use of these to support html
 import rehypeRaw from 'rehype-raw'
@@ -176,7 +177,7 @@ export default class Markdown extends React.PureComponent<Props, State> {
       td.use(gfm)
       return td.turndown(props.source)
     } else {
-      return hackTabIndentation(hackTipIndentation(props.source)).trim()
+      return hackIndentation(props.source).trim()
     }
   }
 

@@ -368,7 +368,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
   }
 
   private get outputOnly() {
-    return this.props.outputOnly !== true
+    return this.props.outputOnly === true
   }
 
   public render() {
@@ -388,8 +388,8 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
             data-is-output-only={this.outputOnly || undefined}
             {...dataProps}
           >
-            {this.outputOnly && this.input()}
-            {this.outputOnly && this.sourceRef()}
+            {!this.outputOnly && this.input()}
+            {!this.outputOnly && this.sourceRef()}
             {this.output()}
           </li>
         )}

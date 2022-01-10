@@ -68,8 +68,5 @@ body[kui-theme-style] {
     @include NoBoxShadow {
       box-shadow: none;
     }
-    @include CardBody {
-      padding: 0;
-    }
   }
 }
