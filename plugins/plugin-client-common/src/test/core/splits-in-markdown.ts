@@ -68,6 +68,7 @@ const IN4: Input = {
   input: join(ROOT2, 'playground.md'),
   splits: [
     {
+      contentBlockIndex: 1,
       position: Selectors.SPLIT_DEFAULT.bind(undefined, Selectors.SPLIT_N(1)),
       content: '# Welcome to the Kui Playground'
     },
@@ -78,11 +79,12 @@ const IN4: Input = {
   ]
 }
 
-async function verifySplit(this: Common.ISuite, { position, content }: typeof IN1['splits'][0]) {
+async function verifySplit(this: Common.ISuite, { position, content, contentBlockIndex = 0 }: typeof IN1['splits'][0]) {
   const split = await this.app.client.$(position())
   await split.waitForDisplayed({ timeout: CLI.waitTimeout })
 
-  const result = await split.$(Selectors._RESULT)
+  const N = contentBlockIndex
+  const result = await split.$(`${Selectors._PROMPT_BLOCK_N(N)} ${Selectors._RESULT}`)
   await result.waitForDisplayed({ timeout: CLI.waitTimeout })
 
   let n = 0

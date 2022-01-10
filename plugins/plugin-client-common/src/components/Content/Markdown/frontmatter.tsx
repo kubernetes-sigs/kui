@@ -104,8 +104,14 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
     let frontmatter: KuiFrontmatter
 
     const newSection = (sectionIdx: number) => {
-      const positionAsGiven = frontmatter.layout[sectionIdx]
+      const positionAsGiven =
+        typeof frontmatter.layout[sectionIdx] === 'object'
+          ? frontmatter.layout[sectionIdx].position
+          : frontmatter.layout[sectionIdx]
       const position = !isValid(positionAsGiven) ? 'default' : positionAsGiven
+      const maximized =
+        typeof frontmatter.layout[sectionIdx] === 'object' &&
+        (frontmatter.layout[sectionIdx].maximized === true || frontmatter.layout[sectionIdx].maximized === 'true')
       const count = frontmatter.layoutCount[position] || 0
       frontmatter.layoutCount[position] = count + 1
 
@@ -115,6 +121,7 @@ export function kuiFrontmatter(opts: { tab: Tab }) {
           data: {
             hProperties: {
               'data-kui-split': position,
+              'data-kui-maximized': maximized.toString(),
               'data-kui-split-count': count
             }
           }

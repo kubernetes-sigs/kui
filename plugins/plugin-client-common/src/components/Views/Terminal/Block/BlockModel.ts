@@ -49,7 +49,7 @@ type WithStartTime = { startTime: number }
 type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends KResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
-type WithAnnouncement = { isAnnouncement: boolean }
+type WithAnnouncement = { isAnnouncement: boolean; maximized?: boolean }
 type WithPreferences = { outputOnly?: boolean }
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
@@ -171,10 +171,11 @@ export function Active(initialValue?: string): ActiveBlock {
 }
 
 /** Transform to AnnouncementBlock */
-export function Announcement(response: ScalarResponse, execUUID = uuid()): AnnouncementBlock {
+export function Announcement(response: ScalarResponse, execUUID = uuid(), maximized?: boolean): AnnouncementBlock {
   return {
     response,
     execUUID,
+    maximized,
     isAnnouncement: true,
     startTime: Date.now(),
     cwd: cwd(),
@@ -390,4 +391,8 @@ export function hideOutput(model: BlockModel): boolean {
     !isEmpty(model) &&
     !isCommentaryResponse(model.response)
   )
+}
+
+export function isMaximized(model: BlockModel) {
+  return isAnnouncement(model) && model.maximized
 }

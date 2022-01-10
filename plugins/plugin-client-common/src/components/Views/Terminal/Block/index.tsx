@@ -26,6 +26,7 @@ import {
   isActive,
   isEmpty,
   isFinished,
+  isMaximized,
   isOutputOnly,
   isProcessing,
   isReplay,
@@ -230,7 +231,7 @@ export default class Block extends React.PureComponent<Props, State> {
               data-is-editable={value.editable || undefined}
               data-is-section-break={this.props.isSectionBreak}
               data-in-sections={this.props.sectionIdx !== undefined || undefined}
-              data-is-maximized={this.state.isMaximized || undefined}
+              data-is-maximized={this.state.isMaximized || isMaximized(this.props.model) || undefined}
               data-is-output-only={isOutputOnly(this.props.model) || undefined}
               data-is-empty={isEmpty(this.props.model) || undefined}
               data-announcement={isAnnouncement(this.props.model) || undefined}

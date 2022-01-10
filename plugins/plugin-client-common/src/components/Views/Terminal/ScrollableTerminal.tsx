@@ -69,6 +69,7 @@ import {
   isWithCompleteEvent,
   isOk,
   isOutputOnly,
+  isMaximized,
   isProcessing,
   hasStartEvent,
   hasCommand,
@@ -341,7 +342,13 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
    * determine whether the a prior version of the node already exists
    * in that position.
    */
-  private readonly injectInSplit = (uuid: string, node: React.ReactNode, position: SplitPosition, count: number) => {
+  private readonly injectInSplit = (
+    uuid: string,
+    node: React.ReactNode,
+    position: SplitPosition,
+    count: number,
+    maximized?: boolean
+  ) => {
     const split =
       (position !== 'default'
         ? this.state.splits.find(_ => _.position === position)
@@ -355,7 +362,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const alreadyIdx = curState.blocks.findIndex(_ => isAnnouncement(_) && _.execUUID === execUUID)
 
         // in either case, we will use this new BlockModel
-        const newBlock = Announcement({ react: node }, execUUID)
+        const newBlock = Announcement({ react: node }, execUUID, maximized)
 
         if (alreadyIdx >= 0) {
           // yup! so splice out with the old, and in with the new!
@@ -1514,6 +1521,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
       'data-position': scrollback.position,
       key: tab.uuid,
       'data-scrollback-id': tab.uuid,
+      'data-has-maximized-block': !!scrollback.blocks.find(isMaximized) || undefined,
       ref: scrollback.tabRefFor,
       onClick: scrollback.onClick, // fancier for bottom input (just below, too)? !this.props.noActiveInput ? scrollback.onClick : undefined,
       onMouseDown:

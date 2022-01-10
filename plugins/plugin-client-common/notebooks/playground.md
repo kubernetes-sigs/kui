@@ -1,7 +1,9 @@
 ---
 title: Kui Playground
 layout:
-    1: default
+    1: 
+        position: default
+        maximized: true
     2: default
 ---
 
