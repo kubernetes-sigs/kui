@@ -46,6 +46,7 @@ export interface Input {
   splits: {
     position: Position
     content: string
+    contentBlockIndex?: number
     blocks?: Block[]
   }[]
 }

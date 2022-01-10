@@ -24,13 +24,15 @@ const ReactCommentary = React.lazy(() => import('../../Commentary').then(_ => ({
 
 export default function div(uuid: string) {
   return (props: React.HTMLAttributes<HTMLDivElement>) => {
+    const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
     const count = props['data-kui-split-count'] ? parseInt(props['data-kui-split-count'], 10) : undefined
 
-    if (!position || (position === 'default' && count === 0)) {
+    if (!position || (position === 'default' && count === 0 && !maximized)) {
       // don't create a split if a position wasn't indicated, or if
-      // this is the first default-positioned section
-      return <React.Fragment>{props.children}</React.Fragment>
+      // this is the first default-positioned section; if it is
+      // maximized, we'll have to go through the injector path
+      return <div data-is-maximized={maximized || undefined}>{props.children}</div>
     } else {
       // then we have a section that targets a given split position
       return (
@@ -47,7 +49,13 @@ export default function div(uuid: string) {
             )
 
             setTimeout(() =>
-              inject(uuid, node, (position + (position === 'default' ? '' : '-strip')) as SplitPosition, count)
+              inject(
+                uuid,
+                node,
+                (position + (position === 'default' ? '' : '-strip')) as SplitPosition,
+                count,
+                maximized
+              )
             )
             return <React.Fragment />
           }}
