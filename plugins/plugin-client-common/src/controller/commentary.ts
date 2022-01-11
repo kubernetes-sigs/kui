@@ -156,7 +156,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
       }
 
   if (filepath && readonly) {
-    Events.eventBus.emitWithTabId('/kui/tab/edit/toggle', getPrimaryTabId(args.tab))
+    Events.eventBus.emitWithTabId('/kui/tab/edit/unset', getPrimaryTabId(args.tab))
   }
 
   const baseUrl = args.parsedOptions['base-url']

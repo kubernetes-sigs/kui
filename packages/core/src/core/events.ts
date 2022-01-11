@@ -157,7 +157,12 @@ class WriteEventBus extends EventBusBase {
   }
 
   public emitWithTabId(
-    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
+    channel:
+      | '/tab/offline'
+      | '/tab/close/request'
+      | '/kui/tab/edit/toggle'
+      | '/kui/tab/edit/set'
+      | '/kui/tab/edit/unset',
     tabId: string,
     tab?: Tab
   ): void {
@@ -353,7 +358,12 @@ class ReadEventBus extends WriteEventBus {
   }
 
   public onWithTabId(
-    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
+    channel:
+      | '/tab/offline'
+      | '/tab/close/request'
+      | '/kui/tab/edit/toggle'
+      | '/kui/tab/edit/set'
+      | '/kui/tab/edit/unset',
     tabId: string,
     listener: (tabId: string, tab: Tab) => void
   ): void {
@@ -361,7 +371,12 @@ class ReadEventBus extends WriteEventBus {
   }
 
   public offWithTabId(
-    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
+    channel:
+      | '/tab/offline'
+      | '/tab/close/request'
+      | '/kui/tab/edit/toggle'
+      | '/kui/tab/edit/set'
+      | '/kui/tab/edit/unset',
     tabId: string,
     listener: (tabId: string, tab: Tab) => void
   ): void {
@@ -369,7 +384,12 @@ class ReadEventBus extends WriteEventBus {
   }
 
   public onceWithTabId(
-    channel: '/tab/offline' | '/tab/close/request' | '/kui/tab/edit/toggle',
+    channel:
+      | '/tab/offline'
+      | '/tab/close/request'
+      | '/kui/tab/edit/toggle'
+      | '/kui/tab/edit/set'
+      | '/kui/tab/edit/unset',
     tabId: string,
     listener: (tabId: string, tab: Tab) => void
   ): void {

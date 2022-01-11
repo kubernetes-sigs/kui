@@ -23,7 +23,13 @@ const Confirm = React.lazy(() => import('../Views/Confirm'))
 import getSize from '../Views/Terminal/getSize'
 import SessionInitStatus from './SessionInitStatus'
 import ScrollableTerminal, { TerminalOptions } from '../Views/Terminal/ScrollableTerminal'
-import { initializeState, MutabilityContext, MutabilityState, toggleReadOnlyBit } from './MutabilityContext'
+import {
+  initializeState,
+  MutabilityContext,
+  MutabilityState,
+  toggleReadOnlyBit,
+  setReadOnlyBit
+} from './MutabilityContext'
 
 type Cleaner = () => void
 
@@ -98,6 +104,12 @@ export default class TabContent extends React.PureComponent<Props, State> {
     }))
   }
 
+  private readonly setEditMode = (value: boolean) => () => {
+    this.setState(state => ({
+      mutability: setReadOnlyBit(state.mutability, value)
+    }))
+  }
+
   public constructor(props: Props) {
     super(props)
 
@@ -163,9 +175,16 @@ export default class TabContent extends React.PureComponent<Props, State> {
     Events.eventBus.onWithTabId('/tab/offline', this.props.uuid, onOffline)
     this.cleaners.push(() => Events.eventBus.offWithTabId('/tab/offline', this.props.uuid, onOffline))
 
-    const onEditToggle = this.toggleEditMode
-    Events.eventBus.onWithTabId('/kui/tab/edit/toggle', this.props.uuid, onEditToggle)
-    this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/toggle', this.props.uuid, onEditToggle))
+    Events.eventBus.onWithTabId('/kui/tab/edit/toggle', this.props.uuid, this.toggleEditMode)
+    this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/toggle', this.props.uuid, this.toggleEditMode))
+
+    const onEditSet = this.setEditMode(true)
+    Events.eventBus.onWithTabId('/kui/tab/edit/set', this.props.uuid, onEditSet)
+    this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/set', this.props.uuid, onEditSet))
+
+    const onEditUnset = this.setEditMode(false)
+    Events.eventBus.onWithTabId('/kui/tab/edit/unset', this.props.uuid, onEditUnset)
+    this.cleaners.push(() => Events.eventBus.offWithTabId('/kui/tab/edit/unset', this.props.uuid, onEditUnset))
 
     this.oneTimeInit()
   }
