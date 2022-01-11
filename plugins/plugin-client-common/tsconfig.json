@@ -6,5 +6,6 @@
     "jsx": "react",
     "outDir": "mdist",
     "rootDir": "src"
-  }
+  },
+  "references": [{ "path": "./notebook" }]
 }

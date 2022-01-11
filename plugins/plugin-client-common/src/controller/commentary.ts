@@ -17,7 +17,6 @@
 import { format } from 'url'
 import { basename, dirname, join } from 'path'
 
-import { FStat } from '@kui-shell/plugin-bash-like/fs'
 import {
   Arguments,
   CommentaryResponse,
@@ -25,10 +24,10 @@ import {
   ParsedOptions,
   Registrar,
   UsageModel,
-  Util,
-  encodeComponent,
   getPrimaryTabId
 } from '@kui-shell/core'
+
+import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
 /**
  * commentary command parsedOptions type
@@ -99,30 +98,6 @@ export function filepathForResponses(filepath: string) {
   return join(dirname(filepath), basename(filepath).replace(/\..*$/, '') + '.json')
 }
 
-async function fetch(filepath: string, { REPL }: Pick<Arguments, 'REPL'>, errOk = false) {
-  try {
-    if (/^https:/.test(filepath)) {
-      return (await REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
-    } else {
-      //   --with-data says give us the file contents
-      const fullpath = Util.findFile(Util.expandHomeDir(filepath))
-      const stats = (await REPL.rexec<FStat>(`vfs fstat ${encodeComponent(fullpath)} --with-data`)).content
-
-      if (stats.isDirectory) {
-        throw new Error('Invalid filepath')
-      } else {
-        return stats.data as string
-      }
-    }
-  } catch (err) {
-    if (!errOk) {
-      throw err
-    } else {
-      return undefined
-    }
-  }
-}
-
 export async function fetchMarkdownFile(filepath: string, args: Pick<Arguments, 'REPL'>) {
   const { pathname } = /^https?:/.test(filepath) ? new URL(filepath) : { pathname: filepath }
 
@@ -130,8 +105,8 @@ export async function fetchMarkdownFile(filepath: string, args: Pick<Arguments, 
     throw new Error('File extension not support')
   } else {
     const [data, codeBlockResponses] = await Promise.all([
-      fetch(filepath, args),
-      fetch(filepathForResponses(filepath), args, true)
+      loadNotebook(filepath, args),
+      loadNotebook(filepathForResponses(filepath), args, true)
     ])
 
     return {
