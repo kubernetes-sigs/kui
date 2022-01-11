@@ -1,4 +1,8 @@
 {
+  "Made with Kui": "Made with Kui",
+  "Visit Kui on Github": "Visit Kui on Github",
+  "kui.hello": "We love CLIs, and think they are critical for interacting in a flexible way with the cloud. We need the power to go off the rails. But ASCII is tedious.\n\nKui takes your normal kubectl command line requests and responds with graphics. Instead of ASCII tables, you are presented with sortable ones. Instead of copying and pasting long auto-generated resource names, in Kui you just click.",
+
   "ExperimentalTag": "Experimental",
   "HoverExperimentalTag": "This command is highly experimental, and may change radically in the near future. Proceed with caution.",
   "Cancel edit": "Currently in edit mode. Click to cancel.",
