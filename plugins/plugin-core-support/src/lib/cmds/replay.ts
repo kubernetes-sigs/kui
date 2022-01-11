@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  Capabilities,
-  Events,
-  Arguments,
-  KResponse,
-  ParsedOptions,
-  Registrar,
-  encodeComponent,
-  Util
-} from '@kui-shell/core'
+import { Capabilities, Events, KResponse, ParsedOptions, Registrar, encodeComponent, Util } from '@kui-shell/core'
+
+import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
 
 /** For the Kui command registration: enforce one mandatory positional parameter */
 const required = [{ name: '<filepath>', docs: 'path to saved snapshot' }]
@@ -55,12 +48,6 @@ function formatMessage(title?: string) {
   return `**Now Playing**: ${title || 'a snapshot'}`
 }
 
-/** Load snapshot model from disk */
-async function loadNotebook(REPL: Arguments['REPL'], filepath: string): Promise<string> {
-  const raw = (await REPL.rexec<(string | object)[]>(`_fetchfile ${REPL.encodeComponent(filepath)}`)).content[0]
-  return typeof raw === 'string' ? raw : JSON.stringify(raw)
-}
-
 /** Command registration */
 export default function(registrar: Registrar) {
   // register the `replay` command
@@ -79,14 +66,18 @@ export default function(registrar: Registrar) {
         await Promise.all([
           parsedOptions.r ? REPL.pexec(cmdline(filepaths[0]), { noHistory: true }) : true,
           ...filepaths.slice(parsedOptions.r ? 1 : 0).map(async filepath => {
-            const src = await loadNotebook(REPL, filepath)
+            const _src = await loadNotebook(filepath, { REPL })
+            const src = typeof _src === 'string' ? _src : JSON.stringify(_src)
 
             const fm = await import('front-matter').then(_ => _.default<{ title?: string }>(src))
             const message = formatMessage(fm.attributes.title)
             const titleProps = fm.attributes.title ? `--title ${encodeComponent(fm.attributes.title)}` : ''
 
-            return REPL.qexec(
-              `tab new --cmdline "${cmdline(filepath)}" ${titleProps} --status-stripe-type ${parsedOptions[
+            // open tabs in background if we are doing a --replace-current-tab (-r) for the first
+            const bg = parsedOptions.r ? '--bg' : ''
+
+            await REPL.qexec(
+              `tab new ${bg} --cmdline "${cmdline(filepath)}" ${titleProps} --status-stripe-type ${parsedOptions[
                 'status-stripe'
               ] || 'blue'}`,
               undefined,
