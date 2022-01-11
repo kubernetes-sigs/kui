@@ -44,8 +44,12 @@ export function initializeState(): MutabilityState {
   }
 }
 
+export function setReadOnlyBit(state: MutabilityState, editable: boolean): MutabilityState {
+  return { editable: editable, executable: state.executable }
+}
+
 export function toggleReadOnlyBit(state: MutabilityState): MutabilityState {
-  return { editable: !state.editable, executable: state.executable }
+  return setReadOnlyBit(state, !state.editable)
 }
 
 /** Context variable to keep track of tab content viewing mode: edit or read only */
