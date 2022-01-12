@@ -326,7 +326,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
       // semicolons between commands and escape newlines
       const cmdline = this.state.value
         .replace(/^\s*#.*$/gm, '') // strip comments
-        .replace(/([^\\])(\n)/g, '$1; ') // convert newlines to semicolons
+        .replace(/([^\\])(;?)\n/g, (_, p1, p2) => `${p1}${p2 || ';'} `) // newline->semi (don't add semi when not needed)
         .replace(/&;/g, '&') // oof, correct for &; as just &
 
       const response = await this.execWithStream(cmdline)
