@@ -312,7 +312,11 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     return this.state.execution !== 'replayed'
       ? content
       : content && (
-          <ExpandableSection showMore={strings('Show Sample Output')} showLess={strings('Hide Sample Output')}>
+          <ExpandableSection
+            className="kui--sample-output"
+            showMore={strings('Show Sample Output')}
+            showLess={strings('Hide Sample Output')}
+          >
             {content}
           </ExpandableSection>
         )

@@ -17,10 +17,6 @@
 @import 'mixins';
 @import '../Terminal/mixins';
 
-@include ExpandableSectionButton {
-  background: none;
-}
-
 @include ExpandableSectionButtonIcon {
   color: var(--color-text-01);
 }
