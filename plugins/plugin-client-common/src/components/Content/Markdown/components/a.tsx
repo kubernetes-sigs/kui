@@ -20,6 +20,7 @@ import { REPL, maybeKuiLink, pexecInCurrentTab } from '@kui-shell/core'
 
 import { Props } from '../../Markdown'
 import { anchorFrom } from './heading'
+import { activateTab } from './tabbed'
 
 // const LinkStatus = React.lazy(() => import('../../LinkStatus'))
 const Tooltip = React.lazy(() => import('../../../spi/Tooltip'))
@@ -50,10 +51,15 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
                 }
               }
             } else if (props.href.charAt(0) === '#') {
+              // in case this is a reference to a section in the current kui tab
+              // TODO: reference to a section in a different kui tab?
               const tab = mdprops.tab
               if (tab) {
                 tab.show(`[data-markdown-anchor="${anchorFrom(uuid, props.href.slice(1))}"]`)
               }
+
+              // in case this is a reference to a markdown tab in this kui tab
+              activateTab(props.href.slice(1), evt)
             } else if (file) {
               if ((isLocal || isNotebook) && !isAbsolute(file)) {
                 // e.g. if a markdown has a relative reference to

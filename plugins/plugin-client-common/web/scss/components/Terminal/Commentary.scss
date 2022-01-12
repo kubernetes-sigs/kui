@@ -24,20 +24,28 @@
 @import '../../Themes/mixins';
 @import 'BlockLinks';
 
-body[kui-theme-style] .pf-c-content {
-  color: inherit;
-
-  ol,
-  ul {
-    margin: 0;
+@mixin TextContent {
+  .pf-c-content {
+    @content;
   }
+}
 
-  /* odd bug in patternfly... */
-  .pf-c-tabs__list li + li {
-    margin-top: 0;
-  }
-  .pf-c-breadcrumb li + li {
-    margin-top: 0;
+body[kui-theme-style] {
+  @include TextContent {
+    color: inherit;
+
+    ol,
+    ul {
+      margin: 0;
+    }
+
+    /* odd bug in patternfly... */
+    .pf-c-tabs__list li + li {
+      margin-top: 0;
+    }
+    .pf-c-breadcrumb li + li {
+      margin-top: 0;
+    }
   }
 }
 
@@ -339,6 +347,17 @@ body[kui-theme-style='dark'] {
     & > p:last-child {
       margin-bottom: 0;
     }
+
+    @include TextContent {
+      & > .marked-content {
+        & > p:first-child {
+          margin-top: 0;
+        }
+        & > p:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
   }
 }
 
@@ -361,10 +380,12 @@ body[kui-theme-style='dark'] {
 }
 
 /** Markdown-rendered content not in a Commentary */
-pre > .pf-c-content {
-  font-size: inherit;
-  p {
-    white-space: pre;
+pre {
+  @include TextContent {
+    font-size: inherit;
+    p {
+      white-space: pre;
+    }
   }
 }
 
