@@ -403,6 +403,11 @@ pre {
       padding: 0;
     }
   }
+  @include MarkdownTip {
+    @include EditorBackground {
+      background-color: $input-bg-inverted;
+    }
+  }
 }
 
 @include CodeBlock {

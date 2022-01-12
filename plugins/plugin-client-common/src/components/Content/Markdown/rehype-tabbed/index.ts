@@ -242,7 +242,7 @@ export function hackIndentation(source: string): string {
       } else {
         inBlockquote = !inBlockquote
         if (inTab) {
-          return possibleEndOfTab
+          return possibleEndOfTab + line.replace(inTab, replacement)
         }
       }
     } else if (inTab) {
