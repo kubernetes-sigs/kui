@@ -594,3 +594,9 @@ $action-hover-delay: 210ms;
     @content;
   }
 }
+
+@mixin SampleOutput {
+  .kui--sample-output {
+    @content;
+  }
+}

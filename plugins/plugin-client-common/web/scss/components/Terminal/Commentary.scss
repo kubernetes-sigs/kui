@@ -318,11 +318,21 @@ body[kui-theme-style='light'] {
 }
 body[kui-theme-style='dark'] {
   @include InvertedTipAndTab;
+  @include ExpandableSectionToggle {
+    color: var(--pf-global--active-color--400);
+  }
+  @include ExpandableSectionButtonIcon {
+    color: inherit;
+  }
+  @include ExpandableSectionContent {
+    a {
+      filter: brightness(0.6) contrast(2);
+    }
+  }
 }
-
 @include MarkdownTip {
   background-color: #e7f1fa;
-  filter: hue-rotate(-45deg);
+  filter: hue-rotate(-45deg) contrast(1.1);
 
   @include ExpandableSectionToggle {
     width: 100%;
