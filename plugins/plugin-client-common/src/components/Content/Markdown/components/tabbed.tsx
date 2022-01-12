@@ -17,32 +17,92 @@
 /* eslint-disable react/prop-types, react/display-name */
 
 import React from 'react'
-import { Tab, Tabs, TabTitleText } from '@patternfly/react-core'
+import Slugger from 'github-slugger'
+import { EventEmitter } from 'events'
+import { Tab, Tabs, TabsProps, TabTitleText } from '@patternfly/react-core'
 
 import Card from '../../../spi/Card'
 
+type Props = {
+  depth: number
+  children: { props: { title: string; children?: React.ReactNode[] } }[]
+}
+
+type State = Pick<TabsProps, 'activeKey'>
+
+const activateEvents = new EventEmitter()
+export function activateTab(slug: string, evt?: React.MouseEvent) {
+  activateEvents.emit(slug, evt)
+}
+
+class LinkableTabs extends React.PureComponent<Props, State> {
+  private readonly slugs = new Slugger()
+  private readonly cleaners: (() => void)[] = []
+
+  public constructor(props: Props) {
+    super(props)
+    this.state = {
+      activeKey: 0
+    }
+
+    this.initEvents()
+  }
+
+  private initEvents() {
+    ;(this.props.children || [])
+      .map(_ => this.slugs.slug(_.props.title))
+      .forEach((slug, activeKey) => {
+        const onActivate = (evt?: React.MouseEvent) => {
+          this.setState({ activeKey })
+
+          if (evt) {
+            // prevent default interpretation of onClick for the href
+            evt.preventDefault()
+          }
+        }
+        activateEvents.on(slug, onActivate)
+        this.cleaners.push(() => activateEvents.off(`/markdown/tabs/activate/${slug}`, onActivate))
+      })
+  }
+
+  public componentWillUnmount() {
+    this.cleaners.forEach(_ => _())
+  }
+
+  private readonly onSelect = (_, tabIndex: number | string) => {
+    this.setState({
+      activeKey: tabIndex
+    })
+  }
+
+  public render() {
+    return (
+      <Tabs
+        className="kui--markdown-tabs paragraph"
+        activeKey={this.state.activeKey}
+        onSelect={this.onSelect}
+        mountOnEnter
+        unmountOnExit
+        data-depth={this.props.depth}
+      >
+        {(this.props.children || []).map((_, idx) => (
+          <Tab
+            key={idx}
+            eventKey={idx}
+            data-depth={this.props.depth}
+            data-title={_.props.title}
+            className="kui--markdown-tab"
+            title={<TabTitleText>{_.props.title}</TabTitleText>}
+          >
+            <Card className="kui--markdown-tab-card">{_.props && _.props.children}</Card>
+          </Tab>
+        ))}
+      </Tabs>
+    )
+  }
+}
+
 export default function tabbed(props) {
   // isSecondary={parseInt(props.depth, 10) > 0}
-  return (
-    <Tabs
-      className="kui--markdown-tabs paragraph"
-      defaultActiveKey={0}
-      mountOnEnter
-      unmountOnExit
-      data-depth={props.depth}
-    >
-      {(props.children || []).map((_, idx) => (
-        <Tab
-          key={idx}
-          eventKey={idx}
-          data-depth={props.depth}
-          data-title={_.props.title}
-          className="kui--markdown-tab"
-          title={<TabTitleText>{_.props.title}</TabTitleText>}
-        >
-          <Card className="kui--markdown-tab-card">{_.props && _.props.children}</Card>
-        </Tab>
-      ))}
-    </Tabs>
-  )
+  return <LinkableTabs depth={props.depth}>{props.children}</LinkableTabs>
 }
