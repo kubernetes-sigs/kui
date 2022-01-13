@@ -181,5 +181,8 @@
     ],
     "excludeNodeModules": false,
     "temp-dir": "packages/test/.nyc_output"
+  },
+  "overrides": {
+    "colors": "1.40.0"
   }
 }
