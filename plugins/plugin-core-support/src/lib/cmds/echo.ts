@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-import { Registrar } from '@kui-shell/core'
+import { Arguments, Capabilities, Registrar } from '@kui-shell/core'
 
-/** For debugging the command line parser */
+function echo({ argvNoOptions }: Pick<Arguments, 'argvNoOptions'>) {
+  return argvNoOptions.slice(1).join(' ') || true
+}
+
 export default (registrar: Registrar) => {
-  registrar.listen('/kuiecho', ({ argvNoOptions }) => {
-    return argvNoOptions.slice(1).join(' ') || true
-  })
+  // For debugging the command line parser. This avoids the PTY.
+  registrar.listen('/kuiecho', echo)
+
+  // and, in a browser deployment without a backing proxy (and hence
+  // without PTY support), we should also register as a handler for
+  // `echo`
+  if (Capabilities.inBrowser() && !Capabilities.hasProxy()) {
+    registrar.listen('/echo', echo)
+  }
 }
