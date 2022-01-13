@@ -19,6 +19,24 @@ import { waitForGreen, createNS, allocateNS, deleteNS } from '@kui-shell/plugin-
 
 const synonyms = ['kubectl', 'k']
 
+describe(`kubectl run single quotes ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  const ns: string = createNS()
+  allocateNS(this, ns)
+
+  it('should kubectl run with single quotes', () =>
+    CLI.command(`kubectl run nginx --image=nginx --overrides='{ "apiVersion": "v1" }' -n ${ns}`, this.app)
+      .then(
+        ReplExpect.okWithCustom<string>({ selector: Selectors.BY_NAME('nginx') })
+      )
+      .then(selector => waitForGreen(this.app, selector))
+      .catch(Common.oops(this, true)))
+
+  deleteNS(this, ns)
+})
+
 describe(`kubectl run ${process.env.MOCHA_RUN_TARGET || ''}`, function(this: Common.ISuite) {
   before(Common.before(this))
   after(Common.after(this))
