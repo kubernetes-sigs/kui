@@ -16,6 +16,9 @@
 
 @use 'sass:math';
 
+/** Terminal font size */
+$terminal-font-size: 0.875rem;
+
 /** Inset of the <input> element w.r.t. the bordered/backgrounded region */
 $inset: 0.5em;
 

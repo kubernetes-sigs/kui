@@ -33,7 +33,7 @@
 @include Input {
   &::placeholder {
     opacity: 0.3;
-    font-size: 0.875em;
+    font-size: $terminal-font-size;
     color: var(--color-text-02);
   }
 }
@@ -120,7 +120,7 @@
     @include ContextInner {
       display: flex;
       align-items: center;
-      font-size: 0.875em;
+      font-size: $terminal-font-size;
     }
   }
 
