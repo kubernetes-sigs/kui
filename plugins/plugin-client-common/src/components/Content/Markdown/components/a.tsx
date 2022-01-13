@@ -22,7 +22,6 @@ import { Props } from '../../Markdown'
 import { anchorFrom } from './heading'
 import { activateTab } from './tabbed'
 
-// const LinkStatus = React.lazy(() => import('../../LinkStatus'))
 const Tooltip = React.lazy(() => import('../../../spi/Tooltip'))
 
 export default function a(mdprops: Props, uuid: string, repl: REPL) {
@@ -92,6 +91,7 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
       return <span className={mdprops.className}>{props.href}</span>
     } else {
       const isKuiBlockLink = props.href.startsWith('#kui-link-')
+
       const tip = isKuiCommand
         ? `### Command Execution\n#### ${decodeURI(props.href.slice(props.href.indexOf('=') + 1)).replace(
             '&quiet',
@@ -108,10 +108,6 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
         : `### External Link\n#### ${props.href}\n\n\`Link will open in a separate window\``
 
       const kuiLink = maybeKuiLink(props.href)
-      /* 
-        if (kuiLink) {
-          props.children.push(<LinkStatus key="link-status" link={kuiLink} />)
-        } */
 
       return (
         <Tooltip markdown={tip}>
@@ -120,7 +116,7 @@ export default function a(mdprops: Props, uuid: string, repl: REPL) {
             href={
               isKuiCommand || isNotebook
                 ? '#'
-                : mdprops.baseUrl
+                : !isKuiBlockLink && mdprops.baseUrl
                 ? mdprops.baseUrl.replace('{filename}', props.href.replace(/^\s*\.\//g, ''))
                 : props.href
             }
