@@ -246,17 +246,14 @@ export function hackIndentation(source: string): string {
         }
       }
     } else if (inTab) {
-      if (line.length === 0 || /^\s+$/.test(line)) {
-        // empty line: still in tab
-        return line
-      } else if (inBlockquote) {
-        // in blockquote, don't modify anything with spacing
-        return line
-      } else if (inTab.test(line)) {
-        // indented line while in tab
-        return line.replace(inTab, replacement)
+      const unindented = line.replace(inTab, replacement)
+
+      if (line.length === 0 || /^\s+$/.test(line) || inBlockquote || inTab.test(line)) {
+        // empty line, in blockquote, or still in tab
+        return unindented
       } else {
-        return pop(line) + line.replace(inTab, replacement)
+        // possibly pop the stack of indentation
+        return pop(line) + unindented
       }
     }
     return line
