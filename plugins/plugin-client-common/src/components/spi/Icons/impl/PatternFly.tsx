@@ -91,7 +91,7 @@ export default function PatternFly4Icons(props: Props) {
     case 'At':
       return <At style={StatusStripe} {...props} />
     case 'Add':
-      return <Add style={size20} {...props} />
+      return <Add {...props} />
     case 'Back':
       return <Back style={Sidecar} {...props} />
     case 'ChartBar':
@@ -173,7 +173,7 @@ export default function PatternFly4Icons(props: Props) {
     case 'ScreenshotInProgress':
       return <ScreenshotInProgress {...props} />
     case 'Split':
-      return <TerminalPlusSidecar style={size20} {...props} />
+      return <TerminalPlusSidecar {...props} />
     case 'Search':
       return <Search style={size20} {...props} />
     case 'Trash':
