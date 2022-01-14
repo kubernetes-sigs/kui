@@ -23,7 +23,6 @@ import yamlMode from './lib/view/modes/yaml'
 import summaryMode from './lib/view/modes/Summary'
 import crdSummaryMode from './lib/view/modes/crd-summary'
 import configmapSummaryMode from './lib/view/modes/configmap-summary'
-import namespaceSummaryMode from './lib/view/modes/namespace-summary'
 import logsMode from './lib/view/modes/logs-mode'
 import ExecIntoPad from './lib/view/modes/ExecIntoPod'
 import lastAppliedMode from './lib/view/modes/last-applied'
@@ -52,7 +51,6 @@ export default async (registrar: PreloadRegistrar) => {
     summaryMode,
     crdSummaryMode,
     configmapSummaryMode,
-    namespaceSummaryMode,
     annotationsMode,
     labelsMode,
     eventsMode,
