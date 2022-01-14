@@ -33,7 +33,7 @@ import { loadNotebook } from '@kui-shell/plugin-client-common/notebook'
  * commentary command parsedOptions type
  */
 type CommentaryOptions = ParsedOptions &
-  Pick<CommentaryResponse['props'], 'header' | 'edit' | 'preview' | 'receive' | 'send'> & {
+  Pick<CommentaryResponse['props'], 'header' | 'edit' | 'preview' | 'receive' | 'send' | 'replace'> & {
     f: string
     file: string
     title: string
@@ -87,6 +87,10 @@ const usage: UsageModel = {
       docs: 'Consume edits from this channel (implies --no-header and --no-edit)'
     },
     {
+      name: '--replace',
+      docs: 'Replace all existing content in this tab'
+    },
+    {
       name: '--file',
       alias: '-f',
       docs: 'File that contains the texts'
@@ -130,7 +134,16 @@ function formatBaseUrl(filepath: string) {
 }
 
 async function addComment(args: Arguments<CommentaryOptions>): Promise<true | CommentaryResponse> {
-  const { edit: _edit, header: _header, preview: _preview, receive, send, title, readonly } = args.parsedOptions
+  const {
+    edit: _edit,
+    header: _header,
+    preview: _preview,
+    receive,
+    send,
+    title,
+    readonly,
+    replace
+  } = args.parsedOptions
 
   const filepath = args.parsedOptions.file || args.parsedOptions.f
 
@@ -149,7 +162,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           .trim()
           .replace(/\\n/g, '\n')
           .replace(/\\t/g, '\t')
-          .replace(/--(no-)?(header|edit|preview|readonly)\s*/g, '')
+          .replace(/--(no-)?(header|edit|preview|readonly|replace)\s*/g, '')
           .replace(/(-t|--title|--send|--receive)\s+\S+\s*/g, '')
           .replace(/^\\#/, '#') // escaped initial comment -> h1
 
@@ -178,6 +191,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           edit,
           header,
           preview,
+          replace,
           receive,
           send,
           title,
@@ -193,6 +207,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           edit,
           header,
           preview,
+          replace,
           receive,
           send,
           title,
@@ -216,7 +231,7 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
  */
 export default function registerCommentaryController(commandTree: Registrar) {
   const flags = {
-    boolean: ['edit', 'header', 'preview', 'readonly']
+    boolean: ['edit', 'header', 'preview', 'readonly', 'replace']
   }
 
   commandTree.listen('/commentary', addComment, { usage, outputOnly: true, flags })

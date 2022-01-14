@@ -178,16 +178,18 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
     super(props)
 
     this.initClipboardEvents()
+    this.state = this.initialState()
+    this.initSnapshotEvents()
+  }
 
+  private initialState() {
     const splits = [this.scrollbackWithWelcome()]
 
-    this.state = {
+    return {
       focusedIdx: 0,
       splits,
       executable: this.initBlockExecutableState(splits)
     }
-
-    this.initSnapshotEvents()
   }
 
   /** This helps enforce sequential block execution semantics */
@@ -906,29 +908,50 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
 
     if (event.execOptions && event.execOptions.echo === false) return
 
-    this.splice(uuid, curState => {
-      const inProcessIdx = curState.blocks.findIndex(_ => {
+    // note: even if the command registration asked for
+    // `outputOnly`, we ignore that if the response is a plain
+    // `true`; e.g. the `commentary` controller uses this to
+    // indicate an empty comment
+    const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly && event.response !== true
+
+    const findBlock = (blocks: ScrollbackState['blocks']) => {
+      return blocks.findIndex(_ => {
         return (
           (isBeingRerun(_) && _.originalExecUUID === event.execUUID) ||
           ((isBeingRerun(_) || isProcessing(_)) && _.execUUID === event.execUUID)
         )
       })
+    }
+
+    // special case: replace all current content?
+    const replace = event.response && isCommentaryResponse(event.response) && event.response.props.replace
+    if (replace && !event.cancelled) {
+      const state = this.initialState()
+      const split = this.state.splits[this.findSplit(this.state, uuid)]
+      const inProcess = split.blocks[findBlock(split.blocks)]
+      if (isProcessing(inProcess) || isBeingRerun(inProcess)) {
+        const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
+        state.splits[0].blocks.splice(0, 0, finishedBlock)
+        this.setState(state)
+        return
+      }
+    }
+
+    this.splice(uuid, curState => {
+      const inProcessIdx = findBlock(curState.blocks)
 
       if (inProcessIdx >= 0) {
         const inProcess = curState.blocks[inProcessIdx]
         if (isProcessing(inProcess) || isBeingRerun(inProcess)) {
+          const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
           try {
-            // note: even if the command registration asked for
-            // `outputOnly`, we ignore that if the response is a plain
-            // `true`; e.g. the `commentary` controller uses this to
-            // indicate an empty comment
-            const outputOnly = event.evaluatorOptions && event.evaluatorOptions.outputOnly && event.response !== true
-            const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
-
-            const blocks = curState.blocks
-              .slice(0, inProcessIdx) // everything before
-              .concat([finishedBlock]) // mark as finished
-              .concat(curState.blocks.slice(inProcessIdx + 1)) // everything after
+            const blocks = (replace
+              ? [finishedBlock]
+              : curState.blocks
+                  .slice(0, inProcessIdx) // everything before
+                  .concat([finishedBlock]) // mark as finished
+                  .concat(curState.blocks.slice(inProcessIdx + 1))
+            ) // everything after
               .concat(!isBeingRerun(inProcess) && inProcessIdx === curState.blocks.length - 1 ? [Active()] : []) // plus a new block!
 
             return {

@@ -46,6 +46,9 @@ export type CommentaryResponse = {
     /** Consume edits from this channel (implies --no-header and --no-edit and --preview) */
     receive?: string
 
+    /** Replace all existing content in this tab */
+    replace?: boolean
+
     /** CodeBlock responses */
     codeBlockResponses?: { status: 'done' | 'error'; response: KResponse }[]
 
