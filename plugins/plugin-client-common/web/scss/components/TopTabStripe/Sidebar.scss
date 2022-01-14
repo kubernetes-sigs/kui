@@ -68,10 +68,9 @@ body[kui-theme-style='light'] {
   @include SidebarToggleButton {
     --kui--sidebar-toggle-button-color: var(--kui--sidebar-color-02);
     font-size: 1.25em;
-    color: var(--kui--sidebar-toggle-button-color);
   }
   @include SidebarToggleIcon {
-    color: var(--kui--sidebar-color-02);
+    color: var(--kui--sidebar-toggle-button-color);
   }
   @include HeaderNameContainer {
     min-height: $height;
