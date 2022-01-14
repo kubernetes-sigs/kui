@@ -243,7 +243,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
       internalNs.length === 0
         ? undefined
         : [
-            { label: '', options: regularNs },
+            { label: strings('User Namespaces'), options: regularNs },
             { divider: true as const },
             { label: strings('System Namespaces'), options: internalNs }
           ]
