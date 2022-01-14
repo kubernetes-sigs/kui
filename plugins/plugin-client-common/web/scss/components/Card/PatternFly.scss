@@ -24,9 +24,9 @@
 }
 @include Card {
   /* to get priority over PatternFly styles */
-  @include CardHeader {
+  /* @include CardHeader {
     @include NoHorizontalPadding;
-  }
+  } */
   @include CardBody {
     @include NoHorizontalPadding;
   }
