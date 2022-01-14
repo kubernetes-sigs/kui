@@ -151,7 +151,11 @@ async function addComment(args: Arguments<CommentaryOptions>): Promise<true | Co
           .replace(/\\t/g, '\t')
           .replace(/--(no-)?(header|edit|preview|readonly)\s*/g, '')
           .replace(/(-t|--title|--send|--receive)\s+\S+\s*/g, '')
-          .replace(/^\\#/, '#'), // escaped initial comment -> h1
+          .replace(/^\\#/, '#') // escaped initial comment -> h1
+
+          // this isn't perfect; e.g. it doesn't handle `commentary "hello" "world`; but it's a start
+          .replace(/^"/, '')
+          .replace(/"$/, ''),
         codeBlockResponses: undefined
       }
 
