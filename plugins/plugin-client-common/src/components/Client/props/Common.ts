@@ -26,4 +26,7 @@ export default interface CommonProps {
 
   /** Are tabs closeable? [default: true except for config.d/client.json readonly: true */
   closeableTabs?: boolean
+
+  /** Don't show top tabs [default: false] */
+  noTopTabs?: boolean
 }

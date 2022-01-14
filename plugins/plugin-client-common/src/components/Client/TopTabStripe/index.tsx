@@ -65,6 +65,7 @@ export type TopTabStripeConfiguration = TabConfiguration
 type Props = TopTabStripeConfiguration & {
   tabs: TabModel[]
   activeIdx: number
+  noTopTabs: boolean
   closeableTabs: boolean
   onNewTab: () => void
   onCloseTab: (idx: number) => void
@@ -126,31 +127,33 @@ export default class TopTabStripe extends React.PureComponent<Props> {
   /** Render tabs */
   private tabs() {
     return (
-      <React.Fragment>
-        <Nav aria-label="Tabs" variant="horizontal" className="kui--header-tabs">
-          <NavList className="kui--tab-list">
-            {this.props.tabs.map((tab, idx) => (
-              <Tab
-                {...this.props}
-                key={idx}
-                idx={idx}
-                uuid={tab.uuid}
-                title={tab.title}
-                closeable={this.props.closeableTabs}
-                active={idx === this.props.activeIdx}
-                onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
-                onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
-              />
-            ))}
-          </NavList>
-        </Nav>
-        {!isReadOnlyClient() && (
-          <div className="kui--top-tab-buttons">
-            <NewTabButton onNewTab={this.props.onNewTab} />
-            <SplitTerminalButton />
-          </div>
-        )}
-      </React.Fragment>
+      !this.props.noTopTabs && (
+        <React.Fragment>
+          <Nav aria-label="Tabs" variant="horizontal" className="kui--header-tabs">
+            <NavList className="kui--tab-list">
+              {this.props.tabs.map((tab, idx) => (
+                <Tab
+                  {...this.props}
+                  key={idx}
+                  idx={idx}
+                  uuid={tab.uuid}
+                  title={tab.title}
+                  closeable={this.props.closeableTabs}
+                  active={idx === this.props.activeIdx}
+                  onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
+                  onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
+                />
+              ))}
+            </NavList>
+          </Nav>
+          {!isReadOnlyClient() && (
+            <div className="kui--top-tab-buttons">
+              <NewTabButton onNewTab={this.props.onNewTab} />
+              <SplitTerminalButton />
+            </div>
+          )}
+        </React.Fragment>
+      )
     )
   }
 
