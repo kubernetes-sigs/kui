@@ -301,6 +301,7 @@ export class Kui extends React.PureComponent<Props, State> {
                 title={this.props.initialTabTitle}
                 onTabReady={this.state.commandLine && this._onTabReady}
                 closeableTabs={this.props.closeableTabs}
+                noTopTabs={this.props.noTopTabs}
                 guidebooks={this.props.guidebooks}
                 guidebooksCommand={this.props.guidebooksCommand}
                 guidebooksExpanded={this.props.guidebooksExpanded}

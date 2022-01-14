@@ -47,11 +47,14 @@ type Props = TabContentOptions &
   TopTabStripeConfiguration &
   BrandingProps &
   GuidebookProps &
-  Pick<CommonProps, 'closeableTabs'>
+  Pick<CommonProps, 'closeableTabs' | 'noTopTabs'>
 
 interface State {
   /** hamburger menu expanded? */
   isSidebarOpen: boolean
+
+  /** in noTopTabs mode, we indicate selected guidebook in the NavItem below */
+  currentGuidebook?: string
 
   /** list of current tabs; one TabContent for each */
   tabs: TabModel[]
@@ -296,6 +299,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         needsSidebar={this.needsSidebar}
         isSidebarOpen={this.state.isSidebarOpen}
         onToggleSidebar={this.toggleSidebar}
+        noTopTabs={this.props.noTopTabs}
         closeableTabs={this.state.tabs.length > 1 && (this.props.closeableTabs || !isReadOnlyClient())}
       />
     )
@@ -344,15 +348,25 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   private sidebar() {
-    const renderItem = (_: MenuItem, idx) =>
-      isGuidebook(_) ? (
+    // helps deal with isActive
+    let first = true
+
+    const renderItem = (_: MenuItem, idx) => {
+      const thisIsTheFirstNavItem = isGuidebook(_) && first
+      if (thisIsTheFirstNavItem) {
+        first = false
+      }
+
+      return isGuidebook(_) ? (
         <NavItem
           key={idx}
-          className="kui--sidebar-nav-item"
           data-title={_.notebook}
-          onClick={() =>
+          className="kui--sidebar-nav-item"
+          isActive={_.notebook === this.state.currentGuidebook || thisIsTheFirstNavItem}
+          onClick={() => {
             pexecInCurrentTab(`${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`)
-          }
+            this.setState({ currentGuidebook: _.notebook })
+          }}
         >
           {_.notebook}
         </NavItem>
@@ -363,6 +377,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
       ) : (
         undefined
       )
+    }
 
     const nav = this.needsSidebar && (
       <React.Fragment>
