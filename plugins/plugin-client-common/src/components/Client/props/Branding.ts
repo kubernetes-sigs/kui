@@ -17,6 +17,9 @@
 type BrandingProps = {
   /** [Optional] This will be displayed in the upper left of the TopTabStripe. Default: "Kui" */
   productName?: string
+
+  /** [Optional] client version */
+  version?: string
 }
 
 export default BrandingProps

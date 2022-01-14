@@ -18,6 +18,7 @@ import React from 'react'
 
 import {
   AdjustIcon as Contrast,
+  BarsIcon as Hamburger,
   OutlinedDotCircleIcon as Waiting,
   EraserIcon as Clear,
   CameraIcon as Screenshot,
@@ -121,6 +122,8 @@ export default function PatternFly4Icons(props: Props) {
       return <Grid {...props} />
     case 'Github':
       return <Github {...props} />
+    case 'Hamburger':
+      return <Hamburger {...props} />
     case 'Help':
       return <Help style={size20} {...props} />
     case 'Info':

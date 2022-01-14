@@ -36,6 +36,7 @@ export type SupportedIcon =
   | 'Forward'
   | 'Grid'
   | 'Github'
+  | 'Hamburger'
   | 'Help'
   | 'Info'
   | 'InProgress'

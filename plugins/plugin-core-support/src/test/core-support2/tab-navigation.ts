@@ -127,7 +127,7 @@ describe('tab navigation', function(this: Common.ISuite) {
 
   const testFullCycle = () => {
     it('should be the beginning of a full cycle', promptBetterBeFocused)
-    testSelector(TAB_BUTTON_N(1))
+    testSelector(TAB_BUTTON_N(1), undefined, undefined, true)
     testSelector(TAB_BUTTON_N(2))
     testSelector(tabButtonSelector)
     testSelector('#help-button', false, undefined, true)
@@ -141,7 +141,7 @@ describe('tab navigation', function(this: Common.ISuite) {
   hitBackspace()
 
   // tab to new tab button and hit enter
-  testSelector(TAB_BUTTON_N(1))
+  testSelector(TAB_BUTTON_N(1), undefined, undefined, true)
   testSelector(tabButtonSelector, true, Selectors.TAB_SELECTED_N(2))
   testPromptIsSelected(false, true)
 

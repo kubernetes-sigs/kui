@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+$height: 3em;
+
 @mixin TopTabStripe {
   .pf-c-page,
-  .kui--top-tab-stripe {
+  .kui--top-tab-stripe-header {
     @content;
   }
 }
@@ -28,6 +30,29 @@
   }
 }
 
+@mixin TopTabStripe_Main {
+  .kui--top-tab-stripe-header--main {
+    @content;
+  }
+}
+@mixin TopTabStripe_Content {
+  .kui--top-tab-stripe-header--content {
+    @content;
+  }
+}
+
+@mixin SidebarToggleButton {
+  button.kui--top-tab-stripe-header--toggle-button {
+    @content;
+  }
+}
+
+@mixin SidebarToggleIcon {
+  .kui--top-tab-stripe-header--toggle-button-icon {
+    @content;
+  }
+}
+
 @mixin TopTabStripe_ProductName {
   .kui--header--name {
     @content;
@@ -35,8 +60,7 @@
 }
 
 @mixin TopTabs {
-  .pf-c-page__header-nav {
-    /* I can't find a way to give us a kui-- className here */
+  .kui--header-tabs {
     @content;
   }
 }
@@ -67,8 +91,7 @@
 }
 
 @mixin HeaderNameContainer {
-  .pf-c-page__header-brand {
-    /* I can't find a way to give us a kui-- className here */
+  .kui--top-tab-stripe-header--brand {
     @content;
   }
 }
@@ -87,5 +110,49 @@
 @mixin TabClose {
   .kui--tab-close {
     @content;
+  }
+}
+
+@mixin Sidebar {
+  .kui--tab-container-sidebar {
+    @content;
+  }
+}
+
+@mixin SidebarBody {
+  .pf-c-page__sidebar-body {
+    @content;
+  }
+}
+
+@mixin SidebarNav {
+  .kui--tab-container-sidebar-nav {
+    @content;
+  }
+}
+
+@mixin SidebarOther {
+  .kui--tab-container-sidebar-other {
+    @content;
+  }
+}
+
+@mixin SidebarNavItem {
+  .kui--sidebar-nav-item {
+    @content;
+  }
+}
+
+@mixin SidebarNavMenu {
+  .kui--sidebar-nav-menu {
+    @content;
+  }
+}
+
+@mixin SidebarNavMenuButton {
+  @include SidebarNavMenu {
+    & > button {
+      @content;
+    }
   }
 }

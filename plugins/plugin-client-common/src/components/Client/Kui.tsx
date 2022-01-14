@@ -23,6 +23,7 @@ import { Capabilities, Events, i18n, REPL, pexecInCurrentTab, encodeComponent, T
 
 import KuiContext from './context'
 import CommonClientProps from './props/Common'
+import GuidebookProps from './props/Guidebooks'
 import KuiConfiguration from './KuiConfiguration'
 import StatusStripe, { Props as StatusStripeProps } from './StatusStripe'
 import { TabContainer, Loading, Alert } from '../..'
@@ -41,6 +42,7 @@ const defaultThemeProperties: Themes.ThemeProperties = {
 }
 
 export type Props = Partial<KuiConfiguration> &
+  GuidebookProps &
   CommonClientProps & {
     /** no Kui bootstrap needed? */
     noBootstrap?: boolean
@@ -292,10 +294,16 @@ export class Kui extends React.PureComponent<Props, State> {
           <React.Suspense fallback={<div />}>
             <div className="kui--full-height">
               <TabContainer
+                productName={this.props.productName}
+                version={this.props.version}
                 noActiveInput={this.props.noActiveInput || !!this.props.bottomInput}
                 bottom={bottom}
                 title={this.props.initialTabTitle}
                 onTabReady={this.state.commandLine && this._onTabReady}
+                closeableTabs={this.props.closeableTabs}
+                guidebooks={this.props.guidebooks}
+                guidebooksCommand={this.props.guidebooksCommand}
+                guidebooksExpanded={this.props.guidebooksExpanded}
               ></TabContainer>
               {this.props.toplevel}
               {this.props.statusStripe !== false && (
