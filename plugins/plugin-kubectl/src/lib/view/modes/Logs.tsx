@@ -150,6 +150,8 @@ export default class Logs extends Terminal<State> {
     const container = containerName ? `-c ${containerName}` : '--all-containers'
     const isMulti = this.isMulti()
 
+    const parsedOptions = args.parsedOptions || {}
+
     if (args.argsForMode && args.argsForMode.command && (!isMulti || !containerName)) {
       // 1) if the user specified no container, we will inject
       // --all-containers for convenience
@@ -163,7 +165,7 @@ export default class Logs extends Terminal<State> {
         args.argsForMode.command = undefined // point 2
       }
 
-      return { command, isLive: args.parsedOptions.f ? ('Live' as const) : ('Paused' as const) }
+      return { command, isLive: parsedOptions.f ? ('Live' as const) : ('Paused' as const) }
     } else {
       // pod:container? a sign of a multi-pod view
       const previous =
