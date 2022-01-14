@@ -33,3 +33,9 @@
 @include SidecarTopTabs {
   background-color: var(--color-sidecar-header);
 }
+
+@include SidecarTopTab {
+  button {
+    font-size: inherit;
+  }
+}
