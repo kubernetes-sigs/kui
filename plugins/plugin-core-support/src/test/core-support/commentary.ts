@@ -17,6 +17,7 @@
 import { dirname } from 'path'
 import { Common, CLI, ReplExpect, Selectors, Util, Keys } from '@kui-shell/test'
 
+import { splitViaButton } from '../core-support2/split-helpers'
 import { lastOutput, typeAndVerify, verifyTextInMonaco } from './commentary-util'
 
 const ROOT = dirname(require.resolve('@kui-shell/plugin-core-support/package.json'))
@@ -59,6 +60,29 @@ describe('commentary and replay', function(this: Common.ISuite) {
       .then(ReplExpect.okWithCustom({ expect: Common.expectedVersion }))
       .catch(Common.oops(this, true)))
   addComment()
+})
+
+describe('commentary replace current content', function(this: Common.ISuite) {
+  before(Common.before(this))
+  after(Common.after(this))
+
+  it('should add something to the terminal', () =>
+    CLI.command('kuiecho hi', this.app)
+      .then(ReplExpect.okWithString('hi'))
+      .catch(Common.oops(this, true)))
+
+  splitViaButton.bind(this)(2)
+
+  it('should run commentary --replace and not show only one finished block', () =>
+    CLI.command('commentary --replace hello', this.app).catch(Common.oops(this, true)))
+
+  it('should show only one split', () => ReplExpect.splitCount(1))
+
+  it('should show only one finished block', () =>
+    ReplExpect.blockCount
+      .bind(this)()
+      .inSplit(1)
+      .is(1))
 })
 
 describe('edit commentary', function(this: Common.ISuite) {
