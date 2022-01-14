@@ -125,6 +125,9 @@ type Props = TerminalOptions &
     /** Status of the proxy session (for client-server architectures of Kui) */
     sessionInit: SessionInitStatus
 
+    /** Reset any notion of left strip etc. */
+    resetSplitLayout(): void
+
     /** Toggle whether we have a left strip split */
     willToggleLeftStripMode(): void
 
@@ -933,6 +936,7 @@ export default class ScrollableTerminal extends React.PureComponent<Props, State
         const finishedBlock = Finished(inProcess, event, outputOnly, asReplay || undefined)
         state.splits[0].blocks.splice(0, 0, finishedBlock)
         this.setState(state)
+        this.props.resetSplitLayout()
         return
       }
     }
