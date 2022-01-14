@@ -293,6 +293,9 @@ export default class TabContent extends React.PureComponent<Props, State> {
     return 'Please wait while we connect to your cluster'
   }
 
+  /** Reset any notion of left strip etc. */
+  private readonly _resetSplitLayout = () => this.setState({ hasLeftStrip: false, hasBottomStrip: false })
+
   /** Enter/exit mode where one split is displayed along the left */
   private readonly _toggleLeftStripMode = () => this.setState(curState => ({ hasLeftStrip: !curState.hasLeftStrip }))
 
@@ -334,6 +337,7 @@ export default class TabContent extends React.PureComponent<Props, State> {
               hasBottomStrip={this.state.hasBottomStrip}
               willToggleLeftStripMode={this._toggleLeftStripMode}
               willToggleBottomStripMode={this._toggleBottomStripMode}
+              resetSplitLayout={this._resetSplitLayout}
               noActiveInput={this.props.noActiveInput || !this.state.mutability.editable}
             >
               {this.children()}
