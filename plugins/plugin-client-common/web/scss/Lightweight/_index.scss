@@ -106,9 +106,4 @@ $row-height: 1.5em;
       }
     }
   }
-  @include TopTabStripe_ProductName {
-    opacity: 0;
-    padding: 0;
-    width: 0.5em;
-  }
 }
