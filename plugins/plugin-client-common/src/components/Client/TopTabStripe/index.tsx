@@ -15,7 +15,16 @@
  */
 
 import React from 'react'
-import { Nav, NavList, PageHeader } from '@patternfly/react-core'
+import {
+  Nav,
+  NavList,
+  Masthead,
+  MastheadMain,
+  MastheadBrand,
+  MastheadContent,
+  MastheadToggle,
+  PageToggleButton
+} from '@patternfly/react-core'
 import { Capabilities, KeyCodes, isReadOnlyClient } from '@kui-shell/core'
 
 import TabModel from '../TabModel'
@@ -23,6 +32,8 @@ import KuiContext from '../context'
 import NewTabButton from './NewTabButton'
 import Tab, { TabConfiguration } from './Tab'
 import SplitTerminalButton from './SplitTerminalButton'
+
+import Icons from '../../spi/Icons'
 
 import '../../../../web/scss/components/TopTabStripe/_index.scss'
 
@@ -54,13 +65,15 @@ export type TopTabStripeConfiguration = TabConfiguration
 type Props = TopTabStripeConfiguration & {
   tabs: TabModel[]
   activeIdx: number
+  closeableTabs: boolean
   onNewTab: () => void
   onCloseTab: (idx: number) => void
   onSwitchTab: (idx: number) => void
-}
 
-/** @types/carbon-react is insufficient here; filling in the gaps for now */
-type CarbonHeaderArgs = { onClickSideNavExpand: React.MouseEventHandler; isSideNavExpanded: boolean }
+  needsSidebar: boolean
+  isSidebarOpen: boolean
+  onToggleSidebar: () => void
+}
 
 export default class TopTabStripe extends React.PureComponent<Props> {
   public componentDidMount() {
@@ -123,7 +136,7 @@ export default class TopTabStripe extends React.PureComponent<Props> {
                 idx={idx}
                 uuid={tab.uuid}
                 title={tab.title}
-                closeable={this.props.tabs.length > 1 && !isReadOnlyClient()}
+                closeable={this.props.closeableTabs}
                 active={idx === this.props.activeIdx}
                 onCloseTab={(idx: number) => this.props.onCloseTab(idx)}
                 onSwitchTab={(idx: number) => this.props.onSwitchTab(idx)}
@@ -153,21 +166,35 @@ export default class TopTabStripe extends React.PureComponent<Props> {
     )
   }
 
-  private header() {
-    const logoProps = {
-      /*      href: 'https://patternfly.org',
-      onClick: () => console.log('clicked logo'),
-      target: '_blank' */
-    }
-
+  private sidebarToggle() {
     return (
-      <PageHeader
-        className="kui--top-tab-stripe-header"
-        logo={this.headerName()}
-        logoProps={logoProps}
-        logoComponent="span"
-        topNav={this.tabs()}
-      />
+      this.props.needsSidebar && (
+        <MastheadToggle className="kui--top-tab-stripe-header--toggle">
+          <PageToggleButton
+            className="kui--top-tab-stripe-header--toggle-button"
+            variant="plain"
+            aria-label="Global navigation"
+            isNavOpen={this.props.isSidebarOpen}
+            onNavToggle={this.props.onToggleSidebar}
+          >
+            <Icons icon="Hamburger" className="kui--top-tab-stripe-header--toggle-button-icon" />
+          </PageToggleButton>
+        </MastheadToggle>
+      )
+    )
+  }
+
+  private header() {
+    return (
+      <Masthead className="kui--top-tab-stripe-header">
+        {this.sidebarToggle()}
+        <MastheadMain className="kui--top-tab-stripe-header--main">
+          <MastheadBrand component="span" className="kui--top-tab-stripe-header--brand">
+            {this.headerName()}
+          </MastheadBrand>
+          <MastheadContent className="kui--top-tab-stripe-header--content">{this.tabs()}</MastheadContent>
+        </MastheadMain>
+      </Masthead>
     )
   }
 

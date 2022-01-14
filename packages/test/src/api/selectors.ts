@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import SidebarApi from './Sidebar'
+
+export const Sidebar = new SidebarApi()
+
 /* eslint-disable @typescript-eslint/camelcase */
 export const TOP_TAB = '.kui--tab-list > .kui--tab'
 export const TOP_TAB_N = (N: number) => `${TOP_TAB}:nth-child(${N})`

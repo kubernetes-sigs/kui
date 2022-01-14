@@ -37,6 +37,8 @@ const ProxyOfflineIndicator = React.lazy(() =>
   import('@kui-shell/plugin-proxy-support').then(_ => ({ default: _.ProxyOfflineIndicator }))
 )
 
+import { version } from '@kui-shell/client/package.json'
+import guidebooks from '@kui-shell/client/config.d/notebooks.json'
 import { productName } from '@kui-shell/client/config.d/name.json'
 
 /**
@@ -77,12 +79,14 @@ export default function renderMain(props: KuiProps) {
 
   return (
     <Kui
+      version={version}
       productName={productName}
       lightweightTables
       {...props}
       isPopup={isPopup}
       quietExecCommand={quietExecCommand}
       toplevel={!Capabilities.inBrowser() && <Search />}
+      guidebooks={guidebooks.submenu}
       commandLine={
         props.commandLine ||
         (!isPopup && [

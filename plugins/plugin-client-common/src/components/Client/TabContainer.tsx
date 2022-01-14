@@ -15,12 +15,16 @@
  */
 
 import React from 'react'
-import { Page } from '@patternfly/react-core'
-import { Events, Tab } from '@kui-shell/core'
+import { Events, Tab, encodeComponent, isReadOnlyClient, pexecInCurrentTab } from '@kui-shell/core'
+import { Nav, NavExpandable, NavList, NavItem, Page, PageSidebar } from '@patternfly/react-core'
 
 import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
+
+import CommonProps from './props/Common'
+import BrandingProps from './props/Branding'
+import GuidebookProps, { isGuidebook, isMenu, MenuItem } from './props/Guidebooks'
 
 import '../../../web/css/static/TabContainer.scss'
 import '../../../web/scss/components/Page/_index.scss'
@@ -39,9 +43,16 @@ import '../../../web/scss/components/Page/_index.scss'
  */
 
 type TabContainerOptions = TabContentOptions
-type Props = TabContentOptions & TopTabStripeConfiguration
+type Props = TabContentOptions &
+  TopTabStripeConfiguration &
+  BrandingProps &
+  GuidebookProps &
+  Pick<CommonProps, 'closeableTabs'>
 
 interface State {
+  /** hamburger menu expanded? */
+  isSidebarOpen: boolean
+
   /** list of current tabs; one TabContent for each */
   tabs: TabModel[]
 
@@ -57,6 +68,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     super(props)
 
     this.state = {
+      isSidebarOpen: this.props.guidebooksExpanded || false,
       tabs: [this.newTabModel()],
       activeIdx: 0
     }
@@ -281,6 +293,10 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         onSwitchTab={this._onSwitchTab}
         activeIdx={this.state.activeIdx}
         topTabNames={this.props.topTabNames}
+        needsSidebar={this.needsSidebar}
+        isSidebarOpen={this.state.isSidebarOpen}
+        onToggleSidebar={this.toggleSidebar}
+        closeableTabs={this.state.tabs.length > 1 && (this.props.closeableTabs || !isReadOnlyClient())}
       />
     )
   }
@@ -321,9 +337,61 @@ export default class TabContainer extends React.PureComponent<Props, State> {
     )
   }
 
+  private readonly toggleSidebar = () => this.setState(curState => ({ isSidebarOpen: !curState.isSidebarOpen }))
+
+  private get needsSidebar() {
+    return !!this.props.guidebooks
+  }
+
+  private sidebar() {
+    const renderItem = (_: MenuItem, idx) =>
+      isGuidebook(_) ? (
+        <NavItem
+          key={idx}
+          className="kui--sidebar-nav-item"
+          data-title={_.notebook}
+          onClick={() =>
+            pexecInCurrentTab(`${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`)
+          }
+        >
+          {_.notebook}
+        </NavItem>
+      ) : isMenu(_) ? (
+        <NavExpandable key={idx} isExpanded title={_.label} className="kui--sidebar-nav-menu" data-title={_.label}>
+          {_.submenu.map(renderItem)}
+        </NavExpandable>
+      ) : (
+        undefined
+      )
+
+    const nav = this.needsSidebar && (
+      <React.Fragment>
+        <Nav className="kui--tab-container-sidebar-nav">
+          <NavList>{this.props.guidebooks.map(renderItem)}</NavList>
+        </Nav>
+        {this.props.productName && this.props.version && (
+          <div className="flex-align-end semi-bold kui--tab-container-sidebar-other">
+            {this.props.productName} v{this.props.version}
+          </div>
+        )}
+      </React.Fragment>
+    )
+
+    return (
+      this.needsSidebar && (
+        <PageSidebar nav={nav} isNavOpen={this.state.isSidebarOpen} className="kui--tab-container-sidebar" />
+      )
+    )
+  }
+
   public render() {
     return (
-      <Page mainContainerId="kui--page-main" className="kui--tab-container-page" header={this.topTabStripe()}>
+      <Page
+        mainContainerId="kui--page-main"
+        className="kui--tab-container-page"
+        header={this.topTabStripe()}
+        sidebar={this.sidebar()}
+      >
         {this.tabContent()}
       </Page>
     )

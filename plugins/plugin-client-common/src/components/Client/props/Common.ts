@@ -23,4 +23,7 @@ export default interface CommonProps {
 
   /** do not show Settings/Themes widget */
   noSettings?: boolean
+
+  /** Are tabs closeable? [default: true except for config.d/client.json readonly: true */
+  closeableTabs?: boolean
 }

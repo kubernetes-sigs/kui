@@ -15,14 +15,14 @@
  */
 
 @import 'mixins';
+@import 'Sidebar';
 @import '../../PatternFly/common';
 
-$height: 3em;
 $tab-label-font-size: 0.875rem;
 
 @include TopTabStripeAbsolute {
   --tab-shadow: inset 0 -3px 0 0;
-  --pf-c-page__header--BackgroundColor: var(--color-stripe-01);
+  --pf-c-masthead--BackgroundColor: var(--color-stripe-01);
 
   .kui--top-tab-stripe-header {
     display: flex;
