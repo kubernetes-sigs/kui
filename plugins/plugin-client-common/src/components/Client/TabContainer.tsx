@@ -348,8 +348,9 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   private sidebar() {
-    // helps deal with isActive
-    let first = true
+    // helps deal with isActive; if we don't have a currentGuidebook,
+    // use the first one (for now)
+    let first = !this.state.currentGuidebook
 
     const renderItem = (_: MenuItem, idx) => {
       const thisIsTheFirstNavItem = isGuidebook(_) && first
