@@ -162,7 +162,7 @@ export function hackIndentation(source: string): string {
 
   const rewrite = source.split(/\n/).map(line => {
     const tabStartMatch = line.match(/^(\s*)===\s+".*"/)
-    const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|info|note|warning)\s+".*"/)
+    const tipStartMatch = line.match(/^(\s*)[?!][?!][?!](\+?)\s+(tip|info|note|warning)/)
     const startMatch = tabStartMatch || tipStartMatch
 
     const pop = (line: string, delta = 0) => {
@@ -227,26 +227,25 @@ export function hackIndentation(source: string): string {
       )
 
       return (
-        `\n\n${possibleEndTab}${possibleNesting}${replacement}${startMarker}\n\n` +
-        line.replace(new RegExp(/^\s*/), replacement)
+        `\n\n${possibleEndTab}${possibleNesting}${replacement}${startMarker}\n\n` + line.replace(/^\s*/, replacement)
       )
     } else if (/^\s*```/.test(line)) {
       const possibleEndOfTab = !inTab || inTab.test(line) ? '' : pop(line)
 
       if (/(bash|sh|shell)/.test(line)) {
         inCodeBlock = true
-        return possibleEndOfTab + line.replace(inTab, replacement)
+        return possibleEndOfTab + line.replace(/^\s*/, replacement)
       } else if (inCodeBlock) {
         inCodeBlock = false
-        return possibleEndOfTab + line.replace(inTab, replacement)
+        return possibleEndOfTab + line.replace(/^\s*/, replacement)
       } else {
         inBlockquote = !inBlockquote
         if (inTab) {
-          return possibleEndOfTab + line.replace(inTab, replacement)
+          return possibleEndOfTab + line.replace(/^\s*/, replacement)
         }
       }
     } else if (inTab) {
-      const unindented = line.replace(inTab, replacement)
+      const unindented = line.replace(/^\s*/, replacement)
 
       if (line.length === 0 || /^\s+$/.test(line) || inBlockquote || inTab.test(line)) {
         // empty line, in blockquote, or still in tab
@@ -256,6 +255,7 @@ export function hackIndentation(source: string): string {
         return pop(line) + unindented
       }
     }
+
     return line
   })
 

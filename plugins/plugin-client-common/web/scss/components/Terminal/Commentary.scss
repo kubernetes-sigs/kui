@@ -281,6 +281,14 @@ body[kui-theme-style='light'] {
   @include ExpandableSection {
     font-size: 0.875rem;
   }
+  @include ExpandableSectionContent {
+    margin-top: 1em;
+    max-width: unset;
+
+    & > .paragraph {
+      padding-top: 0;
+    }
+  }
 
   @include MarkdownTabButton {
     font-size: 0.875rem;
