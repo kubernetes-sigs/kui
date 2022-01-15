@@ -31,7 +31,7 @@
     "debug": "4.3.3",
     "globby": "11.0.4",
     "node-pty": "0.10.1",
-    "shelljs": "0.8.4",
+    "shelljs": "0.8.5",
     "slash": "3.0.0",
     "speed-date": "1.0.0",
     "tmp": "0.2.1",
