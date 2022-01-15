@@ -177,7 +177,9 @@ export default class Markdown extends React.PureComponent<Props, State> {
       td.use(gfm)
       return td.turndown(props.source)
     } else {
-      return hackIndentation(props.source).trim()
+      return hackIndentation(props.source)
+        .trim()
+        .replace(/\){target=[^}]+}/g, ')')
     }
   }
 
