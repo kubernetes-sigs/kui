@@ -295,7 +295,7 @@ body[kui-theme-style='light'] {
   }
 
   @include CommandOutput {
-    flex-direction: column; /* in case of multi-output, e.g. from semicolonInvoke */
+    /* flex-direction: column; */ /* in case of multi-output, e.g. from semicolonInvoke */
     font-size: 0.875rem;
     line-height: initial; /* PatternFly intercepts this for pf-c-content */
 
