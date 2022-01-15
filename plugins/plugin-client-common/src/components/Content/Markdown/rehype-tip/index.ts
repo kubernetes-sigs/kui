@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)"\s*(\n(.|[\n\r])*)?$/
-const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)\s+"(.+)$/
+import { i18n } from '@kui-shell/core'
+
+const strings = i18n('plugin-client-common', 'markdown')
+
+const RE_TIP = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)(\s+"(.+)"\s*)?(\n(.|[\n\r])*)?$/
+const RE_TIP_START = /^([?!][?!][?!])(\+?)\s+(tip|info|note|warning)(\s+"(.+))?$/
 const RE_TIP_END = /^(.*)"\s*(\n(.|[\n\r])*)?$/
 
 export const START_OF_TIP = `<!-- ____KUI_START_OF_TIP____ -->`
@@ -94,8 +98,11 @@ export default function plugin(/* options */) {
                   currentTip = {
                     type: 'element',
                     tagName: 'tip',
-                    properties: { title: startMatch[4], open: !!startMatch[2] || startMatch[1] === '!!!' },
-                    children: startMatch[5] ? [{ type: 'text', value: startMatch[5] }] : [],
+                    properties: {
+                      title: startMatch[5] || strings(startMatch[3]),
+                      open: !!startMatch[2] || startMatch[1] === '!!!'
+                    },
+                    children: startMatch[6] ? [{ type: 'text', value: startMatch[6] }] : [],
                     position: child.position
                   }
                   newChildren.push(currentTip)
@@ -110,7 +117,7 @@ export default function plugin(/* options */) {
                       type: 'element',
                       tagName: 'tip',
                       properties: {
-                        title: startMatch[4],
+                        title: startMatch[5] || strings(startMatch[3]),
                         open: !!startMatch[2] || startMatch[1] === '!!!',
                         partial: true
                       },
