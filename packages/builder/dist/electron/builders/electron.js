@@ -43,10 +43,10 @@
 
 const { arch: osArch } = require('os')
 const { createGunzip } = require('zlib')
-const { basename, join } = require('path')
 const packager = require('electron-packager')
+const { basename, dirname, join } = require('path')
 const { serialHooks } = require('electron-packager/src/hooks')
-const { copy, emptyDir, remove } = require('fs-extra')
+const { copy, emptyDir, mkdirp, remove } = require('fs-extra')
 const { createReadStream, createWriteStream, readdir } = require('fs')
 const { exec } = require('child_process')
 
@@ -123,27 +123,24 @@ function copyNodePty(buildPath, electronVersion, targetPlatform, targetArch) {
       } else {
         try {
           await Promise.all(
-            files.map(
-              sourceFileGz =>
-                new Promise((resolve, reject) => {
-                  const source = join(sourceDir, sourceFileGz)
-                  const target = join(
-                    buildPath,
-                    'node_modules',
-                    nodePty,
-                    'build/Release',
-                    sourceFileGz.replace(/\.gz$/, '')
-                  )
-                  console.log(`node-pty source: ${source}`)
-                  console.log(`node-pty target: ${target}`)
+            files.map(async sourceFileGz => {
+              const source = join(sourceDir, sourceFileGz)
+              const target = /spawn-helper/.test(sourceFileGz)
+                ? join(buildPath, 'dist/build/Release', sourceFileGz.replace(/\.gz$/, ''))
+                : join(buildPath, 'node_modules', nodePty, 'build/Release', sourceFileGz.replace(/\.gz$/, ''))
+              console.log(`node-pty source: ${source}`)
+              console.log(`node-pty target: ${target}`)
 
-                  createReadStream(source)
-                    .pipe(createGunzip())
-                    .pipe(createWriteStream(target))
-                    .on('error', reject)
-                    .on('finish', resolve)
-                })
-            )
+              await mkdirp(dirname(target))
+
+              return new Promise((resolve, reject) => {
+                createReadStream(source)
+                  .pipe(createGunzip())
+                  .pipe(createWriteStream(target, { mode: 0o755 }))
+                  .on('error', reject)
+                  .on('finish', resolve)
+              })
+            })
           )
           resolve()
         } catch (err) {
@@ -236,10 +233,12 @@ const platform = process.argv[2]
 const arch = process.argv[3]
 const launcher = process.argv[4]
 
+const download = platform !== 'darwin' ? undefined : require('../electron-get-options')
+
 //
 // invoke electron-packager, catching any errors it might throw
 //
-package({ dir, name, platform, arch, launcher })
+package({ dir, name, platform, arch, launcher, download })
   .then(sign(name, platform))
   .then(notarize(name, platform))
   .then(() => {

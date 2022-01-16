@@ -30,7 +30,7 @@
     "cookie": "0.4.1",
     "debug": "4.3.3",
     "globby": "11.0.4",
-    "node-pty": "0.10.1",
+    "node-pty": "0.11.0-beta17",
     "shelljs": "0.8.5",
     "slash": "3.0.0",
     "speed-date": "1.0.0",

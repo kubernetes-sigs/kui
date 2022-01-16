@@ -26,12 +26,12 @@ fi
 # ../package.json
 if [ "$1" = "electron" ]; then
     # create an electron dist to test against
-    PLATFORM=$(node -e 'console.log(process.platform)')
-    ARCH=$(node -e 'console.log(require("os").arch())')
+    PLATFORM=${2-$(node -e 'console.log(process.platform)')}
+    ARCH=${3-$(node -e 'console.log(require("os").arch())')}
     TARGET="${PLATFORM}-${ARCH}"
     echo "node-pty PLATFORM=$TARGET"
     mkdir -p node_modules/node-pty/build/Release
-    rm -f node_modules/node-pty/build/Release/*
+    rm -rf node_modules/node-pty/build/Release/*
     cp node_modules/@kui-shell/builder/dist/electron/vendor/node-pty/build/$TARGET/electron/* node_modules/node-pty/build/Release
     gunzip node_modules/node-pty/build/Release/*.gz
     ls node_modules/node-pty/build/Release
@@ -41,6 +41,11 @@ else
         (cd node_modules/.bin && rm -f rc && node -e 'require("fs").symlinkSync("../rc/cli.js", "rc")')
     fi
 
-    cd node_modules/node-pty
-    npm run install
+    (cd node_modules/node-pty && npm run install)
+fi
+
+if [ -f node_modules/node-pty/build/Release/spawn-helper ]; then
+    echo "node-pty spawn-helper handling"
+    mkdir -p dist/build/Release
+    cp node_modules/node-pty/build/Release/spawn-helper dist/build/Release
 fi

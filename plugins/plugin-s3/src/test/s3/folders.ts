@@ -18,7 +18,7 @@ import { v4 } from 'uuid'
 import { tmpdir } from 'os'
 import { unlinkSync } from 'fs'
 import { basename, dirname, join } from 'path'
-import { Common } from '@kui-shell/test'
+import { CLI, Common, ReplExpect } from '@kui-shell/test'
 
 import S3Utils, { PROVIDER } from './util'
 
@@ -51,6 +51,12 @@ export default function folders(this: Common.ISuite) {
   const objectPathInFolder1 = join(folderName1, objectName1)
   const objectPathInSubFolder1 = join(folderName1, subfolderName1, objectName1)
 
+  it('should ls /s3/minio', () =>
+    CLI.command('ls -l /s3/minio', this.app)
+      .then(ReplExpect.okWithAny)
+      .catch(Common.oops(this, true)))
+
+  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 2000)))
   mkdir(bucketName1)
 
   copyToS3(bucketName1, objectName1)

@@ -30,6 +30,13 @@ export default function cd(this: Common.ISuite) {
   // here come the tests:
   const bucketName = `kuitest-${v4()}`
 
+  it('should ls /s3/minio', () =>
+    CLI.command('ls -l /s3/minio', this.app)
+      .then(ReplExpect.okWithAny)
+      .catch(Common.oops(this, true)))
+
+  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 2000)))
+
   mkdir(bucketName)
   copyToS3(bucketName, README)
 

@@ -55,7 +55,7 @@ export async function preinit() {
   }
 
   try {
-    const { remote } = await import('electron')
+    const remote = await import('@electron/remote')
     const window = remote && (remote.getCurrentWindow() as KuiWindow)
     const subwindow = window.subwindow
     if (subwindow && subwindow.fullscreen === true) {
@@ -89,7 +89,7 @@ export async function preinit() {
 
 /** invoke the Client to render its body */
 export async function render(client: Client, root: Element) {
-  const { remote } = await import('electron')
+  const remote = await import('@electron/remote')
   const electronWindow = remote.getCurrentWindow() as KuiWindow
   const prefs = electronWindow.subwindow
   const argv = electronWindow['executeThisArgvPlease']

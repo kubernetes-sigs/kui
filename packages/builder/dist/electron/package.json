@@ -4,13 +4,14 @@
   "description": "Files for creating a Shell distributable binary",
   "main": "index.js",
   "scripts": {
+    "postinstall": "[ \"$(uname)\" != \"Darwin\" ] || node ./electron-download-hack.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
     "debug": "4.3.3",
-    "electron": "11.5.0",
+    "electron": "13.2.1",
     "electron-packager": "15.4.0",
     "glob": "7.1.7",
     "globby": "11.0.3"

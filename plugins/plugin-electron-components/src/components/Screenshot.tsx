@@ -103,8 +103,8 @@ export default class Screenshot extends React.PureComponent<Props, State> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise<void>(async (resolve, reject) => {
       try {
-        const { ipcRenderer, nativeImage, remote } = await import('electron')
-        const { app } = remote
+        const { ipcRenderer, nativeImage } = await import('electron')
+        const { app, getCurrentWebContents } = await import('@electron/remote')
 
         const domRect = element.getBoundingClientRect()
         const rect = {
@@ -137,7 +137,7 @@ export default class Screenshot extends React.PureComponent<Props, State> {
         // started (in that order!)
         //
         ipcRenderer.once('capture-page-to-clipboard-done', listener)
-        ipcRenderer.send('capture-page-to-clipboard', remote.getCurrentWebContents().id, rect)
+        ipcRenderer.send('capture-page-to-clipboard', getCurrentWebContents().id, rect)
       } catch (err) {
         reject(err)
       }
@@ -147,7 +147,8 @@ export default class Screenshot extends React.PureComponent<Props, State> {
   /** User has clicked on the Save to Desktop button */
   private async saveToDisk() {
     const { join } = await import('path')
-    const { remote, shell } = await import('electron')
+    const { shell } = await import('electron')
+    const remote = await import('@electron/remote')
 
     const ts = new Date()
     const filename = `Screen Shot ${dateString(ts)} ${timeString(ts)}.png`

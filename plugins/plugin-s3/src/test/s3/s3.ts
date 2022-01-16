@@ -17,11 +17,11 @@
 import { Common, CLI, ReplExpect } from '@kui-shell/test'
 
 import cd from './cd'
-import S3Utils from './util'
 import basics from './basics'
 import rimraf from './rimraf'
 import pseudo from './pseudo'
 import folders from './folders'
+import S3Utils, { PROVIDER } from './util'
 import wildcardRimraf from './wildcard-rimraf'
 
 if (process.env.NEEDS_MINIO) {
@@ -34,7 +34,7 @@ if (process.env.NEEDS_MINIO) {
     init()
     it('should show minio in /s3', () =>
       CLI.command('ls -l /s3', this.app)
-        .then(ReplExpect.okWith('minio'))
+        .then(ReplExpect.okWith(PROVIDER))
         .catch(Common.oops(this, true)))
   })
 

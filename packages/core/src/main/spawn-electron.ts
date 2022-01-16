@@ -42,6 +42,9 @@ let nWindows = 0
 /** cleaners to be invoked when the last window is closed */
 let cleaners: (() => void)[] = []
 
+/** @electron/remote fails if you try to initialize it more than once */
+let electronRemoteNeedsInit = true
+
 interface EventEmitter {
   on(event: string, listener: Function): void
   once(event: string, listener: Function): void
@@ -51,7 +54,6 @@ interface App extends EventEmitter {
   quit(): void
   exit(exitCode?: number): void
   requestSingleInstanceLock(): boolean
-  allowRendererProcessReuse: boolean
 }
 
 /**
@@ -204,6 +206,11 @@ export function createWindow(
       opts.useContentSize = true
     }
 
+    if (electronRemoteNeedsInit) {
+      require('@electron/remote/main').initialize()
+      electronRemoteNeedsInit = false
+    }
+
     if (process.env.KUI_POSITION_X) {
       opts.x = parseInt(process.env.KUI_POSITION_X, 10)
     }
@@ -216,6 +223,7 @@ export function createWindow(
       subwindow?: ISubwindowPrefs
     }
     const mainWindow = new BrowserWindow(opts) as KuiBrowserWindow
+    require('@electron/remote/main').enable(mainWindow.webContents)
     nWindows++
     debug('createWindow::new BrowserWindow success')
 

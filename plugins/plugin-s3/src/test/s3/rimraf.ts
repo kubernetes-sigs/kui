@@ -16,7 +16,7 @@
 
 import { v4 } from 'uuid'
 import { tmpdir } from 'os'
-import { Common } from '@kui-shell/test'
+import { CLI, Common, ReplExpect } from '@kui-shell/test'
 
 import S3Utils, { README, README3 } from './util'
 
@@ -28,6 +28,13 @@ export default function rimraf(this: Common.ISuite) {
   // bucketName immediately after deleting it
   const bucketName1 = `kuitest-${v4()}`
   const bucketName2 = `kuitest-${v4()}`
+
+  it('should ls /s3/minio', () =>
+    CLI.command('ls -l /s3/minio', this.app)
+      .then(ReplExpect.okWithAny)
+      .catch(Common.oops(this, true)))
+
+  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 2000)))
 
   mkdir(bucketName1)
   mkdir(bucketName2)

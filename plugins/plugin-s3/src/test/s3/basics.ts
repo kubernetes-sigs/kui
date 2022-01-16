@@ -16,7 +16,7 @@
 
 import { v4 } from 'uuid'
 import { tmpdir } from 'os'
-import { Common } from '@kui-shell/test'
+import { CLI, Common, ReplExpect } from '@kui-shell/test'
 
 import S3Utils, { README, README2, README3, PJSON, PROVIDER } from './util'
 
@@ -37,6 +37,13 @@ export default function basics(this: Common.ISuite) {
 
   // here come the tests:
   const bucketName = `kuitest-${v4()}`
+
+  it('should ls /s3/minio', () =>
+    CLI.command('ls -l /s3/minio', this.app)
+      .then(ReplExpect.okWithAny)
+      .catch(Common.oops(this, true)))
+
+  it('should sleep', () => new Promise(resolve => setTimeout(resolve, 2000)))
 
   mkdir(bucketName)
 
