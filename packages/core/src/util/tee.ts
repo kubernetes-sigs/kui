@@ -37,7 +37,7 @@ export default async function(response: Entity) {
       if (process.env.KUI_TEE_TO_FILE_EXIT_ON_END_MARKER) {
         // we were asked to exit after writing an end marker
         try {
-          const { app } = require('electron').remote
+          const { app } = require('@electron/remote')
           debug('attempting to quit', app)
           app.quit()
         } catch (err) {

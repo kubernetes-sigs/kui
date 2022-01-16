@@ -62,6 +62,9 @@ function win32 {
     local ARCH=$1
 
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "win32" ] || [ "$PLATFORM" == "windows" ]; then
+        # copy over prebuilt node-pty
+        npx kui-pty-rebuild electron win32 x64
+
         # create the bundles
         echo "Electron build for win32 $ARCH"
 
@@ -125,6 +128,9 @@ function mac {
             return
         fi
         echo "Electron build darwin $ARCH"
+
+        # copy over prebuilt node-pty
+        npx kui-pty-rebuild electron darwin "$ARCH"
 
         if [ ! -f "$KUI_LAUNCHER" ]; then
             echo "Add kubectl-kui to electron build darwin $ARCH"
@@ -200,6 +206,9 @@ function linux {
     if [ "$PLATFORM" == "all" ] || [ "$PLATFORM" == "linux" ]; then
         echo "Electron build linux $ARCH"
 
+        # copy over prebuilt node-pty
+        npx kui-pty-rebuild electron linux ${ARCH-x64}
+        
         if [[ `uname` == Darwin ]]; then
           which dpkg || brew install dpkg
           which fakeroot || brew install fakeroot
@@ -253,15 +262,9 @@ function builddeps {
     echo "Using CLIENT_NAME=$CLIENT_NAME"
 }
 
-# make sure we have an electron-compatible node-pty
-function pty {
-    npx kui-pty-rebuild electron
-}
-
 # this is the main routine
 function build {
     echo "builddeps" && builddeps
-    echo "pty" && pty
 
     win32 x64
 

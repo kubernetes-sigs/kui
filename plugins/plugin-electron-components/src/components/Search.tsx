@@ -46,12 +46,11 @@ export default class Search extends React.Component<Props, State> {
 
   /** stop findInPage, and clear selections in page */
   private async stopFindInPage() {
-    return import('electron').then(async ({ remote }) => {
-      // note: with 'clearSelection', the focus of the input is very
-      // odd; it is focused, but typing text does nothing until some
-      // global refresh occurs. maybe this is just a bug in electron 6?
-      await remote.getCurrentWebContents().stopFindInPage('activateSelection')
-    })
+    const { getCurrentWebContents } = await import('@electron/remote')
+    // note: with 'clearSelection', the focus of the input is very
+    // odd; it is focused, but typing text does nothing until some
+    // global refresh occurs. maybe this is just a bug in electron 6?
+    await getCurrentWebContents().stopFindInPage('activateSelection')
   }
 
   private initEvents() {
@@ -90,9 +89,9 @@ export default class Search extends React.Component<Props, State> {
   }
 
   private async findInPage(options?: FindInPageOptions) {
-    const { remote } = await import('electron')
+    const { getCurrentWebContents } = await import('@electron/remote')
     // Registering a callback handler
-    remote.getCurrentWebContents().once('found-in-page', async (event: Event, result: FoundInPageResult) => {
+    getCurrentWebContents().once('found-in-page', async (event: Event, result: FoundInPageResult) => {
       this.setState(curState => {
         if (curState.isActive) {
           // we only need hack if we're doing a find as the user is typing and the options is defined for the converse
@@ -105,7 +104,7 @@ export default class Search extends React.Component<Props, State> {
       })
     })
     // this is where we call the electron API to initiate a new find
-    remote.getCurrentWebContents().findInPage(this._input.value, options)
+    getCurrentWebContents().findInPage(this._input.value, options)
   }
 
   /** findInPage api seems to result in a loss of focus */

@@ -35,6 +35,10 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
     try {
       const res = await CLI.command(`echo ${emittedText}`, this.app)
 
+      // since this is not streaming output, there is a race window
+      // after the command completes, kui replaces it with the final form
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
       // wait for the output to appear
       await this.app.client.$(rows(res.count)).then(_ => _.waitForExist())
 
@@ -93,6 +97,10 @@ describe(`xterm copy paste ${process.env.MOCHA_RUN_TARGET || ''}`, function(this
       // emit some characters to the current prompt
       const emittedText = 'hello'
       const res1 = await CLI.command(`echo ${emittedText}`, this.app)
+
+      // since this is not streaming output, there is a race window
+      // after the command completes, kui replaces it with the final form
+      await new Promise(resolve => setTimeout(resolve, 2000))
 
       // wait for the output to appear
       await this.app.client.$(rows(res1.count)).then(_ => _.waitForExist())
