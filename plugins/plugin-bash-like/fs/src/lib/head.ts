@@ -62,7 +62,7 @@ export function showResponseAsMMR(filepath: string, data: string): MultiModalRes
     spec: {
       filepath,
       size: 0,
-      fullpath: Util.findFile(Util.expandHomeDir(filepath))
+      fullpath: Util.absolute(Util.expandHomeDir(filepath))
     }
   }
 

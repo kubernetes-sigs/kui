@@ -61,7 +61,7 @@ async function open(args: Arguments): Promise<KResponse> {
   const filepath = argvNoOptions[argvNoOptions.indexOf('open') + 1]
   debug('open', filepath)
 
-  const fullpath = Util.findFile(Util.expandHomeDir(filepath))
+  const fullpath = Util.absolute(Util.expandHomeDir(filepath))
 
   // suffix excluding gzip extension
   const suffix = filepath.replace(/\.gz$/, '').replace(/^.+\.(\w+)/, '$1')
