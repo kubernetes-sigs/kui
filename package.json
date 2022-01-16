@@ -23,7 +23,7 @@
     "build:electron:linux:arm64": "KUI_HEADLESS_WEBPACK=true PLATFORM=linux ARCH=arm64 kui-build-electron",
     "build:electron:win32:amd64": "KUI_HEADLESS_WEBPACK=true PLATFORM=win32 ARCH=x64 kui-build-electron",
     "build:electron:windows:amd64": "KUI_HEADLESS_WEBPACK=true PLATFORM=win32 ARCH=x64 kui-build-electron",
-    "build:electron:all": "kui-build-electron",
+    "build:electron:all": "KUI_HEADLESS_WEBPACK=true kui-build-electron",
     "_kill": "if [ -f /tmp/kuiwatch-$T.pid ]; then PID=$(cat /tmp/kuiwatch-$T.pid); if [ -n \"$PID\" ]; then kill $PID > /dev/null 2> /dev/null || true; fi; fi",
     "kill": "T=client npm run _kill; T=headless npm run _kill",
     "kill:proxy": "if [ -f /tmp/kuiproxy.pid ]; then PID=$(cat /tmp/kuiproxy.pid); if [ -n \"$PID\" ]; then kill $PID > /dev/null 2> /dev/null || true; fi; rm -f /tmp/kuiproxy.pid; fi",
