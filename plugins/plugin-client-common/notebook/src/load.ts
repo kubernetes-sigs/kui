@@ -27,7 +27,7 @@ export async function loadNotebook(
       return (await REPL.rexec<(string | object)[]>(`_fetchfile ${encodeComponent(filepath)}`)).content[0]
     } else {
       //   --with-data says give us the file contents
-      const fullpath = Util.findFile(Util.expandHomeDir(filepath))
+      const fullpath = Util.absolute(Util.expandHomeDir(filepath))
       const stats = (await REPL.rexec<FStat>(`vfs fstat ${encodeComponent(fullpath)} --with-data`)).content
 
       if (stats.isDirectory) {

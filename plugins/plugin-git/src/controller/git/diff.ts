@@ -52,7 +52,7 @@ async function gitDiff(args: Arguments): Promise<KResponse> {
   try {
     const { argvNoOptions, REPL } = args
     const filepath = argvNoOptions[argvNoOptions.indexOf('diff') + 1]
-    const fullpath = Util.findFile(Util.expandHomeDir(filepath))
+    const fullpath = Util.absolute(Util.expandHomeDir(filepath))
     const name = basename(filepath)
     const suffix = filepath.substring(filepath.lastIndexOf('.') + 1)
     const enclosingDirectory = dirname(filepath)

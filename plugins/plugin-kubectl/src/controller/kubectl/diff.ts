@@ -38,7 +38,7 @@ const doDiff = (command: string) =>
         if (typeof filepath !== 'string') {
           throw new Error('multi-file diff currently unsupported')
         }
-        const fullpath = Util.findFile(Util.expandHomeDir(filepath))
+        const fullpath = Util.absolute(Util.expandHomeDir(filepath))
         const name = basename(filepath)
         const enclosingDirectory = dirname(filepath)
         const packageName = enclosingDirectory === '.' ? undefined : enclosingDirectory

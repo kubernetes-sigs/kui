@@ -15,7 +15,7 @@
  */
 
 // Util
-export { findFile } from '../core/find-file'
+export { default as absolute } from '../util/absolute'
 export { expandHomeDir, cwd, fallbackCWD } from '../util/home'
 export { flatten } from '../core/utility'
 export { promiseEach } from '../util/async'
