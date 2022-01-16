@@ -214,7 +214,7 @@ export function mount(vfs: VFS | VFSProducingFunction, placeholderMountPath?: st
 
 /** @return the absolute path to `filepath` */
 export function absolute(filepath: string): string {
-  return normalize(isAbsolute(Util.expandHomeDir(filepath.toString())) ? filepath : join(Util.cwd(), filepath))
+  return isAbsolute(Util.expandHomeDir(filepath.toString())) ? filepath : normalize(join(Util.cwd(), filepath))
 }
 
 /** Lookup compiatible matching mount */
