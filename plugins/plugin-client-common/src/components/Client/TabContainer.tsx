@@ -15,16 +15,17 @@
  */
 
 import React from 'react'
-import { Events, Tab, encodeComponent, isReadOnlyClient, pexecInCurrentTab } from '@kui-shell/core'
-import { Nav, NavExpandable, NavList, NavItem, Page, PageSidebar } from '@patternfly/react-core'
+import { Page } from '@patternfly/react-core'
+import { Events, Tab, isReadOnlyClient } from '@kui-shell/core'
 
+import Sidebar from './Sidebar'
 import TabModel, { TopTabButton } from './TabModel'
 import TabContent, { TabContentOptions } from './TabContent'
 import TopTabStripe, { TopTabStripeConfiguration } from './TopTabStripe'
 
 import CommonProps from './props/Common'
 import BrandingProps from './props/Branding'
-import GuidebookProps, { isGuidebook, isMenu, MenuItem } from './props/Guidebooks'
+import GuidebookProps from './props/Guidebooks'
 
 import '../../../web/css/static/TabContainer.scss'
 import '../../../web/scss/components/Page/_index.scss'
@@ -52,9 +53,6 @@ type Props = TabContentOptions &
 interface State {
   /** hamburger menu expanded? */
   isSidebarOpen: boolean
-
-  /** in noTopTabs mode, we indicate selected guidebook in the NavItem below */
-  currentGuidebook?: string
 
   /** list of current tabs; one TabContent for each */
   tabs: TabModel[]
@@ -348,55 +346,15 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   }
 
   private sidebar() {
-    // helps deal with isActive; if we don't have a currentGuidebook,
-    // use the first one (for now)
-    let first = !this.state.currentGuidebook
-
-    const renderItem = (_: MenuItem, idx) => {
-      const thisIsTheFirstNavItem = isGuidebook(_) && first
-      if (thisIsTheFirstNavItem) {
-        first = false
-      }
-
-      return isGuidebook(_) ? (
-        <NavItem
-          key={idx}
-          data-title={_.notebook}
-          className="kui--sidebar-nav-item"
-          isActive={_.notebook === this.state.currentGuidebook || thisIsTheFirstNavItem}
-          onClick={() => {
-            pexecInCurrentTab(`${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`)
-            this.setState({ currentGuidebook: _.notebook })
-          }}
-        >
-          {_.notebook}
-        </NavItem>
-      ) : isMenu(_) ? (
-        <NavExpandable key={idx} isExpanded title={_.label} className="kui--sidebar-nav-menu" data-title={_.label}>
-          {_.submenu.map(renderItem)}
-        </NavExpandable>
-      ) : (
-        undefined
-      )
-    }
-
-    const nav = this.needsSidebar && (
-      <React.Fragment>
-        <Nav className="kui--tab-container-sidebar-nav">
-          <NavList>{this.props.guidebooks.map(renderItem)}</NavList>
-        </Nav>
-        {this.props.productName && this.props.version && (
-          <div className="flex-align-end semi-bold kui--tab-container-sidebar-other">
-            {this.props.productName} v{this.props.version}
-          </div>
-        )}
-      </React.Fragment>
-    )
-
     return (
-      this.needsSidebar && (
-        <PageSidebar nav={nav} isNavOpen={this.state.isSidebarOpen} className="kui--tab-container-sidebar" />
-      )
+      <Sidebar
+        isOpen={this.state.isSidebarOpen}
+        version={this.props.version}
+        productName={this.props.productName}
+        guidebooks={this.props.guidebooks}
+        guidebooksCommand={this.props.guidebooksCommand}
+        indicateActiveItem={!!this.props.noTopTabs}
+      />
     )
   }
 
