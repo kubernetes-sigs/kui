@@ -1,8 +1,13 @@
 {
   "label": "Notebooks",
   "submenu": [
-    { "notebook": "Welcome to Kui", "filepath": "/kui/welcome.md" },
-    { "type": "separator" },
+    {
+      "label": "Kui",
+      "submenu": [
+        { "notebook": "Welcome to Kui", "filepath": "/kui/welcome.md" },
+        { "notebook": "Make Your Own Notebook", "filepath": "/kui/make-notebook.md" }
+      ]
+    },
     {
       "label": "Kubernetes",
       "submenu": [
@@ -17,8 +22,6 @@
         { "notebook": "Welcome to Iter8", "filepath": "/kui/iter8/welcome.md" },
         { "notebook": "Tutorial 1", "filepath": "/kui/iter8/tutorial1.md" }
       ]
-    },
-    { "type": "separator" },
-    { "notebook": "Make Your Own Notebook", "filepath": "/kui/make-notebook.md" }
+    }
   ]
 }
