@@ -70,9 +70,9 @@ describe(`watch directory listing until ${process.env.MOCHA_RUN_TARGET || ''}`, 
       })
       .catch(Common.oops(this)))
 
-  names.forEach(_ => {
-    it('should remove the created file', () =>
-      CLI.command(`rm ${_}`, this.app)
+  names.forEach(fileName => {
+    it(`should remove the created file ${fileName}`, () =>
+      CLI.command(`rm /tmp/${fileName}`, this.app)
         .then(ReplExpect.ok)
         .catch(Common.oops(this)))
   })
