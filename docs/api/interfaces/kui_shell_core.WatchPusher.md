@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / WatchPusher
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / WatchPusher
 
 # Interface: WatchPusher
 
@@ -16,6 +16,7 @@ callbacks to indicate state changes
 - [footer](kui_shell_core.WatchPusher.md#footer)
 - [header](kui_shell_core.WatchPusher.md#header)
 - [offline](kui_shell_core.WatchPusher.md#offline)
+- [progress](kui_shell_core.WatchPusher.md#progress)
 - [setBody](kui_shell_core.WatchPusher.md#setbody)
 - [update](kui_shell_core.WatchPusher.md#update)
 
@@ -33,7 +34,7 @@ The entire underlying model has disappared
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:62](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L62)
+[packages/core/src/core/jobs/watchable.ts:80](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L80)
 
 ---
 
@@ -49,7 +50,7 @@ A batch of calls to `update` is complete
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:53](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L53)
+[packages/core/src/core/jobs/watchable.ts:71](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L71)
 
 ---
 
@@ -65,7 +66,7 @@ No more updates will be performed
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:59](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L59)
+[packages/core/src/core/jobs/watchable.ts:77](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L77)
 
 ---
 
@@ -85,7 +86,7 @@ No more updates will be performed
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:67](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L67)
+[packages/core/src/core/jobs/watchable.ts:85](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L85)
 
 ---
 
@@ -107,7 +108,7 @@ The header model has changed
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:65](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L65)
+[packages/core/src/core/jobs/watchable.ts:83](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L83)
 
 ---
 
@@ -129,7 +130,34 @@ The given keyed row is gone
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:56](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L56)
+[packages/core/src/core/jobs/watchable.ts:74](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L74)
+
+---
+
+### progress
+
+▸ **progress**(`progress`): `void`
+
+Update progress bar for a given row
+
+#### Parameters
+
+| Name                       | Type     |
+| :------------------------- | :------- |
+| `progress`                 | `Object` |
+| `progress.fileName?`       | `string` |
+| `progress.message?`        | `string` |
+| `progress.percentComplete` | `number` |
+| `progress.rowIdx`          | `number` |
+| `progress.totalSize?`      | `number` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[packages/core/src/core/jobs/watchable.ts:59](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L59)
 
 ---
 
@@ -151,7 +179,7 @@ set table body
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L50)
+[packages/core/src/core/jobs/watchable.ts:68](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L68)
 
 ---
 

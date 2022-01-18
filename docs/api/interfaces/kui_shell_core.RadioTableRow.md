@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / RadioTableRow
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / RadioTableRow
 
 # Interface: RadioTableRow
 

@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / UsageModel
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / UsageModel
 
 # Interface: UsageModel
 
@@ -77,7 +77,7 @@
 
 ### children
 
-• `Optional` **children**: `Record`<`string`, `Object`\>
+• `Optional` **children**: `Record`<`string`, { `route`: `string` ; `usage?`: [`UsageModel`](kui_shell_core.UsageModel.md) }\>
 
 #### Defined in
 

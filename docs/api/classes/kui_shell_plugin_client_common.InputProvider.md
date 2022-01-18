@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / InputProvider
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / InputProvider
 
 # Class: InputProvider<S\>
 
@@ -6,9 +6,9 @@
 
 ## Type parameters
 
-| Name | Type                                                                                                                                                                                         |
-| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `S`  | extends [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md)[`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) |
+| Name | Type                                                                                                                                                                                            |
+| :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `S`  | extends [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) = [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) |
 
 ## Hierarchy
 
@@ -56,6 +56,7 @@
 - [render](kui_shell_plugin_client_common.InputProvider.md#render)
 - [setState](kui_shell_plugin_client_common.InputProvider.md#setstate)
 - [shouldComponentUpdate](kui_shell_plugin_client_common.InputProvider.md#shouldcomponentupdate)
+- [sourceRef](kui_shell_plugin_client_common.InputProvider.md#sourceref)
 - [status](kui_shell_plugin_client_common.InputProvider.md#status)
 
 ## Constructors
@@ -66,9 +67,9 @@
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                                                         |
-| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `S`  | extends [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md)[`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) |
+| Name | Type                                                                                                                                                                                            |
+| :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `S`  | extends [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) = [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) |
 
 #### Parameters
 
@@ -82,7 +83,7 @@ React.PureComponent<Props, S\>.constructor
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:475
+node_modules/@types/react/index.d.ts:481
 
 • **new InputProvider**<`S`\>(`props`, `context`)
 
@@ -92,9 +93,9 @@ node_modules/@types/react/index.d.ts:475
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                                                         |
-| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `S`  | extends [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md)[`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) |
+| Name | Type                                                                                                                                                                                            |
+| :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `S`  | extends [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) = [`InputProviderState`](../interfaces/kui_shell_plugin_client_common.InputProviderState.md) |
 
 #### Parameters
 
@@ -109,7 +110,7 @@ React.PureComponent<Props, S\>.constructor
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:480
+node_modules/@types/react/index.d.ts:486
 
 ## Properties
 
@@ -119,7 +120,7 @@ node_modules/@types/react/index.d.ts:480
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:212](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L212)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:207](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L207)
 
 ---
 
@@ -147,13 +148,13 @@ React.PureComponent.context
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:473
+node_modules/@types/react/index.d.ts:479
 
 ---
 
 ### props
 
-• `Readonly` **props**: `Readonly`<[`InputProviderProps`](../modules/kui_shell_plugin_client_common.md#inputproviderprops)\> & `Readonly`<`Object`\>
+• `Readonly` **props**: `Readonly`<[`InputProviderProps`](../modules/kui_shell_plugin_client_common.md#inputproviderprops)\> & `Readonly`<{ `children?`: `ReactNode` }\>
 
 #### Inherited from
 
@@ -161,7 +162,7 @@ React.PureComponent.props
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:498
+node_modules/@types/react/index.d.ts:504
 
 ---
 
@@ -182,7 +183,7 @@ React.PureComponent.refs
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:504
+node_modules/@types/react/index.d.ts:510
 
 ---
 
@@ -196,7 +197,7 @@ React.PureComponent.state
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:499
+node_modules/@types/react/index.d.ts:505
 
 ---
 
@@ -229,7 +230,7 @@ React.PureComponent.contextType
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:455
+node_modules/@types/react/index.d.ts:461
 
 ## Methods
 
@@ -261,7 +262,7 @@ React.PureComponent.UNSAFE_componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:711
+node_modules/@types/react/index.d.ts:717
 
 ---
 
@@ -303,7 +304,7 @@ React.PureComponent.UNSAFE_componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:743
+node_modules/@types/react/index.d.ts:749
 
 ---
 
@@ -344,7 +345,7 @@ React.PureComponent.UNSAFE_componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:771
+node_modules/@types/react/index.d.ts:777
 
 ---
 
@@ -358,7 +359,7 @@ node_modules/@types/react/index.d.ts:771
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:204](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L204)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:199](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L199)
 
 ---
 
@@ -386,7 +387,7 @@ React.PureComponent.componentDidCatch
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:640
+node_modules/@types/react/index.d.ts:646
 
 ---
 
@@ -406,7 +407,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:619
+node_modules/@types/react/index.d.ts:625
 
 ---
 
@@ -436,7 +437,7 @@ React.PureComponent.componentDidUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:682
+node_modules/@types/react/index.d.ts:688
 
 ---
 
@@ -466,7 +467,7 @@ React.PureComponent.componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:697
+node_modules/@types/react/index.d.ts:703
 
 ---
 
@@ -506,7 +507,7 @@ React.PureComponent.componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:726
+node_modules/@types/react/index.d.ts:732
 
 ---
 
@@ -527,7 +528,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:635
+node_modules/@types/react/index.d.ts:641
 
 ---
 
@@ -566,7 +567,7 @@ React.PureComponent.componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:756
+node_modules/@types/react/index.d.ts:762
 
 ---
 
@@ -586,7 +587,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:214](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L214)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:209](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L209)
 
 ---
 
@@ -610,7 +611,7 @@ React.PureComponent.forceUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:490
+node_modules/@types/react/index.d.ts:496
 
 ---
 
@@ -642,7 +643,7 @@ React.PureComponent.getSnapshotBeforeUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:676
+node_modules/@types/react/index.d.ts:682
 
 ---
 
@@ -658,7 +659,7 @@ this is what the InputProvider needs to provide, minimially
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:198](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L198)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:193](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L193)
 
 ---
 
@@ -672,7 +673,7 @@ this is what the InputProvider needs to provide, minimially
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:277](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L277)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:272](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L272)
 
 ---
 
@@ -686,7 +687,7 @@ this is what the InputProvider needs to provide, minimially
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:281](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L281)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:276](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L276)
 
 ---
 
@@ -702,7 +703,7 @@ the "xxx >" prompt part of the input section
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:299](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L299)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:294](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L294)
 
 ---
 
@@ -718,7 +719,7 @@ the "xxx" part of "xxx >" of the prompt
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:236](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L236)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:231](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L231)
 
 ---
 
@@ -734,7 +735,7 @@ the ">" part of "xxx >" of the prompt
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:254](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L254)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:249](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L249)
 
 ---
 
@@ -752,7 +753,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:312](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L312)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:322](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L322)
 
 ---
 
@@ -783,7 +784,7 @@ React.PureComponent.setState
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:485
+node_modules/@types/react/index.d.ts:491
 
 ---
 
@@ -818,7 +819,21 @@ React.PureComponent.shouldComponentUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:630
+node_modules/@types/react/index.d.ts:636
+
+---
+
+### sourceRef
+
+▸ `Private` **sourceRef**(): `Element`
+
+#### Returns
+
+`Element`
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:307](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L307)
 
 ---
 
@@ -834,4 +849,4 @@ rendered to the left of the input element
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:202](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L202)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:197](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L197)

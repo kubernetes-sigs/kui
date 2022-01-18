@@ -1,70 +1,72 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / StatusVisualizer
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / MadeWithKui
 
-# Class: StatusVisualizer
+# Class: MadeWithKui
 
-[@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md).StatusVisualizer
+[@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md).MadeWithKui
 
 ## Hierarchy
 
-- `PureComponent`<`Props`\>
+- `PureComponent`
 
-  ↳ **`StatusVisualizer`**
+  ↳ **`MadeWithKui`**
 
 ## Table of contents
 
 ### Constructors
 
-- [constructor](kui_shell_plugin_client_common.StatusVisualizer.md#constructor)
+- [constructor](kui_shell_plugin_client_common.MadeWithKui.md#constructor)
 
 ### Properties
 
-- [context](kui_shell_plugin_client_common.StatusVisualizer.md#context)
-- [props](kui_shell_plugin_client_common.StatusVisualizer.md#props)
-- [refs](kui_shell_plugin_client_common.StatusVisualizer.md#refs)
-- [state](kui_shell_plugin_client_common.StatusVisualizer.md#state)
-- [contextType](kui_shell_plugin_client_common.StatusVisualizer.md#contexttype)
+- [context](kui_shell_plugin_client_common.MadeWithKui.md#context)
+- [popover](kui_shell_plugin_client_common.MadeWithKui.md#popover)
+- [props](kui_shell_plugin_client_common.MadeWithKui.md#props)
+- [refs](kui_shell_plugin_client_common.MadeWithKui.md#refs)
+- [state](kui_shell_plugin_client_common.MadeWithKui.md#state)
+- [contextType](kui_shell_plugin_client_common.MadeWithKui.md#contexttype)
+- [strings](kui_shell_plugin_client_common.MadeWithKui.md#strings)
 
 ### Methods
 
-- [UNSAFE_componentWillMount](kui_shell_plugin_client_common.StatusVisualizer.md#unsafe_componentwillmount)
-- [UNSAFE_componentWillReceiveProps](kui_shell_plugin_client_common.StatusVisualizer.md#unsafe_componentwillreceiveprops)
-- [UNSAFE_componentWillUpdate](kui_shell_plugin_client_common.StatusVisualizer.md#unsafe_componentwillupdate)
-- [componentDidCatch](kui_shell_plugin_client_common.StatusVisualizer.md#componentdidcatch)
-- [componentDidMount](kui_shell_plugin_client_common.StatusVisualizer.md#componentdidmount)
-- [componentDidUpdate](kui_shell_plugin_client_common.StatusVisualizer.md#componentdidupdate)
-- [componentWillMount](kui_shell_plugin_client_common.StatusVisualizer.md#componentwillmount)
-- [componentWillReceiveProps](kui_shell_plugin_client_common.StatusVisualizer.md#componentwillreceiveprops)
-- [componentWillUnmount](kui_shell_plugin_client_common.StatusVisualizer.md#componentwillunmount)
-- [componentWillUpdate](kui_shell_plugin_client_common.StatusVisualizer.md#componentwillupdate)
-- [forceUpdate](kui_shell_plugin_client_common.StatusVisualizer.md#forceupdate)
-- [getSnapshotBeforeUpdate](kui_shell_plugin_client_common.StatusVisualizer.md#getsnapshotbeforeupdate)
-- [render](kui_shell_plugin_client_common.StatusVisualizer.md#render)
-- [sections](kui_shell_plugin_client_common.StatusVisualizer.md#sections)
-- [setState](kui_shell_plugin_client_common.StatusVisualizer.md#setstate)
-- [shouldComponentUpdate](kui_shell_plugin_client_common.StatusVisualizer.md#shouldcomponentupdate)
-- [title](kui_shell_plugin_client_common.StatusVisualizer.md#title)
+- [UNSAFE_componentWillMount](kui_shell_plugin_client_common.MadeWithKui.md#unsafe_componentwillmount)
+- [UNSAFE_componentWillReceiveProps](kui_shell_plugin_client_common.MadeWithKui.md#unsafe_componentwillreceiveprops)
+- [UNSAFE_componentWillUpdate](kui_shell_plugin_client_common.MadeWithKui.md#unsafe_componentwillupdate)
+- [componentDidCatch](kui_shell_plugin_client_common.MadeWithKui.md#componentdidcatch)
+- [componentDidMount](kui_shell_plugin_client_common.MadeWithKui.md#componentdidmount)
+- [componentDidUpdate](kui_shell_plugin_client_common.MadeWithKui.md#componentdidupdate)
+- [componentWillMount](kui_shell_plugin_client_common.MadeWithKui.md#componentwillmount)
+- [componentWillReceiveProps](kui_shell_plugin_client_common.MadeWithKui.md#componentwillreceiveprops)
+- [componentWillUnmount](kui_shell_plugin_client_common.MadeWithKui.md#componentwillunmount)
+- [componentWillUpdate](kui_shell_plugin_client_common.MadeWithKui.md#componentwillupdate)
+- [forceUpdate](kui_shell_plugin_client_common.MadeWithKui.md#forceupdate)
+- [getSnapshotBeforeUpdate](kui_shell_plugin_client_common.MadeWithKui.md#getsnapshotbeforeupdate)
+- [render](kui_shell_plugin_client_common.MadeWithKui.md#render)
+- [setState](kui_shell_plugin_client_common.MadeWithKui.md#setstate)
+- [shouldComponentUpdate](kui_shell_plugin_client_common.MadeWithKui.md#shouldcomponentupdate)
+- [popoverBody](kui_shell_plugin_client_common.MadeWithKui.md#popoverbody)
+- [popoverHeader](kui_shell_plugin_client_common.MadeWithKui.md#popoverheader)
 
 ## Constructors
 
 ### constructor
 
-• **new StatusVisualizer**(`props`)
+• **new MadeWithKui**(`props`)
 
 #### Parameters
 
-| Name    | Type                            |
-| :------ | :------------------------------ |
-| `props` | `Props` \| `Readonly`<`Props`\> |
+| Name    | Type                  |
+| :------ | :-------------------- |
+| `props` | {} \| `Readonly`<{}\> |
 
 #### Inherited from
 
-React.PureComponent<Props\>.constructor
+React.PureComponent.constructor
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:475
+node_modules/@types/react/index.d.ts:481
 
-• **new StatusVisualizer**(`props`, `context`)
+• **new MadeWithKui**(`props`, `context`)
 
 **`deprecated`**
 
@@ -72,18 +74,18 @@ node_modules/@types/react/index.d.ts:475
 
 #### Parameters
 
-| Name      | Type    |
-| :-------- | :------ |
-| `props`   | `Props` |
-| `context` | `any`   |
+| Name      | Type     |
+| :-------- | :------- |
+| `props`   | `Object` |
+| `context` | `any`    |
 
 #### Inherited from
 
-React.PureComponent<Props\>.constructor
+React.PureComponent.constructor
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:480
+node_modules/@types/react/index.d.ts:486
 
 ## Properties
 
@@ -111,13 +113,30 @@ React.PureComponent.context
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:473
+node_modules/@types/react/index.d.ts:479
+
+---
+
+### popover
+
+• `Private` `Readonly` **popover**: `Object`
+
+#### Type declaration
+
+| Name            | Type      |
+| :-------------- | :-------- |
+| `bodyContent`   | `Element` |
+| `headerContent` | `Element` |
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx:26](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx#L26)
 
 ---
 
 ### props
 
-• `Readonly` **props**: `Readonly`<`Props`\> & `Readonly`<`Object`\>
+• `Readonly` **props**: `Readonly`<{}\> & `Readonly`<{ `children?`: `ReactNode` }\>
 
 #### Inherited from
 
@@ -125,7 +144,7 @@ React.PureComponent.props
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:498
+node_modules/@types/react/index.d.ts:504
 
 ---
 
@@ -146,13 +165,13 @@ React.PureComponent.refs
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:504
+node_modules/@types/react/index.d.ts:510
 
 ---
 
 ### state
 
-• **state**: `Readonly`<`Object`\>
+• **state**: `Readonly`<{}\>
 
 #### Inherited from
 
@@ -160,7 +179,7 @@ React.PureComponent.state
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:499
+node_modules/@types/react/index.d.ts:505
 
 ---
 
@@ -193,7 +212,32 @@ React.PureComponent.contextType
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:455
+node_modules/@types/react/index.d.ts:461
+
+---
+
+### strings
+
+▪ `Static` `Private` `Readonly` **strings**: (`key`: `string`, ...`parameters`: (`string` \| `number`)[]) => `string`
+
+#### Type declaration
+
+▸ (`key`, ...`parameters`): `string`
+
+##### Parameters
+
+| Name            | Type                     |
+| :-------------- | :----------------------- |
+| `key`           | `string`                 |
+| `...parameters` | (`string` \| `number`)[] |
+
+##### Returns
+
+`string`
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx:24](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx#L24)
 
 ## Methods
 
@@ -225,7 +269,7 @@ React.PureComponent.UNSAFE_componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:711
+node_modules/@types/react/index.d.ts:717
 
 ---
 
@@ -252,10 +296,10 @@ prevents this from being invoked.
 
 #### Parameters
 
-| Name          | Type                 |
-| :------------ | :------------------- |
-| `nextProps`   | `Readonly`<`Props`\> |
-| `nextContext` | `any`                |
+| Name          | Type            |
+| :------------ | :-------------- |
+| `nextProps`   | `Readonly`<{}\> |
+| `nextContext` | `any`           |
 
 #### Returns
 
@@ -267,7 +311,7 @@ React.PureComponent.UNSAFE_componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:743
+node_modules/@types/react/index.d.ts:749
 
 ---
 
@@ -292,11 +336,11 @@ prevents this from being invoked.
 
 #### Parameters
 
-| Name          | Type                  |
-| :------------ | :-------------------- |
-| `nextProps`   | `Readonly`<`Props`\>  |
-| `nextState`   | `Readonly`<`Object`\> |
-| `nextContext` | `any`                 |
+| Name          | Type            |
+| :------------ | :-------------- |
+| `nextProps`   | `Readonly`<{}\> |
+| `nextState`   | `Readonly`<{}\> |
+| `nextContext` | `any`           |
 
 #### Returns
 
@@ -308,7 +352,7 @@ React.PureComponent.UNSAFE_componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:771
+node_modules/@types/react/index.d.ts:777
 
 ---
 
@@ -336,7 +380,7 @@ React.PureComponent.componentDidCatch
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:640
+node_modules/@types/react/index.d.ts:646
 
 ---
 
@@ -356,7 +400,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:619
+node_modules/@types/react/index.d.ts:625
 
 ---
 
@@ -370,11 +414,11 @@ The snapshot is only present if getSnapshotBeforeUpdate is present and returns n
 
 #### Parameters
 
-| Name        | Type                  |
-| :---------- | :-------------------- |
-| `prevProps` | `Readonly`<`Props`\>  |
-| `prevState` | `Readonly`<`Object`\> |
-| `snapshot?` | `any`                 |
+| Name        | Type            |
+| :---------- | :-------------- |
+| `prevProps` | `Readonly`<{}\> |
+| `prevState` | `Readonly`<{}\> |
+| `snapshot?` | `any`           |
 
 #### Returns
 
@@ -386,7 +430,7 @@ React.PureComponent.componentDidUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:682
+node_modules/@types/react/index.d.ts:688
 
 ---
 
@@ -416,7 +460,7 @@ React.PureComponent.componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:697
+node_modules/@types/react/index.d.ts:703
 
 ---
 
@@ -441,10 +485,10 @@ prevents this from being invoked.
 
 #### Parameters
 
-| Name          | Type                 |
-| :------------ | :------------------- |
-| `nextProps`   | `Readonly`<`Props`\> |
-| `nextContext` | `any`                |
+| Name          | Type            |
+| :------------ | :-------------- |
+| `nextProps`   | `Readonly`<{}\> |
+| `nextContext` | `any`           |
 
 #### Returns
 
@@ -456,7 +500,7 @@ React.PureComponent.componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:726
+node_modules/@types/react/index.d.ts:732
 
 ---
 
@@ -477,7 +521,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:635
+node_modules/@types/react/index.d.ts:641
 
 ---
 
@@ -500,11 +544,11 @@ prevents this from being invoked.
 
 #### Parameters
 
-| Name          | Type                  |
-| :------------ | :-------------------- |
-| `nextProps`   | `Readonly`<`Props`\>  |
-| `nextState`   | `Readonly`<`Object`\> |
-| `nextContext` | `any`                 |
+| Name          | Type            |
+| :------------ | :-------------- |
+| `nextProps`   | `Readonly`<{}\> |
+| `nextState`   | `Readonly`<{}\> |
+| `nextContext` | `any`           |
 
 #### Returns
 
@@ -516,7 +560,7 @@ React.PureComponent.componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:756
+node_modules/@types/react/index.d.ts:762
 
 ---
 
@@ -540,7 +584,7 @@ React.PureComponent.forceUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:490
+node_modules/@types/react/index.d.ts:496
 
 ---
 
@@ -557,10 +601,10 @@ lifecycle events from running.
 
 #### Parameters
 
-| Name        | Type                  |
-| :---------- | :-------------------- |
-| `prevProps` | `Readonly`<`Props`\>  |
-| `prevState` | `Readonly`<`Object`\> |
+| Name        | Type            |
+| :---------- | :-------------- |
+| `prevProps` | `Readonly`<{}\> |
+| `prevState` | `Readonly`<{}\> |
 
 #### Returns
 
@@ -572,7 +616,7 @@ React.PureComponent.getSnapshotBeforeUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:676
+node_modules/@types/react/index.d.ts:682
 
 ---
 
@@ -590,21 +634,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:58](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L58)
-
----
-
-### sections
-
-▸ `Private` **sections**(): `Element`
-
-#### Returns
-
-`Element`
-
-#### Defined in
-
-[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:31](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L31)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx:52](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx#L52)
 
 ---
 
@@ -620,10 +650,10 @@ React.PureComponent.render
 
 #### Parameters
 
-| Name        | Type                                                                                                                                |
-| :---------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `state`     | {} \| (`prevState`: `Readonly`<`Object`\>, `props`: `Readonly`<`Props`\>) => {} \| `Pick`<`Object`, `K`\> \| `Pick`<`Object`, `K`\> |
-| `callback?` | () => `void`                                                                                                                        |
+| Name        | Type                                                                                                         |
+| :---------- | :----------------------------------------------------------------------------------------------------------- |
+| `state`     | {} \| (`prevState`: `Readonly`<{}\>, `props`: `Readonly`<{}\>) => {} \| `Pick`<{}, `K`\> \| `Pick`<{}, `K`\> |
+| `callback?` | () => `void`                                                                                                 |
 
 #### Returns
 
@@ -635,7 +665,7 @@ React.PureComponent.setState
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:485
+node_modules/@types/react/index.d.ts:491
 
 ---
 
@@ -654,11 +684,11 @@ and `componentDidUpdate` will not be called.
 
 #### Parameters
 
-| Name          | Type                  |
-| :------------ | :-------------------- |
-| `nextProps`   | `Readonly`<`Props`\>  |
-| `nextState`   | `Readonly`<`Object`\> |
-| `nextContext` | `any`                 |
+| Name          | Type            |
+| :------------ | :-------------- |
+| `nextProps`   | `Readonly`<{}\> |
+| `nextState`   | `Readonly`<{}\> |
+| `nextContext` | `any`           |
 
 #### Returns
 
@@ -670,18 +700,32 @@ React.PureComponent.shouldComponentUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:630
+node_modules/@types/react/index.d.ts:636
 
 ---
 
-### title
+### popoverBody
 
-▸ `Private` **title**(): `void`
+▸ `Static` `Private` **popoverBody**(): `Element`
 
 #### Returns
 
-`void`
+`Element`
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx:53](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Content/StatusVisualizer/index.tsx#L53)
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx:31](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx#L31)
+
+---
+
+### popoverHeader
+
+▸ `Static` `Private` **popoverHeader**(): `Element`
+
+#### Returns
+
+`Element`
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx:35](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/StatusStripe/MadeWithKui.tsx#L35)

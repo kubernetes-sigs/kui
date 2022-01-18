@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/test](kui_shell_test.md) / Selectors
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/test](kui_shell_test.md) / Selectors
 
 # Namespace: Selectors
 
@@ -30,6 +30,7 @@
 - [EXPERIMENTAL_PROMPT_BLOCK_TAG](kui_shell_test.Selectors.md#experimental_prompt_block_tag)
 - [INVERTED_COLORS](kui_shell_test.Selectors.md#inverted_colors)
 - [LIST_RESULT_FIRST](kui_shell_test.Selectors.md#list_result_first)
+- [Markdown](kui_shell_test.Selectors.md#markdown)
 - [NEW_SPLIT_BUTTON](kui_shell_test.Selectors.md#new_split_button)
 - [N_ATTR](kui_shell_test.Selectors.md#n_attr)
 - [OOPS](kui_shell_test.Selectors.md#oops)
@@ -55,12 +56,15 @@
 - [STATUS_STRIPE_BLOCK](kui_shell_test.Selectors.md#status_stripe_block)
 - [STATUS_STRIPE_MESSAGE](kui_shell_test.Selectors.md#status_stripe_message)
 - [STATUS_STRIPE_PROMPT](kui_shell_test.Selectors.md#status_stripe_prompt)
+- [Sidebar](kui_shell_test.Selectors.md#sidebar)
 - [TAB_CONTENT](kui_shell_test.Selectors.md#tab_content)
 - [TERMINAL_CARD](kui_shell_test.Selectors.md#terminal_card)
 - [TERMINAL_CARD_BODY](kui_shell_test.Selectors.md#terminal_card_body)
 - [TERMINAL_CARD_TITLE](kui_shell_test.Selectors.md#terminal_card_title)
 - [TOP_TAB](kui_shell_test.Selectors.md#top_tab)
 - [WELCOME_BLOCK](kui_shell_test.Selectors.md#welcome_block)
+- [\_PROMPT_BLOCK](kui_shell_test.Selectors.md#_prompt_block)
+- [\_RESULT](kui_shell_test.Selectors.md#_result)
 - [\_SIDECAR](kui_shell_test.Selectors.md#_sidecar)
 - [\_TABLE_AS_GRID](kui_shell_test.Selectors.md#_table_as_grid)
 - [\_TABLE_EMPTY](kui_shell_test.Selectors.md#_table_empty)
@@ -165,6 +169,9 @@
 - [SIDECAR_WITH_FAILURE](kui_shell_test.Selectors.md#sidecar_with_failure)
 - [SOURCE_REF_N](kui_shell_test.Selectors.md#source_ref_n)
 - [SOURCE_REF_TOGGLE_N](kui_shell_test.Selectors.md#source_ref_toggle_n)
+- [SPLIT_BOTTOM](kui_shell_test.Selectors.md#split_bottom)
+- [SPLIT_DEFAULT](kui_shell_test.Selectors.md#split_default)
+- [SPLIT_LEFT](kui_shell_test.Selectors.md#split_left)
 - [SPLIT_N](kui_shell_test.Selectors.md#split_n)
 - [SPLIT_N_AS_BOTTOM_STRIP](kui_shell_test.Selectors.md#split_n_as_bottom_strip)
 - [SPLIT_N_AS_DEFAULT](kui_shell_test.Selectors.md#split_n_as_default)
@@ -239,7 +246,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:319](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L319)
+[packages/test/src/api/selectors.ts:332](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L332)
 
 ---
 
@@ -249,7 +256,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:320](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L320)
+[packages/test/src/api/selectors.ts:333](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L333)
 
 ---
 
@@ -259,7 +266,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L48)
+[packages/test/src/api/selectors.ts:57](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L57)
 
 ---
 
@@ -269,7 +276,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:47](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L47)
+[packages/test/src/api/selectors.ts:56](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L56)
 
 ---
 
@@ -279,7 +286,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:362](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L362)
+[packages/test/src/api/selectors.ts:375](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L375)
 
 ---
 
@@ -289,7 +296,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:356](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L356)
+[packages/test/src/api/selectors.ts:369](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L369)
 
 ---
 
@@ -299,7 +306,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:358](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L358)
+[packages/test/src/api/selectors.ts:371](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L371)
 
 ---
 
@@ -309,7 +316,7 @@
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:360](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L360)
+[packages/test/src/api/selectors.ts:373](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L373)
 
 ---
 
@@ -321,7 +328,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:379](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L379)
+[packages/test/src/api/selectors.ts:392](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L392)
 
 ---
 
@@ -331,7 +338,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:381](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L381)
+[packages/test/src/api/selectors.ts:394](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L394)
 
 ---
 
@@ -341,7 +348,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:380](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L380)
+[packages/test/src/api/selectors.ts:393](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L393)
 
 ---
 
@@ -351,7 +358,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:43](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L43)
+[packages/test/src/api/selectors.ts:52](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L52)
 
 ---
 
@@ -361,7 +368,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:42](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L42)
+[packages/test/src/api/selectors.ts:51](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L51)
 
 ---
 
@@ -371,7 +378,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:36](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L36)
+[packages/test/src/api/selectors.ts:46](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L46)
 
 ---
 
@@ -381,7 +388,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:24](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L24)
+[packages/test/src/api/selectors.ts:30](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L30)
 
 ---
 
@@ -391,7 +398,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L26)
+[packages/test/src/api/selectors.ts:32](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L32)
 
 ---
 
@@ -401,7 +408,7 @@ Confirm Dialog
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L25)
+[packages/test/src/api/selectors.ts:31](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L31)
 
 ---
 
@@ -413,7 +420,7 @@ DescriptionList
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:392](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L392)
+[packages/test/src/api/selectors.ts:405](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L405)
 
 ---
 
@@ -425,7 +432,7 @@ dropdown
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:372](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L372)
+[packages/test/src/api/selectors.ts:385](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L385)
 
 ---
 
@@ -435,7 +442,7 @@ dropdown
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:216](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L216)
+[packages/test/src/api/selectors.ts:229](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L229)
 
 ---
 
@@ -445,7 +452,7 @@ dropdown
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:147](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L147)
+[packages/test/src/api/selectors.ts:156](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L156)
 
 ---
 
@@ -455,7 +462,17 @@ dropdown
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:285](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L285)
+[packages/test/src/api/selectors.ts:298](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L298)
+
+---
+
+### Markdown
+
+• **Markdown**: `default`
+
+#### Defined in
+
+[packages/test/src/api/selectors.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L21)
 
 ---
 
@@ -467,7 +484,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:153](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L153)
+[packages/test/src/api/selectors.ts:162](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L162)
 
 ---
 
@@ -477,7 +494,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:44](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L44)
+[packages/test/src/api/selectors.ts:53](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L53)
 
 ---
 
@@ -487,7 +504,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:51](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L51)
+[packages/test/src/api/selectors.ts:60](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L60)
 
 ---
 
@@ -497,7 +514,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:195](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L195)
+[packages/test/src/api/selectors.ts:208](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L208)
 
 ---
 
@@ -507,7 +524,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:200](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L200)
+[packages/test/src/api/selectors.ts:213](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L213)
 
 ---
 
@@ -517,7 +534,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:197](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L197)
+[packages/test/src/api/selectors.ts:210](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L210)
 
 ---
 
@@ -527,7 +544,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:198](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L198)
+[packages/test/src/api/selectors.ts:211](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L211)
 
 ---
 
@@ -537,7 +554,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:218](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L218)
+[packages/test/src/api/selectors.ts:231](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L231)
 
 ---
 
@@ -547,7 +564,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:35](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L35)
+[packages/test/src/api/selectors.ts:45](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L45)
 
 ---
 
@@ -557,7 +574,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:34](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L34)
+[packages/test/src/api/selectors.ts:44](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L44)
 
 ---
 
@@ -567,7 +584,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:217](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L217)
+[packages/test/src/api/selectors.ts:230](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L230)
 
 ---
 
@@ -577,7 +594,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:179](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L179)
+[packages/test/src/api/selectors.ts:192](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L192)
 
 ---
 
@@ -587,7 +604,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:229](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L229)
+[packages/test/src/api/selectors.ts:242](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L242)
 
 ---
 
@@ -597,7 +614,7 @@ Terminal splits
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:190](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L190)
+[packages/test/src/api/selectors.ts:203](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L203)
 
 ---
 
@@ -609,7 +626,7 @@ Selectors of radio button (new RadioTable-based)
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:346](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L346)
+[packages/test/src/api/selectors.ts:359](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L359)
 
 ---
 
@@ -619,7 +636,7 @@ Selectors of radio button (new RadioTable-based)
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:348](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L348)
+[packages/test/src/api/selectors.ts:361](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L361)
 
 ---
 
@@ -629,7 +646,7 @@ Selectors of radio button (new RadioTable-based)
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:349](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L349)
+[packages/test/src/api/selectors.ts:362](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L362)
 
 ---
 
@@ -639,7 +656,7 @@ Selectors of radio button (new RadioTable-based)
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:364](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L364)
+[packages/test/src/api/selectors.ts:377](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L377)
 
 ---
 
@@ -649,7 +666,7 @@ Selectors of radio button (new RadioTable-based)
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:365](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L365)
+[packages/test/src/api/selectors.ts:378](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L378)
 
 ---
 
@@ -659,7 +676,7 @@ Selectors of radio button (new RadioTable-based)
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:154](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L154)
+[packages/test/src/api/selectors.ts:163](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L163)
 
 ---
 
@@ -669,7 +686,7 @@ Selectors of radio button (new RadioTable-based)
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:155](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L155)
+[packages/test/src/api/selectors.ts:164](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L164)
 
 ---
 
@@ -681,7 +698,7 @@ Status Stripe widgets
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:326](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L326)
+[packages/test/src/api/selectors.ts:339](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L339)
 
 ---
 
@@ -691,7 +708,7 @@ Status Stripe widgets
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L49)
+[packages/test/src/api/selectors.ts:58](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L58)
 
 ---
 
@@ -701,7 +718,7 @@ Status Stripe widgets
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:328](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L328)
+[packages/test/src/api/selectors.ts:341](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L341)
 
 ---
 
@@ -711,7 +728,17 @@ Status Stripe widgets
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L50)
+[packages/test/src/api/selectors.ts:59](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L59)
+
+---
+
+### Sidebar
+
+• **Sidebar**: `default`
+
+#### Defined in
+
+[packages/test/src/api/selectors.ts:20](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L20)
 
 ---
 
@@ -721,7 +748,7 @@ Status Stripe widgets
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:23](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L23)
+[packages/test/src/api/selectors.ts:29](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L29)
 
 ---
 
@@ -733,7 +760,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:207](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L207)
+[packages/test/src/api/selectors.ts:220](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L220)
 
 ---
 
@@ -743,7 +770,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:209](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L209)
+[packages/test/src/api/selectors.ts:222](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L222)
 
 ---
 
@@ -753,7 +780,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:208](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L208)
+[packages/test/src/api/selectors.ts:221](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L221)
 
 ---
 
@@ -763,7 +790,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:18](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L18)
+[packages/test/src/api/selectors.ts:24](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L24)
 
 ---
 
@@ -773,7 +800,27 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:46](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L46)
+[packages/test/src/api/selectors.ts:55](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L55)
+
+---
+
+### \_PROMPT_BLOCK
+
+• **\_PROMPT_BLOCK**: `".repl-block"`
+
+#### Defined in
+
+[packages/test/src/api/selectors.ts:42](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L42)
+
+---
+
+### \_RESULT
+
+• **\_RESULT**: `".repl-result"`
+
+#### Defined in
+
+[packages/test/src/api/selectors.ts:40](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L40)
 
 ---
 
@@ -783,7 +830,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:52](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L52)
+[packages/test/src/api/selectors.ts:61](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L61)
 
 ---
 
@@ -793,7 +840,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:263](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L263)
+[packages/test/src/api/selectors.ts:276](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L276)
 
 ---
 
@@ -803,7 +850,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:275](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L275)
+[packages/test/src/api/selectors.ts:288](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L288)
 
 ---
 
@@ -813,7 +860,7 @@ Terminal card
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:396](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L396)
+[packages/test/src/api/selectors.ts:409](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L409)
 
 ## Functions
 
@@ -835,7 +882,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:323](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L323)
+[packages/test/src/api/selectors.ts:336](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L336)
 
 ---
 
@@ -855,7 +902,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:222](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L222)
+[packages/test/src/api/selectors.ts:235](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L235)
 
 ---
 
@@ -875,7 +922,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:224](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L224)
+[packages/test/src/api/selectors.ts:237](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L237)
 
 ---
 
@@ -895,7 +942,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:220](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L220)
+[packages/test/src/api/selectors.ts:233](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L233)
 
 ---
 
@@ -915,7 +962,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:223](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L223)
+[packages/test/src/api/selectors.ts:236](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L236)
 
 ---
 
@@ -935,7 +982,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:221](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L221)
+[packages/test/src/api/selectors.ts:234](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L234)
 
 ---
 
@@ -955,7 +1002,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:283](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L283)
+[packages/test/src/api/selectors.ts:296](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L296)
 
 ---
 
@@ -975,7 +1022,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:282](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L282)
+[packages/test/src/api/selectors.ts:295](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L295)
 
 ---
 
@@ -995,7 +1042,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:225](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L225)
+[packages/test/src/api/selectors.ts:238](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L238)
 
 ---
 
@@ -1015,7 +1062,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:226](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L226)
+[packages/test/src/api/selectors.ts:239](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L239)
 
 ---
 
@@ -1036,7 +1083,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:227](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L227)
+[packages/test/src/api/selectors.ts:240](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L240)
 
 ---
 
@@ -1057,7 +1104,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:310](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L310)
+[packages/test/src/api/selectors.ts:323](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L323)
 
 ---
 
@@ -1077,7 +1124,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:309](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L309)
+[packages/test/src/api/selectors.ts:322](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L322)
 
 ---
 
@@ -1098,7 +1145,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:314](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L314)
+[packages/test/src/api/selectors.ts:327](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L327)
 
 ---
 
@@ -1119,7 +1166,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:312](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L312)
+[packages/test/src/api/selectors.ts:325](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L325)
 
 ---
 
@@ -1139,7 +1186,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:169](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L169)
+[packages/test/src/api/selectors.ts:182](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L182)
 
 ---
 
@@ -1159,7 +1206,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:170](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L170)
+[packages/test/src/api/selectors.ts:183](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L183)
 
 ---
 
@@ -1179,7 +1226,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:393](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L393)
+[packages/test/src/api/selectors.ts:406](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L406)
 
 ---
 
@@ -1199,7 +1246,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:374](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L374)
+[packages/test/src/api/selectors.ts:387](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L387)
 
 ---
 
@@ -1220,7 +1267,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:373](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L373)
+[packages/test/src/api/selectors.ts:386](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L386)
 
 ---
 
@@ -1242,7 +1289,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:375](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L375)
+[packages/test/src/api/selectors.ts:388](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L388)
 
 ---
 
@@ -1262,7 +1309,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:386](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L386)
+[packages/test/src/api/selectors.ts:399](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L399)
 
 ---
 
@@ -1283,7 +1330,7 @@ xterm
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:388](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L388)
+[packages/test/src/api/selectors.ts:401](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L401)
 
 ---
 
@@ -1306,7 +1353,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:384](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L384)
+[packages/test/src/api/selectors.ts:397](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L397)
 
 ---
 
@@ -1326,7 +1373,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:284](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L284)
+[packages/test/src/api/selectors.ts:297](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L297)
 
 ---
 
@@ -1347,7 +1394,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:234](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L234)
+[packages/test/src/api/selectors.ts:247](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L247)
 
 ---
 
@@ -1368,7 +1415,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:230](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L230)
+[packages/test/src/api/selectors.ts:243](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L243)
 
 ---
 
@@ -1390,7 +1437,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:286](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L286)
+[packages/test/src/api/selectors.ts:299](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L299)
 
 ---
 
@@ -1412,7 +1459,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:240](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L240)
+[packages/test/src/api/selectors.ts:253](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L253)
 
 ---
 
@@ -1433,7 +1480,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:288](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L288)
+[packages/test/src/api/selectors.ts:301](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L301)
 
 ---
 
@@ -1453,7 +1500,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:192](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L192)
+[packages/test/src/api/selectors.ts:205](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L205)
 
 ---
 
@@ -1474,7 +1521,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:193](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L193)
+[packages/test/src/api/selectors.ts:206](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L206)
 
 ---
 
@@ -1494,7 +1541,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:196](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L196)
+[packages/test/src/api/selectors.ts:209](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L209)
 
 ---
 
@@ -1514,7 +1561,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:201](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L201)
+[packages/test/src/api/selectors.ts:214](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L214)
 
 ---
 
@@ -1535,7 +1582,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:212](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L212)
+[packages/test/src/api/selectors.ts:225](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L225)
 
 ---
 
@@ -1555,7 +1602,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:215](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L215)
+[packages/test/src/api/selectors.ts:228](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L228)
 
 ---
 
@@ -1576,7 +1623,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:213](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L213)
+[packages/test/src/api/selectors.ts:226](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L226)
 
 ---
 
@@ -1596,7 +1643,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:343](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L343)
+[packages/test/src/api/selectors.ts:356](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L356)
 
 ---
 
@@ -1616,7 +1663,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:40](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L40)
+[packages/test/src/api/selectors.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L50)
 
 ---
 
@@ -1636,7 +1683,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:172](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L172)
+[packages/test/src/api/selectors.ts:185](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L185)
 
 ---
 
@@ -1658,7 +1705,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:183](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L183)
+[packages/test/src/api/selectors.ts:196](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L196)
 
 ---
 
@@ -1679,7 +1726,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:181](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L181)
+[packages/test/src/api/selectors.ts:194](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L194)
 
 ---
 
@@ -1699,7 +1746,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:180](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L180)
+[packages/test/src/api/selectors.ts:193](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L193)
 
 ---
 
@@ -1719,7 +1766,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:219](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L219)
+[packages/test/src/api/selectors.ts:232](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L232)
 
 ---
 
@@ -1739,7 +1786,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:38](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L38)
+[packages/test/src/api/selectors.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L48)
 
 ---
 
@@ -1760,7 +1807,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:173](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L173)
+[packages/test/src/api/selectors.ts:186](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L186)
 
 ---
 
@@ -1780,7 +1827,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:39](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L39)
+[packages/test/src/api/selectors.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L49)
 
 ---
 
@@ -1800,7 +1847,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:191](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L191)
+[packages/test/src/api/selectors.ts:204](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L204)
 
 ---
 
@@ -1821,7 +1868,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:211](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L211)
+[packages/test/src/api/selectors.ts:224](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L224)
 
 ---
 
@@ -1842,7 +1889,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:175](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L175)
+[packages/test/src/api/selectors.ts:188](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L188)
 
 ---
 
@@ -1862,7 +1909,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:347](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L347)
+[packages/test/src/api/selectors.ts:360](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L360)
 
 ---
 
@@ -1883,7 +1930,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:55](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L55)
+[packages/test/src/api/selectors.ts:64](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L64)
 
 ---
 
@@ -1904,7 +1951,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:58](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L58)
+[packages/test/src/api/selectors.ts:67](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L67)
 
 ---
 
@@ -1926,7 +1973,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:94](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L94)
+[packages/test/src/api/selectors.ts:103](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L103)
 
 ---
 
@@ -1947,7 +1994,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:129](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L129)
+[packages/test/src/api/selectors.ts:138](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L138)
 
 ---
 
@@ -1968,7 +2015,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:131](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L131)
+[packages/test/src/api/selectors.ts:140](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L140)
 
 ---
 
@@ -1989,7 +2036,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:80](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L80)
+[packages/test/src/api/selectors.ts:89](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L89)
 
 ---
 
@@ -2010,7 +2057,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:54](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L54)
+[packages/test/src/api/selectors.ts:63](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L63)
 
 ---
 
@@ -2031,7 +2078,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:68](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L68)
+[packages/test/src/api/selectors.ts:77](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L77)
 
 ---
 
@@ -2052,7 +2099,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:138](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L138)
+[packages/test/src/api/selectors.ts:147](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L147)
 
 ---
 
@@ -2073,7 +2120,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:75](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L75)
+[packages/test/src/api/selectors.ts:84](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L84)
 
 ---
 
@@ -2094,7 +2141,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:103](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L103)
+[packages/test/src/api/selectors.ts:112](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L112)
 
 ---
 
@@ -2115,7 +2162,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:105](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L105)
+[packages/test/src/api/selectors.ts:114](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L114)
 
 ---
 
@@ -2136,7 +2183,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:133](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L133)
+[packages/test/src/api/selectors.ts:142](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L142)
 
 ---
 
@@ -2157,7 +2204,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:135](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L135)
+[packages/test/src/api/selectors.ts:144](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L144)
 
 ---
 
@@ -2178,7 +2225,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:144](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L144)
+[packages/test/src/api/selectors.ts:153](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L153)
 
 ---
 
@@ -2199,7 +2246,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:142](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L142)
+[packages/test/src/api/selectors.ts:151](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L151)
 
 ---
 
@@ -2220,7 +2267,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:66](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L66)
+[packages/test/src/api/selectors.ts:75](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L75)
 
 ---
 
@@ -2241,7 +2288,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:62](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L62)
+[packages/test/src/api/selectors.ts:71](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L71)
 
 ---
 
@@ -2262,7 +2309,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:74](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L74)
+[packages/test/src/api/selectors.ts:83](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L83)
 
 ---
 
@@ -2283,7 +2330,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:117](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L117)
+[packages/test/src/api/selectors.ts:126](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L126)
 
 ---
 
@@ -2304,7 +2351,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:118](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L118)
+[packages/test/src/api/selectors.ts:127](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L127)
 
 ---
 
@@ -2325,7 +2372,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:64](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L64)
+[packages/test/src/api/selectors.ts:73](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L73)
 
 ---
 
@@ -2347,7 +2394,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:111](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L111)
+[packages/test/src/api/selectors.ts:120](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L120)
 
 ---
 
@@ -2368,7 +2415,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:109](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L109)
+[packages/test/src/api/selectors.ts:118](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L118)
 
 ---
 
@@ -2389,7 +2436,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:123](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L123)
+[packages/test/src/api/selectors.ts:132](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L132)
 
 ---
 
@@ -2411,7 +2458,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:113](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L113)
+[packages/test/src/api/selectors.ts:122](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L122)
 
 ---
 
@@ -2433,7 +2480,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:126](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L126)
+[packages/test/src/api/selectors.ts:135](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L135)
 
 ---
 
@@ -2455,7 +2502,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:124](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L124)
+[packages/test/src/api/selectors.ts:133](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L133)
 
 ---
 
@@ -2477,7 +2524,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:119](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L119)
+[packages/test/src/api/selectors.ts:128](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L128)
 
 ---
 
@@ -2499,7 +2546,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:121](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L121)
+[packages/test/src/api/selectors.ts:130](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L130)
 
 ---
 
@@ -2520,7 +2567,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L70)
+[packages/test/src/api/selectors.ts:79](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L79)
 
 ---
 
@@ -2541,7 +2588,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:78](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L78)
+[packages/test/src/api/selectors.ts:87](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L87)
 
 ---
 
@@ -2562,7 +2609,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:73](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L73)
+[packages/test/src/api/selectors.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L82)
 
 ---
 
@@ -2584,7 +2631,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:72](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L72)
+[packages/test/src/api/selectors.ts:81](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L81)
 
 ---
 
@@ -2605,7 +2652,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:140](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L140)
+[packages/test/src/api/selectors.ts:149](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L149)
 
 ---
 
@@ -2626,7 +2673,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:101](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L101)
+[packages/test/src/api/selectors.ts:110](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L110)
 
 ---
 
@@ -2648,7 +2695,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:60](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L60)
+[packages/test/src/api/selectors.ts:69](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L69)
 
 ---
 
@@ -2669,7 +2716,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:83](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L83)
+[packages/test/src/api/selectors.ts:92](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L92)
 
 ---
 
@@ -2691,7 +2738,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:87](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L87)
+[packages/test/src/api/selectors.ts:96](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L96)
 
 ---
 
@@ -2711,7 +2758,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:368](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L368)
+[packages/test/src/api/selectors.ts:381](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L381)
 
 ---
 
@@ -2733,7 +2780,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:85](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L85)
+[packages/test/src/api/selectors.ts:94](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L94)
 
 ---
 
@@ -2753,7 +2800,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:366](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L366)
+[packages/test/src/api/selectors.ts:379](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L379)
 
 ---
 
@@ -2774,7 +2821,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:76](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L76)
+[packages/test/src/api/selectors.ts:85](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L85)
 
 ---
 
@@ -2795,7 +2842,7 @@ Expandable output in notebooks
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:56](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L56)
+[packages/test/src/api/selectors.ts:65](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L65)
 
 ---
 
@@ -2818,7 +2865,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:352](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L352)
+[packages/test/src/api/selectors.ts:365](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L365)
 
 ---
 
@@ -2840,7 +2887,67 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:353](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L353)
+[packages/test/src/api/selectors.ts:366](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L366)
+
+---
+
+### SPLIT_BOTTOM
+
+▸ `Const` **SPLIT_BOTTOM**(`baseSelector?`): `string`
+
+#### Parameters
+
+| Name           | Type     | Default value |
+| :------------- | :------- | :------------ |
+| `baseSelector` | `string` | `SPLITS`      |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[packages/test/src/api/selectors.ts:176](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L176)
+
+---
+
+### SPLIT_DEFAULT
+
+▸ `Const` **SPLIT_DEFAULT**(`baseSelector?`): `string`
+
+#### Parameters
+
+| Name           | Type     | Default value |
+| :------------- | :------- | :------------ |
+| `baseSelector` | `string` | `SPLITS`      |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[packages/test/src/api/selectors.ts:174](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L174)
+
+---
+
+### SPLIT_LEFT
+
+▸ `Const` **SPLIT_LEFT**(`baseSelector?`): `string`
+
+#### Parameters
+
+| Name           | Type     | Default value |
+| :------------- | :------- | :------------ |
+| `baseSelector` | `string` | `SPLITS`      |
+
+#### Returns
+
+`string`
+
+#### Defined in
+
+[packages/test/src/api/selectors.ts:175](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L175)
 
 ---
 
@@ -2861,7 +2968,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:156](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L156)
+[packages/test/src/api/selectors.ts:165](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L165)
 
 ---
 
@@ -2881,7 +2988,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:167](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L167)
+[packages/test/src/api/selectors.ts:180](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L180)
 
 ---
 
@@ -2901,7 +3008,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:165](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L165)
+[packages/test/src/api/selectors.ts:178](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L178)
 
 ---
 
@@ -2921,7 +3028,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:166](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L166)
+[packages/test/src/api/selectors.ts:179](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L179)
 
 ---
 
@@ -2941,7 +3048,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:161](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L161)
+[packages/test/src/api/selectors.ts:170](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L170)
 
 ---
 
@@ -2961,7 +3068,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:159](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L159)
+[packages/test/src/api/selectors.ts:168](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L168)
 
 ---
 
@@ -2981,7 +3088,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:162](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L162)
+[packages/test/src/api/selectors.ts:171](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L171)
 
 ---
 
@@ -3001,7 +3108,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:158](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L158)
+[packages/test/src/api/selectors.ts:167](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L167)
 
 ---
 
@@ -3021,7 +3128,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:317](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L317)
+[packages/test/src/api/selectors.ts:330](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L330)
 
 ---
 
@@ -3041,7 +3148,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:163](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L163)
+[packages/test/src/api/selectors.ts:172](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L172)
 
 ---
 
@@ -3061,7 +3168,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:160](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L160)
+[packages/test/src/api/selectors.ts:169](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L169)
 
 ---
 
@@ -3081,7 +3188,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:333](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L333)
+[packages/test/src/api/selectors.ts:346](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L346)
 
 ---
 
@@ -3101,7 +3208,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:327](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L327)
+[packages/test/src/api/selectors.ts:340](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L340)
 
 ---
 
@@ -3122,7 +3229,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:329](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L329)
+[packages/test/src/api/selectors.ts:342](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L342)
 
 ---
 
@@ -3144,7 +3251,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:335](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L335)
+[packages/test/src/api/selectors.ts:348](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L348)
 
 ---
 
@@ -3164,7 +3271,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:332](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L332)
+[packages/test/src/api/selectors.ts:345](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L345)
 
 ---
 
@@ -3186,7 +3293,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:337](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L337)
+[packages/test/src/api/selectors.ts:350](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L350)
 
 ---
 
@@ -3208,7 +3315,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:330](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L330)
+[packages/test/src/api/selectors.ts:343](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L343)
 
 ---
 
@@ -3228,7 +3335,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:264](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L264)
+[packages/test/src/api/selectors.ts:277](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L277)
 
 ---
 
@@ -3249,7 +3356,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:265](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L265)
+[packages/test/src/api/selectors.ts:278](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L278)
 
 ---
 
@@ -3270,7 +3377,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:268](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L268)
+[packages/test/src/api/selectors.ts:281](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L281)
 
 ---
 
@@ -3291,7 +3398,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:267](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L267)
+[packages/test/src/api/selectors.ts:280](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L280)
 
 ---
 
@@ -3311,7 +3418,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:269](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L269)
+[packages/test/src/api/selectors.ts:282](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L282)
 
 ---
 
@@ -3331,7 +3438,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:271](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L271)
+[packages/test/src/api/selectors.ts:284](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L284)
 
 ---
 
@@ -3351,7 +3458,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:272](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L272)
+[packages/test/src/api/selectors.ts:285](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L285)
 
 ---
 
@@ -3372,7 +3479,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:273](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L273)
+[packages/test/src/api/selectors.ts:286](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L286)
 
 ---
 
@@ -3393,7 +3500,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:243](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L243)
+[packages/test/src/api/selectors.ts:256](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L256)
 
 ---
 
@@ -3413,7 +3520,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:258](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L258)
+[packages/test/src/api/selectors.ts:271](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L271)
 
 ---
 
@@ -3434,7 +3541,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:259](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L259)
+[packages/test/src/api/selectors.ts:272](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L272)
 
 ---
 
@@ -3455,7 +3562,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:261](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L261)
+[packages/test/src/api/selectors.ts:274](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L274)
 
 ---
 
@@ -3475,7 +3582,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:242](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L242)
+[packages/test/src/api/selectors.ts:255](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L255)
 
 ---
 
@@ -3495,7 +3602,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:248](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L248)
+[packages/test/src/api/selectors.ts:261](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L261)
 
 ---
 
@@ -3516,7 +3623,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:249](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L249)
+[packages/test/src/api/selectors.ts:262](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L262)
 
 ---
 
@@ -3536,7 +3643,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:256](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L256)
+[packages/test/src/api/selectors.ts:269](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L269)
 
 ---
 
@@ -3556,7 +3663,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:254](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L254)
+[packages/test/src/api/selectors.ts:267](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L267)
 
 ---
 
@@ -3576,7 +3683,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:244](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L244)
+[packages/test/src/api/selectors.ts:257](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L257)
 
 ---
 
@@ -3596,7 +3703,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:247](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L247)
+[packages/test/src/api/selectors.ts:260](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L260)
 
 ---
 
@@ -3616,7 +3723,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:246](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L246)
+[packages/test/src/api/selectors.ts:259](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L259)
 
 ---
 
@@ -3636,7 +3743,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:245](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L245)
+[packages/test/src/api/selectors.ts:258](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L258)
 
 ---
 
@@ -3656,7 +3763,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:278](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L278)
+[packages/test/src/api/selectors.ts:291](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L291)
 
 ---
 
@@ -3676,7 +3783,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:281](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L281)
+[packages/test/src/api/selectors.ts:294](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L294)
 
 ---
 
@@ -3696,7 +3803,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:280](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L280)
+[packages/test/src/api/selectors.ts:293](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L293)
 
 ---
 
@@ -3716,7 +3823,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:28](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L28)
+[packages/test/src/api/selectors.ts:34](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L34)
 
 ---
 
@@ -3736,7 +3843,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:29](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L29)
+[packages/test/src/api/selectors.ts:35](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L35)
 
 ---
 
@@ -3756,7 +3863,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:27](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L27)
+[packages/test/src/api/selectors.ts:33](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L33)
 
 ---
 
@@ -3776,7 +3883,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:98](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L98)
+[packages/test/src/api/selectors.ts:107](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L107)
 
 ---
 
@@ -3796,7 +3903,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L21)
+[packages/test/src/api/selectors.ts:27](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L27)
 
 ---
 
@@ -3816,7 +3923,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:19](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L19)
+[packages/test/src/api/selectors.ts:25](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L25)
 
 ---
 
@@ -3836,7 +3943,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:20](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L20)
+[packages/test/src/api/selectors.ts:26](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L26)
 
 ---
 
@@ -3856,7 +3963,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:22](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L22)
+[packages/test/src/api/selectors.ts:28](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L28)
 
 ---
 
@@ -3876,7 +3983,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:318](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L318)
+[packages/test/src/api/selectors.ts:331](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L331)
 
 ---
 
@@ -3896,7 +4003,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:291](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L291)
+[packages/test/src/api/selectors.ts:304](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L304)
 
 ---
 
@@ -3916,7 +4023,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:306](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L306)
+[packages/test/src/api/selectors.ts:319](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L319)
 
 ---
 
@@ -3936,7 +4043,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:303](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L303)
+[packages/test/src/api/selectors.ts:316](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L316)
 
 ---
 
@@ -3957,7 +4064,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:304](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L304)
+[packages/test/src/api/selectors.ts:317](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L317)
 
 ---
 
@@ -3978,7 +4085,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:293](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L293)
+[packages/test/src/api/selectors.ts:306](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L306)
 
 ---
 
@@ -3999,7 +4106,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:297](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L297)
+[packages/test/src/api/selectors.ts:310](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L310)
 
 ---
 
@@ -4020,7 +4127,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:295](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L295)
+[packages/test/src/api/selectors.ts:308](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L308)
 
 ---
 
@@ -4041,7 +4148,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:299](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L299)
+[packages/test/src/api/selectors.ts:312](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L312)
 
 ---
 
@@ -4061,7 +4168,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:307](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L307)
+[packages/test/src/api/selectors.ts:320](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L320)
 
 ---
 
@@ -4081,7 +4188,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:302](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L302)
+[packages/test/src/api/selectors.ts:315](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L315)
 
 ---
 
@@ -4102,7 +4209,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:250](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L250)
+[packages/test/src/api/selectors.ts:263](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L263)
 
 ---
 
@@ -4123,7 +4230,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:252](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L252)
+[packages/test/src/api/selectors.ts:265](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L265)
 
 ---
 
@@ -4143,7 +4250,7 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:37](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L37)
+[packages/test/src/api/selectors.ts:47](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L47)
 
 ---
 
@@ -4163,4 +4270,4 @@ SourceRef
 
 #### Defined in
 
-[packages/test/src/api/selectors.ts:289](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L289)
+[packages/test/src/api/selectors.ts:302](https://github.com/kubernetes-sigs/kui/blob/kui/packages/test/src/api/selectors.ts#L302)

@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / RawResponse
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / RawResponse
 
 # Interface: RawResponse<Content\>
 
@@ -25,7 +25,7 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:184](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L184)
+[packages/core/src/models/entity.ts:188](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L188)
 
 ---
 
@@ -35,4 +35,4 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:183](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L183)
+[packages/core/src/models/entity.ts:187](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L187)

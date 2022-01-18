@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/plugin-core-support
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/plugin-core-support
 
 # Module: @kui-shell/plugin-core-support
 
@@ -20,4 +20,4 @@
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:90](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L90)
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:103](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L103)

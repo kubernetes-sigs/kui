@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / [Events](../modules/kui_shell_core.Events.md) / NewTabRequestEvent
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / [Events](../modules/kui_shell_core.Events.md) / NewTabRequestEvent
 
 # Interface: NewTabRequestEvent
 
@@ -21,14 +21,14 @@ Optionally specify to create the new tab without switching to it
 
 #### Defined in
 
-[packages/core/src/core/events.ts:65](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L65)
+[packages/core/src/core/events.ts:61](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L61)
 
 ---
 
 ### tabs
 
-• **tabs**: { `cmdline?`: `string` ; `exec?`: `"pexec"` \| `"qexec"` ; `onClose?`: `string` ; `replaceCurrentTab?`: `boolean` ; `snapshot?`: `Buffer` ; `statusStripeDecoration?`: [`StatusStripeChangeEvent`](../modules/kui_shell_core.Events.md#statusstripechangeevent) ; `title?`: `string` }[]
+• **tabs**: { `cmdline?`: `string` ; `exec?`: `"pexec"` \| `"qexec"` ; `onClose?`: `string` ; `statusStripeDecoration?`: [`StatusStripeChangeEvent`](../modules/kui_shell_core.Events.md#statusstripechangeevent) ; `title?`: `string` }[]
 
 #### Defined in
 
-[packages/core/src/core/events.ts:67](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L67)
+[packages/core/src/core/events.ts:63](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L63)

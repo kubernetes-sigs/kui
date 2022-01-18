@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-core-support](../modules/kui_shell_plugin_core_support.md) / NotebookVFS
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-core-support](../modules/kui_shell_plugin_core_support.md) / NotebookVFS
 
 # Class: NotebookVFS
 
@@ -279,17 +279,17 @@ plugins/plugin-bash-like/fs/mdist/vfs/TrieVFS.d.ts:67
 
 ### isLeaf
 
-▸ `Protected` **isLeaf**(`entry`): entry is Leaf<Notebook \| Object\>
+▸ `Protected` **isLeaf**(`entry`): entry is Leaf<Object\>
 
 #### Parameters
 
-| Name    | Type                                                              |
-| :------ | :---------------------------------------------------------------- |
-| `entry` | `Leaf`<`Notebook` \| { `srcFilepath`: `string` }\> \| `BaseEntry` |
+| Name    | Type                                                |
+| :------ | :-------------------------------------------------- |
+| `entry` | `Leaf`<{ `srcFilepath`: `string` }\> \| `BaseEntry` |
 
 #### Returns
 
-entry is Leaf<Notebook \| Object\>
+entry is Leaf<Object\>
 
 #### Inherited from
 
@@ -303,23 +303,24 @@ plugins/plugin-bash-like/fs/mdist/vfs/TrieVFS.d.ts:25
 
 ### load
 
-▸ `Private` **load**(`data`): `Promise`<`Notebook`\>
+▸ `Private` **load**(`data`): `Promise`<`string`\>
 
 Load Notebook data from bundles
 
 #### Parameters
 
-| Name   | Type                                      |
-| :----- | :---------------------------------------- |
-| `data` | `Notebook` \| { `srcFilepath`: `string` } |
+| Name               | Type     |
+| :----------------- | :------- |
+| `data`             | `Object` |
+| `data.srcFilepath` | `string` |
 
 #### Returns
 
-`Promise`<`Notebook`\>
+`Promise`<`string`\>
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:47](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L47)
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:45](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L45)
 
 ---
 
@@ -343,7 +344,7 @@ TrieVFS.TrieVFS.loadAsString
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:41](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L41)
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:39](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L39)
 
 ---
 
@@ -408,14 +409,13 @@ plugins/plugin-bash-like/fs/mdist/vfs/TrieVFS.d.ts:71
 
 ### nameForDisplay
 
-▸ `Protected` **nameForDisplay**(`name`, `entry`): `Promise`<`string`\>
+▸ `Protected` **nameForDisplay**(`name`): `Promise`<`string`\>
 
 #### Parameters
 
-| Name    | Type            |
-| :------ | :-------------- |
-| `name`  | `string`        |
-| `entry` | `NotebookEntry` |
+| Name   | Type     |
+| :----- | :------- |
+| `name` | `string` |
 
 #### Returns
 
@@ -427,7 +427,7 @@ TrieVFS.TrieVFS.nameForDisplay
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:36](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L36)
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:35](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L35)
 
 ---
 
@@ -517,4 +517,4 @@ TrieVFS.TrieVFS.viewer
 
 #### Defined in
 
-[plugins/plugin-core-support/src/notebooks/vfs/index.ts:32](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L32)
+[plugins/plugin-core-support/src/notebooks/vfs/index.ts:31](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-core-support/src/notebooks/vfs/index.ts#L31)

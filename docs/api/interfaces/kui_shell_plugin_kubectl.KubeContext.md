@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-kubectl](../modules/kui_shell_plugin_kubectl.md) / KubeContext
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-kubectl](../modules/kui_shell_plugin_kubectl.md) / KubeContext
 
 # Interface: KubeContext
 
@@ -60,7 +60,7 @@ KubeResource.content
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:51
+packages/core/mdist/models/entity.d.ts:50
 
 ---
 
@@ -74,7 +74,7 @@ KubeResource.contentType
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:52
+packages/core/mdist/models/entity.d.ts:51
 
 ---
 
@@ -144,7 +144,7 @@ KubeResource.metadata
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:24
+packages/core/mdist/models/entity.d.ts:23
 
 ---
 
@@ -158,7 +158,7 @@ KubeResource.nameHash
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:43
+packages/core/mdist/models/entity.d.ts:42
 
 ---
 
@@ -183,7 +183,7 @@ KubeResource.onclick
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:45
+packages/core/mdist/models/entity.d.ts:44
 
 ---
 
@@ -211,7 +211,7 @@ KubeResource.presentation
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:54
+packages/core/mdist/models/entity.d.ts:53
 
 ---
 
@@ -227,7 +227,7 @@ KubeResource.prettyName
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:42
+packages/core/mdist/models/entity.d.ts:41
 
 ---
 
@@ -277,7 +277,7 @@ KubeResource.toolbarText
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:53
+packages/core/mdist/models/entity.d.ts:52
 
 ---
 
@@ -293,4 +293,4 @@ KubeResource.version
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:40
+packages/core/mdist/models/entity.d.ts:39

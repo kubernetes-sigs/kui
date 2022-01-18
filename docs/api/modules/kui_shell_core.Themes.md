@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / Themes
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / Themes
 
 # Namespace: Themes
 
@@ -36,7 +36,7 @@
 
 ### findThemeByName
 
-▸ **findThemeByName**(`name`): `Promise`<`Object`\>
+▸ **findThemeByName**(`name`): `Promise`<{ `plugin`: `string` ; `theme`: [`Theme`](kui_shell_core.Themes.md#theme) }\>
 
 #### Parameters
 
@@ -46,7 +46,7 @@
 
 #### Returns
 
-`Promise`<`Object`\>
+`Promise`<{ `plugin`: `string` ; `theme`: [`Theme`](kui_shell_core.Themes.md#theme) }\>
 
 the Theme model associated with the given theme name
 

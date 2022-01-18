@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / SourceRef
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / SourceRef
 
 # Interface: SourceRef
 
@@ -27,7 +27,7 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:232](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L232)
+[packages/core/src/models/entity.ts:236](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L236)
 
 ---
 
@@ -37,4 +37,4 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:231](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L231)
+[packages/core/src/models/entity.ts:235](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L235)

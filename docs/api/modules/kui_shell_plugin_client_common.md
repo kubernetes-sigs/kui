@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/plugin-client-common
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/plugin-client-common
 
 # Module: @kui-shell/plugin-client-common
 
@@ -12,10 +12,10 @@
 - [HTMLDom](../classes/kui_shell_plugin_client_common.HTMLDom.md)
 - [InputProvider](../classes/kui_shell_plugin_client_common.InputProvider.md)
 - [Kui](../classes/kui_shell_plugin_client_common.Kui.md)
+- [MadeWithKui](../classes/kui_shell_plugin_client_common.MadeWithKui.md)
 - [MeterWidgets](../classes/kui_shell_plugin_client_common.MeterWidgets.md)
 - [Settings](../classes/kui_shell_plugin_client_common.Settings.md)
 - [StatusStripe](../classes/kui_shell_plugin_client_common.StatusStripe.md)
-- [StatusVisualizer](../classes/kui_shell_plugin_client_common.StatusVisualizer.md)
 - [TabContainer](../classes/kui_shell_plugin_client_common.TabContainer.md)
 - [TabContent](../classes/kui_shell_plugin_client_common.TabContent.md)
 - [TabModel](../classes/kui_shell_plugin_client_common.TabModel.md)
@@ -75,17 +75,17 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:161](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L161)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:160](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L160)
 
 ---
 
 ### KuiProps
 
-Ƭ **KuiProps**: `Partial`<`KuiConfiguration`\> & `CommonClientProps` & { `bottomInput?`: `true` \| `React.ReactNode` ; `initialTabTitle?`: `string` ; `noBootstrap?`: `boolean` ; `quietExecCommand?`: `boolean` ; `toplevel?`: `React.ReactNode` \| `React.ReactNode`[] }
+Ƭ **KuiProps**: `Partial`<`KuiConfiguration`\> & `GuidebookProps` & `CommonClientProps` & { `bottomInput?`: `true` \| `React.ReactNode` ; `initialTabTitle?`: `string` ; `noBootstrap?`: `boolean` ; `quietExecCommand?`: `boolean` ; `toplevel?`: `React.ReactNode` \| `React.ReactNode`[] }
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:43](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L43)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:44](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L44)
 
 ---
 
@@ -119,7 +119,7 @@ variants of how the information should be presented
 
 ### Alert
 
-• **Alert**: `LazyExoticComponent`<`fn`\>
+• **Alert**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -129,7 +129,7 @@ variants of how the information should be presented
 
 ### Ansi
 
-• **Ansi**: `LazyExoticComponent`<`fn`\>
+• **Ansi**: `LazyExoticComponent`<(`props`: `Props`) => `Element`\>
 
 #### Defined in
 
@@ -139,7 +139,7 @@ variants of how the information should be presented
 
 ### Button
 
-• **Button**: `LazyExoticComponent`<`fn`\>
+• **Button**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -149,7 +149,7 @@ variants of how the information should be presented
 
 ### Card
 
-• **Card**: `LazyExoticComponent`<`fn`\>
+• **Card**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -159,7 +159,7 @@ variants of how the information should be presented
 
 ### DropDown
 
-• **DropDown**: `LazyExoticComponent`<`fn`\>
+• **DropDown**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -169,7 +169,7 @@ variants of how the information should be presented
 
 ### Icons
 
-• **Icons**: `LazyExoticComponent`<`fn`\>
+• **Icons**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -199,7 +199,7 @@ variants of how the information should be presented
 
 ### Popover
 
-• **Popover**: `LazyExoticComponent`<`fn`\>
+• **Popover**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -209,7 +209,7 @@ variants of how the information should be presented
 
 ### Select
 
-• **Select**: `LazyExoticComponent`<`fn`\>
+• **Select**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -219,7 +219,7 @@ variants of how the information should be presented
 
 ### Tag
 
-• **Tag**: `LazyExoticComponent`<`fn`\>
+• **Tag**: `LazyExoticComponent`<(`props`: `Props`) => `React.ReactElement`\>
 
 #### Defined in
 
@@ -229,11 +229,11 @@ variants of how the information should be presented
 
 ### TagWidget
 
-• **TagWidget**: `LazyExoticComponent`<`fn`\>
+• **TagWidget**: `LazyExoticComponent`<(`props`: `Props`) => `Element`\>
 
 #### Defined in
 
-[plugins/plugin-client-common/src/index.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L49)
+[plugins/plugin-client-common/src/index.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/index.ts#L50)
 
 ---
 

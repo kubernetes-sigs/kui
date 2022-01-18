@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / Kui
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / Kui
 
 # Class: Kui
 
@@ -85,7 +85,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:85](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L85)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:87](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L87)
 
 ## Properties
 
@@ -95,7 +95,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:271](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L271)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:273](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L273)
 
 ---
 
@@ -123,7 +123,7 @@ React.PureComponent.context
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:473
+node_modules/@types/react/index.d.ts:479
 
 ---
 
@@ -133,13 +133,13 @@ node_modules/@types/react/index.d.ts:473
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:258](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L258)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:260](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L260)
 
 ---
 
 ### props
 
-• `Readonly` **props**: `Readonly`<[`KuiProps`](../modules/kui_shell_plugin_client_common.md#kuiprops)\> & `Readonly`<`Object`\>
+• `Readonly` **props**: `Readonly`<[`KuiProps`](../modules/kui_shell_plugin_client_common.md#kuiprops)\> & `Readonly`<{ `children?`: `ReactNode` }\>
 
 #### Inherited from
 
@@ -147,7 +147,7 @@ React.PureComponent.props
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:498
+node_modules/@types/react/index.d.ts:504
 
 ---
 
@@ -168,7 +168,7 @@ React.PureComponent.refs
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:504
+node_modules/@types/react/index.d.ts:510
 
 ---
 
@@ -182,7 +182,7 @@ React.PureComponent.state
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:499
+node_modules/@types/react/index.d.ts:505
 
 ---
 
@@ -215,7 +215,7 @@ React.PureComponent.contextType
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:455
+node_modules/@types/react/index.d.ts:461
 
 ## Methods
 
@@ -247,7 +247,7 @@ React.PureComponent.UNSAFE_componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:711
+node_modules/@types/react/index.d.ts:717
 
 ---
 
@@ -289,7 +289,7 @@ React.PureComponent.UNSAFE_componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:743
+node_modules/@types/react/index.d.ts:749
 
 ---
 
@@ -330,7 +330,7 @@ React.PureComponent.UNSAFE_componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:771
+node_modules/@types/react/index.d.ts:777
 
 ---
 
@@ -355,7 +355,7 @@ React.PureComponent.componentDidCatch
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:254](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L254)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:256](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L256)
 
 ---
 
@@ -375,7 +375,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:619
+node_modules/@types/react/index.d.ts:625
 
 ---
 
@@ -405,7 +405,7 @@ React.PureComponent.componentDidUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:682
+node_modules/@types/react/index.d.ts:688
 
 ---
 
@@ -435,7 +435,7 @@ React.PureComponent.componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:697
+node_modules/@types/react/index.d.ts:703
 
 ---
 
@@ -475,7 +475,7 @@ React.PureComponent.componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:726
+node_modules/@types/react/index.d.ts:732
 
 ---
 
@@ -496,7 +496,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:635
+node_modules/@types/react/index.d.ts:641
 
 ---
 
@@ -535,7 +535,7 @@ React.PureComponent.componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:756
+node_modules/@types/react/index.d.ts:762
 
 ---
 
@@ -554,7 +554,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:162](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L162)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:164](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L164)
 
 ---
 
@@ -568,7 +568,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:169](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L169)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:171](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L171)
 
 ---
 
@@ -594,7 +594,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:189](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L189)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:191](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L191)
 
 ---
 
@@ -620,7 +620,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:193](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L193)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:195](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L195)
 
 ---
 
@@ -634,7 +634,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:175](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L175)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:177](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L177)
 
 ---
 
@@ -651,7 +651,7 @@ session initialization.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:207](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L207)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:209](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L209)
 
 ---
 
@@ -675,7 +675,7 @@ React.PureComponent.forceUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:490
+node_modules/@types/react/index.d.ts:496
 
 ---
 
@@ -707,7 +707,7 @@ React.PureComponent.getSnapshotBeforeUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:676
+node_modules/@types/react/index.d.ts:682
 
 ---
 
@@ -721,7 +721,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:259](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L259)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:261](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L261)
 
 ---
 
@@ -742,7 +742,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:221](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L221)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:223](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L223)
 
 ---
 
@@ -760,7 +760,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:273](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L273)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:275](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L275)
 
 ---
 
@@ -770,9 +770,9 @@ React.PureComponent.render
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                                                                                                |
-| :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `K`  | extends keyof `ThemeProperties` \| keyof `InputProps` \| keyof `SessionProps` \| `"productName"` \| keyof `FeatureFlags` \| `"_for_testing_"` \| `"userOverrides"` \| `"isBootstrapped"` \| `"commandLine"` \| `"quietExecCommand"` |
+| Name | Type                                                                                                                                                                                                                                      |
+| :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `K`  | extends keyof `ThemeProperties` \| keyof `InputProps` \| keyof `SessionProps` \| keyof `BrandingProps` \| keyof `FeatureFlags` \| `"_for_testing_"` \| `"userOverrides"` \| `"isBootstrapped"` \| `"commandLine"` \| `"quietExecCommand"` |
 
 #### Parameters
 
@@ -791,7 +791,7 @@ React.PureComponent.setState
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:485
+node_modules/@types/react/index.d.ts:491
 
 ---
 
@@ -826,7 +826,7 @@ React.PureComponent.shouldComponentUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:630
+node_modules/@types/react/index.d.ts:636
 
 ---
 
@@ -848,4 +848,4 @@ e.g. defaultColor-then-blue effect.
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/Kui.tsx:245](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L245)
+[plugins/plugin-client-common/src/components/Client/Kui.tsx:247](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/Kui.tsx#L247)

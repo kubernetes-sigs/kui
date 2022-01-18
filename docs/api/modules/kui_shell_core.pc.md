@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / pc
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / pc
 
 # Namespace: pc
 

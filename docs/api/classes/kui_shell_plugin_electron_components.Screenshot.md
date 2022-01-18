@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-electron-components](../modules/kui_shell_plugin_electron_components.md) / Screenshot
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-electron-components](../modules/kui_shell_plugin_electron_components.md) / Screenshot
 
 # Class: Screenshot
 
@@ -82,7 +82,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:185](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L185)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:186](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L186)
 
 ---
 
@@ -120,7 +120,7 @@ React.PureComponent.context
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:473
+node_modules/@types/react/index.d.ts:479
 
 ---
 
@@ -144,7 +144,7 @@ node_modules/@types/react/index.d.ts:473
 
 ### props
 
-• `Readonly` **props**: `Readonly`<`Props`\> & `Readonly`<`Object`\>
+• `Readonly` **props**: `Readonly`<`Props`\> & `Readonly`<{ `children?`: `ReactNode` }\>
 
 #### Inherited from
 
@@ -152,7 +152,7 @@ React.PureComponent.props
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:498
+node_modules/@types/react/index.d.ts:504
 
 ---
 
@@ -173,7 +173,7 @@ React.PureComponent.refs
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:504
+node_modules/@types/react/index.d.ts:510
 
 ---
 
@@ -199,7 +199,7 @@ React.PureComponent.state
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:499
+node_modules/@types/react/index.d.ts:505
 
 ---
 
@@ -250,7 +250,7 @@ React.PureComponent.contextType
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:455
+node_modules/@types/react/index.d.ts:461
 
 ## Methods
 
@@ -282,7 +282,7 @@ React.PureComponent.UNSAFE_componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:711
+node_modules/@types/react/index.d.ts:717
 
 ---
 
@@ -324,7 +324,7 @@ React.PureComponent.UNSAFE_componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:743
+node_modules/@types/react/index.d.ts:749
 
 ---
 
@@ -365,7 +365,7 @@ React.PureComponent.UNSAFE_componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:771
+node_modules/@types/react/index.d.ts:777
 
 ---
 
@@ -402,7 +402,7 @@ screen defined by the extent of the given dom.
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:181](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L181)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:182](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L182)
 
 ---
 
@@ -430,7 +430,7 @@ React.PureComponent.componentDidCatch
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:640
+node_modules/@types/react/index.d.ts:646
 
 ---
 
@@ -450,7 +450,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:619
+node_modules/@types/react/index.d.ts:625
 
 ---
 
@@ -480,7 +480,7 @@ React.PureComponent.componentDidUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:682
+node_modules/@types/react/index.d.ts:688
 
 ---
 
@@ -510,7 +510,7 @@ React.PureComponent.componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:697
+node_modules/@types/react/index.d.ts:703
 
 ---
 
@@ -550,7 +550,7 @@ React.PureComponent.componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:726
+node_modules/@types/react/index.d.ts:732
 
 ---
 
@@ -571,7 +571,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:635
+node_modules/@types/react/index.d.ts:641
 
 ---
 
@@ -610,7 +610,7 @@ React.PureComponent.componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:756
+node_modules/@types/react/index.d.ts:762
 
 ---
 
@@ -650,7 +650,7 @@ React.PureComponent.forceUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:490
+node_modules/@types/react/index.d.ts:496
 
 ---
 
@@ -682,7 +682,7 @@ React.PureComponent.getSnapshotBeforeUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:676
+node_modules/@types/react/index.d.ts:682
 
 ---
 
@@ -698,7 +698,7 @@ Render an Alert to tell the user what we captured
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:188](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L188)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:189](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L189)
 
 ---
 
@@ -738,7 +738,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:208](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L208)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:209](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L209)
 
 ---
 
@@ -770,7 +770,7 @@ Inside of the ToastNotification, render a Save to Desktop button
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Screenshot.tsx:168](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L168)
+[plugins/plugin-electron-components/src/components/Screenshot.tsx:169](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Screenshot.tsx#L169)
 
 ---
 
@@ -801,7 +801,7 @@ React.PureComponent.setState
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:485
+node_modules/@types/react/index.d.ts:491
 
 ---
 
@@ -836,4 +836,4 @@ React.PureComponent.shouldComponentUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:630
+node_modules/@types/react/index.d.ts:636

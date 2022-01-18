@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/test
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/test
 
 # Module: @kui-shell/test
 

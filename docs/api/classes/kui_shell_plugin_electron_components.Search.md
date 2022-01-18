@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-electron-components](../modules/kui_shell_plugin_electron_components.md) / Search
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-electron-components](../modules/kui_shell_plugin_electron_components.md) / Search
 
 # Class: Search
 
@@ -96,7 +96,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:80](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L80)
+[plugins/plugin-electron-components/src/components/Search.tsx:79](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L79)
 
 ---
 
@@ -106,7 +106,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:125](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L125)
+[plugins/plugin-electron-components/src/components/Search.tsx:124](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L124)
 
 ---
 
@@ -116,7 +116,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:139](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L139)
+[plugins/plugin-electron-components/src/components/Search.tsx:138](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L138)
 
 ---
 
@@ -126,7 +126,7 @@ React.Component&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:154](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L154)
+[plugins/plugin-electron-components/src/components/Search.tsx:153](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L153)
 
 ---
 
@@ -154,13 +154,13 @@ React.Component.context
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:473
+node_modules/@types/react/index.d.ts:479
 
 ---
 
 ### props
 
-• `Readonly` **props**: `Readonly`<`Props`\> & `Readonly`<`Object`\>
+• `Readonly` **props**: `Readonly`<`Props`\> & `Readonly`<{ `children?`: `ReactNode` }\>
 
 #### Inherited from
 
@@ -168,7 +168,7 @@ React.Component.props
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:498
+node_modules/@types/react/index.d.ts:504
 
 ---
 
@@ -189,7 +189,7 @@ React.Component.refs
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:504
+node_modules/@types/react/index.d.ts:510
 
 ---
 
@@ -203,7 +203,7 @@ React.Component.state
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:499
+node_modules/@types/react/index.d.ts:505
 
 ---
 
@@ -236,7 +236,7 @@ React.Component.contextType
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:455
+node_modules/@types/react/index.d.ts:461
 
 ## Methods
 
@@ -268,7 +268,7 @@ React.Component.UNSAFE_componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:711
+node_modules/@types/react/index.d.ts:717
 
 ---
 
@@ -310,7 +310,7 @@ React.Component.UNSAFE_componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:743
+node_modules/@types/react/index.d.ts:749
 
 ---
 
@@ -351,7 +351,7 @@ React.Component.UNSAFE_componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:771
+node_modules/@types/react/index.d.ts:777
 
 ---
 
@@ -371,7 +371,7 @@ node_modules/@types/react/index.d.ts:771
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:167](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L167)
+[plugins/plugin-electron-components/src/components/Search.tsx:166](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L166)
 
 ---
 
@@ -399,7 +399,7 @@ React.Component.componentDidCatch
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:640
+node_modules/@types/react/index.d.ts:646
 
 ---
 
@@ -419,7 +419,7 @@ React.Component.componentDidMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:619
+node_modules/@types/react/index.d.ts:625
 
 ---
 
@@ -449,7 +449,7 @@ React.Component.componentDidUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:682
+node_modules/@types/react/index.d.ts:688
 
 ---
 
@@ -479,7 +479,7 @@ React.Component.componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:697
+node_modules/@types/react/index.d.ts:703
 
 ---
 
@@ -519,7 +519,7 @@ React.Component.componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:726
+node_modules/@types/react/index.d.ts:732
 
 ---
 
@@ -540,7 +540,7 @@ React.Component.componentWillUnmount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:635
+node_modules/@types/react/index.d.ts:641
 
 ---
 
@@ -579,7 +579,7 @@ React.Component.componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:756
+node_modules/@types/react/index.d.ts:762
 
 ---
 
@@ -593,7 +593,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:119](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L119)
+[plugins/plugin-electron-components/src/components/Search.tsx:118](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L118)
 
 ---
 
@@ -613,7 +613,7 @@ node_modules/@types/react/index.d.ts:756
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:92](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L92)
+[plugins/plugin-electron-components/src/components/Search.tsx:91](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L91)
 
 ---
 
@@ -637,7 +637,7 @@ React.Component.forceUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:490
+node_modules/@types/react/index.d.ts:496
 
 ---
 
@@ -669,7 +669,7 @@ React.Component.getSnapshotBeforeUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:676
+node_modules/@types/react/index.d.ts:682
 
 ---
 
@@ -685,7 +685,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:112](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L112)
+[plugins/plugin-electron-components/src/components/Search.tsx:111](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L111)
 
 ---
 
@@ -699,7 +699,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:57](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L57)
+[plugins/plugin-electron-components/src/components/Search.tsx:56](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L56)
 
 ---
 
@@ -713,7 +713,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:81](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L81)
+[plugins/plugin-electron-components/src/components/Search.tsx:80](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L80)
 
 ---
 
@@ -727,7 +727,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:126](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L126)
+[plugins/plugin-electron-components/src/components/Search.tsx:125](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L125)
 
 ---
 
@@ -741,7 +741,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:140](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L140)
+[plugins/plugin-electron-components/src/components/Search.tsx:139](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L139)
 
 ---
 
@@ -755,7 +755,7 @@ findInPage api seems to result in a loss of focus
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:155](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L155)
+[plugins/plugin-electron-components/src/components/Search.tsx:154](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L154)
 
 ---
 
@@ -773,7 +773,7 @@ React.Component.render
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:182](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L182)
+[plugins/plugin-electron-components/src/components/Search.tsx:181](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L181)
 
 ---
 
@@ -787,7 +787,7 @@ React.Component.render
 
 #### Defined in
 
-[plugins/plugin-electron-components/src/components/Search.tsx:174](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L174)
+[plugins/plugin-electron-components/src/components/Search.tsx:173](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-electron-components/src/components/Search.tsx#L173)
 
 ---
 
@@ -818,7 +818,7 @@ React.Component.setState
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:485
+node_modules/@types/react/index.d.ts:491
 
 ---
 
@@ -853,7 +853,7 @@ React.Component.shouldComponentUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:630
+node_modules/@types/react/index.d.ts:636
 
 ---
 

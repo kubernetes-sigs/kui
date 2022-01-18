@@ -1,6 +1,6 @@
-Kui API Documentation - v10.8.0
+Kui API Documentation - v11.0.0
 
-# Kui API Documentation - v10.8.0
+# Kui API Documentation - v11.0.0
 
 ## Table of contents
 

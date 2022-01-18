@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / WithSourceReferences
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / WithSourceReferences
 
 # Interface: WithSourceReferences
 
@@ -18,4 +18,4 @@
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:236](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L236)
+[packages/core/src/models/entity.ts:240](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L240)
