@@ -54,4 +54,4 @@ done
 # ugh, bash versus quotes; we just gave up and launched node here:
 # the L.slice is to strip of the trailing comma that the bash printf line emits
 export L=$(printf "\"%s\"," "${LIST[@]}")
-node -e 'require("concurrently")(JSON.parse("[" + process.env.L.slice(0, process.env.L.length - 1) + "]"), { maxProcesses: require("os").cpus().length }).then(() => console.log("ok"))'
+node -e 'require("concurrently")(JSON.parse("[" + process.env.L.slice(0, process.env.L.length - 1) + "]"), { maxProcesses: require("os").cpus().length }).result.then(() => console.log("ok"))'
