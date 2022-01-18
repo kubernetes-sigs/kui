@@ -32,6 +32,7 @@ export default async () => {
         'plugin://plugin-client-common/notebooks/tabs.md',
         'plugin://plugin-client-common/notebooks/welcome.md',
         'plugin://plugin-client-common/notebooks/welcome.json',
+        'plugin://plugin-client-common/notebooks/playground.md',
         'plugin://plugin-client-common/notebooks/make-notebook.md',
         'plugin://plugin-client-common/notebooks/make-notebook.json'
       ],

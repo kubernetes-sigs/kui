@@ -5,6 +5,7 @@
       "label": "Kui",
       "submenu": [
         { "notebook": "Welcome to Kui", "filepath": "/kui/welcome.md" },
+        { "notebook": "Notebook Playground", "filepath": "/kui/playground.md" },
         { "notebook": "Make Your Own Notebook", "filepath": "/kui/make-notebook.md" }
       ]
     },

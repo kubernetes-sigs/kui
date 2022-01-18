@@ -27,7 +27,7 @@ layout:
     commentary --send playground -f /kui/hints.md
     ```
 
-=== "Expandable Section"
+=== "Tips"
     ```bash
     ---
     execute: now
