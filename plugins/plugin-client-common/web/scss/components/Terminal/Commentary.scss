@@ -395,7 +395,7 @@ pre {
   @include TextContent {
     font-size: inherit;
     p {
-      white-space: pre;
+      white-space: pre-wrap;
     }
   }
 }
