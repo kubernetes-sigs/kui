@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/plugin-git
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/plugin-git
 
 # Module: @kui-shell/plugin-git
 

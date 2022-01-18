@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/test](kui_shell_test.md) / ReplExpect
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/test](kui_shell_test.md) / ReplExpect
 
 # Namespace: ReplExpect
 

@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / Tab
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / Tab
 
 # Interface: Tab
 
@@ -37,6 +37,42 @@
 - [accessKey](kui_shell_core.Tab.md#accesskey)
 - [accessKeyLabel](kui_shell_core.Tab.md#accesskeylabel)
 - [align](kui_shell_core.Tab.md#align)
+- [ariaAtomic](kui_shell_core.Tab.md#ariaatomic)
+- [ariaAutoComplete](kui_shell_core.Tab.md#ariaautocomplete)
+- [ariaBusy](kui_shell_core.Tab.md#ariabusy)
+- [ariaChecked](kui_shell_core.Tab.md#ariachecked)
+- [ariaColCount](kui_shell_core.Tab.md#ariacolcount)
+- [ariaColIndex](kui_shell_core.Tab.md#ariacolindex)
+- [ariaColSpan](kui_shell_core.Tab.md#ariacolspan)
+- [ariaCurrent](kui_shell_core.Tab.md#ariacurrent)
+- [ariaDisabled](kui_shell_core.Tab.md#ariadisabled)
+- [ariaExpanded](kui_shell_core.Tab.md#ariaexpanded)
+- [ariaHasPopup](kui_shell_core.Tab.md#ariahaspopup)
+- [ariaHidden](kui_shell_core.Tab.md#ariahidden)
+- [ariaKeyShortcuts](kui_shell_core.Tab.md#ariakeyshortcuts)
+- [ariaLabel](kui_shell_core.Tab.md#arialabel)
+- [ariaLevel](kui_shell_core.Tab.md#arialevel)
+- [ariaLive](kui_shell_core.Tab.md#arialive)
+- [ariaModal](kui_shell_core.Tab.md#ariamodal)
+- [ariaMultiLine](kui_shell_core.Tab.md#ariamultiline)
+- [ariaMultiSelectable](kui_shell_core.Tab.md#ariamultiselectable)
+- [ariaOrientation](kui_shell_core.Tab.md#ariaorientation)
+- [ariaPlaceholder](kui_shell_core.Tab.md#ariaplaceholder)
+- [ariaPosInSet](kui_shell_core.Tab.md#ariaposinset)
+- [ariaPressed](kui_shell_core.Tab.md#ariapressed)
+- [ariaReadOnly](kui_shell_core.Tab.md#ariareadonly)
+- [ariaRequired](kui_shell_core.Tab.md#ariarequired)
+- [ariaRoleDescription](kui_shell_core.Tab.md#ariaroledescription)
+- [ariaRowCount](kui_shell_core.Tab.md#ariarowcount)
+- [ariaRowIndex](kui_shell_core.Tab.md#ariarowindex)
+- [ariaRowSpan](kui_shell_core.Tab.md#ariarowspan)
+- [ariaSelected](kui_shell_core.Tab.md#ariaselected)
+- [ariaSetSize](kui_shell_core.Tab.md#ariasetsize)
+- [ariaSort](kui_shell_core.Tab.md#ariasort)
+- [ariaValueMax](kui_shell_core.Tab.md#ariavaluemax)
+- [ariaValueMin](kui_shell_core.Tab.md#ariavaluemin)
+- [ariaValueNow](kui_shell_core.Tab.md#ariavaluenow)
+- [ariaValueText](kui_shell_core.Tab.md#ariavaluetext)
 - [assignedSlot](kui_shell_core.Tab.md#assignedslot)
 - [attributes](kui_shell_core.Tab.md#attributes)
 - [autocapitalize](kui_shell_core.Tab.md#autocapitalize)
@@ -88,7 +124,6 @@
 - [onanimationstart](kui_shell_core.Tab.md#onanimationstart)
 - [onauxclick](kui_shell_core.Tab.md#onauxclick)
 - [onblur](kui_shell_core.Tab.md#onblur)
-- [oncancel](kui_shell_core.Tab.md#oncancel)
 - [oncanplay](kui_shell_core.Tab.md#oncanplay)
 - [oncanplaythrough](kui_shell_core.Tab.md#oncanplaythrough)
 - [onchange](kui_shell_core.Tab.md#onchange)
@@ -102,7 +137,6 @@
 - [ondrag](kui_shell_core.Tab.md#ondrag)
 - [ondragend](kui_shell_core.Tab.md#ondragend)
 - [ondragenter](kui_shell_core.Tab.md#ondragenter)
-- [ondragexit](kui_shell_core.Tab.md#ondragexit)
 - [ondragleave](kui_shell_core.Tab.md#ondragleave)
 - [ondragover](kui_shell_core.Tab.md#ondragover)
 - [ondragstart](kui_shell_core.Tab.md#ondragstart)
@@ -112,6 +146,7 @@
 - [onended](kui_shell_core.Tab.md#onended)
 - [onerror](kui_shell_core.Tab.md#onerror)
 - [onfocus](kui_shell_core.Tab.md#onfocus)
+- [onformdata](kui_shell_core.Tab.md#onformdata)
 - [onfullscreenchange](kui_shell_core.Tab.md#onfullscreenchange)
 - [onfullscreenerror](kui_shell_core.Tab.md#onfullscreenerror)
 - [ongotpointercapture](kui_shell_core.Tab.md#ongotpointercapture)
@@ -149,7 +184,6 @@
 - [onreset](kui_shell_core.Tab.md#onreset)
 - [onresize](kui_shell_core.Tab.md#onresize)
 - [onscroll](kui_shell_core.Tab.md#onscroll)
-- [onsecuritypolicyviolation](kui_shell_core.Tab.md#onsecuritypolicyviolation)
 - [onseeked](kui_shell_core.Tab.md#onseeked)
 - [onseeking](kui_shell_core.Tab.md#onseeking)
 - [onselect](kui_shell_core.Tab.md#onselect)
@@ -170,11 +204,17 @@
 - [ontransitionstart](kui_shell_core.Tab.md#ontransitionstart)
 - [onvolumechange](kui_shell_core.Tab.md#onvolumechange)
 - [onwaiting](kui_shell_core.Tab.md#onwaiting)
+- [onwebkitanimationend](kui_shell_core.Tab.md#onwebkitanimationend)
+- [onwebkitanimationiteration](kui_shell_core.Tab.md#onwebkitanimationiteration)
+- [onwebkitanimationstart](kui_shell_core.Tab.md#onwebkitanimationstart)
+- [onwebkittransitionend](kui_shell_core.Tab.md#onwebkittransitionend)
 - [onwheel](kui_shell_core.Tab.md#onwheel)
 - [outerHTML](kui_shell_core.Tab.md#outerhtml)
+- [outerText](kui_shell_core.Tab.md#outertext)
 - [ownerDocument](kui_shell_core.Tab.md#ownerdocument)
 - [parentElement](kui_shell_core.Tab.md#parentelement)
 - [parentNode](kui_shell_core.Tab.md#parentnode)
+- [part](kui_shell_core.Tab.md#part)
 - [prefix](kui_shell_core.Tab.md#prefix)
 - [previousElementSibling](kui_shell_core.Tab.md#previouselementsibling)
 - [previousSibling](kui_shell_core.Tab.md#previoussibling)
@@ -203,6 +243,7 @@
 - [animate](kui_shell_core.Tab.md#animate)
 - [append](kui_shell_core.Tab.md#append)
 - [appendChild](kui_shell_core.Tab.md#appendchild)
+- [attachInternals](kui_shell_core.Tab.md#attachinternals)
 - [attachShadow](kui_shell_core.Tab.md#attachshadow)
 - [before](kui_shell_core.Tab.md#before)
 - [blur](kui_shell_core.Tab.md#blur)
@@ -242,7 +283,6 @@
 - [lookupNamespaceURI](kui_shell_core.Tab.md#lookupnamespaceuri)
 - [lookupPrefix](kui_shell_core.Tab.md#lookupprefix)
 - [matches](kui_shell_core.Tab.md#matches)
-- [msGetRegionContent](kui_shell_core.Tab.md#msgetregioncontent)
 - [normalize](kui_shell_core.Tab.md#normalize)
 - [offActivate](kui_shell_core.Tab.md#offactivate)
 - [onActivate](kui_shell_core.Tab.md#onactivate)
@@ -258,6 +298,7 @@
 - [removeClass](kui_shell_core.Tab.md#removeclass)
 - [removeEventListener](kui_shell_core.Tab.md#removeeventlistener)
 - [replaceChild](kui_shell_core.Tab.md#replacechild)
+- [replaceChildren](kui_shell_core.Tab.md#replacechildren)
 - [replaceWith](kui_shell_core.Tab.md#replacewith)
 - [requestFullscreen](kui_shell_core.Tab.md#requestfullscreen)
 - [requestPointerLock](kui_shell_core.Tab.md#requestpointerlock)
@@ -272,6 +313,8 @@
 - [setAttributeNode](kui_shell_core.Tab.md#setattributenode)
 - [setAttributeNodeNS](kui_shell_core.Tab.md#setattributenodens)
 - [setPointerCapture](kui_shell_core.Tab.md#setpointercapture)
+- [setTitle](kui_shell_core.Tab.md#settitle)
+- [show](kui_shell_core.Tab.md#show)
 - [splitCount](kui_shell_core.Tab.md#splitcount)
 - [toggleAttribute](kui_shell_core.Tab.md#toggleattribute)
 - [webkitMatchesSelector](kui_shell_core.Tab.md#webkitmatchesselector)
@@ -288,7 +331,7 @@ HTMLDivElement.ATTRIBUTE_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10762
+node_modules/typescript/lib/lib.dom.d.ts:9696
 
 ---
 
@@ -304,7 +347,7 @@ HTMLDivElement.CDATA_SECTION_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10766
+node_modules/typescript/lib/lib.dom.d.ts:9698
 
 ---
 
@@ -320,7 +363,7 @@ HTMLDivElement.COMMENT_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10770
+node_modules/typescript/lib/lib.dom.d.ts:9700
 
 ---
 
@@ -336,7 +379,7 @@ HTMLDivElement.DOCUMENT_FRAGMENT_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10774
+node_modules/typescript/lib/lib.dom.d.ts:9702
 
 ---
 
@@ -352,7 +395,7 @@ HTMLDivElement.DOCUMENT_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10778
+node_modules/typescript/lib/lib.dom.d.ts:9704
 
 ---
 
@@ -368,7 +411,7 @@ HTMLDivElement.DOCUMENT_POSITION_CONTAINED_BY
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10782
+node_modules/typescript/lib/lib.dom.d.ts:9706
 
 ---
 
@@ -384,7 +427,7 @@ HTMLDivElement.DOCUMENT_POSITION_CONTAINS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10786
+node_modules/typescript/lib/lib.dom.d.ts:9708
 
 ---
 
@@ -400,7 +443,7 @@ HTMLDivElement.DOCUMENT_POSITION_DISCONNECTED
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10790
+node_modules/typescript/lib/lib.dom.d.ts:9710
 
 ---
 
@@ -416,7 +459,7 @@ HTMLDivElement.DOCUMENT_POSITION_FOLLOWING
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10794
+node_modules/typescript/lib/lib.dom.d.ts:9712
 
 ---
 
@@ -430,7 +473,7 @@ HTMLDivElement.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10795
+node_modules/typescript/lib/lib.dom.d.ts:9713
 
 ---
 
@@ -446,7 +489,7 @@ HTMLDivElement.DOCUMENT_POSITION_PRECEDING
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10799
+node_modules/typescript/lib/lib.dom.d.ts:9715
 
 ---
 
@@ -462,7 +505,7 @@ HTMLDivElement.DOCUMENT_TYPE_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10803
+node_modules/typescript/lib/lib.dom.d.ts:9717
 
 ---
 
@@ -478,7 +521,7 @@ HTMLDivElement.ELEMENT_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10807
+node_modules/typescript/lib/lib.dom.d.ts:9719
 
 ---
 
@@ -492,7 +535,7 @@ HTMLDivElement.ENTITY_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10808
+node_modules/typescript/lib/lib.dom.d.ts:9720
 
 ---
 
@@ -506,7 +549,7 @@ HTMLDivElement.ENTITY_REFERENCE_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10809
+node_modules/typescript/lib/lib.dom.d.ts:9721
 
 ---
 
@@ -520,7 +563,7 @@ HTMLDivElement.NOTATION_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10810
+node_modules/typescript/lib/lib.dom.d.ts:9722
 
 ---
 
@@ -536,7 +579,7 @@ HTMLDivElement.PROCESSING_INSTRUCTION_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10814
+node_modules/typescript/lib/lib.dom.d.ts:9724
 
 ---
 
@@ -562,7 +605,7 @@ HTMLDivElement.TEXT_NODE
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10818
+node_modules/typescript/lib/lib.dom.d.ts:9726
 
 ---
 
@@ -586,7 +629,7 @@ HTMLDivElement.accessKey
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6592
+node_modules/typescript/lib/lib.dom.d.ts:6133
 
 ---
 
@@ -600,13 +643,15 @@ HTMLDivElement.accessKeyLabel
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6593
+node_modules/typescript/lib/lib.dom.d.ts:6134
 
 ---
 
 ### align
 
 • **align**: `string`
+
+Sets or retrieves how the object is aligned with adjacent text.
 
 **`deprecated`**
 
@@ -616,7 +661,511 @@ HTMLDivElement.align
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6562
+node_modules/typescript/lib/lib.dom.d.ts:6102
+
+---
+
+### ariaAtomic
+
+• **ariaAtomic**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaAtomic
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1827
+
+---
+
+### ariaAutoComplete
+
+• **ariaAutoComplete**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaAutoComplete
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1828
+
+---
+
+### ariaBusy
+
+• **ariaBusy**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaBusy
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1829
+
+---
+
+### ariaChecked
+
+• **ariaChecked**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaChecked
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1830
+
+---
+
+### ariaColCount
+
+• **ariaColCount**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaColCount
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1831
+
+---
+
+### ariaColIndex
+
+• **ariaColIndex**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaColIndex
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1832
+
+---
+
+### ariaColSpan
+
+• **ariaColSpan**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaColSpan
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1833
+
+---
+
+### ariaCurrent
+
+• **ariaCurrent**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaCurrent
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1834
+
+---
+
+### ariaDisabled
+
+• **ariaDisabled**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaDisabled
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1835
+
+---
+
+### ariaExpanded
+
+• **ariaExpanded**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaExpanded
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1836
+
+---
+
+### ariaHasPopup
+
+• **ariaHasPopup**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaHasPopup
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1837
+
+---
+
+### ariaHidden
+
+• **ariaHidden**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaHidden
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1838
+
+---
+
+### ariaKeyShortcuts
+
+• **ariaKeyShortcuts**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaKeyShortcuts
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1839
+
+---
+
+### ariaLabel
+
+• **ariaLabel**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaLabel
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1840
+
+---
+
+### ariaLevel
+
+• **ariaLevel**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaLevel
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1841
+
+---
+
+### ariaLive
+
+• **ariaLive**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaLive
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1842
+
+---
+
+### ariaModal
+
+• **ariaModal**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaModal
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1843
+
+---
+
+### ariaMultiLine
+
+• **ariaMultiLine**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaMultiLine
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1844
+
+---
+
+### ariaMultiSelectable
+
+• **ariaMultiSelectable**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaMultiSelectable
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1845
+
+---
+
+### ariaOrientation
+
+• **ariaOrientation**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaOrientation
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1846
+
+---
+
+### ariaPlaceholder
+
+• **ariaPlaceholder**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaPlaceholder
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1847
+
+---
+
+### ariaPosInSet
+
+• **ariaPosInSet**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaPosInSet
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1848
+
+---
+
+### ariaPressed
+
+• **ariaPressed**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaPressed
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1849
+
+---
+
+### ariaReadOnly
+
+• **ariaReadOnly**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaReadOnly
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1850
+
+---
+
+### ariaRequired
+
+• **ariaRequired**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaRequired
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1851
+
+---
+
+### ariaRoleDescription
+
+• **ariaRoleDescription**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaRoleDescription
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1852
+
+---
+
+### ariaRowCount
+
+• **ariaRowCount**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaRowCount
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1853
+
+---
+
+### ariaRowIndex
+
+• **ariaRowIndex**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaRowIndex
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1854
+
+---
+
+### ariaRowSpan
+
+• **ariaRowSpan**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaRowSpan
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1855
+
+---
+
+### ariaSelected
+
+• **ariaSelected**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaSelected
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1856
+
+---
+
+### ariaSetSize
+
+• **ariaSetSize**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaSetSize
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1857
+
+---
+
+### ariaSort
+
+• **ariaSort**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaSort
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1858
+
+---
+
+### ariaValueMax
+
+• **ariaValueMax**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaValueMax
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1859
+
+---
+
+### ariaValueMin
+
+• **ariaValueMin**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaValueMin
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1860
+
+---
+
+### ariaValueNow
+
+• **ariaValueNow**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaValueNow
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1861
+
+---
+
+### ariaValueText
+
+• **ariaValueText**: `string`
+
+#### Inherited from
+
+HTMLDivElement.ariaValueText
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:1862
 
 ---
 
@@ -630,7 +1179,7 @@ HTMLDivElement.assignedSlot
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:14832
+node_modules/typescript/lib/lib.dom.d.ts:13103
 
 ---
 
@@ -644,7 +1193,7 @@ HTMLDivElement.attributes
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5095
+node_modules/typescript/lib/lib.dom.d.ts:4720
 
 ---
 
@@ -658,7 +1207,7 @@ HTMLDivElement.autocapitalize
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6594
+node_modules/typescript/lib/lib.dom.d.ts:6135
 
 ---
 
@@ -672,7 +1221,7 @@ HTMLDivElement.autofocus
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:8006
+node_modules/typescript/lib/lib.dom.d.ts:7335
 
 ---
 
@@ -688,7 +1237,7 @@ HTMLDivElement.baseURI
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10677
+node_modules/typescript/lib/lib.dom.d.ts:9649
 
 ---
 
@@ -702,7 +1251,7 @@ HTMLDivElement.childElementCount
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11233
+node_modules/typescript/lib/lib.dom.d.ts:10014
 
 ---
 
@@ -718,7 +1267,7 @@ HTMLDivElement.childNodes
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10681
+node_modules/typescript/lib/lib.dom.d.ts:9651
 
 ---
 
@@ -734,7 +1283,7 @@ HTMLDivElement.children
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11237
+node_modules/typescript/lib/lib.dom.d.ts:10016
 
 ---
 
@@ -750,7 +1299,7 @@ HTMLDivElement.classList
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5099
+node_modules/typescript/lib/lib.dom.d.ts:4722
 
 ---
 
@@ -766,7 +1315,7 @@ HTMLDivElement.className
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5103
+node_modules/typescript/lib/lib.dom.d.ts:4724
 
 ---
 
@@ -780,7 +1329,7 @@ HTMLDivElement.clientHeight
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5104
+node_modules/typescript/lib/lib.dom.d.ts:4725
 
 ---
 
@@ -794,7 +1343,7 @@ HTMLDivElement.clientLeft
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5105
+node_modules/typescript/lib/lib.dom.d.ts:4726
 
 ---
 
@@ -808,7 +1357,7 @@ HTMLDivElement.clientTop
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5106
+node_modules/typescript/lib/lib.dom.d.ts:4727
 
 ---
 
@@ -822,7 +1371,7 @@ HTMLDivElement.clientWidth
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5107
+node_modules/typescript/lib/lib.dom.d.ts:4728
 
 ---
 
@@ -836,7 +1385,7 @@ HTMLDivElement.contentEditable
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5259
+node_modules/typescript/lib/lib.dom.d.ts:4839
 
 ---
 
@@ -850,7 +1399,7 @@ HTMLDivElement.dataset
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:8007
+node_modules/typescript/lib/lib.dom.d.ts:7336
 
 ---
 
@@ -864,7 +1413,7 @@ HTMLDivElement.dir
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6595
+node_modules/typescript/lib/lib.dom.d.ts:6136
 
 ---
 
@@ -878,7 +1427,7 @@ HTMLDivElement.draggable
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6596
+node_modules/typescript/lib/lib.dom.d.ts:6137
 
 ---
 
@@ -892,7 +1441,7 @@ HTMLDivElement.enterKeyHint
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5260
+node_modules/typescript/lib/lib.dom.d.ts:4840
 
 ---
 
@@ -908,7 +1457,7 @@ HTMLDivElement.firstChild
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10685
+node_modules/typescript/lib/lib.dom.d.ts:9653
 
 ---
 
@@ -924,7 +1473,7 @@ HTMLDivElement.firstElementChild
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11241
+node_modules/typescript/lib/lib.dom.d.ts:10018
 
 ---
 
@@ -938,7 +1487,7 @@ HTMLDivElement.hidden
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6597
+node_modules/typescript/lib/lib.dom.d.ts:6138
 
 ---
 
@@ -954,7 +1503,7 @@ HTMLDivElement.id
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5111
+node_modules/typescript/lib/lib.dom.d.ts:4730
 
 ---
 
@@ -968,7 +1517,7 @@ HTMLDivElement.innerHTML
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:9588
+node_modules/typescript/lib/lib.dom.d.ts:8682
 
 ---
 
@@ -982,7 +1531,7 @@ HTMLDivElement.innerText
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6598
+node_modules/typescript/lib/lib.dom.d.ts:6139
 
 ---
 
@@ -996,7 +1545,7 @@ HTMLDivElement.inputMode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5261
+node_modules/typescript/lib/lib.dom.d.ts:4841
 
 ---
 
@@ -1012,7 +1561,7 @@ HTMLDivElement.isConnected
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10689
+node_modules/typescript/lib/lib.dom.d.ts:9655
 
 ---
 
@@ -1026,7 +1575,7 @@ HTMLDivElement.isContentEditable
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5262
+node_modules/typescript/lib/lib.dom.d.ts:4842
 
 ---
 
@@ -1040,7 +1589,7 @@ HTMLDivElement.lang
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6599
+node_modules/typescript/lib/lib.dom.d.ts:6140
 
 ---
 
@@ -1056,7 +1605,7 @@ HTMLDivElement.lastChild
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10693
+node_modules/typescript/lib/lib.dom.d.ts:9657
 
 ---
 
@@ -1072,7 +1621,7 @@ HTMLDivElement.lastElementChild
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11245
+node_modules/typescript/lib/lib.dom.d.ts:10020
 
 ---
 
@@ -1088,7 +1637,7 @@ HTMLDivElement.localName
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5115
+node_modules/typescript/lib/lib.dom.d.ts:4732
 
 ---
 
@@ -1104,7 +1653,7 @@ HTMLDivElement.namespaceURI
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5119
+node_modules/typescript/lib/lib.dom.d.ts:4734
 
 ---
 
@@ -1120,7 +1669,7 @@ HTMLDivElement.nextElementSibling
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10963
+node_modules/typescript/lib/lib.dom.d.ts:9816
 
 ---
 
@@ -1136,7 +1685,7 @@ HTMLDivElement.nextSibling
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10699
+node_modules/typescript/lib/lib.dom.d.ts:9659
 
 ---
 
@@ -1152,7 +1701,7 @@ HTMLDivElement.nodeName
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10703
+node_modules/typescript/lib/lib.dom.d.ts:9661
 
 ---
 
@@ -1168,7 +1717,7 @@ HTMLDivElement.nodeType
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10707
+node_modules/typescript/lib/lib.dom.d.ts:9663
 
 ---
 
@@ -1182,7 +1731,7 @@ HTMLDivElement.nodeValue
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10708
+node_modules/typescript/lib/lib.dom.d.ts:9664
 
 ---
 
@@ -1196,7 +1745,7 @@ HTMLDivElement.nonce
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:8008
+node_modules/typescript/lib/lib.dom.d.ts:7337
 
 ---
 
@@ -1210,7 +1759,7 @@ HTMLDivElement.offsetHeight
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6600
+node_modules/typescript/lib/lib.dom.d.ts:6141
 
 ---
 
@@ -1224,7 +1773,7 @@ HTMLDivElement.offsetLeft
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6601
+node_modules/typescript/lib/lib.dom.d.ts:6142
 
 ---
 
@@ -1238,7 +1787,7 @@ HTMLDivElement.offsetParent
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6602
+node_modules/typescript/lib/lib.dom.d.ts:6143
 
 ---
 
@@ -1252,7 +1801,7 @@ HTMLDivElement.offsetTop
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6603
+node_modules/typescript/lib/lib.dom.d.ts:6144
 
 ---
 
@@ -1266,7 +1815,7 @@ HTMLDivElement.offsetWidth
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6604
+node_modules/typescript/lib/lib.dom.d.ts:6145
 
 ---
 
@@ -1296,7 +1845,7 @@ HTMLDivElement.onabort
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5805
+node_modules/typescript/lib/lib.dom.d.ts:5454
 
 ---
 
@@ -1324,7 +1873,7 @@ HTMLDivElement.onanimationcancel
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5806
+node_modules/typescript/lib/lib.dom.d.ts:5455
 
 ---
 
@@ -1352,7 +1901,7 @@ HTMLDivElement.onanimationend
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5807
+node_modules/typescript/lib/lib.dom.d.ts:5456
 
 ---
 
@@ -1380,7 +1929,7 @@ HTMLDivElement.onanimationiteration
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5808
+node_modules/typescript/lib/lib.dom.d.ts:5457
 
 ---
 
@@ -1408,7 +1957,7 @@ HTMLDivElement.onanimationstart
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5809
+node_modules/typescript/lib/lib.dom.d.ts:5458
 
 ---
 
@@ -1436,7 +1985,7 @@ HTMLDivElement.onauxclick
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5810
+node_modules/typescript/lib/lib.dom.d.ts:5459
 
 ---
 
@@ -1466,35 +2015,7 @@ HTMLDivElement.onblur
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5815
-
----
-
-### oncancel
-
-• **oncancel**: (`ev`: `Event`) => `any`
-
-#### Type declaration
-
-▸ (`ev`): `any`
-
-##### Parameters
-
-| Name | Type    |
-| :--- | :------ |
-| `ev` | `Event` |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-HTMLDivElement.oncancel
-
-#### Defined in
-
-node_modules/typescript/lib/lib.dom.d.ts:5816
+node_modules/typescript/lib/lib.dom.d.ts:5464
 
 ---
 
@@ -1524,7 +2045,7 @@ HTMLDivElement.oncanplay
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5821
+node_modules/typescript/lib/lib.dom.d.ts:5469
 
 ---
 
@@ -1552,7 +2073,7 @@ HTMLDivElement.oncanplaythrough
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5822
+node_modules/typescript/lib/lib.dom.d.ts:5470
 
 ---
 
@@ -1582,7 +2103,7 @@ HTMLDivElement.onchange
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5827
+node_modules/typescript/lib/lib.dom.d.ts:5475
 
 ---
 
@@ -1612,7 +2133,7 @@ HTMLDivElement.onclick
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5832
+node_modules/typescript/lib/lib.dom.d.ts:5480
 
 ---
 
@@ -1640,7 +2161,7 @@ HTMLDivElement.onclose
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5833
+node_modules/typescript/lib/lib.dom.d.ts:5481
 
 ---
 
@@ -1670,7 +2191,7 @@ HTMLDivElement.oncontextmenu
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5838
+node_modules/typescript/lib/lib.dom.d.ts:5486
 
 ---
 
@@ -1698,7 +2219,7 @@ HTMLDivElement.oncopy
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:4899
+node_modules/typescript/lib/lib.dom.d.ts:4576
 
 ---
 
@@ -1726,7 +2247,7 @@ HTMLDivElement.oncuechange
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5839
+node_modules/typescript/lib/lib.dom.d.ts:5487
 
 ---
 
@@ -1754,7 +2275,7 @@ HTMLDivElement.oncut
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:4900
+node_modules/typescript/lib/lib.dom.d.ts:4577
 
 ---
 
@@ -1784,7 +2305,7 @@ HTMLDivElement.ondblclick
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5844
+node_modules/typescript/lib/lib.dom.d.ts:5492
 
 ---
 
@@ -1814,7 +2335,7 @@ HTMLDivElement.ondrag
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5849
+node_modules/typescript/lib/lib.dom.d.ts:5497
 
 ---
 
@@ -1844,7 +2365,7 @@ HTMLDivElement.ondragend
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5854
+node_modules/typescript/lib/lib.dom.d.ts:5502
 
 ---
 
@@ -1874,35 +2395,7 @@ HTMLDivElement.ondragenter
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5859
-
----
-
-### ondragexit
-
-• **ondragexit**: (`ev`: `Event`) => `any`
-
-#### Type declaration
-
-▸ (`ev`): `any`
-
-##### Parameters
-
-| Name | Type    |
-| :--- | :------ |
-| `ev` | `Event` |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-HTMLDivElement.ondragexit
-
-#### Defined in
-
-node_modules/typescript/lib/lib.dom.d.ts:5860
+node_modules/typescript/lib/lib.dom.d.ts:5507
 
 ---
 
@@ -1932,7 +2425,7 @@ HTMLDivElement.ondragleave
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5865
+node_modules/typescript/lib/lib.dom.d.ts:5512
 
 ---
 
@@ -1962,7 +2455,7 @@ HTMLDivElement.ondragover
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5870
+node_modules/typescript/lib/lib.dom.d.ts:5517
 
 ---
 
@@ -1992,7 +2485,7 @@ HTMLDivElement.ondragstart
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5875
+node_modules/typescript/lib/lib.dom.d.ts:5522
 
 ---
 
@@ -2020,7 +2513,7 @@ HTMLDivElement.ondrop
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5876
+node_modules/typescript/lib/lib.dom.d.ts:5523
 
 ---
 
@@ -2050,7 +2543,7 @@ HTMLDivElement.ondurationchange
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5881
+node_modules/typescript/lib/lib.dom.d.ts:5528
 
 ---
 
@@ -2080,7 +2573,7 @@ HTMLDivElement.onemptied
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5886
+node_modules/typescript/lib/lib.dom.d.ts:5533
 
 ---
 
@@ -2110,7 +2603,7 @@ HTMLDivElement.onended
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5891
+node_modules/typescript/lib/lib.dom.d.ts:5538
 
 ---
 
@@ -2128,7 +2621,7 @@ HTMLDivElement.onerror
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5896
+node_modules/typescript/lib/lib.dom.d.ts:5543
 
 ---
 
@@ -2158,7 +2651,35 @@ HTMLDivElement.onfocus
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5901
+node_modules/typescript/lib/lib.dom.d.ts:5548
+
+---
+
+### onformdata
+
+• **onformdata**: (`ev`: `FormDataEvent`) => `any`
+
+#### Type declaration
+
+▸ (`ev`): `any`
+
+##### Parameters
+
+| Name | Type            |
+| :--- | :-------------- |
+| `ev` | `FormDataEvent` |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+HTMLDivElement.onformdata
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:5549
 
 ---
 
@@ -2186,7 +2707,7 @@ HTMLDivElement.onfullscreenchange
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5120
+node_modules/typescript/lib/lib.dom.d.ts:4735
 
 ---
 
@@ -2214,7 +2735,7 @@ HTMLDivElement.onfullscreenerror
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5121
+node_modules/typescript/lib/lib.dom.d.ts:4736
 
 ---
 
@@ -2242,7 +2763,7 @@ HTMLDivElement.ongotpointercapture
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5902
+node_modules/typescript/lib/lib.dom.d.ts:5550
 
 ---
 
@@ -2270,7 +2791,7 @@ HTMLDivElement.oninput
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5903
+node_modules/typescript/lib/lib.dom.d.ts:5551
 
 ---
 
@@ -2298,7 +2819,7 @@ HTMLDivElement.oninvalid
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5904
+node_modules/typescript/lib/lib.dom.d.ts:5552
 
 ---
 
@@ -2328,7 +2849,7 @@ HTMLDivElement.onkeydown
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5909
+node_modules/typescript/lib/lib.dom.d.ts:5557
 
 ---
 
@@ -2341,6 +2862,8 @@ node_modules/typescript/lib/lib.dom.d.ts:5909
 ▸ (`ev`): `any`
 
 Fires when the user presses an alphanumeric key.
+
+**`deprecated`**
 
 ##### Parameters
 
@@ -2358,7 +2881,7 @@ HTMLDivElement.onkeypress
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5914
+node_modules/typescript/lib/lib.dom.d.ts:5563
 
 ---
 
@@ -2388,7 +2911,7 @@ HTMLDivElement.onkeyup
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5919
+node_modules/typescript/lib/lib.dom.d.ts:5568
 
 ---
 
@@ -2418,7 +2941,7 @@ HTMLDivElement.onload
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5924
+node_modules/typescript/lib/lib.dom.d.ts:5573
 
 ---
 
@@ -2448,7 +2971,7 @@ HTMLDivElement.onloadeddata
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5929
+node_modules/typescript/lib/lib.dom.d.ts:5578
 
 ---
 
@@ -2478,7 +3001,7 @@ HTMLDivElement.onloadedmetadata
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5934
+node_modules/typescript/lib/lib.dom.d.ts:5583
 
 ---
 
@@ -2508,7 +3031,7 @@ HTMLDivElement.onloadstart
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5939
+node_modules/typescript/lib/lib.dom.d.ts:5588
 
 ---
 
@@ -2536,7 +3059,7 @@ HTMLDivElement.onlostpointercapture
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5940
+node_modules/typescript/lib/lib.dom.d.ts:5589
 
 ---
 
@@ -2566,7 +3089,7 @@ HTMLDivElement.onmousedown
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5945
+node_modules/typescript/lib/lib.dom.d.ts:5594
 
 ---
 
@@ -2594,7 +3117,7 @@ HTMLDivElement.onmouseenter
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5946
+node_modules/typescript/lib/lib.dom.d.ts:5595
 
 ---
 
@@ -2622,7 +3145,7 @@ HTMLDivElement.onmouseleave
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5947
+node_modules/typescript/lib/lib.dom.d.ts:5596
 
 ---
 
@@ -2652,7 +3175,7 @@ HTMLDivElement.onmousemove
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5952
+node_modules/typescript/lib/lib.dom.d.ts:5601
 
 ---
 
@@ -2682,7 +3205,7 @@ HTMLDivElement.onmouseout
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5957
+node_modules/typescript/lib/lib.dom.d.ts:5606
 
 ---
 
@@ -2712,7 +3235,7 @@ HTMLDivElement.onmouseover
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5962
+node_modules/typescript/lib/lib.dom.d.ts:5611
 
 ---
 
@@ -2742,7 +3265,7 @@ HTMLDivElement.onmouseup
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5967
+node_modules/typescript/lib/lib.dom.d.ts:5616
 
 ---
 
@@ -2770,7 +3293,7 @@ HTMLDivElement.onpaste
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:4901
+node_modules/typescript/lib/lib.dom.d.ts:4578
 
 ---
 
@@ -2800,7 +3323,7 @@ HTMLDivElement.onpause
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5972
+node_modules/typescript/lib/lib.dom.d.ts:5621
 
 ---
 
@@ -2830,7 +3353,7 @@ HTMLDivElement.onplay
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5977
+node_modules/typescript/lib/lib.dom.d.ts:5626
 
 ---
 
@@ -2860,7 +3383,7 @@ HTMLDivElement.onplaying
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5982
+node_modules/typescript/lib/lib.dom.d.ts:5631
 
 ---
 
@@ -2888,7 +3411,7 @@ HTMLDivElement.onpointercancel
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5983
+node_modules/typescript/lib/lib.dom.d.ts:5632
 
 ---
 
@@ -2916,7 +3439,7 @@ HTMLDivElement.onpointerdown
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5984
+node_modules/typescript/lib/lib.dom.d.ts:5633
 
 ---
 
@@ -2944,7 +3467,7 @@ HTMLDivElement.onpointerenter
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5985
+node_modules/typescript/lib/lib.dom.d.ts:5634
 
 ---
 
@@ -2972,7 +3495,7 @@ HTMLDivElement.onpointerleave
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5986
+node_modules/typescript/lib/lib.dom.d.ts:5635
 
 ---
 
@@ -3000,7 +3523,7 @@ HTMLDivElement.onpointermove
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5987
+node_modules/typescript/lib/lib.dom.d.ts:5636
 
 ---
 
@@ -3028,7 +3551,7 @@ HTMLDivElement.onpointerout
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5988
+node_modules/typescript/lib/lib.dom.d.ts:5637
 
 ---
 
@@ -3056,7 +3579,7 @@ HTMLDivElement.onpointerover
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5989
+node_modules/typescript/lib/lib.dom.d.ts:5638
 
 ---
 
@@ -3084,7 +3607,7 @@ HTMLDivElement.onpointerup
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5990
+node_modules/typescript/lib/lib.dom.d.ts:5639
 
 ---
 
@@ -3114,7 +3637,7 @@ HTMLDivElement.onprogress
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5995
+node_modules/typescript/lib/lib.dom.d.ts:5644
 
 ---
 
@@ -3144,7 +3667,7 @@ HTMLDivElement.onratechange
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6000
+node_modules/typescript/lib/lib.dom.d.ts:5649
 
 ---
 
@@ -3174,7 +3697,7 @@ HTMLDivElement.onreset
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6005
+node_modules/typescript/lib/lib.dom.d.ts:5654
 
 ---
 
@@ -3202,7 +3725,7 @@ HTMLDivElement.onresize
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6006
+node_modules/typescript/lib/lib.dom.d.ts:5655
 
 ---
 
@@ -3232,35 +3755,7 @@ HTMLDivElement.onscroll
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6011
-
----
-
-### onsecuritypolicyviolation
-
-• **onsecuritypolicyviolation**: (`ev`: `SecurityPolicyViolationEvent`) => `any`
-
-#### Type declaration
-
-▸ (`ev`): `any`
-
-##### Parameters
-
-| Name | Type                           |
-| :--- | :----------------------------- |
-| `ev` | `SecurityPolicyViolationEvent` |
-
-##### Returns
-
-`any`
-
-#### Inherited from
-
-HTMLDivElement.onsecuritypolicyviolation
-
-#### Defined in
-
-node_modules/typescript/lib/lib.dom.d.ts:6012
+node_modules/typescript/lib/lib.dom.d.ts:5660
 
 ---
 
@@ -3290,7 +3785,7 @@ HTMLDivElement.onseeked
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6017
+node_modules/typescript/lib/lib.dom.d.ts:5665
 
 ---
 
@@ -3320,7 +3815,7 @@ HTMLDivElement.onseeking
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6022
+node_modules/typescript/lib/lib.dom.d.ts:5670
 
 ---
 
@@ -3350,7 +3845,7 @@ HTMLDivElement.onselect
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6027
+node_modules/typescript/lib/lib.dom.d.ts:5675
 
 ---
 
@@ -3378,7 +3873,7 @@ HTMLDivElement.onselectionchange
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6028
+node_modules/typescript/lib/lib.dom.d.ts:5676
 
 ---
 
@@ -3406,7 +3901,7 @@ HTMLDivElement.onselectstart
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6029
+node_modules/typescript/lib/lib.dom.d.ts:5677
 
 ---
 
@@ -3436,13 +3931,13 @@ HTMLDivElement.onstalled
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6034
+node_modules/typescript/lib/lib.dom.d.ts:5682
 
 ---
 
 ### onsubmit
 
-• **onsubmit**: (`ev`: `Event`) => `any`
+• **onsubmit**: (`ev`: `SubmitEvent`) => `any`
 
 #### Type declaration
 
@@ -3450,9 +3945,9 @@ node_modules/typescript/lib/lib.dom.d.ts:6034
 
 ##### Parameters
 
-| Name | Type    |
-| :--- | :------ |
-| `ev` | `Event` |
+| Name | Type          |
+| :--- | :------------ |
+| `ev` | `SubmitEvent` |
 
 ##### Returns
 
@@ -3464,7 +3959,7 @@ HTMLDivElement.onsubmit
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6035
+node_modules/typescript/lib/lib.dom.d.ts:5683
 
 ---
 
@@ -3494,7 +3989,7 @@ HTMLDivElement.onsuspend
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6040
+node_modules/typescript/lib/lib.dom.d.ts:5688
 
 ---
 
@@ -3524,7 +4019,7 @@ HTMLDivElement.ontimeupdate
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6045
+node_modules/typescript/lib/lib.dom.d.ts:5693
 
 ---
 
@@ -3552,7 +4047,7 @@ HTMLDivElement.ontoggle
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6046
+node_modules/typescript/lib/lib.dom.d.ts:5694
 
 ---
 
@@ -3580,7 +4075,7 @@ HTMLDivElement.ontouchcancel
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6047
+node_modules/typescript/lib/lib.dom.d.ts:5695
 
 ---
 
@@ -3608,7 +4103,7 @@ HTMLDivElement.ontouchend
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6048
+node_modules/typescript/lib/lib.dom.d.ts:5696
 
 ---
 
@@ -3636,7 +4131,7 @@ HTMLDivElement.ontouchmove
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6049
+node_modules/typescript/lib/lib.dom.d.ts:5697
 
 ---
 
@@ -3664,7 +4159,7 @@ HTMLDivElement.ontouchstart
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6050
+node_modules/typescript/lib/lib.dom.d.ts:5698
 
 ---
 
@@ -3692,7 +4187,7 @@ HTMLDivElement.ontransitioncancel
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6051
+node_modules/typescript/lib/lib.dom.d.ts:5699
 
 ---
 
@@ -3720,7 +4215,7 @@ HTMLDivElement.ontransitionend
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6052
+node_modules/typescript/lib/lib.dom.d.ts:5700
 
 ---
 
@@ -3748,7 +4243,7 @@ HTMLDivElement.ontransitionrun
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6053
+node_modules/typescript/lib/lib.dom.d.ts:5701
 
 ---
 
@@ -3776,7 +4271,7 @@ HTMLDivElement.ontransitionstart
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6054
+node_modules/typescript/lib/lib.dom.d.ts:5702
 
 ---
 
@@ -3806,7 +4301,7 @@ HTMLDivElement.onvolumechange
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6059
+node_modules/typescript/lib/lib.dom.d.ts:5707
 
 ---
 
@@ -3836,7 +4331,127 @@ HTMLDivElement.onwaiting
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6064
+node_modules/typescript/lib/lib.dom.d.ts:5712
+
+---
+
+### onwebkitanimationend
+
+• **onwebkitanimationend**: (`ev`: `Event`) => `any`
+
+#### Type declaration
+
+▸ (`ev`): `any`
+
+**`deprecated`** This is a legacy alias of `onanimationend`.
+
+##### Parameters
+
+| Name | Type    |
+| :--- | :------ |
+| `ev` | `Event` |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+HTMLDivElement.onwebkitanimationend
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:5714
+
+---
+
+### onwebkitanimationiteration
+
+• **onwebkitanimationiteration**: (`ev`: `Event`) => `any`
+
+#### Type declaration
+
+▸ (`ev`): `any`
+
+**`deprecated`** This is a legacy alias of `onanimationiteration`.
+
+##### Parameters
+
+| Name | Type    |
+| :--- | :------ |
+| `ev` | `Event` |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+HTMLDivElement.onwebkitanimationiteration
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:5716
+
+---
+
+### onwebkitanimationstart
+
+• **onwebkitanimationstart**: (`ev`: `Event`) => `any`
+
+#### Type declaration
+
+▸ (`ev`): `any`
+
+**`deprecated`** This is a legacy alias of `onanimationstart`.
+
+##### Parameters
+
+| Name | Type    |
+| :--- | :------ |
+| `ev` | `Event` |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+HTMLDivElement.onwebkitanimationstart
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:5718
+
+---
+
+### onwebkittransitionend
+
+• **onwebkittransitionend**: (`ev`: `Event`) => `any`
+
+#### Type declaration
+
+▸ (`ev`): `any`
+
+**`deprecated`** This is a legacy alias of `ontransitionend`.
+
+##### Parameters
+
+| Name | Type    |
+| :--- | :------ |
+| `ev` | `Event` |
+
+##### Returns
+
+`any`
+
+#### Inherited from
+
+HTMLDivElement.onwebkittransitionend
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:5720
 
 ---
 
@@ -3864,7 +4479,7 @@ HTMLDivElement.onwheel
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6065
+node_modules/typescript/lib/lib.dom.d.ts:5721
 
 ---
 
@@ -3878,7 +4493,21 @@ HTMLDivElement.outerHTML
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5122
+node_modules/typescript/lib/lib.dom.d.ts:4737
+
+---
+
+### outerText
+
+• **outerText**: `string`
+
+#### Inherited from
+
+HTMLDivElement.outerText
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:6146
 
 ---
 
@@ -3892,7 +4521,7 @@ HTMLDivElement.ownerDocument
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5123
+node_modules/typescript/lib/lib.dom.d.ts:4738
 
 ---
 
@@ -3908,13 +4537,13 @@ HTMLDivElement.parentElement
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10716
+node_modules/typescript/lib/lib.dom.d.ts:9668
 
 ---
 
 ### parentNode
 
-• `Readonly` **parentNode**: `Node` & `ParentNode`
+• `Readonly` **parentNode**: `ParentNode`
 
 Returns the parent.
 
@@ -3924,7 +4553,21 @@ HTMLDivElement.parentNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10720
+node_modules/typescript/lib/lib.dom.d.ts:9670
+
+---
+
+### part
+
+• `Readonly` **part**: `DOMTokenList`
+
+#### Inherited from
+
+HTMLDivElement.part
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:4739
 
 ---
 
@@ -3940,7 +4583,7 @@ HTMLDivElement.prefix
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5127
+node_modules/typescript/lib/lib.dom.d.ts:4741
 
 ---
 
@@ -3956,7 +4599,7 @@ HTMLDivElement.previousElementSibling
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10967
+node_modules/typescript/lib/lib.dom.d.ts:9818
 
 ---
 
@@ -3972,7 +4615,7 @@ HTMLDivElement.previousSibling
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10724
+node_modules/typescript/lib/lib.dom.d.ts:9672
 
 ---
 
@@ -3996,7 +4639,7 @@ HTMLDivElement.scrollHeight
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5128
+node_modules/typescript/lib/lib.dom.d.ts:4742
 
 ---
 
@@ -4010,7 +4653,7 @@ HTMLDivElement.scrollLeft
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5129
+node_modules/typescript/lib/lib.dom.d.ts:4743
 
 ---
 
@@ -4024,7 +4667,7 @@ HTMLDivElement.scrollTop
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5130
+node_modules/typescript/lib/lib.dom.d.ts:4744
 
 ---
 
@@ -4038,7 +4681,7 @@ HTMLDivElement.scrollWidth
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5131
+node_modules/typescript/lib/lib.dom.d.ts:4745
 
 ---
 
@@ -4054,7 +4697,7 @@ HTMLDivElement.shadowRoot
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5135
+node_modules/typescript/lib/lib.dom.d.ts:4747
 
 ---
 
@@ -4070,7 +4713,7 @@ HTMLDivElement.slot
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5139
+node_modules/typescript/lib/lib.dom.d.ts:4749
 
 ---
 
@@ -4084,7 +4727,7 @@ HTMLDivElement.spellcheck
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6605
+node_modules/typescript/lib/lib.dom.d.ts:6147
 
 ---
 
@@ -4108,7 +4751,7 @@ HTMLDivElement.style
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5255
+node_modules/typescript/lib/lib.dom.d.ts:4835
 
 ---
 
@@ -4122,7 +4765,7 @@ HTMLDivElement.tabIndex
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:8009
+node_modules/typescript/lib/lib.dom.d.ts:7338
 
 ---
 
@@ -4138,7 +4781,7 @@ HTMLDivElement.tagName
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5143
+node_modules/typescript/lib/lib.dom.d.ts:4751
 
 ---
 
@@ -4152,7 +4795,7 @@ HTMLDivElement.textContent
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10725
+node_modules/typescript/lib/lib.dom.d.ts:9673
 
 ---
 
@@ -4166,7 +4809,7 @@ HTMLDivElement.title
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6606
+node_modules/typescript/lib/lib.dom.d.ts:6148
 
 ---
 
@@ -4180,7 +4823,7 @@ HTMLDivElement.translate
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6607
+node_modules/typescript/lib/lib.dom.d.ts:6149
 
 ---
 
@@ -4210,7 +4853,7 @@ node_modules/typescript/lib/lib.dom.d.ts:6607
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:32](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L32)
+[packages/core/src/webapp/tab.ts:35](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L35)
 
 ---
 
@@ -4242,7 +4885,7 @@ HTMLDivElement.addEventListener
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6563
+node_modules/typescript/lib/lib.dom.d.ts:6103
 
 ▸ **addEventListener**(`type`, `listener`, `options?`): `void`
 
@@ -4264,7 +4907,7 @@ HTMLDivElement.addEventListener
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6564
+node_modules/typescript/lib/lib.dom.d.ts:6104
 
 ---
 
@@ -4292,7 +4935,7 @@ HTMLDivElement.after
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:3537
+node_modules/typescript/lib/lib.dom.d.ts:3451
 
 ---
 
@@ -4317,7 +4960,7 @@ HTMLDivElement.animate
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:2073
+node_modules/typescript/lib/lib.dom.d.ts:1948
 
 ---
 
@@ -4345,13 +4988,13 @@ HTMLDivElement.append
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11251
+node_modules/typescript/lib/lib.dom.d.ts:10026
 
 ---
 
 ### appendChild
 
-▸ **appendChild**<`T`\>(`newChild`): `T`
+▸ **appendChild**<`T`\>(`node`): `T`
 
 #### Type parameters
 
@@ -4361,9 +5004,9 @@ node_modules/typescript/lib/lib.dom.d.ts:11251
 
 #### Parameters
 
-| Name       | Type |
-| :--------- | :--- |
-| `newChild` | `T`  |
+| Name   | Type |
+| :----- | :--- |
+| `node` | `T`  |
 
 #### Returns
 
@@ -4375,7 +5018,25 @@ HTMLDivElement.appendChild
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10726
+node_modules/typescript/lib/lib.dom.d.ts:9674
+
+---
+
+### attachInternals
+
+▸ **attachInternals**(): `ElementInternals`
+
+#### Returns
+
+`ElementInternals`
+
+#### Inherited from
+
+HTMLDivElement.attachInternals
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:6150
 
 ---
 
@@ -4401,7 +5062,7 @@ HTMLDivElement.attachShadow
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5147
+node_modules/typescript/lib/lib.dom.d.ts:4753
 
 ---
 
@@ -4429,7 +5090,7 @@ HTMLDivElement.before
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:3543
+node_modules/typescript/lib/lib.dom.d.ts:3457
 
 ---
 
@@ -4447,7 +5108,7 @@ HTMLDivElement.blur
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:8010
+node_modules/typescript/lib/lib.dom.d.ts:7339
 
 ---
 
@@ -4465,7 +5126,7 @@ HTMLDivElement.click
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6608
+node_modules/typescript/lib/lib.dom.d.ts:6151
 
 ---
 
@@ -4491,7 +5152,7 @@ HTMLDivElement.cloneNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10730
+node_modules/typescript/lib/lib.dom.d.ts:9676
 
 ---
 
@@ -4523,7 +5184,7 @@ HTMLDivElement.closest
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5151
+node_modules/typescript/lib/lib.dom.d.ts:4755
 
 ▸ **closest**<`K`\>(`selector`): `SVGElementTagNameMap`[`K`]
 
@@ -4549,21 +5210,21 @@ HTMLDivElement.closest
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5152
+node_modules/typescript/lib/lib.dom.d.ts:4756
 
-▸ **closest**<`E`\>(`selector`): `E`
+▸ **closest**<`E`\>(`selectors`): `E`
 
 #### Type parameters
 
-| Name | Type                         |
-| :--- | :--------------------------- |
-| `E`  | extends ` Element``Element ` |
+| Name | Type                          |
+| :--- | :---------------------------- |
+| `E`  | extends `Element` = `Element` |
 
 #### Parameters
 
-| Name       | Type     |
-| :--------- | :------- |
-| `selector` | `string` |
+| Name        | Type     |
+| :---------- | :------- |
+| `selectors` | `string` |
 
 #### Returns
 
@@ -4575,7 +5236,7 @@ HTMLDivElement.closest
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5153
+node_modules/typescript/lib/lib.dom.d.ts:4757
 
 ---
 
@@ -4601,7 +5262,7 @@ HTMLDivElement.compareDocumentPosition
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10734
+node_modules/typescript/lib/lib.dom.d.ts:9678
 
 ---
 
@@ -4627,7 +5288,7 @@ HTMLDivElement.contains
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10738
+node_modules/typescript/lib/lib.dom.d.ts:9680
 
 ---
 
@@ -4653,7 +5314,7 @@ HTMLDivElement.dispatchEvent
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5423
+node_modules/typescript/lib/lib.dom.d.ts:4983
 
 ---
 
@@ -4677,13 +5338,19 @@ HTMLDivElement.focus
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:8011
+node_modules/typescript/lib/lib.dom.d.ts:7340
 
 ---
 
 ### getAnimations
 
-▸ **getAnimations**(): `Animation`[]
+▸ **getAnimations**(`options?`): `Animation`[]
+
+#### Parameters
+
+| Name       | Type                   |
+| :--------- | :--------------------- |
+| `options?` | `GetAnimationsOptions` |
 
 #### Returns
 
@@ -4695,7 +5362,7 @@ HTMLDivElement.getAnimations
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:2074
+node_modules/typescript/lib/lib.dom.d.ts:1949
 
 ---
 
@@ -4721,7 +5388,7 @@ HTMLDivElement.getAttribute
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5157
+node_modules/typescript/lib/lib.dom.d.ts:4759
 
 ---
 
@@ -4748,7 +5415,7 @@ HTMLDivElement.getAttributeNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5161
+node_modules/typescript/lib/lib.dom.d.ts:4761
 
 ---
 
@@ -4768,7 +5435,7 @@ HTMLDivElement.getAttributeNames
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5165
+node_modules/typescript/lib/lib.dom.d.ts:4763
 
 ---
 
@@ -4792,7 +5459,7 @@ HTMLDivElement.getAttributeNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5166
+node_modules/typescript/lib/lib.dom.d.ts:4764
 
 ---
 
@@ -4817,7 +5484,7 @@ HTMLDivElement.getAttributeNodeNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5167
+node_modules/typescript/lib/lib.dom.d.ts:4765
 
 ---
 
@@ -4835,7 +5502,7 @@ HTMLDivElement.getBoundingClientRect
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5168
+node_modules/typescript/lib/lib.dom.d.ts:4766
 
 ---
 
@@ -4853,7 +5520,7 @@ HTMLDivElement.getClientRects
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5169
+node_modules/typescript/lib/lib.dom.d.ts:4767
 
 ---
 
@@ -4879,7 +5546,7 @@ HTMLDivElement.getElementsByClassName
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5173
+node_modules/typescript/lib/lib.dom.d.ts:4769
 
 ---
 
@@ -4909,7 +5576,7 @@ HTMLDivElement.getElementsByTagName
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5174
+node_modules/typescript/lib/lib.dom.d.ts:4770
 
 ▸ **getElementsByTagName**<`K`\>(`qualifiedName`): `HTMLCollectionOf`<`SVGElementTagNameMap`[`K`]\>
 
@@ -4935,7 +5602,7 @@ HTMLDivElement.getElementsByTagName
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5175
+node_modules/typescript/lib/lib.dom.d.ts:4771
 
 ▸ **getElementsByTagName**(`qualifiedName`): `HTMLCollectionOf`<`Element`\>
 
@@ -4955,7 +5622,7 @@ HTMLDivElement.getElementsByTagName
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5176
+node_modules/typescript/lib/lib.dom.d.ts:4772
 
 ---
 
@@ -4980,7 +5647,7 @@ HTMLDivElement.getElementsByTagNameNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5177
+node_modules/typescript/lib/lib.dom.d.ts:4773
 
 ▸ **getElementsByTagNameNS**(`namespaceURI`, `localName`): `HTMLCollectionOf`<`SVGElement`\>
 
@@ -5001,16 +5668,16 @@ HTMLDivElement.getElementsByTagNameNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5178
+node_modules/typescript/lib/lib.dom.d.ts:4774
 
-▸ **getElementsByTagNameNS**(`namespaceURI`, `localName`): `HTMLCollectionOf`<`Element`\>
+▸ **getElementsByTagNameNS**(`namespace`, `localName`): `HTMLCollectionOf`<`Element`\>
 
 #### Parameters
 
-| Name           | Type     |
-| :------------- | :------- |
-| `namespaceURI` | `string` |
-| `localName`    | `string` |
+| Name        | Type     |
+| :---------- | :------- |
+| `namespace` | `string` |
+| `localName` | `string` |
 
 #### Returns
 
@@ -5022,7 +5689,7 @@ HTMLDivElement.getElementsByTagNameNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5179
+node_modules/typescript/lib/lib.dom.d.ts:4775
 
 ---
 
@@ -5048,7 +5715,7 @@ HTMLDivElement.getRootNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10742
+node_modules/typescript/lib/lib.dom.d.ts:9682
 
 ---
 
@@ -5067,7 +5734,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10742
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:37](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L37)
+[packages/core/src/webapp/tab.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L50)
 
 ---
 
@@ -5093,7 +5760,7 @@ HTMLDivElement.hasAttribute
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5183
+node_modules/typescript/lib/lib.dom.d.ts:4777
 
 ---
 
@@ -5120,7 +5787,7 @@ HTMLDivElement.hasAttributeNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5187
+node_modules/typescript/lib/lib.dom.d.ts:4779
 
 ---
 
@@ -5140,7 +5807,7 @@ HTMLDivElement.hasAttributes
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5191
+node_modules/typescript/lib/lib.dom.d.ts:4781
 
 ---
 
@@ -5160,7 +5827,7 @@ HTMLDivElement.hasChildNodes
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10746
+node_modules/typescript/lib/lib.dom.d.ts:9684
 
 ---
 
@@ -5184,7 +5851,7 @@ HTMLDivElement.hasPointerCapture
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5192
+node_modules/typescript/lib/lib.dom.d.ts:4782
 
 ---
 
@@ -5198,20 +5865,20 @@ node_modules/typescript/lib/lib.dom.d.ts:5192
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:40](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L40)
+[packages/core/src/webapp/tab.ts:53](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L53)
 
 ---
 
 ### insertAdjacentElement
 
-▸ **insertAdjacentElement**(`position`, `insertedElement`): `Element`
+▸ **insertAdjacentElement**(`where`, `element`): `Element`
 
 #### Parameters
 
-| Name              | Type             |
-| :---------------- | :--------------- |
-| `position`        | `InsertPosition` |
-| `insertedElement` | `Element`        |
+| Name      | Type             |
+| :-------- | :--------------- |
+| `where`   | `InsertPosition` |
+| `element` | `Element`        |
 
 #### Returns
 
@@ -5223,20 +5890,20 @@ HTMLDivElement.insertAdjacentElement
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5193
+node_modules/typescript/lib/lib.dom.d.ts:4783
 
 ---
 
 ### insertAdjacentHTML
 
-▸ **insertAdjacentHTML**(`where`, `html`): `void`
+▸ **insertAdjacentHTML**(`position`, `text`): `void`
 
 #### Parameters
 
-| Name    | Type             |
-| :------ | :--------------- |
-| `where` | `InsertPosition` |
-| `html`  | `string`         |
+| Name       | Type             |
+| :--------- | :--------------- |
+| `position` | `InsertPosition` |
+| `text`     | `string`         |
 
 #### Returns
 
@@ -5248,20 +5915,20 @@ HTMLDivElement.insertAdjacentHTML
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5194
+node_modules/typescript/lib/lib.dom.d.ts:4784
 
 ---
 
 ### insertAdjacentText
 
-▸ **insertAdjacentText**(`where`, `text`): `void`
+▸ **insertAdjacentText**(`where`, `data`): `void`
 
 #### Parameters
 
 | Name    | Type             |
 | :------ | :--------------- |
 | `where` | `InsertPosition` |
-| `text`  | `string`         |
+| `data`  | `string`         |
 
 #### Returns
 
@@ -5273,13 +5940,13 @@ HTMLDivElement.insertAdjacentText
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5195
+node_modules/typescript/lib/lib.dom.d.ts:4785
 
 ---
 
 ### insertBefore
 
-▸ **insertBefore**<`T`\>(`newChild`, `refChild`): `T`
+▸ **insertBefore**<`T`\>(`node`, `child`): `T`
 
 #### Type parameters
 
@@ -5289,10 +5956,10 @@ node_modules/typescript/lib/lib.dom.d.ts:5195
 
 #### Parameters
 
-| Name       | Type   |
-| :--------- | :----- |
-| `newChild` | `T`    |
-| `refChild` | `Node` |
+| Name    | Type   |
+| :------ | :----- |
+| `node`  | `T`    |
+| `child` | `Node` |
 
 #### Returns
 
@@ -5304,7 +5971,7 @@ HTMLDivElement.insertBefore
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10747
+node_modules/typescript/lib/lib.dom.d.ts:9685
 
 ---
 
@@ -5328,7 +5995,7 @@ HTMLDivElement.isDefaultNamespace
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10748
+node_modules/typescript/lib/lib.dom.d.ts:9686
 
 ---
 
@@ -5354,7 +6021,7 @@ HTMLDivElement.isEqualNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10752
+node_modules/typescript/lib/lib.dom.d.ts:9688
 
 ---
 
@@ -5378,7 +6045,7 @@ HTMLDivElement.isSameNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10753
+node_modules/typescript/lib/lib.dom.d.ts:9689
 
 ---
 
@@ -5402,7 +6069,7 @@ HTMLDivElement.lookupNamespaceURI
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10754
+node_modules/typescript/lib/lib.dom.d.ts:9690
 
 ---
 
@@ -5426,7 +6093,7 @@ HTMLDivElement.lookupPrefix
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10755
+node_modules/typescript/lib/lib.dom.d.ts:9691
 
 ---
 
@@ -5452,25 +6119,7 @@ HTMLDivElement.matches
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5199
-
----
-
-### msGetRegionContent
-
-▸ **msGetRegionContent**(): `any`
-
-#### Returns
-
-`any`
-
-#### Inherited from
-
-HTMLDivElement.msGetRegionContent
-
-#### Defined in
-
-node_modules/typescript/lib/lib.dom.d.ts:5200
+node_modules/typescript/lib/lib.dom.d.ts:4787
 
 ---
 
@@ -5490,7 +6139,7 @@ HTMLDivElement.normalize
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10759
+node_modules/typescript/lib/lib.dom.d.ts:9693
 
 ---
 
@@ -5510,7 +6159,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10759
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:30](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L30)
+[packages/core/src/webapp/tab.ts:33](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L33)
 
 ---
 
@@ -5530,7 +6179,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10759
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:29](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L29)
+[packages/core/src/webapp/tab.ts:32](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L32)
 
 ---
 
@@ -5558,7 +6207,7 @@ HTMLDivElement.prepend
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11257
+node_modules/typescript/lib/lib.dom.d.ts:10032
 
 ---
 
@@ -5590,7 +6239,7 @@ HTMLDivElement.querySelector
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11261
+node_modules/typescript/lib/lib.dom.d.ts:10034
 
 ▸ **querySelector**<`K`\>(`selectors`): `SVGElementTagNameMap`[`K`]
 
@@ -5616,15 +6265,15 @@ HTMLDivElement.querySelector
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11262
+node_modules/typescript/lib/lib.dom.d.ts:10035
 
 ▸ **querySelector**<`E`\>(`selectors`): `E`
 
 #### Type parameters
 
-| Name | Type                         |
-| :--- | :--------------------------- |
-| `E`  | extends ` Element``Element ` |
+| Name | Type                          |
+| :--- | :---------------------------- |
+| `E`  | extends `Element` = `Element` |
 
 #### Parameters
 
@@ -5642,7 +6291,7 @@ HTMLDivElement.querySelector
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11263
+node_modules/typescript/lib/lib.dom.d.ts:10036
 
 ---
 
@@ -5674,7 +6323,7 @@ HTMLDivElement.querySelectorAll
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11267
+node_modules/typescript/lib/lib.dom.d.ts:10038
 
 ▸ **querySelectorAll**<`K`\>(`selectors`): `NodeListOf`<`SVGElementTagNameMap`[`K`]\>
 
@@ -5700,15 +6349,15 @@ HTMLDivElement.querySelectorAll
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11268
+node_modules/typescript/lib/lib.dom.d.ts:10039
 
 ▸ **querySelectorAll**<`E`\>(`selectors`): `NodeListOf`<`E`\>
 
 #### Type parameters
 
-| Name | Type                         |
-| :--- | :--------------------------- |
-| `E`  | extends ` Element``Element ` |
+| Name | Type                          |
+| :--- | :---------------------------- |
+| `E`  | extends `Element` = `Element` |
 
 #### Parameters
 
@@ -5726,7 +6375,7 @@ HTMLDivElement.querySelectorAll
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:11269
+node_modules/typescript/lib/lib.dom.d.ts:10040
 
 ---
 
@@ -5750,7 +6399,7 @@ HTMLDivElement.releasePointerCapture
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5201
+node_modules/typescript/lib/lib.dom.d.ts:4788
 
 ---
 
@@ -5770,7 +6419,7 @@ HTMLDivElement.remove
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:3547
+node_modules/typescript/lib/lib.dom.d.ts:3459
 
 ---
 
@@ -5796,7 +6445,7 @@ HTMLDivElement.removeAttribute
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5205
+node_modules/typescript/lib/lib.dom.d.ts:4790
 
 ---
 
@@ -5823,7 +6472,7 @@ HTMLDivElement.removeAttributeNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5209
+node_modules/typescript/lib/lib.dom.d.ts:4792
 
 ---
 
@@ -5847,13 +6496,13 @@ HTMLDivElement.removeAttributeNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5210
+node_modules/typescript/lib/lib.dom.d.ts:4793
 
 ---
 
 ### removeChild
 
-▸ **removeChild**<`T`\>(`oldChild`): `T`
+▸ **removeChild**<`T`\>(`child`): `T`
 
 #### Type parameters
 
@@ -5863,9 +6512,9 @@ node_modules/typescript/lib/lib.dom.d.ts:5210
 
 #### Parameters
 
-| Name       | Type |
-| :--------- | :--- |
-| `oldChild` | `T`  |
+| Name    | Type |
+| :------ | :--- |
+| `child` | `T`  |
 
 #### Returns
 
@@ -5877,7 +6526,7 @@ HTMLDivElement.removeChild
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10760
+node_modules/typescript/lib/lib.dom.d.ts:9694
 
 ---
 
@@ -5897,7 +6546,7 @@ node_modules/typescript/lib/lib.dom.d.ts:10760
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:33](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L33)
+[packages/core/src/webapp/tab.ts:36](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L36)
 
 ---
 
@@ -5929,7 +6578,7 @@ HTMLDivElement.removeEventListener
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6565
+node_modules/typescript/lib/lib.dom.d.ts:6105
 
 ▸ **removeEventListener**(`type`, `listener`, `options?`): `void`
 
@@ -5951,13 +6600,13 @@ HTMLDivElement.removeEventListener
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:6566
+node_modules/typescript/lib/lib.dom.d.ts:6106
 
 ---
 
 ### replaceChild
 
-▸ **replaceChild**<`T`\>(`newChild`, `oldChild`): `T`
+▸ **replaceChild**<`T`\>(`node`, `child`): `T`
 
 #### Type parameters
 
@@ -5967,10 +6616,10 @@ node_modules/typescript/lib/lib.dom.d.ts:6566
 
 #### Parameters
 
-| Name       | Type   |
-| :--------- | :----- |
-| `newChild` | `Node` |
-| `oldChild` | `T`    |
+| Name    | Type   |
+| :------ | :----- |
+| `node`  | `Node` |
+| `child` | `T`    |
 
 #### Returns
 
@@ -5982,7 +6631,35 @@ HTMLDivElement.replaceChild
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:10761
+node_modules/typescript/lib/lib.dom.d.ts:9695
+
+---
+
+### replaceChildren
+
+▸ **replaceChildren**(...`nodes`): `void`
+
+Replace all children of node with nodes, while replacing strings in nodes with equivalent Text nodes.
+
+Throws a "HierarchyRequestError" DOMException if the constraints of the node tree are violated.
+
+#### Parameters
+
+| Name       | Type                   |
+| :--------- | :--------------------- |
+| `...nodes` | (`string` \| `Node`)[] |
+
+#### Returns
+
+`void`
+
+#### Inherited from
+
+HTMLDivElement.replaceChildren
+
+#### Defined in
+
+node_modules/typescript/lib/lib.dom.d.ts:10046
 
 ---
 
@@ -6010,7 +6687,7 @@ HTMLDivElement.replaceWith
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:3553
+node_modules/typescript/lib/lib.dom.d.ts:3465
 
 ---
 
@@ -6038,7 +6715,7 @@ HTMLDivElement.requestFullscreen
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5216
+node_modules/typescript/lib/lib.dom.d.ts:4799
 
 ---
 
@@ -6056,7 +6733,7 @@ HTMLDivElement.requestPointerLock
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5217
+node_modules/typescript/lib/lib.dom.d.ts:4800
 
 ---
 
@@ -6080,7 +6757,7 @@ HTMLDivElement.scroll
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5218
+node_modules/typescript/lib/lib.dom.d.ts:4801
 
 ▸ **scroll**(`x`, `y`): `void`
 
@@ -6101,7 +6778,7 @@ HTMLDivElement.scroll
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5219
+node_modules/typescript/lib/lib.dom.d.ts:4802
 
 ---
 
@@ -6125,7 +6802,7 @@ HTMLDivElement.scrollBy
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5220
+node_modules/typescript/lib/lib.dom.d.ts:4803
 
 ▸ **scrollBy**(`x`, `y`): `void`
 
@@ -6146,7 +6823,7 @@ HTMLDivElement.scrollBy
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5221
+node_modules/typescript/lib/lib.dom.d.ts:4804
 
 ---
 
@@ -6170,7 +6847,7 @@ HTMLDivElement.scrollIntoView
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5222
+node_modules/typescript/lib/lib.dom.d.ts:4805
 
 ---
 
@@ -6194,7 +6871,7 @@ HTMLDivElement.scrollTo
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5223
+node_modules/typescript/lib/lib.dom.d.ts:4806
 
 ▸ **scrollTo**(`x`, `y`): `void`
 
@@ -6215,13 +6892,23 @@ HTMLDivElement.scrollTo
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5224
+node_modules/typescript/lib/lib.dom.d.ts:4807
 
 ---
 
 ### scrollToBottom
 
-▸ **scrollToBottom**(): `void`
+▸ **scrollToBottom**(`execUUID?`): `void`
+
+If given the optional parameter, only scroll into view if the
+specified block (identified by its execUUID) is the last block in
+this tab
+
+#### Parameters
+
+| Name        | Type     |
+| :---------- | :------- |
+| `execUUID?` | `string` |
 
 #### Returns
 
@@ -6229,7 +6916,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5224
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:36](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L36)
+[packages/core/src/webapp/tab.ts:46](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L46)
 
 ---
 
@@ -6243,7 +6930,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5224
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:35](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L35)
+[packages/core/src/webapp/tab.ts:38](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L38)
 
 ---
 
@@ -6270,7 +6957,7 @@ HTMLDivElement.setAttribute
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5228
+node_modules/typescript/lib/lib.dom.d.ts:4809
 
 ---
 
@@ -6298,7 +6985,7 @@ HTMLDivElement.setAttributeNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5232
+node_modules/typescript/lib/lib.dom.d.ts:4811
 
 ---
 
@@ -6322,7 +7009,7 @@ HTMLDivElement.setAttributeNode
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5233
+node_modules/typescript/lib/lib.dom.d.ts:4812
 
 ---
 
@@ -6346,7 +7033,7 @@ HTMLDivElement.setAttributeNodeNS
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5234
+node_modules/typescript/lib/lib.dom.d.ts:4813
 
 ---
 
@@ -6370,7 +7057,49 @@ HTMLDivElement.setPointerCapture
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5235
+node_modules/typescript/lib/lib.dom.d.ts:4814
+
+---
+
+### setTitle
+
+▸ **setTitle**(`title`): `void`
+
+Update the displayed title for this Tab
+
+#### Parameters
+
+| Name    | Type     |
+| :------ | :------- |
+| `title` | `string` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[packages/core/src/webapp/tab.ts:30](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L30)
+
+---
+
+### show
+
+▸ **show**(`selector`): `void`
+
+#### Parameters
+
+| Name       | Type     |
+| :--------- | :------- |
+| `selector` | `string` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[packages/core/src/webapp/tab.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L48)
 
 ---
 
@@ -6384,7 +7113,7 @@ node_modules/typescript/lib/lib.dom.d.ts:5235
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:39](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L39)
+[packages/core/src/webapp/tab.ts:52](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L52)
 
 ---
 
@@ -6413,13 +7142,15 @@ HTMLDivElement.toggleAttribute
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5241
+node_modules/typescript/lib/lib.dom.d.ts:4820
 
 ---
 
 ### webkitMatchesSelector
 
 ▸ **webkitMatchesSelector**(`selectors`): `boolean`
+
+**`deprecated`** This is a legacy alias of `matches`.
 
 #### Parameters
 
@@ -6437,4 +7168,4 @@ HTMLDivElement.webkitMatchesSelector
 
 #### Defined in
 
-node_modules/typescript/lib/lib.dom.d.ts:5242
+node_modules/typescript/lib/lib.dom.d.ts:4822

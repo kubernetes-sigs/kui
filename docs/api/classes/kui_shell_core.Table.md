@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / Table
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / Table
 
 # Class: Table<RowType\>
 
@@ -6,9 +6,9 @@
 
 ## Type parameters
 
-| Name      | Type                                                                 |
-| :-------- | :------------------------------------------------------------------- |
-| `RowType` | extends [`Row`](kui_shell_core.Row.md)[`Row`](kui_shell_core.Row.md) |
+| Name      | Type                                                                    |
+| :-------- | :---------------------------------------------------------------------- |
+| `RowType` | extends [`Row`](kui_shell_core.Row.md) = [`Row`](kui_shell_core.Row.md) |
 
 ## Table of contents
 
@@ -52,9 +52,9 @@
 
 #### Type parameters
 
-| Name      | Type                                                                             |
-| :-------- | :------------------------------------------------------------------------------- |
-| `RowType` | extends [`Row`](kui_shell_core.Row.md)<`RowType`\>[`Row`](kui_shell_core.Row.md) |
+| Name      | Type                                                                                |
+| :-------- | :---------------------------------------------------------------------------------- |
+| `RowType` | extends [`Row`](kui_shell_core.Row.md)<`RowType`\> = [`Row`](kui_shell_core.Row.md) |
 
 #### Parameters
 

@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / TabContainer
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / TabContainer
 
 # Class: TabContainer
 
@@ -28,12 +28,17 @@
 - [state](kui_shell_plugin_client_common.TabContainer.md#state)
 - [contextType](kui_shell_plugin_client_common.TabContainer.md#contexttype)
 
+### Accessors
+
+- [needsSidebar](kui_shell_plugin_client_common.TabContainer.md#needssidebar)
+
 ### Methods
 
 - [UNSAFE_componentWillMount](kui_shell_plugin_client_common.TabContainer.md#unsafe_componentwillmount)
 - [UNSAFE_componentWillReceiveProps](kui_shell_plugin_client_common.TabContainer.md#unsafe_componentwillreceiveprops)
 - [UNSAFE_componentWillUpdate](kui_shell_plugin_client_common.TabContainer.md#unsafe_componentwillupdate)
 - [\_onNewTab](kui_shell_plugin_client_common.TabContainer.md#_onnewtab)
+- [\_onSetTabTitle](kui_shell_plugin_client_common.TabContainer.md#_onsettabtitle)
 - [captureState](kui_shell_plugin_client_common.TabContainer.md#capturestate)
 - [children](kui_shell_plugin_client_common.TabContainer.md#children)
 - [componentDidCatch](kui_shell_plugin_client_common.TabContainer.md#componentdidcatch)
@@ -56,7 +61,9 @@
 - [restoreState](kui_shell_plugin_client_common.TabContainer.md#restorestate)
 - [setState](kui_shell_plugin_client_common.TabContainer.md#setstate)
 - [shouldComponentUpdate](kui_shell_plugin_client_common.TabContainer.md#shouldcomponentupdate)
+- [sidebar](kui_shell_plugin_client_common.TabContainer.md#sidebar)
 - [tabContent](kui_shell_plugin_client_common.TabContainer.md#tabcontent)
+- [toggleSidebar](kui_shell_plugin_client_common.TabContainer.md#togglesidebar)
 - [topTabStripe](kui_shell_plugin_client_common.TabContainer.md#toptabstripe)
 - [willUpdateTopTabButtons](kui_shell_plugin_client_common.TabContainer.md#willupdatetoptabbuttons)
 
@@ -78,7 +85,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:57](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L57)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:68](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L68)
 
 ## Properties
 
@@ -88,7 +95,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:162](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L162)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:163](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L163)
 
 ---
 
@@ -98,7 +105,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:142](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L142)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:143](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L143)
 
 ---
 
@@ -108,7 +115,7 @@ React.PureComponent&lt;Props, State\&gt;.constructor
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:295](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L295)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:285](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L285)
 
 ---
 
@@ -136,7 +143,7 @@ React.PureComponent.context
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:473
+node_modules/@types/react/index.d.ts:479
 
 ---
 
@@ -148,13 +155,13 @@ Has the first tab activated itself?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:55](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L55)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:66](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L66)
 
 ---
 
 ### props
 
-• `Readonly` **props**: `Readonly`<`Props`\> & `Readonly`<`Object`\>
+• `Readonly` **props**: `Readonly`<`Props`\> & `Readonly`<{ `children?`: `ReactNode` }\>
 
 #### Inherited from
 
@@ -162,7 +169,7 @@ React.PureComponent.props
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:498
+node_modules/@types/react/index.d.ts:504
 
 ---
 
@@ -183,7 +190,7 @@ React.PureComponent.refs
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:504
+node_modules/@types/react/index.d.ts:510
 
 ---
 
@@ -197,7 +204,7 @@ React.PureComponent.state
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:499
+node_modules/@types/react/index.d.ts:505
 
 ---
 
@@ -230,7 +237,21 @@ React.PureComponent.contextType
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:455
+node_modules/@types/react/index.d.ts:461
+
+## Accessors
+
+### needsSidebar
+
+• `Private` `get` **needsSidebar**(): `boolean`
+
+#### Returns
+
+`boolean`
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:344](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L344)
 
 ## Methods
 
@@ -262,7 +283,7 @@ React.PureComponent.UNSAFE_componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:711
+node_modules/@types/react/index.d.ts:717
 
 ---
 
@@ -304,7 +325,7 @@ React.PureComponent.UNSAFE_componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:743
+node_modules/@types/react/index.d.ts:749
 
 ---
 
@@ -345,7 +366,7 @@ React.PureComponent.UNSAFE_componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:771
+node_modules/@types/react/index.d.ts:777
 
 ---
 
@@ -363,6 +384,27 @@ node_modules/@types/react/index.d.ts:771
 
 ---
 
+### \_onSetTabTitle
+
+▸ `Private` `Readonly` **\_onSetTabTitle**(`uuid`, `title`): `void`
+
+#### Parameters
+
+| Name    | Type     |
+| :------ | :------- |
+| `uuid`  | `string` |
+| `title` | `string` |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:306](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L306)
+
+---
+
 ### captureState
 
 ▸ `Private` **captureState**(): `void`
@@ -375,7 +417,7 @@ save tab state such as CWD prior to a tab switch
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:110](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L110)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:111](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L111)
 
 ---
 
@@ -425,7 +467,7 @@ React.PureComponent.componentDidCatch
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:640
+node_modules/@types/react/index.d.ts:646
 
 ---
 
@@ -445,7 +487,7 @@ React.PureComponent.componentDidMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:619
+node_modules/@types/react/index.d.ts:625
 
 ---
 
@@ -475,7 +517,7 @@ React.PureComponent.componentDidUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:682
+node_modules/@types/react/index.d.ts:688
 
 ---
 
@@ -505,7 +547,7 @@ React.PureComponent.componentWillMount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:697
+node_modules/@types/react/index.d.ts:703
 
 ---
 
@@ -545,7 +587,7 @@ React.PureComponent.componentWillReceiveProps
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:726
+node_modules/@types/react/index.d.ts:732
 
 ---
 
@@ -566,7 +608,7 @@ React.PureComponent.componentWillUnmount
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:635
+node_modules/@types/react/index.d.ts:641
 
 ---
 
@@ -605,7 +647,7 @@ React.PureComponent.componentWillUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:756
+node_modules/@types/react/index.d.ts:762
 
 ---
 
@@ -629,7 +671,7 @@ React.PureComponent.forceUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:490
+node_modules/@types/react/index.d.ts:496
 
 ---
 
@@ -661,7 +703,7 @@ React.PureComponent.getSnapshotBeforeUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:676
+node_modules/@types/react/index.d.ts:682
 
 ---
 
@@ -703,7 +745,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:164](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L164)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:165](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L165)
 
 ---
 
@@ -713,17 +755,15 @@ node_modules/@types/react/index.d.ts:676
 
 #### Parameters
 
-| Name                           | Type                      | Default value | Description                                                              |
-| :----------------------------- | :------------------------ | :------------ | :----------------------------------------------------------------------- |
-| `spec`                         | `Object`                  | `{}`          | -                                                                        |
-| `spec.cmdline?`                | `string`                  | `undefined`   | Optionally execute a command in the new tab                              |
-| `spec.exec?`                   | `"pexec"` \| `"qexec"`    | `undefined`   | Execute the command line with qexec or pexec? Default: pexec.            |
-| `spec.onClose?`                | `string`                  | `undefined`   | Optionally execute a command when the tab is closed                      |
-| `spec.replaceCurrentTab?`      | `boolean`                 | `undefined`   | Replace the contents of the current tab with that of the given snapshot? |
-| `spec.snapshot?`               | `Buffer`                  | `undefined`   | Optionally open a snapshot file in the new tab                           |
-| `spec.statusStripeDecoration?` | `StatusStripeChangeEvent` | `undefined`   | Optionally specify color and message to display in the StatusStripe      |
-| `spec.title?`                  | `string`                  | `undefined`   | Optional tab title                                                       |
-| `doNotChangeActiveTab`         | `boolean`                 | `false`       | -                                                                        |
+| Name                           | Type                      | Default value | Description                                                         |
+| :----------------------------- | :------------------------ | :------------ | :------------------------------------------------------------------ |
+| `spec`                         | `Object`                  | `{}`          | -                                                                   |
+| `spec.cmdline?`                | `string`                  | `undefined`   | Optionally execute a command in the new tab                         |
+| `spec.exec?`                   | `"pexec"` \| `"qexec"`    | `undefined`   | Execute the command line with qexec or pexec? Default: pexec.       |
+| `spec.onClose?`                | `string`                  | `undefined`   | Optionally execute a command when the tab is closed                 |
+| `spec.statusStripeDecoration?` | `StatusStripeChangeEvent` | `undefined`   | Optionally specify color and message to display in the StatusStripe |
+| `spec.title?`                  | `string`                  | `undefined`   | Optional tab title                                                  |
+| `doNotChangeActiveTab`         | `boolean`                 | `false`       | -                                                                   |
 
 #### Returns
 
@@ -731,7 +771,7 @@ node_modules/@types/react/index.d.ts:676
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:175](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L175)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:176](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L176)
 
 ---
 
@@ -753,7 +793,7 @@ Close Tab event
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:148](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L148)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:149](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L149)
 
 ---
 
@@ -765,17 +805,15 @@ New Tab event
 
 #### Parameters
 
-| Name                           | Type                      | Default value | Description                                                              |
-| :----------------------------- | :------------------------ | :------------ | :----------------------------------------------------------------------- |
-| `spec`                         | `Object`                  | `{}`          | -                                                                        |
-| `spec.cmdline?`                | `string`                  | `undefined`   | Optionally execute a command in the new tab                              |
-| `spec.exec?`                   | `"pexec"` \| `"qexec"`    | `undefined`   | Execute the command line with qexec or pexec? Default: pexec.            |
-| `spec.onClose?`                | `string`                  | `undefined`   | Optionally execute a command when the tab is closed                      |
-| `spec.replaceCurrentTab?`      | `boolean`                 | `undefined`   | Replace the contents of the current tab with that of the given snapshot? |
-| `spec.snapshot?`               | `Buffer`                  | `undefined`   | Optionally open a snapshot file in the new tab                           |
-| `spec.statusStripeDecoration?` | `StatusStripeChangeEvent` | `undefined`   | Optionally specify color and message to display in the StatusStripe      |
-| `spec.title?`                  | `string`                  | `undefined`   | Optional tab title                                                       |
-| `doNotChangeActiveTab`         | `boolean`                 | `false`       | -                                                                        |
+| Name                           | Type                      | Default value | Description                                                         |
+| :----------------------------- | :------------------------ | :------------ | :------------------------------------------------------------------ |
+| `spec`                         | `Object`                  | `{}`          | -                                                                   |
+| `spec.cmdline?`                | `string`                  | `undefined`   | Optionally execute a command in the new tab                         |
+| `spec.exec?`                   | `"pexec"` \| `"qexec"`    | `undefined`   | Execute the command line with qexec or pexec? Default: pexec.       |
+| `spec.onClose?`                | `string`                  | `undefined`   | Optionally execute a command when the tab is closed                 |
+| `spec.statusStripeDecoration?` | `StatusStripeChangeEvent` | `undefined`   | Optionally specify color and message to display in the StatusStripe |
+| `spec.title?`                  | `string`                  | `undefined`   | Optional tab title                                                  |
+| `doNotChangeActiveTab`         | `boolean`                 | `false`       | -                                                                   |
 
 #### Returns
 
@@ -805,7 +843,7 @@ Switch Tab event: update state so that activeIdx=idx
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:127](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L127)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:128](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L128)
 
 ---
 
@@ -843,7 +881,7 @@ React.PureComponent.render
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:333](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L333)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:361](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L361)
 
 ---
 
@@ -865,7 +903,7 @@ restore tab state after a tab switch
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:119](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L119)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:120](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L120)
 
 ---
 
@@ -896,7 +934,7 @@ React.PureComponent.setState
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:485
+node_modules/@types/react/index.d.ts:491
 
 ---
 
@@ -931,7 +969,21 @@ React.PureComponent.shouldComponentUpdate
 
 #### Defined in
 
-node_modules/@types/react/index.d.ts:630
+node_modules/@types/react/index.d.ts:636
+
+---
+
+### sidebar
+
+▸ `Private` **sidebar**(): `Element`
+
+#### Returns
+
+`Element`
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:348](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L348)
 
 ---
 
@@ -947,7 +999,21 @@ Render the content of the tabs
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:312](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L312)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:320](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L320)
+
+---
+
+### toggleSidebar
+
+▸ `Private` `Readonly` **toggleSidebar**(): `void`
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:342](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L342)
 
 ---
 
@@ -963,7 +1029,7 @@ Render the row of Tabs along the top
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:298](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L298)
+[plugins/plugin-client-common/src/components/Client/TabContainer.tsx:288](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabContainer.tsx#L288)
 
 ---
 
@@ -973,10 +1039,10 @@ Render the row of Tabs along the top
 
 #### Parameters
 
-| Name      | Type                        |
-| :-------- | :-------------------------- |
-| `uuid`    | `string`                    |
-| `buttons` | `TopTabButton`<`Object`\>[] |
+| Name      | Type                                   |
+| :-------- | :------------------------------------- |
+| `uuid`    | `string`                               |
+| `buttons` | `TopTabButton`<{ `key`: `string` }\>[] |
 
 #### Returns
 

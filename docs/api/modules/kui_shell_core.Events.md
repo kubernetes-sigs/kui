@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / Events
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / Events
 
 # Namespace: Events
 
@@ -36,15 +36,10 @@
 
 #### Type declaration
 
-| Name                    | Type                                                                                           |
-| :---------------------- | :--------------------------------------------------------------------------------------------- |
-| `opts?`                 | `Object`                                                                                       |
-| `opts.description?`     | `string`                                                                                       |
-| `opts.name?`            | `string`                                                                                       |
-| `opts.preferReExecute?` | `boolean`                                                                                      |
-| `opts.shallow?`         | `boolean`                                                                                      |
-| `cb`                    | (`snapshot`: `Buffer`) => `void`                                                               |
-| `filter?`               | (`evt`: [`CommandStartEvent`](../interfaces/kui_shell_core.CommandStartEvent.md)) => `boolean` |
+| Name        | Type                             | Description             |
+| :---------- | :------------------------------- | :---------------------- |
+| `execUUID?` | `string`                         | Capture just one block? |
+| `cb?`       | (`snapshot`: `Buffer`) => `void` | -                       |
 
 #### Defined in
 
@@ -82,7 +77,7 @@
 
 #### Defined in
 
-[packages/core/src/core/events.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L50)
+[packages/core/src/core/events.ts:46](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L46)
 
 ## Variables
 
@@ -92,7 +87,7 @@
 
 #### Defined in
 
-[packages/core/src/core/events.ts:396](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L396)
+[packages/core/src/core/events.ts:406](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L406)
 
 ---
 
@@ -124,7 +119,7 @@ Unhook
 
 #### Defined in
 
-[packages/core/src/core/events.ts:433](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L433)
+[packages/core/src/core/events.ts:443](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L443)
 
 ---
 
@@ -146,7 +141,7 @@ Unhook
 
 #### Defined in
 
-[packages/core/src/core/events.ts:412](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L412)
+[packages/core/src/core/events.ts:422](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L422)
 
 ---
 
@@ -169,7 +164,7 @@ interaction events.
 
 #### Defined in
 
-[packages/core/src/core/events.ts:423](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L423)
+[packages/core/src/core/events.ts:433](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L433)
 
 ---
 
@@ -191,4 +186,4 @@ Hook an event listener up to tab events.
 
 #### Defined in
 
-[packages/core/src/core/events.ts:402](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L402)
+[packages/core/src/core/events.ts:412](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/events.ts#L412)

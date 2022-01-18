@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / ResourceByReference
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / ResourceByReference
 
 # Interface: ResourceByReference<Content\>
 
@@ -47,7 +47,7 @@ Entity with a "resource" field that is MetadataBearing
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:64](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L64)
+[packages/core/src/models/entity.ts:63](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L63)
 
 ---
 
@@ -61,7 +61,7 @@ Entity with a "resource" field that is MetadataBearing
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:81](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L81)
+[packages/core/src/models/entity.ts:80](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L80)
 
 ---
 
@@ -75,7 +75,7 @@ Entity with a "resource" field that is MetadataBearing
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L82)
+[packages/core/src/models/entity.ts:81](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L81)
 
 ---
 
@@ -89,7 +89,7 @@ Entity with a "resource" field that is MetadataBearing
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:47](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L47)
+[packages/core/src/models/entity.ts:46](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L46)
 
 ---
 
@@ -113,7 +113,7 @@ Entity with a "resource" field that is MetadataBearing
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L49)
+[packages/core/src/models/entity.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L48)
 
 ---
 
@@ -127,7 +127,7 @@ Entity with a "resource" field that is MetadataBearing
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:71](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L71)
+[packages/core/src/models/entity.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L70)
 
 ---
 
@@ -152,7 +152,7 @@ family of onclick handlers
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:74](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L74)
+[packages/core/src/models/entity.ts:73](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L73)
 
 ---
 
@@ -166,7 +166,7 @@ family of onclick handlers
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:84](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L84)
+[packages/core/src/models/entity.ts:83](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L83)
 
 ---
 
@@ -182,7 +182,7 @@ name hash, e.g. the hash part of auto-generated names, or an openwhisk activatio
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L70)
+[packages/core/src/models/entity.ts:69](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L69)
 
 ---
 
@@ -192,7 +192,7 @@ name hash, e.g. the hash part of auto-generated names, or an openwhisk activatio
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:110](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L110)
+[packages/core/src/models/entity.ts:109](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L109)
 
 ---
 
@@ -206,7 +206,7 @@ name hash, e.g. the hash part of auto-generated names, or an openwhisk activatio
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:83](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L83)
+[packages/core/src/models/entity.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L82)
 
 ---
 
@@ -222,4 +222,4 @@ optional designation of resource version
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:67](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L67)
+[packages/core/src/models/entity.ts:66](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L66)

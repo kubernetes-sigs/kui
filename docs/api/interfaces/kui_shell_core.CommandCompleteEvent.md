@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / CommandCompleteEvent
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / CommandCompleteEvent
 
 # Interface: CommandCompleteEvent<R, T\>
 
@@ -6,10 +6,10 @@
 
 ## Type parameters
 
-| Name | Type                                                                                                               |
-| :--- | :----------------------------------------------------------------------------------------------------------------- |
-| `R`  | extends [`KResponse`](../modules/kui_shell_core.md#kresponse)[`KResponse`](../modules/kui_shell_core.md#kresponse) |
-| `T`  | extends ` ResponseType``ResponseType `                                                                             |
+| Name | Type                                                                                                                  |
+| :--- | :-------------------------------------------------------------------------------------------------------------------- |
+| `R`  | extends [`KResponse`](../modules/kui_shell_core.md#kresponse) = [`KResponse`](../modules/kui_shell_core.md#kresponse) |
+| `T`  | extends `ResponseType` = `ResponseType`                                                                               |
 
 ## Table of contents
 

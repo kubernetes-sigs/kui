@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-s3](../modules/kui_shell_plugin_s3.md) / MinioConfig
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-s3](../modules/kui_shell_plugin_s3.md) / MinioConfig
 
 # Interface: MinioConfig
 
@@ -15,7 +15,7 @@
 
 ### aliases
 
-• **aliases**: `Record`<`string`, `Object`\>
+• **aliases**: `Record`<`string`, { `accessKey`: `string` ; `api`: `string` ; `path`: `"auto"` \| `"dns"` ; `secretKey`: `string` ; `subdir`: `string` ; `url`: `string` }\>
 
 #### Defined in
 

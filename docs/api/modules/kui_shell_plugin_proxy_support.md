@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/plugin-proxy-support
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/plugin-proxy-support
 
 # Module: @kui-shell/plugin-proxy-support
 

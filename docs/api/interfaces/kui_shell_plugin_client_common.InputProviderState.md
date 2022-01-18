@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / InputProviderState
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / InputProviderState
 
 # Interface: InputProviderState
 
@@ -8,8 +8,6 @@
 
 ### Properties
 
-- [counter](kui_shell_plugin_client_common.InputProviderState.md#counter)
-- [durationDom](kui_shell_plugin_client_common.InputProviderState.md#durationdom)
 - [execUUID](kui_shell_plugin_client_common.InputProviderState.md#execuuid)
 - [isReEdit](kui_shell_plugin_client_common.InputProviderState.md#isreedit)
 - [isearch](kui_shell_plugin_client_common.InputProviderState.md#isearch)
@@ -22,28 +20,6 @@
 
 ## Properties
 
-### counter
-
-• `Optional` **counter**: `Timeout`
-
-durationDom, used for counting up duration while Processing
-
-#### Defined in
-
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:189](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L189)
-
----
-
-### durationDom
-
-• `Optional` **durationDom**: `RefObject`<`HTMLSpanElement`\>
-
-#### Defined in
-
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:190](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L190)
-
----
-
 ### execUUID
 
 • `Optional` **execUUID**: `string`
@@ -52,7 +28,7 @@ the execution ID for this prompt, if any
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:177](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L177)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:176](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L176)
 
 ---
 
@@ -64,7 +40,7 @@ did user click to re-edit the input?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:174](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L174)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:173](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L173)
 
 ---
 
@@ -76,7 +52,7 @@ state of active reverse-i-search
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:183](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L183)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:182](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L182)
 
 ---
 
@@ -88,7 +64,7 @@ Copy from props; to help with getDerivedStateFromProps
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:165](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L165)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:164](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L164)
 
 ---
 
@@ -100,7 +76,7 @@ is the input in multi-line mode? if true, use text area rather than in-line inpu
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:168](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L168)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:167](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L167)
 
 ---
 
@@ -112,7 +88,7 @@ did user paste multiline texts
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:171](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L171)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:170](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L170)
 
 ---
 
@@ -124,7 +100,7 @@ DOM element for prompt; set via `ref` in render() below
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:180](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L180)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:179](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L179)
 
 ---
 
@@ -136,7 +112,7 @@ state of tab completion
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:186](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L186)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:185](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L185)
 
 ---
 
@@ -148,4 +124,4 @@ typeahead completion?
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:193](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L193)
+[plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx:188](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Views/Terminal/Block/Input.tsx#L188)

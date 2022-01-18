@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/test](../modules/kui_shell_test.md) / TestNavResponse
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/test](../modules/kui_shell_test.md) / TestNavResponse
 
 # Class: TestNavResponse
 

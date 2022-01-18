@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/core
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/core
 
 # Module: @kui-shell/core
 
@@ -54,7 +54,6 @@
 - [HistoryLine](../interfaces/kui_shell_core.HistoryLine.md)
 - [MetadataNamedResource](../interfaces/kui_shell_core.MetadataNamedResource.md)
 - [ModeRegistration](../interfaces/kui_shell_core.ModeRegistration.md)
-- [Notebook](../interfaces/kui_shell_core.Notebook.md)
 - [ParsedOptions](../interfaces/kui_shell_core.ParsedOptions.md)
 - [PreloadRegistrar](../interfaces/kui_shell_core.PreloadRegistrar.md)
 - [REPL](../interfaces/kui_shell_core.REPL.md)
@@ -71,11 +70,6 @@
 - [Selectable](../interfaces/kui_shell_core.Selectable.md)
 - [SourceRef](../interfaces/kui_shell_core.SourceRef.md)
 - [Split](../interfaces/kui_shell_core.Split.md)
-- [StatusModel](../interfaces/kui_shell_core.StatusModel.md)
-- [StatusModelItem](../interfaces/kui_shell_core.StatusModelItem.md)
-- [StatusModelSection](../interfaces/kui_shell_core.StatusModelSection.md)
-- [StatusModelTile](../interfaces/kui_shell_core.StatusModelTile.md)
-- [StatusModelTileAction](../interfaces/kui_shell_core.StatusModelTileAction.md)
 - [Tab](../interfaces/kui_shell_core.Tab.md)
 - [TabCompletionSpec](../interfaces/kui_shell_core.TabCompletionSpec.md)
 - [ToolbarAlert](../interfaces/kui_shell_core.ToolbarAlert.md)
@@ -124,7 +118,6 @@
 - [ScalarResource](kui_shell_core.md#scalarresource)
 - [ScalarResponse](kui_shell_core.md#scalarresponse)
 - [SnapshottedEvent](kui_shell_core.md#snapshottedevent)
-- [StatusModelStatus](kui_shell_core.md#statusmodelstatus)
 - [Stream](kui_shell_core.md#stream)
 - [Streamable](kui_shell_core.md#streamable)
 - [StringContent](kui_shell_core.md#stringcontent)
@@ -154,7 +147,6 @@
 - [History](kui_shell_core.md#history)
 - [\_split](kui_shell_core.md#_split)
 - [addRelevantModes](kui_shell_core.md#addrelevantmodes)
-- [aggregateStatusModelStatus](kui_shell_core.md#aggregatestatusmodelstatus)
 - [bootIntoSandbox](kui_shell_core.md#bootintosandbox)
 - [cellShouldHaveBadge](kui_shell_core.md#cellshouldhavebadge)
 - [commandsOfferedByPlugin](kui_shell_core.md#commandsofferedbyplugin)
@@ -201,7 +193,6 @@
 - [isMultiModalResponse](kui_shell_core.md#ismultimodalresponse)
 - [isNavResponse](kui_shell_core.md#isnavresponse)
 - [isNewSplitRequest](kui_shell_core.md#isnewsplitrequest)
-- [isNotebook](kui_shell_core.md#isnotebook)
 - [isOfflineClient](kui_shell_core.md#isofflineclient)
 - [isPopup](kui_shell_core.md#ispopup)
 - [isRadioTable](kui_shell_core.md#isradiotable)
@@ -215,7 +206,6 @@
 - [isResourceWithMetadata](kui_shell_core.md#isresourcewithmetadata)
 - [isScalarContent](kui_shell_core.md#isscalarcontent)
 - [isScalarResponse](kui_shell_core.md#isscalarresponse)
-- [isStatusModel](kui_shell_core.md#isstatusmodel)
 - [isStringDiffContent](kui_shell_core.md#isstringdiffcontent)
 - [isStringResponse](kui_shell_core.md#isstringresponse)
 - [isStringWithOptionalContentType](kui_shell_core.md#isstringwithoptionalcontenttype)
@@ -339,19 +329,27 @@ REPL.qexec; the command is assumed to return either
 
 #### Type declaration
 
-| Name             | Type                                           |
-| :--------------- | :--------------------------------------------- |
-| `apiVersion`     | `"kui-shell/v1"`                               |
-| `kind`           | `"CommentaryResponse"`                         |
-| `props`          | `Object`                                       |
-| `props.baseUrl?` | `string`                                       |
-| `props.children` | `string`                                       |
-| `props.repl?`    | [`REPL`](../interfaces/kui_shell_core.REPL.md) |
-| `props.title?`   | `string`                                       |
+| Name                        | Type                                                                                           |
+| :-------------------------- | :--------------------------------------------------------------------------------------------- |
+| `apiVersion`                | `"kui-shell/v1"`                                                                               |
+| `kind`                      | `"CommentaryResponse"`                                                                         |
+| `props`                     | `Object`                                                                                       |
+| `props.baseUrl?`            | `string`                                                                                       |
+| `props.children`            | `string`                                                                                       |
+| `props.codeBlockResponses?` | { `response`: [`KResponse`](kui_shell_core.md#kresponse) ; `status`: `"done"` \| `"error"` }[] |
+| `props.edit?`               | `boolean`                                                                                      |
+| `props.filepath?`           | `string`                                                                                       |
+| `props.header?`             | `boolean`                                                                                      |
+| `props.preview?`            | `boolean`                                                                                      |
+| `props.receive?`            | `string`                                                                                       |
+| `props.repl?`               | [`REPL`](../interfaces/kui_shell_core.REPL.md)                                                 |
+| `props.replace?`            | `boolean`                                                                                      |
+| `props.send?`               | `string`                                                                                       |
+| `props.title?`              | `string`                                                                                       |
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:20](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L20)
+[packages/core/src/models/CommentaryResponse.ts:21](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L21)
 
 ---
 
@@ -378,9 +376,9 @@ The classes of supported `Content` are:
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                                 |
-| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)[`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md) |
+| Name | Type                                                                                                                                                                    |
+| :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md) = [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md) |
 
 #### Defined in
 
@@ -424,9 +422,9 @@ Transform the `execUUID` field of `ExecOptions` to be required.
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                                 |
-| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)[`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md) |
+| Name | Type                                                                                                                                                                    |
+| :--- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md) = [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md) |
 
 #### Type declaration
 
@@ -475,9 +473,9 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Type parameters
 
-| Name      | Type                 |
-| :-------- | :------------------- |
-| `Content` | extends ` any``any ` |
+| Name      | Type                  |
+| :-------- | :-------------------- |
+| `Content` | extends `any` = `any` |
 
 #### Defined in
 
@@ -511,7 +509,7 @@ A command `KResponse` can be any supported `Entity` type
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:159](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L159)
+[packages/core/src/models/entity.ts:158](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L158)
 
 ---
 
@@ -771,7 +769,7 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:140](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L140)
+[packages/core/src/models/entity.ts:139](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L139)
 
 ---
 
@@ -781,13 +779,13 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Type parameters
 
-| Name | Type                 |
-| :--- | :------------------- |
-| `T`  | extends ` any``any ` |
+| Name | Type                  |
+| :--- | :-------------------- |
+| `T`  | extends `any` = `any` |
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:112](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L112)
+[packages/core/src/models/entity.ts:111](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L111)
 
 ---
 
@@ -797,13 +795,13 @@ A `NavResponse` is a collection of `MultiModalResponse` with menu navigation
 
 #### Type parameters
 
-| Name | Type                 |
-| :--- | :------------------- |
-| `T`  | extends ` any``any ` |
+| Name | Type                  |
+| :--- | :-------------------- |
+| `T`  | extends `any` = `any` |
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:87](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L87)
+[packages/core/src/models/entity.ts:86](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L86)
 
 ---
 
@@ -823,20 +821,20 @@ function call.
 
 ### ScalarResponse
 
-Ƭ **ScalarResponse**<`RowType`\>: `SimpleEntity` \| [`Table`](../classes/kui_shell_core.Table.md)<`RowType`\> & `Partial`<[`WithSourceReferences`](../interfaces/kui_shell_core.WithSourceReferences.md)\> \| [`MixedResponse`](kui_shell_core.md#mixedresponse) \| [`CommentaryResponse`](kui_shell_core.md#commentaryresponse) \| [`TabLayoutModificationResponse`](kui_shell_core.md#tablayoutmodificationresponse) \| [`XtermResponse`](../interfaces/kui_shell_core.XtermResponse.md) \| [`StatusModel`](../interfaces/kui_shell_core.StatusModel.md) \| `RandomErrorResponse1` \| `RandomErrorResponse2`
+Ƭ **ScalarResponse**<`RowType`\>: `SimpleEntity` \| [`Table`](../classes/kui_shell_core.Table.md)<`RowType`\> & `Partial`<[`WithSourceReferences`](../interfaces/kui_shell_core.WithSourceReferences.md)\> \| [`MixedResponse`](kui_shell_core.md#mixedresponse) \| [`CommentaryResponse`](kui_shell_core.md#commentaryresponse) \| [`TabLayoutModificationResponse`](kui_shell_core.md#tablayoutmodificationresponse) \| [`XtermResponse`](../interfaces/kui_shell_core.XtermResponse.md) \| `RandomErrorResponse1` \| `RandomErrorResponse2`
 
 This type covers all responses with no complex internal structure
 that views may wish to interpret into fancier views.
 
 #### Type parameters
 
-| Name      | Type                                                                                       |
-| :-------- | :----------------------------------------------------------------------------------------- |
-| `RowType` | extends [`Row`](../classes/kui_shell_core.Row.md)[`Row`](../classes/kui_shell_core.Row.md) |
+| Name      | Type                                                                                          |
+| :-------- | :-------------------------------------------------------------------------------------------- |
+| `RowType` | extends [`Row`](../classes/kui_shell_core.Row.md) = [`Row`](../classes/kui_shell_core.Row.md) |
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:208](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L208)
+[packages/core/src/models/entity.ts:213](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L213)
 
 ---
 
@@ -855,16 +853,6 @@ In order to snapshot an event, we'll need to remember just the tab uuid
 #### Defined in
 
 [packages/core/src/repl/events.ts:68](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/events.ts#L68)
-
----
-
-### StatusModelStatus
-
-Ƭ **StatusModelStatus**: `"success"` \| `"in-progress"` \| `"warning"` \| `"error"` \| `"unknown"`
-
-#### Defined in
-
-[packages/core/src/models/StatusModel.ts:19](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L19)
 
 ---
 
@@ -979,9 +967,9 @@ response type!
 
 #### Type parameters
 
-| Name      | Type                                                 |
-| :-------- | :--------------------------------------------------- |
-| `Request` | extends ` ModificationRequest``ModificationRequest ` |
+| Name      | Type                                                  |
+| :-------- | :---------------------------------------------------- |
+| `Request` | extends `ModificationRequest` = `ModificationRequest` |
 
 #### Type declaration
 
@@ -1292,28 +1280,6 @@ to the given modes model
 
 ---
 
-### aggregateStatusModelStatus
-
-▸ **aggregateStatusModelStatus**(`tile`): `Promise`<[`StatusModelStatus`](kui_shell_core.md#statusmodelstatus)\>
-
-Roll up the status of the LineItems
-
-#### Parameters
-
-| Name   | Type                                                                 |
-| :----- | :------------------------------------------------------------------- |
-| `tile` | [`StatusModelTile`](../interfaces/kui_shell_core.StatusModelTile.md) |
-
-#### Returns
-
-`Promise`<[`StatusModelStatus`](kui_shell_core.md#statusmodelstatus)\>
-
-#### Defined in
-
-[packages/core/src/models/StatusModel.ts:130](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L130)
-
----
-
 ### bootIntoSandbox
 
 ▸ **bootIntoSandbox**(): `Promise`<`void`\>
@@ -1437,7 +1403,7 @@ User hit enter in the REPL
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:605](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L605)
+[packages/core/src/repl/exec.ts:609](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L609)
 
 ---
 
@@ -1514,7 +1480,7 @@ first to register in the case of a tie-breaker.
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:77](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L77)
+[packages/core/src/webapp/tab.ts:90](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L90)
 
 ---
 
@@ -1534,7 +1500,7 @@ first to register in the case of a tie-breaker.
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:65](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L65)
+[packages/core/src/webapp/tab.ts:78](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L78)
 
 ---
 
@@ -1554,7 +1520,7 @@ first to register in the case of a tie-breaker.
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:87](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L87)
+[packages/core/src/webapp/tab.ts:100](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L100)
 
 ---
 
@@ -1576,7 +1542,7 @@ Return the unique identifier for the given tab
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:51](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L51)
+[packages/core/src/webapp/tab.ts:64](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L64)
 
 ---
 
@@ -1622,7 +1588,7 @@ resource is WithDisplayName
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:100](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L100)
+[packages/core/src/models/entity.ts:99](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L99)
 
 ---
 
@@ -1642,7 +1608,7 @@ response is Required<WithSourceReferences\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:239](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L239)
+[packages/core/src/models/entity.ts:243](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L243)
 
 ---
 
@@ -1720,7 +1686,7 @@ you need to block until all session initializers have completed.
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:595](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L595)
+[packages/core/src/repl/exec.ts:599](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L599)
 
 ---
 
@@ -1749,7 +1715,7 @@ Programmatic exec, as opposed to human typing and hitting enter
 
 #### Defined in
 
-[packages/core/src/repl/exec.ts:691](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L691)
+[packages/core/src/repl/exec.ts:695](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/exec.ts#L695)
 
 ---
 
@@ -1847,7 +1813,7 @@ entity is AbortableResponse<ScalarResponse<Row\>\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:247](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L247)
+[packages/core/src/models/entity.ts:251](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L251)
 
 ---
 
@@ -1857,9 +1823,9 @@ entity is AbortableResponse<ScalarResponse<Row\>\>
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                                                        |
-| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`, `T`\>[`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> |
+| Name | Type                                                                                                                                                                                           |
+| :--- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`, `T`\> = [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> |
 
 #### Parameters
 
@@ -1972,7 +1938,7 @@ entity is CommentaryResponse
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:39](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L39)
+[packages/core/src/models/CommentaryResponse.ts:64](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L64)
 
 ---
 
@@ -1994,7 +1960,7 @@ is this commentary reponse be able to treated as a section break
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:45](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L45)
+[packages/core/src/models/CommentaryResponse.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L70)
 
 ---
 
@@ -2082,9 +2048,9 @@ Is the current client running in an executable mode?
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                                                        |
-| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`, `T`\>[`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> |
+| Name | Type                                                                                                                                                                                           |
+| :--- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `T`  | extends [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`, `T`\> = [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> |
 
 #### Parameters
 
@@ -2178,7 +2144,7 @@ entity is MarkdownResponse
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:135](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L135)
+[packages/core/src/models/entity.ts:134](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L134)
 
 ---
 
@@ -2238,7 +2204,7 @@ response is MixedResponse
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:161](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L161)
+[packages/core/src/models/entity.ts:160](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L160)
 
 ---
 
@@ -2299,28 +2265,6 @@ req is TabLayoutModificationResponse<NewSplitRequest\>
 #### Defined in
 
 [packages/core/src/models/TabLayoutModificationResponse.ts:60](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/TabLayoutModificationResponse.ts#L60)
-
----
-
-### isNotebook
-
-▸ **isNotebook**(`raw`): raw is Notebook
-
-#### Parameters
-
-| Name  | Type                       |
-| :---- | :------------------------- |
-| `raw` | `Record`<`string`, `any`\> |
-
-#### Returns
-
-raw is Notebook
-
-wether or not the given `raw` json is an instance of Notebook
-
-#### Defined in
-
-[packages/core/src/repl/events.ts:83](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/events.ts#L83)
 
 ---
 
@@ -2392,7 +2336,7 @@ response is RandomErrorResponse1
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:193](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L193)
+[packages/core/src/models/entity.ts:197](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L197)
 
 ---
 
@@ -2412,7 +2356,7 @@ response is RandomErrorResponse2
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:198](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L198)
+[packages/core/src/models/entity.ts:203](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L203)
 
 ---
 
@@ -2452,7 +2396,7 @@ entity is ReactResponse
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:142](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L142)
+[packages/core/src/models/entity.ts:141](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L141)
 
 ---
 
@@ -2514,7 +2458,7 @@ spec is T
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:113](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L113)
+[packages/core/src/models/entity.ts:112](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L112)
 
 ---
 
@@ -2534,7 +2478,7 @@ spec is ResourceWithMetadata<void\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:89](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L89)
+[packages/core/src/models/entity.ts:88](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L88)
 
 ---
 
@@ -2580,27 +2524,7 @@ response is ScalarResponse<Row\>
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:219](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L219)
-
----
-
-### isStatusModel
-
-▸ **isStatusModel**(`entity`): entity is StatusModel
-
-#### Parameters
-
-| Name     | Type                                                                                                                                                  |
-| :------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `entity` | `Entity`<`void`, [`Row`](../classes/kui_shell_core.Row.md), [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\>\> |
-
-#### Returns
-
-entity is StatusModel
-
-#### Defined in
-
-[packages/core/src/models/StatusModel.ts:67](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/StatusModel.ts#L67)
+[packages/core/src/models/entity.ts:223](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L223)
 
 ---
 
@@ -2844,7 +2768,7 @@ model is Table<Row\>
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:69](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L69)
+[packages/core/src/webapp/tab.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L82)
 
 ---
 
@@ -2896,21 +2820,21 @@ button is ViewButton<T\>
 
 ### isWatchable
 
-▸ **isWatchable**(`model`): model is string & Watchable & number & Watchable & false & Watchable & true & Watchable & HTMLElement & Watchable & Error & Watchable & MarkdownResponse & Watchable & ReactResponse & Watchable & MixedResponse & Watchable & CommentaryResponse & Watchable & TabLayoutModificationResponse<NewSplitRequest\> & Watchable & XtermResponse & Watchable & StatusModel & Watchable & RandomErrorResponse1 & Watchable & RandomErrorResponse2 & Watchable & Table<Row\> & Partial<WithSourceReferences\> & Watchable & Abortable & Object & Watchable & ResourceWithMetadata<void\> & Watchable & ResourceWithMetadata<void\> & View<ResourceWithMetadata<void\>\> & Watchable & NavResponse & Watchable & RadioTable & Watchable & UsageModel & Watchable & RawResponse<void\> & Watchable & ResourceWithMetadata<void\>[] & Watchable
+▸ **isWatchable**(`model`): model is string & Watchable & number & Watchable & false & Watchable & true & Watchable & HTMLElement & Watchable & Error & Watchable & MarkdownResponse & Watchable & ReactResponse & Watchable & MixedResponse & Watchable & CommentaryResponse & Watchable & TabLayoutModificationResponse<NewSplitRequest\> & Watchable & XtermResponse & Watchable & RandomErrorResponse1 & Watchable & RandomErrorResponse2 & Watchable & Table<Row\> & Partial<WithSourceReferences\> & Watchable & Abortable & Object & Watchable & ResourceWithMetadata<void\> & Watchable & ResourceWithMetadata<void\> & View<ResourceWithMetadata<void\>\> & Watchable & NavResponse & Watchable & RadioTable & Watchable & UsageModel & Watchable & RawResponse<void\> & Watchable & ResourceWithMetadata<void\>[] & Watchable
 
 #### Parameters
 
-| Name    | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `model` | `string` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `number` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `false` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `true` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `HTMLElement` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `Error` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `MarkdownResponse` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ReactResponse`](kui_shell_core.md#reactresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`MixedResponse`](kui_shell_core.md#mixedresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`CommentaryResponse`](kui_shell_core.md#commentaryresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`TabLayoutModificationResponse`](kui_shell_core.md#tablayoutmodificationresponse)<[`NewSplitRequest`](kui_shell_core.md#newsplitrequest)\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`XtermResponse`](../interfaces/kui_shell_core.XtermResponse.md) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`StatusModel`](../interfaces/kui_shell_core.StatusModel.md) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `RandomErrorResponse1` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `RandomErrorResponse2` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`Table`](../classes/kui_shell_core.Table.md)<[`Row`](../classes/kui_shell_core.Row.md)\> & `Partial`<[`WithSourceReferences`](../interfaces/kui_shell_core.WithSourceReferences.md)\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`Abortable`](../interfaces/kui_shell_core.Abortable.md) & { `response`: [`ScalarResponse`](kui_shell_core.md#scalarresponse)<[`Row`](../classes/kui_shell_core.Row.md)\> } & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> & `View`<[`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\>\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`NavResponse`](kui_shell_core.md#navresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`RadioTable`](../interfaces/kui_shell_core.RadioTable.md) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`UsageModel`](../interfaces/kui_shell_core.UsageModel.md) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`RawResponse`](../interfaces/kui_shell_core.RawResponse.md)<`void`\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\>[] & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> |
+| Name    | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| :------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `model` | `string` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `number` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `false` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `true` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `HTMLElement` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `Error` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `MarkdownResponse` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ReactResponse`](kui_shell_core.md#reactresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`MixedResponse`](kui_shell_core.md#mixedresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`CommentaryResponse`](kui_shell_core.md#commentaryresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`TabLayoutModificationResponse`](kui_shell_core.md#tablayoutmodificationresponse)<[`NewSplitRequest`](kui_shell_core.md#newsplitrequest)\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`XtermResponse`](../interfaces/kui_shell_core.XtermResponse.md) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `RandomErrorResponse1` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & `RandomErrorResponse2` & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`Table`](../classes/kui_shell_core.Table.md)<[`Row`](../classes/kui_shell_core.Row.md)\> & `Partial`<[`WithSourceReferences`](../interfaces/kui_shell_core.WithSourceReferences.md)\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`Abortable`](../interfaces/kui_shell_core.Abortable.md) & { `response`: [`ScalarResponse`](kui_shell_core.md#scalarresponse)<[`Row`](../classes/kui_shell_core.Row.md)\> } & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\> & `View`<[`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\>\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`NavResponse`](kui_shell_core.md#navresponse) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`RadioTable`](../interfaces/kui_shell_core.RadioTable.md) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`UsageModel`](../interfaces/kui_shell_core.UsageModel.md) & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`RawResponse`](../interfaces/kui_shell_core.RawResponse.md)<`void`\> & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> & [`ResourceWithMetadata`](../interfaces/kui_shell_core.ResourceWithMetadata.md)<`void`\>[] & `Partial`<[`Watchable`](../interfaces/kui_shell_core.Watchable.md)\> |
 
 #### Returns
 
-model is string & Watchable & number & Watchable & false & Watchable & true & Watchable & HTMLElement & Watchable & Error & Watchable & MarkdownResponse & Watchable & ReactResponse & Watchable & MixedResponse & Watchable & CommentaryResponse & Watchable & TabLayoutModificationResponse<NewSplitRequest\> & Watchable & XtermResponse & Watchable & StatusModel & Watchable & RandomErrorResponse1 & Watchable & RandomErrorResponse2 & Watchable & Table<Row\> & Partial<WithSourceReferences\> & Watchable & Abortable & Object & Watchable & ResourceWithMetadata<void\> & Watchable & ResourceWithMetadata<void\> & View<ResourceWithMetadata<void\>\> & Watchable & NavResponse & Watchable & RadioTable & Watchable & UsageModel & Watchable & RawResponse<void\> & Watchable & ResourceWithMetadata<void\>[] & Watchable
+model is string & Watchable & number & Watchable & false & Watchable & true & Watchable & HTMLElement & Watchable & Error & Watchable & MarkdownResponse & Watchable & ReactResponse & Watchable & MixedResponse & Watchable & CommentaryResponse & Watchable & TabLayoutModificationResponse<NewSplitRequest\> & Watchable & XtermResponse & Watchable & RandomErrorResponse1 & Watchable & RandomErrorResponse2 & Watchable & Table<Row\> & Partial<WithSourceReferences\> & Watchable & Abortable & Object & Watchable & ResourceWithMetadata<void\> & Watchable & ResourceWithMetadata<void\> & View<ResourceWithMetadata<void\>\> & Watchable & NavResponse & Watchable & RadioTable & Watchable & UsageModel & Watchable & RawResponse<void\> & Watchable & ResourceWithMetadata<void\>[] & Watchable
 
 #### Defined in
 
-[packages/core/src/core/jobs/watchable.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L70)
+[packages/core/src/core/jobs/watchable.ts:88](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/jobs/watchable.ts#L88)
 
 ---
 
@@ -2970,7 +2894,7 @@ entity is XtermResponse
 
 #### Defined in
 
-[packages/core/src/models/CommentaryResponse.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L49)
+[packages/core/src/models/CommentaryResponse.ts:74](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/CommentaryResponse.ts#L74)
 
 ---
 
@@ -3016,7 +2940,7 @@ entity is XtermResponse
 
 ### pexecInCurrentTab
 
-▸ **pexecInCurrentTab**(`command`, `topLevelTab?`, `isInternalCallpath?`, `incognito?`): `Promise`<[`KResponse`](kui_shell_core.md#kresponse)<`any`\>\>
+▸ **pexecInCurrentTab**(`command`, `topLevelTab?`, `isInternalCallpath?`, `incognito?`, `execUUID?`): `Promise`<[`KResponse`](kui_shell_core.md#kresponse)<`any`\>\>
 
 Execute the given command in the current (or given) tab.
 
@@ -3028,6 +2952,7 @@ Execute the given command in the current (or given) tab.
 | `topLevelTab?`       | [`Tab`](../interfaces/kui_shell_core.Tab.md) | `undefined`   | -                                                                         |
 | `isInternalCallpath` | `boolean`                                    | `false`       | -                                                                         |
 | `incognito`          | `boolean`                                    | `false`       | Execute the command quietly but do not display the result in the Terminal |
+| `execUUID?`          | `string`                                     | `undefined`   | -                                                                         |
 
 #### Returns
 
@@ -3035,7 +2960,7 @@ Execute the given command in the current (or given) tab.
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:124](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L124)
+[packages/core/src/webapp/tab.ts:137](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L137)
 
 ---
 
@@ -3319,7 +3244,7 @@ Are the two Rows the same?
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:73](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L73)
+[packages/core/src/webapp/tab.ts:86](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L86)
 
 ---
 
@@ -3364,7 +3289,7 @@ Are the two Rows the same?
 
 #### Defined in
 
-[packages/core/src/repl/split.ts:193](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/split.ts#L193)
+[packages/core/src/repl/split.ts:197](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/repl/split.ts#L197)
 
 ---
 
@@ -3390,7 +3315,7 @@ We need to find the instance of the Split that has a REPL controller
 
 #### Defined in
 
-[packages/core/src/webapp/tab.ts:104](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L104)
+[packages/core/src/webapp/tab.ts:117](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/webapp/tab.ts#L117)
 
 ---
 

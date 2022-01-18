@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/plugin-kubectl
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/plugin-kubectl
 
 # Module: @kui-shell/plugin-kubectl
 
@@ -130,9 +130,9 @@
 
 #### Type parameters
 
-| Name | Type                                                                                                                         |
-| :--- | :--------------------------------------------------------------------------------------------------------------------------- |
-| `R`  | extends [`KubeResource`](kui_shell_plugin_kubectl.md#kuberesource)[`KubeResource`](kui_shell_plugin_kubectl.md#kuberesource) |
+| Name | Type                                                                                                                            |
+| :--- | :------------------------------------------------------------------------------------------------------------------------------ |
+| `R`  | extends [`KubeResource`](kui_shell_plugin_kubectl.md#kuberesource) = [`KubeResource`](kui_shell_plugin_kubectl.md#kuberesource) |
 
 #### Defined in
 
@@ -258,7 +258,7 @@ jsonpath or go-template? I think so from the latter?
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:513](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L513)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:515](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L515)
 
 ---
 
@@ -288,7 +288,7 @@ Register a command listener
 
 ### doCreate
 
-▸ `Const` **doCreate**(`verb`, `command?`): (`args`: `EvaluatorArgs`<[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)\>) => `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
+▸ `Const` **doCreate**(`verb`, `command?`): (`args`: `EvaluatorArgs`<[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)\>) => `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
 
 #### Parameters
 
@@ -301,7 +301,7 @@ Register a command listener
 
 `fn`
 
-▸ (`args`): `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
+▸ (`args`): `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
 
 ##### Parameters
 
@@ -311,7 +311,7 @@ Register a command listener
 
 ##### Returns
 
-`Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
+`Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
 
 #### Defined in
 
@@ -321,7 +321,7 @@ Register a command listener
 
 ### doDelete
 
-▸ `Const` **doDelete**(`command?`): (`args`: `EvaluatorArgs`<[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)\>) => `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
+▸ `Const` **doDelete**(`command?`): (`args`: `EvaluatorArgs`<[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)\>) => `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
 
 #### Parameters
 
@@ -333,7 +333,7 @@ Register a command listener
 
 `fn`
 
-▸ (`args`): `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
+▸ (`args`): `Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
 
 ##### Parameters
 
@@ -343,7 +343,7 @@ Register a command listener
 
 ##### Returns
 
-`Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
+`Promise`<`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[]\>
 
 #### Defined in
 
@@ -372,7 +372,7 @@ stdout, and discards the exit code and stderr.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:163](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L163)
+[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:165](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L165)
 
 ---
 
@@ -405,11 +405,11 @@ Execute the given command using a pty
 
 #### Type parameters
 
-| Name       | Type                                                                                                                                                 |
-| :--------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Content`  | `void`                                                                                                                                               |
-| `Response` | extends `KResponse`<`Content`\>`KResponse`<`Content`\>                                                                                               |
-| `O`        | extends [`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md) |
+| Name       | Type                                                                                                                                                    |
+| :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Content`  | `void`                                                                                                                                                  |
+| `Response` | extends `KResponse`<`Content`\> = `KResponse`<`Content`\>                                                                                               |
+| `O`        | extends [`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md) = [`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md) |
 
 #### Parameters
 
@@ -425,7 +425,7 @@ Execute the given command using a pty
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:106](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L106)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:108](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L108)
 
 ---
 
@@ -456,7 +456,7 @@ Execute the given command using a pty
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:281](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L281)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:283](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L283)
 
 ---
 
@@ -501,7 +501,7 @@ poll until the given FinalState is reached.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:258](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L258)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:260](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L260)
 
 ---
 
@@ -544,9 +544,9 @@ Execute the given command using a pty, but return a string
 
 #### Type parameters
 
-| Name | Type                                                                                                                                                 |
-| :--- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `O`  | extends [`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md) |
+| Name | Type                                                                                                                                                    |
+| :--- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `O`  | extends [`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md) = [`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md) |
 
 #### Parameters
 
@@ -561,7 +561,7 @@ Execute the given command using a pty, but return a string
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:157](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L157)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:159](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L159)
 
 ---
 
@@ -597,7 +597,7 @@ Behaves as does `exec`, except that it projects out just the
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:222](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L222)
+[plugins/plugin-kubectl/src/controller/kubectl/exec.ts:224](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/exec.ts#L224)
 
 ---
 
@@ -681,7 +681,7 @@ get-as-entity, or get-as-custom, depending on the `-o` flag.
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:134](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L134)
+[plugins/plugin-kubectl/src/controller/kubectl/raw.ts:136](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/controller/kubectl/raw.ts#L136)
 
 ---
 
@@ -759,7 +759,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/util/fetch-file.ts:299](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/util/fetch-file.ts#L299)
+[plugins/plugin-kubectl/src/lib/util/fetch-file.ts:292](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/util/fetch-file.ts#L292)
 
 ---
 
@@ -810,7 +810,7 @@ same as fetchFile, but returning a string rather than a Buffer
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:210](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L210)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:212](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L212)
 
 ---
 
@@ -1388,9 +1388,9 @@ resource is KubeItems<KubeResource<KubeStatus, KubeMetadata\>\>
 
 #### Type parameters
 
-| Name   | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| :----- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Item` | extends `MetadataBearing`<`void`, `Item`\> & [`WithRawData`](../interfaces/kui_shell_plugin_kubectl.WithRawData.md)<`void`, `Item`\> & { `apiVersion`: `string` ; `isKubeResource`: `true` ; `isSimulacrum?`: `boolean` ; `kind`: `string` ; `metadata?`: `KubeMetadata` ; `originatingCommand`: `EvaluatorArgs`<[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)\> ; `spec?`: `any` ; `status?`: [`KubeStatus`](../interfaces/kui_shell_plugin_kubectl.KubeStatus.md) }[`KubeResource`](kui_shell_plugin_kubectl.md#kuberesource)<[`KubeStatus`](../interfaces/kui_shell_plugin_kubectl.KubeStatus.md), `KubeMetadata`\> |
+| Name   | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| :----- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Item` | extends `MetadataBearing`<`void`, `Item`\> & [`WithRawData`](../interfaces/kui_shell_plugin_kubectl.WithRawData.md)<`void`, `Item`\> & { `apiVersion`: `string` ; `isKubeResource`: `true` ; `isSimulacrum?`: `boolean` ; `kind`: `string` ; `metadata?`: `KubeMetadata` ; `originatingCommand`: `EvaluatorArgs`<[`KubeOptions`](../interfaces/kui_shell_plugin_kubectl.KubeOptions.md)\> ; `spec?`: `any` ; `status?`: [`KubeStatus`](../interfaces/kui_shell_plugin_kubectl.KubeStatus.md) } = [`KubeResource`](kui_shell_plugin_kubectl.md#kuberesource)<[`KubeStatus`](../interfaces/kui_shell_plugin_kubectl.KubeStatus.md), `KubeMetadata`\> |
 
 #### Parameters
 
@@ -1730,7 +1730,7 @@ Display the given string as a REPL table
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:459](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L459)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:461](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L461)
 
 ---
 
@@ -1757,7 +1757,7 @@ Display the given string as a REPL table
 
 ### withHelp
 
-▸ **withHelp**<`O`\>(`args`): `string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> & `Partial`<`WithSourceReferences`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[] \| `Promise`<`KResponse`<`any`\>\>
+▸ **withHelp**<`O`\>(`args`): `string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> & `Partial`<`WithSourceReferences`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[] \| `Promise`<`KResponse`<`any`\>\>
 
 Wrap the given command handler `this` with a help dispatcher.
 
@@ -1775,7 +1775,7 @@ Wrap the given command handler `this` with a help dispatcher.
 
 #### Returns
 
-`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `default` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> & `Partial`<`WithSourceReferences`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[] \| `Promise`<`KResponse`<`any`\>\>
+`string` \| `number` \| `boolean` \| `HTMLElement` \| `Error` \| `MarkdownResponse` \| `ReactResponse` \| `MixedResponse` \| `CommentaryResponse` \| `TabLayoutModificationResponse`<`NewSplitRequest`\> \| `XtermResponse` \| `RandomErrorResponse1` \| `RandomErrorResponse2` \| `Table`<`Row`\> & `Partial`<`WithSourceReferences`\> \| `AbortableResponse`<`ScalarResponse`<`Row`\>\> \| `NavResponse` \| `RadioTable` \| `UsageModel` \| `MetadataBearing`<`any`\> \| `RawResponse`<`any`\> \| `MetadataBearing`<`any`\>[] \| `Promise`<`KResponse`<`any`\>\>
 
 #### Defined in
 
@@ -1825,4 +1825,4 @@ Change the namespace breadcrumb of the given maybe-Table
 
 #### Defined in
 
-[plugins/plugin-kubectl/src/lib/view/formatTable.ts:602](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L602)
+[plugins/plugin-kubectl/src/lib/view/formatTable.ts:604](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-kubectl/src/lib/view/formatTable.ts#L604)

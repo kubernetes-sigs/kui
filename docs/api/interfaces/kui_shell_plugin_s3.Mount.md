@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-s3](../modules/kui_shell_plugin_s3.md) / Mount
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-s3](../modules/kui_shell_plugin_s3.md) / Mount
 
 # Interface: Mount
 

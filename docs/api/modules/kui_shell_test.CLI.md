@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/test](kui_shell_test.md) / CLI
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/test](kui_shell_test.md) / CLI
 
 # Namespace: CLI
 
@@ -54,7 +54,7 @@
 
 ### command
 
-▸ `Const` **command**(`cmd`, `app`, `noNewline?`, `noCopyPaste?`, `noFocus?`, `block?`, `currentPrompt?`): `Promise`<`Object`\>
+▸ `Const` **command**(`cmd`, `app`, `noNewline?`, `noCopyPaste?`, `noFocus?`, `block?`, `currentPrompt?`): `Promise`<{ `app`: `Application` = app; `count`: `number` }\>
 
 Execute a CLI command, and return the data-input-count of that command
 
@@ -72,7 +72,7 @@ Execute a CLI command, and return the data-input-count of that command
 
 #### Returns
 
-`Promise`<`Object`\>
+`Promise`<{ `app`: `Application` = app; `count`: `number` }\>
 
 #### Defined in
 
@@ -391,7 +391,7 @@ the "N" of the current block
 
 ### paste
 
-▸ `Const` **paste**(`cmd`, `app`, `nLines?`): `Promise`<`Object`\>
+▸ `Const` **paste**(`cmd`, `app`, `nLines?`): `Promise`<{ `app`: `Application` = app; `count`: `number` }\>
 
 #### Parameters
 
@@ -403,7 +403,7 @@ the "N" of the current block
 
 #### Returns
 
-`Promise`<`Object`\>
+`Promise`<{ `app`: `Application` = app; `count`: `number` }\>
 
 #### Defined in
 

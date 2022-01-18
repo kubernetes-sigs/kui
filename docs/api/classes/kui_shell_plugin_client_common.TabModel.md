@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / TabModel
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-client-common](../modules/kui_shell_plugin_client_common.md) / TabModel
 
 # Class: TabModel
 
@@ -15,37 +15,35 @@
 - [buttons](kui_shell_plugin_client_common.TabModel.md#buttons)
 - [exec](kui_shell_plugin_client_common.TabModel.md#exec)
 - [initialCommandLine](kui_shell_plugin_client_common.TabModel.md#initialcommandline)
-- [isNotebook](kui_shell_plugin_client_common.TabModel.md#isnotebook)
 - [onClose](kui_shell_plugin_client_common.TabModel.md#onclose)
-- [snapshot](kui_shell_plugin_client_common.TabModel.md#snapshot)
 - [state](kui_shell_plugin_client_common.TabModel.md#state)
 - [title](kui_shell_plugin_client_common.TabModel.md#title)
 - [uuid](kui_shell_plugin_client_common.TabModel.md#uuid)
 
 ### Methods
 
+- [setTitle](kui_shell_plugin_client_common.TabModel.md#settitle)
 - [update](kui_shell_plugin_client_common.TabModel.md#update)
 
 ## Constructors
 
 ### constructor
 
-• **new TabModel**(`_uuid?`, `desiredStatusStripeDecoration?`, `doNotChangeActiveTab?`, `_title?`, `_state?`, `_buttons?`, `_initialCommandLine?`, `_onClose?`, `_exec?`, `_snapshot?`)
+• **new TabModel**(`_uuid?`, `desiredStatusStripeDecoration?`, `doNotChangeActiveTab?`, `_title?`, `_state?`, `_buttons?`, `_initialCommandLine?`, `_onClose?`, `_exec?`)
 
 #### Parameters
 
-| Name                             | Type                        | Default value |
-| :------------------------------- | :-------------------------- | :------------ |
-| `_uuid`                          | `string`                    | `undefined`   |
-| `desiredStatusStripeDecoration?` | `StatusStripeChangeEvent`   | `undefined`   |
-| `doNotChangeActiveTab?`          | `boolean`                   | `undefined`   |
-| `_title?`                        | `string`                    | `undefined`   |
-| `_state`                         | `default`                   | `undefined`   |
-| `_buttons`                       | `TopTabButton`<`Object`\>[] | `[]`          |
-| `_initialCommandLine?`           | `string`                    | `undefined`   |
-| `_onClose?`                      | `string`                    | `undefined`   |
-| `_exec?`                         | `"pexec"` \| `"qexec"`      | `undefined`   |
-| `_snapshot?`                     | `Buffer`                    | `undefined`   |
+| Name                             | Type                                   | Default value |
+| :------------------------------- | :------------------------------------- | :------------ |
+| `_uuid`                          | `string`                               | `undefined`   |
+| `desiredStatusStripeDecoration?` | `StatusStripeChangeEvent`              | `undefined`   |
+| `doNotChangeActiveTab?`          | `boolean`                              | `undefined`   |
+| `_title?`                        | `string`                               | `undefined`   |
+| `_state`                         | `default`                              | `undefined`   |
+| `_buttons`                       | `TopTabButton`<{ `key`: `string` }\>[] | `[]`          |
+| `_initialCommandLine?`           | `string`                               | `undefined`   |
+| `_onClose?`                      | `string`                               | `undefined`   |
+| `_exec?`                         | `"pexec"` \| `"qexec"`                 | `undefined`   |
 
 #### Defined in
 
@@ -55,15 +53,15 @@
 
 ### buttons
 
-• `get` **buttons**(): `TopTabButton`<`Object`\>[]
+• `get` **buttons**(): `TopTabButton`<{ `key`: `string` }\>[]
 
 #### Returns
 
-`TopTabButton`<`Object`\>[]
+`TopTabButton`<{ `key`: `string` }\>[]
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:58](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L58)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:56](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L56)
 
 ---
 
@@ -77,7 +75,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:74](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L74)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:76](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L76)
 
 ---
 
@@ -91,21 +89,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:66](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L66)
-
----
-
-### isNotebook
-
-• `get` **isNotebook**(): `boolean`
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L82)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:68](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L68)
 
 ---
 
@@ -119,21 +103,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:70](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L70)
-
----
-
-### snapshot
-
-• `get` **snapshot**(): `Buffer`
-
-#### Returns
-
-`Buffer`
-
-#### Defined in
-
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:78](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L78)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:72](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L72)
 
 ---
 
@@ -147,7 +117,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:54](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L54)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:52](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L52)
 
 ---
 
@@ -161,7 +131,7 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:62](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L62)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:60](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L60)
 
 ---
 
@@ -175,19 +145,19 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:50](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L50)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L48)
 
 ## Methods
 
-### update
+### setTitle
 
-▸ **update**(`buttons`): [`TabModel`](kui_shell_plugin_client_common.TabModel.md)
+▸ **setTitle**(`newTitle`): [`TabModel`](kui_shell_plugin_client_common.TabModel.md)
 
 #### Parameters
 
-| Name      | Type                        |
-| :-------- | :-------------------------- |
-| `buttons` | `TopTabButton`<`Object`\>[] |
+| Name       | Type     |
+| :--------- | :------- |
+| `newTitle` | `string` |
 
 #### Returns
 
@@ -195,4 +165,25 @@
 
 #### Defined in
 
-[plugins/plugin-client-common/src/components/Client/TabModel.ts:86](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L86)
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:64](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L64)
+
+---
+
+### update
+
+▸ **update**(`buttons`, `newTitle?`): [`TabModel`](kui_shell_plugin_client_common.TabModel.md)
+
+#### Parameters
+
+| Name        | Type                                   |
+| :---------- | :------------------------------------- |
+| `buttons`   | `TopTabButton`<{ `key`: `string` }\>[] |
+| `newTitle?` | `string`                               |
+
+#### Returns
+
+[`TabModel`](kui_shell_plugin_client_common.TabModel.md)
+
+#### Defined in
+
+[plugins/plugin-client-common/src/components/Client/TabModel.ts:80](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-client-common/src/components/Client/TabModel.ts#L80)

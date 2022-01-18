@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / @kui-shell/plugin-bash-like
+[Kui API Documentation - v11.0.0](../README.md) / @kui-shell/plugin-bash-like
 
 # Module: @kui-shell/plugin-bash-like
 
@@ -71,9 +71,9 @@ Execute the given command using a pty, but return a string
 
 #### Type parameters
 
-| Name | Type                                     |
-| :--- | :--------------------------------------- |
-| `O`  | extends ` ParsedOptions``ParsedOptions ` |
+| Name | Type                                      |
+| :--- | :---------------------------------------- |
+| `O`  | extends `ParsedOptions` = `ParsedOptions` |
 
 #### Parameters
 
@@ -87,7 +87,7 @@ Execute the given command using a pty, but return a string
 
 #### Defined in
 
-[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:105](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L105)
+[plugins/plugin-bash-like/src/lib/cmds/catchall.ts:108](https://github.com/kubernetes-sigs/kui/blob/kui/plugins/plugin-bash-like/src/lib/cmds/catchall.ts#L108)
 
 ---
 

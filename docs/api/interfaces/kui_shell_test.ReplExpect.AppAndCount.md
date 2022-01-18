@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/test](../modules/kui_shell_test.md) / [ReplExpect](../modules/kui_shell_test.ReplExpect.md) / AppAndCount
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/test](../modules/kui_shell_test.md) / [ReplExpect](../modules/kui_shell_test.ReplExpect.md) / AppAndCount
 
 # Interface: AppAndCount
 

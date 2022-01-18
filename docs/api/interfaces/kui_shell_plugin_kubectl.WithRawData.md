@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-kubectl](../modules/kui_shell_plugin_kubectl.md) / WithRawData
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-kubectl](../modules/kui_shell_plugin_kubectl.md) / WithRawData
 
 # Interface: WithRawData<Content\>
 
@@ -45,7 +45,7 @@ ResourceWithMetadata.apiVersion
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:38
+packages/core/mdist/models/entity.d.ts:37
 
 ---
 
@@ -59,7 +59,7 @@ ResourceWithMetadata.content
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:51
+packages/core/mdist/models/entity.d.ts:50
 
 ---
 
@@ -73,7 +73,7 @@ ResourceWithMetadata.contentType
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:52
+packages/core/mdist/models/entity.d.ts:51
 
 ---
 
@@ -87,7 +87,7 @@ ResourceWithMetadata.kind
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:23
+packages/core/mdist/models/entity.d.ts:22
 
 ---
 
@@ -121,7 +121,7 @@ ResourceWithMetadata.metadata
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:24
+packages/core/mdist/models/entity.d.ts:23
 
 ---
 
@@ -135,7 +135,7 @@ ResourceWithMetadata.nameHash
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:43
+packages/core/mdist/models/entity.d.ts:42
 
 ---
 
@@ -160,7 +160,7 @@ ResourceWithMetadata.onclick
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:45
+packages/core/mdist/models/entity.d.ts:44
 
 ---
 
@@ -174,7 +174,7 @@ ResourceWithMetadata.presentation
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:54
+packages/core/mdist/models/entity.d.ts:53
 
 ---
 
@@ -190,7 +190,7 @@ ResourceWithMetadata.prettyName
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:42
+packages/core/mdist/models/entity.d.ts:41
 
 ---
 
@@ -204,7 +204,7 @@ ResourceWithMetadata.toolbarText
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:53
+packages/core/mdist/models/entity.d.ts:52
 
 ---
 
@@ -220,4 +220,4 @@ ResourceWithMetadata.version
 
 #### Defined in
 
-packages/core/mdist/models/entity.d.ts:40
+packages/core/mdist/models/entity.d.ts:39

@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / MetadataNamedResource
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](../modules/kui_shell_core.md) / MetadataNamedResource
 
 # Interface: MetadataNamedResource
 
@@ -27,7 +27,7 @@ The name part of a metadata bearing resource.
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:47](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L47)
+[packages/core/src/models/entity.ts:46](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L46)
 
 ---
 
@@ -47,4 +47,4 @@ The name part of a metadata bearing resource.
 
 #### Defined in
 
-[packages/core/src/models/entity.ts:49](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L49)
+[packages/core/src/models/entity.ts:48](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/models/entity.ts#L48)

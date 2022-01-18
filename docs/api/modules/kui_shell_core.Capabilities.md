@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / Capabilities
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/core](kui_shell_core.md) / Capabilities
 
 # Namespace: Capabilities
 
@@ -13,17 +13,12 @@
 ### Functions
 
 - [assertHasProxy](kui_shell_core.Capabilities.md#asserthasproxy)
-- [assertInSandbox](kui_shell_core.Capabilities.md#assertinsandbox)
 - [assertLocalAccess](kui_shell_core.Capabilities.md#assertlocalaccess)
-- [getAuthValue](kui_shell_core.Capabilities.md#getauthvalue)
-- [getValidCredentials](kui_shell_core.Capabilities.md#getvalidcredentials)
 - [hasProxy](kui_shell_core.Capabilities.md#hasproxy)
 - [inBrowser](kui_shell_core.Capabilities.md#inbrowser)
 - [inElectron](kui_shell_core.Capabilities.md#inelectron)
 - [inProxy](kui_shell_core.Capabilities.md#inproxy)
-- [inSandbox](kui_shell_core.Capabilities.md#insandbox)
 - [isHeadless](kui_shell_core.Capabilities.md#isheadless)
-- [setHasAuth](kui_shell_core.Capabilities.md#sethasauth)
 
 ## Type aliases
 
@@ -63,23 +58,7 @@ Assert that Kui is supported by a remote proxy
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:105](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L105)
-
----
-
-### assertInSandbox
-
-▸ **assertInSandbox**(): `void`
-
-Yes, we are running in a sandbox
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:121](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L121)
+[packages/core/src/core/capabilities.ts:96](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L96)
 
 ---
 
@@ -96,46 +75,7 @@ would indicate otherwise
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:192](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L192)
-
----
-
-### getAuthValue
-
-▸ `Const` **getAuthValue**(`provider`, `key`): `any`
-
-Retrieve the value for the given key for the auth model of the given provider
-
-#### Parameters
-
-| Name       | Type     |
-| :--------- | :------- |
-| `provider` | `string` |
-| `key`      | `string` |
-
-#### Returns
-
-`any`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:153](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L153)
-
----
-
-### getValidCredentials
-
-▸ `Const` **getValidCredentials**(): `CredentialsMap`
-
-Return a map of all valid credentials
-
-#### Returns
-
-`CredentialsMap`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:162](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L162)
+[packages/core/src/core/capabilities.ts:121](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L121)
 
 ---
 
@@ -151,7 +91,7 @@ Is Kui supported by a remote proxy?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:99](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L99)
+[packages/core/src/core/capabilities.ts:90](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L90)
 
 ---
 
@@ -165,7 +105,7 @@ Is Kui supported by a remote proxy?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:82](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L82)
+[packages/core/src/core/capabilities.ts:73](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L73)
 
 ---
 
@@ -179,7 +119,7 @@ Is Kui supported by a remote proxy?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:81](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L81)
+[packages/core/src/core/capabilities.ts:72](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L72)
 
 ---
 
@@ -195,23 +135,7 @@ Are we the Kui proxy?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:113](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L113)
-
----
-
-### inSandbox
-
-▸ **inSandbox**(): `boolean`
-
-Are we running in a sandbox?
-
-#### Returns
-
-`boolean`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:129](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L129)
+[packages/core/src/core/capabilities.ts:104](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L104)
 
 ---
 
@@ -225,28 +149,4 @@ Are we running in a sandbox?
 
 #### Defined in
 
-[packages/core/src/core/capabilities.ts:80](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L80)
-
----
-
-### setHasAuth
-
-▸ `Const` **setHasAuth**(`provider`, `creds`): `void`
-
-Yes, we have valid credentials to interface with the given
-provider
-
-#### Parameters
-
-| Name       | Type     |
-| :--------- | :------- |
-| `provider` | `string` |
-| `creds`    | `object` |
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[packages/core/src/core/capabilities.ts:138](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L138)
+[packages/core/src/core/capabilities.ts:71](https://github.com/kubernetes-sigs/kui/blob/kui/packages/core/src/core/capabilities.ts#L71)

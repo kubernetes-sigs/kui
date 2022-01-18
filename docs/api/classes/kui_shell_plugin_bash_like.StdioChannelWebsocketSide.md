@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-bash-like](../modules/kui_shell_plugin_bash_like.md) / StdioChannelWebsocketSide
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-bash-like](../modules/kui_shell_plugin_bash_like.md) / StdioChannelWebsocketSide
 
 # Class: StdioChannelWebsocketSide
 

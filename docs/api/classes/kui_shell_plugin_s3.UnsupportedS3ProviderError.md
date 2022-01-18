@@ -1,4 +1,4 @@
-[Kui API Documentation - v10.8.0](../README.md) / [@kui-shell/plugin-s3](../modules/kui_shell_plugin_s3.md) / UnsupportedS3ProviderError
+[Kui API Documentation - v11.0.0](../README.md) / [@kui-shell/plugin-s3](../modules/kui_shell_plugin_s3.md) / UnsupportedS3ProviderError
 
 # Class: UnsupportedS3ProviderError
 
@@ -46,7 +46,7 @@ Error.constructor
 
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:979
+node_modules/typescript/lib/lib.es5.d.ts:1028
 
 ## Properties
 
@@ -60,7 +60,7 @@ Error.message
 
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:974
+node_modules/typescript/lib/lib.es5.d.ts:1023
 
 ---
 
@@ -74,7 +74,7 @@ Error.name
 
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:973
+node_modules/typescript/lib/lib.es5.d.ts:1022
 
 ---
 
@@ -88,7 +88,7 @@ Error.stack
 
 #### Defined in
 
-node_modules/typescript/lib/lib.es5.d.ts:975
+node_modules/typescript/lib/lib.es5.d.ts:1024
 
 ---
 
