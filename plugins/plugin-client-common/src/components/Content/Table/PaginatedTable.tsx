@@ -100,6 +100,8 @@ export type State<T extends KuiTable = KuiTable> = ToolbarProps &
     /* sorting */
     activeSortIdx: number
     activeSortDir: SortByDirection
+
+    lastUpdatedMillis: number
   }
 
 export function getBreadcrumbsFromTable(response: KuiTable, prefixBreadcrumbs: BreadcrumbView[]) {
@@ -179,6 +181,7 @@ export default class PaginatedTable<P extends Props, S extends State> extends Re
         header,
         asSequence,
         asHistogram: defaultPresentation === 'histogram',
+        lastUpdatedMillis: !currentState ? Date.now() : currentState.lastUpdatedMillis,
         activeSortIdx: -1,
         activeSortDir: undefined,
         response: props.response,

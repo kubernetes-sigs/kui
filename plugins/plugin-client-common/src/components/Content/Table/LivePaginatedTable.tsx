@@ -27,7 +27,6 @@ type LiveProps = Props<KuiTable & Watchable> & { onRender: (hasContent: boolean)
 
 interface LiveState extends State {
   isWatching: boolean
-  lastUpdatedMillis: number
 }
 
 export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveState> {
@@ -295,7 +294,10 @@ export default class LivePaginatedTable extends PaginatedTable<LiveProps, LiveSt
   private batchUpdateDone() {
     if (this._deferredUpdate) {
       this._deferredUpdate = undefined
-      this.setState({ lastUpdatedMillis: Date.now() })
+      this.setState(curState => ({
+        body: curState.body.slice(), // force render
+        lastUpdatedMillis: Date.now()
+      }))
     }
   }
 
