@@ -101,7 +101,7 @@
     "colors": "1.4.0",
     "concurrently": "6.5.1",
     "debug": "4.3.3",
-    "electron": "13.2.1",
+    "electron": "13.3.0",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-config-standard": "14.1.1",
