@@ -54,7 +54,7 @@
     "start": "WATCH_ARGS='open' npm run watch"
   },
   "engines": {
-    "node": ">=8.15.0",
+    "node": ">=12.22.9",
     "npm": ">=6.9.0"
   },
   "dependencies": {
@@ -105,7 +105,6 @@
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-config-standard": "14.1.1",
-    "eslint-plugin-header": "3.1.1",
     "eslint-plugin-import": "2.20.1",
     "eslint-plugin-node": "11.0.0",
     "eslint-plugin-promise": "4.2.1",

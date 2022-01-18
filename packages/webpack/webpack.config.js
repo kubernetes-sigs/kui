@@ -160,6 +160,7 @@ if (CompressionPlugin) {
 const allFiles = /.*/
 plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
 plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/@kui-shell\/build/ }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /tsconfig\.cjs\.spec\.json/ }))
 
 if (inBrowser) {
   plugins.push(
