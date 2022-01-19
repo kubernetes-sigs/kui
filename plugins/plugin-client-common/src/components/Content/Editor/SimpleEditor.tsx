@@ -212,7 +212,15 @@ export default class SimpleEditor extends React.Component<Props, State> {
       })
 
       if (props.onContentChange) {
-        editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))
+        // Notes: using onDidChangeModelContent does not let us
+        // distinguish between the initial model change and changes
+        // resulting from user input. Maybe we could look at the
+        // `versionId` property of the model content change event
+        // (does 1 mean the first version? it seems to be 2, dunno
+        // why)... but i'd rather not get into that kind of low-level
+        // dependence on the internal workings of monaco-editor
+        // editor.onDidChangeModelContent(SimpleEditor.onChange(props, editor))
+        editor.onKeyUp(SimpleEditor.onChange(props, editor))
       }
 
       if (!options.readOnly && this.props.focus !== false) {

@@ -62,9 +62,6 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
     /** default: true */
     readonly?: boolean
 
-    /** Callback when content changes */
-    onContentChange?: (content: string) => void
-
     /** A Block identifier, to enable cross-referencing with check lists, etc. */
     blockId?: string
 
@@ -107,6 +104,9 @@ type State = Value &
 
     /** Millis timestamp of the last Run completion */
     endTime?: number
+
+    /** Any updates flowing *up* from the included CodeSnippet component */
+    codeSnippetValue?: string
   }
 
 export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T3>, State> {
@@ -167,12 +167,18 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
   }
 
   public static getDerivedStateFromProps(props: Props, state?: State) {
-    if (!state || state.value !== props.value || state.language !== props.language) {
+    const usePropsValue = !state || !state.codeSnippetValue
+
+    if (!usePropsValue && state && state.codeSnippetValue) {
+      return Object.assign(state, {
+        value: state.codeSnippetValue
+      })
+    } else if (!state || state.value !== props.value || state.language !== props.language) {
       const execUUID = uuid()
       return Object.assign(
         {
           execution: props.status || 'not-yet',
-          value: props.value,
+          value: usePropsValue ? props.value : state.codeSnippetValue || state.value,
           language: props.language,
           validated: false
         },
@@ -222,6 +228,11 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
     }
   }
 
+  /** Updates coming from the CodeSnippet component */
+  private readonly onContentChange = (codeSnippetValue: string) => {
+    this.setState({ codeSnippetValue })
+  }
+
   private input() {
     return (
       <div className="repl-input-element-wrapper flex-layout flex-fill kui--inverted-color-context kui--relative-positioning">
@@ -230,10 +241,11 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
         <div className="flex-fill">
           <CodeSnippet
             wordWrap="on"
-            tabUUID={this.props.tab ? this.props.tab.uuid : undefined}
             value={this.state.value}
             language={this.state.language}
-            onContentChange={this.props.onContentChange}
+            onContentChange={this.onContentChange}
+            readonly={this.props.readonly !== false}
+            tabUUID={this.props.tab ? this.props.tab.uuid : undefined}
           />
         </div>
         {this.actions()}
