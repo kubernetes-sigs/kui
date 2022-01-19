@@ -136,8 +136,14 @@ export default class SimpleEditor extends React.Component<Props, State> {
 
     // ibid, but for Escape -> onCancel
     if (onCancel) {
-      editor.addCommand(KeyCode.Escape, () => {
-        onCancel(editor.getValue())
+      editor.onKeyUp(evt => {
+        if (evt.browserEvent.key === 'Escape') {
+          // swallow the event, so other kui components don't also respond
+          evt.browserEvent.stopPropagation()
+
+          // notify the enclosing component that we have cancelled editing
+          onCancel(editor.getValue())
+        }
       })
     }
   }

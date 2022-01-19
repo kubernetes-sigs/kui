@@ -15,7 +15,6 @@
  */
 
 @import 'mixins';
-@import 'Sidebar';
 @import '../../PatternFly/common';
 
 $tab-label-font-size: 0.875rem;
@@ -232,5 +231,23 @@ $tab-label-font-size: 0.875rem;
 @media (max-width: 42rem) {
   @include TopTabStripe {
     display: none;
+  }
+}
+
+/* Rules to improve rendering versus Sidebar hamburger menu icon */
+@include TopTabStripe {
+  @include HeaderNameContainer {
+    min-height: $height;
+  }
+  @include HeaderName {
+    display: flex;
+    align-items: center;
+  }
+  @include TopTabStripe_Main {
+    min-height: $height;
+  }
+  @include TopTabStripe_Content {
+    min-height: $height;
+    align-items: stretch;
   }
 }

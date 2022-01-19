@@ -348,12 +348,13 @@ export default class TabContainer extends React.PureComponent<Props, State> {
   private sidebar() {
     return (
       <Sidebar
-        isOpen={this.state.isSidebarOpen}
         version={this.props.version}
-        productName={this.props.productName}
+        isOpen={this.state.isSidebarOpen}
+        toggleOpen={this.toggleSidebar}
         guidebooks={this.props.guidebooks}
-        guidebooksCommand={this.props.guidebooksCommand}
+        productName={this.props.productName}
         indicateActiveItem={!!this.props.noTopTabs}
+        guidebooksCommand={this.props.guidebooksCommand}
       />
     )
   }

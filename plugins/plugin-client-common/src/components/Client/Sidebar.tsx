@@ -15,16 +15,20 @@
  */
 
 import React from 'react'
-import { encodeComponent, pexecInCurrentTab } from '@kui-shell/core'
+import { encodeComponent, i18n, pexecInCurrentTab } from '@kui-shell/core'
 import { PageSidebar } from '@patternfly/react-core'
 
 import BrandingProps from './props/Branding'
 import GuidebookProps, { isGuidebook, isMenu, MenuItem } from './props/Guidebooks'
 
+import '../../../web/scss/components/Sidebar/_index.scss'
+
 const Nav = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.Nav })))
 const NavItem = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavItem })))
 const NavList = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavList })))
 const NavExpandable = React.lazy(() => import('@patternfly/react-core').then(_ => ({ default: _.NavExpandable })))
+
+const strings = i18n('plugin-client-common')
 
 type Props = BrandingProps &
   GuidebookProps & {
@@ -33,6 +37,9 @@ type Props = BrandingProps &
 
     /** visually indicate which nav item is active? */
     indicateActiveItem?: boolean
+
+    /** toggle open state */
+    toggleOpen(): void
   }
 
 interface State {
@@ -41,6 +48,8 @@ interface State {
 }
 
 export default class Sidebar extends React.PureComponent<Props, State> {
+  private readonly cleaners: (() => void)[] = []
+
   public constructor(props: Props) {
     super(props)
     this.state = {}
@@ -48,6 +57,21 @@ export default class Sidebar extends React.PureComponent<Props, State> {
 
   private get currentGuidebook() {
     return this.state.currentGuidebook
+  }
+
+  private readonly onKeyup = (evt: KeyboardEvent) => {
+    if (evt.key === 'Escape') {
+      this.props.toggleOpen()
+    }
+  }
+
+  public componentDidMount() {
+    document.addEventListener('keyup', this.onKeyup)
+    this.cleaners.push(() => document.removeEventListener('keyup', this.onKeyup))
+  }
+
+  public componentWillUnmount() {
+    this.cleaners.forEach(_ => _())
   }
 
   private nav() {
@@ -89,8 +113,9 @@ export default class Sidebar extends React.PureComponent<Props, State> {
           <NavList>{this.props.guidebooks.map(renderItem)}</NavList>
         </Nav>
         {this.props.productName && this.props.version && (
-          <div className="flex-align-end semi-bold kui--tab-container-sidebar-other">
-            {this.props.productName} v{this.props.version}
+          <div className="kui--tab-container-sidebar-other flex-layout">
+            <span className="flex-fill sub-text">{strings('Toggle via <Esc>')}</span>
+            <span className="inline-flex flex-align-end semi-bold">v{this.props.version}</span>
           </div>
         )}
       </React.Suspense>

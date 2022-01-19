@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Kubernetes Authors
+ * Copyright 2022 The Kubernetes Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,81 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@import 'mixins';
+@import '../TopTabStripe/mixins';
+
+body[kui-theme-style='light'] {
+  @include Sidebar {
+    --kui--sidebar-color-01: var(--color-base00);
+    --kui--sidebar-color-02: var(--color-base02);
+  }
+  @include TopTabStripe {
+    @include SidebarToggleButton {
+      --kui--sidebar-toggle-button-color: var(--color-text-02);
+    }
+  }
+}
+
+@include TopTabStripe {
+  @include Sidebar {
+    --kui--sidebar-color-01: var(--color-text-01);
+    --kui--sidebar-color-02: var(--color-text-02);
+
+    display: flex;
+    flex-direction: column;
+  }
+  @include SidebarBody {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  @include SidebarNav {
+    flex: 1;
+  }
+  @include SidebarBottomAlignedContent {
+    padding: 0 var(--pf-global--spacer--lg);
+  }
+
+  @include SidebarNavMenuButton {
+    color: var(--kui--sidebar-color-01);
+  }
+
+  @include SidebarNavMenu {
+    @include SidebarNavItem {
+      color: var(--kui--sidebar-color-02);
+    }
+  }
+  @include SidebarNavItem {
+    color: var(--kui--sidebar-color-01);
+
+    a:hover {
+      cursor: pointer;
+    }
+  }
+  @include SidebarToggleButton {
+    --kui--sidebar-toggle-button-color: var(--kui--sidebar-color-02);
+    font-size: 1.25em;
+  }
+  @include SidebarToggleIcon {
+    color: var(--kui--sidebar-toggle-button-color);
+  }
+}
+
+/* Sidebar width */
+@include Sidebar {
+  max-width: 15rem;
+}
+
+/* Coloring of bottom-aligned text */
+@include Sidebar {
+  @include SidebarBottomAlignedContent {
+    .sub-text {
+      opacity: 0.8;
+      color: var(--kui--sidebar-color-02);
+    }
+    .semi-bold {
+      color: var(--kui--sidebar-color-01);
+    }
+  }
+}

@@ -297,6 +297,9 @@ code.fancy-code.hljs {
   display: flex;
   justify-content: flex-end;
 }
+.inline-flex {
+  display: inline-flex;
+}
 .flex-align-start {
   justify-content: flex-start;
 }
