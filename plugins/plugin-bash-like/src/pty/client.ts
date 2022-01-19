@@ -855,6 +855,11 @@ export const doExec = (
           xtermContainer = document.createElement('xterm')
           xtermContainer.classList.add('xterm-container')
 
+          // swallow escape key presses against the xterm container,
+          // e.g. we don't want hitting escape in vi to propagate to
+          // other kui elements
+          xtermContainer.onkeyup = evt => evt.key === 'Escape' && evt.stopPropagation()
+
           if (execOptions.replSilence) {
             debug('repl silence')
             xtermContainer.style.display = 'none'

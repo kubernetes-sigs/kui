@@ -41,18 +41,6 @@ $height: 3em;
   }
 }
 
-@mixin SidebarToggleButton {
-  button.kui--top-tab-stripe-header--toggle-button {
-    @content;
-  }
-}
-
-@mixin SidebarToggleIcon {
-  .kui--top-tab-stripe-header--toggle-button-icon {
-    @content;
-  }
-}
-
 @mixin TopTabStripe_ProductName {
   .kui--header--name {
     @content;
@@ -110,49 +98,5 @@ $height: 3em;
 @mixin TabClose {
   .kui--tab-close {
     @content;
-  }
-}
-
-@mixin Sidebar {
-  .kui--tab-container-sidebar {
-    @content;
-  }
-}
-
-@mixin SidebarBody {
-  .pf-c-page__sidebar-body {
-    @content;
-  }
-}
-
-@mixin SidebarNav {
-  .kui--tab-container-sidebar-nav {
-    @content;
-  }
-}
-
-@mixin SidebarOther {
-  .kui--tab-container-sidebar-other {
-    @content;
-  }
-}
-
-@mixin SidebarNavItem {
-  .kui--sidebar-nav-item {
-    @content;
-  }
-}
-
-@mixin SidebarNavMenu {
-  .kui--sidebar-nav-menu {
-    @content;
-  }
-}
-
-@mixin SidebarNavMenuButton {
-  @include SidebarNavMenu {
-    & > button {
-      @content;
-    }
   }
 }
