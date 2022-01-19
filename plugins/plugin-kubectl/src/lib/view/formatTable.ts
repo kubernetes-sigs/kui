@@ -73,7 +73,7 @@ export const outerCSSForKey = {
   CURRENT: 'entity-name-group entity-name-group-extra-narrow text-center',
   DESIRED: 'entity-name-group entity-name-group-extra-narrow text-center',
 
-  'LAST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
+  'LAST SEEN': 'entity-name-group-extra-narrow', // kubectl get events
   'FIRST SEEN': 'hide-with-sidecar entity-name-group-extra-narrow', // kubectl get events
 
   COUNT: 'keep-with-sidecar',
