@@ -24,6 +24,8 @@
 @import '../../Themes/mixins';
 @import 'BlockLinks';
 
+$marginTop: 0.5em;
+
 @mixin TextContent {
   .pf-c-content {
     @content;
@@ -155,6 +157,10 @@ body[kui-theme-style] {
   @include FullWidthInScrollback;
 }
 
+@include CommentaryEditor {
+  margin-top: $marginTop;
+}
+
 @include Commentary {
   @include BlockLinks;
 
@@ -238,7 +244,7 @@ body[kui-theme-style='light'] {
 
   @include PtyOutputContainer {
     &:not(:first-child) {
-      margin-top: 0.5em;
+      margin-top: $marginTop;
     }
   }
 }
