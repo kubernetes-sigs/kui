@@ -132,7 +132,7 @@
   content: '\00a0';
 }
 .repl-result pre {
-  margin: 2px 0; /* firefox needs some vertical padding, otherwise descenders like "y" crop; weird */
+  margin: 0; /* was: 2px 0, firefox needs some vertical padding, otherwise descenders like "y" crop; weird */
   white-space: pre-wrap;
 }
 
