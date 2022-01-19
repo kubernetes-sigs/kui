@@ -28,13 +28,16 @@
  *
  */
 
+import { i18n } from '@kui-shell/core'
 import prettyPrintMillis from 'pretty-ms'
+
 import toDescriptionList from './convert'
 import { Event } from '../../../../model/resource'
 
+const strings = i18n('plugin-kubectl', 'events')
+
 export default function EventSummary(event: Event) {
   const {
-    metadata,
     involvedObject,
     source,
     reason: Reason,
@@ -46,15 +49,14 @@ export default function EventSummary(event: Event) {
   } = event
 
   return toDescriptionList({
-    'Last seen': prettyPrintMillis(Date.now() - new Date(lastTimestamp).getTime()),
+    'Last seen': strings('ago', prettyPrintMillis(Date.now() - new Date(lastTimestamp).getTime())),
     Object: `${involvedObject.kind}/${involvedObject.name}`,
+    Message,
     Type,
     Reason,
     Subobject: involvedObject.fieldPath,
     Source: `${source.component || ''}${source.host ? (source.component ? ', ' : '') + source.host : ''}`,
-    Message,
-    'First seen': prettyPrintMillis(Date.now() - new Date(firstTimestamp).getTime()),
-    Count,
-    Name: metadata.name
+    'First seen': strings('ago', prettyPrintMillis(Date.now() - new Date(firstTimestamp).getTime())),
+    Count
   })
 }
