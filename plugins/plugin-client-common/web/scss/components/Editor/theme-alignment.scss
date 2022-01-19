@@ -17,11 +17,11 @@ body[kui-theme-style] .monaco-editor {
 
 body[kui-theme-style] .monaco-editor .current-line ~ .line-numbers {
   transition: color 300ms ease-in-out;
-  color: var(--color-brand-02);
+  color: var(--color-text-02);
 }
 body[kui-theme-style] .monaco-editor .line-numbers {
   transition: color 300ms ease-in-out;
-  color: var(--color-text-02);
+  color: var(--color-base04);
   font-weight: 300;
 }
 
