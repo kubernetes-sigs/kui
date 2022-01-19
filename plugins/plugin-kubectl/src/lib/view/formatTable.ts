@@ -790,12 +790,22 @@ export function toKuiTable(
     // https://github.com/dchester/jsonpath/issues/90
     // and ugh, static imports seem to cause problems with headless https://github.com/kubernetes-sigs/kui/issues/7874
     const jsonpath = require('@kui-shell/jsonpath')
-    const qquery = jsonpath.parse('$' + sortBy.replace(/\.\w+-\w+/g, _ => `["${_}"]`))
+    const qquery = jsonpath.parse('$' + sortBy.replace(/^{?(.+)}$/, '$1').replace(/\.\w+-\w+/g, _ => `["${_}"]`))
     const query = (qquery as any) as string // bad typing in @types/jsonpath
 
     body.sort((a, b) => {
       const vvA = jsonpath.value(a.object, query)
       const vvB = jsonpath.value(b.object, query)
+
+      if (!vvB || !vvB) {
+        // then there is some bug in our handling; probably the
+        // PartialObject does not have the fields that the user wants
+        // to sort on; the fix is probably to detect this and do a
+        // full `-o json`
+        //
+        // the `kubectl` CLI may do no better, so ... ignore this for
+        // now
+      }
 
       const vA = sortByDate ? new Date(vvA) : vvA
       const vB = sortByDate ? new Date(vvB) : vvB
