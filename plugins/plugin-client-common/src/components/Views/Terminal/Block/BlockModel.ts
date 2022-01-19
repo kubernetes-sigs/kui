@@ -50,7 +50,7 @@ type WithState<S extends BlockState> = { state: S }
 type WithResponse<R extends KResponse> = { response: R } & WithStartTime
 type WithValue = { value: string }
 type WithAnnouncement = { isAnnouncement: boolean; maximized?: boolean }
-type WithPreferences = { outputOnly?: boolean }
+type WithOutputOnly<T extends boolean = boolean> = { outputOnly: T }
 type WithCommandStart = { startEvent: CommandStartEvent }
 type WithCommandComplete = { completeEvent: CommandCompleteEvent }
 type WithRerun = { isRerun: true; newExecUUID: string } & WithOriginalExecUUID
@@ -63,6 +63,7 @@ export type AnnouncementBlock = WithState<BlockState.ValidResponse> &
   WithResponse<ScalarResponse> &
   WithCWD &
   WithUUID &
+  WithOutputOnly<true> &
   WithAnnouncement
 type EmptyBlock = WithState<BlockState.Empty> & WithCWD & Partial<WithCommand> & Partial<WithCommandComplete>
 type ErrorBlock = WithState<BlockState.Error> &
@@ -84,7 +85,7 @@ type OkBlock = WithState<BlockState.ValidResponse> &
   Partial<WithRerun> &
   Partial<WithSectionBreak> &
   WithReplay &
-  WithPreferences
+  WithOutputOnly
 export type ProcessingBlock = WithState<BlockState.Processing> &
   WithCommand &
   WithUUID &
@@ -176,6 +177,7 @@ export function Announcement(response: ScalarResponse, execUUID = uuid(), maximi
     response,
     execUUID,
     maximized,
+    outputOnly: true,
     isAnnouncement: true,
     startTime: Date.now(),
     cwd: cwd(),
