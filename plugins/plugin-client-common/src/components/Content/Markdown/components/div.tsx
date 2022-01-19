@@ -26,9 +26,10 @@ export default function div(uuid: string) {
   return (props: React.HTMLAttributes<HTMLDivElement>) => {
     const maximized = props['data-kui-maximized'] === 'true'
     const position = props['data-kui-split']
+    const placeholder = props['data-kui-placeholder']
     const count = props['data-kui-split-count'] ? parseInt(props['data-kui-split-count'], 10) : undefined
 
-    if (!position || (position === 'default' && count === 0 && !maximized)) {
+    if (!position || (position === 'default' && count === 0 && !maximized && !placeholder)) {
       // don't create a split if a position wasn't indicated, or if
       // this is the first default-positioned section; if it is
       // maximized, we'll have to go through the injector path
@@ -42,7 +43,7 @@ export default function div(uuid: string) {
               <ReactCommentary>
                 <TextContent>
                   <div className="padding-content marked-content page-content" data-is-nested>
-                    {props.children}
+                    {props.children || (placeholder ? <span className="italic sub-text">{placeholder}</span> : '')}
                   </div>
                 </TextContent>
               </ReactCommentary>
