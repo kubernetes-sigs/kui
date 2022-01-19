@@ -29,14 +29,18 @@ const rootRelative = (dir: string) => join(ROOT, dir)
       CLI.command(`${head} ${rootRelative('package.json')}`, this.app)
         .then(ReplExpect.ok)
         .then(SidecarExpect.open)
-        .then(res =>
-          this.app.client.waitUntil(async () => {
+        .then(res => {
+          let idx = 0
+          return this.app.client.waitUntil(async () => {
             const linesNumbers = await this.app.client.$$(
               Selectors.SIDECAR_CUSTOM_CONTENT_LINE_NUMBERS(res.count, res.splitIndex)
             )
+            if (++idx > 5) {
+              console.error(`Still waiting for lineNumbers actual=${linesNumbers.length} expected=10`)
+            }
             return linesNumbers.length === 10
           })
-        )
+        })
         .catch(Common.oops(this)))
 
     it(`should ${head} -n 5 package.json and see 5 lines`, () =>

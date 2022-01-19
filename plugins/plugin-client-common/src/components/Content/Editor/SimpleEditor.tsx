@@ -150,6 +150,8 @@ export default class SimpleEditor extends React.Component<Props, State> {
   private initMonaco(props: Props, state: State) {
     const cleaners = []
 
+    const nLines = props.content.split(/\n/).length
+
     try {
       // here we instantiate an editor widget
       const providedOptions = {
@@ -162,7 +164,15 @@ export default class SimpleEditor extends React.Component<Props, State> {
       }
       const overrides: Monaco.IStandaloneEditorConstructionOptions = { theme: props.light ? 'vs' : 'vs-dark' }
       const options: Monaco.IStandaloneEditorConstructionOptions = Object.assign(
-        defaultMonacoOptions(providedOptions),
+        defaultMonacoOptions(
+          Object.assign(
+            {
+              showLineNumbers: nLines > 1,
+              lineNumbersMinChars: nLines.toString().length
+            },
+            providedOptions
+          )
+        ),
         providedOptions,
         overrides
       )

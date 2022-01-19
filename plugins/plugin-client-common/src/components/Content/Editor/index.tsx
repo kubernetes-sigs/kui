@@ -355,6 +355,7 @@ export default class Editor extends React.PureComponent<Props, State> {
       // here we instantiate an editor widget
       const providedOptions = {
         value: '',
+        showLineNumbers: true,
         readOnly: Editor.isReadOnly(props, state),
         language:
           state.content.contentType === 'text/plain'

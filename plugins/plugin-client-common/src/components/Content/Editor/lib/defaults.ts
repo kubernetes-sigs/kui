@@ -22,6 +22,7 @@ export interface Options extends editor.IEditorConstructionOptions {
   simple?: boolean
   fontSize?: number
   language?: string
+  showLineNumbers?: boolean
 }
 
 /** Once we scroll to the bottom or top, then start scrolling the enclosing scroll region */
@@ -59,10 +60,10 @@ export default (options: Options): editor.IEditorConstructionOptions => ({
   // simplify the UI?
   links: !options.simple,
   folding: !options.simple || !/markdown|text|shell/i.test(options.language),
-  lineNumbers: options.simple ? 'off' : 'on',
+  lineNumbers: !options.showLineNumbers ? 'off' : 'on',
   wordWrap: options.wordWrap || (options.simple ? 'off' : 'on'),
-  wrappingIndent: 'indent',
   renderLineHighlight: options.simple ? 'none' : undefined,
   renderFinalNewline: !options.simple,
-  lineDecorationsWidth: options.simple ? 0 : undefined
+  lineDecorationsWidth: !options.showLineNumbers ? 0 : undefined,
+  lineNumbersMinChars: options.lineNumbersMinChars || (!options.showLineNumbers ? 0 : undefined)
 })
