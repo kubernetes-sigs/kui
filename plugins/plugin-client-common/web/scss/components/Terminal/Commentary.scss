@@ -346,7 +346,6 @@ body[kui-theme-style='dark'] {
 }
 @include MarkdownTip {
   background-color: #e7f1fa;
-  filter: hue-rotate(-45deg) contrast(1.1);
 
   @include ExpandableSectionToggle {
     width: 100%;
