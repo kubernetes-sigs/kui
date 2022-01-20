@@ -22,6 +22,9 @@ $bgcolor: var(--color-base06);
   background-color: $bgcolor;
 
   &[data-is-markdown] {
+    .pf-c-content {
+      font-size: inherit;
+    }
     .pf-c-tooltip__content {
       padding: 0;
       font-size: 0.75rem;
@@ -56,7 +59,6 @@ $bgcolor: var(--color-base06);
 
     p {
       padding-top: 0;
-      padding-bottom: 0;
     }
 
     p + p {
