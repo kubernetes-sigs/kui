@@ -111,7 +111,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
   private message() {
     if (this.state.type !== 'default' && this.state.message) {
       return (
-        <div className="kui--status-stripe-element left-pad kui--status-stripe-message-element">
+        <div className="kui--status-stripe-element left-pad kui--status-stripe-message-element flex-fill">
           {this.simpleMarkdown(this.state.message)}
         </div>
       )
@@ -125,7 +125,7 @@ export default class StatusStripe extends React.PureComponent<Props, State> {
    *
    */
   private widgets() {
-    if (this.state.type !== 'default' || React.Children.count(this.props.children) === 0) {
+    if (React.Children.count(this.props.children) === 0) {
       return this.filler()
     } else {
       return this.props.children

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Debug from 'debug'
 import React from 'react'
 import { v4 as uuid } from 'uuid'
 import {
@@ -47,6 +48,7 @@ const SourceRef = React.lazy(() => import('../SourceRef'))
 const CodeSnippet = React.lazy(() => import('../../../spi/CodeSnippet'))
 const ExpandableSection = React.lazy(() => import('../../../spi/ExpandableSection'))
 
+const debug = Debug('plugin-client-common/components/Views/Terminal/Block/CodeBlock')
 const strings = i18n('plugin-client-common')
 
 interface Value {
@@ -61,6 +63,9 @@ type Props<T1 = any, T2 = any, T3 = any> = Value &
 
     /** default: true */
     readonly?: boolean
+
+    /** Re-execute the command when events are passed on the given channel */
+    watch?: string
 
     /** A Block identifier, to enable cross-referencing with check lists, etc. */
     blockId?: string
@@ -120,6 +125,7 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   public componentDidMount() {
     this.initLinkEvents()
+    this.initWatchEvents()
 
     if (this.props.executeImmediately && !this.props.response) {
       setTimeout(this._onRun)
@@ -128,6 +134,29 @@ export default class Input<T1, T2, T3> extends StreamingConsumer<Props<T1, T2, T
 
   public componentWillUnmount() {
     this.cleaners.forEach(_ => _())
+  }
+
+  /**
+   * Re-execute command upon receipt of an event on the specified
+   * `this.props.watch` channel.
+   *
+   */
+  private readonly onWatchEvent = () => this._onRun()
+
+  private initWatchEvents() {
+    if (this.props.watch) {
+      const channels = this.props.watch.split(/\s*,\s*/)
+      debug(
+        `initializing code block watch events on ${channels.length} channel${
+          channels.length === 1 ? '' : 's'
+        }: ${channels}`
+      )
+
+      channels.forEach(channel => {
+        Events.eventChannelUnsafe.on(channel, this.onWatchEvent)
+        this.cleaners.push(() => Events.eventChannelUnsafe.off(channel, this.onWatchEvent))
+      })
+    }
   }
 
   private emitLinkStatus(execution = this.state.execution) {
