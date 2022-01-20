@@ -137,6 +137,8 @@ $tab-label-font-size: 0.875rem;
       color: var(--color-text-02);
       padding: 0;
       flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
       &:hover {
         color: var(--color-text-02);
