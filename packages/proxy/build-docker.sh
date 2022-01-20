@@ -115,7 +115,15 @@ function image {
         echo "Loading ContentSecurityPolicy from env $CSP"
     fi
 
-    NODE_PTY_VERSION=$(npm view node-pty version)
+    # sigh, this is harder than it should be: we want to get the
+    # *installed* version of node-pty do not use `npm view node-pty
+    # version` has this seems to get info about what is *published*
+    # maybe most of the time those are the same, but e.g. if we have
+    # installed a beta version e.g. 0.11.0-beta17, then there *will*
+    # be a difference between the two, because `npm view node-pty`
+    # will use implicitly the @latest dist-tag
+    NODE_PTY_VERSION=$(npm list node-pty | grep node-pty | cut -d @ -f2)
+    echo "Using node-pty@${NODE_PTY_VERSION}"
     (cd "$BUILDDIR" && docker build . -t kuishell/kui --build-arg CSP="$CSP" --build-arg OPENGRAPH="$OPENGRAPH" --build-arg KUBE_VERSION=$KUBE_VERSION --build-arg HELM_VERSION=$HELM_VERSION --build-arg OC_VERSION=$OC_VERSION $KUBECONFIG_ARG --build-arg NODE_PTY_VERSION=$NODE_PTY_VERSION)
 }
 
