@@ -65,6 +65,7 @@ const allFiles = /.*/
 plugins.push(new IgnorePlugin({ resourceRegExp: /\.css/, contextRegExp: /@kui-shell/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /\.scss/, contextRegExp: /@kui-shell/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: allFiles, contextRegExp: /\/tests\// }))
+plugins.push(new IgnorePlugin({ resourceRegExp: /tsconfig\.cjs\.spec\.json/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-charts/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-core/ }))
 plugins.push(new IgnorePlugin({ resourceRegExp: /@patternfly\/react-icons/ }))
