@@ -143,6 +143,7 @@ export default class CurrentContext extends React.PureComponent<Props, State> {
         label,
         isSelected,
         description: isSelected ? strings('This is your current context') : undefined,
+        quietExec: true,
         command: `${kubectl} config use-context ${encodeComponent(name)}`
       }
     })

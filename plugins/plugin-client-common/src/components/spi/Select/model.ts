@@ -16,6 +16,7 @@
 export type SelectOptions = {
   label: string
   command?: string | (() => Promise<string>)
+  quietExec?: boolean
   description?: React.ReactNode
   isSelected?: boolean
   isDisabled?: boolean

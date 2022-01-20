@@ -57,9 +57,9 @@ export default class PatternFlySelect extends React.PureComponent<Props, State> 
   private async onClick(option: SelectOptions) {
     if (option.command) {
       if (typeof option.command === 'string') {
-        pexecInCurrentTab(option.command)
+        pexecInCurrentTab(option.command, undefined, undefined, option.quietExec)
       } else {
-        pexecInCurrentTab(await option.command())
+        pexecInCurrentTab(await option.command(), undefined, undefined, option.quietExec)
       }
     }
   }

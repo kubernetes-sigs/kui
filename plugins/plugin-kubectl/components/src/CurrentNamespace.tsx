@@ -223,6 +223,7 @@ export default class CurrentNamespace extends React.PureComponent<Props, State> 
       label: ns,
       isSelected,
       description: isSelected ? strings('This is your current namespace') : undefined,
+      quietExec: true,
       command: async () => {
         const kubectl = await this.kubectl()
         return `${kubectl} config set-context --current --namespace=${ns}`
