@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.1](https://github.com/kubernetes-sigs/kui/compare/v11.0.0...v11.0.1) (2022-01-20)
+
+**Note:** Version bump only for package @kui-shell/plugin-client-alternate
+
 # [11.0.0](https://github.com/kubernetes-sigs/kui/compare/v4.5.0...v11.0.0) (2022-01-18)
 
 ### Bug Fixes

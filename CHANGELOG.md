@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.1](https://github.com/IBM/kui/compare/v11.0.0...v11.0.1) (2022-01-20)
+
+### Bug Fixes
+
+- back-port of electron/remote fix to 11_0_x ([4398a77](https://github.com/IBM/kui/commit/4398a77))
+
 # [11.0.0](https://github.com/IBM/kui/compare/v4.5.0...v11.0.0) (2022-01-18)
 
 ### Bug Fixes
