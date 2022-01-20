@@ -351,6 +351,7 @@ export default class TabContainer extends React.PureComponent<Props, State> {
         version={this.props.version}
         isOpen={this.state.isSidebarOpen}
         toggleOpen={this.toggleSidebar}
+        noTopTabs={this.props.noTopTabs}
         guidebooks={this.props.guidebooks}
         productName={this.props.productName}
         indicateActiveItem={!!this.props.noTopTabs}
