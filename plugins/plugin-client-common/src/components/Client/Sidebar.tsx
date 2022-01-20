@@ -18,6 +18,7 @@ import React from 'react'
 import { encodeComponent, i18n, pexecInCurrentTab } from '@kui-shell/core'
 import { PageSidebar } from '@patternfly/react-core'
 
+import CommonProps from './props/Common'
 import BrandingProps from './props/Branding'
 import GuidebookProps, { isGuidebook, isMenu, MenuItem } from './props/Guidebooks'
 
@@ -30,7 +31,8 @@ const NavExpandable = React.lazy(() => import('@patternfly/react-core').then(_ =
 
 const strings = i18n('plugin-client-common')
 
-type Props = BrandingProps &
+type Props = Pick<CommonProps, 'noTopTabs'> &
+  BrandingProps &
   GuidebookProps & {
     /** unfurled? */
     isOpen: boolean
@@ -92,7 +94,12 @@ export default class Sidebar extends React.PureComponent<Props, State> {
           className="kui--sidebar-nav-item"
           isActive={this.props.indicateActiveItem && (_.notebook === this.currentGuidebook || thisIsTheFirstNavItem)}
           onClick={() => {
-            pexecInCurrentTab(`${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`)
+            const quiet = !this.props.noTopTabs
+            pexecInCurrentTab(
+              `${this.props.guidebooksCommand || 'replay'} ${encodeComponent(_.filepath)}`,
+              undefined,
+              quiet
+            )
             this.setState({ currentGuidebook: _.notebook })
           }}
         >
