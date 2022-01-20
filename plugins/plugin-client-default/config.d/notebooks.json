@@ -12,6 +12,7 @@
     {
       "label": "Kubernetes",
       "submenu": [
+        { "notebook": "Dashboard", "filepath": "/kui/kubernetes/dashboard1.md" },
         { "notebook": "CRUD Operations", "filepath": "/kui/kubernetes/crud-operations.md" },
         { "notebook": "Working with Jobs", "filepath": "/kui/kubernetes/create-jobs.md" },
         { "notebook": "Deploying Applications", "filepath": "/kui/kubernetes/deploy-applications.md" }

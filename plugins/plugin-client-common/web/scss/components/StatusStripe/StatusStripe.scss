@@ -38,6 +38,9 @@ $z-index: var(--pf-global--ZIndex--xs);
     @include StatusStripeElement {
       color: $fg-type-blue;
     }
+    @include StatusStripeElementHiddenInGuidebook {
+      display: none;
+    }
   }
   &[data-type='yellow'] {
     background-color: $bg-type-yellow;

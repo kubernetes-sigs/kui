@@ -77,6 +77,7 @@ export default function code(
             className="kui--code-block-in-markdown"
             tab={mdprops.tab}
             value={body}
+            watch={attributes.watch}
             language={language}
             blockId={attributes.id}
             validate={attributes.validate === '$body' ? body : attributes.validate}

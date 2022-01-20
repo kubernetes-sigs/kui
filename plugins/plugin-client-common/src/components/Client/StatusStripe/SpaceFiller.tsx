@@ -21,5 +21,5 @@ import React from 'react'
  *
  */
 export default function SpaceFiller() {
-  return <div className="flex-fill" />
+  return <div className="flex-fill kui--status-stripe-space-filler kui--hide-in-guidebook kui--status-stripe-element" />
 }
