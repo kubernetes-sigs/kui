@@ -577,7 +577,7 @@ $action-hover-delay: 210ms;
 }
 
 @mixin MarkdownTip {
-  .kui--markdown-tip {
+  div.kui--markdown-tip {
     @content;
   }
 }
